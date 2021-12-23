@@ -2,68 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B5BC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 03:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F58C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Dec 2021 08:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346158AbhLWDVy (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Dec 2021 22:21:54 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:60746 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231389AbhLWDVx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Dec 2021 22:21:53 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowAC3v1s468Nh8QlfBA--.30561S2;
-        Thu, 23 Dec 2021 11:21:29 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     andy.shevchenko@gmail.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, liviu.dudau@arm.com, sudeep.holla@arm.com,
-        lorenzo.pieralisi@arm.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] serial: mps2-uart: Check for error irq
-Date:   Thu, 23 Dec 2021 11:21:27 +0800
-Message-Id: <20211223032127.1259695-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S242799AbhLWIBI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Dec 2021 03:01:08 -0500
+Received: from mail.BETTERBIZ.PL ([45.86.209.138]:60132 "EHLO
+        mail.betterbiz.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242795AbhLWIBI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Dec 2021 03:01:08 -0500
+X-Greylist: delayed 597 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 03:01:08 EST
+Received: by mail.betterbiz.pl (Postfix, from userid 1001)
+        id C386C82853; Thu, 23 Dec 2021 02:45:48 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=betterbiz.pl; s=mail;
+        t=1640245863; bh=07NAgW1e0WiNB9zqagiM2BnwZfWBCpNa2E4+ccxBPgw=;
+        h=Date:From:To:Subject:From;
+        b=VqLUk2NStbhyc57npmlSMSjXOTcEnE3rRbT+SopiPqVDyPCTWFdddQ/3XzAbzqCgL
+         jBIoPRtoVmNyHiiB+h5LjvDQnRclBFQPk/lzom5xz0XBgh3y1gW5aJcq1VMJ+hUnf7
+         LRBoBuxb8Ed0x+VfIXlGWX6qbIUnodFOPiX/kXqk+GImRtW0WqLz8xtPUt15Ombna+
+         QkHe98CnDq+MkOVIu90EO7zdjwFB2zzqshvkibV6e7ZYGjRKKsh+6HG2YiumAm316+
+         MazBSPKqN6SelN6l8BOcagNp9KwcOWhZBLvm8NE/hFic44uspavusTM7Ei8zntlUoV
+         rQt0zRyJqVeiw==
+Received: by mail.betterbiz.pl for <linux-serial@vger.kernel.org>; Thu, 23 Dec 2021 07:45:46 GMT
+Message-ID: <20211223024500-0.1.f.zpc.0.i8b26ge4wh@betterbiz.pl>
+Date:   Thu, 23 Dec 2021 07:45:46 GMT
+From:   "Jakub Daroch" <jakub.daroch@betterbiz.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: Wycena paneli fotowoltaicznych
+X-Mailer: mail.betterbiz.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowAC3v1s468Nh8QlfBA--.30561S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYD7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2js
-        IEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE
-        6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72
-        CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
-        M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8GwCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IY
-        s7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI
-        0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU-miiUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thursday, December 23, 2021, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->> I find that platform_get_irq() will not always succeed.
->> It will return error irq in case there is no suitable irq.
->> Therefore, it might be better to check it if order to avoid the use of
->> error irq.
+Dzie=C5=84 dobry,
+
+dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
+irm=C4=85.
+
+=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
+ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej nawet o 90%.
+
+Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
+ropozycji?
 
 
-> IRQ
->
->
-> You haven't compiled it, right?
-
-Actually, I compile the patch again.
-But I still gain no error.
-Please give me more detail.
-
-Sincerely thanks,
-Jiasheng
-
+Pozdrawiam,
+Jakub Daroch
