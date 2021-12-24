@@ -2,34 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4768BC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 14:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDDDC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 14:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352977AbhLXOaI (ORCPT
+        id S1353040AbhLXOaO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Dec 2021 09:30:08 -0500
-Received: from relmlor1.renesas.com ([210.160.252.171]:8002 "EHLO
+        Fri, 24 Dec 2021 09:30:14 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:55816 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1353017AbhLXOaC (ORCPT
+        by vger.kernel.org with ESMTP id S1352956AbhLXOaI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Dec 2021 09:30:02 -0500
+        Fri, 24 Dec 2021 09:30:08 -0500
 X-IronPort-AV: E=Sophos;i="5.88,232,1635174000"; 
-   d="scan'208";a="104623549"
+   d="scan'208";a="104623572"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 24 Dec 2021 23:30:01 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 24 Dec 2021 23:30:07 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 02DE34000ABD;
-        Fri, 24 Dec 2021 23:29:59 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 202D04000AA9;
+        Fri, 24 Dec 2021 23:30:04 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
 Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 08/10] serial: ar933x: Use platform_get_irq() to get the interrupt
-Date:   Fri, 24 Dec 2021 14:29:14 +0000
-Message-Id: <20211224142917.6966-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 10/10] serial: pmac_zilog: Use platform_get_irq() to get the interrupt
+Date:   Fri, 24 Dec 2021 14:29:16 +0000
+Message-Id: <20211224142917.6966-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -48,50 +52,39 @@ code use platform_get_irq().
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/tty/serial/ar933x_uart.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/tty/serial/pmac_zilog.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index 4379ca4842ae..8cabe50c4a33 100644
---- a/drivers/tty/serial/ar933x_uart.c
-+++ b/drivers/tty/serial/ar933x_uart.c
-@@ -707,11 +707,11 @@ static int ar933x_uart_probe(struct platform_device *pdev)
- 	struct ar933x_uart_port *up;
- 	struct uart_port *port;
- 	struct resource *mem_res;
--	struct resource *irq_res;
- 	struct device_node *np;
- 	unsigned int baud;
- 	int id;
- 	int ret;
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 12ce150b0ad4..5359236b32d6 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -1702,17 +1702,21 @@ extern struct platform_device scc_a_pdev, scc_b_pdev;
+ 
+ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ {
+-	struct resource *r_ports, *r_irq;
++	struct resource *r_ports;
 +	int irq;
  
- 	np = pdev->dev.of_node;
- 	if (IS_ENABLED(CONFIG_OF) && np) {
-@@ -730,11 +730,9 @@ static int ar933x_uart_probe(struct platform_device *pdev)
- 	if (id >= CONFIG_SERIAL_AR933X_NR_UARTS)
- 		return -EINVAL;
+ 	r_ports = platform_get_resource(uap->pdev, IORESOURCE_MEM, 0);
+-	r_irq = platform_get_resource(uap->pdev, IORESOURCE_IRQ, 0);
+-	if (!r_ports || !r_irq)
++	if (!r_ports)
+ 		return -ENODEV;
  
--	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!irq_res) {
--		dev_err(&pdev->dev, "no IRQ resource\n");
--		return -EINVAL;
--	}
-+	irq = platform_get_irq(pdev, 0);
++	irq = platform_get_irq(uap->pdev, 0);
 +	if (irq < 0)
 +		return irq;
- 
- 	up = devm_kzalloc(&pdev->dev, sizeof(struct ar933x_uart_port),
- 			  GFP_KERNEL);
-@@ -766,7 +764,7 @@ static int ar933x_uart_probe(struct platform_device *pdev)
- 
- 	port->mapbase = mem_res->start;
- 	port->line = id;
--	port->irq = irq_res->start;
-+	port->irq = irq;
- 	port->dev = &pdev->dev;
- 	port->type = PORT_AR933X;
- 	port->iotype = UPIO_MEM32;
++
+ 	uap->port.mapbase  = r_ports->start;
+ 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
+ 	uap->port.iotype   = UPIO_MEM;
+-	uap->port.irq      = r_irq->start;
++	uap->port.irq      = irq;
+ 	uap->port.uartclk  = ZS_CLOCK;
+ 	uap->port.fifosize = 1;
+ 	uap->port.ops      = &pmz_pops;
 -- 
 2.17.1
 
