@@ -2,76 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D98B0C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 14:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E64CAC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 14:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352915AbhLXO3p (ORCPT
+        id S1352862AbhLXO3t (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Dec 2021 09:29:45 -0500
-Received: from relmlor2.renesas.com ([210.160.252.172]:9063 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1352862AbhLXO3n (ORCPT
+        Fri, 24 Dec 2021 09:29:49 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:18174 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1352920AbhLXO3r (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Dec 2021 09:29:43 -0500
+        Fri, 24 Dec 2021 09:29:47 -0500
 X-IronPort-AV: E=Sophos;i="5.88,232,1635174000"; 
-   d="scan'208";a="105108379"
+   d="scan'208";a="104623533"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 24 Dec 2021 23:29:40 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 24 Dec 2021 23:29:45 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 96CD34000ABD;
-        Fri, 24 Dec 2021 23:29:39 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 07B9C4000ABD;
+        Fri, 24 Dec 2021 23:29:43 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     linux-serial@vger.kernel.org
+To:     linux-serial@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 00/10] serial: Use platform_get_irq*() variants to fetch IRQ's
-Date:   Fri, 24 Dec 2021 14:29:06 +0000
-Message-Id: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH 02/10] serial: 8250_bcm7271: Use platform_get_irq() to get the interrupt
+Date:   Fri, 24 Dec 2021 14:29:08 +0000
+Message-Id: <20211224142917.6966-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi All,
+platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+allocation of IRQ resources in DT core code, this causes an issue
+when using hierarchical interrupt domains using "interrupts" property
+in the node as this bypasses the hierarchical setup and messes up the
+irq chaining.
 
-This patch series aims to drop using platform_get_resource() for IRQ types
-in preparation for removal of static setup of IRQ resource from DT core
-code.
+In preparation for removal of static setup of IRQ resource from DT core
+code use platform_get_irq().
 
-Dropping usage of platform_get_resource() was agreed based on
-the discussion [0].
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/
-patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-Cheers,
-Prabhakar
-
-Lad Prabhakar (10):
-  serial: altera: Use platform_get_irq_optional() to get the interrupt
-  serial: 8250_bcm7271: Use platform_get_irq() to get the interrupt
-  serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()
-  serial: meson: Use platform_get_irq() to get the interrupt
-  serial: pxa: Use platform_get_irq() to get the interrupt
-  serial: altera_jtaguart: Use platform_get_irq_optional() to get the
-    interrupt
-  serial: vt8500: Use platform_get_irq() to get the interrupt
-  serial: ar933x: Use platform_get_irq() to get the interrupt
-  serial: bcm63xx: Use platform_get_irq() to get the interrupt
-  serial: pmac_zilog: Use platform_get_irq() to get the interrupt
-
- drivers/tty/serial/8250/8250_bcm7271.c | 23 +++++++++++++----------
- drivers/tty/serial/altera_jtaguart.c   | 11 +++++++----
- drivers/tty/serial/altera_uart.c       |  9 +++++----
- drivers/tty/serial/ar933x_uart.c       | 12 +++++-------
- drivers/tty/serial/bcm63xx_uart.c      | 10 +++++-----
- drivers/tty/serial/meson_uart.c        | 11 ++++++-----
- drivers/tty/serial/pmac_zilog.c        | 12 ++++++++----
- drivers/tty/serial/pxa.c               | 12 ++++++++----
- drivers/tty/serial/vt8500_serial.c     | 12 ++++++++----
- 9 files changed, 65 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 5163d60756b7..7ecfcc650d28 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -941,7 +941,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 	struct brcmuart_priv *priv;
+ 	struct clk *baud_mux_clk;
+ 	struct uart_8250_port up;
+-	struct resource *irq;
++	int irq;
+ 	void __iomem *membase = NULL;
+ 	resource_size_t mapbase = 0;
+ 	u32 clk_rate = 0;
+@@ -952,11 +952,9 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 		"uart", "dma_rx", "dma_tx", "dma_intr2", "dma_arb"
+ 	};
+ 
+-	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!irq) {
+-		dev_err(dev, "missing irq\n");
+-		return -EINVAL;
+-	}
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
+ 	priv = devm_kzalloc(dev, sizeof(struct brcmuart_priv),
+ 			GFP_KERNEL);
+ 	if (!priv)
+@@ -1044,7 +1042,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 	up.port.dev = dev;
+ 	up.port.mapbase = mapbase;
+ 	up.port.membase = membase;
+-	up.port.irq = irq->start;
++	up.port.irq = irq;
+ 	up.port.handle_irq = brcmuart_handle_irq;
+ 	up.port.regshift = 2;
+ 	up.port.iotype = of_device_is_big_endian(np) ?
 -- 
 2.17.1
 
