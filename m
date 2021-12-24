@@ -2,94 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F46C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 17:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8EDC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Dec 2021 17:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353273AbhLXRFb (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Dec 2021 12:05:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
+        id S231481AbhLXRZc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Dec 2021 12:25:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbhLXRFb (ORCPT
+        with ESMTP id S229539AbhLXRZb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Dec 2021 12:05:31 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D92C061401;
-        Fri, 24 Dec 2021 09:05:30 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so8887694pjp.0;
-        Fri, 24 Dec 2021 09:05:30 -0800 (PST)
+        Fri, 24 Dec 2021 12:25:31 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BD0C061401;
+        Fri, 24 Dec 2021 09:25:31 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id o20so35465775eds.10;
+        Fri, 24 Dec 2021 09:25:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DBgnyq+9DNsn0qFM2xOT3B8WYOlzGlfix0qN2fnTTm8=;
-        b=AVPAxm/YxXTtYyjhDBMo0/D9fNf43ainvRdet07XjrZuLQUiyc8kymV/DcaMPAYan4
-         aAmt6fbxuPWqv2zWxHz9ppydjnjiYpMP2Eh1kmC0FjeAYeMC++ZVh7yxDRkqoiF2hIS/
-         sq3BGGrijS6fk53uNj4S9UwvnQwfeakyJM7aiFRg/9q+hKeVxFvkIhxIwsN2JEnIR096
-         af0vsXcdm9RxTTvmECO9U9FkpdGTgJI7IPBf6GrBqBxvwhSgiBOPEPkEgiJabliwgQWv
-         +HTslNkQudbzzrLBEBvReKteyQAXcrzCrkX6h6kdnPXfysnc0k1wfQso9fq5iD9ZImtf
-         AAcQ==
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KuTjgwH+FkGjo+0kMKflsFHxsvKi/rJpxLiasu7mx6s=;
+        b=XgjIkn8UkAuY6SKls/ZiprFT8L25uAkSS2Fl7njQ6bhReHWtRg4YJlbrGqtFzC6I1b
+         7HBzqm+ebPYhziN0O4UCyMK7fTEN8OKXl2H3Y1HLHVGj1DJel9qEcOrC5JH65te1FAnh
+         +jW1lzQAo8a4tf/VKygxgy2v4buur1E5bOj/YQ0NuXjw/IWE8kgLcvsF2U6X2h2tzSO8
+         p5iGKS5PXHxk10WO0YERCXSowiFDL0d1aZVhlSNIJY9FnYQVb8vwjfLv6WFMEFCBzCm6
+         m41+kRehH9mV3DtnfTYhD2EjnyVoJIrOyUqyHC0bB+yueY2Wytq1wY+8Rw9dg2VTKVHk
+         YpUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DBgnyq+9DNsn0qFM2xOT3B8WYOlzGlfix0qN2fnTTm8=;
-        b=VEnUpYzNVx+UQGDRTevrjGz0cU+J6H57q99M83BAur4IppBa+Vtf/eUrsVfBogmRwi
-         wcVmMFxjrflX1CtVXMzgv6wJew3RsqA1gN7jt2LdP24jgJlbRmhh1LiehJ/BcGY338uw
-         KylWzoc5ltvCCL277FACfnlZbCsdNuusjK69pAco4Z2Q9nw+zJGxsiH6YDNOTwtUUhET
-         KfgIJV4+NI5IP9earVnhdJGqGZDTJ+8rsqw1CFNd+JQhgugrElFBnABj2uYWfStD5/S8
-         qFDCcXbWC3SzQtirSt7giT/yo980NdntNKYhh2/ax62mr7h07JMkm60JpARqlbnxnHeA
-         CtuA==
-X-Gm-Message-State: AOAM530iI/dOgJOPnb2Mggd31UXZ5fz/Wht3AjiWGVPolOQ3Pk4jhkGU
-        Ex2YvSlo+uYdws5lxE0OO2o=
-X-Google-Smtp-Source: ABdhPJxHCJmxFCjR6EXakVQvD0kX8ww0wiLYVPi1L4Yh5zo6EDrNDLoRxlTKm6ZYsluWTCWJ0sQQuA==
-X-Received: by 2002:a17:902:f68a:b0:148:c288:beb6 with SMTP id l10-20020a170902f68a00b00148c288beb6mr7363293plg.8.1640365530271;
-        Fri, 24 Dec 2021 09:05:30 -0800 (PST)
-Received: from ?IPV6:2600:8802:b00:4a48:81cd:f5a9:7f89:a39c? ([2600:8802:b00:4a48:81cd:f5a9:7f89:a39c])
-        by smtp.gmail.com with ESMTPSA id kb1sm10263433pjb.45.2021.12.24.09.05.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Dec 2021 09:05:29 -0800 (PST)
-Message-ID: <c878d04d-c2a2-1edb-01fe-e163412d2d96@gmail.com>
-Date:   Fri, 24 Dec 2021 09:05:24 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KuTjgwH+FkGjo+0kMKflsFHxsvKi/rJpxLiasu7mx6s=;
+        b=lCLKM5Ou+FSNBK79oV1iiNWuKaY9AbDvu05JtDtwygZxYBSu2arpIxisl7UbZtyDT2
+         MYkvYQZs2aQGRTcDPMl+OKd+4quUql8nYzQEB/u3g/ODk5ltv0nLQ1m9f4qpYoPPP1Zl
+         rR4QwLUI1RZUPciU0CzxOAYDg7KcoQc5Uq7WVZND8clV78YQfeSdlIeZIUMs7qBpvH/I
+         N+UtJFlzgYYPhGM/pYzxpiM2IrMHLegNR9NfJdR8ouo0OZ7rvdjLVfNLOUaT7HaH5xXJ
+         fhX/L8TeKpNyQ6XnZcqC3fRkPAEf9U3k5JALuQ2Jhesgz3x5NihOP27uV3nnOZn8Ff6R
+         cXaA==
+X-Gm-Message-State: AOAM533R/hO5ofBInUVwc1/FW60XwODE9blrA122PoBB9EJZhobicQ0W
+        EXwQyo8e8WK0wXZFnlR6L2KhcWq2o6D6tZ5uac4=
+X-Google-Smtp-Source: ABdhPJyc11+JkPEMQT+pTLoJD1KWuqfTAVmfOBMYnWwmWHpeCkyvXdY+D4MjyEu7TuPIWvnKfD9bf7bg0cpi1GLK8GI=
+X-Received: by 2002:a17:907:c0c:: with SMTP id ga12mr5924684ejc.147.1640366729650;
+ Fri, 24 Dec 2021 09:25:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 09/10] serial: bcm63xx: Use platform_get_irq() to get the
- interrupt
-Content-Language: en-US
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-serial@vger.kernel.org,
+References: <20211221071634.25980-1-yu.tu@amlogic.com> <20211221071634.25980-4-yu.tu@amlogic.com>
+In-Reply-To: <20211221071634.25980-4-yu.tu@amlogic.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Fri, 24 Dec 2021 18:25:18 +0100
+Message-ID: <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] tty: serial: meson: add UART driver compatible with
+ S4 SoC on-chip
+To:     Yu Tu <yu.tu@amlogic.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-References: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211224142917.6966-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211224142917.6966-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello,
+
+On Tue, Dec 21, 2021 at 8:17 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>
+> The S4 SoC on-chip UART uses a 12M clock as the clock source for
+> calculating the baud rate of the UART. But previously, chips used 24M or
+> other clock sources. So add this change. The specific clock source is
+> determined by chip design.
+Does the new S4 SoC use an external 12MHz XTAL or does it use a 24MHz XTAL?
+If there's still a 24MHz XTAL then I think this description is not
+correct - at least based on how I understand the UART controller.
+
+SoCs up to GXL and GXM had an internal divide-by-3 (clock divider) in
+the UART controller IP and an external 24MHz XTAL.
+This was not configurable, so the clock for all baud-rates had to be
+derived from an 8MHz (24MHz divided by 3) clock.
+
+With the A311D (G12B, which is still using an external 24MHz XTAL) SoC
+the UART controller gained two new bits - with configurable dividers -
+according to the public datasheets:
+UART_EE_A_REG5[26]:
+- 0x0: divide the input clock by 3 (meaning: this internally works
+with an 8MHz clock)
+- 0x1: use the input clock directly without further division (meaning:
+this internally work with an 24MHz clock)
+UART_EE_A_REG5[27]:
+- 0x0: use the clock as configured in UART_EE_A_REG5[26]
+- 0x1: divide the input clock by 2 (meaning: this internally works
+with an 12MHz clock)
+
+While writing this email I did some investigation and found that
+UART_EE_A_REG5[26] is used in the vendor kernel even for GXL and GXM
+SoCs.
+So this probably has been introduced with the GXL generation (and thus
+is missing on GXBB and earlier SoCs).
+Also UART_EE_A_REG5[27] seems to have been introduced with the G12A
+generation of SoCs (not surprising since G12A and G12B peripherals are
+very similar).
+
+Does the UART controller not work with divide-by-3 (as we have it
+today) or are these configurable dividers to reduce jitter?
 
 
-On 12/24/2021 06:29, Lad Prabhakar wrote:
-> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-> allocation of IRQ resources in DT core code, this causes an issue
-> when using hierarchical interrupt domains using "interrupts" property
-> in the node as this bypasses the hierarchical setup and messes up the
-> irq chaining.
-> 
-> In preparation for removal of static setup of IRQ resource from DT core
-> code use platform_get_irq().
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Best regards,
+Martin
