@@ -2,84 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECA9C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 17:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D21E4C2BA4C
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 17:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbhL0RId (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Dec 2021 12:08:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
+        id S231171AbhL0RtC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Dec 2021 12:49:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhL0RId (ORCPT
+        with ESMTP id S229973AbhL0Rs6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Dec 2021 12:08:33 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5045C06173E;
-        Mon, 27 Dec 2021 09:08:32 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id o6so64008082edc.4;
-        Mon, 27 Dec 2021 09:08:32 -0800 (PST)
+        Mon, 27 Dec 2021 12:48:58 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D31C06173E;
+        Mon, 27 Dec 2021 09:48:58 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id p4so26342029oia.9;
+        Mon, 27 Dec 2021 09:48:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CP3XLT+70/9TbwzYF+eOW8bBY3OtuRCt28EaG1yMPjI=;
-        b=ZnWgZ0/0+2JOJyXbSy/uJJqVU9N3F81fLwani2ZdxqnjQ6ee+RKGAnTIPGF3VTsQrv
-         cGkJvJlXYxfFRcESX6Pep4WvIMU+U37QjIhQcz5I+XGEZD41vGYKR/lsod8ChOEXq0C3
-         FWPM+c6olxDPS4EQOmijx/UDUr2z/aOQ3jOzwm1hYnW9+sh6pm+DgaRPFojfC74wJ2c8
-         GI25ZBCRQc+WVcoslQOmdszG+hppBi2CMx5b+JBy+o2QGToU8BXiJWZGWxGlt3/FiklY
-         KABhbwkW7OWX7FrWeDr1J5qUIgX6fM53zrs8wMnuV+nQOzmKxfbIv/DWK2iXaq5k2dMU
-         r13g==
+        d=gmail.com; s=20210112;
+        h=sender:to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pEDTSevr8Wui7/9Ib0ms0N7Elw3SuXo4ylecnWyhlSo=;
+        b=ehv/beOOjVHY0/sgKdcpY8YzavbZDivcQVdBoIeoRKI4qC8EayE8VBARAwiSsJBeMg
+         Zz3lXu+y9k2nNSuIlCNv/KXJeQUZt+jBe9GlImPC6RkELaI4OwGtotJ8lJT4/RYUvXeg
+         5Yx++5EIDR1wB7QuoetS4tNem0svdSDSCecLUq4Nl5eBOUOKs2Gs+UisJK8zu7iYw2pq
+         PcDsXaJJl8yT+sBrdf2ZMSprNPKxdo/1kTE/fvwlcME88l50Ds0vKqwzoH4bPkfvnAPw
+         BW+JRWfrn/ItjQte78Dwgt8Dko2eYYW3nLA+EyqURprwTeFBH4+RkctBrk7LJGBiMFCC
+         vwig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CP3XLT+70/9TbwzYF+eOW8bBY3OtuRCt28EaG1yMPjI=;
-        b=HZNPMahL5J6Psp99tCv5R7XwBx6qTvdVB0Dn/K8CKRc5MP6NQywEq4z8qgskAwMtH2
-         NKZ+Cyfa8c16i52Tkl0L3CrXvNzAk2TheQjXaRVA+gxSid1nqJ68NK2KXwm6ZYtIeVO+
-         mYTCNunAXArnBoLdQytD5zV7nwLbe+VFkiKr/AQVPBQMiTS98ZCqzAgO8jXaH1w8DweS
-         aSboiHfYljdxT6DrubKe9xUMFBGifDZralb1lyChviKo8xOUVijONuuTHfp5LSHD5LQz
-         VXUKrisnWe222ive2fpiz/u95YzXUf+ygkhuntG5nuMzg+hQ8aP5egfBUFxs4NMZ+4RS
-         +u+w==
-X-Gm-Message-State: AOAM531zJF1j63H8Bg8QUxLCUwhokUL90xreGZd/pvQVZ5YzfS44BKuI
-        yGJNz+CLJ2xAKWOcBxCPer37u/jVZl6TnV5QAYU=
-X-Google-Smtp-Source: ABdhPJwpCEJ3+l77fWb2qzfj5ZSxrhjxVBVPcL+FNzq7vm4rd82I+aiVNvv5fk2DIsZzjCAxljBFKp/Di6bSsbjLSo8=
-X-Received: by 2002:a05:6402:1c08:: with SMTP id ck8mr17033688edb.32.1640624911401;
- Mon, 27 Dec 2021 09:08:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20211227054529.30586-1-xianwei.zhao@amlogic.com> <1640619206.696540.519387.nullmailer@robh.at.kernel.org>
-In-Reply-To: <1640619206.696540.519387.nullmailer@robh.at.kernel.org>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Mon, 27 Dec 2021 18:08:20 +0100
-Message-ID: <CAFBinCAhbJUevamYqmzrFsVcXoK8Wcntem9VmYUpBL8ktEsVAA@mail.gmail.com>
-Subject: Re: [PATCH V3] dt-bindings: serial: amlogic, meson-uart: support S4
-To:     Rob Herring <robh@kernel.org>
-Cc:     Xianwei Zhao <xianwei.zhao@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        kelvin.zhang@amlogic.com, devicetree@vger.kernel.org,
+        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pEDTSevr8Wui7/9Ib0ms0N7Elw3SuXo4ylecnWyhlSo=;
+        b=grPxdLNZWxzd6MLJXLvlie32V5D+cK6q+VbTuMDzkR3MJP1KD4OB5da1uChIe9RmTa
+         5cVLVRaTYgXzxS223geGtti6TYnB9rkSBXhDePMy5/Q5lbGJzIg1t5xaZFudVus9p7MV
+         s3GA06+kfgruyHj1/n5ABoFhx39H260P5fpgXQNQ5inu0t8j0ZiWu56eCz2L+JOoRBCQ
+         UUWLMM4LFEARQQ41292Vzfm55apBrIcH8CAZZ2ZTNhMWbnoVb2AV5xJtrAEGFGPBogPA
+         dubgaDij7gl1Lq4RaK/z9Dz0VvBt4DaSzE3fFrgvoa1JVXXZzjWHpP6yg57wVH/GZsZs
+         GDlA==
+X-Gm-Message-State: AOAM532nUlvdX7rl9vye27j1VwVn4NtgHVc4eR4Xfztr203T7CRcMktC
+        WxhMOD3US83YiuD8VfYl7fk=
+X-Google-Smtp-Source: ABdhPJxb6+7biAtxOQefdtgXxvyx2b2YNDyhmSemqV7yYJxoDKcbxu7R4xufBgYDTWnPfrrEWMwb0g==
+X-Received: by 2002:a05:6808:20a6:: with SMTP id s38mr14781112oiw.152.1640627337723;
+        Mon, 27 Dec 2021 09:48:57 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 23sm2931424oty.6.2021.12.27.09.48.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Dec 2021 09:48:57 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Teddy Wang <teddy.wang@siliconmotion.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-serial@vger.kernel.org, Jerome Brunet <jbrunet@baylibre.com>,
-        linux-amlogic@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        Forest Bond <forest@alittletooquiet.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-csky@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-media@vger.kernel.org,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-wireless@vger.kernel.org,
+        megaraidlinux.pdl@broadcom.com, linux-spi@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
+References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
+ <20211227164317.4146918-2-schnelle@linux.ibm.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+Message-ID: <281298ec-3898-9b02-1d92-66bf6df41170@roeck-us.net>
+Date:   Mon, 27 Dec 2021 09:48:50 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20211227164317.4146918-2-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 4:33 PM Rob Herring <robh@kernel.org> wrote:
-[...]
-> serial@84dc: compatible: 'oneOf' conditional failed, one must be fixed:
->         arch/arm/boot/dts/meson6-atv1200.dt.yaml
->         arch/arm/boot/dts/meson8b-ec100.dt.yaml
->         arch/arm/boot/dts/meson8b-mxq.dt.yaml
->         arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
->         arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
->         arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
-The warnings from this section (affecting arch/arm/boot/dts/meson*)
-have been there before this patch already.
-I am going to send a patch to clean them up so it doesn't cause
-further confusion in the future.
+On 12/27/21 8:42 AM, Niklas Schnelle wrote:
+> Introduce a new LEGACY_PCI Kconfig option which gates support for legacy
+> PCI devices including those attached to a PCI-to-PCI Express bridge and
+> PCI Express devices using legacy I/O spaces. Note that this is different
+> from non PCI uses of I/O ports such as by ACPI.
+> 
+> Add dependencies on LEGACY_PCI for all PCI drivers which only target
+> legacy PCI devices and ifdef legacy PCI specific functions in ata
+> handling.
+> 
 
+This effectively disables all default configurations which now depend
+on CONFIG_LEGACY_PCI. Yet, I don't see CONFIG_LEGACY_PCI added to
+configuration files which explicitly enable any of the affected
+configurations. Is that on purpose ? If so, I think it should at least
+be mentioned in the commit description. However, I think it would be
+more appropriate to either delete all affected configuration flags from
+the affected configuration files, or to add CONFIG_LEGACY_PCI=y to those
+files.
 
-Best regards,
-Martin
+Guenter
