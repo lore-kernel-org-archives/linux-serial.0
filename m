@@ -2,109 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7605DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 06:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40816C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 08:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbhL0G4L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Dec 2021 01:56:11 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:12930 "EHLO
-        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbhL0G4L (ORCPT
+        id S232686AbhL0Ime (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Dec 2021 03:42:34 -0500
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.25]:9000 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231521AbhL0Ime (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Dec 2021 01:56:11 -0500
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 27 Dec
- 2021 14:56:09 +0800
-Message-ID: <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
-Date:   Mon, 27 Dec 2021 14:56:09 +0800
+        Mon, 27 Dec 2021 03:42:34 -0500
+X-Greylist: delayed 364 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Dec 2021 03:42:34 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1640594185;
+    s=strato-dkim-0002; d=mades.net;
+    h=Subject:Message-ID:To:From:Date:Cc:Date:From:Subject:Sender;
+    bh=hIwli2pJET0l1AzalZASC/YnD8TyUQSWQLAQMVyR5dU=;
+    b=aFbhcGF//3hm1rSY0ZNUmBZ2YpHnBLMReOcGCZ7qK1VhuLH7QyUDqV+hhnBA9/nfzg
+    UIKWibPSePcxBKDJsnsyYhM2xlA3ragE8OIzVZo7fE9fZpNvzpXvFnevq/ICyjd/ra8u
+    lf4G0Lac6bIvREKyuCSLShPo91BxKkQjvgPz+XH83Oav1XZVykHADBo9+uHBhSwuhiLr
+    nouOqwT5bp0lmnZnwP8T48FSLgGY2BC6F4SaQUM3EkgTVld4aNRTMH9wGUGSlm3C8IPS
+    OSKG0zgaUweL1zZAsvDAjpgwcFxllSAg8FvEhBMqwYJcV0s/tZS5HZ63vFYweiP4dbr2
+    qmMA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JmMHfUWmW/JCZ5q3rSbjoqaGiJoG2nOuw/BEppjnAC9QlFFS7UbO3fgzapMAIqNr"
+X-RZG-CLASS-ID: mo00
+Received: from oxapp02-03.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.35.3 AUTH)
+    with ESMTPSA id 402723xBR8aPsUF
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Mon, 27 Dec 2021 09:36:25 +0100 (CET)
+Date:   Mon, 27 Dec 2021 09:36:25 +0100 (CET)
+From:   Jochen Mades <jochen@mades.net>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <572288095.547800.1640594185677@webmail.strato.com>
+Subject: amba-pl011 driver: bug in RS485 mode
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 3/3] tty: serial: meson: add UART driver compatible with
- S4 SoC on-chip
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-References: <20211221071634.25980-1-yu.tu@amlogic.com>
- <20211221071634.25980-4-yu.tu@amlogic.com>
- <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev33
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Martin,
-	Thank you very much for your reply.
+Hi,
 
-On 2021/12/25 1:25, Martin Blumenstingl wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> Hello,
-> 
-> On Tue, Dec 21, 2021 at 8:17 AM Yu Tu <yu.tu@amlogic.com> wrote:
->>
->> The S4 SoC on-chip UART uses a 12M clock as the clock source for
->> calculating the baud rate of the UART. But previously, chips used 24M or
->> other clock sources. So add this change. The specific clock source is
->> determined by chip design.
-> Does the new S4 SoC use an external 12MHz XTAL or does it use a 24MHz XTAL?
-> If there's still a 24MHz XTAL then I think this description is not
-> correct - at least based on how I understand the UART controller.
-> 
-The S4 SoC uses 12MHz(UART_EE_A_REG5[27]=0x1,the bit is set in romcode). 
-This register description is the same as the G12A and G12B you know.
+I tested the amba-pl011 driver from the current branch rpi-5.16.y in RS485 mode and found a bug.
 
-> SoCs up to GXL and GXM had an internal divide-by-3 (clock divider) in
-> the UART controller IP and an external 24MHz XTAL.
-> This was not configurable, so the clock for all baud-rates had to be
-> derived from an 8MHz (24MHz divided by 3) clock.
-> 
-> With the A311D (G12B, which is still using an external 24MHz XTAL) SoC
-> the UART controller gained two new bits - with configurable dividers -
-> according to the public datasheets:
-> UART_EE_A_REG5[26]:
-> - 0x0: divide the input clock by 3 (meaning: this internally works
-> with an 8MHz clock)
-> - 0x1: use the input clock directly without further division (meaning:
-> this internally work with an 24MHz clock)
-> UART_EE_A_REG5[27]:
-> - 0x0: use the clock as configured in UART_EE_A_REG5[26]
-> - 0x1: divide the input clock by 2 (meaning: this internally works
-> with an 12MHz clock)
-> 
-> While writing this email I did some investigation and found that
-> UART_EE_A_REG5[26] is used in the vendor kernel even for GXL and GXM
-> SoCs.
-> So this probably has been introduced with the GXL generation (and thus
-> is missing on GXBB and earlier SoCs).
-> Also UART_EE_A_REG5[27] seems to have been introduced with the G12A
-> generation of SoCs (not surprising since G12A and G12B peripherals are
-> very similar).
-> 
-> Does the UART controller not work with divide-by-3 (as we have it
-> today) or are these configurable dividers to reduce jitter?
-> 
-The UART controller can work with divide-by-3.
-The chip history as you described above, the current reason for using 
-12MHz clock is really what you call reduce jitter. The UART mainly 
-connects to Bluetooth and uses typical baud rates of 2Mhz, 3MHz and 
-4MHz, so 12MHz is used as the clock source.
-> 
-> Best regards,
-> Martin
-> 
+The current driver pulls-up RTS in function pl011_set_mctrl independent from the rs485-flags SER_RS485_RTS_AFTER_SEND.
+This leads to problems if the driver is used as RS485 slave.
+
+In my opinion the patch should look like that (and was tested successfully by myself):
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 537f37ac4..3b45beae8 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1647,7 +1647,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+        unsigned int cr;
+
+        if (port->rs485.flags & SER_RS485_ENABLED)
+-               mctrl &= ~TIOCM_RTS;
++       {
++               if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++                       mctrl &= ~TIOCM_RTS;
++               else
++                       mctrl |= TIOCM_RTS;
++       }
+
+        cr = pl011_read(uap, REG_CR);
+
+
+Please let me know, if I'm allowed to commit this change and let me know how to do that or if someone of you guys will do that better.
+
+Bests
+Jochen
