@@ -2,84 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40816C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 08:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A04C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 12:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232686AbhL0Ime (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Dec 2021 03:42:34 -0500
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.25]:9000 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231521AbhL0Ime (ORCPT
+        id S233708AbhL0MCF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Dec 2021 07:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233631AbhL0MCF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Dec 2021 03:42:34 -0500
-X-Greylist: delayed 364 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Dec 2021 03:42:34 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1640594185;
-    s=strato-dkim-0002; d=mades.net;
-    h=Subject:Message-ID:To:From:Date:Cc:Date:From:Subject:Sender;
-    bh=hIwli2pJET0l1AzalZASC/YnD8TyUQSWQLAQMVyR5dU=;
-    b=aFbhcGF//3hm1rSY0ZNUmBZ2YpHnBLMReOcGCZ7qK1VhuLH7QyUDqV+hhnBA9/nfzg
-    UIKWibPSePcxBKDJsnsyYhM2xlA3ragE8OIzVZo7fE9fZpNvzpXvFnevq/ICyjd/ra8u
-    lf4G0Lac6bIvREKyuCSLShPo91BxKkQjvgPz+XH83Oav1XZVykHADBo9+uHBhSwuhiLr
-    nouOqwT5bp0lmnZnwP8T48FSLgGY2BC6F4SaQUM3EkgTVld4aNRTMH9wGUGSlm3C8IPS
-    OSKG0zgaUweL1zZAsvDAjpgwcFxllSAg8FvEhBMqwYJcV0s/tZS5HZ63vFYweiP4dbr2
-    qmMA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JmMHfUWmW/JCZ5q3rSbjoqaGiJoG2nOuw/BEppjnAC9QlFFS7UbO3fgzapMAIqNr"
-X-RZG-CLASS-ID: mo00
-Received: from oxapp02-03.back.ox.d0m.de
-    by smtp-ox.front (RZmta 47.35.3 AUTH)
-    with ESMTPSA id 402723xBR8aPsUF
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Mon, 27 Dec 2021 09:36:25 +0100 (CET)
-Date:   Mon, 27 Dec 2021 09:36:25 +0100 (CET)
-From:   Jochen Mades <jochen@mades.net>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <572288095.547800.1640594185677@webmail.strato.com>
-Subject: amba-pl011 driver: bug in RS485 mode
+        Mon, 27 Dec 2021 07:02:05 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A44C06173E
+        for <linux-serial@vger.kernel.org>; Mon, 27 Dec 2021 04:02:05 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id s1so31931378wra.6
+        for <linux-serial@vger.kernel.org>; Mon, 27 Dec 2021 04:02:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=xkc8SKUPYzJLLeRWgMJMh/IdK4g8gIh52fq2aT0Flxo=;
+        b=oub0ntE58NXbt0tUZ2DHgu52WmkJ96Px7RyPUiH/Q45xLY2pW6tqCIrZOujPWVEzip
+         fmZ8HNj4/G9CwhZm64IyN/9lOnt7u4Wn+nKhXvT0c/6TewDOwDV38imcK3WJCCn4YLD3
+         EdWbW2Bu3oAXUq4gNLAEiy7K7SC1Xma3Vd6h7SKl5GhLpwiCRQETLHE+djyrpmNtHzGG
+         zOBzfZhd8a7t3ukuk8WbAyTuv+b/MtiDXCXSxnWcOno87kAko0jEM74W7lkWPLPgcZ0v
+         1L95fmZQsBt5tQTjK99nRjr5wApbKevpvSRTcGjtefn3S0gJeq3RE/mMaYfdj6W0EVg5
+         Gqlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=xkc8SKUPYzJLLeRWgMJMh/IdK4g8gIh52fq2aT0Flxo=;
+        b=v9Dxun45aofLoglGbIQPS7/XMmeFDXl0sPvIH9MFo/BuABSZkyyZ/+e0hb3m5W+5mH
+         500TWOAraScUaI9qM8iJfODkiisaMwSsnb08Phz162w4JB8O+TaLODgqQ9sKf3oOo3eR
+         njxmhQEpPIepQTiPvBobRUKBvVRZcFoaSo8HasRCA8jRoE4ReLKXJzQh5gm6U/6c9QBv
+         8QHxP7BnE54fDZHXIfMtBT9M2chcCMXQqQH2MyIs3RHWpHhUa5+eLKm43joj9Z1w2A8y
+         VjPKO+wYslsY+5zylw/ZyOdn3uXkN/brMsjytdbb6vv6YLzj22Vr6jEA3BQdbxM2RicQ
+         TZEQ==
+X-Gm-Message-State: AOAM531MrYQjfbNuCUJG5h6apmEyBmlgMsK9v2QM7L2PvhsquTtu/PeW
+        MNqsIqMvx5GvtNIQ6RSl2ecn0Q==
+X-Google-Smtp-Source: ABdhPJyK3jVzmRJ1bHzkXpI+GlgYyNXvk0veyzs681rdxTKfvgfVYTo9TD5WLJ8FwhhUNcM2Rcq/FA==
+X-Received: by 2002:a5d:5262:: with SMTP id l2mr12549749wrc.141.1640606523406;
+        Mon, 27 Dec 2021 04:02:03 -0800 (PST)
+Received: from localhost ([2a04:cec0:10c6:6fed:3056:9d74:5100:5bd5])
+        by smtp.gmail.com with ESMTPSA id v1sm17460961wru.45.2021.12.27.04.02.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Dec 2021 04:02:03 -0800 (PST)
+References: <20211221071634.25980-1-yu.tu@amlogic.com>
+ <20211221071634.25980-4-yu.tu@amlogic.com>
+ <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
+ <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH 3/3] tty: serial: meson: add UART driver compatible with
+ S4 SoC on-chip
+Date:   Mon, 27 Dec 2021 12:58:34 +0100
+In-reply-to: <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
+Message-ID: <1jzgomz26b.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.5-Rev33
-X-Originating-Client: open-xchange-appsuite
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-I tested the amba-pl011 driver from the current branch rpi-5.16.y in RS485 mode and found a bug.
+On Mon 27 Dec 2021 at 14:56, Yu Tu <yu.tu@amlogic.com> wrote:
 
-The current driver pulls-up RTS in function pl011_set_mctrl independent from the rs485-flags SER_RS485_RTS_AFTER_SEND.
-This leads to problems if the driver is used as RS485 slave.
+> Hi Martin,
+> 	Thank you very much for your reply.
+>
+> On 2021/12/25 1:25, Martin Blumenstingl wrote:
+>> [ EXTERNAL EMAIL ]
+>> Hello,
+>> On Tue, Dec 21, 2021 at 8:17 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>>>
+>>> The S4 SoC on-chip UART uses a 12M clock as the clock source for
+>>> calculating the baud rate of the UART. But previously, chips used 24M or
+>>> other clock sources. So add this change. The specific clock source is
+>>> determined by chip design.
+>> Does the new S4 SoC use an external 12MHz XTAL or does it use a 24MHz XTAL?
+>> If there's still a 24MHz XTAL then I think this description is not
+>> correct - at least based on how I understand the UART controller.
+>> 
+> The S4 SoC uses 12MHz(UART_EE_A_REG5[27]=0x1,the bit is set in
+> romcode). This register description is the same as the G12A and G12B you
+> know.
+>
+>> SoCs up to GXL and GXM had an internal divide-by-3 (clock divider) in
+>> the UART controller IP and an external 24MHz XTAL.
+>> This was not configurable, so the clock for all baud-rates had to be
+>> derived from an 8MHz (24MHz divided by 3) clock.
+>> With the A311D (G12B, which is still using an external 24MHz XTAL) SoC
+>> the UART controller gained two new bits - with configurable dividers -
+>> according to the public datasheets:
+>> UART_EE_A_REG5[26]:
+>> - 0x0: divide the input clock by 3 (meaning: this internally works
+>> with an 8MHz clock)
+>> - 0x1: use the input clock directly without further division (meaning:
+>> this internally work with an 24MHz clock)
+>> UART_EE_A_REG5[27]:
+>> - 0x0: use the clock as configured in UART_EE_A_REG5[26]
+>> - 0x1: divide the input clock by 2 (meaning: this internally works
+>> with an 12MHz clock)
+>> While writing this email I did some investigation and found that
+>> UART_EE_A_REG5[26] is used in the vendor kernel even for GXL and GXM
+>> SoCs.
+>> So this probably has been introduced with the GXL generation (and thus
+>> is missing on GXBB and earlier SoCs).
+>> Also UART_EE_A_REG5[27] seems to have been introduced with the G12A
+>> generation of SoCs (not surprising since G12A and G12B peripherals are
+>> very similar).
+>> Does the UART controller not work with divide-by-3 (as we have it
+>> today) or are these configurable dividers to reduce jitter?
+>> 
+> The UART controller can work with divide-by-3.
+> The chip history as you described above, the current reason for using 12MHz
+> clock is really what you call reduce jitter. The UART mainly connects to
+> Bluetooth and uses typical baud rates of 2Mhz, 3MHz and 4MHz, so 12MHz is
+> used as the clock source.
 
-In my opinion the patch should look like that (and was tested successfully by myself):
+Looks to me that the clock divider above should be modelled properly
+with CCF. If you wish the initial Romcode setting to remain untouched,
+then don't put CLK_SET_RATE_PARENT to stop rate propagation.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 537f37ac4..3b45beae8 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1647,7 +1647,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
-        unsigned int cr;
+CCF will figure out what the internal rate is. You don't need to device
+tree data if things are done properly
 
-        if (port->rs485.flags & SER_RS485_ENABLED)
--               mctrl &= ~TIOCM_RTS;
-+       {
-+               if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-+                       mctrl &= ~TIOCM_RTS;
-+               else
-+                       mctrl |= TIOCM_RTS;
-+       }
+>> Best regards,
+>> Martin
+>> 
 
-        cr = pl011_read(uap, REG_CR);
-
-
-Please let me know, if I'm allowed to commit this change and let me know how to do that or if someone of you guys will do that better.
-
-Bests
-Jochen
