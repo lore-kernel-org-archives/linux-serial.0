@@ -2,101 +2,242 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB84FC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 13:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1149BC4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 15:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233853AbhL0NRj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Dec 2021 08:17:39 -0500
-Received: from bmailout2.hostsharing.net ([83.223.78.240]:56075 "EHLO
-        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbhL0NRi (ORCPT
+        id S238128AbhL0Pdz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Dec 2021 10:33:55 -0500
+Received: from mail-qt1-f177.google.com ([209.85.160.177]:41571 "EHLO
+        mail-qt1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237707AbhL0Pdb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Dec 2021 08:17:38 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id E1CFB280067AF;
-        Mon, 27 Dec 2021 14:17:34 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id D11AE2F5D1A; Mon, 27 Dec 2021 14:17:34 +0100 (CET)
-Date:   Mon, 27 Dec 2021 14:17:34 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Su Bao Cheng <baocheng.su@siemens.com>, baocheng_su@163.com,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Chao Zeng <chao.zeng@siemens.com>,
-        linux-serial@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        rafael.gago@gmail.com, rafael_gago_81@hotmail.com,
-        rafael.gago@zenuity.com, rafael.gago@zenseact.com
-Subject: Re: [PATCH] serial: Fix incorrect rs485 polarity on uart open
-Message-ID: <20211227131734.GA32042@wunner.de>
-References: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
- <8a10bea0-fb8a-c25a-6828-ab907b336d0b@kernel.org>
- <510a7dcc-9025-d669-bea7-e772da3874a5@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <510a7dcc-9025-d669-bea7-e772da3874a5@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 27 Dec 2021 10:33:31 -0500
+Received: by mail-qt1-f177.google.com with SMTP id v22so13750103qtx.8;
+        Mon, 27 Dec 2021 07:33:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=FwZQOWeqoj/A63XT5pEn9HZSQ3cY9sRkGGed0FATKDw=;
+        b=zAigRwH+Py7cSifJQT9HCZESezc42pJ3FG4PH7dw+WlxykNOTYAx/oAou7jin259KH
+         33lFnrhD9y1yY6EJFn1sPDp1QY6F+syqOr2Nbd1allt7eZ3v/BSVnne5zjCTevQP9Iy7
+         a0G0bDrfEnbHSW4QjX8LhLKmPnk8fDfszWOuNFgvOn/zEwZUKQMbgGRX7Lr5K0A9+jUy
+         VP24YHWd/zl9lOEf+MPI70rsgf5W8Wxsgeqp9le62FRiTficzhIRDQglDqUgx+2VJ7ts
+         TuvuHM459sFucic/pS7o3RNawDVz3ngjfSjg37fjGfabzBlTibvnXLrgWaWW4uxaaxkL
+         lwcw==
+X-Gm-Message-State: AOAM533kQPkNYbCnFwRekhR7jx2tEIcA7GpBB4nNoXCLhirb/We9fFSL
+        x88YVsYyle7YlNjiKEf2+w==
+X-Google-Smtp-Source: ABdhPJzgNNGYj4jnprOtCG45DZlKE+H4MQBRgoMU8JbLBWjvZgou8p1UtEXaB66csKcw5ySPQu6PmA==
+X-Received: by 2002:ac8:47d3:: with SMTP id d19mr15325971qtr.72.1640619210381;
+        Mon, 27 Dec 2021 07:33:30 -0800 (PST)
+Received: from robh.at.kernel.org ([24.55.105.145])
+        by smtp.gmail.com with ESMTPSA id d20sm12473326qtg.73.2021.12.27.07.33.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Dec 2021 07:33:29 -0800 (PST)
+Received: (nullmailer pid 519388 invoked by uid 1000);
+        Mon, 27 Dec 2021 15:33:26 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Xianwei Zhao <xianwei.zhao@amlogic.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kelvin.zhang@amlogic.com, devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-serial@vger.kernel.org, Jerome Brunet <jbrunet@baylibre.com>,
+        linux-amlogic@lists.infradead.org
+In-Reply-To: <20211227054529.30586-1-xianwei.zhao@amlogic.com>
+References: <20211227054529.30586-1-xianwei.zhao@amlogic.com>
+Subject: Re: [PATCH V3] dt-bindings: serial: amlogic, meson-uart: support S4
+Date:   Mon, 27 Dec 2021 11:33:26 -0400
+Message-Id: <1640619206.696540.519387.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 07:30:52AM +0100, Jiri Slaby wrote:
-> On 20. 12. 21, 7:28, Jiri Slaby wrote:
-> > On 18. 12. 21, 10:58, Lukas Wunner wrote:
-> > > Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
-> > > RTS") sought to deassert RTS when opening an rs485-enabled uart port.
-> > > That way, the transceiver does not occupy the bus until it transmits
-> > > data.
-> > > 
-> > > Unfortunately, the commit mixed up the logic and *asserted* RTS instead
-> > > of *deasserting* it:
-> > > 
-> > > The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
-> > > opening an rs232 port. "Raising" actually means lowering the signal
-> > > that's coming out of the uart, because an rs232 transceiver not only
-> > > changes a signal's voltage level, it also *inverts* the signal. See
-> > > the simplified schematic in the MAX232 datasheet for an example:
-> > > https://www.ti.com/lit/ds/symlink/max232.pdf
-> > > 
-> > > So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
-> > > and that results in the signal being driven low.
-> > > 
-> > > In contrast to rs232, the signal level for rs485 Transmit Enable is the
-> > > identity, not the inversion: If the transceiver expects a "high" RTS
-> > > signal for Transmit Enable, the signal coming out of the uart must also
-> > > be high, so TIOCM_RTS must be *cleared* in port->mctrl.
-> > > 
-> > > The commit did the exact opposite, but it's easy to see why given the
-> > > confusing semantics of rs232 and rs485. Fix it.
-> > > 
-> > > Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
-> > > RTS")
-> > > Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> > > Cc: stable@vger.kernel.org # v4.14+
-> > > Cc: Rafael Gago Castano <rgc@hms.se>
-> > 
-> > Rafael, can you ack/test this, please?
+On Mon, 27 Dec 2021 13:45:29 +0800, Xianwei Zhao wrote:
+> Add serial bindings support meson S4 SoC family.
 > 
-> Definitely on that e-mail:
->  550 5.4.1 Recipient address rejected: Access denied. AS(201806281)
-> [DB5EUR03FT039.eop-EUR03.prod.protection.outlook.com]
+> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+> ---
+> V2 -> V3 : fix the type menson->meson
+> V1 -> V2 : update author name
+> ---
+>  .../devicetree/bindings/serial/amlogic,meson-uart.yaml          | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Trying rafael.gago@gmail.com from the Author field.
 
-A bit of GitHub sleuthing turned up the following alternative addresses:
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-rafael_gago_81@hotmail.com
-rafael.gago@zenuity.com
-rafael.gago@zenseact.com
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-Unfortunately none of them is responsive.  I was hoping that the Siemens
-folks might be willing to attest correctness of the patch.
+Full log is available here: https://patchwork.ozlabs.org/patch/1573297
 
-Thanks,
 
-Lukas
+serial@23000: 'bluetooth', 'uart-has-rtscts' do not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dt.yaml
+
+serial@24000: 'bluetooth', 'uart-has-rtscts' do not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-axg-s400.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-s922x-khadas-vim3.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dt.yaml
+
+serial@4c0: clock-names:0: 'xtal' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@4c0: clock-names:1: 'pclk' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@4c0: clock-names:2: 'baud' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@4c0: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm/boot/dts/meson6-atv1200.dt.yaml
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@4e0: 'uart-has-rtscts' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dt.yaml
+
+serial@84c0: 'bluetooth' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95-meta.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95-pro.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95-telos.dt.yaml
+
+serial@84c0: 'bluetooth', 'uart-has-rtscts' do not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-hub.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-play2.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-kii-pro.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905d-sml5442tw.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxm-mecool-kiii-pro.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxm-minix-neo-u9h.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxm-wetek-core2.dt.yaml
+
+serial@84c0: clock-names:0: 'xtal' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84c0: clock-names:1: 'pclk' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84c0: clock-names:2: 'baud' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84c0: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm/boot/dts/meson6-atv1200.dt.yaml
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84c0: 'uart-has-rtscts' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/amlogic/meson-gxl-s805x-p241.dt.yaml
+	arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+
+serial@84dc: clock-names:0: 'xtal' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84dc: clock-names:1: 'pclk' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84dc: clock-names:2: 'baud' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84dc: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm/boot/dts/meson6-atv1200.dt.yaml
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@84dc: 'uart-has-rtscts' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+
+serial@8700: clock-names:0: 'xtal' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@8700: clock-names:1: 'pclk' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@8700: clock-names:2: 'baud' was expected
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
+serial@8700: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm/boot/dts/meson6-atv1200.dt.yaml
+	arch/arm/boot/dts/meson8b-ec100.dt.yaml
+	arch/arm/boot/dts/meson8b-mxq.dt.yaml
+	arch/arm/boot/dts/meson8b-odroidc1.dt.yaml
+	arch/arm/boot/dts/meson8m2-mxiii-plus.dt.yaml
+	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
+
