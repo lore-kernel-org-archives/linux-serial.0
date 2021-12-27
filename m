@@ -2,141 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A04C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 12:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB84FC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Dec 2021 13:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233708AbhL0MCF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Dec 2021 07:02:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233631AbhL0MCF (ORCPT
+        id S233853AbhL0NRj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Dec 2021 08:17:39 -0500
+Received: from bmailout2.hostsharing.net ([83.223.78.240]:56075 "EHLO
+        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230148AbhL0NRi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Dec 2021 07:02:05 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A44C06173E
-        for <linux-serial@vger.kernel.org>; Mon, 27 Dec 2021 04:02:05 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id s1so31931378wra.6
-        for <linux-serial@vger.kernel.org>; Mon, 27 Dec 2021 04:02:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=xkc8SKUPYzJLLeRWgMJMh/IdK4g8gIh52fq2aT0Flxo=;
-        b=oub0ntE58NXbt0tUZ2DHgu52WmkJ96Px7RyPUiH/Q45xLY2pW6tqCIrZOujPWVEzip
-         fmZ8HNj4/G9CwhZm64IyN/9lOnt7u4Wn+nKhXvT0c/6TewDOwDV38imcK3WJCCn4YLD3
-         EdWbW2Bu3oAXUq4gNLAEiy7K7SC1Xma3Vd6h7SKl5GhLpwiCRQETLHE+djyrpmNtHzGG
-         zOBzfZhd8a7t3ukuk8WbAyTuv+b/MtiDXCXSxnWcOno87kAko0jEM74W7lkWPLPgcZ0v
-         1L95fmZQsBt5tQTjK99nRjr5wApbKevpvSRTcGjtefn3S0gJeq3RE/mMaYfdj6W0EVg5
-         Gqlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=xkc8SKUPYzJLLeRWgMJMh/IdK4g8gIh52fq2aT0Flxo=;
-        b=v9Dxun45aofLoglGbIQPS7/XMmeFDXl0sPvIH9MFo/BuABSZkyyZ/+e0hb3m5W+5mH
-         500TWOAraScUaI9qM8iJfODkiisaMwSsnb08Phz162w4JB8O+TaLODgqQ9sKf3oOo3eR
-         njxmhQEpPIepQTiPvBobRUKBvVRZcFoaSo8HasRCA8jRoE4ReLKXJzQh5gm6U/6c9QBv
-         8QHxP7BnE54fDZHXIfMtBT9M2chcCMXQqQH2MyIs3RHWpHhUa5+eLKm43joj9Z1w2A8y
-         VjPKO+wYslsY+5zylw/ZyOdn3uXkN/brMsjytdbb6vv6YLzj22Vr6jEA3BQdbxM2RicQ
-         TZEQ==
-X-Gm-Message-State: AOAM531MrYQjfbNuCUJG5h6apmEyBmlgMsK9v2QM7L2PvhsquTtu/PeW
-        MNqsIqMvx5GvtNIQ6RSl2ecn0Q==
-X-Google-Smtp-Source: ABdhPJyK3jVzmRJ1bHzkXpI+GlgYyNXvk0veyzs681rdxTKfvgfVYTo9TD5WLJ8FwhhUNcM2Rcq/FA==
-X-Received: by 2002:a5d:5262:: with SMTP id l2mr12549749wrc.141.1640606523406;
-        Mon, 27 Dec 2021 04:02:03 -0800 (PST)
-Received: from localhost ([2a04:cec0:10c6:6fed:3056:9d74:5100:5bd5])
-        by smtp.gmail.com with ESMTPSA id v1sm17460961wru.45.2021.12.27.04.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Dec 2021 04:02:03 -0800 (PST)
-References: <20211221071634.25980-1-yu.tu@amlogic.com>
- <20211221071634.25980-4-yu.tu@amlogic.com>
- <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
- <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH 3/3] tty: serial: meson: add UART driver compatible with
- S4 SoC on-chip
-Date:   Mon, 27 Dec 2021 12:58:34 +0100
-In-reply-to: <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
-Message-ID: <1jzgomz26b.fsf@starbuckisacylon.baylibre.com>
+        Mon, 27 Dec 2021 08:17:38 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id E1CFB280067AF;
+        Mon, 27 Dec 2021 14:17:34 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id D11AE2F5D1A; Mon, 27 Dec 2021 14:17:34 +0100 (CET)
+Date:   Mon, 27 Dec 2021 14:17:34 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Su Bao Cheng <baocheng.su@siemens.com>, baocheng_su@163.com,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Chao Zeng <chao.zeng@siemens.com>,
+        linux-serial@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        rafael.gago@gmail.com, rafael_gago_81@hotmail.com,
+        rafael.gago@zenuity.com, rafael.gago@zenseact.com
+Subject: Re: [PATCH] serial: Fix incorrect rs485 polarity on uart open
+Message-ID: <20211227131734.GA32042@wunner.de>
+References: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
+ <8a10bea0-fb8a-c25a-6828-ab907b336d0b@kernel.org>
+ <510a7dcc-9025-d669-bea7-e772da3874a5@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <510a7dcc-9025-d669-bea7-e772da3874a5@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Dec 20, 2021 at 07:30:52AM +0100, Jiri Slaby wrote:
+> On 20. 12. 21, 7:28, Jiri Slaby wrote:
+> > On 18. 12. 21, 10:58, Lukas Wunner wrote:
+> > > Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
+> > > RTS") sought to deassert RTS when opening an rs485-enabled uart port.
+> > > That way, the transceiver does not occupy the bus until it transmits
+> > > data.
+> > > 
+> > > Unfortunately, the commit mixed up the logic and *asserted* RTS instead
+> > > of *deasserting* it:
+> > > 
+> > > The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
+> > > opening an rs232 port. "Raising" actually means lowering the signal
+> > > that's coming out of the uart, because an rs232 transceiver not only
+> > > changes a signal's voltage level, it also *inverts* the signal. See
+> > > the simplified schematic in the MAX232 datasheet for an example:
+> > > https://www.ti.com/lit/ds/symlink/max232.pdf
+> > > 
+> > > So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
+> > > and that results in the signal being driven low.
+> > > 
+> > > In contrast to rs232, the signal level for rs485 Transmit Enable is the
+> > > identity, not the inversion: If the transceiver expects a "high" RTS
+> > > signal for Transmit Enable, the signal coming out of the uart must also
+> > > be high, so TIOCM_RTS must be *cleared* in port->mctrl.
+> > > 
+> > > The commit did the exact opposite, but it's easy to see why given the
+> > > confusing semantics of rs232 and rs485. Fix it.
+> > > 
+> > > Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
+> > > RTS")
+> > > Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> > > Cc: stable@vger.kernel.org # v4.14+
+> > > Cc: Rafael Gago Castano <rgc@hms.se>
+> > 
+> > Rafael, can you ack/test this, please?
+> 
+> Definitely on that e-mail:
+>  550 5.4.1 Recipient address rejected: Access denied. AS(201806281)
+> [DB5EUR03FT039.eop-EUR03.prod.protection.outlook.com]
+> 
+> Trying rafael.gago@gmail.com from the Author field.
 
-On Mon 27 Dec 2021 at 14:56, Yu Tu <yu.tu@amlogic.com> wrote:
+A bit of GitHub sleuthing turned up the following alternative addresses:
 
-> Hi Martin,
-> 	Thank you very much for your reply.
->
-> On 2021/12/25 1:25, Martin Blumenstingl wrote:
->> [ EXTERNAL EMAIL ]
->> Hello,
->> On Tue, Dec 21, 2021 at 8:17 AM Yu Tu <yu.tu@amlogic.com> wrote:
->>>
->>> The S4 SoC on-chip UART uses a 12M clock as the clock source for
->>> calculating the baud rate of the UART. But previously, chips used 24M or
->>> other clock sources. So add this change. The specific clock source is
->>> determined by chip design.
->> Does the new S4 SoC use an external 12MHz XTAL or does it use a 24MHz XTAL?
->> If there's still a 24MHz XTAL then I think this description is not
->> correct - at least based on how I understand the UART controller.
->> 
-> The S4 SoC uses 12MHz(UART_EE_A_REG5[27]=0x1,the bit is set in
-> romcode). This register description is the same as the G12A and G12B you
-> know.
->
->> SoCs up to GXL and GXM had an internal divide-by-3 (clock divider) in
->> the UART controller IP and an external 24MHz XTAL.
->> This was not configurable, so the clock for all baud-rates had to be
->> derived from an 8MHz (24MHz divided by 3) clock.
->> With the A311D (G12B, which is still using an external 24MHz XTAL) SoC
->> the UART controller gained two new bits - with configurable dividers -
->> according to the public datasheets:
->> UART_EE_A_REG5[26]:
->> - 0x0: divide the input clock by 3 (meaning: this internally works
->> with an 8MHz clock)
->> - 0x1: use the input clock directly without further division (meaning:
->> this internally work with an 24MHz clock)
->> UART_EE_A_REG5[27]:
->> - 0x0: use the clock as configured in UART_EE_A_REG5[26]
->> - 0x1: divide the input clock by 2 (meaning: this internally works
->> with an 12MHz clock)
->> While writing this email I did some investigation and found that
->> UART_EE_A_REG5[26] is used in the vendor kernel even for GXL and GXM
->> SoCs.
->> So this probably has been introduced with the GXL generation (and thus
->> is missing on GXBB and earlier SoCs).
->> Also UART_EE_A_REG5[27] seems to have been introduced with the G12A
->> generation of SoCs (not surprising since G12A and G12B peripherals are
->> very similar).
->> Does the UART controller not work with divide-by-3 (as we have it
->> today) or are these configurable dividers to reduce jitter?
->> 
-> The UART controller can work with divide-by-3.
-> The chip history as you described above, the current reason for using 12MHz
-> clock is really what you call reduce jitter. The UART mainly connects to
-> Bluetooth and uses typical baud rates of 2Mhz, 3MHz and 4MHz, so 12MHz is
-> used as the clock source.
+rafael_gago_81@hotmail.com
+rafael.gago@zenuity.com
+rafael.gago@zenseact.com
 
-Looks to me that the clock divider above should be modelled properly
-with CCF. If you wish the initial Romcode setting to remain untouched,
-then don't put CLK_SET_RATE_PARENT to stop rate propagation.
+Unfortunately none of them is responsive.  I was hoping that the Siemens
+folks might be willing to attest correctness of the patch.
 
-CCF will figure out what the internal rate is. You don't need to device
-tree data if things are done properly
+Thanks,
 
->> Best regards,
->> Martin
->> 
-
+Lukas
