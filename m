@@ -2,135 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471E5C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Dec 2021 11:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE42AC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Dec 2021 12:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbhL1LYO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Dec 2021 06:24:14 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:16623 "EHLO
-        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbhL1LYO (ORCPT
+        id S230206AbhL1MBr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Dec 2021 07:01:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54384 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230080AbhL1MBn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Dec 2021 06:24:14 -0500
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 28 Dec
- 2021 19:24:11 +0800
-Content-Type: multipart/mixed;
-        boundary="------------pJLNGTZO4iwSOLaQx0LO32SJ"
-Message-ID: <36d63dde-6bfc-925b-51ae-ee801dcfa681@amlogic.com>
-Date:   Tue, 28 Dec 2021 19:24:11 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 3/3] tty: serial: meson: add UART driver compatible with
- S4 SoC on-chip
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 28 Dec 2021 07:01:43 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A787611A1;
+        Tue, 28 Dec 2021 12:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C83C36AE8;
+        Tue, 28 Dec 2021 12:01:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640692902;
+        bh=dpf3i7sjhIXaDkn8SthFB0jsZoBRTSFg7eTP6aY/SC8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cN4QD1KP8rQOfSZWJcUJF6kjhcWMfJ7bsZb/f5oUmzKHLL7psqPmCS6g0Qkj/K564
+         7/rlEQ+Pe342cAd267FpeISixTvHGRK0P9C0wYDjAD6ufccb9veUMjKH50WqUkS/jg
+         kHgfqD+MN2N2OGriHTomtwS+h+y4P/Fk7pKEHkJ8=
+Date:   Tue, 28 Dec 2021 13:01:38 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Teddy Wang <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-References: <20211221071634.25980-1-yu.tu@amlogic.com>
- <20211221071634.25980-4-yu.tu@amlogic.com>
- <CAFBinCB9Fre9Lea2CAm_8o8g1e3o8oX4ZONbN_bhykNXoFHDdQ@mail.gmail.com>
- <e041c9ed-ff42-a7e7-2fc5-03c96cc69a88@amlogic.com>
- <CAFBinCAr=U0BM6O329td6=Nw4oknyKQUgTGtwhq4RdCLdR_H+A@mail.gmail.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <CAFBinCAr=U0BM6O329td6=Nw4oknyKQUgTGtwhq4RdCLdR_H+A@mail.gmail.com>
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-watchdog@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+Message-ID: <Ycr8ooFX+w9RGu1M@kroah.com>
+References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
+ <20211227164317.4146918-2-schnelle@linux.ibm.com>
+ <YcrJAwsKIxxX18pW@kroah.com>
+ <20211228101435.3a55b983@coco.lan>
+ <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---------------pJLNGTZO4iwSOLaQx0LO32SJ
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+On Tue, Dec 28, 2021 at 11:58:55AM +0100, Niklas Schnelle wrote:
+> We add both LEGACY_PCI and HAS_IOPORT to differentiate between two
+> cases. HAS_IOPORT is for PC-style devices that are not on a PCI card
+> while LEGACY_PCI is for PCI drivers that require port I/O. This
+> includes pre-PCIe devices as well as PCIe devices which require
+> features like I/O spaces. The "legacy" naming is comes from the PCIe
+> spec which in section 2.1.1.2 says "PCI Express supports I/O Space for
+> compatibility with legacy devices which require their use. Future
+> revisions of this specification may deprecate the use of I/O Space."
 
-Hi Martin and Jerome，
-	Thank you very much for your reply. I have learned a lot from your 
-communication.
+Ah, then mention the reason why this is called LEGACY_PCI is that it is
+because that is what the PCI spec calls it.  It was not obvious here at
+all that this is where the name came from.
 
-On 2021/12/28 4:04, Martin Blumenstingl wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> Hello,
-> 
-> On Mon, Dec 27, 2021 at 7:56 AM Yu Tu <yu.tu@amlogic.com> wrote:
-> [...]
->>> Does the new S4 SoC use an external 12MHz XTAL or does it use a 24MHz XTAL?
->>> If there's still a 24MHz XTAL then I think this description is not
->>> correct - at least based on how I understand the UART controller.
->>>
->> The S4 SoC uses 12MHz(UART_EE_A_REG5[27]=0x1,the bit is set in romcode).
->> This register description is the same as the G12A and G12B you know.
-> Thank you for this explanation!
-> So the problem is that we're not touching bit 26 and bit 27 - and with
-> the updated romcode you would not get any serial output since the
-> divider is calculated off the wrong clock.
-> 
-> I agree with Jerome that we shouldn't put a flag in device-tree.
-> 
-> Also I did some experimenting with Jerome's idea to implement the
-> clocks using CCF (common clock framework), see the attached patches.
-> It was a bit tricky because some initial clean-ups were needed in the
-> serial driver.
-> Note: I have only briefly tested this on a 32-bit Meson8m2 SoC, see my
-> attached patches and the clk_summary debugfs output.
-> In fact, I expect that there are some issues with at least one of the
-> patches as the whole bit 26 and bit 27 code is untested.
-> 
-> Do you see any problems with this patch?
-> Could you try to implement CCF support with the idea from the attached
-> patches (you don't need to re-use them, I just wrote them to make it
-> clearer in our discussion what we're talking about).
-> 
-I couldn't agree with you more. I have verified it on a 64-bit S4 
-platform. Please refer to the attachment for verification output 
-information.
-I will prepare the second version of patch according to the example 
-ideas you provided.
-> 
-> Best regards,
-> Martin
---------------pJLNGTZO4iwSOLaQx0LO32SJ
-Content-Type: text/plain; charset="UTF-8"; name="s4-clk-debug-output.txt"
-Content-Disposition: attachment; filename="s4-clk-debug-output.txt"
-Content-Transfer-Encoding: base64
+thanks,
 
-77u/IyBjYXQgL3N5cy9rZXJuZWwvZGVidWcvY2xrL2Nsa19zdW1tYXJ5IA0KICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgZW5hYmxlICBwcmVwYXJlICBwcm90ZWN0ICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBkdXR5ICBoYXJkd2FyZQ0KICAgY2xvY2sgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGNvdW50ICAgIGNvdW50ICAgIGNvdW50ICAgICAgICBy
-YXRlICAgYWNjdXJhY3kgcGhhc2UgIGN5Y2xlICAgIGVuYWJsZQ0KLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIHh0YWwgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICA3ICAgICAgICA3ICAgICAgICAwICAgIDI0MDAwMDAwICAg
-ICAgICAgIDAgICAgIDAgIDUwMDAwICAgICAgICAgWQ0KICAgIGZlMDdhMDAwLnNlcmlhbCN4
-dGFsX2RpdjIgICAgICAgICAxICAgICAgICAxICAgICAgICAwICAgIDEyMDAwMDAwICAgICAg
-ICAgIDAgICAgIDAgIDUwMDAwICAgICAgICAgWQ0KICAgICAgIGZlMDdhMDAwLnNlcmlhbCN4
-dGFsMl9jbGtfc2VsICAgICAgIDEgICAgICAgIDEgICAgICAgIDAgICAgMTIwMDAwMDAgICAg
-ICAgICAgMCAgICAgMCAgNTAwMDAgICAgICAgICBZDQogICAgICAgICAgZmUwN2EwMDAuc2Vy
-aWFsI3VzZV94dGFsICAgICAgIDEgICAgICAgIDEgICAgICAgIDAgICAgMTIwMDAwMDAgICAg
-ICAgICAgMCAgICAgMCAgNTAwMDAgICAgICAgICBZDQogICAgICAgICAgICAgZmUwN2EwMDAu
-c2VyaWFsI2JhdWRfZGl2ICAgICAgIDEgICAgICAgIDEgICAgICAgIDAgICAgICA5MjMwNzcg
-ICAgICAgICAgMCAgICAgMCAgNTAwMDAgICAgICAgICBZDQogICAgZmUwN2EwMDAuc2VyaWFs
-I3h0YWxfZGl2MyAgICAgICAgIDAgICAgICAgIDAgICAgICAgIDAgICAgIDgwMDAwMDAgICAg
-ICAgICAgMCAgICAgMCAgNTAwMDAgICAgICAgICBZDQogICAgICAgZmUwN2EwMDAuc2VyaWFs
-I3h0YWxfY2xrX3NlbCAgICAgICAwICAgICAgICAwICAgICAgICAwICAgICA4MDAwMDAwICAg
-ICAgICAgIDAgICAgIDAgIDUwMDAwICAgICAgICAgWQ0KDQojIA0KIyBzdHR5IC1GIC9kZXYv
-dHR5QU1MMCAgMTE1MjAwDQoNCiMgc3R0eSAtRiAvZGV2L3R0eUFNTDAgDQpzcGVlZCAxMTUy
-MDAgYmF1ZDsgbGluZSA9IDA7DQppbnRyID0gXkM7IHF1aXQgPSBeXDsgZXJhc2UgPSBePzsg
-a2lsbCA9IF5VOyBlb2YgPSBeRDsgZW9sID0gPHVuZGVmPjsNCmVvbDIgPSA8dW5kZWY+OyBz
-d3RjaCA9IDx1bmRlZj47IHN0YXJ0ID0gXlE7IHN0b3AgPSBeUzsgc3VzcCA9IF5aOyBycHJu
-dCA9IF5SOw0Kd2VyYXNlID0gXlc7IGxuZXh0ID0gXlY7IGZsdXNoID0gXk87IG1pbiA9IDE7
-IHRpbWUgPSAwOw0KLWJya2ludCBpeG9mZiAtaW1heGJlbA0K
-
---------------pJLNGTZO4iwSOLaQx0LO32SJ--
+greg k-h
