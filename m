@@ -2,81 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EFCC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16877C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239201AbhL3MV5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 07:21:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41278 "EHLO
+        id S239224AbhL3M1M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 07:27:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43472 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbhL3MVz (ORCPT
+        with ESMTP id S239191AbhL3M1K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 07:21:55 -0500
+        Thu, 30 Dec 2021 07:27:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FBA46168D
-        for <linux-serial@vger.kernel.org>; Thu, 30 Dec 2021 12:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58299C36AEA;
-        Thu, 30 Dec 2021 12:21:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9580A616AB;
+        Thu, 30 Dec 2021 12:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B54C36AEA;
+        Thu, 30 Dec 2021 12:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640866915;
-        bh=QnboU+XWv/N4jKlN+ix1h0EdhwaY2bVTHgrD3bn62uE=;
+        s=korg; t=1640867230;
+        bh=jtRDTNUABNjxRYAFcGzm5lwPyIQ9Sfjf1gd358LMomE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IoePjmOl0MsTx5W89M3kR8qB1/d0jRstUV91Br0Fpe4MHdoSJDqqUCq2ip1P4jDtt
-         bR/xshUPjlHcwNJKXBZEkxoR8OhqDSi8YAALhfcTPEFa4syywQLBVN8BcLv+ISbT95
-         x5VYpP8VQRxMh+DCmtJ7HUBCke0mgHSxAK/RQT6Y=
-Date:   Thu, 30 Dec 2021 13:21:52 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jochen Mades <jochen@mades.net>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: amba-pl011 driver: bug in RS485 mode
-Message-ID: <Yc2kYOU67BqDpzLy@kroah.com>
-References: <572288095.547800.1640594185677@webmail.strato.com>
+        b=w5t0JwdJUbRUNni+Y/Ko4RuRl4SknYmbIq0b+hxBe6zqYWCNmCddSRML+b6x0cGWN
+         bYXduHtQc7KlYFW74rgjSU0/fw0Iv8Cs6nXwdA/A4SUe6qz9FCE/w/tDrwJIfFN494
+         CC5GtbM5p5//HMU7+jQbWZlKSShxJfQ9/4A2ZcIE=
+Date:   Thu, 30 Dec 2021 13:27:07 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Al Cooper <alcooperx@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>
+Subject: Re: [PATCH 03/10] serial: 8250_bcm7271: Propagate error codes from
+ brcmuart_probe()
+Message-ID: <Yc2lmzJgn/nEbC5r@kroah.com>
+References: <20211224142917.6966-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211224142917.6966-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAHp75VdC+JifneoYRS3yoXoAhio+TXQzca3pku7ug=A_ewWrsg@mail.gmail.com>
+ <CA+V-a8tzcCtnD9GDm8g+-84tKAdcPaj3Qy0s=vJmn5qMxLp=3g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <572288095.547800.1640594185677@webmail.strato.com>
+In-Reply-To: <CA+V-a8tzcCtnD9GDm8g+-84tKAdcPaj3Qy0s=vJmn5qMxLp=3g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 09:36:25AM +0100, Jochen Mades wrote:
-> Hi,
+On Sat, Dec 25, 2021 at 12:20:02PM +0000, Lad, Prabhakar wrote:
+> Hi Andy,
 > 
-> I tested the amba-pl011 driver from the current branch rpi-5.16.y in RS485 mode and found a bug.
+> Thank you for the review.
 > 
-> The current driver pulls-up RTS in function pl011_set_mctrl independent from the rs485-flags SER_RS485_RTS_AFTER_SEND.
-> This leads to problems if the driver is used as RS485 slave.
-> 
-> In my opinion the patch should look like that (and was tested successfully by myself):
-> 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 537f37ac4..3b45beae8 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1647,7 +1647,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
->         unsigned int cr;
-> 
->         if (port->rs485.flags & SER_RS485_ENABLED)
-> -               mctrl &= ~TIOCM_RTS;
-> +       {
-> +               if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-> +                       mctrl &= ~TIOCM_RTS;
-> +               else
-> +                       mctrl |= TIOCM_RTS;
-> +       }
-> 
->         cr = pl011_read(uap, REG_CR);
-> 
-> 
-> Please let me know, if I'm allowed to commit this change and let me know how to do that or if someone of you guys will do that better.
+> On Sat, Dec 25, 2021 at 11:20 AM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> >
+> >
+> >
+> > On Friday, December 24, 2021, Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> >>
+> >> In case of failures brcmuart_probe() always returned -ENODEV, this
+> >> isn't correct for example platform_get_irq_byname() may return
+> >> -EPROBE_DEFER to handle such cases propagate error codes in
+> >> brcmuart_probe() in case of failures.
+> >>
+> >> Fixes: 41a469482de25 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+> >> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> >> ---
+> >>  drivers/tty/serial/8250/8250_bcm7271.c | 11 ++++++++---
+> >>  1 file changed, 8 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+> >> index 7ecfcc650d28..cc60a7874e8b 100644
+> >> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+> >> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> >> @@ -1074,14 +1074,18 @@ static int brcmuart_probe(struct platform_device *pdev)
+> >>                 priv->rx_bufs = dma_alloc_coherent(dev,
+> >>                                                    priv->rx_size,
+> >>                                                    &priv->rx_addr, GFP_KERNEL);
+> >> -               if (!priv->rx_bufs)
+> >> +               if (!priv->rx_bufs) {
+> >> +                       ret = -EINVAL;
+> >
+> >
+> >
+> > For memory allocation we usually return -ENOMEM.
+> >
+> Agreed, will fix that.
 
-Anyone is allowed to submit a change, please do so as per the
-Documentation/SubmittingPatches file describes and we will be glad to
-review it and apply it if it is ok.
-
-thanks,
+Just send a follow-on patch for that, thanks.
 
 greg k-h
