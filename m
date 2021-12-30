@@ -2,116 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D3CC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 14:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF28AC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 16:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239935AbhL3ORq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 09:17:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55516 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239934AbhL3ORq (ORCPT
+        id S241333AbhL3Qg5 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 11:36:57 -0500
+Received: from mail-qt1-f179.google.com ([209.85.160.179]:43796 "EHLO
+        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241327AbhL3Qg5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 09:17:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640873865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BSl6NhO3rkJbiaCAxgZIg8uGpQxft2WdEugt3YD6tYc=;
-        b=I46QqTomInCzv1xk6vEOUGZDOnCt2TxeBpx0wj2rduAOQnC1yGcSCsPHiZVxRTCRCryCZv
-        WazQz8iEJjrPOth54lG/DW8thDCVH93Mnf5kOVA8CZ/Ap4fNGLRK70ip0tKb8lF4ZpxJ5P
-        mFM4Om+0T2h+KbNRrx0M2L1ZkRAkn8g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-455-C8rdBQgHM3C6QQBFvAQDrA-1; Thu, 30 Dec 2021 09:17:40 -0500
-X-MC-Unique: C8rdBQgHM3C6QQBFvAQDrA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 095551006AA5;
-        Thu, 30 Dec 2021 14:17:38 +0000 (UTC)
-Received: from shalem.redhat.com (unknown [10.39.192.254])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 618017AB49;
-        Thu, 30 Dec 2021 14:17:35 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v2 3/3] serdev: Do not instantiate serdevs on boards with known bogus DSDT entries
-Date:   Thu, 30 Dec 2021 15:17:22 +0100
-Message-Id: <20211230141722.512395-4-hdegoede@redhat.com>
-In-Reply-To: <20211230141722.512395-1-hdegoede@redhat.com>
-References: <20211230141722.512395-1-hdegoede@redhat.com>
+        Thu, 30 Dec 2021 11:36:57 -0500
+Received: by mail-qt1-f179.google.com with SMTP id q14so22121472qtx.10;
+        Thu, 30 Dec 2021 08:36:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZgbwrwneUUbI3eKFGGiSBbN6uCV4a8tfPJGMC/xXd1M=;
+        b=FdEtWoB5qHGQQpBr/tHrq4epQSqeRelos2IzFW4C3/P84PmkfNmSbDOtKpwmvtKMgh
+         CZ6xZfnoYZtO5t3QjxsymJHqitJXWqtDLl2U3AaFpL14kCLzIbJ9wDHPZYlA/ML52r+c
+         Nq7an83/9O/uQMydHc3Qfl+aAJJcw5rgy6307NUeBZ7OIT6kTNyrCsocth7qaz8GfdwM
+         /RO5oPDD905l/2FY8RN3imbf5VEMg0p07A+a4GpKLNK7jcFyCSvbeDpPQvjtdCwCgt7I
+         nee2PbtD6tMq5Du599F3IRcUUAjifF3Nb5bDl1JuAYcB2ZyutidPj5LhMSFnlQ3LwSpH
+         4DkA==
+X-Gm-Message-State: AOAM532zK7AzKBkcBWj+tby6deXRJxY7MN5sM51BxXWStu0fZbiOTQLy
+        1Ta0Y2QNWJFJIoW0M+8DstaT/qwONmOg+40XJzs=
+X-Google-Smtp-Source: ABdhPJxDrbYpc15TaUfWdMgXcFUYn3WeBudh8IfpVmSA6Q5kCn0aIexJQ3hsjNZj+AMvokhdd/xba0Q0DwV/FIaszy0=
+X-Received: by 2002:ac8:46cc:: with SMTP id h12mr27362513qto.417.1640882216236;
+ Thu, 30 Dec 2021 08:36:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20211230115747.15302-1-hdegoede@redhat.com>
+In-Reply-To: <20211230115747.15302-1-hdegoede@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 30 Dec 2021 17:36:45 +0100
+Message-ID: <CAJZ5v0goKmkTwr25FB7EX0kqpO6BdBL12M3hcqrAxS8u9UaLAg@mail.gmail.com>
+Subject: Re: [PATCH] ACPI / scan: Create platform device for BCM4752 and
+ LNV4752 ACPI nodes
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-serial@vger.kernel.org,
+        =?UTF-8?B?RnLDqWTDqXJpYyBEYW5pcw==?= <frederic.danis.oss@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-x86 ACPI devices which ship with only Android as their factory image use
-older kernels which do not yet support ACPI serdev enumeration, as such
-the serdev information in their ACPI tables is not reliable.
+On Thu, Dec 30, 2021 at 12:57 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> BCM4752 and LNV4752 ACPI nodes describe a Broadcom 4752 GPS module
+> attached to an UART of the system.
+>
+> The GPS modules talk a custom protocol which only works with a closed-
+> source Android gpsd daemon which knows this protocol.
+>
+> The ACPI nodes also describe GPIOs to turn the GPS on/off these are
+> handled by the net/rfkill/rfkill-gpio.c code. This handling predates the
+> addition of enumeration of ACPI instantiated serdevs to the kernel and
+> was broken by that addition, because the ACPI scan code now no longer
+> instantiates platform_device-s for these nodes.
+>
+> Rename the i2c_multi_instantiate_ids HID list to ignore_serial_bus_ids
+> and add the BCM4752 and LNV4752 HIDs, so that rfkill-gpio gets
+> a platform_device to bind to again; and so that a tty cdev for gpsd
+> gets created for these.
+>
+> Fixes: e361d1f85855 ("ACPI / scan: Fix enumeration for special UART devices")
+> Cc: Frédéric Danis <frederic.danis.oss@gmail.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> Note there is some work on reverse-engineering the protocol for these
+> GPS modules here, but this is not complete:
+> https://redmine.replicant.us/projects/replicant/wiki/BCM4751
+> https://git.replicant.us/contrib/PaulK/bcm4751/
+> ---
+>  drivers/acpi/scan.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index 526e823a33fb..c5dfbe26a0cb 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1701,6 +1701,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+>  {
+>         struct list_head resource_list;
+>         bool is_serial_bus_slave = false;
+> +       static const struct acpi_device_id ignore_serial_bus_ids[] = {
+>         /*
+>          * These devices have multiple I2cSerialBus resources and an i2c-client
+>          * must be instantiated for each, each with its own i2c_device_id.
+> @@ -1709,11 +1710,18 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+>          * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
+>          * which i2c_device_id to use for each resource.
+>          */
+> -       static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
+>                 {"BSG1160", },
+>                 {"BSG2150", },
+>                 {"INT33FE", },
+>                 {"INT3515", },
+> +       /*
+> +        * HIDs of device with an UartSerialBusV2 resource for which userspace
+> +        * expects a regular tty cdev to be created (instead of the in kernel
+> +        * serdev) and which have a kernel driver which expects a platform_dev
+> +        * such as the rfkill-gpio driver.
+> +        */
+> +               {"BCM4752", },
+> +               {"LNV4752", },
+>                 {}
+>         };
+>
+> @@ -1727,8 +1735,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+>              fwnode_property_present(&device->fwnode, "baud")))
+>                 return true;
+>
+> -       /* Instantiate a pdev for the i2c-multi-instantiate drv to bind to */
+> -       if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
+> +       if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
+>                 return false;
+>
+>         INIT_LIST_HEAD(&resource_list);
+> --
 
-For example on the Asus ME176C tablet the serdev describing the Bluetooth
-HCI points to the serdev_controller connected to the GPS and the other way
-around.
-
-Use the new acpi_quirk_skip_serdev_enumeration() helper to identify
-known boards with this issue and then either abort adding the serdev
-controller (creating a tty cdev instead) or only create the controller
-leaving the instantation of the serdev itself up to platform code.
-
-In the case where only the serdev controller is created the necessary
-serdevs will instead be instantiated by the
-drivers/platform/x86/x86-android-tablets.c kernel module.
-
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/tty/serdev/core.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index f1324fe99378..92e3433276f8 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -727,10 +727,24 @@ static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
- static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
- {
- 	acpi_status status;
-+	bool skip;
-+	int ret;
- 
- 	if (!has_acpi_companion(ctrl->dev.parent))
- 		return -ENODEV;
- 
-+	/*
-+	 * Skip registration on boards where the ACPI tables are known to
-+	 * contain buggy devices. Note serdev_controller_add() must still
-+	 * succeed in this case, so that the proper serdev devices can be
-+	 * added "manually" later.
-+	 */
-+	ret = acpi_quirk_skip_serdev_enumeration(ctrl->dev.parent, &skip);
-+	if (ret)
-+		return ret;
-+	if (skip)
-+		return 0;
-+
- 	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
- 				     SERDEV_ACPI_MAX_SCAN_DEPTH,
- 				     acpi_serdev_add_device, NULL, ctrl, NULL);
--- 
-2.33.1
-
+Applied as 5.17 material, thanks!
