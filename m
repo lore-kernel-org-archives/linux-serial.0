@@ -2,56 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED16C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 22:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B055C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 22:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242264AbhL3Wey (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 17:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S242273AbhL3WlV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 17:41:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242253AbhL3Wey (ORCPT
+        with ESMTP id S234688AbhL3WlV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 17:34:54 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3769C061574;
-        Thu, 30 Dec 2021 14:34:53 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id j21so102825632edt.9;
-        Thu, 30 Dec 2021 14:34:53 -0800 (PST)
+        Thu, 30 Dec 2021 17:41:21 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A12C061574;
+        Thu, 30 Dec 2021 14:41:20 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id w16so103005169edc.11;
+        Thu, 30 Dec 2021 14:41:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=keDpfpmYkXFiVgktyndmnfL9DTHJGo7630SMho0JAeE=;
-        b=ai6bQPVEAVEI84Hr676QSSliE+FR4kHYNtcIKRXGqvO0ZFSSntFZrdJGBovV7M2b8d
-         p2CRo0K5/4qPORmzar5tSkOD19nOcQHG8T01qunC12cBe/fjgsvFXdSdtU5B4jfmuyLq
-         AVLIM5tab73qpz3JSJ5WbJ7S9wE6eu00OJbybBCG2A72CwOsGoiiec3uorb7kiOsOmkw
-         t4FsZpo32HpTTzn9N2DIE0LDn9l1TQA5nY3LlixgsZWZLfEsjZ6u7M/F0zA9p7cbT/Qo
-         dfZbj3t6uqZLqrHVWO/TfQkS6xiRBdNO0eVecXvuVQ7oRFohDMw9alrxsjyQunudjRw1
-         Nzlg==
+        bh=Io66HcUiLdVjjQqfsG6ke9IYSCPIgdy83uGT3iFGDRY=;
+        b=fKnkHOWPj9bJBcuLBDjRUjw82wEi6715Sv3LgvoYt2iPafs/3BjDjvZv/lsNwRVCIf
+         UdOdo7kDBPKeU8jw3NIMRCMA19K76CPQ2gtywrpOfaHQbIu8u7BxeOKHjCdTtxt12lwv
+         WIXS8D5YG4O+fhY4pOPlHkuFPoh1ErwgC0gfEA5hhis3B9IMPp9caigTWJzmK29t4YOQ
+         3T78D2/ceYpQfhW3Z4OjEr/3OqOmIYcBzVymHls6nFgoezCFhkr9aHszJNyxRGtnOgkB
+         TPUCM/4E+xhrKPwFV86csn3Q40lDwlVuY3IX6mAxzdXJK5jafYQTb8IwsJGGZmXDvaoL
+         UYKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=keDpfpmYkXFiVgktyndmnfL9DTHJGo7630SMho0JAeE=;
-        b=y5lm3OX8zROthuYyBgeyWIwwRxfdhnQq64dASrSmkld7QWsFrzQnY82XWCFwYlx9ej
-         kaad+f+JBOpMWxJRchTwv2KWq/vUt9WraoABYX4qN5GBrnlJ1OATs5HQs8ukbl0krT2C
-         p71m6ZOScKVJFw2wGWGBdY/qPTDcV/spdpts9CerqyzlNzMllhcCMItI41xnYpOBch33
-         eMbIq4pOGrCNhHvSQCDuAK2LIbH0m8zhnsbvGO1rsD+KC0RzpfTKMEbCBsB3ZOnxHcQ0
-         qRvs1SXZdsQWzC3/0W1YA9AYFYu+mYhO0csalN8MlQJ3KSBDTd6BuwbiYaD1zK6uaDx4
-         2ubA==
-X-Gm-Message-State: AOAM532Qe1ZMhI/9IOO2rR+MncJVtU4r6pmAI6GBKnfm0/E59w2GDUgX
-        tCn404kHBXOrWpL1CiNNHEWNjgC8C2NYirdclh0=
-X-Google-Smtp-Source: ABdhPJy06stqBtrzO3pPH2Sb6S4wUoQroR8A11+Jus2e4clCR7PxO5IkHtNeOhstYloGzN2BG15vOFzp8x/xl7qa0w4=
-X-Received: by 2002:a17:907:75dc:: with SMTP id jl28mr26131756ejc.13.1640903692114;
- Thu, 30 Dec 2021 14:34:52 -0800 (PST)
+        bh=Io66HcUiLdVjjQqfsG6ke9IYSCPIgdy83uGT3iFGDRY=;
+        b=NKAXDr8Ldn0a3w4RlOdPcA1ztFY9H2H1SM8BjNFZx4Hr4V2n1CcFu7eB1txYEHDuB5
+         XW/6OxmkwrOZRPDFSmIgsbfBSOFbJvtMssSdonWTiynWNY/fCDjApvZw5hyN0J0tD/MK
+         zbAo6S734x52bEq5PXgdg8Y7RlPj2W65gxiqhoEwtbgNN8yVLTA8qDxUIlA64f82Ibzj
+         +e2mPZ6CcDhtg6irxJRSulS4fQ4AfZ+AxL/cbKdr6hrt+eNEcRcZLpViGouqqBfcaZgW
+         cM6zztrxuT9YLFsYhNq18r3j9KDKwBYo5Mt9RbLt3NiNCT361+dzCXuXf6cAiAFLgRfF
+         b2pA==
+X-Gm-Message-State: AOAM532wLfZopD+BULwbi+arPK0mf2KylnI1tudBBSAwvgT8niD1akgo
+        XcLTIbzjvfem4wgEnjT43hGGBQ9tjTVgiDwbqS8=
+X-Google-Smtp-Source: ABdhPJyc3+8pKEBma4UIVLbyKZ0OwEGnDSbOQoseLj9oz+jzU13ksxDgRUoco3UPkmeVynlUMRu417KD4nrZocZsvx4=
+X-Received: by 2002:a17:906:ff14:: with SMTP id zn20mr27176133ejb.649.1640904079384;
+ Thu, 30 Dec 2021 14:41:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20211230102110.3861-1-yu.tu@amlogic.com> <20211230102110.3861-4-yu.tu@amlogic.com>
-In-Reply-To: <20211230102110.3861-4-yu.tu@amlogic.com>
+References: <20211230102110.3861-1-yu.tu@amlogic.com> <20211230102110.3861-7-yu.tu@amlogic.com>
+In-Reply-To: <20211230102110.3861-7-yu.tu@amlogic.com>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 30 Dec 2021 23:34:41 +0100
-Message-ID: <CAFBinCB0RTfOLbV3ZC+9dJEiw2_y41V+JvNP9GOPaQcCLB7UdA@mail.gmail.com>
-Subject: Re: [PATCH V3 3/6] dt-bindings: serial: meson: Support S4 SoC uart.
- Also Drop compatible = amlogic,meson-gx-uart.
+Date:   Thu, 30 Dec 2021 23:41:08 +0100
+Message-ID: <CAFBinCAzDSw6jmpU-S2KGZ32D+U1fNqLgKMmkPSdz=-XN4isDA@mail.gmail.com>
+Subject: Re: [PATCH V3 6/6] tty: serial: meson: Change request_irq to
+ devm_request_irq and move devm_request_irq to meson_uart_probe()
 To:     Yu Tu <yu.tu@amlogic.com>
 Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -66,40 +66,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Thu, Dec 30, 2021 at 11:22 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>
+> Because an interrupt error occurs when the user opens /dev/ttyAML* but
+> don't close it, and then opens the same port again. This problem is
+> encountered in actual projects.
+I would like to hear from the serial driver maintainers whether the
+described problem is a userspace or driver bug.
 
-as Greg already mentioned the $subject line is very long.
-
-On Thu, Dec 30, 2021 at 11:21 AM Yu Tu <yu.tu@amlogic.com> wrote:
-> Deprecated, don't use anymore because compatible = amlogic,meson-gx-uart
-> don't differentiate between GXBB and GXL which have different
-> revisions of the UART IP. So it's split into GXBB and GXL.
-actually it's split into GXBB, GXL and G12A
+If it's a driver bug then this should be sent as a separate patch
+(unrelated to this series) with a fixes tag.
 
 [...]
-> -              - amlogic,meson-gx-uart
-> +              - amlogic,meson-gxbb-uart
-> +              - amlogic,meson-gxl-uart
-> +              - amlogic,meson-g12a-uart
-> +              - amlogic,meson-s4-uart
-In addition to Greg's comment I suggest splitting this into two patches:
-- one where the "amlogic,meson-gx-uart" compatible is marked as
-deprecated (Documentation/devicetree/bindings/power/supply/bq27xxx.yaml
-has an example for deprecated entries) and GXBB, GXL and G12A
-compatible strings are added instead
-- another one where the new S4 compatible string is added
-
-The idea here is to have "one logical change per patch".
-Deprecating and replacing "amlogic,meson-gx-uart" is one logical change.
-Adding a new compatible string is another logical change.
-I am hoping that this will also make it easier to find a shorter
-$subject line (which according to the patch submission guide [0]
-should be 70-75 characters: "the summary must be no more than 70-75
-characters")
+> +       ret = devm_request_irq(&pdev->dev, port->irq, meson_uart_interrupt,
+> +                              0, dev_name(&pdev->dev), port);
+You can replace dev_name(&pdev->dev) with NULL to achieve the same
+result with less code.
+dev_name(dev) is the default value, see [0]
 
 
 Best regards,
 Martin
 
 
-[0] https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#the-canonical-patch-format
+[0] https://elixir.bootlin.com/linux/v5.15/source/kernel/irq/devres.c#L64
