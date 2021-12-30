@@ -2,84 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9472C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1CAC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233442AbhL3MEG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 07:04:06 -0500
-Received: from mga05.intel.com ([192.55.52.43]:30674 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229463AbhL3MEG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 07:04:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640865846; x=1672401846;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZLoHuM4dXn79jCK53xCIAkvKyvkG0LYKUHR2ZiCAZHk=;
-  b=Tf9/KQU/KHPXhSVJmF7exibHWM1gobOnL8ajEqjjQM6wMDQcb55wj7j4
-   Oaf0pZX+JxgmkhZnho9qa7MEYM7uwo33rFz1mUt9q/NFbT+OKp34QDRLt
-   tjIelRkVLUv/t/vgZzq2/Zs/VyvZ3+LNwMhJApYicPbVqoW5lib/kWyeR
-   uiq8xP9zODqxCd2R5/6yeDuNNyLxj6NlUB8PHsBA3Zcw+vU8ikg28+AUs
-   O3+IY9XO4WAzkvjMdOtEmBwfSyU87fcX1yBEUWDtMDdGTEhkkQjsJg8Td
-   uFw3OIeriFZfz0XOxbZmMnjYSvZEyYz9pS3zocDs4WacfliiSUEQPvy8t
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="327992703"
-X-IronPort-AV: E=Sophos;i="5.88,248,1635231600"; 
-   d="scan'208";a="327992703"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2021 04:04:06 -0800
-X-IronPort-AV: E=Sophos;i="5.88,248,1635231600"; 
-   d="scan'208";a="554787292"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2021 04:04:01 -0800
-Received: by lahna (sSMTP sendmail emulation); Thu, 30 Dec 2021 14:03:59 +0200
-Date:   Thu, 30 Dec 2021 14:03:59 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 02/12] i2c: acpi: Do not instantiate I2C-clients on
- boards with known bogus DSDT entries
-Message-ID: <Yc2gL6aLJ0lfrUXv@lahna>
-References: <20211229231431.437982-1-hdegoede@redhat.com>
- <20211229231431.437982-3-hdegoede@redhat.com>
+        id S239136AbhL3MSz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 07:18:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40190 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229463AbhL3MSz (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Dec 2021 07:18:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA2BB61696;
+        Thu, 30 Dec 2021 12:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7932BC36AEA;
+        Thu, 30 Dec 2021 12:18:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640866733;
+        bh=ZmhNNEovTSCg7JZmbQ+oNEu/8HfxroskblP4ABJoAi0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C678eFJzgcBh8duCr707xJdUo1E70QEyS66Zrvk2RR5z8mCcDJVbzg9fkU5rnf9Kp
+         gUeSHcSEXLBQnYif8qUdi5YK8tuY+YbF5bmTfDxe9i4fbRR9u/Lw5mnHD/7s4gKw8y
+         CD7DOJJHstykreXXRTe18ab9HfB2StCj+HpxA5Bs=
+Date:   Thu, 30 Dec 2021 13:18:50 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     hammer hsieh <hammerh0314@gmail.com>
+Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jirislaby@kernel.org, p.zabel@pengutronix.de, wells.lu@sunplus.com,
+        Hammer Hsieh <hammer.hsieh@sunplus.com>
+Subject: Re: [PATCH v5 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+Message-ID: <Yc2jqlV8LDR56oxy@kroah.com>
+References: <1639379407-28607-1-git-send-email-hammer.hsieh@sunplus.com>
+ <1639379407-28607-3-git-send-email-hammer.hsieh@sunplus.com>
+ <YcCmaJkeKy+R0mhF@kroah.com>
+ <CAOX-t54j9=7eLMAx4n-ngiNdM=Ab=YcK-zdxRW88e41cPS=46Q@mail.gmail.com>
+ <YcGOmzKSHOoycZNC@kroah.com>
+ <CAOX-t55fBM7u3qZm7ubLANDnWNFhCiBXB29v00racWd-gy3OgA@mail.gmail.com>
+ <YcWL4c0e02mzETMp@kroah.com>
+ <CAOX-t557bRfBk0+ixH_zXkxpt54cf96vNc1Fq7yNejVLOrc--g@mail.gmail.com>
+ <CAOX-t55bGWY99r0=SYcMgUBpSCHRznHk3KFrtScq9X_J+8boyw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211229231431.437982-3-hdegoede@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CAOX-t55bGWY99r0=SYcMgUBpSCHRznHk3KFrtScq9X_J+8boyw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 12:14:21AM +0100, Hans de Goede wrote:
-> x86 ACPI devices which ship with only Android as their factory image
-> usually declare a whole bunch of bogus I2C devices in their ACPI tables.
+On Fri, Dec 24, 2021 at 05:21:27PM +0800, hammer hsieh wrote:
+> Hi, Greg KH:
 > 
-> Instantiating I2C clients for these bogus devices causes various issues,
-> e.g. GPIO/IRQ resource conflicts because sometimes drivers do bind to them.
-> The Android x86 kernel fork shipped on these devices has some special code
-> to remove these bogus devices, instead of just fixing the DSDT <sigh>.
+> I am still not really understand why you said the driver looks like 8250.
+> SP7021 SoC have our own register define.
+> That's why we submit a new serial driver.
 > 
-> Use the new acpi_quirk_skip_i2c_client_enumeration() helper to
-> identify known boards with this issue, and on these boards ignore I2C
-> devices described in ACPI, with a few exceptions which are known to
-> always be correct (and in case of the audio-codecs where the drivers
-> heavily rely on the codec being enumerated through ACPI).
-> 
-> Note these boards typically do actually have I2C devices, just
-> different ones then the ones described in their DSDT. The devices
-> which are actually present are manually instantiated by the
-> drivers/platform/x86/x86-android-tablets.c kernel module.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> Refer to:
+> https://sunplus.atlassian.net/wiki/spaces/doc/pages/1873412290/13.+Universal+Asynchronous+Receiver+Transmitter+UART
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Odd, ok, I thought this was an 8250-like uart, why did they go and
+redesign all of the register values for something as well-known as a
+UART?
+
+Anyway, I think you are right, please fix up the other issues and resend
+the driver and we will be glad to review it again.
+
+thanks,
+
+greg k-h
