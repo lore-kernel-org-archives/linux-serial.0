@@ -2,110 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A381C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EFCC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 12:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239207AbhL3MVV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 07:21:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41062 "EHLO
+        id S239201AbhL3MV5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 07:21:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41278 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbhL3MVU (ORCPT
+        with ESMTP id S229463AbhL3MVz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 07:21:20 -0500
+        Thu, 30 Dec 2021 07:21:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A10D6169A;
-        Thu, 30 Dec 2021 12:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553E1C36AE9;
-        Thu, 30 Dec 2021 12:21:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640866879;
-        bh=7c2jIbmQWrJcunLczYU/rzP/vwSAussEe7dJWNFuvlQ=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FBA46168D
+        for <linux-serial@vger.kernel.org>; Thu, 30 Dec 2021 12:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58299C36AEA;
+        Thu, 30 Dec 2021 12:21:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640866915;
+        bh=QnboU+XWv/N4jKlN+ix1h0EdhwaY2bVTHgrD3bn62uE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EGnk+1uWGYtasSFmJdgClE08rxEj0n6APefMhgbVPX9yB7DAyqP7VS4zGU92mdVt8
-         QK56Y3rYwt1NjNTqyQmSgYsvD0gfyoGN/o26CDKEFNDrpKocE62BzigZb0ll9P+WAc
-         WFozQzwJb89zoULPc85Qc6KuBX8XuE8mkmH8L3+m8Od9ZHLWIY/zzZeo3gdKgDOXSE
-         5merZX/C4q/e0QytySx/rQplrgvpl+AK10DspuyWqfYyO4hjVPzldFmk57sGrV9Mrp
-         B6xsaFS2etwABZsZ2vyhqgY15leD9LOUjbo5sQjXMlhJVxHKtrQ2tQ/VI5B/9O+lRJ
-         uTIH9E0nLt9Sg==
-Date:   Thu, 30 Dec 2021 13:21:16 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 02/12] i2c: acpi: Do not instantiate I2C-clients on
- boards with known bogus DSDT entries
-Message-ID: <Yc2kPCe3R0EX8+A1@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-References: <20211229231431.437982-1-hdegoede@redhat.com>
- <20211229231431.437982-3-hdegoede@redhat.com>
+        b=IoePjmOl0MsTx5W89M3kR8qB1/d0jRstUV91Br0Fpe4MHdoSJDqqUCq2ip1P4jDtt
+         bR/xshUPjlHcwNJKXBZEkxoR8OhqDSi8YAALhfcTPEFa4syywQLBVN8BcLv+ISbT95
+         x5VYpP8VQRxMh+DCmtJ7HUBCke0mgHSxAK/RQT6Y=
+Date:   Thu, 30 Dec 2021 13:21:52 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jochen Mades <jochen@mades.net>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: amba-pl011 driver: bug in RS485 mode
+Message-ID: <Yc2kYOU67BqDpzLy@kroah.com>
+References: <572288095.547800.1640594185677@webmail.strato.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="l9QD1I1TGdxXkLLb"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211229231431.437982-3-hdegoede@redhat.com>
+In-Reply-To: <572288095.547800.1640594185677@webmail.strato.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Dec 27, 2021 at 09:36:25AM +0100, Jochen Mades wrote:
+> Hi,
+> 
+> I tested the amba-pl011 driver from the current branch rpi-5.16.y in RS485 mode and found a bug.
+> 
+> The current driver pulls-up RTS in function pl011_set_mctrl independent from the rs485-flags SER_RS485_RTS_AFTER_SEND.
+> This leads to problems if the driver is used as RS485 slave.
+> 
+> In my opinion the patch should look like that (and was tested successfully by myself):
+> 
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 537f37ac4..3b45beae8 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1647,7 +1647,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>         unsigned int cr;
+> 
+>         if (port->rs485.flags & SER_RS485_ENABLED)
+> -               mctrl &= ~TIOCM_RTS;
+> +       {
+> +               if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+> +                       mctrl &= ~TIOCM_RTS;
+> +               else
+> +                       mctrl |= TIOCM_RTS;
+> +       }
+> 
+>         cr = pl011_read(uap, REG_CR);
+> 
+> 
+> Please let me know, if I'm allowed to commit this change and let me know how to do that or if someone of you guys will do that better.
 
---l9QD1I1TGdxXkLLb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Anyone is allowed to submit a change, please do so as per the
+Documentation/SubmittingPatches file describes and we will be glad to
+review it and apply it if it is ok.
 
+thanks,
 
-Okay, I have a question, after all :)
-
-> +static const struct acpi_device_id i2c_acpi_known_good_ids[] = {
-> +	{ "10EC5640", 0 }, /* RealTek ALC5640 audio codec */
-> +	{ "INT33F4", 0 },  /* X-Powers AXP288 PMIC */
-> +	{ "INT33FD", 0 },  /* Intel Crystal Cove PMIC */
-> +	{ "NPCE69A", 0 },  /* Asus Transformer keyboard dock */
-> +	{}
-> +};
-
-Can't we add this table to patch 1 and check it within a
-acpi_quirk_skip_i2c_client_enumeration(adev)?
-
-
---l9QD1I1TGdxXkLLb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmHNpDwACgkQFA3kzBSg
-KbY5zg/+PLL6gOU7FAksfDVOMM0uRjhWj8x9AQn85+7iEOkKTMbQ3TzRMBSbc5XN
-RZ4dEeYzRWD1/eQV2n3ayzscq7qO8jz4Bms769MLiD146SjeR7OUTD29yyrTsd+n
-5kDnWoce/WU65H1A5CZ7NO9AI9DuyMBCQAtsZ1xkhNr+Htjl0LqLtGV3z5wB11zU
-W4KlAnNWeI56BPuOmKUz0fb6Td8Ww93pXXnhXA3UiOGzTLpsxQBYrs0yGVn9mI8Y
-46jrO7Rv7JVuOv14eRGYnJx9dAqOQ3ne85IlWMrSro3Ia7JdVlFL/dDGdvR9Oole
-hqEeMrZJlD1K9RndkaQzukPkX3Ou4KCCntrOpb5KlWJe94fAYExWMCNWs7BdWXq4
-YNIDyavQlE5XRkmLJ5wpngMybgcf4NsfNYW0sUgzrU6WSXNLyu9WWgVjEvztECJA
-P3ERywDphHIrgOJWRX97s3KYL/qjr3Xn7uZWU7n05m43EZ7LSWiBo3R0WTQHtep1
-QoiK/qjQ7RHE0XVZ+Qgc/hRTyue0umV699ZUAtfcwOuOA3/y6uGUpvW8wfAQTQe1
-HgCl+g6pEbITpt21F0PFC4bc1UFbwLRx8xamEez0w2bJ+1KlSI7ppGG6S4PBTNKV
-KqSrCpDwB56edYvjMww51fJHrHXdatIPoknMs7/eilSKe8GukyY=
-=5jcQ
------END PGP SIGNATURE-----
-
---l9QD1I1TGdxXkLLb--
+greg k-h
