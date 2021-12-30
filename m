@@ -2,187 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2961DC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Dec 2021 23:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF053C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 04:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233102AbhL2XPc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Dec 2021 18:15:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22131 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233086AbhL2XPa (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Dec 2021 18:15:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640819730;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m8EU9J0c/TaatBioeQmN+Zx8f6lc3hvej2FNIrlPMy8=;
-        b=JSExEfYZoVO2yn9FSnBEdHDKv38UuKm8KXcVOK8B52AnSJUC3quqiwDEpmTaisMQNEKU0F
-        hBBW+6ECzFqi1rHylqpo/rf6sjHsiFhlbnIeF9BkhVkNaywKz03a16PR5FuIVmEbxtBh/B
-        HsnnyHwoMMZhZwmSx6EFg/qQTQsFKOc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-qGeJnb7VPj6yPw-U75gq2Q-1; Wed, 29 Dec 2021 18:15:28 -0500
-X-MC-Unique: qGeJnb7VPj6yPw-U75gq2Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6A15E801ADC;
-        Wed, 29 Dec 2021 23:15:26 +0000 (UTC)
-Received: from shalem.redhat.com (unknown [10.39.192.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 99F791037F5B;
-        Wed, 29 Dec 2021 23:15:23 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 12/12] platform/x86: x86-android-tablets: Add TM800A550L data
-Date:   Thu, 30 Dec 2021 00:14:31 +0100
-Message-Id: <20211229231431.437982-13-hdegoede@redhat.com>
-In-Reply-To: <20211229231431.437982-1-hdegoede@redhat.com>
-References: <20211229231431.437982-1-hdegoede@redhat.com>
+        id S235867AbhL3EtA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Dec 2021 23:49:00 -0500
+Received: from mail.djicorp.com ([14.21.64.4]:56524 "EHLO mail.djicorp.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229834AbhL3Es7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 29 Dec 2021 23:48:59 -0500
+X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 Dec 2021 23:48:59 EST
+IronPort-SDR: SglpbcEdGTc+D8YOF6PPVLj+bX24cqC6eqRcLW+zvFKj6+sj+gb2r+K4AyCaQhzfHCDnJeVy6w
+ 4ec5R+aMCNBg==
+X-IronPort-AV: E=Sophos;i="5.88,247,1635177600"; 
+   d="scan'208";a="12547668"
+From:   wigin zeng <wigin.zeng@dji.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        First Light <xiaoguang.chen@dji.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IOetlA==?=
+ =?utf-8?B?5aSNOiBbUEFUQ0hdIHNlcmlhbDogODI1MDogYWRkIGxvY2sgZm9yIGRtYSBy?=
+ =?utf-8?Q?x?=
+Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiDnrZTlpI06IFtQQVRD?=
+ =?utf-8?Q?H]_serial:_8250:_add_lock_for_dma_rx?=
+Thread-Index: AQHX7M8cgUf9QibCHEeycmxSNUOEd6wpP9YAgACLx/D//4YHgIAAiJFw//+PM4CAEXtykP//udeAABInGiD//4DlgP//eQnwgACSc4D/8Cl5MA==
+Date:   Thu, 30 Dec 2021 04:41:47 +0000
+Message-ID: <893a2e55bef04d5dbb9ffa99efdbb023@MAIL-MBX-cwP12.dji.com>
+References: <YbGygPtkz6ihyW51@kroah.com>
+ <674707a0388c4a3a9bb25676c61e1737@MAIL-MBX-cwP12.dji.com>
+ <YbHBb2uB9JRP0tWc@kroah.com>
+ <f2150f8a7b7242b48227e30e5550da0b@MAIL-MBX-cwP12.dji.com>
+ <YbHVXwdCUCvmZrbS@kroah.com>
+ <62dd5f2fedbb4332a4d04dea4970a347@MAIL-MBX-cwP12.dji.com>
+ <YcBEy9zi2G7UYErE@kroah.com>
+ <c35df81a176f418eb90e18563170de67@MAIL-MBX-cwP12.dji.com>
+ <YcBT/Vf41PWUYdxT@kroah.com>
+ <b9cdf44fe8064c6bb14d5e7aaec3d33a@MAIL-MBX-cwP12.dji.com>
+ <YcBdnzfUceNqdVHb@kroah.com>
+In-Reply-To: <YcBdnzfUceNqdVHb@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [58.34.188.114]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The whitelabel (sold as various brands) TM800A550L tablets's DSDT contains
-a whole bunch of bogus ACPI I2C devices and the ACPI node describing
-the touchscreen is bad (the IRQ is missing). Enumeration of these is
-skipped through the acpi_quirk_skip_i2c_client_enumeration().
-
-Add support for manually instantiating the (now) missing I2C devices by
-adding the necessary device info to the x86-android-tablets module,
-including instantiating an actually working i2c-client for
-the touchscreen.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/platform/x86/x86-android-tablets.c | 90 ++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
-
-diff --git a/drivers/platform/x86/x86-android-tablets.c b/drivers/platform/x86/x86-android-tablets.c
-index fb257b5811d3..5f66fab6100e 100644
---- a/drivers/platform/x86/x86-android-tablets.c
-+++ b/drivers/platform/x86/x86-android-tablets.c
-@@ -534,6 +534,86 @@ static const struct x86_dev_info xiaomi_mipad2_info __initconst = {
- 	.i2c_client_count = ARRAY_SIZE(xiaomi_mipad2_i2c_clients),
- };
- 
-+/*
-+ * Whitelabel (sold as various brands) TM800A550L tablets.
-+ * These tablet's DSDT contains a whole bunch of bogus ACPI I2C devices
-+ * (removed through acpi_quirk_skip_i2c_client_enumeration()) and
-+ * the touchscreen fwnode has the wrong GPIOs.
-+ */
-+static const char * const whitelabel_tm800a550l_accel_mount_matrix[] = {
-+	"-1", "0", "0",
-+	"0", "1", "0",
-+	"0", "0", "1"
-+};
-+
-+static const struct property_entry whitelabel_tm800a550l_accel_props[] = {
-+	PROPERTY_ENTRY_STRING_ARRAY("mount-matrix", whitelabel_tm800a550l_accel_mount_matrix),
-+	{ }
-+};
-+
-+static const struct software_node whitelabel_tm800a550l_accel_node = {
-+	.properties = whitelabel_tm800a550l_accel_props,
-+};
-+
-+static const struct property_entry whitelabel_tm800a550l_goodix_props[] = {
-+	PROPERTY_ENTRY_STRING("firmware-name", "gt912-tm800a550l.fw"),
-+	PROPERTY_ENTRY_STRING("goodix,config-name", "gt912-tm800a550l.cfg"),
-+	PROPERTY_ENTRY_U32("goodix,main-clk", 54),
-+	{ }
-+};
-+
-+static const struct software_node whitelabel_tm800a550l_goodix_node = {
-+	.properties = whitelabel_tm800a550l_goodix_props,
-+};
-+
-+static const struct x86_i2c_client_info whitelabel_tm800a550l_i2c_clients[] __initconst = {
-+	{
-+		/* goodix touchscreen */
-+		.board_info = {
-+			.type = "GDIX1001:00",
-+			.addr = 0x14,
-+			.dev_name = "goodix_ts",
-+			.swnode = &whitelabel_tm800a550l_goodix_node,
-+		},
-+		.adapter_path = "\\_SB_.I2C2",
-+		.irq_data = {
-+			.type = X86_ACPI_IRQ_TYPE_APIC,
-+			.index = 0x44,
-+			.trigger = ACPI_EDGE_SENSITIVE,
-+			.polarity = ACPI_ACTIVE_HIGH,
-+		},
-+	}, {
-+		/* kxcj91008 accel */
-+		.board_info = {
-+			.type = "kxcj91008",
-+			.addr = 0x0f,
-+			.dev_name = "kxcj91008",
-+			.swnode = &whitelabel_tm800a550l_accel_node,
-+		},
-+		.adapter_path = "\\_SB_.I2C3",
-+	},
-+};
-+
-+static struct gpiod_lookup_table whitelabel_tm800a550l_goodix_gpios = {
-+	.dev_id = "i2c-goodix_ts",
-+	.table = {
-+		GPIO_LOOKUP("INT33FC:01", 26, "reset", GPIO_ACTIVE_HIGH),
-+		GPIO_LOOKUP("INT33FC:02", 3, "irq", GPIO_ACTIVE_HIGH),
-+		{ }
-+	},
-+};
-+
-+static struct gpiod_lookup_table *whitelabel_tm800a550l_gpios[] = {
-+	&whitelabel_tm800a550l_goodix_gpios,
-+	NULL
-+};
-+
-+static const struct x86_dev_info whitelabel_tm800a550l_info __initconst = {
-+	.i2c_client_info = whitelabel_tm800a550l_i2c_clients,
-+	.i2c_client_count = ARRAY_SIZE(whitelabel_tm800a550l_i2c_clients),
-+	.gpiod_lookup_tables = whitelabel_tm800a550l_gpios,
-+};
-+
- static const struct dmi_system_id x86_android_tablet_ids[] __initconst = {
- 	{
- 		/* Asus MeMO Pad 7 ME176C */
-@@ -568,6 +648,16 @@ static const struct dmi_system_id x86_android_tablet_ids[] __initconst = {
- 		},
- 		.driver_data = (void *)&xiaomi_mipad2_info,
- 	},
-+	{
-+		/* Whitelabel (sold as various brands) TM800A550L */
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
-+			DMI_MATCH(DMI_BOARD_NAME, "Aptio CRB"),
-+			/* Above strings are too generic, also match on BIOS version */
-+			DMI_MATCH(DMI_BIOS_VERSION, "ZY-8-BI-PX4S70VTR400-X423B-005-D"),
-+		},
-+		.driver_data = (void *)&whitelabel_tm800a550l_info,
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(dmi, x86_android_tablet_ids);
--- 
-2.33.1
-
+Pj4gT24gb3VyIHBsYXRmb3JtLCBVQVJUIGNvbm5lY3RlZCB0byBhIE1DVSB3aGljaCB3aWxsIHNl
+bmQgZGF0YSBvZiB2YXJpYWJsZSBsZW5ndGggZnJvbSB0aW1lIHRvIHRpbWUuIFRoZXJlIGlzIG5v
+IGRlZmluaXRpb24gb2YgYSBtYXhpbXVtIHRyYW5zbWlzc2lvbiBsZW5ndGguDQo+ID5XZSBjb25m
+aWd1cmVkIERNQSBibG9jayBzaXplIGlzIDQwOTZieXRlcywgaG93ZXZlciwgdGhlcmUgYXJlIG1v
+cmUgDQo+ID50aGFuIDQxMDAgYnl0ZXMgaW5wdXQsIERNQSBqdXN0IGhhbmRsZWQgNDA5NmJ5dGVz
+IGFuZCBsZWZ0IGJ5dGVzIGluIEZJRk8gY2Fubm90IHRyaWdnZXIgbmV4dCBETUEgVHJhbnNmZXIg
+ZG9uZSBpbnRlcnJ1cHQobGVmdCBieXRlcyBudW1iZXIgPCBETUEgYmxvY2sgc2l6ZSApLCBzbyB0
+aGVzZSBkYXRhIHNob3VsZCBiZSBwcm9jZXNzZWQgYnkgVUFSVCBJUlEuDQoNCj5UaGF0IGlzIGEg
+YnJva2VuIGhhcmR3YXJlIGRlc2lnbiBhbmQgd2lsbCBub3Qgd29yayB3aXRoIGFueSBvcGVyYXRp
+bmcgc3lzdGVtLg0KDQpEbyB5b3UgbWVhbiB0aGUgZGF0YSBzaXplIG9mIFVBUlQgaW5wdXQgbXVz
+dCBiZSBzbWFsbGVyIHRoYW4gRE1BIGNvbmZpZ3VyZWQgUlggYmxvY2sgc2l6ZT8gSWYgbm90LCB0
+aGVyZSBpcyByaXNrIHRvIGNhdXNlIHBhbmljIHdpdGggY3VycmVudCBkcml2ZXIuDQpXZSBjYW5u
+b3QgbGltaXQgdGhlIGxlbmd0aCBvZiBkYXRhIHNlbnQgYnkgYW4gZXh0ZXJuYWwgZGV2aWNlIGF0
+IGEgdGltZS4gTm8gbWF0dGVyIGhvdyBtdWNoIGRhdGEgaW5wdXQgZXh0ZXJuYWxseSwgd2Ugc2hv
+dWxkIGVuc3VyZSBzeXN0ZW0gbm90IGNyYXNoLCB0aGlzIHBhdGNoIGFjaGlldmVzIHRoaXMgZ29h
+bC4NCg0KQlJzDQpXZWlqdW4NCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogR3Jl
+ZyBLSCBbbWFpbHRvOmdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnXSANCuWPkemAgeaXtumXtDog
+MjAyMeW5tDEy5pyIMjDml6UgMTg6NDENCuaUtuS7tuS6ujogd2lnaW4gemVuZyA8d2lnaW4uemVu
+Z0BkamkuY29tPg0K5oqE6YCBOiBqaXJpc2xhYnlAa2VybmVsLm9yZzsgbGludXgtc2VyaWFsQHZn
+ZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgRmlyc3QgTGlnaHQg
+PHhpYW9ndWFuZy5jaGVuQGRqaS5jb20+DQrkuLvpopg6IFJlOiDnrZTlpI06IOetlOWkjTog562U
+5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXSBzZXJpYWw6IDgyNTA6IGFkZCBsb2NrIGZvciBk
+bWEgcngNCg0K44CQRVhURVJOQUwgRU1BSUzjgJEgRE8gTk9UIENMSUNLIGFueSBsaW5rcyBvciBh
+dHRhY2htZW50cyB1bmxlc3MgeW91IGNhbiBtYWtlIHN1cmUgYm90aCB0aGUgc2VuZGVyIGFuZCB0
+aGUgY29udGVudCBhcmUgdHJ1c3R3b3J0aHkuDQoNCg0K44CQ5aSW6YOo6YKu5Lu25o+Q6YaS44CR
+5Lul5LiL6YKu5Lu25p2l5rqQ5LqO5YWs5Y+45aSW6YOo77yM6K+35Yu/54K55Ye76ZO+5o6l5oiW
+6ZmE5Lu277yM6Zmk6Z2e5oKo56Gu6K6k6YKu5Lu25Y+R5Lu25Lq65ZKM5YaF5a655Y+v5L+h44CC
+DQoNCg0KDQpPbiBNb24sIERlYyAyMCwgMjAyMSBhdCAxMDoyNTo1MUFNICswMDAwLCB3aWdpbiB6
+ZW5nIHdyb3RlOg0KPiBPbiBNb24sIERlYyAyMCwgMjAyMSBhdCAwOTo0NDowNEFNICswMDAwLCB3
+aWdpbiB6ZW5nIHdyb3RlOg0KPiA+ID4gPlRoYXQgbWFrZXMgbm8gc2Vuc2UsIGFzIHdoYXQgb3Jk
+ZXJzIHRoZSBkYXRhIGNvbWluZyBpbj8gIFRoZSAyIGJ5dGVzIGNvdWxkIGJlIGFkZGVkIHRvIHRo
+ZSB0dHkgYnVmZmVyIGJlZm9yZSB0aGUgNTEyIGJ5dGVzLCBvciB0aGUgb3RoZXIgd2F5IGFyb3Vu
+ZC4NCj4gPg0KPiA+ID4gPldoYXQgaGFyZHdhcmUgYXJlIHlvdSB1c2luZyB0aGF0IGlzIG1peGlu
+ZyBkbWEgYW5kIGlycSBkYXRhIGxpa2UgdGhpcz8NCj4gPiA+ID5UaGF0IGZlZWxzIHZlcnkgd3Jv
+bmcuDQo+ID4NCj4gPiA+SXQgaXMgbm90IG5vcm1hbCBjYXNlLCBub3JtYWxseSwgdGhlIGlucHV0
+IHNpemUgc2hvdWxkIHNtYWxsZXIgdGhhbiBETUEgYmxvY2sgc2l6ZSBhbmQgRE1BIGNvbXBsZXRl
+IHRoZSB3aG9sZSBjb3B5Lg0KPiA+ID5Ib3dldmVyLCB0aGVyZSBhcmUgc29tZSBhYm5vcm1hbCBz
+aXR1YXRpb25zLiBUaGUgZXh0ZXJuYWwgaW5wdXQgaXMgdW5leHBlY3RlZGx5IGxhcmdlciB0aGFu
+IHRoZSBkYXRhIGxlbmd0aCBvZiB0aGUgRE1BIGNvbmZpZ3VyYXRpb24uIFRoaXMgc2l0dWF0aW9u
+IGluIG15IGV4YW1wbGUgd2lsbCBhcHBlYXIsIGFuZCBpdCBtYXkgY2F1c2UgdGhlIGtlcm5lbCB0
+byBwYW5pYy4NCj4NCj4gPllvdSBkaWQgbm90IGFuc3dlciBteSBxdWVzdGlvbiBhYm91dCBoYXJk
+d2FyZSB0eXBlIDooDQo+DQo+ID5BbmQgYWdhaW4sIGhvdyBpcyB0aGlzIGhhcHBlbmluZz8gIElm
+IHlvdSB1c2UgRE1BLCBhbGwgZGF0YSBzaG91bGQgYmUgY29taW5nIHRocm91Z2ggRE1BIGFuZCBu
+b3QgdGhlIGlycS4gIE90aGVyd2lzZSBjcmF6eSBzdHVmZiBsaWtlIHRoaXMgd2lsbCBoYXBwZW4g
+aW4gYW55IHR5cGUgb2YgZHJpdmVyLCB5b3VyIGhhcmR3YXJlIGNhbiBub3QgbWl4IHRoaXMgdHlw
+ZSBvZiBzdHVmZiB1cC4NCj4NCj4gT24gb3VyIHBsYXRmb3JtLCBVQVJUIGNvbm5lY3RlZCB0byBh
+IE1DVSB3aGljaCB3aWxsIHNlbmQgZGF0YSBvZiB2YXJpYWJsZSBsZW5ndGggZnJvbSB0aW1lIHRv
+IHRpbWUuIFRoZXJlIGlzIG5vIGRlZmluaXRpb24gb2YgYSBtYXhpbXVtIHRyYW5zbWlzc2lvbiBs
+ZW5ndGguDQo+IFdlIGNvbmZpZ3VyZWQgRE1BIGJsb2NrIHNpemUgaXMgNDA5NmJ5dGVzLCBob3dl
+dmVyLCB0aGVyZSBhcmUgbW9yZSANCj4gdGhhbiA0MTAwIGJ5dGVzIGlucHV0LCBETUEganVzdCBo
+YW5kbGVkIDQwOTZieXRlcyBhbmQgbGVmdCBieXRlcyBpbiBGSUZPIGNhbm5vdCB0cmlnZ2VyIG5l
+eHQgRE1BIFRyYW5zZmVyIGRvbmUgaW50ZXJydXB0KGxlZnQgYnl0ZXMgbnVtYmVyIDwgRE1BIGJs
+b2NrIHNpemUgKSwgc28gdGhlc2UgZGF0YSBzaG91bGQgYmUgcHJvY2Vzc2VkIGJ5IFVBUlQgSVJR
+Lg0KDQpUaGF0IGlzIGEgYnJva2VuIGhhcmR3YXJlIGRlc2lnbiBhbmQgd2lsbCBub3Qgd29yayB3
+aXRoIGFueSBvcGVyYXRpbmcgc3lzdGVtLg0KDQo+IEluIG90aGVyIHdvcmQsIGlmIHRoZSBleHRl
+cm5hbCB1c2UgVUFSVCAidnVsbmVyYWJpbGl0eSIgdG8gYXR0YWNrIHRoZSBzeXN0ZW0sIHdlIG5l
+ZWQgdG8gZW5zdXJlIHRoYXQgdGhlIHN5c3RlbSBub3QgY3Jhc2ggYXQgbGVhc3QsIHJpZ2h0Pw0K
+DQpTbyB5b3UgYXJlIHNheWluZyB0aGF0IExpbnV4IG5vdyB0cmVhdCBhbGwgaGFyZHdhcmUgdGhh
+dCBoYXMgRE1BIGZ1bmN0aW9uYWxpdHkgYXMgYSBwb3RlbnRpYWwgdGhyZWF0PyAgVGhhdCBpcyBu
+b3QgYSBtb2RlbCB0aGF0IExpbnV4LCBvciBhbnkgb3RoZXIgb3BlcmF0aW5nIHN5c3RlbSwgaGFz
+IGV2ZXIgaGFkIHRvIHN1cHBvcnQgYmVmb3JlLCBwbGVhc2UgZG8gbm90IG1ha2UgdXAgbmV3IHJ1
+bGVzIGhlcmUgYW5kIGV4cGVjdCBMaW51eCB0byBhdXRvbWF0aWNhbGx5IHN1cHBvcnQgdGhlbSB3
+aXRob3V0IGEgbG90IG9mIHJlZGVzaWduIGFuZCB3b3JrLg0KDQpJZiB5b3Ugd2lzaCB0byBwcm90
+ZWN0IExpbnV4IGZyb20gdGhpcyB0eXBlIG9mIHVudHJ1c3RlZCBoYXJkd2FyZSwgcGxlYXNlIGRv
+IHRoZSB3b3JrIHRvIGRvIHNvLiAgVGhpcyBwYXRjaCBpcyBub3QgdGhhdCB3b3JrLg0KDQo+ID5I
+b3cgY2FuIGZsb3cgY29udHJvbCBoYW5kbGUgdGhpcyBhdCBhbGw/ICBGbG93IGNvbnRyb2wgaXMg
+YXQgdGhlIHNlcmlhbCBkYXRhIHN0cmVhbSBsZXZlbC4gIFRoaXMgaXMgY29uZnVzaW5nIHRoZSBQ
+Q0kgZGF0YSBzdHJlYW0gb3JkZXIuDQo+DQo+IEkganVzdCB0aGluayBtb3JlIGxvZ2ljIGlzIG5l
+ZWRlZCB0byBjb250cm9sIHRoZSBvcmRlciBvZiBkYXRhIHByb2Nlc3NpbmcgYnkgRE1BIGFuZCBV
+QVJUIElSUSB0byBrZWVwIHRoZSBpbnRlZ3JpdHkgb2Ygc2VyaWFsIGRhdGEuDQo+IEJ1dCB0aGUg
+c3BlY2lmaWMgZGVzaWduLCBJIGhhdmVuJ3QgY29uc2lkZXJlZCB5ZXQsIHRoZSBmaXJzdCBnb2Fs
+IGlzIHRoZSBrZWVwIHRoZSBzeXN0ZW0gYWxpdmUuDQoNCkFnYWluLCB0aGlzIGlzIGEgYnJva2Vu
+IGhhcmR3YXJlIGRlc2lnbiwgcGxlYXNlIGZpeCB0aGF0IGZpcnN0Lg0KDQp0aGFua3MsDQoNCmdy
+ZWcgay1oDQpUaGlzIGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0byBtYXkgY29udGFp
+biBwcml2YXRlLCBjb25maWRlbnRpYWwsIGFuZCBwcml2aWxlZ2VkIG1hdGVyaWFsIGZvciB0aGUg
+c29sZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudC4gQW55IHJldmlldywgY29weWluZywg
+b3IgZGlzdHJpYnV0aW9uIG9mIHRoaXMgZW1haWwgKG9yIGFueSBhdHRhY2htZW50cyB0aGVyZXRv
+KSBieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGlu
+dGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBpbW1lZGlhdGVseSBh
+bmQgcGVybWFuZW50bHkgZGVsZXRlIHRoZSBvcmlnaW5hbCBhbmQgYW55IGNvcGllcyBvZiB0aGlz
+IGVtYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgdGhlcmV0by4NCg0K5q2k55S15a2Q6YKu5Lu25Y+K
+6ZmE5Lu25omA5YyF5ZCr5YaF5a655YW35pyJ5py65a+G5oCn77yM5LiU5LuF6ZmQ5LqO5o6l5pS2
+5Lq65L2/55So44CC5pyq57uP5YWB6K6477yM56aB5q2i56ys5LiJ5Lq66ZiF6K+744CB5aSN5Yi2
+5oiW5Lyg5pKt6K+l55S15a2Q6YKu5Lu25Lit55qE5Lu75L2V5L+h5oGv44CC5aaC5p6c5oKo5LiN
+5bGe5LqO5Lul5LiK55S15a2Q6YKu5Lu255qE55uu5qCH5o6l5pS26ICF77yM6K+35oKo56uL5Y2z
+6YCa55+l5Y+R6YCB5Lq65bm25Yig6Zmk5Y6f55S15a2Q6YKu5Lu25Y+K5YW255u45YWz55qE6ZmE
+5Lu244CCDQo=
