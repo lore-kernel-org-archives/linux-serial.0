@@ -2,27 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0423AC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 31 Dec 2021 10:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CC6C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Dec 2021 10:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbhLaK1P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 31 Dec 2021 05:27:15 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:34146 "EHLO
+        id S229554AbhLaKfb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 31 Dec 2021 05:35:31 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:49568 "EHLO
         mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbhLaK1O (ORCPT
+        with ESMTP id S229528AbhLaKfa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 31 Dec 2021 05:27:14 -0500
+        Fri, 31 Dec 2021 05:35:30 -0500
 Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Fri, 31 Dec
- 2021 18:27:12 +0800
-Message-ID: <a296e666-368b-4cd5-427e-30fc66a15b49@amlogic.com>
-Date:   Fri, 31 Dec 2021 18:27:12 +0800
+ 2021 18:35:28 +0800
+Message-ID: <93da58f8-aca1-2fcf-e45c-e341e1be593b@amlogic.com>
+Date:   Fri, 31 Dec 2021 18:35:27 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH V3 1/6] tty: serial: meson: Drop the legacy compatible
- strings and clock code
+Subject: Re: [PATCH V3 3/6] dt-bindings: serial: meson: Support S4 SoC uart.
+ Also Drop compatible = amlogic,meson-gx-uart.
 Content-Language: en-US
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 CC:     <linux-serial@vger.kernel.org>,
@@ -36,10 +36,10 @@ CC:     <linux-serial@vger.kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>
 References: <20211230102110.3861-1-yu.tu@amlogic.com>
- <20211230102110.3861-2-yu.tu@amlogic.com>
- <CAFBinCCwjS36ss_4sU+o9m8gEprFsVZbqcxgpQxczTNohZqFdA@mail.gmail.com>
+ <20211230102110.3861-4-yu.tu@amlogic.com>
+ <CAFBinCB0RTfOLbV3ZC+9dJEiw2_y41V+JvNP9GOPaQcCLB7UdA@mail.gmail.com>
 From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <CAFBinCCwjS36ss_4sU+o9m8gEprFsVZbqcxgpQxczTNohZqFdA@mail.gmail.com>
+In-Reply-To: <CAFBinCB0RTfOLbV3ZC+9dJEiw2_y41V+JvNP9GOPaQcCLB7UdA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.18.29.173]
@@ -49,41 +49,48 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Martin,
-	Thank you very much for your reply.
 
-On 2021/12/31 6:22, Martin Blumenstingl wrote:
+
+On 2021/12/31 6:34, Martin Blumenstingl wrote:
 > [ EXTERNAL EMAIL ]
 > 
+> Hello,
+> 
+> as Greg already mentioned the $subject line is very long.
+> 
 > On Thu, Dec 30, 2021 at 11:21 AM Yu Tu <yu.tu@amlogic.com> wrote:
->>
->> All mainline .dts files have been using the stable UART since Linux
->> 4.16. Drop the legacy compatible strings and related clock code.
->>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
-> I have just realized that this cannot be dropped until my series "ARM:
-> dts: meson: fix UART device-tree schema validation" [0] is merged
+>> Deprecated, don't use anymore because compatible = amlogic,meson-gx-uart
+>> don't differentiate between GXBB and GXL which have different
+>> revisions of the UART IP. So it's split into GXBB and GXL.
+> actually it's split into GXBB, GXL and G12A
 > 
 > [...]
->> -/* Legacy bindings, should be removed when no more used */
->> -OF_EARLYCON_DECLARE(meson, "amlogic,meson-uart",
->> -                   meson_serial_early_console_setup);
-> This part is still needed as long as above series is not merged yet.
-> If we remove this then earlycon will stop working on the 32-bit SoCs
-> unless [0] is merged.
+>> -              - amlogic,meson-gx-uart
+>> +              - amlogic,meson-gxbb-uart
+>> +              - amlogic,meson-gxl-uart
+>> +              - amlogic,meson-g12a-uart
+>> +              - amlogic,meson-s4-uart
+> In addition to Greg's comment I suggest splitting this into two patches:
+> - one where the "amlogic,meson-gx-uart" compatible is marked as
+> deprecated (Documentation/devicetree/bindings/power/supply/bq27xxx.yaml
+> has an example for deprecated entries) and GXBB, GXL and G12A
+> compatible strings are added instead
+> - another one where the new S4 compatible string is added
 > 
-> All other code below - except the of_device_id entry - can still be
-> removed since meson8.dtsi and meson8b.dtsi are using the non-legacy
-> clocks already.
+> The idea here is to have "one logical change per patch".
+> Deprecating and replacing "amlogic,meson-gx-uart" is one logical change.
+> Adding a new compatible string is another logical change.
+> I am hoping that this will also make it easier to find a shorter
+> $subject line (which according to the patch submission guide [0]
+> should be 70-75 characters: "the summary must be no more than 70-75
+> characters")
 > 
-> Sorry for only noticing this now.
-> 
-I will add it back in the next patch and delete it after your submission 
-is merged.
+I will split the two patches in the next version.One was deprecating and 
+replacing "AmLogic, Meson-GX-Uart" and the other added S4 compatible.
 > 
 > Best regards,
 > Martin
 > 
 > 
-> [0] https://patchwork.kernel.org/project/linux-amlogic/cover/20211227180026.4068352-1-martin.blumenstingl@googlemail.com/
+> [0] https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#the-canonical-patch-format
 > 
