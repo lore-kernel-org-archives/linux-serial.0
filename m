@@ -2,182 +2,244 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF400C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Dec 2021 23:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C97C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 31 Dec 2021 03:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242334AbhL3XNt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Dec 2021 18:13:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhL3XNs (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Dec 2021 18:13:48 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8251FC061574;
-        Thu, 30 Dec 2021 15:13:48 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id m21so104420308edc.0;
-        Thu, 30 Dec 2021 15:13:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZjS3WKP5qJV4EDilsIZw+xVU+rDXRT31OPDC34vv2uI=;
-        b=Y07RmJGr6NZBTjFC//bhbEjk+UhhWpNPddiGau7tN3tcFkHbtGr+o1fPe4V6nB8thD
-         +E2ahByORD/7KewpDKmG8Bqgz2i4v0Jgid4wQ9MWFk/uKZ8/dj+yH9zpAff381qey49V
-         Xt1inaa+QOLdykM7etsTPLWUX8OUS4JUjZihy+kNo35MS/mR8wDNFQKrbrXXC09q5tin
-         65mJjwVw+EUPQRrqckyRVMj8u/qQxpgAcsMvXqwv0uyB2GG69CNrPSfLJllt87faddGR
-         QGiIx4I9c8OAxOUy7HGWKoLHxFPeKiiMVIQV5bT7dLV8a3yURWnKfmFt+jIcxZEHBnSn
-         zppg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZjS3WKP5qJV4EDilsIZw+xVU+rDXRT31OPDC34vv2uI=;
-        b=hayo3pvBXQ0Sb0FgJRKyTF4IcEazrktw6DCt34UYsvHKlgWptlyZUL1Ikx5mIR5ErI
-         D95ovvZycr9duyaCY1U+HUyDWRvN8Yn3utpqn9Nd1xNBiYhkmY1jiVrdERz0e71llwZC
-         fOQMi/0cSsV5uAlNLZyWbI89Oel5NResh7XUMODxz+bZ4adAmoLcRB89tRmIqpHFln7c
-         AKJ3YBhNqsK6TLh1X66pNrtX3C5DtXIApQCTZxVDn8Pt8IQF1QMdKrbeY0/AZPZsHriA
-         YBD3OesBKo4/uOMk5znM9ksrXTarnZenRwIeIs7LxEH+k+Ed0Ars5Ht1XYIwL3ojqapK
-         R8iQ==
-X-Gm-Message-State: AOAM53358DdkCR5UYG7yU9z5ZZFv0i1RdKKpEl5GChBxOLeLjkUzIH3z
-        pON43KgZFUKSwqsJFmpJ0v3IzpO+fzN9hoVInKFcyEExtjk=
-X-Google-Smtp-Source: ABdhPJxBvPIVBgX5cxzud69fvSHeIG189+MSK3hCBdSdcNGtK0h/eCppV761qa/XMsD0MuRHo7R/XrhfEvxvez1M1UI=
-X-Received: by 2002:a05:6402:1b9c:: with SMTP id cc28mr31790799edb.219.1640906026806;
- Thu, 30 Dec 2021 15:13:46 -0800 (PST)
+        id S229590AbhLaDfr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Dec 2021 22:35:47 -0500
+Received: from mga03.intel.com ([134.134.136.65]:32518 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242613AbhLaDfp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Dec 2021 22:35:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640921745; x=1672457745;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rM6mWTYAUtLn43XoKyTPk9EXs3cgxdas7ouGlQ8JI/Q=;
+  b=lK6k0By/AQUzdMke7b3PKoh3IM1qSwCx6S/fcze0Thj/X9o7e+5R/pEd
+   l7DXorq4eTGRCLVGOR9yA5nyEWEIHqnpKUBeic6lkNxfz7y4xBO4BT4pk
+   G47HNmYouheVlF1xIptkPsa91hV8kdozhYKYKjasf4m6/j305mvWoVcAo
+   gw/NVU3kqZPOfoBOYFz8tK4DyrFyTncviRgO0WNwx8JJDPkkWIcGi1gGc
+   jkYAUAUAyhVAu2bN0bd2N6ZX2fzf2cHWp8qsAB2I9Rizfq/WFmYtriRQn
+   kMOdd3ItR9kBGN+aG8ZK1roI8jYEL23RFniZFAZ/bKVPcWbE6mRjZffWj
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10213"; a="241722425"
+X-IronPort-AV: E=Sophos;i="5.88,250,1635231600"; 
+   d="scan'208";a="241722425"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2021 19:35:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,250,1635231600"; 
+   d="scan'208";a="487054443"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 30 Dec 2021 19:35:41 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n38hg-000AuC-Fk; Fri, 31 Dec 2021 03:35:40 +0000
+Date:   Fri, 31 Dec 2021 11:35:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 5acb78dc72b48bc44226a86368fb442800981a0c
+Message-ID: <61ce7a69.8u3qS6AVISgo8wU5%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20211230102110.3861-1-yu.tu@amlogic.com> <20211230102110.3861-5-yu.tu@amlogic.com>
-In-Reply-To: <20211230102110.3861-5-yu.tu@amlogic.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Fri, 31 Dec 2021 00:13:36 +0100
-Message-ID: <CAFBinCCL-QaeSRCLzfyNXcRQZ7YC1D85rP2y4OGkAjCmQEqGgQ@mail.gmail.com>
-Subject: Re: [PATCH V3 4/6] tty: serial: meson: The UART baud rate calculation
- is described using the common clock code. Also added S4 chip uart Compatible.
-To:     Yu Tu <yu.tu@amlogic.com>
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vyacheslav <adeep@lexina.in>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 11:21 AM Yu Tu <yu.tu@amlogic.com> wrote:
-[...]
-> @@ -270,14 +284,11 @@ static void meson_uart_reset(struct uart_port *port)
->  static int meson_uart_startup(struct uart_port *port)
->  {
->         u32 val;
-> -       int ret = 0;
-> +       int ret;
->
-> -       val = readl(port->membase + AML_UART_CONTROL);
-> -       val |= AML_UART_CLEAR_ERR;
-> -       writel(val, port->membase + AML_UART_CONTROL);
-> -       val &= ~AML_UART_CLEAR_ERR;
-> -       writel(val, port->membase + AML_UART_CONTROL);
-> +       meson_uart_reset(port);
-I suggest splitting this into a separate patch. In general I think
-it's a good idea to re-use meson_uart_reset here if possible.
-However, if during testing it turns out that this doesn't work then we
-can revert this single patch which updates meson_uart_startup() only -
-instead of reverting the whole transition to the common clock
-framework.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 5acb78dc72b48bc44226a86368fb442800981a0c  tty: goldfish: Use platform_get_irq() to get the interrupt
 
-[...]
->  static int meson_uart_request_port(struct uart_port *port)
->  {
-> +       struct meson_uart_data *private_data = port->private_data;
-> +       int ret;
-> +
-> +       ret = clk_prepare_enable(private_data->pclk);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = clk_prepare_enable(private_data->baud_clk);
-> +       if (ret) {
-> +               clk_disable_unprepare(private_data->pclk);
-> +               return ret;
-> +       }
-This code is from my original suggestion - and I had a doubt there
-which I forgot to add as a comment originally:
-Can you confirm that accessing the UART controller registers works
-even when "pclk" is turned off?
-I am asking this because the common clock framework can access the
-clocks at any time.
-And I have seen SoCs which would hang when trying to access a module's
-registers while the module's pclk is turned off.
+elapsed time: 725m
 
-[...]
->         port->fifosize = 64;
-commit 27d44e05d7b85d ("tty: serial: meson: retrieve port FIFO size
-from DT") [0] from May 2021 has changed this line to:
-  port->fifosize = fifosize;
-So your patch currently does not apply to linux-next (or even Linus'
-mainline tree).
+configs tested: 173
+configs skipped: 3
 
-[...]
->  static const struct of_device_id meson_uart_dt_match[] = {
-> -       { .compatible = "amlogic,meson6-uart" },
-> -       { .compatible = "amlogic,meson8-uart" },
-> -       { .compatible = "amlogic,meson8b-uart" },
-> -       { .compatible = "amlogic,meson-gx-uart" },
-> +       {
-> +               .compatible = "amlogic,meson6-uart",
-> +               .data = (void *)false,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson8-uart",
-> +               .data = (void *)false,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson8b-uart",
-> +               .data = (void *)false,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson-gxbb-uart",
-> +               .data = (void *)false,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson-gxl-uart",
-> +               .data = (void *)true,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson-g12a-uart",
-> +               .data = (void *)true,
-> +       },
-> +       {
-> +               .compatible = "amlogic,meson-s4-uart",
-> +               .data = (void *)true,
-> +       },
-> +       /*
-> +        * deprecated, don't use anymore because it doesn't differentiate
-> +        * between GXBB and GXL which have different revisions of the UART IP.
-> +        */
-> +       {
-> +               .compatible = "amlogic,meson-gx-uart",
-> +               .data = (void *)false,
-> +       },
-For this change I think it's also best to split it into separate
-changes, similar to the dt-bindings:
-1) deprecate and replace "amlogic,meson-gx-uart"
-2) another one to add the S4 compatible string
-3) and a third one with the big common clock framework change (adding
-the .data attributes)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-This is about the "Separate each logical change into a separate patch"
-rule from the Linux kernel patch submission guide [1]
-Also I hope that it will make it (at least a bit) easier for others to
-also review this patch.
+gcc tested configs:
+arm                                 defconfig
+arm64                               defconfig
+arm                              allmodconfig
+arm64                            allyesconfig
+arm                              allyesconfig
+i386                 randconfig-c001-20211229
+i386                 randconfig-c001-20211230
+sh                             sh03_defconfig
+sh                   secureedge5410_defconfig
+powerpc                 canyonlands_defconfig
+sh                            hp6xx_defconfig
+arc                        nsimosci_defconfig
+arm                            hisi_defconfig
+riscv                             allnoconfig
+mips                       lemote2f_defconfig
+powerpc                     ppa8548_defconfig
+powerpc                      makalu_defconfig
+sh                           se7780_defconfig
+sh                          landisk_defconfig
+sh                   sh7724_generic_defconfig
+riscv                            alldefconfig
+arm                         vf610m4_defconfig
+ia64                            zx1_defconfig
+arm                         at91_dt_defconfig
+powerpc                 mpc832x_rdb_defconfig
+sh                          sdk7780_defconfig
+powerpc                    mvme5100_defconfig
+ia64                        generic_defconfig
+mips                          rm200_defconfig
+powerpc                      pmac32_defconfig
+powerpc                     kilauea_defconfig
+sh                          lboxre2_defconfig
+mips                     loongson2k_defconfig
+openrisc                         alldefconfig
+mips                        bcm63xx_defconfig
+sh                                  defconfig
+csky                                defconfig
+powerpc                      walnut_defconfig
+powerpc                       ppc64_defconfig
+mips                         mpc30x_defconfig
+arm                        cerfcube_defconfig
+mips                          ath25_defconfig
+sh                          rsk7203_defconfig
+arm                      footbridge_defconfig
+riscv             nommu_k210_sdcard_defconfig
+mips                            e55_defconfig
+powerpc                     ksi8560_defconfig
+h8300                       h8s-sim_defconfig
+powerpc                          g5_defconfig
+arm                           spitz_defconfig
+powerpc                mpc7448_hpc2_defconfig
+arm                          pxa168_defconfig
+powerpc                 mpc8272_ads_defconfig
+powerpc                   lite5200b_defconfig
+h8300                               defconfig
+parisc                           allyesconfig
+arm                         nhk8815_defconfig
+mips                           ip28_defconfig
+xtensa                         virt_defconfig
+arm                         bcm2835_defconfig
+powerpc                     tqm8540_defconfig
+arm                         orion5x_defconfig
+powerpc                    adder875_defconfig
+mips                         bigsur_defconfig
+mips                      malta_kvm_defconfig
+powerpc                     asp8347_defconfig
+ia64                             allyesconfig
+um                               alldefconfig
+mips                            gpr_defconfig
+m68k                           sun3_defconfig
+powerpc                 mpc836x_mds_defconfig
+powerpc                    ge_imp3a_defconfig
+mips                           mtx1_defconfig
+sh                ecovec24-romimage_defconfig
+arm                        mini2440_defconfig
+xtensa                           alldefconfig
+sh                            migor_defconfig
+sparc64                          alldefconfig
+xtensa                  cadence_csp_defconfig
+arm                        spear3xx_defconfig
+arc                              allyesconfig
+arm                        spear6xx_defconfig
+arc                         haps_hs_defconfig
+powerpc                     ep8248e_defconfig
+sh                        sh7785lcr_defconfig
+sh                           se7750_defconfig
+m68k                       m5475evb_defconfig
+arm                           sama5_defconfig
+sh                          sdk7786_defconfig
+parisc                generic-64bit_defconfig
+riscv                            allmodconfig
+powerpc                     powernv_defconfig
+mips                        qi_lb60_defconfig
+arm                        mvebu_v7_defconfig
+arm                  randconfig-c002-20211230
+ia64                             allmodconfig
+ia64                                defconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+s390                                defconfig
+sparc                               defconfig
+i386                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                              debian-10.3
+i386                   debian-10.3-kselftests
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a013-20211230
+x86_64               randconfig-a015-20211230
+x86_64               randconfig-a012-20211230
+x86_64               randconfig-a011-20211230
+x86_64               randconfig-a016-20211230
+x86_64               randconfig-a014-20211230
+i386                 randconfig-a016-20211230
+i386                 randconfig-a011-20211230
+i386                 randconfig-a012-20211230
+i386                 randconfig-a013-20211230
+i386                 randconfig-a014-20211230
+i386                 randconfig-a015-20211230
+arc                  randconfig-r043-20211230
+riscv                randconfig-r042-20211230
+s390                 randconfig-r044-20211230
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
+clang tested configs:
+x86_64               randconfig-a002-20211230
+x86_64               randconfig-a001-20211230
+x86_64               randconfig-a003-20211230
+x86_64               randconfig-a006-20211230
+x86_64               randconfig-a004-20211230
+x86_64               randconfig-a005-20211230
+i386                 randconfig-a001-20211230
+i386                 randconfig-a005-20211230
+i386                 randconfig-a004-20211230
+i386                 randconfig-a002-20211230
+i386                 randconfig-a006-20211230
+i386                 randconfig-a003-20211230
+x86_64               randconfig-a015-20211228
+x86_64               randconfig-a014-20211228
+x86_64               randconfig-a013-20211228
+x86_64               randconfig-a012-20211228
+x86_64               randconfig-a011-20211228
+x86_64               randconfig-a016-20211228
+hexagon              randconfig-r041-20211230
+hexagon              randconfig-r045-20211230
 
-Best regards,
-Martin
-
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/tty/serial/meson_uart.c?id=27d44e05d7b85d9d4cfe0a3c0663ea49752ece93
-[1] https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html#separate-your-changes
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
