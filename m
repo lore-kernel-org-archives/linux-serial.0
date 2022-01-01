@@ -2,227 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48506C433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  1 Jan 2022 01:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC746C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  1 Jan 2022 13:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231159AbiAABkX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 31 Dec 2021 20:40:23 -0500
-Received: from mga14.intel.com ([192.55.52.115]:61798 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229473AbiAABkX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 31 Dec 2021 20:40:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641001223; x=1672537223;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eYG4wccfiHzgB/c4pPLOtXpvlWszUyTKwI+OBvNrMxM=;
-  b=YwuOMHso3qvGPLYPRWZYETX4iwmJjRzuBATWOiQO6Y93ZeYK9fgQAxhA
-   ZTA9sm9GANBS6DAbYdBxSS3e2RcwUBT7pxbB4RAzElecMDq83xfi7LvkC
-   Ij8MlYgDGOL7PPjb3RdKhfP4QXzU4R7zAdY5JUa8cKumdWT6h0UAWgF8K
-   l8/ivkfJiM5+rgHLIc6GavkWZaTNkBCAyZJEoQ5/0NV3Hx6eLYmXf3+Lj
-   tnAmjhdOdwW2f2nHz65kAGsDe9unStZMCoxNwCA2N/ZFksJjqIYzVXIPM
-   EiGhiDPn9LpLeAW5XBpRK2Ochu9kixKeW89BJ13/8t/F8gPyKMX67WWa7
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10214"; a="242068161"
-X-IronPort-AV: E=Sophos;i="5.88,252,1635231600"; 
-   d="scan'208";a="242068161"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Dec 2021 17:40:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,252,1635231600"; 
-   d="scan'208";a="524873772"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 31 Dec 2021 17:40:21 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n3TNc-000Bs9-QL; Sat, 01 Jan 2022 01:40:20 +0000
-Date:   Sat, 01 Jan 2022 09:39:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 99a507a8ea28542ec196e2dd80096708e2482735
-Message-ID: <61cfb0df.mGp03/G/3ugL37St%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S230361AbiAANaY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 1 Jan 2022 08:30:24 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:46969 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229762AbiAANaX (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 1 Jan 2022 08:30:23 -0500
+Received: from [10.18.89.180] (10.18.89.180) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Sat, 1 Jan
+ 2022 21:30:13 +0800
+Message-ID: <7278bace-a2b9-0cfc-55b3-c19311e3352e@amlogic.com>
+Date:   Sat, 1 Jan 2022 21:30:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V3 4/6] tty: serial: meson: The UART baud rate calculation
+ is described using the common clock code. Also added S4 chip uart Compatible.
+Content-Language: en-US
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vyacheslav <adeep@lexina.in>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+References: <20211230102110.3861-1-yu.tu@amlogic.com>
+ <20211230102110.3861-5-yu.tu@amlogic.com>
+ <CAFBinCCL-QaeSRCLzfyNXcRQZ7YC1D85rP2y4OGkAjCmQEqGgQ@mail.gmail.com>
+ <3e1e40aa-7865-0f7a-5772-e2ad96c8141d@amlogic.com>
+ <CAFBinCB2nF0TwRE1uJ4UTB_avcqRBfOHR1CDSe29dB1o-YjEHQ@mail.gmail.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <CAFBinCB2nF0TwRE1uJ4UTB_avcqRBfOHR1CDSe29dB1o-YjEHQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.89.180]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 99a507a8ea28542ec196e2dd80096708e2482735  Revert "serdev: BREAK/FRAME/PARITY/OVERRUN notification prototype V2"
+Hi Martin,
+     Thank you very much for your reply.
 
-elapsed time: 723m
+On 2021/12/31 23:32, Martin Blumenstingl wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> On Fri, Dec 31, 2021 at 12:24 PM Yu Tu <yu.tu@amlogic.com> wrote:
+> [...]
+>>>>    static int meson_uart_request_port(struct uart_port *port)
+>>>>    {
+>>>> +       struct meson_uart_data *private_data = port->private_data;
+>>>> +       int ret;
+>>>> +
+>>>> +       ret = clk_prepare_enable(private_data->pclk);
+>>>> +       if (ret)
+>>>> +               return ret;
+>>>> +
+>>>> +       ret = clk_prepare_enable(private_data->baud_clk);
+>>>> +       if (ret) {
+>>>> +               clk_disable_unprepare(private_data->pclk);
+>>>> +               return ret;
+>>>> +       }
+>>> This code is from my original suggestion - and I had a doubt there
+>>> which I forgot to add as a comment originally:
+>>> Can you confirm that accessing the UART controller registers works
+>>> even when "pclk" is turned off?
+>>> I am asking this because the common clock framework can access the
+>>> clocks at any time.
+>>> And I have seen SoCs which would hang when trying to access a module's
+>>> registers while the module's pclk is turned off.
+>> On all meson platforms, the default pclk for all UART is turned on
+>> during the u-boot phase. When registering uart pclk in the kernel phase,
+>> the CLK_IGNORE_UNUSED flag is added. So the real shutdown is when the
+>> standby goes down, the parent clk shuts down.
+> Interesting, thanks for sharing that u-boot turns these clocks on.
+> Let's say someone wanted to make u-boot save power and turn off all
+> UART clocks except the one for uart_AO (where we typically connect the
+> serial console).
+> In that case the pclk of uart_C (just to choose an example here) is
+> turned off. Would there be a problem then accessing the registers of
+> uart_C before clk_prepare_enable is called?
+The way you describe it, it does hang. This would not be recommended on 
+actual projects.
 
-configs tested: 152
-configs skipped: 3
+At present, AmLogic chips are older than S4 Soc, and we have no way to 
+deal with this problem. We have to tell customers not to use it in this 
+way。Customers rarely use it in real projects.On the S4 SOC we will use 
+a clock like the UART pclk to control the shutdown using two registers, 
+one safe (need to operate in EL3) and one normal (EL1). It will only be 
+closed if both registers are closed. This mainly prevents misoperation.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                 randconfig-c001-20211231
-arm                            lart_defconfig
-parisc                generic-64bit_defconfig
-arm                            mps2_defconfig
-arm                          gemini_defconfig
-i386                                defconfig
-mips                      maltasmvp_defconfig
-m68k                         apollo_defconfig
-nios2                            allyesconfig
-powerpc                      ppc6xx_defconfig
-xtensa                  audio_kc705_defconfig
-mips                  maltasmvp_eva_defconfig
-openrisc                            defconfig
-alpha                               defconfig
-sh                           se7751_defconfig
-m68k                          sun3x_defconfig
-xtensa                          iss_defconfig
-sh                           sh2007_defconfig
-arm                           viper_defconfig
-arm                         axm55xx_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                      makalu_defconfig
-um                             i386_defconfig
-m68k                       m5475evb_defconfig
-xtensa                           alldefconfig
-microblaze                          defconfig
-arm                          pxa910_defconfig
-sh                           se7705_defconfig
-sh                           se7750_defconfig
-nios2                            alldefconfig
-alpha                            alldefconfig
-mips                         db1xxx_defconfig
-parisc                generic-32bit_defconfig
-h8300                               defconfig
-sh                             sh03_defconfig
-powerpc                       eiger_defconfig
-powerpc                   currituck_defconfig
-m68k                          multi_defconfig
-sh                         ap325rxa_defconfig
-sh                         microdev_defconfig
-sh                        apsh4ad0a_defconfig
-sh                           se7343_defconfig
-openrisc                 simple_smp_defconfig
-alpha                            allyesconfig
-arm                  randconfig-c002-20220101
-arm                  randconfig-c002-20211231
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-csky                                defconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a002-20211231
-x86_64               randconfig-a001-20211231
-x86_64               randconfig-a003-20211231
-x86_64               randconfig-a006-20211231
-x86_64               randconfig-a004-20211231
-x86_64               randconfig-a005-20211231
-x86_64               randconfig-a005-20220101
-x86_64               randconfig-a001-20220101
-x86_64               randconfig-a004-20220101
-x86_64               randconfig-a006-20220101
-x86_64               randconfig-a003-20220101
-x86_64               randconfig-a002-20220101
-i386                 randconfig-a003-20220101
-i386                 randconfig-a005-20220101
-i386                 randconfig-a004-20220101
-i386                 randconfig-a006-20220101
-i386                 randconfig-a001-20220101
-i386                 randconfig-a002-20220101
-i386                 randconfig-a001-20211231
-i386                 randconfig-a005-20211231
-i386                 randconfig-a004-20211231
-i386                 randconfig-a002-20211231
-i386                 randconfig-a006-20211231
-i386                 randconfig-a003-20211231
-arc                  randconfig-r043-20220101
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-riscv                randconfig-c006-20211231
-arm                  randconfig-c002-20211231
-mips                 randconfig-c004-20211231
-powerpc              randconfig-c003-20211231
-x86_64               randconfig-c007-20211231
-i386                 randconfig-c001-20211231
-powerpc                   lite5200b_defconfig
-powerpc                          allmodconfig
-arm                         orion5x_defconfig
-x86_64                           allyesconfig
-powerpc                      acadia_defconfig
-arm                            dove_defconfig
-arm                         socfpga_defconfig
-powerpc                 xes_mpc85xx_defconfig
-arm                  colibri_pxa270_defconfig
-x86_64               randconfig-a013-20211231
-x86_64               randconfig-a015-20211231
-x86_64               randconfig-a012-20211231
-x86_64               randconfig-a011-20211231
-x86_64               randconfig-a016-20211231
-x86_64               randconfig-a014-20211231
-x86_64               randconfig-a015-20220101
-x86_64               randconfig-a012-20220101
-x86_64               randconfig-a014-20220101
-x86_64               randconfig-a013-20220101
-x86_64               randconfig-a011-20220101
-x86_64               randconfig-a016-20220101
-i386                 randconfig-a011-20211231
-i386                 randconfig-a013-20211231
-i386                 randconfig-a012-20211231
-i386                 randconfig-a014-20211231
-i386                 randconfig-a015-20211231
-i386                 randconfig-a016-20211231
-hexagon              randconfig-r041-20211231
-hexagon              randconfig-r045-20211231
-riscv                randconfig-r042-20211231
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+With your experience, I'd like to know how you deal with this kind of 
+problem.
+> 
+> [...]
+>>>>           port->fifosize = 64;
+>>> commit 27d44e05d7b85d ("tty: serial: meson: retrieve port FIFO size
+>>> from DT") [0] from May 2021 has changed this line to:
+>>>     port->fifosize = fifosize;
+>>> So your patch currently does not apply to linux-next (or even Linus'
+>>> mainline tree).
+>>>
+>> So do I need to wait for [0] patch merged before I can continue to make
+>> changes ?
+> These changes are already merged.
+> 
+>> What can I do before?
+> You should base your changes on top of the tty.git/tty-next branch [1]
+> where Greg (the maintainer of this tree) will pick up the patches once
+> they are good (got enough Acked-by/Reviewed-by, etc.).
+> I suspect that you based your changes on an older or stable kernel
+> version (let's say 5.10). New functionality should always get into the
+> -next tree where various auto-build robots will compile-test the
+> changes and we even have Kernel CI where changes are tested on real
+> hardware (BayLibre even maintains Amlogic boards in their Kernel CI
+> labs). Let's say Amlogic updates to Linux 5.17 next year then the
+> patches are already included in that kernel version - instead of being
+> only available in Linux 5.10.
+> 
+I'm sorry, I did branch confirm there was a mistake, I have corrected.
+> 
+> Best regards,
+> Martin
+> 
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/log/?h=tty-next
+> 
