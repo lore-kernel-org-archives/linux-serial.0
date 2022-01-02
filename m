@@ -2,105 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF988C433F5
-	for <linux-serial@archiver.kernel.org>; Sun,  2 Jan 2022 18:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E454DC433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  2 Jan 2022 19:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiABS2D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 2 Jan 2022 13:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        id S229455AbiABThC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 2 Jan 2022 14:37:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiABS2D (ORCPT
+        with ESMTP id S229450AbiABThB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 2 Jan 2022 13:28:03 -0500
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A6CC061761;
-        Sun,  2 Jan 2022 10:28:03 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 8BFDB100DECB3;
-        Sun,  2 Jan 2022 19:28:01 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 697BF16E2A; Sun,  2 Jan 2022 19:28:01 +0100 (CET)
-Date:   Sun, 2 Jan 2022 19:28:01 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     jmades <jochen@mades.net>, gregkh@linuxfoundation.org,
-        Russell King <linux@armlinux.org.uk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>
-Subject: Re: [PATCH] Bugfix RTS line config in RS485 mode is overwritten in
- pl011_set_mctrl() function.
-Message-ID: <20220102182801.GA22268@wunner.de>
-References: <20211231171516.18407-1-jochen@mades.net>
- <20220102100710.GA29858@wunner.de>
- <0e0e91b8-72f8-aa31-50e2-80090dd5613a@gmx.de>
+        Sun, 2 Jan 2022 14:37:01 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451A9C061761;
+        Sun,  2 Jan 2022 11:37:01 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id w16so128568771edc.11;
+        Sun, 02 Jan 2022 11:37:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uzAERIEZYtJsAijaT2QvW435vVYwBNMjvEfhVhmIpoI=;
+        b=X7Tjc25U+hYXI+B2D5vMKce//4kBPegHGMfpeAX+uP9GFV3PoKrqHYVuFNG2GW2za6
+         9bbVpiOalULkX0stLnVxCVgHTuh/3VhBKz7vV3G1ons/CYAZ60t9IDV8hr8/cMb/AZZ1
+         Mv3GqGICQnAvGYel7hC3i0LbZbr5UXX9ek0wFd3pNbWlT0IZ0bzRula1AKIiyZFobwuY
+         xUxl8KOCMSwapwquwv0+K9wWJfqJ0qbRLgANTpGkpXppwS7HtO/f663A6NP34jn6GJnQ
+         /MrcCQBSQi2AvXyFM0M76oHSwtEBb1VSuEPtyRDzT73KgRV1wWDV2XDRsnY5XUQ/M8ep
+         /Vgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uzAERIEZYtJsAijaT2QvW435vVYwBNMjvEfhVhmIpoI=;
+        b=nyVdphMTJir3LYLPmhaTxW9x4mzOaRCgZJXZBZCqTZX8+c/yfhcIep8kNxhilrsUVu
+         G5p4thgBCFYoIpVZXmjeLq+hHNBrsOEChm8JrfBKz79AxyzSJg/Eur/tgjhzSkKhdBwh
+         CJStjhGhqrGoV8iW4ZGDm/0mjhwEfmscSzheNPvBhEpYnXlIXHFCjNKqExmkrzpw3tIZ
+         ZjThlo2s4ipZzZIMptwfDc3qnEPSC4oxUO6l37NfvT+0+sXadFBWquHiutijOzQ0ijBJ
+         uLBZ7Ph9qJe3328lJqCw30kvECWoqO4gllF2EtIMy+SL7Uy+7ajfUycpdV/TboFoKlXI
+         R5RQ==
+X-Gm-Message-State: AOAM530ISfF+vHBzMHqvn5pst974rsDMMoPLmvmOYKkzkLr12sTkvZzW
+        a1V/PPUn0k3eP9851bbHjGbR/ewqe3jH0mC7ppI=
+X-Google-Smtp-Source: ABdhPJyA5JDjOj3D7kdnhw3GydVhkJJ79iI3UrO51EvXQ4tl9sz/KzZ3LjetLzazLYQ9J2BpMXjF0rDNtrnThAkP+14=
+X-Received: by 2002:a05:6402:1b9c:: with SMTP id cc28mr41250867edb.219.1641152219124;
+ Sun, 02 Jan 2022 11:36:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e0e91b8-72f8-aa31-50e2-80090dd5613a@gmx.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211230102110.3861-1-yu.tu@amlogic.com> <20211230102110.3861-5-yu.tu@amlogic.com>
+ <CAFBinCCL-QaeSRCLzfyNXcRQZ7YC1D85rP2y4OGkAjCmQEqGgQ@mail.gmail.com>
+ <3e1e40aa-7865-0f7a-5772-e2ad96c8141d@amlogic.com> <CAFBinCB2nF0TwRE1uJ4UTB_avcqRBfOHR1CDSe29dB1o-YjEHQ@mail.gmail.com>
+ <7278bace-a2b9-0cfc-55b3-c19311e3352e@amlogic.com>
+In-Reply-To: <7278bace-a2b9-0cfc-55b3-c19311e3352e@amlogic.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 2 Jan 2022 20:36:48 +0100
+Message-ID: <CAFBinCCwE1DbP+Y49o3WxNdeE11ZK=HcGbXa0Sq52tch+eNhrQ@mail.gmail.com>
+Subject: Re: [PATCH V3 4/6] tty: serial: meson: The UART baud rate calculation
+ is described using the common clock code. Also added S4 chip uart Compatible.
+To:     Yu Tu <yu.tu@amlogic.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vyacheslav <adeep@lexina.in>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jan 02, 2022 at 04:06:53PM +0100, Lino Sanfilippo wrote:
-> On 02.01.22 at 11:07, Lukas Wunner wrote:
-> > On Fri, Dec 31, 2021 at 05:15:14PM +0000, jmades wrote:
-> > > --- a/drivers/tty/serial/amba-pl011.c
-> > > +++ b/drivers/tty/serial/amba-pl011.c
-> > > @@ -1646,8 +1646,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> > >  	    container_of(port, struct uart_amba_port, port);
-> > >  	unsigned int cr;
-> > >
-> > > -	if (port->rs485.flags & SER_RS485_ENABLED)
-> > > -		mctrl &= ~TIOCM_RTS;
-> > > +	if (port->rs485.flags & SER_RS485_ENABLED) {
-> > > +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-> > > +			mctrl &= ~TIOCM_RTS;
-> > > +		else
-> > > +			mctrl |= TIOCM_RTS;
-> > > +	}
-> > >
-> > >  	cr = pl011_read(uap, REG_CR);
-> 
-> Does this logic really have to be implemented in the driver?
+Hi,
 
-No, it doesn't have to be and indeed I'm working towards consolidating
-it in the serial core with this collection of patches:
+On Sat, Jan 1, 2022 at 2:30 PM Yu Tu <yu.tu@amlogic.com> wrote:
+[...]
+> > Interesting, thanks for sharing that u-boot turns these clocks on.
+> > Let's say someone wanted to make u-boot save power and turn off all
+> > UART clocks except the one for uart_AO (where we typically connect the
+> > serial console).
+> > In that case the pclk of uart_C (just to choose an example here) is
+> > turned off. Would there be a problem then accessing the registers of
+> > uart_C before clk_prepare_enable is called?
+> The way you describe it, it does hang. This would not be recommended on
+> actual projects.
+>
+> At present, AmLogic chips are older than S4 Soc, and we have no way to
+> deal with this problem. We have to tell customers not to use it in this
+> way=E3=80=82Customers rarely use it in real projects.On the S4 SOC we wil=
+l use
+> a clock like the UART pclk to control the shutdown using two registers,
+> one safe (need to operate in EL3) and one normal (EL1). It will only be
+> closed if both registers are closed. This mainly prevents misoperation.
+oh, interesting that there's some updates specifically with the S4 SoCs :-)
 
-https://git.kernel.org/gregkh/tty/c/d3b3404df318
-https://lore.kernel.org/all/f49f945375f5ccb979893c49f1129f51651ac738.1641129062.git.lukas@wunner.de
-https://lore.kernel.org/all/e22089ab49e6e78822c50c8c4db46bf3ee885623.1641129328.git.lukas@wunner.de
-https://lore.kernel.org/all/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-https://github.com/l1k/linux/commit/532ef2ad757f
-
-The last of these removes the rs485 logic from pl011_set_mctrl().
-I'll post it once the others (and Jochen Mades' patch) have landed.
-
-Even though the logic is eventually removed from pl011_set_mctrl(),
-Jochen's patch makes sense as a backportable fix for v5.15.
+> With your experience, I'd like to know how you deal with this kind of
+> problem.
+Before this patch the driver simply turns on the clock from within
+meson_uart_probe() (specifically it does so in
+meson_uart_probe_clock()).
+I think there's advanced power-saving techniques. Maybe for now we
+keep it simple and just enable the clock(s) at probe time and disable
+them at driver remove time. What do you think?
 
 
-> It looks as if the serial core already takes RS485 into account before
-> calling set_mctrls(). At least I get the impression when looking
-> at uart_tiocmset() and uart_port_dtr_rts(). Also other drivers like imx
-> simply seem to ignore RTS in case of RS485.
-
-The logic in uart_port_dtr_rts() is broken.  That's fixed by d3b3404df318,
-which is queued up in tty-next for v5.17.
-
-The pl011 driver papered over it with its own rs485-specific logic in
-pl011_set_mctrl().  But as Jochen Mades correctly pointed out, that
-only worked correctly if RTS is driven high on idle.
-
-
-The logic in uart_tiocmset() is correct, but not sufficient because
-uart_throttle(), uart_unthrottle and uart_set_termios() need to become
-rs485-aware as well.  That's also addressed by the above-linked
-GitHub commit.
-
-Thanks,
-
-Lukas
+Best regards,
+Martin
