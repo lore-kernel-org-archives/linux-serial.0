@@ -2,156 +2,145 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63507C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jan 2022 11:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41112C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Jan 2022 13:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233062AbiACLmh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jan 2022 06:42:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60550 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231760AbiACLmg (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jan 2022 06:42:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641210155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gSNOI5ql8oXZVvuzD0ppCtwWNeddD2uNEOgMzwq7yWs=;
-        b=cmdow/FWHRgbM6aSxs/xTctjtcIMiH4QlG036cY7wdoBRm6ldaHP0OiJawl8UnBYAfPjg8
-        3QCKr8q83OcMsDq0Gtq9lUwnS1d4UI653YmVrg5G4b+E4dm6YYLafARmZTqxDDDxuCLK4B
-        qWD+nQk1TC7MUQtw2DciR0i99U9buqA=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-232-rWM2n-kSNpOCOTnGIT_l4g-1; Mon, 03 Jan 2022 06:42:34 -0500
-X-MC-Unique: rWM2n-kSNpOCOTnGIT_l4g-1
-Received: by mail-ed1-f70.google.com with SMTP id ch27-20020a0564021bdb00b003f8389236f8so22469484edb.19
-        for <linux-serial@vger.kernel.org>; Mon, 03 Jan 2022 03:42:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gSNOI5ql8oXZVvuzD0ppCtwWNeddD2uNEOgMzwq7yWs=;
-        b=HQz5AP7zq0NnbSsiHK4CKJc4VZz0ctAZCefZNipRQFM4exL7eJAgf9o8ycICy+b1dp
-         n4yfWlYuFoYT7SF+hgicsbrY1Vg51yJ2D4pMISSdV1Z+pLZp+DlA0hK+S3kB0tOOa183
-         mTBXwTHRj/tFOSZESmXNm7HdXCdBOGD9d2ySvJgZQ5SHeYh2IGNmSspAzBOQ+ustYpZj
-         1/3xUysCLaFVWctlOOIhcnTO//+SaBOMU+CclPalnSVHqpqSeRzr92e4Kl+2n0I5TFtF
-         2MhEYNHrJPDlDOIlK3ms9SlSFCsD2EBTkzv9VC+qSGBwIqnn6UA2ej8iEUKdAxwza8bf
-         42dA==
-X-Gm-Message-State: AOAM533PrGow8nZnEB01Rb9YX/HYDPJNMO4TUpuANsCoAFP+QGNrBp0Q
-        +abrpd4YMWOZMNMUfxLoA3QHtq6ZtNFq8QLNdkVcA+A2HhFbKqXfsIpx/AZMcEg+wmigcw7tdnL
-        RjKdjIZjB2Xn7sg/4uzU42Y6/
-X-Received: by 2002:a17:906:9491:: with SMTP id t17mr34874583ejx.667.1641210153014;
-        Mon, 03 Jan 2022 03:42:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyIi4yBcIp+Imi4nqsCAFS4wrZ7x5Z4CdDD0XwShkPowGrJPzk/hjb7Xh+egDpsRHbtUE5ZNA==
-X-Received: by 2002:a17:906:9491:: with SMTP id t17mr34874574ejx.667.1641210152871;
-        Mon, 03 Jan 2022 03:42:32 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id sc7sm10590939ejc.87.2022.01.03.03.42.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jan 2022 03:42:32 -0800 (PST)
-Message-ID: <464b14f9-3df8-5651-7268-80f9fe0df3d4@redhat.com>
-Date:   Mon, 3 Jan 2022 12:42:31 +0100
+        id S230071AbiACNoQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Jan 2022 08:44:16 -0500
+Received: from mout.gmx.net ([212.227.17.21]:51753 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229992AbiACNoQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 3 Jan 2022 08:44:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641217444;
+        bh=yaQHdpEO6ELc+KNDCcxAhySyf6kSbKGGUg4JlkIvxk0=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=LVGk9sFHCtOReTe3gdC1AG3e2q4l4s5WOJyddP3SuCGRF+jLNgquia4wTGSnOqj1T
+         fLZpHisCbUAkt72OfBAJgB+KRG10kZ2jjiHlC7OKdRE+666bvLsCqCZ2DIavhJRFig
+         Dj4flvEcl46zpxtXItc8nHXqz7Nramv3yo1yOTHw=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.72] ([149.172.237.68]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MZCfJ-1mrKon21Uv-00V7hl; Mon, 03
+ Jan 2022 14:44:04 +0100
+Subject: Re: [PATCH] Bugfix RTS line config in RS485 mode is overwritten in
+ pl011_set_mctrl() function.
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     jmades <jochen@mades.net>, gregkh@linuxfoundation.org,
+        Russell King <linux@armlinux.org.uk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>
+References: <20211231171516.18407-1-jochen@mades.net>
+ <20220102100710.GA29858@wunner.de>
+ <0e0e91b8-72f8-aa31-50e2-80090dd5613a@gmx.de>
+ <20220102182801.GA22268@wunner.de>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <769e26e3-6ebe-5d41-484e-3aff033f00c5@gmx.de>
+Date:   Mon, 3 Jan 2022 14:44:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 00/12] ACPI / pdx86: Add support for x86 Android tablets
- with broken DSDTs
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-serial@vger.kernel.org
-References: <20211229231431.437982-1-hdegoede@redhat.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20211229231431.437982-1-hdegoede@redhat.com>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=hdegoede@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+In-Reply-To: <20220102182801.GA22268@wunner.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:q20d/Pz6LffTlZL9sbytzXuMFoNESX16SsIkXD1fI8D/Ght3ib0
+ PiCTumtGXkfbFJNM6deKjJKJPYsXigfp2R4LgPS/GdTY/WLeusNpM2VaZwINyq8K7hMT+VG
+ FQEllyIY/JybHOX2baxk5Jh44JsMyogTzW2akotGUhY6dnT1jedARuNtvHjOh3vAXOATPkI
+ gjI8bRKCzKzBmUvG6U2bQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CtiThadKlqQ=:HKMg+As/KGnUlblU2i9f+6
+ 4IVIew8mHSQXYSA/hUkNVhg2DlC90UgrugyLRp4s8/9wlvlBkWHwj0ibwHOLoXy+BvhXcdNCy
+ plcbxpTvD1BdRkI0PntcUtCPEOa4Y/LJZnAjKWDrjGfYIIoQ42aeoDS2pRe7jznVhQrLFCNvg
+ e4GjGyEWHV9vtjPyoW2wk+Oo1ejcAvtNl54+tNgC2MCQHV/r8+eCKouCyVX5ShMid08laZ02J
+ XkOzwVbYMoAGKVfolPparpGoKrHwNQE/9Tj1MXwcPbZTMFSIcyPx7sbMyQgc01/uklQQlW/vi
+ iFy5MNQvhZ71xbFEbVnwmpcIrP0+8Qzrw2xMV/0kUxf6twKfDBkKAHmcQJ0H01rLzV2RfDQEw
+ m9Rd+sifj0tVQIFBm3xZiktQSZSI01NXTCAcknEXSBHia7r7kX2IxZWwpF4GV9NAyfTzFHqAv
+ J74mgX8igKoEw92VpbfiN66+yrk+5hFgbuXhT/+Sr3ixC0r8mBObASAZc4G0w9RcmUMn+XMk6
+ Uu4Gqq8xdDwakNtAGHnLu8zVS6afdgSMvIW83DdY7S5Z7OTvt+wJ1lECvwXy2/O15efVm2Kjn
+ Op6pzBtOHYoN4NM+RKSWWb70KIlv4OYBH4FtmrdPUAy7bpssLqezQrCiKPr5CoydUBOf3DnP8
+ 5RG9Q0Vo28OhVNTxt6TCapBOdo/FJEcyLo5riSNO7nP9JYJNYy1LFpyaJUojf72YzDOmoR0hW
+ fNw3DgSigmOhXvMhsr5JYg2Whg69Kjljt5lexnVHNeCnzkPhIYJed7E3RwzIMb09X+K/5kEjX
+ DmwVfOz064HKo079cWOOzq15H4wJxdhqp3zo10TStjjf7WB1ttXWJCBLrlJ7poKc1/DD/9j3I
+ GQ0ne5ym50Z7l5Xyjs+Ltr9uMsBVlW/A4Xv+fV/kFJdJDX5zcXWQycTlbCIkK61w6uqN0IEx+
+ Dtpjz7iWiwIx8OSSzeNl0kSj7r2aEKYvle2rtF/buiz2XzoZt2chvjBZtx39MUIm/W+1ViZIa
+ /WxqAu78nMq7iBbnUQQeJnichlRMwEm8eGCIQrGQqqNKR+L27fASDUxMQGeZBf5VLFSsCOWU9
+ 24bT3pd7w5YJZE=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi All,
+On 02.01.22 at 19:28, Lukas Wunner wrote:
+> On Sun, Jan 02, 2022 at 04:06:53PM +0100, Lino Sanfilippo wrote:
+>> On 02.01.22 at 11:07, Lukas Wunner wrote:
+>>> On Fri, Dec 31, 2021 at 05:15:14PM +0000, jmades wrote:
+>>>> --- a/drivers/tty/serial/amba-pl011.c
+>>>> +++ b/drivers/tty/serial/amba-pl011.c
+>>>> @@ -1646,8 +1646,12 @@ static void pl011_set_mctrl(struct uart_port *=
+port, unsigned int mctrl)
+>>>>  	    container_of(port, struct uart_amba_port, port);
+>>>>  	unsigned int cr;
+>>>>
+>>>> -	if (port->rs485.flags & SER_RS485_ENABLED)
+>>>> -		mctrl &=3D ~TIOCM_RTS;
+>>>> +	if (port->rs485.flags & SER_RS485_ENABLED) {
+>>>> +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+>>>> +			mctrl &=3D ~TIOCM_RTS;
+>>>> +		else
+>>>> +			mctrl |=3D TIOCM_RTS;
+>>>> +	}
+>>>>
+>>>>  	cr =3D pl011_read(uap, REG_CR);
+>>
+>> Does this logic really have to be implemented in the driver?
+>
+> No, it doesn't have to be and indeed I'm working towards consolidating
+> it in the serial core with this collection of patches:
+>
+> https://git.kernel.org/gregkh/tty/c/d3b3404df318
+> https://lore.kernel.org/all/f49f945375f5ccb979893c49f1129f51651ac738.164=
+1129062.git.lukas@wunner.de
+> https://lore.kernel.org/all/e22089ab49e6e78822c50c8c4db46bf3ee885623.164=
+1129328.git.lukas@wunner.de
+> https://lore.kernel.org/all/bceeaba030b028ed810272d55d5fc6f3656ddddb.164=
+1129752.git.lukas@wunner.de
+> https://github.com/l1k/linux/commit/532ef2ad757f
+>
+> The last of these removes the rs485 logic from pl011_set_mctrl().
+> I'll post it once the others (and Jochen Mades' patch) have landed.
+>
+> Even though the logic is eventually removed from pl011_set_mctrl(),
+> Jochen's patch makes sense as a backportable fix for v5.15.
+>
+>
+>> It looks as if the serial core already takes RS485 into account before
+>> calling set_mctrls(). At least I get the impression when looking
+>> at uart_tiocmset() and uart_port_dtr_rts(). Also other drivers like imx
+>> simply seem to ignore RTS in case of RS485.
+>
+> The logic in uart_port_dtr_rts() is broken.  That's fixed by d3b3404df31=
+8,
+> which is queued up in tty-next for v5.17.
+>
+> The pl011 driver papered over it with its own rs485-specific logic in
+> pl011_set_mctrl().  But as Jochen Mades correctly pointed out, that
+> only worked correctly if RTS is driven high on idle.
+>
+>
+> The logic in uart_tiocmset() is correct, but not sufficient because
+> uart_throttle(), uart_unthrottle and uart_set_termios() need to become
+> rs485-aware as well.  That's also addressed by the above-linked
+> GitHub commit.
+>
 
-On 12/30/21 00:14, Hans de Goede wrote:
-> Hi All,
-> 
-> As a small(ish) hoppy project over the holidays I've been looking into
-> getting some (somewhat older) x86 tablets which ship with Android as the
-> only OS on their factory image working with the mainline kernel.
-> 
-> These typically have pretty broken DSDTs since the Android image kernel
-> just has everything hardcoded.
-> 
-> This patch-series makes most things on 3 of these tablets work with the
-> mainline kernel and lays the groundwork for adding support for similar
-> tablets.
-> 
-> Since the ACPI tables on these devices clearly are buggy this series is
-> written so as to add minimal changes to the ACPI core code, leaving all
-> of the heavy lifting to the recently introduced (in linux-next)
-> drivers/platform/x86/x86-android-tablets.c module, which when built as
-> a module only autoloads on affected devices based on DMI matching.
-> 
-> And when this module is disabled the added acpi_quirk_skip_*_enumeration()
-> helpers are replaced by inline stubs and even the minimally added core
-> code will be optimized away.
-> 
-> The ACPI core changes are in patches 1-3 of this series. Since the
-> i2c and serdev ACPI enumeration changes are very small and depend on
-> patch 1, I believe it would be best for patches 1-3 to all be merged
-> through Rafael's ACPI tree.
 
-I've added patches 4-12 to my pdx86/review-hans (soon to be for-next)
-branch now.
+Thanks for this information. I have one or two patches prepared a while ag=
+o that
+aim into a similar direction (move RS485 related code out of the drivers i=
+nto
+the serial core). I will send them in the next days.
 
-Regards,
-
-Hans
+Best regards,
+Lino
 
 
-> Hans de Goede (12):
->   ACPI / x86: Add acpi_quirk_skip_[i2c_client|serdev]_enumeration()
->     helpers
->   i2c: acpi: Do not instantiate I2C-clients on boards with known bogus
->     DSDT entries
->   serdev: Do not instantiate serdevs on boards with known bogus DSDT
->     entries
->   platform/x86: x86-android-tablets: Don't return -EPROBE_DEFER from a
->     non probe() function
->   platform/x86: x86-android-tablets: Add support for PMIC interrupts
->   platform/x86: x86-android-tablets: Add support for instantiating
->     platform-devs
->   platform/x86: x86-android-tablets: Add support for instantiating
->     serdevs
->   platform/x86: x86-android-tablets: Add support for registering GPIO
->     lookup tables
->   platform/x86: x86-android-tablets: Add support for preloading modules
->   platform/x86: x86-android-tablets: Add Asus TF103C data
->   platform/x86: x86-android-tablets: Add Asus MeMO Pad 7 ME176C data
->   platform/x86: x86-android-tablets: Add TM800A550L data
-> 
->  drivers/acpi/x86/utils.c                   |  96 ++++
->  drivers/i2c/i2c-core-acpi.c                |  17 +
->  drivers/platform/x86/Kconfig               |   2 +-
->  drivers/platform/x86/x86-android-tablets.c | 562 ++++++++++++++++++++-
->  drivers/tty/serdev/core.c                  |  14 +
->  include/acpi/acpi_bus.h                    |  16 +
->  6 files changed, 698 insertions(+), 9 deletions(-)
-> 
 
