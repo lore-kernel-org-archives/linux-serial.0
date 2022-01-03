@@ -2,36 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A14AFC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jan 2022 16:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06443C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  3 Jan 2022 16:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbiACQ3n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jan 2022 11:29:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
+        id S233875AbiACQfE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 3 Jan 2022 11:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233889AbiACQ3n (ORCPT
+        with ESMTP id S233994AbiACQfE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jan 2022 11:29:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D680C061761;
-        Mon,  3 Jan 2022 08:29:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC3C61167;
-        Mon,  3 Jan 2022 16:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82760C36AED;
-        Mon,  3 Jan 2022 16:29:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641227382;
-        bh=hKFBNm7uS+9zcfXfym6OnPULO39oZtoPlGFqz3VIPCc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iYz7E2uTbYMQ0JFww+jaXgwMn6+5V2r63geMzJN4ah8A6iWNWnGf8ngDNv5XDfqlQ
-         850xpKD4kNLHJtqDtLLmFgSMe+33UwO4x8JOdWoP2s/Yj7nAu7B5oanCs4Ux1/nePR
-         qSvnhyCosdyYZn+FM0g6hGRVZdQ0SwFVCXIkV/QI=
-Date:   Mon, 3 Jan 2022 17:29:39 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
+        Mon, 3 Jan 2022 11:35:04 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC93C061761
+        for <linux-serial@vger.kernel.org>; Mon,  3 Jan 2022 08:35:04 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id e5so70919484wrc.5
+        for <linux-serial@vger.kernel.org>; Mon, 03 Jan 2022 08:35:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=T3i9zgwcayeVl7cWKMRosEJ4OOhKmrBVCf1DuyQd0ZQ=;
+        b=RCUaoyJ8tstUuLAgGQdCMqjsBhS4AyDd1/vb1OGi7sZXmNZg0AVF09KzJY55SMrOC8
+         BmAsBLhu+de4Kk0F4X/aSuyK16euq/BSzIHaZC69KVLlv7to4DJc5XFMyp0SBgNkmM8S
+         tOAGUGP1WeSR+HiF4cZSYlzjCtE5W1UQBHzIxKU+KgWco/ik9v25waLqEiJ+SixDe0Zh
+         HUwAqUEhJltFYvSk35b7WFJFpWMAO3fTBFg9n7emkb/ZLmYDBm5AC/MqAB6J5vGtmYUL
+         Pyus9RPN1hHm3SVRlRpqlLUovM+UdhLUPq7NYvk9gN9xp/Gsakn5CDDNu9prgw1hqE9c
+         OObA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=T3i9zgwcayeVl7cWKMRosEJ4OOhKmrBVCf1DuyQd0ZQ=;
+        b=Mk2S9jvyhUrzw3dLnC7nByEvuKgtLeQoabF+V5bNajEObgpc1IY0ANvK3HNuB3ymee
+         6J+QUg8C5A+oAdfb93umXNEsgCMWHo2i4K1fCZfFuGbbHHzDWJ3/AZaY9i7pSrppEl8k
+         QmXZLUz+T2rmiuxrs9vlJeFdTu21kiyZ34lqHsbA99Y5vlplkmw8Ky5RDITNmHEeMgIU
+         dWL3mhEcpFOzroPjJboS7brz+HzX3zvddjzMvL35rpXn3eGt+xvY4IMrQdEIuZCOR216
+         H6mR1QjcMdzFlVfWxtxc7GZhLcFlj0mYCVNoGoWeK7AUtXzb4v4BBy6BiLGQ9vtzNrEt
+         8Umw==
+X-Gm-Message-State: AOAM5308EmlllFDxZ4O+RHVMOQgiDPNtfyE3A5PB3xwD5T0hE+JlUoqJ
+        Os/5xf6/v36XXhLL1oryD0Rk5g==
+X-Google-Smtp-Source: ABdhPJw8ZtseazM51WUqhtiDVXvitp+YDlIfXCPd0LTC+fJ/cPh2CMZqRThBa00IrdH/HQDGzeNZOw==
+X-Received: by 2002:a5d:58dc:: with SMTP id o28mr38899290wrf.217.1641227702500;
+        Mon, 03 Jan 2022 08:35:02 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:7c9d:a967:38e2:5220? ([2001:861:44c0:66c0:7c9d:a967:38e2:5220])
+        by smtp.gmail.com with ESMTPSA id l10sm20389876wmq.7.2022.01.03.08.35.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Jan 2022 08:35:02 -0800 (PST)
+Subject: Re: [PATCH V3 1/6] tty: serial: meson: Drop the legacy compatible
+ strings and clock code
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -40,9 +61,6 @@ Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Yu Tu <yu.tu@amlogic.com>
-Subject: Re: [PATCH V3 1/6] tty: serial: meson: Drop the legacy compatible
- strings and clock code
-Message-ID: <YdMkc2YQcYjgR7Qk@kroah.com>
 References: <20211230102110.3861-1-yu.tu@amlogic.com>
  <20211230102110.3861-2-yu.tu@amlogic.com>
  <CAFBinCCwjS36ss_4sU+o9m8gEprFsVZbqcxgpQxczTNohZqFdA@mail.gmail.com>
@@ -51,79 +69,70 @@ References: <20211230102110.3861-1-yu.tu@amlogic.com>
  <3865f01c-83f7-a69d-6835-c26f662629b7@baylibre.com>
  <YdMUEzStFf99EeQ5@kroah.com>
  <df9e472e-ac17-26ed-d820-e80d5b7b0e80@baylibre.com>
+ <YdMkc2YQcYjgR7Qk@kroah.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <257d153c-960a-59fc-dfa9-5e160e42b68d@baylibre.com>
+Date:   Mon, 3 Jan 2022 17:35:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <df9e472e-ac17-26ed-d820-e80d5b7b0e80@baylibre.com>
+In-Reply-To: <YdMkc2YQcYjgR7Qk@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 03, 2022 at 04:29:56PM +0100, Neil Armstrong wrote:
-> Hi Greg,
-> On 03/01/2022 16:19, Greg Kroah-Hartman wrote:
-> > A: http://en.wikipedia.org/wiki/Top_post
-> > Q: Were do I find info about this thing called top-posting?
-> > A: Because it messes up the order in which people normally read text.
-> > Q: Why is top-posting such a bad thing?
-> > A: Top-posting.
-> > Q: What is the most annoying thing in e-mail?
-> > 
-> > A: No.
-> > Q: Should I include quotations after my reply?
-> > 
-> > http://daringfireball.net/2007/07/on_to>
-> > On Mon, Jan 03, 2022 at 03:59:33PM +0100, Neil Armstrong wrote:
-> >> Hi Greg,
-> >>
-> >> Martin just saw this patch was applied, but the serie wasn't reviewed enough and it will break
-> >> earlycon support on the ARMv7 Amlogic SoCs fore 5.17.
-> > 
-> > Ok, what should I revert?
+On 03/01/2022 17:29, Greg Kroah-Hartman wrote:
+> On Mon, Jan 03, 2022 at 04:29:56PM +0100, Neil Armstrong wrote:
+>>>> Would it be possible we also receive the notification when those patches are applied ?
+>>>> Maybe a MAINTAINERS entry is missing so we can receive them ?
+>>>
+>>> That would be good, so that people can review the patches.  Otherwise I
+>>> have to just guess :)
+>>
+>> exact, I naively thought it would be matched in the:
+>> N:      meson
+>> entry but it seems an proper entry for drivers/tty/serial/meson_uart.c is needed.
 > 
-> None, we have a fix in the pipe
+> Try it, does that work when running get_maintainer.pl on this patch?
+
+Yes it does work, so no problem here
+
 > 
-> > 
-> >> Anyway, I'll push the corresponding DT fixes for 5.17-rc1.
-> > 
-> > How did we get out of sync here?
+>>>> It would help me track those TTY and USB patches more easily.
+>>>
+>>> I recommend MAINTAINERS entries for drivers that are not listed and that
+>>> you care about seeing the changes for.
+>>
+>> This is why we have a regex to match these.
 > 
-> The serie wasn't fully reviewed, and I was out of office when it was applied.
+> Great, the submitter should have used that.
 > 
-> > 
-> >> Would it be possible we also receive the notification when those patches are applied ?
-> >> Maybe a MAINTAINERS entry is missing so we can receive them ?
-> > 
-> > That would be good, so that people can review the patches.  Otherwise I
-> > have to just guess :)
+>> I can submit a patch to have a proper entry if the regex is not enough/appropriate.
 > 
-> exact, I naively thought it would be matched in the:
-> N:      meson
-> entry but it seems an proper entry for drivers/tty/serial/meson_uart.c is needed.
-
-Try it, does that work when running get_maintainer.pl on this patch?
-
-> >> It would help me track those TTY and USB patches more easily.
-> > 
-> > I recommend MAINTAINERS entries for drivers that are not listed and that
-> > you care about seeing the changes for.
+> Whatever makes the tools work is fine with me.
 > 
-> This is why we have a regex to match these.
+>> BTW can you point us how are selected the recipients of the notification messages you send ?
+> 
+> For when I apply a patch, everyone on the ack/signed-off-by/reviewed-by
+> list gets a response.  I do not hit mailing lists with the notification
+> as that's just too much noise.
+> 
+> Been doing it this way for well over a decade now, nothing new here :)
 
-Great, the submitter should have used that.
+Ok right, no problem, other maintainers (e.g: net, sound) and default b4 behavior is to
+send notification to same recipient as original patch.
 
-> I can submit a patch to have a proper entry if the regex is not enough/appropriate.
+It it fits everyone for a decade, no need to change ! We have very low patches for tty & usb anyway
 
-Whatever makes the tools work is fine with me.
+Neil
 
-> BTW can you point us how are selected the recipients of the notification messages you send ?
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-For when I apply a patch, everyone on the ack/signed-off-by/reviewed-by
-list gets a response.  I do not hit mailing lists with the notification
-as that's just too much noise.
-
-Been doing it this way for well over a decade now, nothing new here :)
-
-thanks,
-
-greg k-h
