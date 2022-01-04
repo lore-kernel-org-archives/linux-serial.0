@@ -2,184 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CA8C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 07:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DC3C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 08:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233104AbiADHR6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jan 2022 02:17:58 -0500
-Received: from mail-ed1-f46.google.com ([209.85.208.46]:37873 "EHLO
-        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbiADHR6 (ORCPT
+        id S233799AbiADIUh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 03:20:37 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:39621 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233729AbiADIUg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jan 2022 02:17:58 -0500
-Received: by mail-ed1-f46.google.com with SMTP id o6so144858442edc.4;
-        Mon, 03 Jan 2022 23:17:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pOAXZ90y+NqNgM4bMsWBaGvAJnnSkQQXCw6loSgl2/0=;
-        b=XYdPiyPhm42BJoz5DA3nMwmgWfa6nsyyb3s6hvozNJ9/hjmr9c84cmcFuV3uSnWEow
-         JnkOT1MkU75P+ZBoVGeqsUNMyS+LIB5NbTFzfXsTkB3tbbrSw8BlFj2F8/T2YbMEHTDe
-         ijwGeqLgTIbwZNkjudxsL5bwG58N0bG9EZy2pE8a82Eaj2wP+Yv7/9zH9RTVRREvWqKk
-         HKtJzorDpWofQ2UEw7qjJcNXubBmkDWZuReZpohHaF3C1dWMUTfAZ8VS1pzv2g8ELs9Y
-         O2UZX0239BvNFX4dI/qvkDh1pMp36zai1OCOSFj+Ju+HhfEKFAWmCdXPoT0Ti+O2Al2I
-         ZOIw==
-X-Gm-Message-State: AOAM532NyvCdQ5JaWR1DTpA4PwuAc74Q4HHyF1bb3xPupo8PrbnfrpRy
-        WLJuGuHy4kwtvjNB/nb04GY=
-X-Google-Smtp-Source: ABdhPJxyS+tzswPsc9YapgmN417/e8DdnMTszn/Q2wP39cAGpiC/unR8VNCGRsayLdvZRy6T0izOmQ==
-X-Received: by 2002:a05:6402:1a4f:: with SMTP id bf15mr48104233edb.260.1641280677169;
-        Mon, 03 Jan 2022 23:17:57 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id j11sm14371994edv.0.2022.01.03.23.17.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jan 2022 23:17:56 -0800 (PST)
-Message-ID: <50ceeac0-adb1-30c1-ecc7-ddd4fb94a99c@kernel.org>
-Date:   Tue, 4 Jan 2022 08:17:55 +0100
+        Tue, 4 Jan 2022 03:20:36 -0500
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 4 Jan
+ 2022 16:20:33 +0800
+Message-ID: <1f16f430-677e-d1f0-1a7f-bf1d1a7c3c47@amlogic.com>
+Date:   Tue, 4 Jan 2022 16:20:33 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2] serial: 8250: Move Alpha-specific quirk out of the
- core
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V3 4/6] tty: serial: meson: The UART baud rate calculation
+ is described using the common clock code. Also added S4 chip uart Compatible.
 Content-Language: en-US
-To:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Ulrich Teichert <krypton@ulrich-teichert.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-References: <b83d069cb516549b8a5420e097bb6bdd806f36fc.1640695609.git.lukas@wunner.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <b83d069cb516549b8a5420e097bb6bdd806f36fc.1640695609.git.lukas@wunner.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vyacheslav <adeep@lexina.in>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+References: <20211230102110.3861-1-yu.tu@amlogic.com>
+ <20211230102110.3861-5-yu.tu@amlogic.com>
+ <CAFBinCCL-QaeSRCLzfyNXcRQZ7YC1D85rP2y4OGkAjCmQEqGgQ@mail.gmail.com>
+ <3e1e40aa-7865-0f7a-5772-e2ad96c8141d@amlogic.com>
+ <CAFBinCB2nF0TwRE1uJ4UTB_avcqRBfOHR1CDSe29dB1o-YjEHQ@mail.gmail.com>
+ <7278bace-a2b9-0cfc-55b3-c19311e3352e@amlogic.com>
+ <CAFBinCCwE1DbP+Y49o3WxNdeE11ZK=HcGbXa0Sq52tch+eNhrQ@mail.gmail.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <CAFBinCCwE1DbP+Y49o3WxNdeE11ZK=HcGbXa0Sq52tch+eNhrQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28. 12. 21, 18:22, Lukas Wunner wrote:
-> struct uart_8250_port contains mcr_mask and mcr_force members whose
-> sole purpose is to work around an Alpha-specific quirk.  This code
-> doesn't belong in the core where it is executed by everyone else,
-> so move it to a proper ->set_mctrl callback which is used on the
-> affected Alpha machine only.
+Hi Martin,
+	Thank you very much for your reply.
+On 2022/1/3 3:36, Martin Blumenstingl wrote:
+> [ EXTERNAL EMAIL ]
 > 
-> The quirk was introduced in January 1995:
-> https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/diff/drivers/char/serial.c?h=1.1.83
+> Hi,
 > 
-> The members in struct uart_8250_port were added in 2002:
-> https://git.kernel.org/history/history/c/4524aad27854
+> On Sat, Jan 1, 2022 at 2:30 PM Yu Tu <yu.tu@amlogic.com> wrote:
+> [...]
+>>> Interesting, thanks for sharing that u-boot turns these clocks on.
+>>> Let's say someone wanted to make u-boot save power and turn off all
+>>> UART clocks except the one for uart_AO (where we typically connect the
+>>> serial console).
+>>> In that case the pclk of uart_C (just to choose an example here) is
+>>> turned off. Would there be a problem then accessing the registers of
+>>> uart_C before clk_prepare_enable is called?
+>> The way you describe it, it does hang. This would not be recommended on
+>> actual projects.
+>>
+>> At present, AmLogic chips are older than S4 Soc, and we have no way to
+>> deal with this problem. We have to tell customers not to use it in this
+>> way。Customers rarely use it in real projects.On the S4 SOC we will use
+>> a clock like the UART pclk to control the shutdown using two registers,
+>> one safe (need to operate in EL3) and one normal (EL1). It will only be
+>> closed if both registers are closed. This mainly prevents misoperation.
+> oh, interesting that there's some updates specifically with the S4 SoCs :-)
 > 
-> The quirk applies to non-PCI Alphas and arch/alpha/Kconfig specifies
-> "select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
-> machine is the EISA-based Jensen that Linus was working on back then:
-> https://lore.kernel.org/all/CAHk-=wj1JWZ3sCrGz16nxEj7=0O+srMg6Ah3iPTDXSPKEws_SA@mail.gmail.com/
+>> With your experience, I'd like to know how you deal with this kind of
+>> problem.
+> Before this patch the driver simply turns on the clock from within
+> meson_uart_probe() (specifically it does so in
+> meson_uart_probe_clock()).
+> I think there's advanced power-saving techniques. Maybe for now we
+> keep it simple and just enable the clock(s) at probe time and disable
+> them at driver remove time. What do you think?
 > 
-> Up until now the quirk is not applied unless CONFIG_PCI is disabled.
-> If users forget to do that or run a generic Alpha kernel, the serial
-> ports aren't usable on Jensen.  Avoid by confining the quirk to
-> CONFIG_ALPHA_JENSEN instead of !CONFIG_PCI.  On generic Alpha kernels,
-> auto-detect at runtime whether the quirk needs to be applied.
+I agree with you.
 > 
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> Cc: Ulrich Teichert <krypton@ulrich-teichert.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> ---
-> Changes in v2:
-> * Also apply quirk when running a generic Alpha kernel on a Jensen.
-> * Fix outdated reference to the quirk in sunsu.c.
+> Best regards,
+> Martin
 > 
->   drivers/tty/serial/8250/8250.h       | 12 ++----------
->   drivers/tty/serial/8250/8250_alpha.c | 21 +++++++++++++++++++++
->   drivers/tty/serial/8250/8250_core.c  |  9 ++++-----
->   drivers/tty/serial/8250/8250_port.c  |  2 +-
->   drivers/tty/serial/8250/Makefile     |  2 ++
->   drivers/tty/serial/sunsu.c           |  3 ++-
->   include/linux/serial_8250.h          |  2 --
->   7 files changed, 32 insertions(+), 19 deletions(-)
->   create mode 100644 drivers/tty/serial/8250/8250_alpha.c
-> 
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index 6473361525d1..db784ace25d8 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -241,16 +241,8 @@ static inline int serial8250_in_MCR(struct uart_8250_port *up)
->   	return mctrl;
->   }
->   
-> -#if defined(__alpha__) && !defined(CONFIG_PCI)
-> -/*
-> - * Digital did something really horribly wrong with the OUT1 and OUT2
-> - * lines on at least some ALPHA's.  The failure mode is that if either
-> - * is cleared, the machine locks up with endless interrupts.
-> - */
-> -#define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
-> -#else
-> -#define ALPHA_KLUDGE_MCR 0
-> -#endif
-> +bool alpha_jensen(void);
-> +void alpha_jensen_set_mctrl(struct uart_port *port, unsigned int mctrl);
->   
->   #ifdef CONFIG_SERIAL_8250_PNP
->   int serial8250_pnp_init(void);
-> diff --git a/drivers/tty/serial/8250/8250_alpha.c b/drivers/tty/serial/8250/8250_alpha.c
-> new file mode 100644
-> index 000000000000..58e70328aa4d
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_alpha.c
-> @@ -0,0 +1,21 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +
-> +#include <asm/machvec.h>
-> +#include "8250.h"
-> +
-> +bool alpha_jensen(void)
-> +{
-> +	return !strcmp(alpha_mv.vector_name, "Jensen");
-> +}
-> +
-> +void alpha_jensen_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> +{
-> +	/*
-> +	 * Digital did something really horribly wrong with the OUT1 and OUT2
-> +	 * lines on Alpha Jensen.  The failure mode is that if either is
-> +	 * cleared, the machine locks up with endless interrupts.
-> +	 */
-> +	mctrl |= TIOCM_OUT1 | TIOCM_OUT2;
-> +
-> +	serial8250_do_set_mctrl(port, mctrl);
-> +}
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 1ce193daea7f..01d30f6ed8fb 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -509,11 +509,10 @@ static void __init serial8250_isa_init_ports(void)
->   
->   		up->ops = &univ8250_driver_ops;
->   
-> -		/*
-> -		 * ALPHA_KLUDGE_MCR needs to be killed.
-> -		 */
-> -		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
-> -		up->mcr_force = ALPHA_KLUDGE_MCR;
-> +		if (IS_ENABLED(CONFIG_ALPHA_JENSEN) ||
-> +		    (IS_ENABLED(CONFIG_ALPHA_GENERIC) && alpha_jensen()))
-
-It'd be definitely nicer, if here was only "if (alpha_jensen())". The 
-rest would be done in the header or in 8250_alpha.c.
-
-Or even create an empty __weak arch_serial8250_set_defaults() and also 
-one non-empty in arch/alpha/?
-
-thanks,
--- 
-js
-suse labs
