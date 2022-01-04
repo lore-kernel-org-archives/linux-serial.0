@@ -2,111 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D673C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 19:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C43C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 22:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236462AbiADTIB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jan 2022 14:08:01 -0500
-Received: from mail-ot1-f47.google.com ([209.85.210.47]:39574 "EHLO
-        mail-ot1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234842AbiADTIA (ORCPT
+        id S235210AbiADWIg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 17:08:36 -0500
+Received: from slot0.jllresort.com ([62.197.136.5]:44604 "EHLO
+        slot0.jllresort.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235220AbiADWIf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jan 2022 14:08:00 -0500
-Received: by mail-ot1-f47.google.com with SMTP id r10-20020a056830080a00b0055c8fd2cebdso48394529ots.6;
-        Tue, 04 Jan 2022 11:08:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zol8RqhcqrOeExkKxHD6i/0eMcZgg4YGQ9xIXDGBZL0=;
-        b=PjW3z79RptREbGLfbP+x+XsFuASMO38iK4GD+0s8viJLQg73kyiDYHo7ueIu+LciFO
-         PNGK1YqTJOvhOiVI7gufSf6vw0l1cuGm/5Vk9WZoSY1v2LDE8GuA96PCS2oIEgK0whRG
-         dSglLdpMuQzCebFqhRkiRIV4wfjklJTcqHppZ4PHjITrkVs7YJmY/PSsSS9wM08ahFUL
-         zni7nUylYa8seGCosDSVne8jobjcf7QYzPmK/msVsPvXPNCp5g33tOxNapk8g+e9DqQV
-         6Fyu5fQxMrBTVjRJLiN0C9ywaKdZCRN23jUUPFcG/l+kQjcvPqDDefmgxav302ArcK/z
-         3TFg==
-X-Gm-Message-State: AOAM532Nb31/airPzf6jy9jxlzK9zoG3FDTHcldZ85/aXfxfpWmbFvIu
-        P04aJxwV3RgYtfuJdpxatT87Pls4ZQ==
-X-Google-Smtp-Source: ABdhPJwD6As9c1PJJ5b5sN3V+8tRevP6v+G+WluIcZqLUbDDpYLuCj4xh6m/A3masXZmj4ALYIcjWg==
-X-Received: by 2002:a9d:a55:: with SMTP id 79mr37401880otg.275.1641323279784;
-        Tue, 04 Jan 2022 11:07:59 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x4sm10005968oiv.35.2022.01.04.11.07.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 11:07:59 -0800 (PST)
-Received: (nullmailer pid 1229576 invoked by uid 1000);
-        Tue, 04 Jan 2022 19:07:57 -0000
-Date:   Tue, 4 Jan 2022 13:07:57 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, festevam@gmail.com,
-        abel.vesa@nxp.com, olof@lixom.net, kernel@pengutronix.de,
-        stefan@agner.ch, ulf.hansson@linaro.org,
-        linux-gpio@vger.kernel.org, linux-imx@nxp.com,
-        Mr.Bossman075@gmail.com, linux-mmc@vger.kernel.org,
-        shawnguo@kernel.org, mturquette@baylibre.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de,
-        soc@kernel.org, gregkh@linuxfoundation.org, sboyd@kernel.org,
-        devicetree@vger.kernel.org, s.hauer@pengutronix.de,
-        adrian.hunter@intel.com, linus.walleij@linaro.org,
-        linux-serial@vger.kernel.org, robh+dt@kernel.org,
-        giulio.benetti@benettiengineering.com, linux-clk@vger.kernel.org,
-        aisheng.dong@nxp.com
-Subject: Re: [PATCH v7 4/7] dt-bindings: clock: imx: Add documentation for
- i.MXRT1050 clock
-Message-ID: <YdSbDTcA6qyZdJJv@robh.at.kernel.org>
-References: <20220103233948.198119-1-Mr.Bossman075@gmail.com>
- <20220103233948.198119-5-Mr.Bossman075@gmail.com>
+        Tue, 4 Jan 2022 17:08:35 -0500
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=jllresort.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=ele.mon@jllresort.com;
+ bh=nLL60AIMXrPfJHLZLraTRukKByg=;
+ b=aOzQy4VhC2PWNC+lWQuioZnoDBsGy5xZOLAYK01GpCPmttxfS1NSAvjRgsox8IBP/FZurWGdK08O
+   atsNn/VUx1/eRcVKGyXW1Ewhaky4Yd9/NGdZGPQkTJa8+cprlSpJIOOG5M2jLD7fv09EzoTrwFTm
+   hR2CeA+NlgTZdvTFRIIjeAp3fHBQRw09iOAf9zY8SpkW75UbPG7L52L7mNZEESWZTECl/INMWA3N
+   Y9hLmFiRf8kSPBi334+j528lLUfEb3zsNXu+ztkYAgBUPB3ju5KXxiwBPcPfPBzEraWeriY1OK01
+   TiLXc1kPfFt8tj3jrvQCGB6J8/yzvXi+GLa+PA==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=jllresort.com;
+ b=heHOQxfQhcMT4p3BzzPV+crrXe/kWa1jx1BJj1mwqd5Bk4Cqpdla4M6XQy+x5sACP2qcsdxBMo7F
+   3fcroWIAd72szJknnetIejmKLBkwbl9vxNg+1qmG8k9wSkxZtN8947G+QL3Uc98i0LJe7haLUr41
+   vS5ZVNn8SJdVD1frJslmaxyhxA0fx3rE0DNbjcRj7zNcGDMylHJQZ/bIXqEIJt+sjoLYUj7ctyHd
+   7QyqGcAfgETsQAMuShbKYC5XIkNl/hikW+ZROYPEF6o0SotStyHyc+arBsm3/DQ94q6wOviMGUcV
+   dvymsk9jrDjKA//T7roANaAy00nB4P2QQQmfqg==;
+Reply-To: ayvazmustafa231@gmail.com
+From:   ele.mon@jllresort.com
+To:     linux-serial@vger.kernel.org
+Subject: Attention:
+Date:   4 Jan 2022 23:08:22 +0100
+Message-ID: <20220104230822.35CD36E0E1004CF3@jllresort.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220103233948.198119-5-Mr.Bossman075@gmail.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 03 Jan 2022 18:39:45 -0500, Jesse Taube wrote:
-> From: Jesse Taube <mr.bossman075@gmail.com>
-> 
-> Add DT binding documentation for i.MXRT1050 clock driver.
-> 
-> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> ---
-> V1->V2:
-> * Replace macros with values
-> V2->V3:
-> * Remove anatop
-> * Use lpuart not gpt
-> * include imxrt1050-clock.h
-> * 2 space tabs to 4
-> * Remove oneOf enum
-> * Change maxItems to 2
-> V3->V4:
-> * Nothing done
-> V4->V5:
-> * Remove extra newline
-> * Rename ccm to clock-controller
-> * Change minItems to const
-> * Change minItems to description
-> * Rename file to add 1050
-> * Change commit description to just 1050
-> V5->V6:
-> * Add maxItems for clocks description
-> V6->V7:
-> * Nothing done
-> ---
->  .../bindings/clock/imxrt1050-clock.yaml       | 67 +++++++++++++++++++
->  1 file changed, 67 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml
-> 
+Greetings to you linux-serial,
 
+I was wondering if you got my previous email? I have been trying=20
+to reach you by email linux-serial@vger.kernel.org, kindly get=20
+back to me swiftly, it is very important.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-If a tag was not added on purpose, please state why and what changed.
-
+Thanks
+Mustafa Ayvaz
+Email: mustafa.ayvaz@ayvazburosu.com
