@@ -2,67 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75906C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 11:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7709C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 13:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiADLiG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jan 2022 06:38:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38350 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiADLiF (ORCPT
+        id S233306AbiADNK7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 08:10:59 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:58335 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229568AbiADNK7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jan 2022 06:38:05 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 604F861349
-        for <linux-serial@vger.kernel.org>; Tue,  4 Jan 2022 11:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E0EAC36AE9;
-        Tue,  4 Jan 2022 11:38:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641296284;
-        bh=hx/fOp6SJmK2BQeMp++u3THrWv+QtsVOcMF50oxiGnM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KYtCfKzEtbt5wBeftsaEUAboto3Zvs471aYZxS2Imm1kI8l1xxpyUa1xQnWLpxa13
-         oT2c07v5TQpnIK53PG+aVcHW7wulKM5k+SDnCQ7qpBJl3Ctycm0XXAFt81g+SMoII+
-         dmPx+/+8JM4BrTePhDyaF6hBpWPdJrfs4MY5JXXU=
-Date:   Tue, 4 Jan 2022 12:38:01 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        k.drobinski@camlintechnologies.com
-Subject: Re: [PATCH] serial: imx: reduce RX interrupt frequency
-Message-ID: <YdQxmQ+OMCrabg2u@kroah.com>
-References: <20220104103203.2033673-1-tomasz.mon@camlingroup.com>
- <YdQndwYc9xaauvpS@kroah.com>
- <7e509806-77ae-8f94-2563-7dbae1ebca17@camlingroup.com>
+        Tue, 4 Jan 2022 08:10:59 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6E3405C01CF;
+        Tue,  4 Jan 2022 08:10:58 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Tue, 04 Jan 2022 08:10:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alyssa.is; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm2; bh=18TDmxuulZJ82bw/4QiI1lkvE7
+        HMf8V3nqn+LBojWio=; b=C4/U7nkhnDKch+7Xl6rRXBdGerFtX0g5/xOE5erzcE
+        FT8N5uuQUXjXXb/j0XFuqUJWNuHEP7fNcZlgJ+LNoJzsmOp7g4+gE0dAze2OQKTP
+        6Zz7hvm9X9TJVxZd3rbVdA2TpAgfug87tvZaqZMLR9rkgzT/99wQ4QbuXhcebO17
+        iQ78/DxrAxtKj6a92mHp9UGxaBrj0ZA2/1pU2EBA5WL4zFvshtIZ4sFQJ3SIV/j9
+        E5ZwMixaqszLGfECwTXnbHp3DgpyIEcLEEyrUYzySEIDdk6NiYpI/BVWsK05XftU
+        DRktdIvcIAw3UjHJlo1+TqTO2lUG+HWsSwtKfPrUlwJw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=18TDmxuulZJ82bw/4
+        QiI1lkvE7HMf8V3nqn+LBojWio=; b=QfvHLe8ZZxPrtuuXgycelj/6P01jhk6tW
+        FKDcVHrd4AA5wgz7obx91YmRVO5/4PD4gJ5PEWtxFqXJfbvpOwiOuAKqT3h6xIpg
+        ImREp4VJvgFeN/tmsFKEESjiv3uYECrXS7uT1s4o2z7Uj4KL+zubX7GVQVvSfYGo
+        G1uA0YaZnApyyf9D7uTB/fMXYDXc1FR/Ny5vvfWWNNGFkNaSU5dgdVYzDusjuYn6
+        NKgC1kcwnl6giv2ga1bJBV5tCm4R0zGlHrT9BV1I/cMm4w527tKpV8ULdolzKitC
+        WfuRSWVpnpMpQ+bDKPss4k3cpOBVWyKPpy2h7YbFWnZLIxyNifzfA==
+X-ME-Sender: <xms:YkfUYYJw0xBgxtC4o_pNdu7yac_MzXO7LJaL1kKJ-YtI_ZXON__Wqg>
+    <xme:YkfUYYLP6dyy7ZqL8ChnDWVLkRJzQK0jbcY9hN0lKqGri2vZ8_9Ontkz6FEApl1CX
+    b9LEZiadITS375gow>
+X-ME-Received: <xmr:YkfUYYt-NB96C6Etm7oDfaVkWDjoS8iwe4vfUS2kBdvuK-9woqcrY41xcoVLWCokkd9f5eGdemch_O8n9eecEzIRr3M3X6Nn>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrudeffedggeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeetlhihshhsrgcu
+    tfhoshhsuceohhhisegrlhihshhsrgdrihhsqeenucggtffrrghtthgvrhhnpeeijeelie
+    eihffgleeuheegieehueevudetheeujeeufeeiteeiuefhteeiveelffenucffohhmrghi
+    nheprghnthhmihgtrhhordgtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepqhihlhhishhsseigvddvtddrqhihlhhishhsrdhnvght
+X-ME-Proxy: <xmx:YkfUYVYvEupZ431DO_7VrfvVTAk1T1XjtH0UaxrYwz5RGzfZt_zwag>
+    <xmx:YkfUYfYv0XMVjt6JU2hpcqm7Hcs-t16y3IC9-v5yigs4FbnA_IIeeg>
+    <xmx:YkfUYRAM10xsANMOVUjlo4b7H0TbMYw5kn_uYYYzU6wGt0dp9Y80Gw>
+    <xmx:YkfUYUP65VK6sc3D_r2UB4ixlEfCCvPw98yqrIpc7Ah1otfBUe1YXg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 4 Jan 2022 08:10:57 -0500 (EST)
+Received: by x220.qyliss.net (Postfix, from userid 1000)
+        id 70363488; Tue,  4 Jan 2022 13:10:56 +0000 (UTC)
+From:   Alyssa Ross <hi@alyssa.is>
+To:     Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Stafford Horne <shorne@gmail.com>
+Cc:     Alyssa Ross <hi@alyssa.is>,
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] serial: liteuart: fix MODULE_ALIAS
+Date:   Tue,  4 Jan 2022 13:10:28 +0000
+Message-Id: <20220104131030.1674733-1-hi@alyssa.is>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7e509806-77ae-8f94-2563-7dbae1ebca17@camlingroup.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 12:13:06PM +0100, Tomasz Moń wrote:
-> On 04.01.2022 11:54, Greg Kroah-Hartman wrote:
-> > Why can't you do this dynamically based on the baud rate so as to always
-> > work properly for all speeds without increased delays for slower ones?
-> 
-> Could you please advise on which baud rates to consider as slow? Does it
-> sound good to have the old trigger level for rates up to and including
-> 115200 and the new one for faster ones?
+modprobe can't handle spaces in aliases.
 
-You tell me, you are the one seeing this issue and are seeing delays on
-slower values with your change.  Do some testing to see where the curve
-is.
+Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
+Signed-off-by: Alyssa Ross <hi@alyssa.is>
+---
+ drivers/tty/serial/liteuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks,
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 2941659e5274..7f74bf7bdcff 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -436,4 +436,4 @@ module_exit(liteuart_exit);
+ MODULE_AUTHOR("Antmicro <www.antmicro.com>");
+ MODULE_DESCRIPTION("LiteUART serial driver");
+ MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("platform: liteuart");
++MODULE_ALIAS("platform:liteuart");
 
-greg k-h
+base-commit: c9e6606c7fe92b50a02ce51dda82586ebdf99b48
+-- 
+2.33.0
+
