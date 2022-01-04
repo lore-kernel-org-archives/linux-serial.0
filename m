@@ -2,80 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF706C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 17:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6505DC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 18:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234272AbiADRuq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jan 2022 12:50:46 -0500
-Received: from relmlor1.renesas.com ([210.160.252.171]:30825 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233839AbiADRuq (ORCPT
+        id S236124AbiADSM7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 13:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233114AbiADSM7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jan 2022 12:50:46 -0500
-X-IronPort-AV: E=Sophos;i="5.88,261,1635174000"; 
-   d="scan'208";a="105493655"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 05 Jan 2022 02:50:44 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id A87A240B3513;
-        Wed,  5 Jan 2022 02:50:42 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Al Cooper <alcooperx@gmail.com>,
+        Tue, 4 Jan 2022 13:12:59 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4875FC061761;
+        Tue,  4 Jan 2022 10:12:59 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id z3so27615580plg.8;
+        Tue, 04 Jan 2022 10:12:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VoJ1XzenoMXIIHCTkV24ONDP6NmMrn6ozSDjV348Lb0=;
+        b=ZFlSfuRPGlCQe+EmeKxKSNKGmTvhrHBeMnpHszesth2GlNd9wCtu5biKcS7H8JdUYc
+         8j1UEm3LeV0+/5hRzQYCYE7cj/nTCCxtrdxahhwzbVSrIr9+XBFivDgWVhyNQKnwJ15e
+         psTMarHi9K5tY85l2+apN8ugNGkdivyNE2wKZnfabC7p/vXOaplogYeD+/D5SNw8xpOS
+         UqLCVTxOyLdpYcU3wwkY1AOH1xwjnELuS2loB8rR+bePQIeOnQGwa13CKgvgT69slEKS
+         RRG6aWIA6dsmW6e3RFm8bXA8PEGerZtALjTTnhq/QtW37OKRtoB6Q9rNrt4iXnB7G7Im
+         j/Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VoJ1XzenoMXIIHCTkV24ONDP6NmMrn6ozSDjV348Lb0=;
+        b=Qs9Rq13RkB3ISauIbUiKMiCgFHEBFlFF5KfIwbf6NADZQRP5gLTRju4sCFf8aN3Q7q
+         p8M6oIqfeXZT2FNHVx5d478sdJGgLkZD1E4gxtZMFTly1H/GfnzTX5ZOgottojGfVHh7
+         lK4HJ6BgajYmGKzQ9jykmEkSAa9PRBnsND+qx3QwWwPEKnOBHpZHN+58M1wT3uq8f8W3
+         xR8hK69RkccEdPQlC7WAGQ/7TvlZllYv1um1JyIu81bBw9WlKuZMLdGEVKGyUkZBOWci
+         EZBTdJHq+2HwLswDdhTycdthy3dkcZrt9s4FEUvxBN67wUaZabE+bauL1wCZ9Mwn1yUQ
+         mwug==
+X-Gm-Message-State: AOAM5338SpUPJXY+3ud7QyGkh7LcLTu7F+WVOUHN70KYXUBUpCgUhc9f
+        obSfZnJ7oX8cks32PHSbulW2m2jHHV4=
+X-Google-Smtp-Source: ABdhPJwyFgMV9YT2U9Rq99jv9Hsxeyzi6VKAS2lGsb5iQEkXlTkVLDUsqnm5AO2PRfCI+chKPNS1gA==
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id f12-20020a170902860c00b00149101725f0mr50041560plo.116.1641319978257;
+        Tue, 04 Jan 2022 10:12:58 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m19sm34972140pfk.218.2022.01.04.10.12.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 10:12:57 -0800 (PST)
+Subject: Re: [PATCH] serial: 8250_bcm7271: Fix return error code in case of
+ dma_alloc_coherent() failure
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Al Cooper <alcooperx@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Jiri Slaby <jirislaby@kernel.org>
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Prabhakar <prabhakar.csengg@gmail.com>,
         linux-serial@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: 8250_bcm7271: Fix return error code in case of dma_alloc_coherent() failure
-Date:   Tue,  4 Jan 2022 17:50:08 +0000
-Message-Id: <20220104175009.7029-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+References: <20220104175009.7029-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9f8ef75a-9743-b89e-3d6b-ca4907db2de0@gmail.com>
+Date:   Tue, 4 Jan 2022 10:12:54 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220104175009.7029-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In case of dma_alloc_coherent() failure return -ENOMEM instead of
-returning -EINVAL.
+On 1/4/22 9:50 AM, Lad Prabhakar wrote:
+> In case of dma_alloc_coherent() failure return -ENOMEM instead of
+> returning -EINVAL.
+> 
+> Fixes: c195438f1e84 ("serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()")
+> Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Fixes: c195438f1e84 ("serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()")
-Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
-Hi All,
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-This patch applies to -next.
-
-Cheers,
-Prabhakar
----
- drivers/tty/serial/8250/8250_bcm7271.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index cc60a7874e8b..9b878d023dac 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1075,7 +1075,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 						   priv->rx_size,
- 						   &priv->rx_addr, GFP_KERNEL);
- 		if (!priv->rx_bufs) {
--			ret = -EINVAL;
-+			ret = -ENOMEM;
- 			goto err;
- 		}
- 		priv->tx_size = UART_XMIT_SIZE;
-@@ -1083,7 +1083,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 						  priv->tx_size,
- 						  &priv->tx_addr, GFP_KERNEL);
- 		if (!priv->tx_buf) {
--			ret = -EINVAL;
-+			ret = -ENOMEM;
- 			goto err;
- 		}
- 	}
+The fixes tag may be a bit superfluous since this is just an error path,
+but it is correct nonetheless.
 -- 
-2.17.1
-
+Florian
