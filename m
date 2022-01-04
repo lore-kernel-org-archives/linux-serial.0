@@ -2,72 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B02C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 15:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF706C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 17:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiADPFd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 4 Jan 2022 10:05:33 -0500
-Received: from mout02.posteo.de ([185.67.36.142]:44689 "EHLO mout02.posteo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234670AbiADPFc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 4 Jan 2022 10:05:32 -0500
-X-Greylist: delayed 448 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 Jan 2022 10:05:32 EST
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id 7DA9A240105
-        for <linux-serial@vger.kernel.org>; Tue,  4 Jan 2022 15:58:02 +0100 (CET)
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4JSwhj2x3Mz9rwn;
-        Tue,  4 Jan 2022 15:57:57 +0100 (CET)
-Message-ID: <c5c4176f-2a55-6fc5-d5dd-ce3b43fd11ff@posteo.net>
-Date:   Tue,  4 Jan 2022 14:57:56 +0000
-MIME-Version: 1.0
-Subject: Re: [PATCH] serial: atmel: Use platform_get_irq() to get the
- interrupt
-Content-Language: fr-FR
-To:     Rob Herring <robh@kernel.org>,
+        id S234272AbiADRuq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 12:50:46 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:30825 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233839AbiADRuq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 4 Jan 2022 12:50:46 -0500
+X-IronPort-AV: E=Sophos;i="5.88,261,1635174000"; 
+   d="scan'208";a="105493655"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 05 Jan 2022 02:50:44 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id A87A240B3513;
+        Wed,  5 Jan 2022 02:50:42 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Al Cooper <alcooperx@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20211215224832.1985402-1-robh@kernel.org>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20211215224832.1985402-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-serial@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_bcm7271: Fix return error code in case of dma_alloc_coherent() failure
+Date:   Tue,  4 Jan 2022 17:50:08 +0000
+Message-Id: <20220104175009.7029-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+In case of dma_alloc_coherent() failure return -ENOMEM instead of
+returning -EINVAL.
 
-Le 15/12/2021 à 23:48, Rob Herring a écrit :
-> Accessing platform device resources directly has long been deprecated for
-> DT as IRQ resources may not be available at device creation time. Drivers
-> continuing to use static IRQ resources is blocking removing the static setup
-> from the DT core code.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Fixes: c195438f1e84 ("serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()")
+Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+Hi All,
 
-> ---
->   drivers/tty/serial/atmel_serial.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 2c99a47a2535..9e57bfe523cf 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2479,7 +2479,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
->   	port->fifosize		= 1;
->   	port->dev		= &pdev->dev;
->   	port->mapbase		= mpdev->resource[0].start;
-> -	port->irq		= mpdev->resource[1].start;
-> +	port->irq		= platform_get_irq(mpdev, 0);
->   	port->rs485_config	= atmel_config_rs485;
->   	port->iso7816_config	= atmel_config_iso7816;
->   	port->membase		= NULL;
+This patch applies to -next.
 
-Thanks !
+Cheers,
+Prabhakar
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index cc60a7874e8b..9b878d023dac 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1075,7 +1075,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 						   priv->rx_size,
+ 						   &priv->rx_addr, GFP_KERNEL);
+ 		if (!priv->rx_bufs) {
+-			ret = -EINVAL;
++			ret = -ENOMEM;
+ 			goto err;
+ 		}
+ 		priv->tx_size = UART_XMIT_SIZE;
+@@ -1083,7 +1083,7 @@ static int brcmuart_probe(struct platform_device *pdev)
+ 						  priv->tx_size,
+ 						  &priv->tx_addr, GFP_KERNEL);
+ 		if (!priv->tx_buf) {
+-			ret = -EINVAL;
++			ret = -ENOMEM;
+ 			goto err;
+ 		}
+ 	}
+-- 
+2.17.1
+
