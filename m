@@ -2,147 +2,184 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C755C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  3 Jan 2022 23:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CA8C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  4 Jan 2022 07:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiACXkR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 3 Jan 2022 18:40:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiACXkE (ORCPT
+        id S233104AbiADHR6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 4 Jan 2022 02:17:58 -0500
+Received: from mail-ed1-f46.google.com ([209.85.208.46]:37873 "EHLO
+        mail-ed1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230349AbiADHR6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 3 Jan 2022 18:40:04 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F389C061761;
-        Mon,  3 Jan 2022 15:40:03 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id v4so29884127qtk.0;
-        Mon, 03 Jan 2022 15:40:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Y0OBHyV0Yv0fxv0JIp0Dg+o77BaY4TFzMuQN0E/92Zw=;
-        b=jfglK91yHDPAxFW7UmvQNIZ3Kb9MeAw7xven4vLGLkBIgPwJBin6posEjhgdflEu2I
-         NwOfxO7RtcpObVq+lxSVAnS6Q16s4pYtSqSu6hJGeqRceig7duFgVijexrttL5knuRwH
-         ksX2haCa4oOPKIe16zHaf+IxHM9238NFn4jSPn9LXK4XmFOg33OixZgsmLcEIQCqgObm
-         kLe0hWpr6dfXE3cZrM2rcbICu8YRsXK9vP8UCHpkbGkSej/2lpTJ9Y1+U9igy7s+ZcUR
-         k9jaF07oxbuN1eG5o1SK/djvYMPMiSWRnk+4Rl/5JsqG8MMbSNhW7/oE7nc32Km5nozk
-         y0Wg==
+        Tue, 4 Jan 2022 02:17:58 -0500
+Received: by mail-ed1-f46.google.com with SMTP id o6so144858442edc.4;
+        Mon, 03 Jan 2022 23:17:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Y0OBHyV0Yv0fxv0JIp0Dg+o77BaY4TFzMuQN0E/92Zw=;
-        b=KH51vO79klCJ5QkKCVLDvlpu2kkPW/sm1RhVlzK5DKJUSABjjmJ4hbgXB7zyX3hiVA
-         QR0de18jecAfdv1S/UWnJ4zMEiqt7NR3O+H+6QKxFupCqZh8yVEZrhnbB7l8y61VOQBV
-         5HYpKROPtAJjGX8gN6FNHGp0gq+cb3HbtLNDsfsvFm0XzakaVi35EaH4ioQaU7/JYI9C
-         Zcj3mYJJPhoY/N89i5snBKDNd21zIE0I8mcSoYb34VadZKkgccYeby0LodHbQbtr3hm/
-         Ilvj+hyrs+Qcx6LqVTnKbkrttuSAr0bW+GeMmv2u8tZS9EQGcDmt4oeV8gwl3Il2bU/6
-         TnfQ==
-X-Gm-Message-State: AOAM532QEreWoBmHIcA1j1/9DyC2KQjShlbJKX9VoBMBNoBNdhj7cd/F
-        SVagZ/wfBXyYyrvvf3XZizA=
-X-Google-Smtp-Source: ABdhPJzhGRPuzumek58syRdqEvkjERaZvB9j7i2ee8TKYsHTfcv8/2Xw18wRIlR/yDEpPv807riaGg==
-X-Received: by 2002:ac8:7f89:: with SMTP id z9mr42462922qtj.15.1641253202503;
-        Mon, 03 Jan 2022 15:40:02 -0800 (PST)
-Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
-        by smtp.gmail.com with ESMTPSA id o5sm26965991qkp.132.2022.01.03.15.40.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jan 2022 15:40:02 -0800 (PST)
-From:   Jesse Taube <mr.bossman075@gmail.com>
-X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
-To:     linux-imx@nxp.com
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
-        stefan@agner.ch, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
-        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
-        adrian.hunter@intel.com, jirislaby@kernel.org,
-        giulio.benetti@benettiengineering.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, Mr.Bossman075@gmail.com,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v7 7/7] ARM: imxrt_defconfig: Add i.MXRT family defconfig
-Date:   Mon,  3 Jan 2022 18:39:48 -0500
-Message-Id: <20220103233948.198119-8-Mr.Bossman075@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220103233948.198119-1-Mr.Bossman075@gmail.com>
-References: <20220103233948.198119-1-Mr.Bossman075@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pOAXZ90y+NqNgM4bMsWBaGvAJnnSkQQXCw6loSgl2/0=;
+        b=XYdPiyPhm42BJoz5DA3nMwmgWfa6nsyyb3s6hvozNJ9/hjmr9c84cmcFuV3uSnWEow
+         JnkOT1MkU75P+ZBoVGeqsUNMyS+LIB5NbTFzfXsTkB3tbbrSw8BlFj2F8/T2YbMEHTDe
+         ijwGeqLgTIbwZNkjudxsL5bwG58N0bG9EZy2pE8a82Eaj2wP+Yv7/9zH9RTVRREvWqKk
+         HKtJzorDpWofQ2UEw7qjJcNXubBmkDWZuReZpohHaF3C1dWMUTfAZ8VS1pzv2g8ELs9Y
+         O2UZX0239BvNFX4dI/qvkDh1pMp36zai1OCOSFj+Ju+HhfEKFAWmCdXPoT0Ti+O2Al2I
+         ZOIw==
+X-Gm-Message-State: AOAM532NyvCdQ5JaWR1DTpA4PwuAc74Q4HHyF1bb3xPupo8PrbnfrpRy
+        WLJuGuHy4kwtvjNB/nb04GY=
+X-Google-Smtp-Source: ABdhPJxyS+tzswPsc9YapgmN417/e8DdnMTszn/Q2wP39cAGpiC/unR8VNCGRsayLdvZRy6T0izOmQ==
+X-Received: by 2002:a05:6402:1a4f:: with SMTP id bf15mr48104233edb.260.1641280677169;
+        Mon, 03 Jan 2022 23:17:57 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id j11sm14371994edv.0.2022.01.03.23.17.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Jan 2022 23:17:56 -0800 (PST)
+Message-ID: <50ceeac0-adb1-30c1-ecc7-ddd4fb94a99c@kernel.org>
+Date:   Tue, 4 Jan 2022 08:17:55 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2] serial: 8250: Move Alpha-specific quirk out of the
+ core
+Content-Language: en-US
+To:     Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Ulrich Teichert <krypton@ulrich-teichert.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+References: <b83d069cb516549b8a5420e097bb6bdd806f36fc.1640695609.git.lukas@wunner.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <b83d069cb516549b8a5420e097bb6bdd806f36fc.1640695609.git.lukas@wunner.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Giulio Benetti <giulio.benetti@benettiengineering.com>
+On 28. 12. 21, 18:22, Lukas Wunner wrote:
+> struct uart_8250_port contains mcr_mask and mcr_force members whose
+> sole purpose is to work around an Alpha-specific quirk.  This code
+> doesn't belong in the core where it is executed by everyone else,
+> so move it to a proper ->set_mctrl callback which is used on the
+> affected Alpha machine only.
+> 
+> The quirk was introduced in January 1995:
+> https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/diff/drivers/char/serial.c?h=1.1.83
+> 
+> The members in struct uart_8250_port were added in 2002:
+> https://git.kernel.org/history/history/c/4524aad27854
+> 
+> The quirk applies to non-PCI Alphas and arch/alpha/Kconfig specifies
+> "select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
+> machine is the EISA-based Jensen that Linus was working on back then:
+> https://lore.kernel.org/all/CAHk-=wj1JWZ3sCrGz16nxEj7=0O+srMg6Ah3iPTDXSPKEws_SA@mail.gmail.com/
+> 
+> Up until now the quirk is not applied unless CONFIG_PCI is disabled.
+> If users forget to do that or run a generic Alpha kernel, the serial
+> ports aren't usable on Jensen.  Avoid by confining the quirk to
+> CONFIG_ALPHA_JENSEN instead of !CONFIG_PCI.  On generic Alpha kernels,
+> auto-detect at runtime whether the quirk needs to be applied.
+> 
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> Cc: Ulrich Teichert <krypton@ulrich-teichert.org>
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> ---
+> Changes in v2:
+> * Also apply quirk when running a generic Alpha kernel on a Jensen.
+> * Fix outdated reference to the quirk in sunsu.c.
+> 
+>   drivers/tty/serial/8250/8250.h       | 12 ++----------
+>   drivers/tty/serial/8250/8250_alpha.c | 21 +++++++++++++++++++++
+>   drivers/tty/serial/8250/8250_core.c  |  9 ++++-----
+>   drivers/tty/serial/8250/8250_port.c  |  2 +-
+>   drivers/tty/serial/8250/Makefile     |  2 ++
+>   drivers/tty/serial/sunsu.c           |  3 ++-
+>   include/linux/serial_8250.h          |  2 --
+>   7 files changed, 32 insertions(+), 19 deletions(-)
+>   create mode 100644 drivers/tty/serial/8250/8250_alpha.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+> index 6473361525d1..db784ace25d8 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -241,16 +241,8 @@ static inline int serial8250_in_MCR(struct uart_8250_port *up)
+>   	return mctrl;
+>   }
+>   
+> -#if defined(__alpha__) && !defined(CONFIG_PCI)
+> -/*
+> - * Digital did something really horribly wrong with the OUT1 and OUT2
+> - * lines on at least some ALPHA's.  The failure mode is that if either
+> - * is cleared, the machine locks up with endless interrupts.
+> - */
+> -#define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
+> -#else
+> -#define ALPHA_KLUDGE_MCR 0
+> -#endif
+> +bool alpha_jensen(void);
+> +void alpha_jensen_set_mctrl(struct uart_port *port, unsigned int mctrl);
+>   
+>   #ifdef CONFIG_SERIAL_8250_PNP
+>   int serial8250_pnp_init(void);
+> diff --git a/drivers/tty/serial/8250/8250_alpha.c b/drivers/tty/serial/8250/8250_alpha.c
+> new file mode 100644
+> index 000000000000..58e70328aa4d
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_alpha.c
+> @@ -0,0 +1,21 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +
+> +#include <asm/machvec.h>
+> +#include "8250.h"
+> +
+> +bool alpha_jensen(void)
+> +{
+> +	return !strcmp(alpha_mv.vector_name, "Jensen");
+> +}
+> +
+> +void alpha_jensen_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> +{
+> +	/*
+> +	 * Digital did something really horribly wrong with the OUT1 and OUT2
+> +	 * lines on Alpha Jensen.  The failure mode is that if either is
+> +	 * cleared, the machine locks up with endless interrupts.
+> +	 */
+> +	mctrl |= TIOCM_OUT1 | TIOCM_OUT2;
+> +
+> +	serial8250_do_set_mctrl(port, mctrl);
+> +}
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 1ce193daea7f..01d30f6ed8fb 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -509,11 +509,10 @@ static void __init serial8250_isa_init_ports(void)
+>   
+>   		up->ops = &univ8250_driver_ops;
+>   
+> -		/*
+> -		 * ALPHA_KLUDGE_MCR needs to be killed.
+> -		 */
+> -		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
+> -		up->mcr_force = ALPHA_KLUDGE_MCR;
+> +		if (IS_ENABLED(CONFIG_ALPHA_JENSEN) ||
+> +		    (IS_ENABLED(CONFIG_ALPHA_GENERIC) && alpha_jensen()))
 
-Add generic i.MXRT family defconfig.
+It'd be definitely nicer, if here was only "if (alpha_jensen())". The 
+rest would be done in the header or in 8250_alpha.c.
 
-Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
-Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
----
-V1->V2:
-* Nothing done
-V2->V3:
-* Nothing done
-V3->V4:
-* Remove unnecessary CONFIGs
-* Add futex suport after "ARM: 9122/1: select HAVE_FUTEX_CMPXCHG"
-9d417cbe36eee7afdd85c2e871685f8dab7c2dba
-V4->V5:
-* Change commit description
-V5->V6:
-* Nothing done
-V6->V7:
-* Nothing done
----
- arch/arm/configs/imxrt_defconfig | 35 ++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
- create mode 100644 arch/arm/configs/imxrt_defconfig
+Or even create an empty __weak arch_serial8250_set_defaults() and also 
+one non-empty in arch/alpha/?
 
-diff --git a/arch/arm/configs/imxrt_defconfig b/arch/arm/configs/imxrt_defconfig
-new file mode 100644
-index 000000000000..52dba3762996
---- /dev/null
-+++ b/arch/arm/configs/imxrt_defconfig
-@@ -0,0 +1,35 @@
-+# CONFIG_LOCALVERSION_AUTO is not set
-+CONFIG_BPF_SYSCALL=y
-+CONFIG_SCHED_AUTOGROUP=y
-+# CONFIG_MMU is not set
-+CONFIG_ARCH_MXC=y
-+CONFIG_SOC_IMXRT=y
-+CONFIG_SET_MEM_PARAM=y
-+CONFIG_DRAM_BASE=0x80000000
-+CONFIG_DRAM_SIZE=0x02000000
-+CONFIG_BINFMT_FLAT=y
-+CONFIG_UEVENT_HELPER=y
-+CONFIG_DEVTMPFS=y
-+CONFIG_DEVTMPFS_MOUNT=y
-+CONFIG_IMX_WEIM=y
-+CONFIG_LEGACY_PTY_COUNT=2
-+CONFIG_SERIAL_FSL_LPUART=y
-+CONFIG_SERIAL_FSL_LPUART_CONSOLE=y
-+CONFIG_SERIAL_DEV_BUS=y
-+CONFIG_PINCTRL_IMXRT1050=y
-+CONFIG_GPIO_MXC=y
-+CONFIG_MMC=y
-+CONFIG_MMC_SDHCI=y
-+CONFIG_MMC_SDHCI_PLTFM=y
-+CONFIG_MMC_SDHCI_ESDHC_IMX=y
-+CONFIG_DMADEVICES=y
-+CONFIG_FSL_EDMA=y
-+CONFIG_CLK_IMXRT1050=y
-+CONFIG_EXT4_FS=y
-+CONFIG_EXT4_FS_POSIX_ACL=y
-+CONFIG_EXT4_FS_SECURITY=y
-+CONFIG_VFAT_FS=y
-+CONFIG_FAT_DEFAULT_UTF8=y
-+CONFIG_EXFAT_FS=y
-+CONFIG_NLS_ASCII=y
-+CONFIG_NLS_UTF8=y
+thanks,
 -- 
-2.34.1
-
+js
+suse labs
