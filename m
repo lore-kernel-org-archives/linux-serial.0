@@ -2,146 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2FFC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 14:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F37C4167E
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 17:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbiAEOho (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jan 2022 09:37:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236305AbiAEOhn (ORCPT
+        id S242453AbiAERml (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:42:41 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4352 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242412AbiAERmi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jan 2022 09:37:43 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3114C061761
-        for <linux-serial@vger.kernel.org>; Wed,  5 Jan 2022 06:37:42 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id bp20so89595989lfb.6
-        for <linux-serial@vger.kernel.org>; Wed, 05 Jan 2022 06:37:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=t5/NVsWW+HYep8WxiVlKj1ccvmsZcX9F48EbbEDJQ80=;
-        b=AK/m13lH3EzyHcNNLurvkeiNyqdnrstinP5637TebQtdG5CCRRFfiRAyNT2YuOtDvq
-         tZoWMRLm8V/Ku2YIu4PKIdIRIKl1gQEZLMZBbOoqANvhWgfW0f1VHgORMuAuXJTDdMKP
-         P3uwYFFEWFq/2j8b/NoOjVdMv7ac7uD4Jy2e7KOh0fmjsIrP2KdnCeY2gezP+29Hid0X
-         IjGpOZHQjGNuQdLASR58VhtVtajDIcekPn/rcxFyhlgE7CZ59UBbMmVpd829jwET8gQN
-         apUaMWRMqs+DS5qd0e89cJfZLJNJ/Zbj05f4vzqSLnGnRFxwm/xtjRLDT6geneKMQP92
-         opVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version:content-transfer-encoding;
-        bh=t5/NVsWW+HYep8WxiVlKj1ccvmsZcX9F48EbbEDJQ80=;
-        b=GCuNhdlTFtMKIwo3W3pR2WOpy4RF1Up7ucSVfsCSjASbTXL/xt7HSErdqOXY5Avt2b
-         N7jFKEb9zTiaUtdgI60qyOfPHCBBM+u9BkFECXvufMbSCKS6dc/+VeB1SYbmOLpAk8TV
-         +R4K47za7wNM3TfSd0oMYNktUuMzXMYeh8U4H4GfvsumgYMKjWQa4I1sNyDRrRgVkQaS
-         sBj/s3BWytc/ruB3NGvMzmbRtr5P163oDMlZJ1DMC3yNZe7yaSkqvpe7ky3PqgpXN24w
-         AAAim0JXFCUjyALX67rK4IYEMHS3ddeeoFdCW2tDC5B0qkYBRvYvYKLhFyOo91zBiwnr
-         BBaA==
-X-Gm-Message-State: AOAM532rlNzScN2m/IN/jo5VHYNZ72dyJgwTy86VF6GuTEPu72ApDE8w
-        DuedW9X9vcPneR978F44b1un458ggl8=
-X-Google-Smtp-Source: ABdhPJx74RFU4LQKj4uLkIUvUBx4PEPCr7jMXGzFfm2LNCTnlnnDkNledf0+vU5upBk2Hqrv7ffyxw==
-X-Received: by 2002:a05:6512:12c5:: with SMTP id p5mr48262005lfg.354.1641393461167;
-        Wed, 05 Jan 2022 06:37:41 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id u11sm4216800lfl.101.2022.01.05.06.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 06:37:40 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        k.drobinski@camlintechnologies.com,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH] serial: imx: reduce RX interrupt frequency
-References: <20220104103203.2033673-1-tomasz.mon@camlingroup.com>
-        <YdQndwYc9xaauvpS@kroah.com> <877dbe5oct.fsf@osv.gnss.ru>
-        <20220105130431.b3vb2icesuedaavk@pengutronix.de>
-        <87pmp64831.fsf@osv.gnss.ru>
-        <20220105134059.rcvegrjghgm7ryeh@pengutronix.de>
-Date:   Wed, 05 Jan 2022 17:37:39 +0300
-In-Reply-To: <20220105134059.rcvegrjghgm7ryeh@pengutronix.de> (Marc
-        Kleine-Budde's message of "Wed, 5 Jan 2022 14:40:59 +0100")
-Message-ID: <87iluy45ak.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Wed, 5 Jan 2022 12:42:38 -0500
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JTcDP1FRwz67w73;
+        Thu,  6 Jan 2022 01:39:17 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 5 Jan 2022 18:42:31 +0100
+Received: from [10.47.27.56] (10.47.27.56) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 5 Jan
+ 2022 17:42:28 +0000
+From:   John Garry <john.garry@huawei.com>
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Arnd Bergmann" <arnd@arndb.de>
+CC:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ettore Chimenti <ek5.chimenti@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "Palmer Dabbelt" <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Ian Abbott" <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "Karsten Keil" <isdn@linux-pingi.de>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        <GR-QLogic-Storage-Upstream@marvell.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Teddy Wang" <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Wim Van Sebroeck" <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arch@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-csky@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-hwmon@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <MPT-FusionLinux.pdl@broadcom.com>,
+        <linux-scsi@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+        <linux-wireless@vger.kernel.org>, <megaraidlinux.pdl@broadcom.com>,
+        <linux-spi@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-watchdog@vger.kernel.org>
+References: <20211229160317.GA1681139@bhelgaas>
+ <e0877e91d7d50299ea5a3ffcee2cf1016458ce10.camel@linux.ibm.com>
+Message-ID: <3f39d8a2-2e57-a671-2926-eb4f2bf20c76@huawei.com>
+Date:   Wed, 5 Jan 2022 17:42:16 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e0877e91d7d50299ea5a3ffcee2cf1016458ce10.camel@linux.ibm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.27.56]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Marc Kleine-Budde <mkl@pengutronix.de> writes:
+On 29/12/2021 16:55, Niklas Schnelle wrote:
+> On Wed, 2021-12-29 at 10:03 -0600, Bjorn Helgaas wrote:
+>> On Wed, Dec 29, 2021 at 01:12:07PM +0100, Mauro Carvalho Chehab wrote:
+>>> Em Wed, 29 Dec 2021 12:45:38 +0100
+>>> Niklas Schnelle<schnelle@linux.ibm.com>  escreveu:
+>>>> ...
+>>>> I do think we agree that once done correctly there is value in
+>>>> such an option independent of HAS_IOPORT only gating inb() etc uses.
+>> I'm not sure I'm convinced about this.  For s390, you could do this
+>> patch series, where you don't define inb() at all, and you add new
+>> dependencies to prevent compile errors.  Or you could define inb() to
+>> return ~0, which is what happens on other platforms when the device is
+>> not present.
+>>
+>>> Personally, I don't see much value on a Kconfig var for legacy PCI I/O
+>>> space. From maintenance PoV, bots won't be triggered if someone use
+>>> HAS_IOPORT instead of the PCI specific one - or vice-versa. So, we
+>>> could end having a mix of both at the wrong places, in long term.
+>>>
+>>> Also, assuming that PCIe hardware will some day abandon support for
+>>> "legacy" PCI I/O space, I guess some runtime logic would be needed,
+>>> in order to work with both kinds of PCIe controllers. So, having a
+>>> Kconfig option won't help much, IMO.
+>>>
+>>> So, my personal preference would be to have just one Kconfig var, but
+>>> I'm ok if the PCI maintainers decide otherwise.
+>> I don't really like the "LEGACY_PCI" Kconfig option.  "Legacy" just
+>> means something old and out of favor; it doesn't say*what*  that
+>> something is.
+>>
+>> I think you're specifically interested in I/O port space usage, and it
+>> seems that you want all PCI drivers that*only*  use I/O port space to
+>> depend on LEGACY_PCI?  Drivers that can use either I/O or memory
+>> space or both would not depend on LEGACY_PCI?  This seems a little
+>> murky and error-prone.
+> I'd like to hear Arnd's opinion on this but you're the PCI maintainer
+> so of course your buy-in would be quite important for such an option.
+> 
 
-> On 05.01.2022 16:37:22, Sergey Organov wrote:
->> Marc Kleine-Budde <mkl@pengutronix.de> writes:
->> 
->> > On 05.01.2022 16:00:34, Sergey Organov wrote:
->> >> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
->> >> 
->> >> > On Tue, Jan 04, 2022 at 11:32:03AM +0100, Tomasz Moń wrote:
->> >> >> Triggering RX interrupt for every byte defeats the purpose of aging
->> >> >> timer and leads to interrupt starvation at high baud rates.
->> >> >> 
->> >> >> Increase receiver trigger level to 8 to increase the minimum period
->> >> >> between RX interrupts to 8 characters time. The tradeoff is increased
->> >> >> latency. In the worst case scenario, where RX data has intercharacter
->> >> >> delay slightly less than aging timer (8 characters time), it can take
->> >> >> up to 63 characters time for the interrupt to be raised since the
->> >> >> reception of the first character.
->> >> >
->> >> > Why can't you do this dynamically based on the baud rate so as to always
->> >> > work properly for all speeds without increased delays for slower ones?
->> >> 
->> >> I don't like the idea of dynamic threshold as I don't think increased
->> >> complexity is worth it.
->> >> 
->> >> In fact the threshold works "properly" on any baud rate, as maximum
->> >> latency is proportional to the current baud rate, and if somebody does
->> >> care about *absolute* latency, increasing baud rate is the primary
->> >> solution.
->> >
->> > Nope - this only works if you have both sides under control.... Which is
->> > not the case in our $CUSTROMER's use case.
->> 
->> Yep, if one can't use primary solution, they need to come up with
->> something else.
->
-> Please don't break existing use cases while improving the kernel.
+Hi Niklas,
 
-If we aim at strict backward compatibility, the default value of water
-level mark should not be changed, and I'm afraid it can't be changed at
-any baud rate that is currently supported, as we can't be sure nobody
-uses that feature of being "low latency" at any given baud rate.
+I can't see the value in the LEGACY_PCI config - however I don't really 
+understand Arnd's original intention.
 
->
->> Where is that historical "low-latency" bit, by the
->> way?
->
-> ...has been removed:
->
-> https://lore.kernel.org/all/20210105120239.28031-11-jslaby@suse.cz/
->
-> Is there an option to bring that back?
+It was written that it would allow us to control "whether we have any 
+pre-PCIe devices or those PCIe drivers that need PIO accessors other 
+than ioport_map()/pci_iomap()".
 
-It had different meaning as far as I recall, but as a way out of current
-situation, I think something similar could be introduced as an
-additional bit for tty parameters structure that is "true" by default,
-meaning "minimize latency", and can be set to "false" through ioctl().
-
-Alternatively, we might want to introduce "threshold baud rate"
-parameter for tty, for drivers to be free to set high watermarks above
-that baud rate.
+However I just don't see why CONFIG_PCI=y and CONFIG_HAS_IOPORT=y aren't 
+always the gating factor here. Arnd?
 
 Thanks,
--- Sergey Organov
-
-
->
-> Marc
+John
