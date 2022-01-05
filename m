@@ -2,34 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFEDC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 13:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2FFC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 14:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240417AbiAENlK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jan 2022 08:41:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
+        id S237590AbiAEOho (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jan 2022 09:37:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240392AbiAENlJ (ORCPT
+        with ESMTP id S236305AbiAEOhn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jan 2022 08:41:09 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EC9C061761
-        for <linux-serial@vger.kernel.org>; Wed,  5 Jan 2022 05:41:09 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1n56XG-0006q0-9x; Wed, 05 Jan 2022 14:41:02 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-7899-4998-133d-b4b9.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7899:4998:133d:b4b9])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 7D08F6D1A13;
-        Wed,  5 Jan 2022 13:41:00 +0000 (UTC)
-Date:   Wed, 5 Jan 2022 14:40:59 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Sergey Organov <sorganov@gmail.com>
+        Wed, 5 Jan 2022 09:37:43 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3114C061761
+        for <linux-serial@vger.kernel.org>; Wed,  5 Jan 2022 06:37:42 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id bp20so89595989lfb.6
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jan 2022 06:37:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=t5/NVsWW+HYep8WxiVlKj1ccvmsZcX9F48EbbEDJQ80=;
+        b=AK/m13lH3EzyHcNNLurvkeiNyqdnrstinP5637TebQtdG5CCRRFfiRAyNT2YuOtDvq
+         tZoWMRLm8V/Ku2YIu4PKIdIRIKl1gQEZLMZBbOoqANvhWgfW0f1VHgORMuAuXJTDdMKP
+         P3uwYFFEWFq/2j8b/NoOjVdMv7ac7uD4Jy2e7KOh0fmjsIrP2KdnCeY2gezP+29Hid0X
+         IjGpOZHQjGNuQdLASR58VhtVtajDIcekPn/rcxFyhlgE7CZ59UBbMmVpd829jwET8gQN
+         apUaMWRMqs+DS5qd0e89cJfZLJNJ/Zbj05f4vzqSLnGnRFxwm/xtjRLDT6geneKMQP92
+         opVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version:content-transfer-encoding;
+        bh=t5/NVsWW+HYep8WxiVlKj1ccvmsZcX9F48EbbEDJQ80=;
+        b=GCuNhdlTFtMKIwo3W3pR2WOpy4RF1Up7ucSVfsCSjASbTXL/xt7HSErdqOXY5Avt2b
+         N7jFKEb9zTiaUtdgI60qyOfPHCBBM+u9BkFECXvufMbSCKS6dc/+VeB1SYbmOLpAk8TV
+         +R4K47za7wNM3TfSd0oMYNktUuMzXMYeh8U4H4GfvsumgYMKjWQa4I1sNyDRrRgVkQaS
+         sBj/s3BWytc/ruB3NGvMzmbRtr5P163oDMlZJ1DMC3yNZe7yaSkqvpe7ky3PqgpXN24w
+         AAAim0JXFCUjyALX67rK4IYEMHS3ddeeoFdCW2tDC5B0qkYBRvYvYKLhFyOo91zBiwnr
+         BBaA==
+X-Gm-Message-State: AOAM532rlNzScN2m/IN/jo5VHYNZ72dyJgwTy86VF6GuTEPu72ApDE8w
+        DuedW9X9vcPneR978F44b1un458ggl8=
+X-Google-Smtp-Source: ABdhPJx74RFU4LQKj4uLkIUvUBx4PEPCr7jMXGzFfm2LNCTnlnnDkNledf0+vU5upBk2Hqrv7ffyxw==
+X-Received: by 2002:a05:6512:12c5:: with SMTP id p5mr48262005lfg.354.1641393461167;
+        Wed, 05 Jan 2022 06:37:41 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id u11sm4216800lfl.101.2022.01.05.06.37.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 06:37:40 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Fabio Estevam <festevam@gmail.com>,
         linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
@@ -40,102 +60,88 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>
 Subject: Re: [PATCH] serial: imx: reduce RX interrupt frequency
-Message-ID: <20220105134059.rcvegrjghgm7ryeh@pengutronix.de>
 References: <20220104103203.2033673-1-tomasz.mon@camlingroup.com>
- <YdQndwYc9xaauvpS@kroah.com>
- <877dbe5oct.fsf@osv.gnss.ru>
- <20220105130431.b3vb2icesuedaavk@pengutronix.de>
- <87pmp64831.fsf@osv.gnss.ru>
+        <YdQndwYc9xaauvpS@kroah.com> <877dbe5oct.fsf@osv.gnss.ru>
+        <20220105130431.b3vb2icesuedaavk@pengutronix.de>
+        <87pmp64831.fsf@osv.gnss.ru>
+        <20220105134059.rcvegrjghgm7ryeh@pengutronix.de>
+Date:   Wed, 05 Jan 2022 17:37:39 +0300
+In-Reply-To: <20220105134059.rcvegrjghgm7ryeh@pengutronix.de> (Marc
+        Kleine-Budde's message of "Wed, 5 Jan 2022 14:40:59 +0100")
+Message-ID: <87iluy45ak.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6ug27dxrsfcpvwlc"
-Content-Disposition: inline
-In-Reply-To: <87pmp64831.fsf@osv.gnss.ru>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Marc Kleine-Budde <mkl@pengutronix.de> writes:
 
---6ug27dxrsfcpvwlc
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On 05.01.2022 16:37:22, Sergey Organov wrote:
+>> Marc Kleine-Budde <mkl@pengutronix.de> writes:
+>> 
+>> > On 05.01.2022 16:00:34, Sergey Organov wrote:
+>> >> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+>> >> 
+>> >> > On Tue, Jan 04, 2022 at 11:32:03AM +0100, Tomasz Moń wrote:
+>> >> >> Triggering RX interrupt for every byte defeats the purpose of aging
+>> >> >> timer and leads to interrupt starvation at high baud rates.
+>> >> >> 
+>> >> >> Increase receiver trigger level to 8 to increase the minimum period
+>> >> >> between RX interrupts to 8 characters time. The tradeoff is increased
+>> >> >> latency. In the worst case scenario, where RX data has intercharacter
+>> >> >> delay slightly less than aging timer (8 characters time), it can take
+>> >> >> up to 63 characters time for the interrupt to be raised since the
+>> >> >> reception of the first character.
+>> >> >
+>> >> > Why can't you do this dynamically based on the baud rate so as to always
+>> >> > work properly for all speeds without increased delays for slower ones?
+>> >> 
+>> >> I don't like the idea of dynamic threshold as I don't think increased
+>> >> complexity is worth it.
+>> >> 
+>> >> In fact the threshold works "properly" on any baud rate, as maximum
+>> >> latency is proportional to the current baud rate, and if somebody does
+>> >> care about *absolute* latency, increasing baud rate is the primary
+>> >> solution.
+>> >
+>> > Nope - this only works if you have both sides under control.... Which is
+>> > not the case in our $CUSTROMER's use case.
+>> 
+>> Yep, if one can't use primary solution, they need to come up with
+>> something else.
+>
+> Please don't break existing use cases while improving the kernel.
 
-On 05.01.2022 16:37:22, Sergey Organov wrote:
-> Marc Kleine-Budde <mkl@pengutronix.de> writes:
->=20
-> > On 05.01.2022 16:00:34, Sergey Organov wrote:
-> >> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
-> >>=20
-> >> > On Tue, Jan 04, 2022 at 11:32:03AM +0100, Tomasz Mo=C5=84 wrote:
-> >> >> Triggering RX interrupt for every byte defeats the purpose of aging
-> >> >> timer and leads to interrupt starvation at high baud rates.
-> >> >>=20
-> >> >> Increase receiver trigger level to 8 to increase the minimum period
-> >> >> between RX interrupts to 8 characters time. The tradeoff is increas=
-ed
-> >> >> latency. In the worst case scenario, where RX data has intercharact=
-er
-> >> >> delay slightly less than aging timer (8 characters time), it can ta=
-ke
-> >> >> up to 63 characters time for the interrupt to be raised since the
-> >> >> reception of the first character.
-> >> >
-> >> > Why can't you do this dynamically based on the baud rate so as to al=
-ways
-> >> > work properly for all speeds without increased delays for slower one=
-s?
-> >>=20
-> >> I don't like the idea of dynamic threshold as I don't think increased
-> >> complexity is worth it.
-> >>=20
-> >> In fact the threshold works "properly" on any baud rate, as maximum
-> >> latency is proportional to the current baud rate, and if somebody does
-> >> care about *absolute* latency, increasing baud rate is the primary
-> >> solution.
-> >
-> > Nope - this only works if you have both sides under control.... Which is
-> > not the case in our $CUSTROMER's use case.
->=20
-> Yep, if one can't use primary solution, they need to come up with
-> something else.
+If we aim at strict backward compatibility, the default value of water
+level mark should not be changed, and I'm afraid it can't be changed at
+any baud rate that is currently supported, as we can't be sure nobody
+uses that feature of being "low latency" at any given baud rate.
 
-Please don't break existing use cases while improving the kernel.
+>
+>> Where is that historical "low-latency" bit, by the
+>> way?
+>
+> ...has been removed:
+>
+> https://lore.kernel.org/all/20210105120239.28031-11-jslaby@suse.cz/
+>
+> Is there an option to bring that back?
 
-> Where is that historical "low-latency" bit, by the
-> way?
+It had different meaning as far as I recall, but as a way out of current
+situation, I think something similar could be introduced as an
+additional bit for tty parameters structure that is "true" by default,
+meaning "minimize latency", and can be set to "false" through ioctl().
 
-=2E..has been removed:
+Alternatively, we might want to introduce "threshold baud rate"
+parameter for tty, for drivers to be free to set high watermarks above
+that baud rate.
 
-https://lore.kernel.org/all/20210105120239.28031-11-jslaby@suse.cz/
+Thanks,
+-- Sergey Organov
 
-Is there an option to bring that back?
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---6ug27dxrsfcpvwlc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHVn+gACgkQqclaivrt
-76kMCwf9F2x5EUpEVaoYCxND3tRdZ8FFcMcOZ7karKS5EiEmpLjc0ydy20WNpxsq
-g+hnVYv9w2OWiwlqwPvZNe4V4npHafw4PX+N7MEMeGbyAkCwg0c2Jl038gcEyAgf
-snpwXvjVd+3tjaeAArh3p/rb38XFHB+jFMF5w3cRYTQk/aU00SOFNcg1Mb+iKQTp
-hr1UBM1rC32vJqGjyFvKNgtr4EKsMxOPqDhXdntT7r8laNoPq56LJRpApxUms3j9
-r9iHFOlFNTByWVQ5ccgasL429dkPPW0oWJL+l6LikdhvvRw79MkS6SA3ooQX2OhD
-7plAqPbQ+SwyKfGClbqghUwvwmgA9A==
-=7CFa
------END PGP SIGNATURE-----
-
---6ug27dxrsfcpvwlc--
+>
+> Marc
