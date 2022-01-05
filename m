@@ -2,132 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA382C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 10:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05441C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 13:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239561AbiAEK5N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jan 2022 05:57:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
+        id S236583AbiAENAj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 5 Jan 2022 08:00:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239570AbiAEK5M (ORCPT
+        with ESMTP id S236580AbiAENAi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jan 2022 05:57:12 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB60C061761
-        for <linux-serial@vger.kernel.org>; Wed,  5 Jan 2022 02:57:12 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1n53yb-00088L-4z; Wed, 05 Jan 2022 11:57:05 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-7899-4998-133d-b4b9.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7899:4998:133d:b4b9])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5AF1C6D18A3;
-        Wed,  5 Jan 2022 10:57:03 +0000 (UTC)
-Date:   Wed, 5 Jan 2022 11:57:02 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+        Wed, 5 Jan 2022 08:00:38 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1686FC061761
+        for <linux-serial@vger.kernel.org>; Wed,  5 Jan 2022 05:00:38 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id r4so45729811lfe.7
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jan 2022 05:00:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=UqVe6bAG+AeG0h6+TXigPHoEhXUFUZz4NkPNFzoDjHw=;
+        b=ZWICMIn1OBMyBlPrR8bm02QB66hHxMsLZQp3L8CwdXAn+rUKY6L82NweLwE9DmimaA
+         foim2bZ/81jBct2z31X0ExpPzzGQDKdrIlpFE1mVK1Sx26YMyokWlWwTc10fRZ6WXqH+
+         eQZj+a4V+sH4c7Ac+Jw/qdbU/0KYnfib37UmwBzlPCBSzH7cZOc0RVZWsfAbU5jpASX+
+         GDhq7+KaPTQR8vG71h6/9hBpHH20bJmBq4wGaHOhO8IMAJvnPTkBytKMG730D/KEpMDY
+         KepxBYZ7Tphj98GK5sg8XFj4HI41wIzjXsGAUEwPhDjrhDW1Xh1VT/HHz7cV/tgMc//+
+         o74A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version:content-transfer-encoding;
+        bh=UqVe6bAG+AeG0h6+TXigPHoEhXUFUZz4NkPNFzoDjHw=;
+        b=vou4AgyAKEw5NuCQC4ZpUE0xFbOnhzWgOM4vgD03cCAIFPs/YhvCEdcDTYuHJme8Ox
+         PQzulUjNnaYCL8gpUpgaj9m1rkv0HtGYDJ+W1tI3D/NWM8dmXdPWjX0xEMtbPKyxyw11
+         PZ2zU+ou3BN6IKE9ZvOA+7BKC43H88dPwOs3mNBWiLT0wrJO1CNHr2h//mJm1Ou1CfBF
+         n12yrS2mUcNk3ejwp1wBVmd+EEJvXFA7PNBECLgMf8U0jCTusm9Se4IwQJkdFhY0qm+O
+         wDcTvG8D4wPNc3HH0alzo8R9ij/c7+wMYCWmPn2dKqdBteKFDRMpXPP5oqWCQS+HFRYh
+         e1lA==
+X-Gm-Message-State: AOAM530UA1m03I8lO9xuKsZbtTyTatUlYwTeG+a6clhoMTDjVoNIhDGg
+        YnIk6Xo7iLN0Dkxh/izbFW0=
+X-Google-Smtp-Source: ABdhPJxLanuJXhy+8Ldh0L5SSQaTqFKiFBpRB5fXUSEqrLfX2rwDr9VnJ+nv9nOI6bpaatD+1QzXKQ==
+X-Received: by 2002:a19:674b:: with SMTP id e11mr17348941lfj.83.1641387636307;
+        Wed, 05 Jan 2022 05:00:36 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id q14sm4173661lfu.74.2022.01.05.05.00.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 05:00:35 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         k.drobinski@camlintechnologies.com
 Subject: Re: [PATCH] serial: imx: reduce RX interrupt frequency
-Message-ID: <20220105105702.vrz7u3nam27izwah@pengutronix.de>
 References: <20220104103203.2033673-1-tomasz.mon@camlingroup.com>
- <YdQndwYc9xaauvpS@kroah.com>
- <7e509806-77ae-8f94-2563-7dbae1ebca17@camlingroup.com>
- <YdQxmQ+OMCrabg2u@kroah.com>
- <20220104224900.u3omfbilejx2jawr@pengutronix.de>
- <4c48200b-cc2e-0766-a002-831a789d4879@camlingroup.com>
- <YdV00WYGGd49WYt9@kroah.com>
+        <YdQndwYc9xaauvpS@kroah.com>
+Date:   Wed, 05 Jan 2022 16:00:34 +0300
+In-Reply-To: <YdQndwYc9xaauvpS@kroah.com> (Greg Kroah-Hartman's message of
+        "Tue, 4 Jan 2022 11:54:47 +0100")
+Message-ID: <877dbe5oct.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5wlq3p55oytqdc3h"
-Content-Disposition: inline
-In-Reply-To: <YdV00WYGGd49WYt9@kroah.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
---5wlq3p55oytqdc3h
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Tue, Jan 04, 2022 at 11:32:03AM +0100, Tomasz Moń wrote:
+>> Triggering RX interrupt for every byte defeats the purpose of aging
+>> timer and leads to interrupt starvation at high baud rates.
+>> 
+>> Increase receiver trigger level to 8 to increase the minimum period
+>> between RX interrupts to 8 characters time. The tradeoff is increased
+>> latency. In the worst case scenario, where RX data has intercharacter
+>> delay slightly less than aging timer (8 characters time), it can take
+>> up to 63 characters time for the interrupt to be raised since the
+>> reception of the first character.
+>
+> Why can't you do this dynamically based on the baud rate so as to always
+> work properly for all speeds without increased delays for slower ones?
 
-On 05.01.2022 11:37:05, Greg Kroah-Hartman wrote:
-> On Wed, Jan 05, 2022 at 08:59:09AM +0100, Tomasz Mo=C5=84 wrote:
-> > On 04.01.2022 23:49, Uwe Kleine-K=C3=B6nig wrote:
-> > > On Tue, Jan 04, 2022 at 12:38:01PM +0100, Greg Kroah-Hartman wrote:
-> > >> On Tue, Jan 04, 2022 at 12:13:06PM +0100, Tomasz Mo=C5=84 wrote:
-> > >>> On 04.01.2022 11:54, Greg Kroah-Hartman wrote:
-> > >>>> Why can't you do this dynamically based on the baud rate so as to =
-always
-> > >>>> work properly for all speeds without increased delays for slower o=
-nes?
-> > >>>
-> > >>> Could you please advise on which baud rates to consider as slow? Do=
-es it
-> > >>> sound good to have the old trigger level for rates up to and includ=
-ing
-> > >>> 115200 and the new one for faster ones?
-> > >>
-> > >> You tell me, you are the one seeing this issue and are seeing delays=
- on
-> > >> slower values with your change.  Do some testing to see where the cu=
-rve
-> > >> is.
-> >=20
-> > While the increased latency due to this change is undeniable, it is
-> > important to note that latency is not everything. There are applications
-> > where the latency is crucial, however using Linux for such applications
-> > is questionable. Linux is not a Real Time Operating System after all.
->=20
-> Yes, Linux can be used in real time situtations just fine, look at the
-> RT patchset for proof of that.
->=20
-> So let's not make things any worse for no good reason if at all
-> possible.
+I don't like the idea of dynamic threshold as I don't think increased
+complexity is worth it.
 
-+1
+In fact the threshold works "properly" on any baud rate, as maximum
+latency is proportional to the current baud rate, and if somebody does
+care about *absolute* latency, increasing baud rate is the primary
+solution. At most I'd think about some ioctl() to manually tweak the
+threshold, for some exotic applications.
 
-We have a $CUSTOMER, where serial latency is crucial. And we have a task
-to cut down latencies and jitter even more.
+That said, are there examples in the kernel where this threshold is
+dynamic? If not, then it's another argument against introducing it, and
+if yes, then the OP will have reference implementation of exact
+dependency curve.
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---5wlq3p55oytqdc3h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHVeXsACgkQqclaivrt
-76l+Qwf/YWitn8APufBNgU4+dgTHNsMK5ArklPxAAK37cD3Dn+S1ATaRiRFzMcMV
-QemXYKmsdP2A+lN0RF+poNpeXORKWP3DUIVx6YiBxqzpkYeKRBKOCHC8bBtGzpmX
-RGLMDYPqv9VPJDpuFD/gBaDPum0p9sz+bph0Z43DlUTAAotKT926FJHiZGKwpYk/
-+QoOrCAwdoemv83zrASaKeRvLgiVsiRYbRaPABkkFq5YOWnmPYf6lKzxuUE1gfwb
-KdtsBpIVz4HWViMmcG4oLrHDqKP9pvxZOxNB47nchoEMJpGBYleJzH+7rBgS9Az6
-sxEhetc2Ik1PPzBv8wJdExpmpGibIQ==
-=UEzv
------END PGP SIGNATURE-----
-
---5wlq3p55oytqdc3h--
+Thanks,
+-- Sergey Organov
