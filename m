@@ -2,143 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E840EC433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  6 Jan 2022 15:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E85C433FE
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Jan 2022 17:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240526AbiAFPj1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Jan 2022 10:39:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240507AbiAFPj0 (ORCPT
+        id S242160AbiAFRl1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:41:27 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4360 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241966AbiAFRlY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Jan 2022 10:39:26 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5126FC061245
-        for <linux-serial@vger.kernel.org>; Thu,  6 Jan 2022 07:39:26 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id x6so5778938lfa.5
-        for <linux-serial@vger.kernel.org>; Thu, 06 Jan 2022 07:39:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=6sfkzUbiLnyJ9hqy3bUk8Fi6OGWLE1bDj7vLrDNoEoA=;
-        b=YqznuQ0b+u/t/z2z386vGFCmqo06dpkSX9MXsbvuPiCE8gKvvuEv0s22QIE95hQ1AI
-         a1lBTNhzIMwJo/qeVEZ1SUwRQtSLq6KXYyN30LBfePH4jhJdkY+4WAReztePdAnFR8zK
-         IOazvQK34DCj9+kCoxKBfFoecWF1jqg2DvOyA5ofm7L+MosjJQ2JKayWrwmG4EVot06v
-         iSp5zrxfiPhjxGCYiZGCvvLrlh9A/FI9ItgHBfs7M8WpwMqQmjYqf0cbLCa6jlwFh0o3
-         y0OblBtts4TACrkKmrrEZjOxgykEk021Oh4eSn3H01AtgM6dCUEMljLjBKx8Z3M5ifBD
-         oSxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version:content-transfer-encoding;
-        bh=6sfkzUbiLnyJ9hqy3bUk8Fi6OGWLE1bDj7vLrDNoEoA=;
-        b=BK3cu5ci9o47nHcu48mWjZDunQAnzacZSzjKHTwRkbXubv3BMrfB52f6PZLhiCabuL
-         LoDi9ZsI+Pf2mUsNhxVGTz+zYZAjf9LouUrjUyFaAPQxxt+spvlPr9EFLhdHEPSiG92t
-         eGrh/rYG846j3Zts7NdbmtmpCppY/FaCY3QsWveSTPthz2Z0od+sAhJUoy0ixv6qfBV+
-         vVkQ2+FtMOUSACWs3dkf0BkynoLR6Y0NdNjrgWd+dkIInCCCHq3+E2ZkzDtmTVwbWJwG
-         B5BDFDcmuT2GwpYftRS0YFVSjI+0yLcWfgIwrwYNv/S+sN2g7/jwHQV8FqSOn6jLRJ2q
-         keEg==
-X-Gm-Message-State: AOAM532nULMuBoH5zq9ke7HauksZuEOTCxUFINiow3/PK8kGE6In+d6b
-        t+TJX3BWa7oHijGIsRXnMoA=
-X-Google-Smtp-Source: ABdhPJzumIy5uf1JIodzUT0y9SllvVng/BcDqRlFAZeiV+Mlv0Jto0CYieyeDUFQ+jZ9vrLKz2X9xQ==
-X-Received: by 2002:a05:6512:25a:: with SMTP id b26mr51093384lfo.296.1641483564576;
-        Thu, 06 Jan 2022 07:39:24 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id f19sm202668lfv.100.2022.01.06.07.39.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 07:39:23 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tomasz =?utf-8?Q?Mo?= =?utf-8?Q?=C5=84?= 
-        <tomasz.mon@camlingroup.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Thu, 6 Jan 2022 12:41:24 -0500
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JVD6c3dG6z67wb3;
+        Fri,  7 Jan 2022 01:36:24 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 6 Jan 2022 18:41:19 +0100
+Received: from [10.47.27.56] (10.47.27.56) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 6 Jan
+ 2022 17:41:15 +0000
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+To:     Bjorn Helgaas <helgaas@kernel.org>
+CC:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ettore Chimenti <ek5.chimenti@gmail.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "Paul Walmsley" <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        "Damien Le Moal" <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        "H Hartley Sweeten" <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        "Sathya Prakash" <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        <GR-QLogic-Storage-Upstream@marvell.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Teddy Wang" <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        k.drobinski@camlintechnologies.com
-Subject: Re: [PATCH] serial: imx: reduce RX interrupt frequency
-References: <20220104103203.2033673-1-tomasz.mon@camlingroup.com>
-        <YdQndwYc9xaauvpS@kroah.com>
-        <7e509806-77ae-8f94-2563-7dbae1ebca17@camlingroup.com>
-        <YdQxmQ+OMCrabg2u@kroah.com>
-        <20220104224900.u3omfbilejx2jawr@pengutronix.de>
-        <4c48200b-cc2e-0766-a002-831a789d4879@camlingroup.com>
-        <YdV00WYGGd49WYt9@kroah.com>
-        <20220105105702.vrz7u3nam27izwah@pengutronix.de>
-Date:   Thu, 06 Jan 2022 18:39:23 +0300
-In-Reply-To: <20220105105702.vrz7u3nam27izwah@pengutronix.de> (Marc
-        Kleine-Budde's message of "Wed, 5 Jan 2022 11:57:02 +0100")
-Message-ID: <87tuegho0k.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        "Wim Van Sebroeck" <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arch@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-csky@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-hwmon@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <MPT-FusionLinux.pdl@broadcom.com>,
+        <linux-scsi@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+        <linux-wireless@vger.kernel.org>, <megaraidlinux.pdl@broadcom.com>,
+        <linux-spi@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-watchdog@vger.kernel.org>
+References: <20220105194748.GA215560@bhelgaas>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <74bf4fde-3972-1c36-ca04-58089da0d82b@huawei.com>
+Date:   Thu, 6 Jan 2022 17:41:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220105194748.GA215560@bhelgaas>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.27.56]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Marc Kleine-Budde <mkl@pengutronix.de> writes:
+On 05/01/2022 19:47, Bjorn Helgaas wrote:
+>>>>>   ok if the PCI maintainers decide otherwise.
+>>>> I don't really like the "LEGACY_PCI" Kconfig option.  "Legacy" just
+>>>> means something old and out of favor; it doesn't say*what*  that
+>>>> something is.
+>>>>
+>>>> I think you're specifically interested in I/O port space usage, and it
+>>>> seems that you want all PCI drivers that*only*  use I/O port space to
+>>>> depend on LEGACY_PCI?  Drivers that can use either I/O or memory
+>>>> space or both would not depend on LEGACY_PCI?  This seems a little
+>>>> murky and error-prone.
+>>> I'd like to hear Arnd's opinion on this but you're the PCI maintainer
+>>> so of course your buy-in would be quite important for such an option.
+> I'd like to hear Arnd's opinion, too.  If we do add LEGACY_PCI, I
+> think we need a clear guide for when to use it, e.g., "a PCI driver
+> that uses inb() must depend on LEGACY_PCI" or whatever it is.
+> 
+> I must be missing something because I don't see what we gain from
+> this.  We have PCI drivers, e.g., megaraid [1], for devices that have
+> either MEM or I/O BARs.  I think we want to build drivers like that on
+> any arch that supports PCI.
+> 
+> If the arch doesn't support I/O port space, devices that only have I/O
+> BARs won't work, of course, and hopefully the PCI core and driver can
+> figure that out and gracefully fail the probe.
+> 
+> But that same driver should still work with devices that have MEM
+> BARs.  If inb() isn't always present, I guess we could litter these
+> drivers with #ifdefs, but that would be pretty ugly. 
 
-> On 05.01.2022 11:37:05, Greg Kroah-Hartman wrote:
->> On Wed, Jan 05, 2022 at 08:59:09AM +0100, Tomasz Moń wrote:
->> > On 04.01.2022 23:49, Uwe Kleine-König wrote:
->> > > On Tue, Jan 04, 2022 at 12:38:01PM +0100, Greg Kroah-Hartman wrote:
->> > >> On Tue, Jan 04, 2022 at 12:13:06PM +0100, Tomasz Moń wrote:
->> > >>> On 04.01.2022 11:54, Greg Kroah-Hartman wrote:
->> > >>>> Why can't you do this dynamically based on the baud rate so
->> > >>>> as to always
->> > >>>> work properly for all speeds without increased delays for slower ones?
->> > >>>
->> > >>> Could you please advise on which baud rates to consider as
->> > >>> slow? Does it
->> > >>> sound good to have the old trigger level for rates up to and including
->> > >>> 115200 and the new one for faster ones?
->> > >>
->> > >> You tell me, you are the one seeing this issue and are seeing delays on
->> > >> slower values with your change.  Do some testing to see where the curve
->> > >> is.
->> > 
->> > While the increased latency due to this change is undeniable, it is
->> > important to note that latency is not everything. There are applications
->> > where the latency is crucial, however using Linux for such applications
->> > is questionable. Linux is not a Real Time Operating System after all.
->> 
->> Yes, Linux can be used in real time situtations just fine, look at the
->> RT patchset for proof of that.
+There were some ifdefs added to the 8250 drivers in Arnd's original 
+patch [0], but it does not seem included here.
 
-Do you mean CONFIG_PREEMPT_RT patches? If so, you probably miss the
-point. These patches, among other things, convert interrupt handlers
-into preemptible kernel threads, that in turn may even result in
-increase of latency of getting characters from RS232 as seen by user
-applications.
+Niklas, what happened to the 8250 and the other driver changes?
 
-These patches rather allow to write specific kernel IRQ handlers that
-will have low latencies, too meet RT requirements.
+[0] 
+https://lore.kernel.org/lkml/CAK8P3a0MNbx-iuzW_-=0ab6-TTZzwV-PT_6gAC1Gp5PgYyHcrA@mail.gmail.com/
 
-Anyway, we are discussing this in the context of plain mainstream
-kernel, and when latency vs throughput compromise is to be considered,
-I'd expect throughput to win, not latency.
+> IMO inb() should
+> be present but do something innocuous like return ~0, as it would if
+> I/O port space is supported but there's no device at that address.
+> 
+> [1]https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/scsi/megaraid.c?id=v5.15#n4210
+> 
 
->> 
->> So let's not make things any worse for no good reason if at all
->> possible.
->
-> +1
->
-> We have a $CUSTOMER, where serial latency is crucial. And we have a task
-> to cut down latencies and jitter even more.
+That driver would prob not be used on systems which does not support 
+PIO, and so could have a HAS_IOPORT dependency. But it is not strictly 
+necessary.
 
-Provided plain Linux kernel is far from being RT, it seems that to meet
-the requirements you'd need to patch the kernel anyway. Like, say, apply
-RT-patches and then turn this particular ISR back from threads to kernel
-level. In which case adding one more tweak of setting the water mark
-back to 1 is not a big deal, right?
+Anyway, it would be good to have an idea of how much ifdeffery is 
+required in drivers.
 
 Thanks,
--- Sergey Organov
+John
