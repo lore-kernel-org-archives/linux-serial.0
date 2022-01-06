@@ -2,178 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED6AC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  5 Jan 2022 19:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2441C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  6 Jan 2022 09:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243673AbiAETr4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 5 Jan 2022 14:47:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243651AbiAETrx (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 5 Jan 2022 14:47:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3FAC061245;
-        Wed,  5 Jan 2022 11:47:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C357DB81D6D;
-        Wed,  5 Jan 2022 19:47:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8F0C36AE0;
-        Wed,  5 Jan 2022 19:47:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641412069;
-        bh=t/Luv/nk2DzaSNkJU//u39w5XVRhppoSx5pKsM3k/v4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=VUv9O2qdqKxA+jG4CFc2u3LsBBtVCfotavPXFO/fA1pTVEWrxgynepfFoNwDmpPe3
-         gm6mzSwrf0Mu9v8LI0ep1L8d0gF07n+txTEieNZIGWxOqW9SiL4CAOcvJbfSVMhQ+3
-         AXwKESLwYk/C/VLxQ9B09ONeiabtURx+gn19Ju8IEKSa/0hYllteATy6HWhv5F/Jtp
-         78FWTCTutn0mw70OCHpRgC8L6tBrcnnp3ILK1zuW9o6rgJRHSCKyS7qdLXCdCEZ3Sf
-         pZgJlDurZwMThwqJkqgUgnGVT16YwqrnJM1KhaMG1e1LQ7K8PhR9cgiSRWv4dC4Mip
-         cFT1uhvBqjObQ==
-Date:   Wed, 5 Jan 2022 13:47:48 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Ettore Chimenti <ek5.chimenti@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.com>,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Mark Brown <broonie@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Teddy Wang <teddy.wang@siliconmotion.com>,
-        Forest Bond <forest@alittletooquiet.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org,
-        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
-Message-ID: <20220105194748.GA215560@bhelgaas>
+        id S237141AbiAFJGz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 6 Jan 2022 04:06:55 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:39792 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236715AbiAFJGz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 6 Jan 2022 04:06:55 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAA3GRYYsdZhSWS1BQ--.58555S2;
+        Thu, 06 Jan 2022 17:06:32 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] tty/serial: Check for null pointer after calling devm_ioremap
+Date:   Thu,  6 Jan 2022 17:06:31 +0800
+Message-Id: <20220106090631.2714586-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3f39d8a2-2e57-a671-2926-eb4f2bf20c76@huawei.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAA3GRYYsdZhSWS1BQ--.58555S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JFWruF4UZrWxZw1fKF48WFg_yoWDCrX_C3
+        Z5ua1kAr18CF10va17JryfuFW0q398Zay8Wr1Igr9aq3s5AFs7XFZrWrnIvw4UW3yqvF1U
+        G39rur47Ar409jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8uwCF
+        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUOo7ZUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 05:42:16PM +0000, John Garry wrote:
-> On 29/12/2021 16:55, Niklas Schnelle wrote:
-> > On Wed, 2021-12-29 at 10:03 -0600, Bjorn Helgaas wrote:
-> > > On Wed, Dec 29, 2021 at 01:12:07PM +0100, Mauro Carvalho Chehab wrote:
-> > > > Em Wed, 29 Dec 2021 12:45:38 +0100
-> > > > Niklas Schnelle<schnelle@linux.ibm.com>  escreveu:
-> > > > > ...
-> > > > > I do think we agree that once done correctly there is value in
-> > > > > such an option independent of HAS_IOPORT only gating inb() etc uses.
-> > > I'm not sure I'm convinced about this.  For s390, you could do this
-> > > patch series, where you don't define inb() at all, and you add new
-> > > dependencies to prevent compile errors.  Or you could define inb() to
-> > > return ~0, which is what happens on other platforms when the device is
-> > > not present.
-> > > 
-> > > > Personally, I don't see much value on a Kconfig var for legacy PCI I/O
-> > > > space. From maintenance PoV, bots won't be triggered if someone use
-> > > > HAS_IOPORT instead of the PCI specific one - or vice-versa. So, we
-> > > > could end having a mix of both at the wrong places, in long term.
-> > > > 
-> > > > Also, assuming that PCIe hardware will some day abandon support for
-> > > > "legacy" PCI I/O space, I guess some runtime logic would be needed,
-> > > > in order to work with both kinds of PCIe controllers. So, having a
-> > > > Kconfig option won't help much, IMO.
-> > > > 
-> > > > So, my personal preference would be to have just one Kconfig var, but
-> > > > I'm ok if the PCI maintainers decide otherwise.
-> > > I don't really like the "LEGACY_PCI" Kconfig option.  "Legacy" just
-> > > means something old and out of favor; it doesn't say*what*  that
-> > > something is.
-> > > 
-> > > I think you're specifically interested in I/O port space usage, and it
-> > > seems that you want all PCI drivers that *only* use I/O port space to
-> > > depend on LEGACY_PCI?  Drivers that can use either I/O or memory
-> > > space or both would not depend on LEGACY_PCI?  This seems a little
-> > > murky and error-prone.
-> > I'd like to hear Arnd's opinion on this but you're the PCI maintainer
-> > so of course your buy-in would be quite important for such an option.
+As the possible failure of the allocation, the devm_ioremap() may return
+NULL pointer.
+And the 'port->membase' will be directly used in mlb_usio_startup().
+Therefore, in order to avoid the dereference of the NULL pointer, it
+should be better to add the sanity check.
 
-I'd like to hear Arnd's opinion, too.  If we do add LEGACY_PCI, I
-think we need a clear guide for when to use it, e.g., "a PCI driver
-that uses inb() must depend on LEGACY_PCI" or whatever it is.
+Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/tty/serial/milbeaut_usio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I must be missing something because I don't see what we gain from
-this.  We have PCI drivers, e.g., megaraid [1], for devices that have
-either MEM or I/O BARs.  I think we want to build drivers like that on
-any arch that supports PCI.
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+index 8f2cab7f66ad..1ecbf6d0dc79 100644
+--- a/drivers/tty/serial/milbeaut_usio.c
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -523,6 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
+ 	}
+ 	port->membase = devm_ioremap(&pdev->dev, res->start,
+ 				resource_size(res));
++	if (!port->membase) {
++		ret = -ENOMEM;
++		goto failed;
++	}
+ 
+ 	ret = platform_get_irq_byname(pdev, "rx");
+ 	mlb_usio_irq[index][RX] = ret;
+-- 
+2.25.1
 
-If the arch doesn't support I/O port space, devices that only have I/O
-BARs won't work, of course, and hopefully the PCI core and driver can
-figure that out and gracefully fail the probe.
-
-But that same driver should still work with devices that have MEM
-BARs.  If inb() isn't always present, I guess we could litter these
-drivers with #ifdefs, but that would be pretty ugly.  IMO inb() should
-be present but do something innocuous like return ~0, as it would if
-I/O port space is supported but there's no device at that address.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/scsi/megaraid.c?id=v5.15#n4210
-
-> I can't see the value in the LEGACY_PCI config - however I don't really
-> understand Arnd's original intention.
-> 
-> It was written that it would allow us to control "whether we have any
-> pre-PCIe devices or those PCIe drivers that need PIO accessors other than
-> ioport_map()/pci_iomap()".
-> 
-> However I just don't see why CONFIG_PCI=y and CONFIG_HAS_IOPORT=y aren't
-> always the gating factor here. Arnd?
-> 
-> Thanks,
-> John
