@@ -2,201 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90062C433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  7 Jan 2022 12:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC6DC433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  7 Jan 2022 14:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbiAGMm7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 7 Jan 2022 07:42:59 -0500
-Received: from mga18.intel.com ([134.134.136.126]:42432 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229624AbiAGMm6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 7 Jan 2022 07:42:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641559378; x=1673095378;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ri7bOFc1ix6Qp6S+KpH6bZBbTwi9/CWd7Tp4XqMDXHo=;
-  b=bLU1g4e0AxLAMdNUbCnyFTJLIFFjWbY57R3G55AT6UIJNPpMAMBV7eil
-   caiO6/aIHnk/8GFZiBvaf14+qbWzMB1TLdBmJM84tb9QEUGcqgR5xVPrW
-   obOqp8rcPpktB7/DtnTn6Sjk14GB0SL/Q1FujK2FvKfmAsIteSj7BoimH
-   SdGNQ/71GlQj+15xS/d9yx7NvvHIR108WAyM+CQPtdiwKNEwQmeTWQVbS
-   mxY7sIsiSBidBaNNZ6qsqTK8fSEyWw5dbD7uzl4AgtVgILeIvUQyMYPPP
-   uY+lq75ssOW3vUkB3inXrX36ZdrM7Jk2El4Yq0cFsiooQi9o0lGTC75/Q
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="229668899"
-X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="229668899"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 04:42:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="473307417"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 07 Jan 2022 04:42:57 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5oa8-000IgC-Fp; Fri, 07 Jan 2022 12:42:56 +0000
-Date:   Fri, 07 Jan 2022 20:42:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 93a770b7e16772530196674ffc79bb13fa927dc6
-Message-ID: <61d8354a.AINS0ImjOfOPOSt+%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S239113AbiAGOtQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 7 Jan 2022 09:49:16 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:60372 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1347864AbiAGOtQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 7 Jan 2022 09:49:16 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowABnb5_VUthhJmv7BQ--.49088S2;
+        Fri, 07 Jan 2022 22:48:53 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v2] tty/serial: Check for null pointer after calling devm_ioremap
+Date:   Fri,  7 Jan 2022 22:48:52 +0800
+Message-Id: <20220107144852.4081390-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowABnb5_VUthhJmv7BQ--.49088S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4UZry8tw4UKr17Cr45Jrb_yoWkCrg_GF
+        n5uan5Cw18CF4Fya17JryfZFWqq390vayxWrn2gr9Iq3sxAF4kXFZrWrn3Zw4UW3yqvFyU
+        CrZruF47Zr1UujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb2AFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
+        cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
+        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry5MxAI
+        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
+        CI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUVxRhUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 93a770b7e16772530196674ffc79bb13fa927dc6  serial: core: Keep mctrl register state and cached copy in sync
+As the possible failure of the devres_alloc(), the devm_ioremap()
+may return NULL pointer.
+And the 'port->membase' will be used in mlb_usio_startup() without the
+check.
+Therefore, in order to avoid the dereference of the NULL pointer, it
+should be better to add the check to guarantee the success of the probe.
 
-elapsed time: 1252m
-
-configs tested: 128
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm64                               defconfig
-i386                 randconfig-c001-20220106
-s390                       zfcpdump_defconfig
-arm                     eseries_pxa_defconfig
-powerpc                    adder875_defconfig
-sh                        sh7785lcr_defconfig
-powerpc                    klondike_defconfig
-m68k                          atari_defconfig
-m68k                          multi_defconfig
-sh                        sh7763rdp_defconfig
-sh                            shmin_defconfig
-sh                           se7705_defconfig
-powerpc                      tqm8xx_defconfig
-sh                           se7206_defconfig
-powerpc64                        alldefconfig
-arc                          axs101_defconfig
-powerpc                     taishan_defconfig
-sh                        edosk7705_defconfig
-sh                          r7780mp_defconfig
-mips                      loongson3_defconfig
-ia64                      gensparse_defconfig
-openrisc                    or1ksim_defconfig
-xtensa                  cadence_csp_defconfig
-sh                         ap325rxa_defconfig
-powerpc                      ep88xc_defconfig
-m68k                        m5407c3_defconfig
-mips                         cobalt_defconfig
-sh                           se7721_defconfig
-mips                            gpr_defconfig
-arm                  randconfig-c002-20220106
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64               randconfig-a012-20220106
-x86_64               randconfig-a015-20220106
-x86_64               randconfig-a014-20220106
-x86_64               randconfig-a013-20220106
-x86_64               randconfig-a011-20220106
-x86_64               randconfig-a016-20220106
-i386                 randconfig-a012-20220106
-i386                 randconfig-a016-20220106
-i386                 randconfig-a014-20220106
-i386                 randconfig-a015-20220106
-i386                 randconfig-a011-20220106
-i386                 randconfig-a013-20220106
-s390                 randconfig-r044-20220106
-arc                  randconfig-r043-20220106
-riscv                randconfig-r042-20220106
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-mips                 randconfig-c004-20220106
-arm                  randconfig-c002-20220106
-i386                 randconfig-c001-20220106
-riscv                randconfig-c006-20220106
-powerpc              randconfig-c003-20220106
-x86_64               randconfig-c007-20220106
-s390                 randconfig-c005-20220106
-arm                  colibri_pxa300_defconfig
-mips                       lemote2f_defconfig
-mips                         tb0219_defconfig
-powerpc                 xes_mpc85xx_defconfig
-s390                             alldefconfig
-mips                           ip28_defconfig
-mips                      bmips_stb_defconfig
-i386                 randconfig-a003-20220106
-i386                 randconfig-a005-20220106
-i386                 randconfig-a004-20220106
-i386                 randconfig-a006-20220106
-i386                 randconfig-a002-20220106
-i386                 randconfig-a001-20220106
-x86_64               randconfig-a012-20220107
-x86_64               randconfig-a015-20220107
-x86_64               randconfig-a014-20220107
-x86_64               randconfig-a013-20220107
-x86_64               randconfig-a011-20220107
-x86_64               randconfig-a016-20220107
-x86_64               randconfig-a005-20220106
-x86_64               randconfig-a001-20220106
-x86_64               randconfig-a004-20220106
-x86_64               randconfig-a006-20220106
-x86_64               randconfig-a002-20220106
-x86_64               randconfig-a003-20220106
-
+Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changelog
+
+v1 -> v2
+
+* Change 1. Refine the commit message to be more clear.
+---
+ drivers/tty/serial/milbeaut_usio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+index 8f2cab7f66ad..1ecbf6d0dc79 100644
+--- a/drivers/tty/serial/milbeaut_usio.c
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -523,6 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
+ 	}
+ 	port->membase = devm_ioremap(&pdev->dev, res->start,
+ 				resource_size(res));
++	if (!port->membase) {
++		ret = -ENOMEM;
++		goto failed;
++	}
+ 
+ 	ret = platform_get_irq_byname(pdev, "rx");
+ 	mlb_usio_irq[index][RX] = ret;
+-- 
+2.25.1
+
