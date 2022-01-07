@@ -2,82 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E05DC433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  7 Jan 2022 01:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE829C433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  7 Jan 2022 08:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344340AbiAGBmc (ORCPT
+        id S1345730AbiAGIXU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:42:32 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:42430 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229538AbiAGBmb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:42:31 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABHTVlwmtdhQ588BQ--.58935S2;
-        Fri, 07 Jan 2022 09:42:09 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] tty/serial: Check for null pointer after calling devm_ioremap
-Date:   Fri,  7 Jan 2022 09:42:07 +0800
-Message-Id: <20220107014207.2761644-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 7 Jan 2022 03:23:20 -0500
+Received: from mail-wm1-f44.google.com ([209.85.128.44]:52054 "EHLO
+        mail-wm1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236161AbiAGIXU (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 7 Jan 2022 03:23:20 -0500
+Received: by mail-wm1-f44.google.com with SMTP id e5so3388436wmq.1
+        for <linux-serial@vger.kernel.org>; Fri, 07 Jan 2022 00:23:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0P9RI3wph960b+6CGRLRmsYi4Dmj1J9+YMyqOgH1634=;
+        b=cXqj5Ahu/a9mZ+oB9N+z889W+S+8Omi+YNg3SEEZQI8aNWZqwUG4r4sCCDzDugVvH5
+         ntN2ZlYCZE8MHooDhLb/n9e2zetkA/WFpCMhFkXn5NKXiHu9jADdaWCuiKzD+Rc3tlTh
+         QefLt3LNIh9QsGbxAAoPbosKecQ9TFYem5DIJ0kBArN7enhW13huBsHWdw/02axfqYh6
+         P6AAmyP6k2nEOmuLrDJvBDJe/azsihXkSqPUjDK0fn2F40flbyC3Wb79UTYQyyvM481A
+         qKXCqCpY0OiZUYil9PD0wSHGTfRhGnn/2wLscnLam/clz7u/j88HpVQpKN8cB159Hz2O
+         huJw==
+X-Gm-Message-State: AOAM533q8dVwrdR5PTG2ohdeLD5OouWIMGowAgDNSTtGgSzLk+6Jy6Zo
+        A+bvjyEdljGUtxiHtVXkBg0=
+X-Google-Smtp-Source: ABdhPJxCto+lF1sANdDJCTlzqkVxK1z7J4WzQjHrpCiLszBBagVdsWQaJzzsITf/m6btKS5o/vYJPw==
+X-Received: by 2002:a05:600c:1c9f:: with SMTP id k31mr10029928wms.159.1641543798876;
+        Fri, 07 Jan 2022 00:23:18 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id o8sm4946963wry.20.2022.01.07.00.23.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 00:23:18 -0800 (PST)
+Message-ID: <f3848788-822c-2125-0f2e-10f9962d11ba@kernel.org>
+Date:   Fri, 7 Jan 2022 09:23:17 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABHTVlwmtdhQ588BQ--.58935S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr4rGF48tw4rXryrtr4UCFg_yoWkZrX_WF
-        9YgFs5A3yjganxXa1SywnavF12q39xur1fXrWxCF1IqryfJa15G34kWr9xZw47GayYvrnx
-        urWDAa12qr1j9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
-        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij
-        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
-        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfU5kucDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] serial: core: Keep mctrl register state and cached copy
+ in sync
+Content-Language: en-US
+To:     Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Jochen Mades <jochen@mades.net>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Chao Zeng <chao.zeng@siemens.com>, linux-serial@vger.kernel.org
+References: <bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 11:01:20PM +0800, Greg KH wrote:
->> As the possible failure of the allocation, the devm_ioremap() may return
->> NULL pointer.
->
-> I do not understand this sentence.
+On 02. 01. 22, 18:52, Lukas Wunner wrote:
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2389,7 +2389,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+>   		 * We probably don't need a spinlock around this, but
 
-Well, since the devm_ioremap() calls devres_alloc() to allocate memory,
-it may fail because of the lack of memory and return NULL pointer.
+One line above, it states:
+--- keep the DTR setting that is set in uart_set_options()
 
->> And the 'port->membase' will be directly used in mlb_usio_startup().
->
-> This does not make sense either.
+>   		 */
+>   		spin_lock_irqsave(&port->lock, flags);
+> -		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
+> +		port->mctrl &= TIOCM_DTR;
+> +		port->ops->set_mctrl(port, port->mctrl);
 
-I notice that in mlb_usio_startup() 'port->membase' is used in
-'escr = readb(port->membase + MLB_USIO_REG_ESCR);'
-without checking whether it is NULL before, that is to say, it is directly used.
-Therefore, it may cause the dereference of the NULL pointer.
+So I don't think this is correct -- either the comment is wrong now or 
+the code...
 
->> Therefore, in order to avoid the dereference of the NULL pointer, it
->> should be better to add the sanity check.
->
-> What do you mean by "sanity check"?
-
-Since I believe that after all the allocation we need to check whether it
-succeed.
-So the "sanity check" means the check that lost and we need to make up to
-maintain the integrity.
-
-Moreover, I am glad for your reply.
-And I will refine my commit message in next version to make it more clear.
-
-Sincerely thanks,
-Jiang
-
+thanks,
+-- 
+js
+suse labs
