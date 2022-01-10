@@ -2,19 +2,19 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF626C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Jan 2022 10:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98035C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Jan 2022 10:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244088AbiAJKmp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:42:45 -0500
+        id S244108AbiAJKmu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:42:50 -0500
 Received: from mail-sh.amlogic.com ([58.32.228.43]:41675 "EHLO
         mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244040AbiAJKmp (ORCPT
+        with ESMTP id S244091AbiAJKmr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:42:45 -0500
+        Mon, 10 Jan 2022 05:42:47 -0500
 Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 10 Jan 2022
- 18:42:42 +0800
+ 18:42:44 +0800
 From:   Yu Tu <yu.tu@amlogic.com>
 To:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -28,10 +28,12 @@ CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Yu Tu <yu.tu@amlogic.com>
-Subject: [PATCH V5 0/5] The UART driver compatible with
-Date:   Mon, 10 Jan 2022 18:42:09 +0800
-Message-ID: <20220110104214.25321-1-yu.tu@amlogic.com>
+Subject: [PATCH V5 1/5] dt-bindings: serial: meson: Drop legacy compatible.
+Date:   Mon, 10 Jan 2022 18:42:10 +0800
+Message-ID: <20220110104214.25321-2-yu.tu@amlogic.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220110104214.25321-1-yu.tu@amlogic.com>
+References: <20220110104214.25321-1-yu.tu@amlogic.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -40,32 +42,44 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Using the common Clock code to describe the UART baud rate
-clock makes it easier for the UART driver to be compatible
-with the baud rate requirements of the UART IP on different
-meson chips. Add Meson S4 SoC compatible.
+Deprecated, don't use anymore because legacy amlogic,meson-gx-uart
+compatible. Don't differentiate between GXBB, GXL and G12A which
+have different revisions of the UART IP. So it's split into
+GXBB,GXL and G12A.
 
-Yu Tu (5):
-  dt-bindings: serial: meson: Drop legacy compatible.
-  tty: serial: meson: Move request the register region.
-  tty: serial: meson: Using the common clock code describe.
-  tty: serial: meson: Make some bit of the REG5 register writable.
-  tty: serial: meson: Added S4 SOC compatibility.
+Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+---
+ .../devicetree/bindings/serial/amlogic,meson-uart.yaml | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-V4 -> V5: Change error format.
-V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
-in the email.
-V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
-the DTS before it can be deleted
-V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
-discussed in the email
-
-Link:https://lore.kernel.org/linux-amlogic/20220110085604.18042-1-yu.tu@amlogic.com/
-
- .../bindings/serial/amlogic,meson-uart.yaml   |  10 +-
- drivers/tty/serial/meson_uart.c               | 244 ++++++++++++------
- 2 files changed, 177 insertions(+), 77 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 72e8868db3e0..ad9f1f4537a0 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -28,7 +28,10 @@ properties:
+               - amlogic,meson6-uart
+               - amlogic,meson8-uart
+               - amlogic,meson8b-uart
+-              - amlogic,meson-gx-uart
++              - amlogic,meson-gx-uart # deprecated, use revision specific property below
++              - amlogic,meson-gxbb-uart
++              - amlogic,meson-gxl-uart
++              - amlogic,meson-g12a-uart
+               - amlogic,meson-s4-uart
+           - const: amlogic,meson-ao-uart
+       - description: Everything-Else power domain UART controller
+@@ -36,7 +39,10 @@ properties:
+           - amlogic,meson6-uart
+           - amlogic,meson8-uart
+           - amlogic,meson8b-uart
+-          - amlogic,meson-gx-uart
++          - amlogic,meson-gx-uart # deprecated, use revision specific property below
++          - amlogic,meson-gxbb-uart
++          - amlogic,meson-gxl-uart
++          - amlogic,meson-g12a-uart
+           - amlogic,meson-s4-uart
+ 
+   reg:
 -- 
 2.33.1
 
