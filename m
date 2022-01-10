@@ -2,27 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E26FC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Jan 2022 08:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1256C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Jan 2022 08:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242064AbiAJIzn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:55:43 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:19223 "EHLO
+        id S241715AbiAJIzr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:55:47 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:22026 "EHLO
         mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242336AbiAJIyl (ORCPT
+        with ESMTP id S232475AbiAJIzb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:54:41 -0500
+        Mon, 10 Jan 2022 03:55:31 -0500
 Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 10 Jan
- 2022 16:54:39 +0800
-Message-ID: <f16843d4-c3c7-9b24-e262-3ca5472e07a7@amlogic.com>
-Date:   Mon, 10 Jan 2022 16:54:39 +0800
+ 2022 16:54:58 +0800
+Message-ID: <79e4a4d1-eefd-9fa2-d365-192f28f4c9c8@amlogic.com>
+Date:   Mon, 10 Jan 2022 16:54:57 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH 1/2] dt-bindings: serial: meson: Drop compatible =
- amlogic,meson-gx-uart.
+Subject: Re: [PATCH] tty: serial: meson: Change request_irq to
+ devm_request_irq and move devm_request_irq to meson_uart_probe()
 Content-Language: en-US
 To:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -36,8 +36,9 @@ CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 References: <20220110082616.13474-1-yu.tu@amlogic.com>
+ <20220110082616.13474-2-yu.tu@amlogic.com>
 From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <20220110082616.13474-1-yu.tu@amlogic.com>
+In-Reply-To: <20220110082616.13474-2-yu.tu@amlogic.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.18.29.173]
@@ -52,43 +53,67 @@ Hi All,
 the email. I will resend V4.
 
 On 2022/1/10 16:26, Yu Tu wrote:
-> Deprecated, don't use anymore because compatible =
-> amlogic,meson-gx-uart. Don't differentiate between GXBB, GXL
-> and G12A which have different revisions of the UART IP.
-> So it's split into GXBB, GXL and G12A.
+> Because an interrupt error occurs when the user opens /dev/ttyAML* but
+> don't close it, and then opens the same port again. This problem is
+> encountered in actual projects.
 > 
 > Signed-off-by: Yu Tu <yu.tu@amlogic.com>
 > ---
->   .../devicetree/bindings/serial/amlogic,meson-uart.yaml | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
+>   drivers/tty/serial/meson_uart.c | 16 +++++++++-------
+>   1 file changed, 9 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> index 72e8868db3e0..ad9f1f4537a0 100644
-> --- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-> @@ -28,7 +28,10 @@ properties:
->                 - amlogic,meson6-uart
->                 - amlogic,meson8-uart
->                 - amlogic,meson8b-uart
-> -              - amlogic,meson-gx-uart
-> +              - amlogic,meson-gx-uart # deprecated, use revision specific property below
-> +              - amlogic,meson-gxbb-uart
-> +              - amlogic,meson-gxl-uart
-> +              - amlogic,meson-g12a-uart
->                 - amlogic,meson-s4-uart
->             - const: amlogic,meson-ao-uart
->         - description: Everything-Else power domain UART controller
-> @@ -36,7 +39,10 @@ properties:
->             - amlogic,meson6-uart
->             - amlogic,meson8-uart
->             - amlogic,meson8b-uart
-> -          - amlogic,meson-gx-uart
-> +          - amlogic,meson-gx-uart # deprecated, use revision specific property below
-> +          - amlogic,meson-gxbb-uart
-> +          - amlogic,meson-gxl-uart
-> +          - amlogic,meson-g12a-uart
->             - amlogic,meson-s4-uart
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index 45e41f20cba3..0dd3f5b35768 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -135,8 +135,6 @@ static void meson_uart_shutdown(struct uart_port *port)
+>   	unsigned long flags;
+>   	u32 val;
 >   
->     reg:
+> -	free_irq(port->irq, port);
+> -
+>   	spin_lock_irqsave(&port->lock, flags);
+>   
+>   	val = readl(port->membase + AML_UART_CONTROL);
+> @@ -284,7 +282,6 @@ static void meson_uart_reset(struct uart_port *port)
+>   static int meson_uart_startup(struct uart_port *port)
+>   {
+>   	u32 val;
+> -	int ret;
+>   
+>   	meson_uart_reset(port);
+>   
+> @@ -298,10 +295,7 @@ static int meson_uart_startup(struct uart_port *port)
+>   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+>   	writel(val, port->membase + AML_UART_MISC);
+>   
+> -	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+> -			  port->name, port);
+> -
+> -	return ret;
+> +	return 0;
+>   }
+>   
+>   static void meson_uart_change_speed(struct uart_port *port, unsigned long baud)
+> @@ -908,6 +902,14 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	meson_ports[pdev->id] = port;
+>   	platform_set_drvdata(pdev, port);
+>   
+> +	ret = devm_request_irq(&pdev->dev, port->irq, meson_uart_interrupt,
+> +			       0, dev_name(&pdev->dev), port);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to request uart irq: %d\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+>   	/* reset port before registering (and possibly registering console) */
+>   	meson_uart_reset(port);
+>   
 > 
-> base-commit: 99a507a8ea28542ec196e2dd80096708e2482735
+> base-commit: b3a9e3b9622ae10064826dccb4f7a52bd88c7407
+> prerequisite-patch-id: 97a514f3447511cb204179ce03ae99dc1d5902d9
+> prerequisite-patch-id: a2e4756ff85f0df0efe111d7e2cb51b8e26e226f
+> prerequisite-patch-id: af9e3acc8f6ff7602d3a68a57c008e5ec362b353
+> prerequisite-patch-id: 7af8c81b4c2163240725e96625b1487c280f4f30
+> prerequisite-patch-id: 8791f6362b14e7c4ff4f85cce550f06abeb1af7a
