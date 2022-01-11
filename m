@@ -2,91 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D3AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 08:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 536EAC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 08:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348913AbiAKI3N (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:29:13 -0500
-Received: from mail-ed1-f43.google.com ([209.85.208.43]:38799 "EHLO
-        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348918AbiAKI3M (ORCPT
+        id S236480AbiAKImz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 Jan 2022 03:42:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45972 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236634AbiAKImz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:29:12 -0500
-Received: by mail-ed1-f43.google.com with SMTP id u21so41424632edd.5;
-        Tue, 11 Jan 2022 00:29:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HLfFV+bY2Dj5UwJM9aU9W649JzY157duB65QvuOzkf4=;
-        b=3kQMyEOeDRvbq/t8GKKUlNY81weZxmyUriXhJlcyHrA+gVWvqUrck0M7OMybowptvK
-         mDMn+qP5ttqzOEYxoJSgJQ75ddoob5qzB+Bae7VjsBRDJdH2ALm00xQtEKdragrTocMS
-         xM8I9pRStOOv/WFv6jfbHySZKGhy86hjEGYsa38MX2UklHx+nL9TdaBenEi/K65aenpV
-         3rMVjNM5aooFC28yUvyfddod3Ek/KN5rOVlboDRAqPfHAUb2nYo5zSsCnbC1htHxmdyi
-         N4ZMvn7G7BvZ/WZc6BYfz+HqfKBV23tux1FwzhzmNQd1KcAX3rIejHjA85tms++wZHDp
-         3MnQ==
-X-Gm-Message-State: AOAM531vck9luJRrafiUoaVWrX6+v4l+lqDTM/F9YimuFG0V3Z7b6Vn+
-        VNIvkjha0Q0eMp271JjG9lU=
-X-Google-Smtp-Source: ABdhPJz/j4NU7oQT+G1S3gM3uEPvf0rwZ54H+Cg2WOyQtau9JzE67LSnMxiBQ/oUdji5CpgqIfNfLA==
-X-Received: by 2002:a17:906:dc8a:: with SMTP id cs10mr2754811ejc.622.1641889750866;
-        Tue, 11 Jan 2022 00:29:10 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id qk11sm3303229ejc.110.2022.01.11.00.29.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 00:29:10 -0800 (PST)
-Message-ID: <7b6faabc-bbf9-2d93-274a-93df725e4aca@kernel.org>
-Date:   Tue, 11 Jan 2022 09:29:09 +0100
+        Tue, 11 Jan 2022 03:42:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1125B81835;
+        Tue, 11 Jan 2022 08:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B80C36AE3;
+        Tue, 11 Jan 2022 08:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641890572;
+        bh=LN0bM0PV85bgqHIPq9jkVFjh0nc2l/zowS1CsyWEfTg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JENFMSprGHBcxINRGy/ZlIsKQOhgrliuUtBkNx7IJ6sIhEef9z0LC1opZes3Fm9O6
+         tXWkQr5arS4hw+9xfOkUxrQnJwJSOM4HrZAImpUnvBHqz/O+Yu4OEkEPOQRcNO3NkG
+         Fw+nVcg9ZyFHhWf78sfoK5vfoE95w8CDu/55pgqw=
+Date:   Tue, 11 Jan 2022 09:42:49 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Daniel Starke <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] tty: n_gsm: Fix SW flow control encoding/handling
+Message-ID: <Yd1DCeajCpJ62zUs@kroah.com>
+References: <20220111072317.2082-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V2] tty: serial: fsl_lpuart: count tty buffer overruns
-Content-Language: en-US
-To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-References: <20220111082229.5117-1-sherry.sun@nxp.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220111082229.5117-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111072317.2082-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 01. 22, 9:22, Sherry Sun wrote:
-> Added support for counting the tty buffer overruns in fsl_lpuart driver
-> like other uart drivers.
-> 
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> 
-> ---
-> changes in V2
-> 1. Change the copied type to int to avoid implicit conversion, as the
-> tty_insert_flip_string return type is int.
-> ---
->   drivers/tty/serial/fsl_lpuart.c | 20 +++++++++++++-------
->   1 file changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index ce3e26144689..82a1a2817750 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-...
-> @@ -1116,7 +1118,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
->   	struct dma_chan *chan = sport->dma_rx_chan;
->   	struct circ_buf *ring = &sport->rx_ring;
->   	unsigned long flags;
-> -	int count = 0;
-> +	int count = 0, copied = 0;
+On Mon, Jan 10, 2022 at 11:23:17PM -0800, Daniel Starke wrote:
+> According to 3GPP 27.010 chapter 5.2.7.3 DC1 and DC3 (SW flow control)
 
-Why is it necessary to initialize copied?
+What is all of that?  Do you have a link to the document that this is
+and where it says this?
 
-Actually neither count needs to be initialized AFAICT. Care to fix that 
-too (in a separate patch).
+> are to
+> be treated according to ISO/IEC 646.
+
+What is "ISO/IEC 646"?
+
+> That means the MSB shall be ignored.
+
+"MSB"?  Please spell it out, you have plenty of room here.
+
+> This patch applies the needed changes to handle this correctly.
+
+What changes are needed?  Please talk about what you are doing, as the
+documentation asks you to so do.
+
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 0b96b14bbfe1..9ee0643fc9e2 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -322,6 +322,7 @@ static int addr_cnt;
+>  #define GSM1_ESCAPE_BITS	0x20
+>  #define XON			0x11
+>  #define XOFF			0x13
+> +#define ASCII_MASK		0x7F
+
+Where did "ASCII" come from?  You didn't say anything about that in the
+changelog.
+
+>  static const struct tty_port_operations gsm_port_ops;
+>  
+> @@ -521,7 +522,7 @@ static void gsm_print_packet(const char *hdr, int addr, int cr,
+>   *	@output: output buffer
+>   *	@len: length of input
+>   *
+> - *	Expand a buffer by bytestuffing it. The worst case size change
+> + *	Expand a buffer by byte stuffing it. The worst case size change
+
+This change is not described above, and is totally different and belongs
+in a different change.
+
+
+>   *	is doubling and the caller is responsible for handing out
+>   *	suitable sized buffers.
+>   */
+> @@ -531,7 +532,8 @@ static int gsm_stuff_frame(const u8 *input, u8 *output, int len)
+>  	int olen = 0;
+>  	while (len--) {
+>  		if (*input == GSM1_SOF || *input == GSM1_ESCAPE
+> -		    || *input == XON || *input == XOFF) {
+> +		    || (*input & ASCII_MASK) == XON
+> +		    || (*input & ASCII_MASK) == XOFF) {
+>  			*output++ = GSM1_ESCAPE;
+>  			*output++ = *input++ ^ GSM1_ESCAPE_BITS;
+>  			olen++;
+> -- 
+> 2.25.1
+> 
+
+What commit does this fix?
+
+Please read the section entitled "The canonical patch format" in the
+kernel file, Documentation/SubmittingPatches for a description of how
+to do all of this better.
 
 thanks,
--- 
-js
-suse labs
+
+greg k-h
