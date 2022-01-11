@@ -2,114 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 650FFC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 16:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC46C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 18:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343828AbiAKQps (ORCPT
+        id S1344961AbiAKSbo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:45:48 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:58178 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S240793AbiAKQpq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:45:46 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BGCfWb022160;
-        Tue, 11 Jan 2022 17:45:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=DUFh1SKt2sWCGI0makXOoBN/QEWeJJpABfJYD6qhEeA=;
- b=RunS487M0nGsePY944EKUzlt0hPZcCSlcyeUFE75ZRIcmwUrCKVhJ2ZYpeF0rgmtQZ7T
- fG2ow+YI+lWSfPpKjaYO3nr5/Q9406Zbhcx6tA7cHOkeOEsIOmPNI3wUSI3sqzhgKT2n
- mOUEm/7ol5dVeBa7boYn7P9I2aKSxaoRaoxHkGMFQob9/VcSCIG69elFlHZjWc5fZYc5
- +IlxludzNtaurwf3P34BQtgTGYYwJD7UHWVfnBRVYTZayfspcXyg4nomiMW/m7CuRqD1
- cS15Q5hNSmcXVK66uekf/wXjoALxkabNOqFHcqEhfCftqLk+oQhZkad/yyJamg0Oq/kl fw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dh2m5uyub-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 17:45:25 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3DDDC10002A;
-        Tue, 11 Jan 2022 17:45:25 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 353E1245FC8;
-        Tue, 11 Jan 2022 17:45:25 +0100 (CET)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 11 Jan 2022 17:45:24
- +0100
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] serial: stm32: prevent TDR register overwrite when sending x_char
-Date:   Tue, 11 Jan 2022 17:44:40 +0100
-Message-ID: <20220111164441.6178-2-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220111164441.6178-1-valentin.caron@foss.st.com>
-References: <20220111164441.6178-1-valentin.caron@foss.st.com>
+        Tue, 11 Jan 2022 13:31:44 -0500
+Received: from mga03.intel.com ([134.134.136.65]:18094 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344959AbiAKSbo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 11 Jan 2022 13:31:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641925904; x=1673461904;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ryXGJRwIBDLNRLqkigeBrzSsrgWtrQ49r2/rTwopAjE=;
+  b=mrtIyStHfgLLtlsHYZgwaa9uXQUfiUYUDoYEwuj4mjXhBjB17fN4qI2I
+   1fDLP3wwJiFhBCOCjCYWAYSe7gT9J2GpAdNDVRY2k9X+ymKxUNhuuunZ3
+   j6PHkWpny6Lkx/AF2Yqb6wfFMNPKHzQhDw+j2O3kPcMsMwWVPFfuhX2In
+   xfKSi858IzF2+zX8eD7A/7dxmrRI93bZu9RrzGJ568H6yUzWfJzzGUc8n
+   jfL9RcAjUEgtzJuksznbGkkI5/olMYYSyUoygkK5WDHdf5X20mpiMD6OC
+   nShgipOVRRjkSctAvkyK6oNuplsYaCiwOgvdI5SU+xME3p1qrCwBJfc8j
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243511685"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="243511685"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 10:31:43 -0800
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="472553684"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 10:31:42 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n7Lue-009NwM-K1;
+        Tue, 11 Jan 2022 20:30:28 +0200
+Date:   Tue, 11 Jan 2022 20:30:28 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     asheplyakov@basealt.ru
+Cc:     linux-serial@vger.kernel.org,
+        "Vadim V . Vlasov" <vadim.vlasov@elpitech.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Subject: Re: [PATCH] serial: 8250_dw: verify clock rate in dw8250_set_termios
+Message-ID: <Yd3MxFo/R4C/0uvg@smile.fi.intel.com>
+References: <20220111132847.218193-1-asheplyakov@basealt.ru>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111132847.218193-1-asheplyakov@basealt.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When sending x_char in stm32_usart_transmit_chars(), driver can overwrite
-the value of TDR register by the value of x_char. If this happens, the
-previous value that was present in TDR register will not be sent through
-uart.
+On Tue, Jan 11, 2022 at 05:28:47PM +0400, asheplyakov@basealt.ru wrote:
+> From: Alexey Sheplyakov <asheplyakov@basealt.ru>
 
-This code checks if the previous value in TDR register is sent before
-writing the x_char value into register.
+Thanks for your patch, my comments below.
 
-Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+> Refuse to change the clock rate if clk_round_rate() returns
+> a rate which is way too off (i.e. by more than 1/16 from the one
+> necessary for a given baud rate). In particular this happens if
+> the requested rate is below the minimum supported by the clock.
+> 
+> Fixes the UART console on BE-M1000 SoC. Without this patch the
+> console gets garbled immediately after loading the driver.
+> dw8250_set_termios tries to configure the baud rate (115200),
+> and calls clk_round_rate to figure out the supported rate closest
+> to 1843200 Hz (which is 115200 * 16). However the (SoC-specific)
+> clock driver returns 4705882 Hz. This frequency is way too off,
+> hence after setting it the console gets garbled.
 
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
----
- drivers/tty/serial/stm32-usart.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+So, the root cause is to understand _why_ the clock provider is uncapable
+to fulfil the request. Any investigation has been conducted?
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 1f89ab0e49ac..c1b8828451c8 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -550,11 +550,23 @@ static void stm32_usart_transmit_chars(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 	struct circ_buf *xmit = &port->state->xmit;
-+	u32 isr;
-+	int ret;
- 
- 	if (port->x_char) {
- 		if (stm32_usart_tx_dma_started(stm32_port) &&
- 		    stm32_usart_tx_dma_enabled(stm32_port))
- 			stm32_usart_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
-+
-+		/* Check that TDR is empty before filling FIFO */
-+		ret =
-+		readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
-+						  isr,
-+						  (isr & USART_SR_TXE),
-+						  10, 1000);
-+		if (ret)
-+			dev_warn(port->dev, "1 character may be erased\n");
-+
- 		writel_relaxed(port->x_char, port->membase + ofs->tdr);
- 		port->x_char = 0;
- 		port->icount.tx++;
+> Signed-off-by: Alexey Sheplyakov <asheplyakov@basealt.ru>
+> Signed-off-by: Vadim V. Vlasov <vadim.vlasov@elpitech.ru>
+
+> 
+
+Should be no blank lines in the tag block, but...
+
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+
+...I recommend to use --cc parameter to git send-email instead of polluting
+commit message.
+
+...
+
+> -	if (rate > 0) {
+> +	if (rate > 0 && rate >= baud * 15 && rate <= baud * 17) {
+
+It doesn't fell like a correct fix.
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
