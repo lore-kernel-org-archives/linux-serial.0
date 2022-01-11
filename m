@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3005C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 21:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85913C43219
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 21:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245099AbiAKV0X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:26:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S245614AbiAKVyV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245018AbiAKV0O (ORCPT
+        with ESMTP id S244768AbiAKVyU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:26:14 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7EEC061751;
-        Tue, 11 Jan 2022 13:26:14 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id c19so774105qtx.3;
-        Tue, 11 Jan 2022 13:26:14 -0800 (PST)
+        Tue, 11 Jan 2022 16:54:20 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F7CC06173F;
+        Tue, 11 Jan 2022 13:54:20 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id h4so810868qth.11;
+        Tue, 11 Jan 2022 13:54:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2DvqFBpuIutEn6jdqjBPtihA+7CFslR8HD0Tr5Yiiwg=;
-        b=fqPC855DyYCHll1gqOiF11f2C+B9Tatn2vke0Jt6NTycTA2QWdQO15b7VoUQfyqfB1
-         HLeg9ANghpRc651rTOksDoF+9Vu6TzukuZejnhvLkcFu8EvreH1oQZZoeKwpPjsbytQd
-         QmbsTSffdKvfAw1Few8StvJwMligNJx2z2o6fzEErM0abyqbdcd5zOzZPp/fg/xnLA3m
-         MfEK/LJ6qUuKP+VLUdMqHpJatIv8plSQc2MhlDzqV+PgTpKLb5M82hQ6YTT+Ih7Wksg4
-         jvz2vygoocv0VrbuGwxea8XhLpDts/rc5P5/62hZoB0VSlF/JU/8yZYHs2nfUJgyL3e4
-         A0vw==
+        bh=9soPHD2iWMuBaxqS0P8Wb7tdZ1W/Iv2iXvfYHF2vO4U=;
+        b=Htv9QaycmIrZyYLvrW4T/C6D63rMwP1n8e82pkZpviv/g9EwzlhwUeerJpyxEV7Cwq
+         gY/Vx1F/fLOXtYV2+22FBbO80f64Xs/vddJJMeo74buxCH/G4t/3QvGs2SRgd/zAw8Mp
+         DsPFIvQYWieJe725LVyKqnl8X6XFQZE9BllQYTREu6VrdtwvcLsCR7zm6XObd+h9b+Nk
+         4r9RcAEgv0dl94VTVYbF9WD6nOWH9gnr+YZbalDbVZW2xKGOn+ASYp4z4sopPdQC27bA
+         f2djyfqE8g6qedEQQiUGlEpf0mO8qaOGj/PJZYYl3SlRx12OBpON1twRmSd+sKtrGpne
+         BUKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2DvqFBpuIutEn6jdqjBPtihA+7CFslR8HD0Tr5Yiiwg=;
-        b=jLeYLoxKIICUihuBm49z9KZjkKmTRcuvV3ynjLzbM5SnYWvbYnCSVl64BMqQJY8aIo
-         iMpTTwVlJCw6TtCdvH3oC86klJeq4chN2TErDjNHmLol0pyjshXubyG5iUY3xA/rnEuy
-         RYQk1W/NAEVI18vDr7GvOqehWhlrazV095c6fRUDnHg4etkebbWxMi3WGCGVJmce5zLO
-         xYxVSEhn9Hc4ARQoTu8tal0IriWlBDGsb9NWyT1tVVFpn6a3PdR0NBAYr/bxL/3aaRYO
-         ZDHaOUzo4L03oroHZOQOJZQTg87c4tiBfRQpJQNNjQsJbco1IAYk4DV8FmQM1gL1lNSm
-         YLIg==
-X-Gm-Message-State: AOAM530QRnRfh6CsK4jI9Y4NvXJsoHi46vEIOF8c37R2k04f4P4Ddf+Q
-        aqC0cd9tLnh96mi1zuChK9t+YEU3EXI=
-X-Google-Smtp-Source: ABdhPJwz/BcfTylmPL/IDFxnKlTu6b2XkgU2EBMcYazvt6241cKH2DEnhG4rx8ggVGK/4LibDzYHcQ==
-X-Received: by 2002:a05:622a:38e:: with SMTP id j14mr3901063qtx.218.1641936373637;
-        Tue, 11 Jan 2022 13:26:13 -0800 (PST)
+        bh=9soPHD2iWMuBaxqS0P8Wb7tdZ1W/Iv2iXvfYHF2vO4U=;
+        b=Y6lMBvomkUOsD+cI3g0/T2rcJRTUe/lnX9Ni9ONlA/91yP7r0g8KOkEh1EvrvH3s0r
+         fDpqnXDBMmHlMl+WkPNtuVAML4UJdJwjRfvhBp/iAs3MmX2+RHGtiJNuDQBMedFfl/1/
+         3191AWssnLsB+T+kaH8f3kKeQ2TaZ61UZDSZdWEgh8S+iuy3JdnlKzaQ4ViLTik9EPRv
+         7+Z2Vxduz0JtGeIJfRBWF+TNUNmAHZtTAwpatb+ulbaut6Wdm60sIhSv8k9ueE+JF3cr
+         9EIekWw2iCYHJeODdjXC4VPsKjcjK/kt1DHU+0r7SA5Vizt0pVPS2dc4EiOFx2lU5UUE
+         0YIw==
+X-Gm-Message-State: AOAM5317AFYjfzbGXurihK0mvPNGD9JN/2urTMlPnL+NDfxl2qYwccEN
+        hymNJpkGHJG9kPDQMRhXvN8=
+X-Google-Smtp-Source: ABdhPJzXFeAeJpTU5SuG9ktkmcmd438xUMesQQPIy15zS8fEnSjLRVJFkPy40jVDlmRx6CAHemm6WQ==
+X-Received: by 2002:a05:622a:92:: with SMTP id o18mr5461722qtw.570.1641938059341;
+        Tue, 11 Jan 2022 13:54:19 -0800 (PST)
 Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
-        by smtp.gmail.com with ESMTPSA id l15sm7761990qkp.16.2022.01.11.13.26.12
+        by smtp.gmail.com with ESMTPSA id l10sm7591020qtk.18.2022.01.11.13.54.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 13:26:13 -0800 (PST)
+        Tue, 11 Jan 2022 13:54:19 -0800 (PST)
 From:   Jesse Taube <mr.bossman075@gmail.com>
 X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
 To:     linux-imx@nxp.com
@@ -64,9 +64,9 @@ Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v7 3/7] dt-bindings: imx: Add clock binding for i.MXRT1050
-Date:   Tue, 11 Jan 2022 16:26:02 -0500
-Message-Id: <20220111212606.2072669-4-Mr.Bossman075@gmail.com>
+Subject: [PATCH v8 0/7] Add initial support for the i.MXRTxxxx SoC family starting from i.IMXRT1050 SoC.
+Date:   Tue, 11 Jan 2022 16:54:08 -0500
+Message-Id: <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
 References: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
@@ -76,114 +76,89 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Giulio Benetti <giulio.benetti@benettiengineering.com>
+This patchset contains:
+- i.MXRT10xx family infrastructure
+- i.MXRT1050 pinctrl driver adaption
+- i.MXRT1050 clock driver adaption
+- i.MXRT1050 sd-card driver adaption
+- i.MXRT1050 uart driver adaption
+- i.MXRT1050-evk basic support
 
-Add the clock binding doc for i.MXRT1050.
+The i.MXRTxxxx family that could have support by Linux actually spreads
+from i.MXRT1020 to i.MXRT1170 with the first one supporting 1 USB OTG &
+100M ethernet with a cortex-M7@500Mhz up to the latter with i.MXRT1170
+with cortex-M7@1Ghz and cortex-M4@400Mhz, 2MB of internal SRAM, 2D GPU,
+2x 1Gb and 1x 100Mb ENET. The i.MXRT family is NXP's answer to
+STM32F7XX, as it uses only simple SDRAM, it gives the chance of a 4 or
+less layer PCBs. Seeing that these chips are comparable to the
+STM32F7XXs which have linux ported to them it seems reasonable to add
+support for them.
 
-Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
-[Giulio: added all clocks up to IMXRT1050_CLK_USBOH3]
-Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-[Jesse: added clocks from IMXRT1050_CLK_IPG_PDOF to
-IMXRT1050_CLK_DMA_MUX and moved IMXRT1050_CLK_END on]
----
-V1->V2:
-* Nothing done
-V2->V3:
-* Added GPT binding
-V3->V4:
-* Change License to MIT or GPL-2
-V4->V5:
-* Nothing done
-V5->V6:
-* Nothing done
-V6->V7:
-* Fix typo in numbering
-* Remove GPT
-V7->V8:
-* Nothing done
----
- include/dt-bindings/clock/imxrt1050-clock.h | 72 +++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+Giving Linux support to this family should ease the development process,
+instead of using a RTOS they could use Embedded Linux allowing for more
+portability, ease of design and will broaden the scope of people using
+embedded linux.
+
+The EVK has very little SDRAM, generally 32MB starting from
+i.MXRT1020(the lowest P/N), although the i.MXRT1160/70 provide instead
+64MB of SDRAM for more functionality.
+
+At the moment we do not support XIP for either u-boot or Linux but it
+should be done in the future. XIP will also save SDRAM.
+
+Another interesting fact is the amount of internal SRAM, as the P/N
+increases the SRAM will reach up to 2MB(some could be for cache and
+some would be for video).
+
+Also, some parts have embed flash of 4MB that can be used for
+u-boot/Linux, if both correctly sized it will leave the SDRAM free.
+
+External flash can be Quad SPI and HyperFlash, so throughput would be
+decent.
+
+The i.MXRT11xx series supports MIPI interface too.
+
+The family in general provide CAN bus, audio I/O, 1 or more
+USB(otg/host), 1 or more 100Mb/1Gb ethernet, camera interface, sd-card.
+
+All this can be used for simple GUIs, web-servers, point-of-sale
+stations, etc.
+
+
+Giulio Benetti (4):
+  ARM: imx: Add initial support for i.MXRT10xx family
+  dt-bindings: imx: Add clock binding for i.MXRT1050
+  ARM: dts: imx: Add i.MXRT1050-EVK support
+  ARM: imxrt_defconfig: Add i.MXRT family defconfig
+
+Jesse Taube (3):
+  ARM: dts: imxrt1050-pinfunc: Add pinctrl binding header
+  dt-bindings: clock: imx: Add documentation for i.MXRT1050 clock
+  clk: imx: Add initial support for i.MXRT1050 clock driver
+
+ .../bindings/clock/imxrt1050-clock.yaml       |  67 ++
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/imxrt1050-evk.dts           |  72 ++
+ arch/arm/boot/dts/imxrt1050-pinfunc.h         | 993 ++++++++++++++++++
+ arch/arm/boot/dts/imxrt1050.dtsi              | 160 +++
+ arch/arm/configs/imxrt_defconfig              |  35 +
+ arch/arm/mach-imx/Kconfig                     |   7 +
+ arch/arm/mach-imx/Makefile                    |   2 +
+ arch/arm/mach-imx/mach-imxrt.c                |  19 +
+ drivers/clk/imx/Kconfig                       |   7 +
+ drivers/clk/imx/Makefile                      |   1 +
+ drivers/clk/imx/clk-imxrt1050.c               | 168 +++
+ include/dt-bindings/clock/imxrt1050-clock.h   |  72 ++
+ 13 files changed, 1605 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml
+ create mode 100644 arch/arm/boot/dts/imxrt1050-evk.dts
+ create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/imxrt1050.dtsi
+ create mode 100644 arch/arm/configs/imxrt_defconfig
+ create mode 100644 arch/arm/mach-imx/mach-imxrt.c
+ create mode 100644 drivers/clk/imx/clk-imxrt1050.c
  create mode 100644 include/dt-bindings/clock/imxrt1050-clock.h
 
-diff --git a/include/dt-bindings/clock/imxrt1050-clock.h b/include/dt-bindings/clock/imxrt1050-clock.h
-new file mode 100644
-index 000000000000..93bef0832d16
---- /dev/null
-+++ b/include/dt-bindings/clock/imxrt1050-clock.h
-@@ -0,0 +1,72 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-+/*
-+ * Copyright(C) 2019
-+ * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
-+ */
-+
-+#ifndef __DT_BINDINGS_CLOCK_IMXRT1050_H
-+#define __DT_BINDINGS_CLOCK_IMXRT1050_H
-+
-+#define IMXRT1050_CLK_DUMMY			0
-+#define IMXRT1050_CLK_CKIL			1
-+#define IMXRT1050_CLK_CKIH			2
-+#define IMXRT1050_CLK_OSC			3
-+#define IMXRT1050_CLK_PLL2_PFD0_352M		4
-+#define IMXRT1050_CLK_PLL2_PFD1_594M		5
-+#define IMXRT1050_CLK_PLL2_PFD2_396M		6
-+#define IMXRT1050_CLK_PLL3_PFD0_720M		7
-+#define IMXRT1050_CLK_PLL3_PFD1_664_62M		8
-+#define IMXRT1050_CLK_PLL3_PFD2_508_24M		9
-+#define IMXRT1050_CLK_PLL3_PFD3_454_74M		10
-+#define IMXRT1050_CLK_PLL2_198M			11
-+#define IMXRT1050_CLK_PLL3_120M			12
-+#define IMXRT1050_CLK_PLL3_80M			13
-+#define IMXRT1050_CLK_PLL3_60M			14
-+#define IMXRT1050_CLK_PLL1_BYPASS		15
-+#define IMXRT1050_CLK_PLL2_BYPASS		16
-+#define IMXRT1050_CLK_PLL3_BYPASS		17
-+#define IMXRT1050_CLK_PLL5_BYPASS		19
-+#define IMXRT1050_CLK_PLL1_REF_SEL		20
-+#define IMXRT1050_CLK_PLL2_REF_SEL		21
-+#define IMXRT1050_CLK_PLL3_REF_SEL		22
-+#define IMXRT1050_CLK_PLL5_REF_SEL		23
-+#define IMXRT1050_CLK_PRE_PERIPH_SEL		24
-+#define IMXRT1050_CLK_PERIPH_SEL		25
-+#define IMXRT1050_CLK_SEMC_ALT_SEL		26
-+#define IMXRT1050_CLK_SEMC_SEL			27
-+#define IMXRT1050_CLK_USDHC1_SEL		28
-+#define IMXRT1050_CLK_USDHC2_SEL		29
-+#define IMXRT1050_CLK_LPUART_SEL		30
-+#define IMXRT1050_CLK_LCDIF_SEL			31
-+#define IMXRT1050_CLK_VIDEO_POST_DIV_SEL	32
-+#define IMXRT1050_CLK_VIDEO_DIV			33
-+#define IMXRT1050_CLK_ARM_PODF			34
-+#define IMXRT1050_CLK_LPUART_PODF		35
-+#define IMXRT1050_CLK_USDHC1_PODF		36
-+#define IMXRT1050_CLK_USDHC2_PODF		37
-+#define IMXRT1050_CLK_SEMC_PODF			38
-+#define IMXRT1050_CLK_AHB_PODF			39
-+#define IMXRT1050_CLK_LCDIF_PRED		40
-+#define IMXRT1050_CLK_LCDIF_PODF		41
-+#define IMXRT1050_CLK_USDHC1			42
-+#define IMXRT1050_CLK_USDHC2			43
-+#define IMXRT1050_CLK_LPUART1			44
-+#define IMXRT1050_CLK_SEMC			45
-+#define IMXRT1050_CLK_LCDIF_APB			46
-+#define IMXRT1050_CLK_PLL1_ARM			47
-+#define IMXRT1050_CLK_PLL2_SYS			48
-+#define IMXRT1050_CLK_PLL3_USB_OTG		49
-+#define IMXRT1050_CLK_PLL4_AUDIO		50
-+#define IMXRT1050_CLK_PLL5_VIDEO		51
-+#define IMXRT1050_CLK_PLL6_ENET			52
-+#define IMXRT1050_CLK_PLL7_USB_HOST		53
-+#define IMXRT1050_CLK_LCDIF_PIX			54
-+#define IMXRT1050_CLK_USBOH3			55
-+#define IMXRT1050_CLK_IPG_PDOF			56
-+#define IMXRT1050_CLK_PER_CLK_SEL		57
-+#define IMXRT1050_CLK_PER_PDOF			58
-+#define IMXRT1050_CLK_DMA			59
-+#define IMXRT1050_CLK_DMA_MUX			60
-+#define IMXRT1050_CLK_END			61
-+
-+#endif /* __DT_BINDINGS_CLOCK_IMXRT1050_H */
 -- 
 2.34.1
 
