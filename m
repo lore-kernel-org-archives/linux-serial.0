@@ -2,135 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8FAC43219
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 16:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E02C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Jan 2022 16:45:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349923AbiAKQXN (ORCPT
+        id S1343790AbiAKQpo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:23:13 -0500
-Received: from mail-vk1-f181.google.com ([209.85.221.181]:46638 "EHLO
-        mail-vk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343692AbiAKQXL (ORCPT
+        Tue, 11 Jan 2022 11:45:44 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:53626 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240793AbiAKQpo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:23:11 -0500
-Received: by mail-vk1-f181.google.com with SMTP id bj47so5699666vkb.13;
-        Tue, 11 Jan 2022 08:23:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ibmuXY2d4QvS3H2IyD2t1BJ8+qE8/4OrKlqbySBpfZw=;
-        b=ylhhRGbEhSPbcK4ThoW9iayv006f31oxB20wWz0R9WqZozvAVnQNCqlInGnQpSCVvr
-         H4mJnUkLY0bJvNtAPyJZsib95cSPLp/gRhCnqels13DjMAyqSp4qOVfC143opebBwfGs
-         BLaEmo9dPs1hHbzWFSCmpTGGnpu31aPNRzX/eqlYLMcnHWIXnOm8T0mzwH8ys0DpUV2B
-         /8rRdrCOslHB9wtm4QZ2R/cyVE9iYjJu5oCXxBGmPYqm/YLa5OPMM/NW5dyg2gwweJKm
-         3UsNaD1d6P16cA0Qy79GMiFBXZTwST7TIJt8wWf7q0VJDewK+6oEPj0plvOySnQv2PqO
-         ZrHA==
-X-Gm-Message-State: AOAM532+NziSDCHV9kb8LHAOehVDRzRw+14YVMbtbcDrG7JiPpBsTGFt
-        +oLOscPwhm6uTmy3O1d7dCki5SvF+v7kxQ==
-X-Google-Smtp-Source: ABdhPJz6Xep7GQaFwxXXg6FUTH81husz/nDPykOeiqNGzei76rMt++y0edT5C90dPr5u5VVGvRfC5g==
-X-Received: by 2002:a05:6122:2225:: with SMTP id bb37mr2380426vkb.27.1641918190405;
-        Tue, 11 Jan 2022 08:23:10 -0800 (PST)
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
-        by smtp.gmail.com with ESMTPSA id l27sm3593845vko.17.2022.01.11.08.23.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 08:23:09 -0800 (PST)
-Received: by mail-ua1-f50.google.com with SMTP id c36so30643243uae.13;
-        Tue, 11 Jan 2022 08:23:09 -0800 (PST)
-X-Received: by 2002:a67:e985:: with SMTP id b5mr2267085vso.77.1641918189316;
- Tue, 11 Jan 2022 08:23:09 -0800 (PST)
+        Tue, 11 Jan 2022 11:45:44 -0500
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BBoJgU024713;
+        Tue, 11 Jan 2022 17:45:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=IN9ceG9HgeMhT60YAmViP0IH3j3ce+PtYoMrQL69pyY=;
+ b=aM8Te+X1D5uu1hxdZjH3li1a+pzjU9Gs3a7F9dBKOuY/nmQjb1lQVKOdCG3g2F3inpRy
+ kyuLVh1MjbJ1TI7LWNBDTqC6i35XaZgBm7UVs0QlclPeeEi7TLMOg1VRiMYbB9qXQ+9Q
+ 7IhtynAsEL1AhuNCTVT15UiwfG5dAgc/VFQLglTKTEDT33ogwuEXKCinwAvSwFuir8bo
+ pn2zjHJcTtRfrW+uigunYNSdEPUAMnIlVKYrX/FUQ8ywtuHV4beX1delfVdCFlP7OCY2
+ m22HyFJWLM3vVxD4FE7vsE/JNZfXJXYNWxWLeWP5TL/2/VMeXgWYSW5ej/0HKTEa9OTA Nw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dh9cb9c63-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:45:23 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0E19C10002A;
+        Tue, 11 Jan 2022 17:45:22 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 02154245FC8;
+        Tue, 11 Jan 2022 17:45:22 +0100 (CET)
+Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 11 Jan 2022 17:45:21
+ +0100
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/2] serial: stm32: fix software flow control
+Date:   Tue, 11 Jan 2022 17:44:39 +0100
+Message-ID: <20220111164441.6178-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211221094717.16187-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20211221094717.16187-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 11 Jan 2022 17:22:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUB-wK_0Vqn4fmqQ0jaHWmo9OTRPT1bwWsZh76U1J729A@mail.gmail.com>
-Message-ID: <CAMuHMdUB-wK_0Vqn4fmqQ0jaHWmo9OTRPT1bwWsZh76U1J729A@mail.gmail.com>
-Subject: Re: [PATCH 06/16] dt-bindings: serial: renesas,scif: Document RZ/V2L SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Prabhakar,
+This serie fix issues on STM32 USART driver when using software flow control.
 
-On Tue, Dec 21, 2021 at 10:48 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Add SCIF binding documentation for Renesas RZ/V2L SoC. SCIF block on RZ/V2L
-> is identical to one found on the RZ/G2L SoC. No driver changes are required
-> as RZ/G2L compatible string "renesas,scif-r9a07g044" will be used as a
-> fallback.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Valentin Caron (2):
+  serial: stm32: prevent TDR register overwrite when sending x_char
+  serial: stm32: fix software flow control transfer
 
-Thanks for your patch!
+ drivers/tty/serial/stm32-usart.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -67,6 +67,12 @@ properties:
->        - items:
->            - enum:
->                - renesas,scif-r9a07g044      # RZ/G2{L,LC}
-> +              - renesas,scif-r9a07g054      # RZ/V2L
+-- 
+2.17.1
 
-As the idea is to rely on the RZ/G2L fallback for matching, cfr. below,
-the above addition is not needed or wanted.
-
-> +
-> +      - items:
-> +          - enum:
-> +              - renesas,scif-r9a07g054      # RZ/V2L
-> +          - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback for RZ/V2L
->
->    reg:
->      maxItems: 1
-> @@ -154,6 +160,7 @@ if:
->            - renesas,rcar-gen2-scif
->            - renesas,rcar-gen3-scif
->            - renesas,scif-r9a07g044
-> +          - renesas,scif-r9a07g054
-
-This addition is not needed if the fallback is always present.
-
->  then:
->    required:
->      - resets
-
-Given Greg already applied your patch, I think you have to send a
-follow-up patch.
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
