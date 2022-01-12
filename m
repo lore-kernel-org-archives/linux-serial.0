@@ -2,202 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDACC4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 08:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D99C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 09:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351764AbiALIxy (ORCPT
+        id S1352008AbiALJX7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:53:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
+        Wed, 12 Jan 2022 04:23:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351769AbiALIxy (ORCPT
+        with ESMTP id S236569AbiALJX7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:53:54 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F8BC061748
-        for <linux-serial@vger.kernel.org>; Wed, 12 Jan 2022 00:53:53 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7ZLN-0005mh-UE; Wed, 12 Jan 2022 09:50:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7ZL6-009rFV-QA; Wed, 12 Jan 2022 09:50:40 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7ZL5-00061g-Dl; Wed, 12 Jan 2022 09:50:39 +0100
-Date:   Wed, 12 Jan 2022 09:50:09 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>, kvm@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>, linux-gpio@vger.kernel.org,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xmww6gsp5dtrk3ed"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+        Wed, 12 Jan 2022 04:23:59 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C84CC06173F;
+        Wed, 12 Jan 2022 01:23:59 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so3659342pjp.0;
+        Wed, 12 Jan 2022 01:23:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=xoqHD2fGBh/+nC109QIpzVKHDNVPgk6VF0zAraXZPPU=;
+        b=jVQB6rE98LmPOOgpYk3AXOPs1FkIMnXp+j+jJb3wfdgB2K+Woja5aXjei+6qR8DL8G
+         oLvV4KJjodWKh844Oe45kTaFdNxfV3j5alK22iDdliYYBjFBn1gKU9xiUv6M+fypwiQF
+         3ygYyFqUW+HPPFGOczwtJiZjuLoqMXx+Xvzr8qfstNtgjR4MKJSrNJDfdOfegyW+XJcu
+         zhvBo2TgBx8Evy6WW4hcxJkX68u4hmAmkBtgSUf9s0jrXbznmJKAlyvZjswaPjdDruEb
+         ZYZsLXZhx9TycXq7orz+TUq4xWOMDA2zD+Du1W72xLCJH/cnvCF8iLgZK/2PO9xWjYqT
+         NuwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=xoqHD2fGBh/+nC109QIpzVKHDNVPgk6VF0zAraXZPPU=;
+        b=AhnqfP9Sl//o+q8uwJ98UNTX82aZKr1ntdjuf4rAOIVVDYsKuPPQoCKTG8BWZop87u
+         wrFOAlEhEiCn/Tvy9/onInE1xQNa/ahcbG2wLLztSuvGyGQIDaoq9zES7DRsio4X9vtR
+         sa0g3suvju46oqxmAahXNznW2gCnEEgmBAlaLl62NilaXqCyzODx+PU28t5Qq/8cR4ZV
+         fB5Rnd1FxVKEajlDqucTE8BNwXFoHBuK3AjY0LaIi6OGM/+8f1bYKz3mUDoOMj4E2tG9
+         7z7JrM4fQM9mFD2pPAYuKTNqCwuanmD1Vuq0aT0E0yGWzKf3HvwdlOJCiTkx967N67JA
+         YWDw==
+X-Gm-Message-State: AOAM5326eCRfmElZVyZiYKCdReg8H6aznMdGI6eWYyGNNPR3JKUa0e6L
+        ccqsAPhFC0MM/aaWDvZez3A=
+X-Google-Smtp-Source: ABdhPJzUZz7nksdFPTQeZMQJKHhPbzTNpPBHSV+vvjfihX9xgYGn5aRbJPCxpWW06QyO1PGck6bTZQ==
+X-Received: by 2002:a63:7d0e:: with SMTP id y14mr7618945pgc.356.1641979438564;
+        Wed, 12 Jan 2022 01:23:58 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id h11sm4898527pjs.10.2022.01.12.01.23.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Jan 2022 01:23:58 -0800 (PST)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Subject: [PATCH v6 0/2] Add UART driver for Suplus SP7021 SoC
+Date:   Wed, 12 Jan 2022 17:24:02 +0800
+Message-Id: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This is a patch series for UART driver for Suplus SP7021 SoC.
 
---xmww6gsp5dtrk3ed
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
-On Wed, Jan 12, 2022 at 09:33:48AM +0100, Geert Uytterhoeven wrote:
-> Hi Andrew,
->=20
-> On Mon, Jan 10, 2022 at 10:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
-> > > > This patch is based on the former Andy Shevchenko's patch:
-> > > >
-> > > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchen=
-ko@linux.intel.com/
-> > > >
-> > > > Currently platform_get_irq_optional() returns an error code even if=
- IRQ
-> > > > resource simply has not been found. It prevents the callers from be=
-ing
-> > > > error code agnostic in their error handling:
-> > > >
-> > > >     ret =3D platform_get_irq_optional(...);
-> > > >     if (ret < 0 && ret !=3D -ENXIO)
-> > > >             return ret; // respect deferred probe
-> > > >     if (ret > 0)
-> > > >             ...we get an IRQ...
-> > > >
-> > > > All other *_optional() APIs seem to return 0 or NULL in case an opt=
-ional
-> > > > resource is not available. Let's follow this good example, so that =
-the
-> > > > callers would look like:
-> > > >
-> > > >     ret =3D platform_get_irq_optional(...);
-> > > >     if (ret < 0)
-> > > >             return ret;
-> > > >     if (ret > 0)
-> > > >             ...we get an IRQ...
-> > >
-> > > The difference to gpiod_get_optional (and most other *_optional) is t=
-hat
-> > > you can use the NULL value as if it were a valid GPIO.
-> > >
-> > > As this isn't given with for irqs, I don't think changing the return
-> > > value has much sense.
-> >
-> > We actually want platform_get_irq_optional() to look different to all
-> > the other _optional() methods because it is not equivalent. If it
-> > looks the same, developers will assume it is the same, and get
-> > themselves into trouble.
->=20
-> Developers already assume it is the same, and thus forget they have
-> to check against -ENXIO instead of zero.
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-Is this an ack for renaming platform_get_irq_optional() to
-platform_get_irq_silent()?
+Refer to (UART):
+https://sunplus.atlassian.net/wiki/spaces/doc/pages/1873412290/13.+Universal+Asynchronous+Receiver+Transmitter+UART
 
-And then a coccinelle or sparse or ... hook that catches people testing
-the return value against 0 would be great.
+Hammer Hsieh (2):
+  dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
+  serial:sunplus-uart:Add Sunplus SoC UART Driver
 
-Best regards
-Uwe
+ .../bindings/serial/sunplus,sp7021-uart.yaml       |  56 ++
+ MAINTAINERS                                        |   6 +
+ drivers/tty/serial/Kconfig                         |  25 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/sunplus-uart.c                  | 756 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 6 files changed, 847 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+ create mode 100644 drivers/tty/serial/sunplus-uart.c
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+-- 
+2.7.4
 
---xmww6gsp5dtrk3ed
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHeljYACgkQwfwUeK3K
-7AljMgf/RPunUgCLZTRo6HVoWGaeXoeKF+2cGlwuAsz4Z00TAkiSHfoaeZtHOlTi
-q5shu1KHHU618Mhtt6XvXodObLXVJs41ty1v6SytKsW7BJQt5naWkyRnggT5tFWu
-ggmVGMBXOmKX/wp2DCDa7dah1/SOrnFqP53whp6ZTB6oejvTyXmM97J3490sqGq5
-MsUAM2Z9/yyDuSZevN858NdTs3OZGSfWvvhFoG4EurYBcNo4znZgjQ6JgBbg3L5J
-/m2yKP4XrG0hiM86Q5XlzUdX3r5ERS4K78HS9ywkjsC/gmXD3i3XQGIjcG5VMN7F
-HGppnegV30H+5MPW7Ws6xs2xopwryw==
-=d8xy
------END PGP SIGNATURE-----
-
---xmww6gsp5dtrk3ed--
