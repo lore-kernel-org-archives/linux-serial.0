@@ -2,93 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E5CC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 01:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 913BDC4167D
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 08:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347577AbiALBln (ORCPT
+        id S1351657AbiALIeH convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:41:43 -0500
-Received: from mout.gmx.net ([212.227.17.21]:53467 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236309AbiALBln (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:41:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641951693;
-        bh=uHF0ooAWGXR54vTGChda2qbPj9tBD6JBdlJPU4+vjME=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=jdasv9ndBdJF+6zmGC3wpoNjDwn+HO9UZCrUEJQ/Tv1qWf3jRUGrO2LMqoE1VWznU
-         VsYfZ17lmGkOlH6SD1bu7iZVdJ546McEOYAPfreitCFTuy6DGLqtXyIGifzPfOFUbL
-         sxckmWd+DIf7Q2Ri4ephHwPXMb/EY+WMX1STme8k=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.47] ([149.172.237.68]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M1Ygt-1n4znb3yg7-0038gO; Wed, 12
- Jan 2022 02:41:33 +0100
-Subject: Re: [PATCH] Bugfix RTS line config in RS485 mode is overwritten in
- pl011_set_mctrl() function.
-To:     Jochen Mades <jochen@mades.net>, Lukas Wunner <lukas@wunner.de>
-Cc:     gregkh@linuxfoundation.org, Russell King <linux@armlinux.org.uk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>
-References: <20211231171516.18407-1-jochen@mades.net>
- <20220102100710.GA29858@wunner.de>
- <0e0e91b8-72f8-aa31-50e2-80090dd5613a@gmx.de>
- <20220102182801.GA22268@wunner.de>
- <27017560.2684465.1641895232612@webmail.strato.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <21c124f6-43a2-7ac8-2fde-a7bebacec459@gmx.de>
-Date:   Wed, 12 Jan 2022 02:41:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 12 Jan 2022 03:34:07 -0500
+Received: from mail-ua1-f49.google.com ([209.85.222.49]:41614 "EHLO
+        mail-ua1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237928AbiALIeE (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 12 Jan 2022 03:34:04 -0500
+Received: by mail-ua1-f49.google.com with SMTP id p37so3317815uae.8;
+        Wed, 12 Jan 2022 00:34:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=phWLHSZjGguJkLwzqhKqiJsmBiGXyQV/Ve2Tok5pS7g=;
+        b=xQ+L+sbnDvIN7pQZoS8oBhJ5hzOFEnlOOpe0OQGj7QGmg7rD/yK5U1MGDB+JbrfrmQ
+         Og+LufblsPcyAVbZiGFfqtw3N2LGMeLNEhUeKdnNxSYyOEPDVOTY9uaxHaH7LtUo7nUu
+         ZvT/QTfefrqC1vON97MKHf+PjxRKic3ayHsJFD6oS5cU9Z1f7gnSF2qJbpA31ujslifE
+         tDhl4Uz+JeZB66TZl0+hAwQWxum4Vlt01A1vgRSNzGq5560NZ2vCuDBsqQpogRY4cL0O
+         CcUQMHrLamCovqXDX55XYYap2uK0R+WbsTNj8+rS638rfgH4JfDPr/fLf/9RMA7JbLil
+         8mIw==
+X-Gm-Message-State: AOAM530bCf0yLZUGo4uESq65lDQwMDIPSwXAwTd0KJYxcY+rNfkltWlc
+        SMx9dbIt3QtupXLLf1ZRuArJNDEz+J0gPZMr
+X-Google-Smtp-Source: ABdhPJzhw6BMVIlG0RK3C7ZFhyThZLkewdr5PHsq29ggIRCtRT34EBNJubspsNzz4yr+xS05jmWBlw==
+X-Received: by 2002:a67:f84e:: with SMTP id b14mr3562668vsp.32.1641976442903;
+        Wed, 12 Jan 2022 00:34:02 -0800 (PST)
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
+        by smtp.gmail.com with ESMTPSA id n15sm6569086vkf.35.2022.01.12.00.34.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 00:34:00 -0800 (PST)
+Received: by mail-ua1-f52.google.com with SMTP id m90so3385529uam.2;
+        Wed, 12 Jan 2022 00:34:00 -0800 (PST)
+X-Received: by 2002:ab0:2118:: with SMTP id d24mr3735076ual.78.1641976440167;
+ Wed, 12 Jan 2022 00:34:00 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <27017560.2684465.1641895232612@webmail.strato.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:W5ZXNZUmvomns9fZHWeaYhn6U8ZKnwprDdCMksMUzkajbIgXC7k
- iZNFoeSwZHT3kbTlbrf3iDgOeGWAQFJLfnZFLp+o3PB+JKT12byOgPL6c4VhMJoCR8vkmzg
- nWiwQ5R4jwEDg6tuK9i/s5FhbXWNVZfmB29tcG1MNlccdpw4OJpudq8ba/fmQv3lpxOkr90
- 9QCaqg6zdtyj80yJaFihA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JzkNfumjzlY=:XQu8umm3dbKkINtCRcA++3
- QTnB+D5ysR9G/t0fRP7yGIlWKU9r/mpHSW6LJSzNXQmy/aOb+QC8KcsLSV5LDOpxISFVasDO7
- tdNQ0kjfaNiGQONFgByzdjU2rx7ra7OiOaKZpQG0OQNWiGKeES0biIktErROUKTEVuMFEXfpE
- sW+DvOpewxGemTP1RetjtcC6XJt0miBmCrEZVv+UCcgmNr6pnWuDzk9pRmd/ub/9nFuHgr8HP
- VQFls63dzJylCHckZJygbrDfeKWBIs/6ShDmxeKwcw/i8Jr/nbFneTNRKY7RK5bUYTiByAZEP
- SMGUZjgRmxj/ix2JeS5mNupFO5hQHMTO2hqXLe5fNemV5dcs+rqwry7nCDcZQRFBGtFmZ01C/
- vheyx75evcB4G6FbHMsgGRYU4QVC8roxEcOZR91pi4XDbKxoi0pkjfDDoQJdF3IELeKbJk+xn
- zIL6sJINagZStkzB8uqMbnD2uJDEgjNGM/JZXCZr8nNGiWNZhbLPA5qIoMx1jB5EOfv4+hfBQ
- vQEh0tOfqIPpIZmflk25kWPSXC2yAdHE3oJ1m0ph8XP1MJTY9mOAuDv8NlZH0LOwi/LB99hx9
- 2oEj5E73GTDP3HiU7rOpM8SNjRAsJSjmrx8jReJHzUm+q9FearrxH6G9HAlGSOvYJ172P79qP
- 4Pr7j3A0JAmNlx+qAYBoRBmK+duwXUrJazojl23cY/dng8cXgtnASOzTaZl5zlpJztL5FACg9
- c+OmR2TTaIXVmMwfEmb3DQA24EG7ZE4NB3X6/xVVv1FYe96PCTe3/VYNNYZjo+9NDpt5Kgpsd
- bbfzE/kuh201ohN9ZV2EUbi+X/azKcPoNMD3xfVsLwMqH+1Sk0DnWEGBs/dy4J7/HQblYdt5d
- ywGEuv5Ks7PAieabExwgAV0vyOYVlQt4pX/PiPFG1EjRPFM7SG4T1GWIZMHlzVGu2cqwONBoM
- dTflsAWPBxIDQFWALVXLg8sB+jlRtkpDRG71CaOdH/nfkMz3sLTbAR2d5Xd+IC/GFgTosRDF/
- W72JbNGB8zjO4BLxHS2L/74b6OZ8EWBL8zRsRzIPpmK17onhHwfKU7Ot4uvyOv2UdE4kMRpsN
- uWPyzWI2bovF/k=
+References: <20220110195449.12448-1-s.shtylyov@omp.ru> <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
+In-Reply-To: <YdyilpjC6rtz6toJ@lunn.ch>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 12 Jan 2022 09:33:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+Message-ID: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-phy@lists.infradead.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        Robert Richter <rric@kernel.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jochen,
+Hi Andrew,
 
-On 11.01.22 at 11:00, Jochen Mades wrote:
-> Hi Lukas, Lino,
+On Mon, Jan 10, 2022 at 10:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-König wrote:
+> > On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
+> > > This patch is based on the former Andy Shevchenko's patch:
+> > >
+> > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
+> > >
+> > > Currently platform_get_irq_optional() returns an error code even if IRQ
+> > > resource simply has not been found. It prevents the callers from being
+> > > error code agnostic in their error handling:
+> > >
+> > >     ret = platform_get_irq_optional(...);
+> > >     if (ret < 0 && ret != -ENXIO)
+> > >             return ret; // respect deferred probe
+> > >     if (ret > 0)
+> > >             ...we get an IRQ...
+> > >
+> > > All other *_optional() APIs seem to return 0 or NULL in case an optional
+> > > resource is not available. Let's follow this good example, so that the
+> > > callers would look like:
+> > >
+> > >     ret = platform_get_irq_optional(...);
+> > >     if (ret < 0)
+> > >             return ret;
+> > >     if (ret > 0)
+> > >             ...we get an IRQ...
+> >
+> > The difference to gpiod_get_optional (and most other *_optional) is that
+> > you can use the NULL value as if it were a valid GPIO.
+> >
+> > As this isn't given with for irqs, I don't think changing the return
+> > value has much sense.
 >
-> please let me know when I could test again with an "official" linux kern=
-el, instead of using my local patch.
->
-> Bests
-> Jochen
+> We actually want platform_get_irq_optional() to look different to all
+> the other _optional() methods because it is not equivalent. If it
+> looks the same, developers will assume it is the same, and get
+> themselves into trouble.
 
-While the fix itself looks good so far there are still some style issue as=
- Lukas pointed out. These issues
-have to be fixed before the patch can be accepted for mainline integration=
-. Please have a look at
-Documentation/process/submitting-patches.rst for the correct patch format.=
- After these issues are fixed
-please send the patch as a v2, so we can review the new version.
+Developers already assume it is the same, and thus forget they have
+to check against -ENXIO instead of zero.
 
-Best regards,
-Lino
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
