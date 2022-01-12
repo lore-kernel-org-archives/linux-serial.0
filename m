@@ -2,367 +2,203 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B56AC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 13:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 809ACC4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Jan 2022 14:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235337AbiALN4X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:56:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353790AbiALN4T (ORCPT
+        id S1354196AbiALOlz (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 12 Jan 2022 09:41:55 -0500
+Received: from mail-qt1-f173.google.com ([209.85.160.173]:42834 "EHLO
+        mail-qt1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354194AbiALOlv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:56:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EECEC061748;
-        Wed, 12 Jan 2022 05:56:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E06561988;
-        Wed, 12 Jan 2022 13:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0CB3C36AEA;
-        Wed, 12 Jan 2022 13:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641995777;
-        bh=Jh2sdZHXZxFs3QySakLm/p5Q99AdhyOjRAQrLG8ICsQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=xRZCsyELSOtAv7eXSERWkAAFVVu5DNtpQq/xxRjrAuWPxUJ4lbJlA+0JOGM7XkfuP
-         zPTAfWajQ3AsP5EfE5XOYFakFIy9jB9216I6wIr5Giwtv2hSIgFDnQevWLneQ4pdK+
-         OlYX5XY1Btar5FEHhmU9zYneOQDH0mWe4sE2qe2s=
-Date:   Wed, 12 Jan 2022 14:56:14 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver changes for 5.17-rc1
-Message-ID: <Yd7d/lD76eYkCjul@kroah.com>
+        Wed, 12 Jan 2022 09:41:51 -0500
+Received: by mail-qt1-f173.google.com with SMTP id y17so3182165qtx.9;
+        Wed, 12 Jan 2022 06:41:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eqySNHIMSrRvIgAiOM0qBvook97PLGK990KJv8uK3eo=;
+        b=uo5AZ07a45C8mgYze+9+LAsur76rvJV1DGpCdlYCi7UZcjbwACwzjc/eblHrNcD7BE
+         uHNLEVRxsoeGiabwS9LkZ1ZnZMpb/65FHe3cAojrX37ZWtkZzSrscKxgMEs6/bNvr8Ms
+         64BtKLow+fHPHPVp1SWNDrqvFIfaf+3lM8CdnM9IuaGQcg6nDBuZ+PS5lPYIiD0qdv/k
+         AQ+inGgdbiDLFdl466ew5JdWho0orVAIftNC8pQOxFZzHnd0yCQqZ8QpZZGfIFq6bKDO
+         x/EKh2o3AnBByccsJ0Vue7ubwwFdR/3UeCeZkILSuLcENKFOcnZqgvQOHU3Frws1Ki+c
+         0u6Q==
+X-Gm-Message-State: AOAM533MvrA+dMe61LdDl6kh4TTdKET+EMfFwEYifStoXaPXqQo184hA
+        iVk9xpsp8KTqgNzRXEslNIg5ijuZ3Rzo4S8t63k=
+X-Google-Smtp-Source: ABdhPJwkrdKkjqm85M1oqBy+x6EYsmedgIEeAb8RfpkJ1ISYwM2cxFKOOAchYagZSo08mCWlmbsTnHWauUmSmFEGXlM=
+X-Received: by 2002:a05:622a:178e:: with SMTP id s14mr7678497qtk.302.1641998509704;
+ Wed, 12 Jan 2022 06:41:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220110195449.12448-1-s.shtylyov@omp.ru> <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de> <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <Yd7Z3Qwevb/lEwQZ@lunn.ch> <CAMuHMdV2cGvqMppwt9xhpze=pcnHfTozDZMjwT1DkivLD+_nbQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdV2cGvqMppwt9xhpze=pcnHfTozDZMjwT1DkivLD+_nbQ@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 12 Jan 2022 15:41:38 +0100
+Message-ID: <CAJZ5v0iyAHtDe1kFObQorXOX0Xraxac0j29Dh+8sq7zxzbsmcQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Eric Auger <eric.auger@redhat.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        openipmi-developer@lists.sourceforge.net,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit a7904a538933c525096ca2ccde1e60d0ee62c08e:
+On Wed, Jan 12, 2022 at 2:55 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Andrew,
+>
+> On Wed, Jan 12, 2022 at 2:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > > If an optional IRQ is not present, drivers either just ignore it (e.g.
+> > > for devices that can have multiple interrupts or a single muxed IRQ),
+> > > or they have to resort to polling. For the latter, fall-back handling
+> > > is needed elsewhere in the driver.
+> > > To me it sounds much more logical for the driver to check if an
+> > > optional irq is non-zero (available) or zero (not available), than to
+> > > sprinkle around checks for -ENXIO. In addition, you have to remember
+> > > that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
+> > > (or some other error code) to indicate absence. I thought not having
+> > > to care about the actual error code was the main reason behind the
+> > > introduction of the *_optional() APIs.
+> >
+> > The *_optional() functions return an error code if there has been a
+> > real error which should be reported up the call stack. This excludes
+> > whatever error code indicates the requested resource does not exist,
+> > which can be -ENODEV etc. If the device does not exist, a magic cookie
+> > is returned which appears to be a valid resources but in fact is
+> > not. So the users of these functions just need to check for an error
+> > code, and fail the probe if present.
+>
+> Agreed.
+>
+> Note that in most (all?) other cases, the return type is a pointer
+> (e.g. to struct clk), and NULL is the magic cookie.
+>
+> > You seems to be suggesting in binary return value: non-zero
+> > (available) or zero (not available)
+>
+> Only in case of success. In case of a real failure, an error code
+> must be returned.
+>
+> > This discards the error code when something goes wrong. That is useful
+> > information to have, so we should not be discarding it.
+>
+> No, the error code must be retained in case of failure.
+>
+> > IRQ don't currently have a magic cookie value. One option would be to
+> > add such a magic cookie to the subsystem. Otherwise, since 0 is
+> > invalid, return 0 to indicate the IRQ does not exist.
+>
+> Exactly. And using 0 means the similar code can be used as for other
+> subsystems, where NULL would be returned.
+>
+> The only remaining difference is the "dummy cookie can be passed
+> to other functions" behavior.  Which is IMHO a valid difference,
+> as unlike with e.g. clk_prepare_enable(), you do pass extra data to
+> request_irq(), and sometimes you do need to handle the absence of
+> the interrupt using e.g. polling.
+>
+> > The request for a script checking this then makes sense. However, i
+> > don't know how well coccinelle/sparse can track values across function
+> > calls. They probably can check for:
+> >
+> >    ret = irq_get_optional()
+> >    if (ret < 0)
+> >       return ret;
+> >
+> > A missing if < 0 statement somewhere later is very likely to be an
+> > error. A comparison of <= 0 is also likely to be an error. A check for
+> > > 0 before calling any other IRQ functions would be good. I'm
+> > surprised such a check does not already existing in the IRQ API, but
+> > there are probably historical reasons for that.
+>
+> There are still a few platforms where IRQ 0 does exist.
 
-  Linux 5.16-rc6 (2021-12-19 14:14:33 -0800)
+Not just a few even.  This happens on a reasonably recent x86 PC:
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc1
-
-for you to fetch changes up to 93a770b7e16772530196674ffc79bb13fa927dc6:
-
-  serial: core: Keep mctrl register state and cached copy in sync (2022-01-06 16:01:48 +0100)
-
-----------------------------------------------------------------
-TTY/Serial driver updates for 5.17-rc1
-
-Here is the big set of tty/serial driver updates for 5.17-rc1.
-
-Nothing major in here, just lots of good updates and fixes, including:
-	- more tty core cleanups from Jiri as well as mxser driver
-	  cleanups.  This is the majority of the core diffstat
-	- tty documentation updates from Jiri
-	- platform_get_irq() updates
-	- various serial driver updates for new features and hardware
-	- fifo usage for 8250 console, reducing cpu load a lot
-	- LED fix for keyboards, long-time bugfix that went through many
-	  revisions
-	- minor cleanups
-
-All have been in linux-next for a while with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Abel Vesa (1):
-      dt-bindings: serial: fsl-lpuart: Fix i.MX 8QM compatible matching
-
-Alyssa Ross (1):
-      serial: liteuart: fix MODULE_ALIAS
-
-Andy Shevchenko (3):
-      serial: 8250_pci: Split out Pericom driver
-      serial: 8250_pericom: Use serial_dl_write() instead of open coded
-      tty: tty_io: Switch to vmalloc() fallback in case of TTY_NO_WRITE_SPLIT
-
-Biju Das (2):
-      dt-bindings: serial: renesas,scif: Document RZ/V2L SoC
-      dt-bindings: serial: renesas,sci: Document RZ/V2L SoC
-
-Cai Huoqing (1):
-      tty: mips_ejtag_fdc: Make use of the helper function kthread_run_on_cpu()
-
-Colin Ian King (1):
-      serial: 8250_pci: remove redundant assignment to tmp after the mask operation
-
-Emil Renner Berthing (1):
-      serial: 8250_dw: Add StarFive JH7100 quirk
-
-Fugang Duan (2):
-      tty: serial: imx: clear the RTSD status before enable the RTSD irq
-      tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
-
-Geert Uytterhoeven (3):
-      serial: sh-sci: Drop support for "sci_ick" clock
-      serial: sh-sci: Use dev_err_probe()
-      serial: sh-sci: Use devm_clk_get_optional()
-
-Greg Kroah-Hartman (3):
-      Merge 5.16-rc4 into tty-next
-      Merge 5.16-rc6 into tty-next
-      Revert "serdev: BREAK/FRAME/PARITY/OVERRUN notification prototype V2"
-
-Jacky Bai (1):
-      dt-bindings: serial: fsl-lpuart: Add imx8ulp compatible string
-
-Jay Dolan (1):
-      serial: 8250_pericom: Re-enable higher baud rates
-
-Jesse Taube (2):
-      dt-bindings: serial: fsl-lpuart: add i.MXRT1050 compatible
-      tty: serial: fsl_lpuart: Add i.MXRT1050 support
-
-Jing Yao (1):
-      serial: 8250: replace snprintf in show functions with sysfs_emit
-
-Jiri Slaby (51):
-      n_gsm: remove unused parameters from gsm_error()
-      tty: remove TTY_SOFT_SAK part from __do_SAK()
-      tty: remove tty NULL check from __do_SAK()
-      tty: clean up whitespace in __do_SAK()
-      tty: serial, join uport checks in uart_port_shutdown()
-      mxser: remove wait for sent from mxser_close_port
-      mxser: rename mxser_close_port() to mxser_stop_rx()
-      mxser: keep only !tty test in ISR
-      mxser: move MSR read to mxser_check_modem_status()
-      mxser: clean up tx handling in mxser_transmit_chars()
-      mxser: remove pointless xmit_buf checks
-      mxser: remove tty->driver_data NULL check
-      mxser: call stop_rx from mxser_shutdown_port()
-      mxser: don't flush buffer from mxser_close() directly
-      mxser: use tty_port_close() in mxser_close()
-      mxser: extract TX empty check from mxser_wait_until_sent()
-      mxser: use msleep_interruptible() in mxser_wait_until_sent()
-      mxser: clean up timeout handling in mxser_wait_until_sent()
-      mxser: don't throttle manually
-      mxser: remove tty parameter from mxser_receive_chars_new()
-      mxser: increase buf_overrun if tty_insert_flip_char() fails
-      mxser: add MOXA prefix to some PCI device IDs
-      mxser: move ids from pci_ids.h here
-      mxser: use PCI_DEVICE_DATA
-      tty: drivers/tty/, stop using tty_schedule_flip()
-      tty: the rest, stop using tty_schedule_flip()
-      tty: drop tty_schedule_flip()
-      tty: remove file from tty_ldisc_ops::ioctl and compat_ioctl
-      tty: finish kernel-doc of tty_struct members
-      tty: add kernel-doc for tty_port
-      tty: add kernel-doc for tty_driver
-      tty: add kernel-doc for tty_operations
-      tty: add kernel-doc for tty_port_operations
-      tty: add kernel-doc for tty_ldisc_ops
-      tty: combine tty_operations triple docs into kernel-doc
-      tty: combine tty_ldisc_ops docs into kernel-doc
-      tty: reformat tty_struct::flags into kernel-doc
-      tty: reformat TTY_DRIVER_ flags into kernel-doc
-      tty: reformat kernel-doc in tty_port.c
-      tty: reformat kernel-doc in tty_io.c
-      tty: reformat kernel-doc in tty_ldisc.c
-      tty: reformat kernel-doc in tty_buffer.c
-      tty: fix kernel-doc in n_tty.c
-      tty: reformat kernel-doc in n_tty.c
-      tty: add kernel-doc for more tty_driver functions
-      tty: add kernel-doc for more tty_port functions
-      tty: move tty_ldisc docs to new Documentation/tty/
-      tty: make tty_ldisc docs up-to-date
-      tty: more kernel-doc for tty_ldisc
-      tty: add kernel-doc for tty_standard_install
-      Documentation: add TTY chapter
-
-Lad Prabhakar (15):
-      dt-bindings: serial: renesas,scif: Make resets as a required property
-      dt-bindings: serial: renesas,sci: Document RZ/G2L SoC
-      serial: sh-sci: Add support to deassert/assert reset line
-      serial: altera: Use platform_get_irq_optional() to get the interrupt
-      serial: 8250_bcm7271: Use platform_get_irq() to get the interrupt
-      serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()
-      serial: meson: Use platform_get_irq() to get the interrupt
-      serial: pxa: Use platform_get_irq() to get the interrupt
-      serial: altera_jtaguart: Use platform_get_irq_optional() to get the interrupt
-      serial: vt8500: Use platform_get_irq() to get the interrupt
-      serial: ar933x: Use platform_get_irq() to get the interrupt
-      serial: bcm63xx: Use platform_get_irq() to get the interrupt
-      serial: pmac_zilog: Use platform_get_irq() to get the interrupt
-      tty: goldfish: Use platform_get_irq() to get the interrupt
-      serial: 8250_bcm7271: Fix return error code in case of dma_alloc_coherent() failure
-
-Lino Sanfilippo (1):
-      serial: amba-pl011: do not request memory region twice
-
-Lizhi Hou (1):
-      tty: serial: uartlite: allow 64 bit address
-
-Lukas Bulwahn (1):
-      arm: remove zte zx platform left-over
-
-Lukas Wunner (6):
-      serial: Fix incorrect rs485 polarity on uart open
-      serial: 8250: Move Alpha-specific quirk out of the core
-      serial: pl010: Drop CR register reset on set_termios
-      serial: pl011: Drop CR register reset on set_termios
-      serial: pl011: Drop redundant DTR/RTS preservation on close/open
-      serial: core: Keep mctrl register state and cached copy in sync
-
-Magnus Damm (2):
-      serial: sh-sci: Remove BREAK/FRAME/PARITY/OVERRUN printouts
-      serdev: BREAK/FRAME/PARITY/OVERRUN notification prototype V2
-
-Muhammad Usama Anjum (1):
-      serial: lantiq: store and compare return status correctly
-
-Rob Herring (2):
-      serial: lantiq: Use platform_get_irq() to get the interrupt
-      serial: atmel: Use platform_get_irq() to get the interrupt
-
-Sam Protsenko (3):
-      tty: serial: samsung: Remove USI initialization
-      tty: serial: samsung: Enable console as module
-      tty: serial: samsung: Fix console registration from module
-
-Sherry Sun (1):
-      tty: serial: fsl_lpuart: add timeout for wait_event_interruptible in .shutdown()
-
-Tudor Ambarus (2):
-      tty: serial: atmel: Check return code of dmaengine_submit()
-      tty: serial: atmel: Call dma_async_issue_pending()
-
-Valentin Caron (4):
-      serial: stm32: move tx dma terminate DMA to shutdown
-      serial: stm32: rework TX DMA state condition
-      serial: stm32: fix flow control transfer in DMA mode
-      serial: stm32: correct loop for dma error handling
-
-Wander Lairson Costa (1):
-      tty: serial: Use fifo in 8250 console driver
-
-Xiang wangx (1):
-      tty/ldsem: Fix syntax errors in comments
-
-Xianwei Zhao (1):
-      dt-bindings: serial: amlogic, meson-uart: support S4
-
-Yanteng Si (1):
-      docs/driver-api: Replace a comma in the n_gsm.rst with a double colon
-
-Yoshihiro Shimoda (2):
-      dt-bindings: serial: renesas,scif: Document r8a779f0 bindings
-      tty: serial: sh-sci: Add support for R-Car Gen4
-
-Yu Tu (1):
-      tty: serial: meson: Drop the legacy compatible strings and clock code
-
-lianzhi chang (1):
-      tty: Fix the keyboard led light display problem
-
- .../bindings/serial/amlogic,meson-uart.yaml        |   2 +
- .../devicetree/bindings/serial/fsl-lpuart.yaml     |   8 +-
- .../devicetree/bindings/serial/renesas,sci.yaml    |  48 +-
- .../devicetree/bindings/serial/renesas,scif.yaml   |  15 +
- Documentation/driver-api/serial/index.rst          |   1 -
- Documentation/driver-api/serial/n_gsm.rst          |   8 +-
- Documentation/driver-api/serial/tty.rst            | 328 --------
- Documentation/index.rst                            |   1 +
- Documentation/tty/index.rst                        |  63 ++
- Documentation/tty/n_tty.rst                        |  22 +
- Documentation/tty/tty_buffer.rst                   |  46 +
- Documentation/tty/tty_driver.rst                   | 128 +++
- Documentation/tty/tty_internals.rst                |  31 +
- Documentation/tty/tty_ldisc.rst                    |  85 ++
- Documentation/tty/tty_port.rst                     |  70 ++
- Documentation/tty/tty_struct.rst                   |  81 ++
- arch/alpha/kernel/srmcons.c                        |   2 +-
- arch/arm/include/debug/pl01x.S                     |   7 -
- drivers/accessibility/speakup/spk_ttyio.c          |   4 +-
- drivers/bluetooth/hci_ldisc.c                      |   5 +-
- drivers/input/serio/serport.c                      |   5 +-
- drivers/net/can/slcan.c                            |   4 +-
- drivers/net/hamradio/6pack.c                       |   4 +-
- drivers/net/hamradio/mkiss.c                       |   4 +-
- drivers/net/ppp/ppp_async.c                        |   3 +-
- drivers/net/ppp/ppp_synctty.c                      |   3 +-
- drivers/net/slip/slip.c                            |   4 +-
- drivers/s390/char/keyboard.h                       |   4 +-
- drivers/tty/goldfish.c                             |  12 +-
- drivers/tty/mips_ejtag_fdc.c                       |  22 +-
- drivers/tty/moxa.c                                 |   4 +-
- drivers/tty/mxser.c                                | 306 +++----
- drivers/tty/n_gsm.c                                |  11 +-
- drivers/tty/n_hdlc.c                               |   5 +-
- drivers/tty/n_tty.c                                | 692 ++++++++--------
- drivers/tty/serial/8250/8250.h                     |  12 +-
- drivers/tty/serial/8250/8250_alpha.c               |  21 +
- drivers/tty/serial/8250/8250_bcm7271.c             |  23 +-
- drivers/tty/serial/8250/8250_core.c                |   9 +-
- drivers/tty/serial/8250/8250_dw.c                  |   3 +
- drivers/tty/serial/8250/8250_pci.c                 | 407 +--------
- drivers/tty/serial/8250/8250_pericom.c             | 214 +++++
- drivers/tty/serial/8250/8250_port.c                |  65 +-
- drivers/tty/serial/8250/Kconfig                    |   8 +
- drivers/tty/serial/8250/Makefile                   |   3 +
- drivers/tty/serial/Kconfig                         |   2 +-
- drivers/tty/serial/altera_jtaguart.c               |  11 +-
- drivers/tty/serial/altera_uart.c                   |   9 +-
- drivers/tty/serial/amba-pl010.c                    |   3 -
- drivers/tty/serial/amba-pl011.c                    |  73 +-
- drivers/tty/serial/ar933x_uart.c                   |  12 +-
- drivers/tty/serial/atmel_serial.c                  |  16 +-
- drivers/tty/serial/bcm63xx_uart.c                  |  10 +-
- drivers/tty/serial/fsl_lpuart.c                    |  12 +-
- drivers/tty/serial/imx.c                           |  13 +-
- drivers/tty/serial/lantiq.c                        |  34 +-
- drivers/tty/serial/liteuart.c                      |   2 +-
- drivers/tty/serial/lpc32xx_hs.c                    |   2 +-
- drivers/tty/serial/meson_uart.c                    |  45 +-
- drivers/tty/serial/pmac_zilog.c                    |  12 +-
- drivers/tty/serial/pxa.c                           |  12 +-
- drivers/tty/serial/samsung_tty.c                   |  78 +-
- drivers/tty/serial/serial_core.c                   |  19 +-
- drivers/tty/serial/sh-sci.c                        |  91 +-
- drivers/tty/serial/stm32-usart.c                   |  74 +-
- drivers/tty/serial/stm32-usart.h                   |   2 +-
- drivers/tty/serial/sunsu.c                         |   3 +-
- drivers/tty/serial/uartlite.c                      |   2 +-
- drivers/tty/serial/vt8500_serial.c                 |  12 +-
- drivers/tty/tty_buffer.c                           | 279 +++----
- drivers/tty/tty_io.c                               | 921 ++++++++++-----------
- drivers/tty/tty_ldisc.c                            | 292 +++----
- drivers/tty/tty_ldsem.c                            |   2 +-
- drivers/tty/tty_port.c                             | 223 +++--
- drivers/tty/vt/keyboard.c                          |  18 +-
- drivers/tty/vt/vt.c                                |   2 +-
- drivers/usb/class/cdc-acm.c                        |   4 -
- include/linux/amba/bus.h                           |   6 -
- include/linux/pci_ids.h                            |  18 -
- include/linux/serial_8250.h                        |   2 -
- include/linux/serial_s3c.h                         |   9 -
- include/linux/tty.h                                | 153 +++-
- include/linux/tty_driver.h                         | 572 ++++++++-----
- include/linux/tty_flip.h                           |   1 -
- include/linux/tty_ldisc.h                          | 287 ++++---
- include/linux/tty_port.h                           | 131 ++-
- net/nfc/nci/uart.c                                 |   5 +-
- 87 files changed, 3297 insertions(+), 2980 deletions(-)
- delete mode 100644 Documentation/driver-api/serial/tty.rst
- create mode 100644 Documentation/tty/index.rst
- create mode 100644 Documentation/tty/n_tty.rst
- create mode 100644 Documentation/tty/tty_buffer.rst
- create mode 100644 Documentation/tty/tty_driver.rst
- create mode 100644 Documentation/tty/tty_internals.rst
- create mode 100644 Documentation/tty/tty_ldisc.rst
- create mode 100644 Documentation/tty/tty_port.rst
- create mode 100644 Documentation/tty/tty_struct.rst
- create mode 100644 drivers/tty/serial/8250/8250_alpha.c
- create mode 100644 drivers/tty/serial/8250/8250_pericom.c
+rafael@gratch:~/work/linux-pm> head -2 /proc/interrupts
+           CPU0       CPU1       CPU2       CPU3       CPU4       CPU5
+  0:         10          0          0          0          0          0
+ IR-IO-APIC    2-edge
+timer
