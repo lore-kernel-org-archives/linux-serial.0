@@ -2,99 +2,157 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97066C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 09:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3658DC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 10:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233052AbiAMJIP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Jan 2022 04:08:15 -0500
-Received: from mail-ed1-f47.google.com ([209.85.208.47]:43643 "EHLO
-        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiAMJIO (ORCPT
+        id S232691AbiAMKPX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:15:23 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:37735 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232498AbiAMKPT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Jan 2022 04:08:14 -0500
-Received: by mail-ed1-f47.google.com with SMTP id m4so20460216edb.10;
-        Thu, 13 Jan 2022 01:08:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wC2KgNOyavftb+JH6q0bbSSTyPPUp1FHUEoqTU+2oII=;
-        b=SOnD2sGfqZsRZXBYWXVODzMnFQBlc4FE4Hi5xuglrYlrAadZlzgCX6k/kkBP1zAOM2
-         gKoUEs7xA2EiPxI912UDla9wOJOE6NzyHVRXoTIs7Bu6vwnFz/Xp2At4WeXLDA3nGMEv
-         7UUzfX19eKfMMf1gbFPOzoVC0hzNoFoGPNz2A/qyLCcJhFX864BcNJonImNCPRRCCYdF
-         qiy+FCCB+Fe1uKeUBxf1YYJH+S1b6vuiixcPFHQEa/8UK62zckClf3PpUg+fSx1QCeWO
-         fjSf+F4yl4eQQHVwBLMGkavF8zmendCk8krhUqddO/YnNdQtVIXVUV8KhFwOUD8Aalhy
-         9ffA==
-X-Gm-Message-State: AOAM5329hbOFW6d+UrKbMlWMOTfdlwsJvDhXLxz2ebMHFDGSq/tx/we5
-        sO1ZCpAMLR2skfNoXgM0Oaw=
-X-Google-Smtp-Source: ABdhPJxDvbw8uDi/CZCHdNVb8ZF0cm/dXO5wxlQuyJkPUYQmVI9ihlrf7qz1xLinH94LB5ZX9C933w==
-X-Received: by 2002:a05:6402:6cf:: with SMTP id n15mr3235992edy.353.1642064893088;
-        Thu, 13 Jan 2022 01:08:13 -0800 (PST)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id 20sm656699ejy.105.2022.01.13.01.08.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 01:08:12 -0800 (PST)
-Message-ID: <d6d3aa07-7bf1-2b6d-356f-ae13c7b9d6cd@kernel.org>
-Date:   Thu, 13 Jan 2022 10:08:11 +0100
+        Thu, 13 Jan 2022 05:15:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642068733;
+    s=strato-dkim-0002; d=mades.net;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=gjSeIaAVPPUOlY0waP3Qt3bcY7tgnjSTzfK/vzsotbk=;
+    b=W6jVuclrIweWyP3Tk9Ry3jRW8ZMFFe8YWpxygzZPa0Sb0G19l+h6Zo0sGGvauzcWPW
+    s4oGisDgwCL7TCn8UK1ZmHoFlVoTs/TvqW/rTg92Q14+f8StKhjmlo1nRCAAOrJx6KxR
+    l+KjveyU9mDfS4JyGoMqowzIo4J0ABaFOTf5Y2M44CYriMhWAmjSfFiS7HjMtANck0eV
+    allkxys2WEKi2zz6N2WsVDpJeW9hDnKJaxiHWOCD6txN4GtzZ+/8MEWZ5P/D7wWsChXT
+    XhvfTI/kWEAJ/yDjCDTAlG+AifocRmXZ1oTggsBhsYqhrGdMZLC8n4GI+I1cVSxzvEFh
+    z30g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JmMHfUWmW/JCZ5q3rSbjoqaGiJoG2nOuw/BEppjnAC9QlFFS7UbO3fgyYpMDJqZr"
+X-RZG-CLASS-ID: mo00
+Received: from oxapp04-01.back.ox.d0m.de
+    by smtp.strato.de (RZmta 47.37.6 AUTH)
+    with ESMTPSA id Y49088y0DACCQvK
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Thu, 13 Jan 2022 11:12:12 +0100 (CET)
+Date:   Thu, 13 Jan 2022 11:12:12 +0100 (CET)
+From:   Jochen Mades <jochen@mades.net>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     gregkh@linuxfoundation.org, Russell King <linux@armlinux.org.uk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>
+Message-ID: <1489312180.3256431.1642068732902@webmail.strato.com>
+In-Reply-To: <20220102100710.GA29858@wunner.de>
+References: <20211231171516.18407-1-jochen@mades.net>
+ <20220102100710.GA29858@wunner.de>
+Subject: Re: [PATCH] Bugfix RTS line config in RS485 mode is overwritten in
+ pl011_set_mctrl() function.
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Content-Language: en-US
-To:     hammer hsieh <hammerh0314@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
-References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
- <1641979444-11661-3-git-send-email-hammerh0314@gmail.com>
- <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
- <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; 
+        boundary="----=_Part_3256430_984438116.1642068732902"
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev33
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13. 01. 22, 9:54, hammer hsieh wrote:
->>> +static void sunplus_shutdown(struct uart_port *port)
->>> +{
->>> +     unsigned long flags;
->>> +
->>> +     spin_lock_irqsave(&port->lock, flags);
->>> +     writel(0, port->membase + SUP_UART_ISC);
->>> +     spin_unlock_irqrestore(&port->lock, flags);
->>
->> I asked last time:
->> * What bus is this -- posting?
->>
->> You replied:
->> * Here just clear interrupt.
->> * Not really understand your comment?
->>
->> So I am asking again:
->> What bus is this? Isn't a posted write a problem here? I mean, shouldn't
->> you read from the register so that the write hits the device? That
->> depends on the bus this sits on, so just asking.
->>
+------=_Part_3256430_984438116.1642068732902
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi Lukas,
+
+> Patch is correct, but commit message could be improved:
 > 
-> Each UART has its own ISC register.
-> Ex.
-> dev/ttySUP0 base_adr = 0x9C00-0000 , isc_addr = 0x9C00-001C
-> dev/ttySUP1 base_adr = 0x9C00-0080 , isc_addr = 0x9C00-009C
-> dev/ttySUP2 base_adr = 0x9C00-0100 , isc_addr = 0x9C00-011C
-> dev/ttySUP3 base_adr = 0x9C00-0180 , isc_addr = 0x9C00-019C
-> dev/ttySUP4 base_adr = 0x9C00-0200 , isc_addr = 0x9C00-021C
-> So sunplus_shutdown() just simply turn off its own device isc only.
-> That's why I didn't read register value, just write 0 for it.
+> * Subject should be in imperative mood (by convention), it should be
+>   prepended by "serial: pl011: " (in line with previous commits touching
+>   this driver, use "git log --oneline amba-pl011.c") and the trailing dot
+>   is unnecessary, e.g.:
+> 
+>   "serial: pl011: Fix incorrect rs485 RTS polarity on set_mctrl"
+> 
+> * Commit message should be wrapped at 72 characters (so that it appears
+>   centered when displayed with "git log" on an 80 chars terminal).
+>   The reference to "0001-serial-amba-pl011-add-RS485-support.patch"
+>   should be replaced with a reference to the offending commit, e.g.:
+>
+>   "Commit 8d479237727c ("serial: amba-pl011: add RS485 support") sought
+>   to keep RTS deasserted on set_mctrl if rs485 is enabled.  However it
+>   did so only if deasserted RTS polarity is high.  Fix it in case it's
+>   low."
+>
+>   Feel free to copy this to a v2 of your patch and amend as you see fit.
+> 
 
-Could you explain me what posted write is and how does it not matter in 
-this case?
+Find attached the patch with the new subject and corretced commit message.
 
-thanks,
--- 
-js
-suse labs
+> * Add tags for the offending commit:
+> 
+>   Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
+>   Cc: stable@vger.kernel.org # v5.15+
+> 
+> * Be sure to cc the author of the offending commit.
+
+Sorry I don't know how to do that correctly. Can you please give support/hints?
+
+ 
+> Thanks,
+> 
+> Lukas
+> 
+> > ---
+> >  drivers/tty/serial/amba-pl011.c | 8 ++++++--
+> >  1 file changed, 6 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> > index 537f37ac4..1749c1498 100644
+> > --- a/drivers/tty/serial/amba-pl011.c
+> > +++ b/drivers/tty/serial/amba-pl011.c
+> > @@ -1646,8 +1646,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
+> >  	    container_of(port, struct uart_amba_port, port);
+> >  	unsigned int cr;
+> >  
+> > -	if (port->rs485.flags & SER_RS485_ENABLED)
+> > -		mctrl &= ~TIOCM_RTS;
+> > +	if (port->rs485.flags & SER_RS485_ENABLED) {
+> > +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+> > +			mctrl &= ~TIOCM_RTS;
+> > +		else
+> > +			mctrl |= TIOCM_RTS;
+> > +	}
+> >  
+> >  	cr = pl011_read(uap, REG_CR);
+------=_Part_3256430_984438116.1642068732902
+Content-Type: application/octet-stream;
+ name=0001-serial-pl011-Fix-incorrect-rs485-RTS-polarity-on-set.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename=0001-serial-pl011-Fix-incorrect-rs485-RTS-polarity-on-set.patch
+X-Part-Id: f1625624c73e46c9af41987e48acb7b2
+
+RnJvbSA5MDY5MGIzZThhZmJkZmJiYjVjZWIwZjZjZWY0MGVkMjgyYjFjMDA0IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBqbWFkZXMgPGpvY2hlbkBtYWRlcy5uZXQ+CkRhdGU6IE1vbiwg
+MjcgRGVjIDIwMjEgMDg6Mzc6MjYgKzAwMDAKU3ViamVjdDogW1BBVENIXSBzZXJpYWw6IHBsMDEx
+OiBGaXggaW5jb3JyZWN0IHJzNDg1IFJUUyBwb2xhcml0eSBvbiBzZXRfbWN0cmwKCkNvbW1pdCA4
+ZDQ3OTIzNzcyN2MgKCJzZXJpYWw6IGFtYmEtcGwwMTE6IGFkZCBSUzQ4NSBzdXBwb3J0Iikgc291
+Z2h0CnRvIGtlZXAgUlRTIGRlYXNzZXJ0ZWQgb24gc2V0X21jdHJsIGlmIHJzNDg1IGlzIGVuYWJs
+ZWQuIEhvd2V2ZXIgaXQgZGlkCnNvIG9ubHkgaWYgZGVhc3NlcnRlZCBSVFMgcG9sYXJpdHkgaXMg
+aGlnaC4gRml4IGl0IGluIGNhc2UgaXQncyBsb3cuCgpTaWduZWQtb2ZmLWJ5OiBqbWFkZXMgPGpv
+Y2hlbkBtYWRlcy5uZXQ+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyB8IDgg
+KysrKysrLS0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0p
+CgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYyBiL2RyaXZlcnMv
+dHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKaW5kZXggNTM3ZjM3YWM0Li4xNzQ5YzE0OTggMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hbWJhLXBsMDExLmMKKysrIGIvZHJpdmVycy90dHkv
+c2VyaWFsL2FtYmEtcGwwMTEuYwpAQCAtMTY0Niw4ICsxNjQ2LDEyIEBAIHN0YXRpYyB2b2lkIHBs
+MDExX3NldF9tY3RybChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgbWN0cmwp
+CiAJICAgIGNvbnRhaW5lcl9vZihwb3J0LCBzdHJ1Y3QgdWFydF9hbWJhX3BvcnQsIHBvcnQpOwog
+CXVuc2lnbmVkIGludCBjcjsKIAotCWlmIChwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9F
+TkFCTEVEKQotCQltY3RybCAmPSB+VElPQ01fUlRTOworCWlmIChwb3J0LT5yczQ4NS5mbGFncyAm
+IFNFUl9SUzQ4NV9FTkFCTEVEKSB7CisJCWlmIChwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4
+NV9SVFNfQUZURVJfU0VORCkKKwkJCW1jdHJsICY9IH5USU9DTV9SVFM7CisJCWVsc2UKKwkJCW1j
+dHJsIHw9IFRJT0NNX1JUUzsKKwl9CiAKIAljciA9IHBsMDExX3JlYWQodWFwLCBSRUdfQ1IpOwog
+Ci0tIAoyLjIwLjEKCg==
+------=_Part_3256430_984438116.1642068732902--
