@@ -2,144 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F5BC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 10:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8B8C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 10:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbiAMKUq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:20:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41004 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiAMKUp (ORCPT
+        id S230429AbiAMK4g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230349AbiAMK4f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:20:45 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 544A261BE6;
-        Thu, 13 Jan 2022 10:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1456CC36AE9;
-        Thu, 13 Jan 2022 10:20:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642069244;
-        bh=9l4YiTzis5EX2SbFlAJNIL7bN9QTMaOyqHcEuSDbCVE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FA+eauo75VUVRV4J+OZEz7sUf05vB0tLcQ+0A+VoOy/43Peu41YMAKQMWmByj514c
-         /QpQviQ+Ofgv4AymrOGZaYbwpXu272z0//Gt0UWyKmxAPUGAyYachjIsBKW/DSZnQk
-         tM+up+YtDH6DL82B2c58A1CntyKeQmFsMWdmp8Kw=
-Date:   Thu, 13 Jan 2022 11:20:41 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jochen Mades <jochen@mades.net>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>
-Subject: Re: [PATCH] Bugfix RTS line config in RS485 mode is overwritten in
- pl011_set_mctrl() function.
-Message-ID: <Yd/8+YR549pvmOHS@kroah.com>
-References: <20211231171516.18407-1-jochen@mades.net>
- <20220102100710.GA29858@wunner.de>
- <1489312180.3256431.1642068732902@webmail.strato.com>
+        Thu, 13 Jan 2022 05:56:35 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99252C06173F;
+        Thu, 13 Jan 2022 02:56:35 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u15so9143176ple.2;
+        Thu, 13 Jan 2022 02:56:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=oJN4J8iu8PnOEhGvfSZZbeVmWmfK/UHswq06bUpnhww=;
+        b=FCOLTh9HE7z4yI4p4kO4gjamu+UemBWoBBBlEfR75KI/z+1LGYSGemNx50G0/92gad
+         yQgrFSbW5AKtRXtcm6HSebEpz+xon99EKrAIMM6VoH7cfuZt4K0GdRi0f47J2J8Esp/a
+         xCjAoGOJLIKQEbLFWLVpmKcurdjZLpZt5JuN3tVeo6PJVnrSz7WJNBB++UUtBLIfS7k/
+         vIycNVyWkW60I5KvE0u3M7d7clLiUk1ARAsfGTgLeSJgyxhTBoS0yFL06X3ioFV4KI2S
+         s6xB8ThZ5zN8r9eNiMbQ40oNU+XL5eEvLodxI6FvGwvo+dfN8Vg/soJRwRUw/t8D74Gx
+         1Y8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oJN4J8iu8PnOEhGvfSZZbeVmWmfK/UHswq06bUpnhww=;
+        b=sie/UPGrbKiSPbDYGKrt3R6UCE2N0wHY0uxrgn7VQaVZGbk5CuwpfZLShpJBp2ndoB
+         t5mgTplgTwALPnPalOBMAA/vfZJbmwJGNapBkiNgaaLlgits/NUuLRJ6AodiPIh4enaa
+         GM8+viZ7dmOn3uEf6p6YP1JmhpWi3cE/a5m/Xhs2MwGQMxdCQf2rajBrrJm9moEuQPLF
+         oxlxD4IezfpDas7NKaNZYWOJlQyhBm7spHQ8gmOaLDj/YoKMKTGYyS4YzfXwLutLvbtw
+         CIsaxWoeKABkb2o48iA/iJyZdTBKynGWn4IoHiuUYJsc/v6cu0grQhMLbu03ZBhiXzuF
+         5W9A==
+X-Gm-Message-State: AOAM5319UoaJUg4e8zyiI5i3suYRhjD8Ga8hcJQuIaQxJdtHwjJelTeX
+        0dzrgW1qI+hGt0coyp2jRN9B9ADR5+KQTzMvILQ=
+X-Google-Smtp-Source: ABdhPJwLsBJSMyCZLung9morGRLOKMNW3NWd77lPXM9jNrofI1B2dzn/JSHbib0QgGsOYg/UK/Ya2i30o6BWxvwI0bE=
+X-Received: by 2002:a63:7f55:: with SMTP id p21mr3402265pgn.338.1642071395080;
+ Thu, 13 Jan 2022 02:56:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1489312180.3256431.1642068732902@webmail.strato.com>
+References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
+ <1641979444-11661-3-git-send-email-hammerh0314@gmail.com> <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
+ <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com> <d6d3aa07-7bf1-2b6d-356f-ae13c7b9d6cd@kernel.org>
+In-Reply-To: <d6d3aa07-7bf1-2b6d-356f-ae13c7b9d6cd@kernel.org>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Thu, 13 Jan 2022 18:56:44 +0800
+Message-ID: <CAOX-t57KZb0hNDuhPsabkmkf_qOOLqyH3yuvkHP6UNwhLodWDg@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 11:12:12AM +0100, Jochen Mades wrote:
-> Hi Lukas,
-> 
-> > Patch is correct, but commit message could be improved:
-> > 
-> > * Subject should be in imperative mood (by convention), it should be
-> >   prepended by "serial: pl011: " (in line with previous commits touching
-> >   this driver, use "git log --oneline amba-pl011.c") and the trailing dot
-> >   is unnecessary, e.g.:
-> > 
-> >   "serial: pl011: Fix incorrect rs485 RTS polarity on set_mctrl"
-> > 
-> > * Commit message should be wrapped at 72 characters (so that it appears
-> >   centered when displayed with "git log" on an 80 chars terminal).
-> >   The reference to "0001-serial-amba-pl011-add-RS485-support.patch"
-> >   should be replaced with a reference to the offending commit, e.g.:
+Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B41=E6=9C=8813=E6=97=
+=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=885:08=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On 13. 01. 22, 9:54, hammer hsieh wrote:
+> >>> +static void sunplus_shutdown(struct uart_port *port)
+> >>> +{
+> >>> +     unsigned long flags;
+> >>> +
+> >>> +     spin_lock_irqsave(&port->lock, flags);
+> >>> +     writel(0, port->membase + SUP_UART_ISC);
+> >>> +     spin_unlock_irqrestore(&port->lock, flags);
+> >>
+> >> I asked last time:
+> >> * What bus is this -- posting?
+> >>
+> >> You replied:
+> >> * Here just clear interrupt.
+> >> * Not really understand your comment?
+> >>
+> >> So I am asking again:
+> >> What bus is this? Isn't a posted write a problem here? I mean, shouldn=
+'t
+> >> you read from the register so that the write hits the device? That
+> >> depends on the bus this sits on, so just asking.
+> >>
 > >
-> >   "Commit 8d479237727c ("serial: amba-pl011: add RS485 support") sought
-> >   to keep RTS deasserted on set_mctrl if rs485 is enabled.  However it
-> >   did so only if deasserted RTS polarity is high.  Fix it in case it's
-> >   low."
-> >
-> >   Feel free to copy this to a v2 of your patch and amend as you see fit.
-> > 
-> 
-> Find attached the patch with the new subject and corretced commit message.
-> 
-> > * Add tags for the offending commit:
-> > 
-> >   Fixes: 8d479237727c ("serial: amba-pl011: add RS485 support")
-> >   Cc: stable@vger.kernel.org # v5.15+
-> > 
-> > * Be sure to cc the author of the offending commit.
-> 
-> Sorry I don't know how to do that correctly. Can you please give support/hints?
-> 
->  
-> > Thanks,
-> > 
-> > Lukas
-> > 
-> > > ---
-> > >  drivers/tty/serial/amba-pl011.c | 8 ++++++--
-> > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> > > index 537f37ac4..1749c1498 100644
-> > > --- a/drivers/tty/serial/amba-pl011.c
-> > > +++ b/drivers/tty/serial/amba-pl011.c
-> > > @@ -1646,8 +1646,12 @@ static void pl011_set_mctrl(struct uart_port *port, unsigned int mctrl)
-> > >  	    container_of(port, struct uart_amba_port, port);
-> > >  	unsigned int cr;
-> > >  
-> > > -	if (port->rs485.flags & SER_RS485_ENABLED)
-> > > -		mctrl &= ~TIOCM_RTS;
-> > > +	if (port->rs485.flags & SER_RS485_ENABLED) {
-> > > +		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-> > > +			mctrl &= ~TIOCM_RTS;
-> > > +		else
-> > > +			mctrl |= TIOCM_RTS;
-> > > +	}
-> > >  
-> > >  	cr = pl011_read(uap, REG_CR);
+> > Each UART has its own ISC register.
+> > Ex.
+> > dev/ttySUP0 base_adr =3D 0x9C00-0000 , isc_addr =3D 0x9C00-001C
+> > dev/ttySUP1 base_adr =3D 0x9C00-0080 , isc_addr =3D 0x9C00-009C
+> > dev/ttySUP2 base_adr =3D 0x9C00-0100 , isc_addr =3D 0x9C00-011C
+> > dev/ttySUP3 base_adr =3D 0x9C00-0180 , isc_addr =3D 0x9C00-019C
+> > dev/ttySUP4 base_adr =3D 0x9C00-0200 , isc_addr =3D 0x9C00-021C
+> > So sunplus_shutdown() just simply turn off its own device isc only.
+> > That's why I didn't read register value, just write 0 for it.
+>
+> Could you explain me what posted write is and how does it not matter in
+> this case?
+>
 
+Each UART ISC register contains
 
-Hi,
+Bit7 MSM(Modem Status) INT enable / disable (Access type RW) not use
+now (0: default)
+Bit6 LSM(Line Status) INT  enable / disable  (Access type RW) not use
+now(0: default)
+Bit5 RXM INT enable / disable  (Access type RW) set this
+Bit4 TXM INT enable / disable  (Access type RW) set this
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Bit3 MS(Modem Status) INT flag (Access type Read only) not use now (0: defa=
+ult)
+Bit2 LS(Line Status) INT flag (Access type Read only) not use now (0: defau=
+lt)
+Bit1 RX INT flag (Access type Read only) read this
+Bit0 TX INT flag (Access type Read only) read this
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+sunplus_shutdown()
+main purpose is to turn off TX INT(bit4) and RX INT(bit5)
+bit7 and bit6 not used, should be 0.
+bit3 ~ bit0 read only, no effect while writing 0 to them.
 
-- Your patch was attached, please place it inline so that it can be
-  applied directly from the email message itself.
-
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file, Documentation/SubmittingPatches
-  for how to do this correctly.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+> thanks,
+> --
+> js
+> suse labs
