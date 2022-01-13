@@ -2,73 +2,145 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAAAC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 08:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD38C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Jan 2022 08:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232582AbiAMICe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:02:34 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:43724 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231391AbiAMICe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:02:34 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACXn1d_3N9h7bRFBg--.37830S2;
-        Thu, 13 Jan 2022 16:02:08 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     jirislaby@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] tty/serial: Check for null pointer after calling devm_ioremap
-Date:   Thu, 13 Jan 2022 16:02:06 +0800
-Message-Id: <20220113080206.1198250-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S230101AbiAMIyJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:54:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230071AbiAMIyI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 13 Jan 2022 03:54:08 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97387C06173F;
+        Thu, 13 Jan 2022 00:54:08 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id n11so6681080plf.4;
+        Thu, 13 Jan 2022 00:54:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uAZ68Y2XfdAKorZiV700UePRC99qa3lTlzuq+2AtBAg=;
+        b=TKbcO0jr+l53jtGwqRstAcbmZXRP6RcmN9hGG2GaWHmS6Ee9Fo2C7FLf3gd+2+wF4z
+         EOD8avQxSQm1GCXBD8+vHiYyHAB2+95EbPAksAe7NxIQZ0LIhA71QrdjiVnxcRJizvLj
+         1hN3ejxPoVzVXRGGocdlf4LAL5AQq8nMk5qm7rnSFQ9KU69+98M/xiQIvH2zeP5QrM0s
+         +EXfQ1EtX38GtKUMGK572NK2RSFq92n8NA+ilISglODA5cfbrUnX2DvzvIloYO3bW2UC
+         kCGpgV3iBWXJTj2xkO8QKUoxYt5ecuEkZ5A3nvOXk0RITS5StqAMQcWkOS1jnjHELpCt
+         v9WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uAZ68Y2XfdAKorZiV700UePRC99qa3lTlzuq+2AtBAg=;
+        b=QxM5YoFyFjuK0Io5gtUIG0UAoJGQZwPyEbSNkQAv35oSrNXgAJjRjR5YAQu6RRabOM
+         Q2LQwtsIqzdqPPnH9zff/txH8epd4rDMHi3C84PiUcyMlrqGgozA7g9A7HXcEPelxQwj
+         5TeviYC5ftdYa4ruVoiQ29mt40mmxG5Qxdxr12RzaCEq+wSSKRye16TDWhp+1Kx70NJY
+         iA9BcYndP/xb6s6f5TRW6BN64n1l/c1nMhOiRIyOn7cscwu8swXDkUWUJaZbi2NfahR7
+         tiyKjIpljg8vEIXHQHaM66pOSyTbxcuVbVTO0FE4Rmxf5SvgJpvl7L78JwGHV0UtT4ek
+         GE6w==
+X-Gm-Message-State: AOAM530nAl5RPQ+NpU9aGK8UTfe9t0guISQTd79qFNpkGMW3YjXefMap
+        QXOKrNOcZs1S0a+toEuzzlIbEcpZXbgGEwA/KG4=
+X-Google-Smtp-Source: ABdhPJzCHzJ6G8FR10V5FLG8CU7iOrWbVN7PznzQHudPnABW40Gu6lA9xZF2IRvT+vjDPErvUXT6in+NZIwjD795A4M=
+X-Received: by 2002:a17:902:a501:b0:14a:4ed2:2a01 with SMTP id
+ s1-20020a170902a50100b0014a4ed22a01mr3332335plq.49.1642064048054; Thu, 13 Jan
+ 2022 00:54:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACXn1d_3N9h7bRFBg--.37830S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Wr43KryUGw47tr15Xw43Wrg_yoWDGwb_WF
-        s8Can3Z34rAr1rta1qkry3Zw4aqrsI9ayxWr1xZF9Fy3s8ZFs7WFZrurn7Zw4UXws2qF1D
-        Gr47Zw4UZF4jvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8ZwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUIzuXUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
+ <1641979444-11661-3-git-send-email-hammerh0314@gmail.com> <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
+In-Reply-To: <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Thu, 13 Jan 2022 16:54:17 +0800
+Message-ID: <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 03:35:14PM +0800, Jiri Slaby wrote:
->> diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
->> index 8f2cab7f66ad..1ecbf6d0dc79 100644
->> --- a/drivers/tty/serial/milbeaut_usio.c
->> +++ b/drivers/tty/serial/milbeaut_usio.c
->> @@ -523,6 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
->>   	}
->>   	port->membase = devm_ioremap(&pdev->dev, res->start,
->>   				resource_size(res));
->> +	if (!port->membase) {
->> +		ret = -ENOMEM;
->> +		goto failed;
->> +	}
+Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B41=E6=9C=8813=E6=97=
+=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=883:06=E5=AF=AB=E9=81=93=EF=BC=9A
 >
-> what about using devm_ioremap_resource() and have only one if there?
+> Hi,
+>
+> On 12. 01. 22, 10:24, Hammer Hsieh wrote:
+> > Add Sunplus SoC UART Driver
+> ...
+> > --- /dev/null
+> > +++ b/drivers/tty/serial/sunplus-uart.c
+> > @@ -0,0 +1,756 @@
+> ...
+> > +/* Register offsets */
+> > +#define SUP_UART_DATA                        0x00
+> > +#define SUP_UART_LSR                 0x04
+> > +#define SUP_UART_MSR                 0x08
+> > +#define SUP_UART_LCR                 0x0C
+> > +#define SUP_UART_MCR                 0x10
+> > +#define SUP_UART_DIV_L                       0x14
+> > +#define SUP_UART_DIV_H                       0x18
+> > +#define SUP_UART_ISC                 0x1C
+> > +#define SUP_UART_TX_RESIDUE          0x20
+> > +#define SUP_UART_RX_RESIDUE          0x24
+> > +
+> > +/* Line Status Register bits */
+> > +#define SUP_UART_LSR_BC                      BIT(5) /* break condition=
+ status */
+> > +#define SUP_UART_LSR_FE                      BIT(4) /* frame error sta=
+tus */
+> > +#define SUP_UART_LSR_OE                      BIT(3) /* overrun error s=
+tatus */
+> > +#define SUP_UART_LSR_PE                      BIT(2) /* parity error st=
+atus */
+>
+> I just wonder why do the HW creators feel so creative to redefine the
+> world...
+>
 
-Well, I check the comment of the devm_ioremap_resource() and notice that
-it checks and requests region before ioremap.
-And the usage example is fit for the situation.
-But I have still have no idea what the concrete advantages of the
-devm_ioremap_resource(), like fixing something or improve the efficiency.
-Please give me more detail.
+Our IC designer create it, I just try to make it work.
+Indeed, before Greg KH mentioned 8250-like, I didn't realize our uart
+so much like 8250.
+Thanks for your review.
 
-Sincerely thanks,
-Jiang
+> > +static void sunplus_shutdown(struct uart_port *port)
+> > +{
+> > +     unsigned long flags;
+> > +
+> > +     spin_lock_irqsave(&port->lock, flags);
+> > +     writel(0, port->membase + SUP_UART_ISC);
+> > +     spin_unlock_irqrestore(&port->lock, flags);
+>
+> I asked last time:
+> * What bus is this -- posting?
+>
+> You replied:
+> * Here just clear interrupt.
+> * Not really understand your comment?
+>
+> So I am asking again:
+> What bus is this? Isn't a posted write a problem here? I mean, shouldn't
+> you read from the register so that the write hits the device? That
+> depends on the bus this sits on, so just asking.
+>
 
+Each UART has its own ISC register.
+Ex.
+dev/ttySUP0 base_adr =3D 0x9C00-0000 , isc_addr =3D 0x9C00-001C
+dev/ttySUP1 base_adr =3D 0x9C00-0080 , isc_addr =3D 0x9C00-009C
+dev/ttySUP2 base_adr =3D 0x9C00-0100 , isc_addr =3D 0x9C00-011C
+dev/ttySUP3 base_adr =3D 0x9C00-0180 , isc_addr =3D 0x9C00-019C
+dev/ttySUP4 base_adr =3D 0x9C00-0200 , isc_addr =3D 0x9C00-021C
+So sunplus_shutdown() just simply turn off its own device isc only.
+That's why I didn't read register value, just write 0 for it.
+
+> Other than that the driver looks much better now, i.e. LGTM.
+>
+> thanks,
+> --
+> js
+> suse labs
