@@ -2,200 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1E8C2BA4C
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 13:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D24C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 15:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbiANNGU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 08:06:20 -0500
-Received: from mga14.intel.com ([192.55.52.115]:42810 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231283AbiANNGK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 08:06:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642165570; x=1673701570;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Eo7EfpdrH3wA8s8pzPgaa2QUgdkyHS+qVWfq0/cogWQ=;
-  b=TUibVCDD1lMQhtQD/MPJ/IlalGJGZ+o9Xn3zE/4aZNHlWoemmz1CZVRX
-   Uc4t32rMHTgl+PhV1LWJQ0p4p254E4BDkqJQMkRfXv0GEajIoUj5R34vJ
-   /n+2IK7yjcjPcgO26PoR/eoUA2DaA/1n2pYGGbC04J1QJrRIuBiqzDgC+
-   QnrkoszTHNKv2IU40h4CW6Y9rz3j74Xihrzb+We+eea89NSSqu2IOaZlQ
-   rugZ+1ZxPwYqBHskwFT/BFUvqzcIS6ods5Z4T04uCC+YOqrc9jHfq2wwf
-   aYhMhurAiIlcAzhT/3ykGMl7xRYzGMDf2mvO2W+/DpGIb/QmVsOmxRHyS
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244441648"
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="244441648"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 05:06:09 -0800
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="530231083"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 05:05:53 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n8MFy-00AcJJ-9G;
-        Fri, 14 Jan 2022 15:04:38 +0200
-Date:   Fri, 14 Jan 2022 15:04:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        id S238737AbiANPaC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:30:02 -0500
+Received: from mail-db8eur05on2062.outbound.protection.outlook.com ([40.107.20.62]:36928
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230420AbiANPaA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Jan 2022 10:30:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iUFYdpzJ8kChaKRV5k8ZeFCTVjDaOj1zyF8dUOcObE9cbxPihNIJkR0dkce8b5sBgOkT4D/Q3YIt/ZZXbjLVFRzDWKomBcK50jxUybwzWPz9Eoj0ZSlU1xaPe+mriZg5tJddgTkCHZArUt/LPZQ46mu8dH/ugD3uJLO3obiwd0QmwD8oBWWqqNtXsz3E3snb+P0nQ16ZHYJ6zXXfjEvID86ywxFkemYE+hvWGuP0hgPwJkr9YdlDNF+n1TwHlrsJ6naD80CsIoe6o0SClZ721sCaJ/0aJsqM7QnK4M0ImIoSJPcJDen8/W5B0t13oZvrRsSz9+FLzzx56k+R+YIyVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IxpRH1cSKTOc25DkcXp4pOlY+pEJv31IT4FqEbjiVYE=;
+ b=V6S3y/YetSLaWUBsvsx48BuGfEsTCipM9f/8I3mnR/t5f7r6S5wuHJtK7VXxXI9rEqg7MmPBSUi6uLBEc7PA10EmgtwDbLNxe8K6N/mYqZHJnUIrXWd+WwnLGFHP72hHGNLfmto8xMf7IURP6Gm0yRcskBzDWyh9e22i7BmIcA5N67YD/CBD5RVhGQiTr4eddLxEtpbFG5jVdd1Lp9CyTIME48/1csMtmeTrigu0dhBRa7pA0RJbUHfurrOWVscIJsjCrJmbaSD/xWa18YGAJtUJ3Pe3/kiam3RanmatXhj4eS+EcNRBpgnUvTXynW9CpcbB2eWrhYWEBjy0rgFCYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IxpRH1cSKTOc25DkcXp4pOlY+pEJv31IT4FqEbjiVYE=;
+ b=Q0xvEVDTEOLwdi2NAls8OyS5Ya7IzanzVs9lFtW3JVaxW+vqbITLs7KtgJgk2fKaHEPP4Y01DmLl6ZG+lskwdB2f+KHrLI8gyQOrp0uG/wExOQPFWPPpyKv50aglkfEduXgA0UfFL1bvyu9MskVHMLJYVdZmoDTHQmKIWZOE16k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by VI1PR0402MB3840.eurprd04.prod.outlook.com (2603:10a6:803:22::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Fri, 14 Jan
+ 2022 15:29:54 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::f853:4e9a:7ab6:dbf7]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::f853:4e9a:7ab6:dbf7%5]) with mapi id 15.20.4867.011; Fri, 14 Jan 2022
+ 15:29:54 +0000
+Date:   Fri, 14 Jan 2022 17:29:52 +0200
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <YeF05vBOzkN+xYCq@smile.fi.intel.com>
-References: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL compatible
+Message-ID: <YeGW8IgkxFN/r7WR@abelvesa>
+References: <1640085372-1972-1-git-send-email-abel.vesa@nxp.com>
+ <CAL_Jsq+XNNVbUiJeqPvDrz_oZoV1PTxRcE9O5ovEAHQZ37cn9g@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220113194358.xnnbhsoyetihterb@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CAL_Jsq+XNNVbUiJeqPvDrz_oZoV1PTxRcE9O5ovEAHQZ37cn9g@mail.gmail.com>
+X-ClientProxiedBy: VI1PR08CA0156.eurprd08.prod.outlook.com
+ (2603:10a6:800:d5::34) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8803e6d8-5384-42f0-87bd-08d9d772b6c5
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3840:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB384032F7718071D0DC88D014F6549@VI1PR0402MB3840.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:534;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YOXhg9JGeMF+LI8GJj64riYuk/BXOz+G+PQi10ytS5uUa5TvJSTov6+9+GhRobd7leeFOWUW4qEtx4fiuj/CytBqn0U4xzN1PSNKQcB+smLzVIIbAhM0FhwhA8nAoVphS60qMTR8aGtFhqGV2dAXJqPKt1ZcKchc7riWGe1Tzk1bq5uczYgNxE3Xc3vZPjqlw1Dg8Mitg01Dleqjrt9VZiPvDbKOULqsw0yJ/pESNZMQ6iQmMdLsqJhbUfj4iQ753ZsrQUngzGRmeGDxb+9bUrYM3BrbbaRgLu0xn/BGhDBdmL7Gcsu4fOfzgzZLQvebpoOl8UzDLUO9NQoNKGoGekvgbWydvVV1AvIajaBwCV46GuWUhivcEtJE3JRrNbUlpd5bTTkbhXb3MygydhlhlzDhYTHkMSsmkunIztgiE4pz0hVdoIDqtYMgEraj4XkJCx75RsZ/szmw7dMRX8xHLEOdakRxiyYzfK1foF9WGPYcUsFFPSHgHfN6BjE6+wWJT6zrfxyNjGUpV+ezdICz9D+cp47BbJt+7ifz1c6k22opgTyMeecUWimvFwQNKb69jmMYAcDtRNcJLzsN0+rs7ssDtCxhjJwJiP4VKJdXiS7KJbWBCsg1i/s/Fv/CYtrpyvBjxZfjeKGJ7VZB2cGxtE27tD6w16jinQse5clfQC85C/f9g5CiMXyElSyWOxyHTMkW9ZSF24Suv/KJxkurRUoDpdoi1G3IU63xGg4TMqI7PUJAHfOrfQFopui7MHTNhWFCDgiBdtUm3p6swcbnogDuewFurs9baNSDJQQo8iA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(2906002)(6486002)(6916009)(508600001)(8936002)(38350700002)(38100700002)(33716001)(6506007)(66946007)(66556008)(66476007)(86362001)(966005)(8676002)(44832011)(5660300002)(52116002)(4326008)(186003)(316002)(54906003)(26005)(6512007)(53546011)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rxZUj00yWmWMyZt9rTqTqKkclMpg3guLwacO11OFL5uX7bU3c8fZMTXHBiY7?=
+ =?us-ascii?Q?FCRuRirs7g+fCH6OJ8MQtiJwSPzevKS2rA6R6IXTAeT9PDluBW7rEK1bNE6T?=
+ =?us-ascii?Q?VF9XKkQl5UYKnzdZjI+YKMOJPP71tkjOqTCyqDbwLlD0Tz90d3SbvROSM3gE?=
+ =?us-ascii?Q?cBMv5hJAdhzWZRkuh2Cup7AzeTNUmSFcY0s8cNyT0JIZ8/HnuPo44dt9MKZX?=
+ =?us-ascii?Q?qgacyCx9dQ8RAXpwQ7A7dVG5on6VHKI3GHTU2RPj1HMUv+EX7p1f/Zsvi1ac?=
+ =?us-ascii?Q?XLEhLhTJjdeLO7uB+PTTmvF0iNB8BTp85s1KObSSY/dBQmP8Zv9xdZApSemY?=
+ =?us-ascii?Q?HOXX0gqPYEwI0bstWvdNMc5O4ePBraqtetT7fHNWs8yYsg+E5UbrTLpElZV9?=
+ =?us-ascii?Q?/4pYFGQP7s+wsWWOuk0vq9ijom3BwA5AqtExq9En63H/nZ2ULuSQ3sIMvh+H?=
+ =?us-ascii?Q?TeGXDwiPPnC/uz59Np9HeTuzAIsiLc/S6BvuaZsoHzPCxFfes2NcnuWT4pRZ?=
+ =?us-ascii?Q?/biBwljsS0qLXY/SXNyx8GNXRodzL33cNlmEasHliWJBp7b5gBrgw/kbGhVk?=
+ =?us-ascii?Q?HZTqb4n5+0+y0IEEtQQZfGxOjrnh6hyDSsLpDtUUbveu2lU3pFQ44pZSbsRQ?=
+ =?us-ascii?Q?3yYeNtoh3s0EhSma/FWJoV6HLciDxrzxaY4DRZKov9YT3riCwqt3uM7peyr9?=
+ =?us-ascii?Q?wsVrRPI0JRWfSZiGobQnUM5Pzp/d3U9SyWWnEUPCBihUYNvSeY8Gqf41sUhZ?=
+ =?us-ascii?Q?Xy/KFzwpMHQLMu+D6dQaKEwthzTxJJLN7Hzj31yAO3zk1AufuG40mtqyd54w?=
+ =?us-ascii?Q?OUrS8vF2/J30lXIGCmoCnZ5SSkMM+w+KFwjpUCi3CdHVIrYdKy5kFe94KXTQ?=
+ =?us-ascii?Q?PGClAhyPOdazMVR3lDIObW/hfIoiQODmjXpqxL6DJKcbC7s7UeLECc+jJ805?=
+ =?us-ascii?Q?Csk4oLoYIaQdPrv3mfCJzKHtxlfFkBtNz54h8PmEGrqsfM+XAY0Pawdorqy1?=
+ =?us-ascii?Q?/qI9XhjS3xQ7cOSHXlxhIqOnJo5x0ZT0hPslbYcn5Y2fN/CktaTN0LVfdlpL?=
+ =?us-ascii?Q?SPoUBSANhpZaRwVVktBI5Y1q98jcW9c7ELbN26qMF9OiLR3Heaz7ZPrlJYx+?=
+ =?us-ascii?Q?/VWW3qc/59Eqw1Ke5WfXcNGT6dm9rzwejXIzYg8BNOHwy57tgQMuzD2eBwbR?=
+ =?us-ascii?Q?Uogo/4W2su5VeMmjNSxXc1JDQo6pkwW5kHsXwH1aqU4ev1LLVi70VgjIbFkk?=
+ =?us-ascii?Q?pk3OaVxasxz931TbCaolUKCypSa6DYhskgITBASApcc9gFfHGVMERkBrUa+Y?=
+ =?us-ascii?Q?mBzp/Bu4MtWmgymiV55tZiBBa/cUhD76UFknf6NYIDkRrqa+ZcCz7ceqqONJ?=
+ =?us-ascii?Q?HPgD5ji7te+GqEqpMh1ssTqj9yI9MchzWNAh4WoTrJ5/CUhjXvGG2ipbveF0?=
+ =?us-ascii?Q?28mBfZwXWks7cnqVek0hNxLhcnKDc5kK5F+figosOAQHu1ysP+zze5aqH6Vu?=
+ =?us-ascii?Q?p3t/TK6KKE+Tl0WPFHoa1OPMMQgrDPBLM6GEBye6AKvnCeIVB5uzB4yGhVwI?=
+ =?us-ascii?Q?a2PMEd+jDU8R6fCwdxvAWx8H3qN5xBUiV+tRXfH7+BI5KwnP0cnfxUBjZB4C?=
+ =?us-ascii?Q?AEJ2gwNbSpZgFp56MSVdX6I=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8803e6d8-5384-42f0-87bd-08d9d772b6c5
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 15:29:54.4152
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1VgPjcECD2CbLpyYswApm+ZSgClFwQmGoK+wZr7C2/6JLJ0SCildjeXAJiOIG0plIOmkvvxSQS+VGBvhZH11sA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3840
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 08:43:58PM +0100, Uwe Kleine-König wrote:
-> The subsystems regulator, clk and gpio have the concept of a dummy
-> resource. For regulator, clk and gpio there is a semantic difference
-> between the regular _get() function and the _get_optional() variant.
-> (One might return the dummy resource, the other won't. Unfortunately
-> which one implements which isn't the same for these three.) The
-> difference between platform_get_irq() and platform_get_irq_optional() is
-> only that the former might emit an error message and the later won't.
+On 21-12-21 09:43:39, Rob Herring wrote:
+> On Tue, Dec 21, 2021 at 7:16 AM Abel Vesa <abel.vesa@nxp.com> wrote:
+> >
+> > Add i.MX8DXL lpuart compatible to the bindings documentation.
+> >
+> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> > ---
+> >
+> > This is a resend of the following, but as a separate patch.
+> >
+> > https://lore.kernel.org/linux-arm-kernel/YcCisM3BqM984k%2F1@kroah.com/
+> >
+> >  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > index 6e04e3848261..1f482e166467 100644
+> > --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> > @@ -30,6 +30,10 @@ properties:
+> >        - items:
+> >            - const: fsl,imx8qm-lpuart
+> >            - const: fsl,imx8qxp-lpuart
+> > +      - items:
+> > +          - const: fsl,imx8dxl-lpuart
+> > +          - const: fsl,imx8qxp-lpuart
+> > +          - const: fsl,imx7ulp-lpuart
 > 
-> To prevent people's expectations that there is a semantic difference
-> between these too, rename platform_get_irq_optional() to
-> platform_get_irq_silent() to make the actual difference more obvious.
+> It doesn't really make sense that imx8qm and imx8dxl are backwards
+> compatible with imx8qxp, but only imx8qm is backwards compatible to
+> imx7ulp. Ir only makes sense if some feature/quirk specific to
+> fsl,imx7ulp-lpuart is gone in imx8qm.
 > 
-> The #define for the old name can and should be removed once all patches
-> currently in flux still relying on platform_get_irq_optional() are
-> fixed.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
-> 
-> On Thu, Jan 13, 2022 at 02:45:30PM +0000, Mark Brown wrote:
-> > On Thu, Jan 13, 2022 at 12:08:31PM +0100, Uwe Kleine-König wrote:
-> > 
-> > > This is all very unfortunate. In my eyes b) is the most sensible
-> > > sense, but the past showed that we don't agree here. (The most annoying
-> > > part of regulator_get is the warning that is emitted that regularily
-> > > makes customers ask what happens here and if this is fixable.)
-> > 
-> > Fortunately it can be fixed, and it's safer to clearly specify things.
-> > The prints are there because when the description is wrong enough to
-> > cause things to blow up we can fail to boot or run messily and
-> > forgetting to describe some supplies (or typoing so they haven't done
-> > that) and people were having a hard time figuring out what might've
-> > happened.
-> 
-> Yes, that's right. I sent a patch for such a warning in 2019 and pinged
-> occationally. Still waiting for it to be merged :-\
-> (https://lore.kernel.org/r/20190625100412.11815-1-u.kleine-koenig@pengutronix.de)
-> 
-> > > I think at least c) is easy to resolve because
-> > > platform_get_irq_optional() isn't that old yet and mechanically
-> > > replacing it by platform_get_irq_silent() should be easy and safe.
-> > > And this is orthogonal to the discussion if -ENOXIO is a sensible return
-> > > value and if it's as easy as it could be to work with errors on irq
-> > > lookups.
-> > 
-> > It'd certainly be good to name anything that doesn't correspond to one
-> > of the existing semantics for the API (!) something different rather
-> > than adding yet another potentially overloaded meaning.
-> 
-> It seems we're (at least) three who agree about this. Here is a patch
-> fixing the name.
 
+Actually, I'll just drop the imx7ulp from the imx8dxl dts nodes and then
+from this patch.
 
-And similar number of people are on the other side.
+The imx7ulp compatible is not needed anymore because the following
+commit:
 
--- 
-With Best Regards,
-Andy Shevchenko
+b4b844930f27bf7019 ("tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"
 
+got reverted by:
 
+4e9679738a918d8a48 ('Revert "tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP"')
+
+Will resend with proper changes.
+
+> Rob
