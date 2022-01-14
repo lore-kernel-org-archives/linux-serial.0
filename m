@@ -2,41 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770D9C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 23:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673A4C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 23:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbiANXFy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 18:05:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        id S229659AbiANXQ7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jan 2022 18:16:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231320AbiANXFy (ORCPT
+        with ESMTP id S229643AbiANXQ6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 18:05:54 -0500
+        Fri, 14 Jan 2022 18:16:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4302C061574;
-        Fri, 14 Jan 2022 15:05:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FE7C061574;
+        Fri, 14 Jan 2022 15:16:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8660B62065;
-        Fri, 14 Jan 2022 23:05:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4154C36AE9;
-        Fri, 14 Jan 2022 23:05:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DEE62069;
+        Fri, 14 Jan 2022 23:16:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB353C36AE7;
+        Fri, 14 Jan 2022 23:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642201552;
-        bh=eW8qfxOLXmdoe8jddUPKE7G9qg502Iient4wuy9l11I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iecKcacZgzID8/b83zx1M7UUlCj0+BSDXYsyfZsokK9MDNjfllpfTYDSzIY8Oz3ge
-         vBHt+OI7i3geYdpP7aSckqswrzFNYRVqyeAqCBlaNw4nxhwgePgSncP0JuEwgobZwl
-         ceQ68+uqxOA75qL065+rX6avsuj5DJBN2iDhJd9M8OjoUxOwhpPUeHsgkrozDv8b9M
-         b9PScIWVf5ZWEJMerqVOVqCFzeFRJ63EC6ZEjFEGHkJnFRUfM/W+baHS2m9ZkRaV9/
-         LnvTyCPoTNeaVZ9Q9/x08jRgwmfqeRQpMl9S3IzU9HGaw2l+vpX06+7JEj/sH5wumY
-         2tsfKhUS5o3dw==
-Received: by pali.im (Postfix)
-        id DA3527D1; Sat, 15 Jan 2022 00:05:49 +0100 (CET)
-Date:   Sat, 15 Jan 2022 00:05:49 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>
+        s=k20201202; t=1642202217;
+        bh=HsftLIf5iEt9qf6u589RLSowTzG+vqNn6xCHtEXuZsc=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=b8iCq/Nhe0N9zsHG+BAL8qNvLgE+5anhTeyh8dE7FUJxvN95xb2HXP6p38hqAUAFg
+         0wwZo3698lkcqVLqw0aoPTpN3mVj3eOJUjsXX514MDvm0uNJiAM5buafDZyWZ/Lu+/
+         MfjLNhgNBsndYZZU+STY3OwEJpkxrHIK0D48RVGh2EMh/MgUsApJJOOWhsTfYujqWP
+         +0gVWwCY7M9EKHM/YFaw9L93U52r9COfwxmKiZJoh0nnxswgA5VUc0wVo53DkD09U1
+         ENXeYrjmuYUtEnJ+jtBPdJ7BVlGTksG+tA1BZ1vbpuQwVxZl7IUR0uKJaUVDfSNuoC
+         NfZRSvidU0JRA==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220114230549.56co4qcpnq32muwj@pali>
+References: <20210930095838.28145-1-pali@kernel.org> <20211103214209.azo2z3z4gy7aj5hu@pali> <87ee6bm9hn.fsf@BL-laptop> <20220114105100.im6gmkt6fjl2aiwl@pali> <20220114225659.D5D79C36AE9@smtp.kernel.org> <20220114230549.56co4qcpnq32muwj@pali>
+Subject: Re: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
+From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
         Michael Turquette <mturquette@baylibre.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,59 +46,30 @@ Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
         linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
-Message-ID: <20220114230549.56co4qcpnq32muwj@pali>
-References: <20210930095838.28145-1-pali@kernel.org>
- <20211103214209.azo2z3z4gy7aj5hu@pali>
- <87ee6bm9hn.fsf@BL-laptop>
- <20220114105100.im6gmkt6fjl2aiwl@pali>
- <20220114225659.D5D79C36AE9@smtp.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220114225659.D5D79C36AE9@smtp.kernel.org>
-User-Agent: NeoMutt/20180716
+To:     Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>
+Date:   Fri, 14 Jan 2022 15:16:55 -0800
+User-Agent: alot/0.10
+Message-Id: <20220114231657.AB353C36AE7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Friday 14 January 2022 14:56:58 Stephen Boyd wrote:
-> Quoting Pali Rohár (2022-01-14 02:51:00)
-> > Hello Stephen!
-> > 
-> > On Friday 17 December 2021 18:23:00 Gregory CLEMENT wrote:
-> > > Hello Pali,
-> > > 
-> > > > On Thursday 30 September 2021 11:58:32 Pali Rohár wrote:
-> > > >> This patch series add support for baudrates higher than 230400 on
-> > > >> Marvell Armada 37xx boards.
-> > > >
-> > > > Stephen, Gregory, are there any issues with this patch series?
-> > > 
-> > > I am not found of these changes but let's apply it as I didn't take time
-> > > to do a better review.
-> > > 
-> > > However I can't apply the dt part if the driver is not merged.
-> > 
-> > Stephen, are there any issues with driver (non-DT) part changes in this
-> > patch series? If not, could you please merge them? This patch series is
-> > here on the list since September without any request for change...
-> 
-> Oh I missed this thread. I thought it was going to be resent.
-> 
-> > 
-> > We would really like to see support for higher baudrates for Armada 3720
-> > platforms in mainline kernel.
-> 
-> If we're adding new support why can't we break with backwards
-> compatibility for the binding and do it a different way?
+Quoting Pali Roh=C3=A1r (2022-01-14 15:05:49)
+> On Friday 14 January 2022 14:56:58 Stephen Boyd wrote:
+> >=20
+> > If we're adding new support why can't we break with backwards
+> > compatibility for the binding and do it a different way?
+>=20
+> Because DTS are backwards compatible. I was told more times that kernel
+> drivers should work correctly with older DTS files. On some boards are
+> DTB files provided by bootloader and they do not use in-kernel DTS
+> files.
 
-Because DTS are backwards compatible. I was told more times that kernel
-drivers should work correctly with older DTS files. On some boards are
-DTB files provided by bootloader and they do not use in-kernel DTS
-files.
+I'm not suggesting to break the kernel driver when used with older DTBs.
+New features are fair game to change the compatible string and do
+something different. If the user wants the new feature they update their
+DTB. We shouldn't be constrained by backwards compatibility here.
