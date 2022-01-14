@@ -2,138 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F33C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 10:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2DFC4321E
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 11:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237869AbiANKvF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 05:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiANKvE (ORCPT
+        id S240868AbiANLe3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jan 2022 06:34:29 -0500
+Received: from mxout01.lancloud.ru ([45.84.86.81]:56428 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236513AbiANLe0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 05:51:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBBBC061574;
-        Fri, 14 Jan 2022 02:51:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0555561EDC;
-        Fri, 14 Jan 2022 10:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D30C36AEA;
-        Fri, 14 Jan 2022 10:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642157463;
-        bh=bwrKb5nAY1yxA7hO1VfpRRfXBzaaN35Y7HZsuMZ/sQA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AroH/H9LPZJM5aRxed34qf1Wxr4EkTk9guDLhEoBlZWeTLfpwb4Vbw266zUyaf1UG
-         iAaAgZU01LvZnWwimunky3+Z2UFB1OiVtLkrTW9pJiDC7F/eMJXZCPz210Q55U+ftv
-         qLwPa6zLtdy+67nABXZ631xy0e8itMSmn2/nW9toG7FSDsuGSaE3q7frpa8Vt5xg9z
-         BATbOHb+iSz08HU3nySD8uw6HxURgTAoJU5n3ucfTOASa0PdlJXd/qSyrK5CE/cks1
-         WWN6AOP4Xy+XHBLUsyCAtBLknQ8BaLBd77/43tQmniFddyyJNXITf+uhiX2bt5dVXw
-         KVJppvIThR4wQ==
-Received: by pali.im (Postfix)
-        id DF3EC7D1; Fri, 14 Jan 2022 11:51:00 +0100 (CET)
-Date:   Fri, 14 Jan 2022 11:51:00 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        Fri, 14 Jan 2022 06:34:26 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 0230320DD201
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] driver core: platform: Rename platform_get_irq_optional()
+ to platform_get_irq_silent()
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+To:     Mark Brown <broonie@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>, Jiri Slaby <jirislaby@kernel.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Borislav Petkov" <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        <platform-driver-x86@vger.kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        "Eric Auger" <eric.auger@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
-Message-ID: <20220114105100.im6gmkt6fjl2aiwl@pali>
-References: <20210930095838.28145-1-pali@kernel.org>
- <20211103214209.azo2z3z4gy7aj5hu@pali>
- <87ee6bm9hn.fsf@BL-laptop>
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Linux MMC List" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        "Brian Norris" <computersforpeace@gmail.com>,
+        <netdev@vger.kernel.org>
+References: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
+ <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <YeCI47ltlWzjzjYy@sirena.org.uk>
+ <1df04d74-8aa2-11f1-54e9-34d0e8f4e58b@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <fba81d0d-c7e3-394d-5929-1706ac9ef5b7@omp.ru>
+Date:   Fri, 14 Jan 2022 14:34:16 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87ee6bm9hn.fsf@BL-laptop>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <1df04d74-8aa2-11f1-54e9-34d0e8f4e58b@omp.ru>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Stephen!
+On 1/13/22 11:57 PM, Sergey Shtylyov wrote:
 
-On Friday 17 December 2021 18:23:00 Gregory CLEMENT wrote:
-> Hello Pali,
+>>> The subsystems regulator, clk and gpio have the concept of a dummy
+>>> resource. For regulator, clk and gpio there is a semantic difference
+>>> between the regular _get() function and the _get_optional() variant.
+>>> (One might return the dummy resource, the other won't. Unfortunately
+>>> which one implements which isn't the same for these three.) The
+>>> difference between platform_get_irq() and platform_get_irq_optional() is
+>>> only that the former might emit an error message and the later won't.
 > 
-> > On Thursday 30 September 2021 11:58:32 Pali Rohár wrote:
-> >> This patch series add support for baudrates higher than 230400 on
-> >> Marvell Armada 37xx boards.
-> >
-> > Stephen, Gregory, are there any issues with this patch series?
-> 
-> I am not found of these changes but let's apply it as I didn't take time
-> to do a better review.
-> 
-> However I can't apply the dt part if the driver is not merged.
+>    This is only a current difference but I'm still going to return 0 ISO
+> -ENXIO from latform_get_irq_optional(), no way I'd leave that -ENXIO there
 
-Stephen, are there any issues with driver (non-DT) part changes in this
-patch series? If not, could you please merge them? This patch series is
-here on the list since September without any request for change...
+   platform.
 
-We would really like to see support for higher baudrates for Armada 3720
-platforms in mainline kernel.
+> alone... :-)
+> 
+>> Reviewed-by: Mark Brown <broonie@kernel.org>
+> 
+>    Hm... I'm seeing a tag bit not seeing the patch itself...
 
-> Gregory
-> 
-> > If not, could you take them?
-> >
-> >> Changes in v7:
-> >> * fixed lint errors in yaml binding file
-> >> 
-> >> Changes in v6:
-> >> * fixed yaml binding file and dts files
-> >> 
-> >> Changes in v5:
-> >> * fixed yaml binding file
-> >> 
-> >> Changes in v4:
-> >> * converted armada3700-uart-clock documentation to YAML
-> >> * split documentation changes into two commits:
-> >>   - first which adds clock documentation
-> >>   - second which updates UART documentation
-> >> 
-> >> Changes in v3:
-> >> v3 is rebased on top of Linus master branch and all already applied patches
-> >> were dropped. There are no changes in patches itself since v2.
-> >> 
-> >> Pali Rohár (6):
-> >>   math64: New DIV_U64_ROUND_CLOSEST helper
-> >>   serial: mvebu-uart: implement UART clock driver for configuring UART
-> >>     base clock
-> >>   dt-bindings: mvebu-uart: document DT bindings for
-> >>     marvell,armada-3700-uart-clock
-> >>   dt-bindings: mvebu-uart: update information about UART clock
-> >>   arm64: dts: marvell: armada-37xx: add device node for UART clock and
-> >>     use it
-> >>   serial: mvebu-uart: implement support for baudrates higher than 230400
-> >> 
-> >>  .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
-> >>  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
-> >>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
-> >>  drivers/tty/serial/Kconfig                    |   1 +
-> >>  drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
-> >>  include/linux/math64.h                        |  13 +
-> >>  6 files changed, 667 insertions(+), 21 deletions(-)
-> >>  create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
-> >> 
-> >> -- 
-> >> 2.20.1
-> >> 
-> 
-> -- 
-> Gregory Clement, Bootlin
-> Embedded Linux and Kernel engineering
-> http://bootlin.com
+   Grr, my mail server tossed it into the spam folder... :-(
+
+MBR, Sergey
