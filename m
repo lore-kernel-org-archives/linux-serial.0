@@ -2,145 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793B7C4321E
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 06:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ADFC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 07:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239436AbiANG5m convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:57:42 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:48213 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiANG5i (ORCPT
+        id S229470AbiANHoQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jan 2022 02:44:16 -0500
+Received: from eu-smtp-delivery-197.mimecast.com ([185.58.85.197]:52849 "EHLO
+        eu-smtp-delivery-197.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230403AbiANHoP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:57:38 -0500
-Received: (Authenticated sender: peter@korsgaard.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 6952FFF805;
-        Fri, 14 Jan 2022 06:57:08 +0000 (UTC)
-Received: from peko by dell.be.48ers.dk with local (Exim 4.92)
-        (envelope-from <peter@korsgaard.com>)
-        id 1n8GWI-0002SW-Ku; Fri, 14 Jan 2022 07:57:06 +0100
-From:   Peter Korsgaard <peter@korsgaard.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list\:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list\:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
+        Fri, 14 Jan 2022 02:44:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
+        s=mimecast20210310; t=1642146253;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UmZSizZC3Y98wYG05A3e909OMWQddcE8UBKKAYZZ3TI=;
+        b=hkgwn6elTBIGMiqehumVTAbK6HI6juLkIR6ciUl2+Ed5eaNGniECJWDmVBJ6ColZKeAT4k
+        35ETLkfh7ySNRFJ30nAsGVCcXx4BvgkYU+DYzQpAzDwbk9gg2S7z6DBoU0eQ7qcd3ysz+G
+        5D9HDbOcHKuwmVV9pE/qQHA1u57qkOg=
+Received: from GBR01-LO2-obe.outbound.protection.outlook.com
+ (mail-lo2gbr01lp2050.outbound.protection.outlook.com [104.47.21.50]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ uk-mta-274-o2BJSJ70OtK21d45WEGrUQ-1; Fri, 14 Jan 2022 07:44:12 +0000
+X-MC-Unique: o2BJSJ70OtK21d45WEGrUQ-1
+Received: from CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:16b::6)
+ by CWLP123MB3585.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:93::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Fri, 14 Jan
+ 2022 07:44:11 +0000
+Received: from CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::4c56:90c1:1ed:2ea3]) by CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::4c56:90c1:1ed:2ea3%4]) with mapi id 15.20.4888.012; Fri, 14 Jan 2022
+ 07:44:11 +0000
+From:   =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] driver core: platform: Rename platform_get_irq_optional() to platform_get_irq_silent()
-References: <20220110195449.12448-2-s.shtylyov@omp.ru>
-        <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
-        <YdyilpjC6rtz6toJ@lunn.ch>
-        <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
-        <20220112085009.dbasceh3obfok5dc@pengutronix.de>
-        <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-        <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
-        <Yd9L9SZ+g13iyKab@sirena.org.uk>
-        <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
-        <YeA7CjOyJFkpuhz/@sirena.org.uk>
-        <20220113194358.xnnbhsoyetihterb@pengutronix.de>
-Date:   Fri, 14 Jan 2022 07:57:06 +0100
-In-Reply-To: <20220113194358.xnnbhsoyetihterb@pengutronix.de> ("Uwe
-        =?utf-8?Q?Kleine-K=C3=B6nig=22's?= message of "Thu, 13 Jan 2022 20:43:58
- +0100")
-Message-ID: <87ilum954t.fsf@dell.be.48ers.dk>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, k.drobinski@camlintechnologies.com,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2] serial: imx: reduce RX interrupt frequency
+Date:   Fri, 14 Jan 2022 08:44:00 +0100
+Message-ID: <20220114074400.3417233-1-tomasz.mon@camlingroup.com>
+X-Mailer: git-send-email 2.25.1
+X-ClientProxiedBy: LO4P265CA0001.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2ad::14) To CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:16b::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 50b16d71-6db4-4b0c-42d8-08d9d731a7aa
+X-MS-TrafficTypeDiagnostic: CWLP123MB3585:EE_
+X-Microsoft-Antispam-PRVS: <CWLP123MB358515FBD715355AD5482F9E92549@CWLP123MB3585.GBRP123.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:586
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: vkGwMshj+h9E8+LXkdwKtGFtaPexy81Ck0+2+29Yzp61reGT8BnGrqOTltwN6zf0IVfFwqgFgw/YymDJb0q/ipuULez4zDVn5R57dp3ndTXyYK+wqKCwB0GWVwr5HFdIs+el+eFk8bfnvH4C6KCfGI6gVMmq/t/0aNtW+BPicg4aRjRPnHRfXuJ3LGK2D0hFuAfWhnFDbMkoPAnWfiFTBRH5UgJ46Uwg+1cF2IZW2n+WMM/cWavKXhMlVbU4J9pJPvxOvefBLl/F6WlZ+1ChKe20bpyU8ulOHDG7ihvSxdRIXRN2CSpUKEvxeEYUmNoOu6or3FuCc0FRCPjlh5re9pZqt4nQ0tXdSg2q2lYj3ZGv7Up2IOifa157jkY+bjl95gzwZfh9yF6IEWSvCUumQd08SjRv8r7IrTkwctOu9uhYqKGOPSaRjgzsfijWeykYvIkLrI+H5qmra/mE+qTSGDcWGgFvCCHu8f1OZMHpMsYG0gBUoy+TTi5axpKamIrTjLwiCNpl6IjH4uKTCIDFzVyaXEKnWaOuYIjhWiPXfttk4iJCguCz2/jBMUbFN2pDGwn6JJM3rEsbbZQvrpiVvTz6TpBOdOVrOPenIOz9LSd+RaJzdewJjQXevgwi9EzAi+lAez2n6guwbCB/FW6TyF6z1tBvUb1OS1k8CfJ5aCVkMJQol/KDs73SwUS0GYkxz+kFT9Bp/q0P6vYpQIPEVK8jKq7SfFefvAw3J3F89AYRhVFKOUJvdz1TmUu+pmq4Cnfx46JEpyJt5t2q+ALVpCmkhQHSWAzqc4G9zL9sizk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(6486002)(83380400001)(316002)(6916009)(86362001)(38100700002)(5660300002)(6506007)(54906003)(38350700002)(2906002)(52116002)(508600001)(66574015)(36756003)(1076003)(6666004)(8936002)(66476007)(66556008)(966005)(66946007)(8676002)(26005)(4326008)(2616005)(6512007)(186003);DIR:OUT;SFP:1101
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SfhlYi3C7PamaO34Xsvpu/9N27UTW3ESuIBO4bUZkqkPyYoVMoccnKNPP3Ow?=
+ =?us-ascii?Q?B2XhOCOgik3NtikL79/1j48hgH35qQLWtgP6uyarMvguAOotDmcmw8M7bqm+?=
+ =?us-ascii?Q?lvMzPSTeakgcV3SrO9ObhoMzOBauQZTeCbNMWywOzuJW5CpoT4kcjK8qZ2Qe?=
+ =?us-ascii?Q?LaW5LmhJYRRV+xVTNBQPk5wQo5ItTqY4vtXBxqa8mtAhoytZxS3HgD7RXJIk?=
+ =?us-ascii?Q?A727yOhSSRcN7pY2L6PzW6KKfMKwqyHrB1a82aGF9SOF+3wUV1wNHfd3ffbN?=
+ =?us-ascii?Q?KWyxVd3nsrC7morInUPmSGur+TFLpWaeD2N4xTEBdMyhykv2AWdDVnU8j2I0?=
+ =?us-ascii?Q?zX91+s4FueN7r50Cert4pTc/IUbozYdmVEWMESmvKbdA5yxV44+cy/YCgkmJ?=
+ =?us-ascii?Q?yQ4W/BP7sWSJlMlsfe+/3DLwG3NrDG6pOviMOwTsO9hHgq+/siHauGBKARFJ?=
+ =?us-ascii?Q?WhBFSTRAiHtp1xzf4h5/wo0D5omidnaqsWTVW3TCcdwVR1vFlXynpfAbb0p/?=
+ =?us-ascii?Q?9C/7Noa1l6TgZiabxh7Z47KP4zpK2E7yXpQP4ymzKew4VWAHZlfmntUGPzUw?=
+ =?us-ascii?Q?EoR3H+JkrKrF3MwTUs2b93iB9P+iDsF4jOVri55hSbLJ0bkjXR2ZCFvR7u7P?=
+ =?us-ascii?Q?+kBZ4ID3yUsBmEsX6Wq1oM2VVLFWYbdRwhhuuKv8SY8WuMwGLhW8sIYTKAOd?=
+ =?us-ascii?Q?KD00uspK3+dxUICwSgM+GjutYu8TtLRqp/Bzx67BGlVzLvUb5qFkCFStb6Ll?=
+ =?us-ascii?Q?B94Tv7gPRmQyMVm5k4IsZPMY/00nG79r+esKlq+d/USXLG9pgD15serHe5O3?=
+ =?us-ascii?Q?hbcy9d9DN0y3fGhaOo19IyNimuqHoG4O7+jX5nLUXLsOSePczlWSejpYg86F?=
+ =?us-ascii?Q?JESJ1Uv4U21nYX2P5ahMOoJavWiT2fPYg2P+lp/MEe1OZDAj7CGuFdM58t73?=
+ =?us-ascii?Q?gRYfCdWMIf026kVE32owZy1Skh1MzWPRab0Y/3D1JOPhmG8v/NGGfBK9HlG1?=
+ =?us-ascii?Q?mt99CW3m9lLPHzIRDpi0H0POieNtpKoW4lKYfwoWIYyAzCYtv5vQ1/d9Ygd9?=
+ =?us-ascii?Q?iAInv7PM/KMgmJnCu9ad+bQ8s0SOsJG7uen7ksFpCFl7em11Lkzz/tuRlOKS?=
+ =?us-ascii?Q?63zZ0ib9iasBuurd1KC2M7Wea2L+6vaIeovl5zDuh3UTCg5FBgsTT6aD+s1N?=
+ =?us-ascii?Q?5qW4EE2RAt5bFnJG7zV0O2MQdZnAH7ujmdCQuzEZdl3CLkvTHmmj7b5O88Bl?=
+ =?us-ascii?Q?A7G9P6y0it/jBRPDTasrTUTeeb9EnZqQsu6Qo9GAE2XxlGH7arP5i8EBzQAR?=
+ =?us-ascii?Q?61VN8mQk+nqxDr0DNjjfYlVDxNpDpjufghAHV5mnRf8r5Xx3D+vFeECXlsee?=
+ =?us-ascii?Q?U18AYihPJqCSZvmDqd8aG+0lJ81uNefU1vJix8730T6JBkxLvqDu0YgV1dug?=
+ =?us-ascii?Q?K05bOdVKxQ8iq+O3ZUeRUQDqz8K4vBHgTkCNk3ceindB5DtWvhvMO6kGNvQv?=
+ =?us-ascii?Q?ss9oKwrdqj4Eqmgm4taUmqBuxRgikqBPezmyzcNQXVCJ8KUPyIwOGTp7gKsw?=
+ =?us-ascii?Q?Ux8FVM1/yrNKkS52Ztq/+KrzfyZCHsiLzfOqyfrAjjC3g37tahSmhI/jOndU?=
+ =?us-ascii?Q?lsqv1ubpAsSIoYvSksTmQqx7+KTVT0kshpIKh7cURbopa6D5p8svvrJju5Qc?=
+ =?us-ascii?Q?742C0g=3D=3D?=
+X-OriginatorOrg: camlingroup.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50b16d71-6db4-4b0c-42d8-08d9d731a7aa
+X-MS-Exchange-CrossTenant-AuthSource: CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 07:44:11.7520
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OFtxC1iomVA4x2rENj8IQbDhgmhJ6fTjV7HYTim3ASIFvJ4zARr5DeQx077cIQC63mK+5OmRCaluhK+QU+JCG2yxuaNpA7SBN6/JhfVryg8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP123MB3585
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUK97A341 smtp.mailfrom=tomasz.mon@camlingroup.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: camlingroup.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
->>>>> "Uwe" == Uwe Kleine-König <u.kleine-koenig@pengutronix.de> writes:
+Triggering RX interrupt for every byte defeats the purpose of aging
+timer and leads to interrupt storm at high baud rates. The interrupt
+storm can starve line discipline worker and prevent tty throttling,
+rendering hardware/software flow control useless.
 
- > The subsystems regulator, clk and gpio have the concept of a dummy
- > resource. For regulator, clk and gpio there is a semantic difference
- > between the regular _get() function and the _get_optional() variant.
- > (One might return the dummy resource, the other won't. Unfortunately
- > which one implements which isn't the same for these three.) The
- > difference between platform_get_irq() and platform_get_irq_optional() is
- > only that the former might emit an error message and the later won't.
+Increase receiver trigger level to 8 to increase the minimum period
+between RX interrupts to 8 characters time. The tradeoff is increased
+latency.
 
- > To prevent people's expectations that there is a semantic difference
- > between these too, rename platform_get_irq_optional() to
- > platform_get_irq_silent() to make the actual difference more obvious.
+Aging timer resets with every received character. Worst case scenario
+happens when RX data intercharacter delay is slightly less than the
+aging timer timeout (8 characters time). The upper bound of the time
+a character can wait in RxFIFO before being read is:
+  (RXTL - 1) * (8 character time timeout + received 1 character time)
 
- > The #define for the old name can and should be removed once all patches
- > currently in flux still relying on platform_get_irq_optional() are
- > fixed.
+Usually the data is received in frames, with low intercharacter delay.
+In such case the latency increase is 8 characters time at the end of
+the frame with probability (RXTL - 1) / RXTL.
 
- > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Tomasz Mo=C5=84 <tomasz.mon@camlingroup.com>
+Acked-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+---
+changes in v2:
+  - reworded commit message based on review comments
+  - added Acked-by by Uwe tag from V1 review
 
-For i2c-ocores.c:
+v1: https://lore.kernel.org/linux-serial/20220104103203.2033673-1-tomasz.mo=
+n@camlingroup.com/
+---
+ drivers/tty/serial/imx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Peter Korsgaard <peter@korsgaard.com>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 90f82e6c54e4..3c812c47ecc0 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1255,7 +1255,7 @@ static void imx_uart_clear_rx_errors(struct imx_port =
+*sport)
+ }
+=20
+ #define TXTL_DEFAULT 2 /* reset default */
+-#define RXTL_DEFAULT 1 /* reset default */
++#define RXTL_DEFAULT 8 /* 8 characters or aging timer */
+ #define TXTL_DMA 8 /* DMA burst setting */
+ #define RXTL_DMA 9 /* DMA burst setting */
+=20
+--=20
+2.25.1
 
--- 
-Bye, Peter Korsgaard
