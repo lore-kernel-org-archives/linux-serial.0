@@ -2,264 +2,610 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CE9C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 20:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1A8C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Jan 2022 20:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244278AbiANUas (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:30:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        id S229474AbiANUyM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244275AbiANUao (ORCPT
+        with ESMTP id S229437AbiANUyM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:30:44 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E46C061574
-        for <linux-serial@vger.kernel.org>; Fri, 14 Jan 2022 12:30:43 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCl-0001fN-N3; Fri, 14 Jan 2022 21:29:47 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCi-00AJbq-3s; Fri, 14 Jan 2022 21:29:43 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCg-0002hC-MP; Fri, 14 Jan 2022 21:29:42 +0100
-Date:   Fri, 14 Jan 2022 21:29:39 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <20220114202939.5kq5ud5opfosjlyc@pengutronix.de>
-References: <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <386a7f56-38c8-229c-4fec-4b38a77c4121@omp.ru>
+        Fri, 14 Jan 2022 15:54:12 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A3AC06161C
+        for <linux-serial@vger.kernel.org>; Fri, 14 Jan 2022 12:54:11 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id x22so34027746lfd.10
+        for <linux-serial@vger.kernel.org>; Fri, 14 Jan 2022 12:54:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=embecosm.com; s=google;
+        h=date:from:to:cc:subject:message-id:user-agent:mime-version;
+        bh=yj+eYBaHeNHAfB17KcfcEFwuS8iSBPYgLsLaXghV7qI=;
+        b=VdXIL0dCpjQa6xTD3aBg5DG8bhutQaZ913KDd6+SixUStC5xVEzsqQ6Feb1veCLwbQ
+         VpB2zmjrfgLRsZKa4TD+DbGt5gmSwVRix7E6SSyi3c6v/KZhqMC4o0wSWH5V2bU2VE+v
+         iiAW21gtcAzRLOn629bhlMEAA0rsShq55Q7BqVFfLT5mA+3Gy0/YV/C/Rx7IzDRglu3n
+         koMcN+MGogJzJG22k321k8/1os/OheRwBcstzC2f1wSHyxnGGOysBF5QVlZGQ/jYmYeP
+         9fQzsbXAuTFwyzymf83qHg4PvGcnmnTBGEZjrzQbRgeTsfUP49P/77VE3ibLIVwq/IVT
+         M2BQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :mime-version;
+        bh=yj+eYBaHeNHAfB17KcfcEFwuS8iSBPYgLsLaXghV7qI=;
+        b=UegXkmDMdcEYuL81lINq3vVyPigvUqLVsKSmVcMDVDAJ8NvP93K5Il0bP0D7Ps/Gdm
+         kDfeyohTtSlqU7Q8fy0fqrQa+lEKzza913EDHiMvi0duPpmtcCsus6g9mM3SApDnhhgs
+         J4oP0haMwioHUKAgRcdxYOAq2izrivbl7haDQSJZxD3MN0+82Kc6zpBRXoNAb440KNxM
+         4XnL8RDZXjU5HU+RfFa5ayko4Ey4rv1MLIbtZhoTFY6H3TySXCJapXtdtVyJh3mYVr0y
+         zhogzzfbV++ss3EKca5Pxy9W1Wm01Z59aejuBdSHtboag0ZkUa0xd0Y2Panc0fQNszBP
+         9xLg==
+X-Gm-Message-State: AOAM533+Qf/Fo5EaC+hqCg6U9pfXZq5ydZ/lofuyn09fI8PIvf8mYYHq
+        ZWD7HFPLd5cvFlPTidc/X45sFDIXxVd7SQ==
+X-Google-Smtp-Source: ABdhPJxL3zTJGkMopyK3IzxvOr1JvHXCCAovqjoykSJ1wh7LVE6/rmNGtybmjI4JpV1sqr4S385LQA==
+X-Received: by 2002:a19:7010:: with SMTP id h16mr8344935lfc.561.1642193649719;
+        Fri, 14 Jan 2022 12:54:09 -0800 (PST)
+Received: from [192.168.219.3] ([78.8.192.131])
+        by smtp.gmail.com with ESMTPSA id n15sm106375lfu.85.2022.01.14.12.54.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jan 2022 12:54:09 -0800 (PST)
+Date:   Fri, 14 Jan 2022 20:54:05 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@embecosm.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH] tty: Revert the removal of the Cyclades public API
+Message-ID: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gs4ynp4fq77e5cup"
-Content-Disposition: inline
-In-Reply-To: <386a7f56-38c8-229c-4fec-4b38a77c4121@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+cyclades, remove this orphan"), which removed a part of the API and 
+caused compilation errors for user programs using said part, such as 
+GCC 9 in its libsanitizer component[1]:
 
---gs4ynp4fq77e5cup
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+  160 | #include <linux/cyclades.h>
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 
-On Fri, Jan 14, 2022 at 10:45:38PM +0300, Sergey Shtylyov wrote:
-> On 1/13/22 10:43 PM, Uwe Kleine-K=F6nig wrote:
->=20
-> > The subsystems regulator, clk and gpio have the concept of a dummy
-> > resource. For regulator, clk and gpio there is a semantic difference
-> > between the regular _get() function and the _get_optional() variant.
-> > (One might return the dummy resource, the other won't. Unfortunately
-> > which one implements which isn't the same for these three.) The
-> > difference between platform_get_irq() and platform_get_irq_optional() is
-> > only that the former might emit an error message and the later won't.
-> >=20
-> > To prevent people's expectations that there is a semantic difference
-> > between these too, rename platform_get_irq_optional() to
-> > platform_get_irq_silent() to make the actual difference more obvious.
-> >=20
-> > The #define for the old name can and should be removed once all patches
-> > currently in flux still relying on platform_get_irq_optional() are
-> > fixed.
->=20
->    Hm... I'm afraid that with this #define they would never get fixed... =
-:-)
+Any part of the public API is a contract between the kernel and the 
+userland and therefore once there it must not be removed even if its 
+implementation side has gone and any relevant calls will now fail 
+unconditionally.
 
-I will care for it.
+Revert the part of the commit referred then that affects the user API, 
+bringing the most recent version of <linux/cyclades.h> back verbatim 
+modulo the removal of trailing whitespace which used to be there, and 
+updating <linux/major.h> accordingly.
 
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > On Thu, Jan 13, 2022 at 02:45:30PM +0000, Mark Brown wrote:
-> >> On Thu, Jan 13, 2022 at 12:08:31PM +0100, Uwe Kleine-K=F6nig wrote:
-> >>
-> >>> This is all very unfortunate. In my eyes b) is the most sensible
-> >>> sense, but the past showed that we don't agree here. (The most annoyi=
-ng
-> >>> part of regulator_get is the warning that is emitted that regularily
-> >>> makes customers ask what happens here and if this is fixable.)
-> >>
-> >> Fortunately it can be fixed, and it's safer to clearly specify things.
-> >> The prints are there because when the description is wrong enough to
-> >> cause things to blow up we can fail to boot or run messily and
-> >> forgetting to describe some supplies (or typoing so they haven't done
-> >> that) and people were having a hard time figuring out what might've
-> >> happened.
-> >=20
-> > Yes, that's right. I sent a patch for such a warning in 2019 and pinged
-> > occationally. Still waiting for it to be merged :-\
-> > (https://lore.kernel.org/r/20190625100412.11815-1-u.kleine-koenig@pengu=
-tronix.de)
-> >=20
-> >>> I think at least c) is easy to resolve because
-> >>> platform_get_irq_optional() isn't that old yet and mechanically
-> >>> replacing it by platform_get_irq_silent() should be easy and safe.
-> >>> And this is orthogonal to the discussion if -ENOXIO is a sensible ret=
-urn
-> >>> value and if it's as easy as it could be to work with errors on irq
-> >>> lookups.
-> >>
-> >> It'd certainly be good to name anything that doesn't correspond to one
-> >> of the existing semantics for the API (!) something different rather
-> >> than adding yet another potentially overloaded meaning.
-> >=20
-> > It seems we're (at least) three who agree about this. Here is a patch
-> > fixing the name.
->=20
->    I can't say I genrally agree with this patch...
+References:
 
-Yes, I didn't count you to the three people signaling agreement.
+[1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel 
+    header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
 
-> [...]
-> > diff --git a/include/linux/platform_device.h b/include/linux/platform_d=
-evice.h
-> > index 7c96f169d274..6d495f15f717 100644
-> > --- a/include/linux/platform_device.h
-> > +++ b/include/linux/platform_device.h
-> > @@ -69,7 +69,14 @@ extern void __iomem *
-> >  devm_platform_ioremap_resource_byname(struct platform_device *pdev,
-> >  				      const char *name);
-> >  extern int platform_get_irq(struct platform_device *, unsigned int);
-> > -extern int platform_get_irq_optional(struct platform_device *, unsigne=
-d int);
-> > +extern int platform_get_irq_silent(struct platform_device *, unsigned =
-int);
-> > +
-> > +/*
-> > + * platform_get_irq_optional was recently renamed to platform_get_irq_=
-silent.
-> > + * Fixup users to not break patches that were created before the renam=
-e.
-> > + */
-> > +#define platform_get_irq_optional(pdev, index) platform_get_irq_silent=
-(pdev, index)
-> > +
->=20
->    Yeah, why bother fixing if it compiles anyway?
+Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
+Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
+Cc: stable@vger.kernel.org # v5.13+
+---
+ include/uapi/linux/cyclades.h |  494 ++++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/major.h    |    2 
+ 2 files changed, 496 insertions(+)
 
-The plan is to remove the define in one or two kernel releases. The idea
-is only to not break patches that are currently in next.
-
->    I think an inline wrapper with an indication to gcc that the function =
-is deprecated
-> (I just forgot how it should look) would be better instead...
-
-The deprecated function annotation is generally frowned upon. See
-771c035372a0.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---gs4ynp4fq77e5cup
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHh3S8ACgkQwfwUeK3K
-7AkDXQf/U5FAV2AAfHdpPoYhXkPobJeAf5Dqsq9HthaQ/4EsbgoDzhwXUQuRqgGp
-s3l08rbKnPAXvuz91TT4s4P4EfflDVbvLMELaacliZW9A2Zubif0kRa5i7noZtww
-bMiLnHbf6jZNoGKWayBhA0I+mD3ItG2bJkiZMPC9EauwofQRd5TZEOFEnf0MOQYR
-WDceoBK0StFIaNP+azd2h5Mkfo+sy70ZLX3i1E5+f2X9Iac4pOldU5N65ldsgg9N
-AVzKdnYk6h5IpXqZaytMAGpMn9j4OQHJGDLA8zo0jjwjnK+1JHnoGFwlJO43H0af
-61XlzqllsW1diNuTEAhAtFOrNwsDYQ==
-=Iw62
------END PGP SIGNATURE-----
-
---gs4ynp4fq77e5cup--
+linux-uapi-cyclades.diff
+Index: linux/include/uapi/linux/cyclades.h
+===================================================================
+--- /dev/null
++++ linux/include/uapi/linux/cyclades.h
+@@ -0,0 +1,494 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/* $Revision: 3.0 $$Date: 1998/11/02 14:20:59 $
++ * linux/include/linux/cyclades.h
++ *
++ * This file was initially written by
++ * Randolph Bentson <bentson@grieg.seaslug.org> and is maintained by
++ * Ivan Passos <ivan@cyclades.com>.
++ *
++ * This file contains the general definitions for the cyclades.c driver
++ *$Log: cyclades.h,v $
++ *Revision 3.1  2002/01/29 11:36:16  henrique
++ *added throttle field on struct cyclades_port to indicate whether the
++ *port is throttled or not
++ *
++ *Revision 3.1  2000/04/19 18:52:52  ivan
++ *converted address fields to unsigned long and added fields for physical
++ *addresses on cyclades_card structure;
++ *
++ *Revision 3.0  1998/11/02 14:20:59  ivan
++ *added nports field on cyclades_card structure;
++ *
++ *Revision 2.5  1998/08/03 16:57:01  ivan
++ *added cyclades_idle_stats structure;
++ *
++ *Revision 2.4  1998/06/01 12:09:53  ivan
++ *removed closing_wait2 from cyclades_port structure;
++ *
++ *Revision 2.3  1998/03/16 18:01:12  ivan
++ *changes in the cyclades_port structure to get it closer to the
++ *standard serial port structure;
++ *added constants for new ioctls;
++ *
++ *Revision 2.2  1998/02/17 16:50:00  ivan
++ *changes in the cyclades_port structure (addition of shutdown_wait and
++ *chip_rev variables);
++ *added constants for new ioctls and for CD1400 rev. numbers.
++ *
++ *Revision 2.1	1997/10/24 16:03:00  ivan
++ *added rflow (which allows enabling the CD1400 special flow control
++ *feature) and rtsdtr_inv (which allows DTR/RTS pin inversion) to
++ *cyclades_port structure;
++ *added Alpha support
++ *
++ *Revision 2.0  1997/06/30 10:30:00  ivan
++ *added some new doorbell command constants related to IOCTLW and
++ *UART error signaling
++ *
++ *Revision 1.8  1997/06/03 15:30:00  ivan
++ *added constant ZFIRM_HLT
++ *added constant CyPCI_Ze_win ( = 2 * Cy_PCI_Zwin)
++ *
++ *Revision 1.7  1997/03/26 10:30:00  daniel
++ *new entries at the end of cyclades_port struct to reallocate
++ *variables illegally allocated within card memory.
++ *
++ *Revision 1.6  1996/09/09 18:35:30  bentson
++ *fold in changes for Cyclom-Z -- including structures for
++ *communicating with board as well modest changes to original
++ *structures to support new features.
++ *
++ *Revision 1.5  1995/11/13 21:13:31  bentson
++ *changes suggested by Michael Chastain <mec@duracef.shout.net>
++ *to support use of this file in non-kernel applications
++ *
++ *
++ */
++
++#ifndef _UAPI_LINUX_CYCLADES_H
++#define _UAPI_LINUX_CYCLADES_H
++
++#include <linux/types.h>
++
++struct cyclades_monitor {
++        unsigned long           int_count;
++        unsigned long           char_count;
++        unsigned long           char_max;
++        unsigned long           char_last;
++};
++
++/*
++ * These stats all reflect activity since the device was last initialized.
++ * (i.e., since the port was opened with no other processes already having it
++ * open)
++ */
++struct cyclades_idle_stats {
++    __kernel_old_time_t in_use;	/* Time device has been in use (secs) */
++    __kernel_old_time_t recv_idle; /* Time since last char received (secs) */
++    __kernel_old_time_t xmit_idle; /* Time since last char transmitted (secs) */
++    unsigned long  recv_bytes;	/* Bytes received */
++    unsigned long  xmit_bytes;	/* Bytes transmitted */
++    unsigned long  overruns;	/* Input overruns */
++    unsigned long  frame_errs;	/* Input framing errors */
++    unsigned long  parity_errs;	/* Input parity errors */
++};
++
++#define CYCLADES_MAGIC  0x4359
++
++#define CYGETMON                0x435901
++#define CYGETTHRESH             0x435902
++#define CYSETTHRESH             0x435903
++#define CYGETDEFTHRESH          0x435904
++#define CYSETDEFTHRESH          0x435905
++#define CYGETTIMEOUT            0x435906
++#define CYSETTIMEOUT            0x435907
++#define CYGETDEFTIMEOUT         0x435908
++#define CYSETDEFTIMEOUT         0x435909
++#define CYSETRFLOW		0x43590a
++#define CYGETRFLOW		0x43590b
++#define CYSETRTSDTR_INV		0x43590c
++#define CYGETRTSDTR_INV		0x43590d
++#define CYZSETPOLLCYCLE		0x43590e
++#define CYZGETPOLLCYCLE		0x43590f
++#define CYGETCD1400VER		0x435910
++#define	CYSETWAIT		0x435912
++#define	CYGETWAIT		0x435913
++
++/*************** CYCLOM-Z ADDITIONS ***************/
++
++#define CZIOC           ('M' << 8)
++#define CZ_NBOARDS      (CZIOC|0xfa)
++#define CZ_BOOT_START   (CZIOC|0xfb)
++#define CZ_BOOT_DATA    (CZIOC|0xfc)
++#define CZ_BOOT_END     (CZIOC|0xfd)
++#define CZ_TEST         (CZIOC|0xfe)
++
++#define CZ_DEF_POLL	(HZ/25)
++
++#define MAX_BOARD       4       /* Max number of boards */
++#define MAX_DEV         256     /* Max number of ports total */
++#define	CYZ_MAX_SPEED	921600
++
++#define	CYZ_FIFO_SIZE	16
++
++#define CYZ_BOOT_NWORDS 0x100
++struct CYZ_BOOT_CTRL {
++        unsigned short  nboard;
++        int             status[MAX_BOARD];
++        int             nchannel[MAX_BOARD];
++        int             fw_rev[MAX_BOARD];
++        unsigned long   offset;
++        unsigned long   data[CYZ_BOOT_NWORDS];
++};
++
++
++#ifndef DP_WINDOW_SIZE
++/*
++ *	Memory Window Sizes
++ */
++
++#define	DP_WINDOW_SIZE		(0x00080000)	/* window size 512 Kb */
++#define	ZE_DP_WINDOW_SIZE	(0x00100000)	/* window size 1 Mb (Ze and
++						  8Zo V.2 */
++#define	CTRL_WINDOW_SIZE	(0x00000080)	/* runtime regs 128 bytes */
++
++/*
++ *	CUSTOM_REG - Cyclom-Z/PCI Custom Registers Set. The driver
++ *	normally will access only interested on the fpga_id, fpga_version,
++ *	start_cpu and stop_cpu.
++ */
++
++struct	CUSTOM_REG {
++	__u32	fpga_id;		/* FPGA Identification Register */
++	__u32	fpga_version;		/* FPGA Version Number Register */
++	__u32	cpu_start;		/* CPU start Register (write) */
++	__u32	cpu_stop;		/* CPU stop Register (write) */
++	__u32	misc_reg;		/* Miscellaneous Register */
++	__u32	idt_mode;		/* IDT mode Register */
++	__u32	uart_irq_status;	/* UART IRQ status Register */
++	__u32	clear_timer0_irq;	/* Clear timer interrupt Register */
++	__u32	clear_timer1_irq;	/* Clear timer interrupt Register */
++	__u32	clear_timer2_irq;	/* Clear timer interrupt Register */
++	__u32	test_register;		/* Test Register */
++	__u32	test_count;		/* Test Count Register */
++	__u32	timer_select;		/* Timer select register */
++	__u32	pr_uart_irq_status;	/* Prioritized UART IRQ stat Reg */
++	__u32	ram_wait_state;		/* RAM wait-state Register */
++	__u32	uart_wait_state;	/* UART wait-state Register */
++	__u32	timer_wait_state;	/* timer wait-state Register */
++	__u32	ack_wait_state;		/* ACK wait State Register */
++};
++
++/*
++ *	RUNTIME_9060 - PLX PCI9060ES local configuration and shared runtime
++ *	registers. This structure can be used to access the 9060 registers
++ *	(memory mapped).
++ */
++
++struct RUNTIME_9060 {
++	__u32	loc_addr_range;	/* 00h - Local Address Range */
++	__u32	loc_addr_base;	/* 04h - Local Address Base */
++	__u32	loc_arbitr;	/* 08h - Local Arbitration */
++	__u32	endian_descr;	/* 0Ch - Big/Little Endian Descriptor */
++	__u32	loc_rom_range;	/* 10h - Local ROM Range */
++	__u32	loc_rom_base;	/* 14h - Local ROM Base */
++	__u32	loc_bus_descr;	/* 18h - Local Bus descriptor */
++	__u32	loc_range_mst;	/* 1Ch - Local Range for Master to PCI */
++	__u32	loc_base_mst;	/* 20h - Local Base for Master PCI */
++	__u32	loc_range_io;	/* 24h - Local Range for Master IO */
++	__u32	pci_base_mst;	/* 28h - PCI Base for Master PCI */
++	__u32	pci_conf_io;	/* 2Ch - PCI configuration for Master IO */
++	__u32	filler1;	/* 30h */
++	__u32	filler2;	/* 34h */
++	__u32	filler3;	/* 38h */
++	__u32	filler4;	/* 3Ch */
++	__u32	mail_box_0;	/* 40h - Mail Box 0 */
++	__u32	mail_box_1;	/* 44h - Mail Box 1 */
++	__u32	mail_box_2;	/* 48h - Mail Box 2 */
++	__u32	mail_box_3;	/* 4Ch - Mail Box 3 */
++	__u32	filler5;	/* 50h */
++	__u32	filler6;	/* 54h */
++	__u32	filler7;	/* 58h */
++	__u32	filler8;	/* 5Ch */
++	__u32	pci_doorbell;	/* 60h - PCI to Local Doorbell */
++	__u32	loc_doorbell;	/* 64h - Local to PCI Doorbell */
++	__u32	intr_ctrl_stat;	/* 68h - Interrupt Control/Status */
++	__u32	init_ctrl;	/* 6Ch - EEPROM control, Init Control, etc */
++};
++
++/* Values for the Local Base Address re-map register */
++
++#define	WIN_RAM		0x00000001L	/* set the sliding window to RAM */
++#define	WIN_CREG	0x14000001L	/* set the window to custom Registers */
++
++/* Values timer select registers */
++
++#define	TIMER_BY_1M	0x00		/* clock divided by 1M */
++#define	TIMER_BY_256K	0x01		/* clock divided by 256k */
++#define	TIMER_BY_128K	0x02		/* clock divided by 128k */
++#define	TIMER_BY_32K	0x03		/* clock divided by 32k */
++
++/****************** ****************** *******************/
++#endif
++
++#ifndef ZFIRM_ID
++/* #include "zfwint.h" */
++/****************** ****************** *******************/
++/*
++ *	This file contains the definitions for interfacing with the
++ *	Cyclom-Z ZFIRM Firmware.
++ */
++
++/* General Constant definitions */
++
++#define	MAX_CHAN	64		/* max number of channels per board */
++
++/* firmware id structure (set after boot) */
++
++#define ID_ADDRESS	0x00000180L	/* signature/pointer address */
++#define	ZFIRM_ID	0x5557465AL	/* ZFIRM/U signature */
++#define	ZFIRM_HLT	0x59505B5CL	/* ZFIRM needs external power supply */
++#define	ZFIRM_RST	0x56040674L	/* RST signal (due to FW reset) */
++
++#define	ZF_TINACT_DEF	1000		/* default inactivity timeout
++					   (1000 ms) */
++#define	ZF_TINACT	ZF_TINACT_DEF
++
++struct	FIRM_ID {
++	__u32	signature;		/* ZFIRM/U signature */
++	__u32	zfwctrl_addr;		/* pointer to ZFW_CTRL structure */
++};
++
++/* Op. System id */
++
++#define	C_OS_LINUX	0x00000030	/* generic Linux system */
++
++/* channel op_mode */
++
++#define	C_CH_DISABLE	0x00000000	/* channel is disabled */
++#define	C_CH_TXENABLE	0x00000001	/* channel Tx enabled */
++#define	C_CH_RXENABLE	0x00000002	/* channel Rx enabled */
++#define	C_CH_ENABLE	0x00000003	/* channel Tx/Rx enabled */
++#define	C_CH_LOOPBACK	0x00000004	/* Loopback mode */
++
++/* comm_parity - parity */
++
++#define	C_PR_NONE	0x00000000	/* None */
++#define	C_PR_ODD	0x00000001	/* Odd */
++#define C_PR_EVEN	0x00000002	/* Even */
++#define C_PR_MARK	0x00000004	/* Mark */
++#define C_PR_SPACE	0x00000008	/* Space */
++#define C_PR_PARITY	0x000000ff
++
++#define	C_PR_DISCARD	0x00000100	/* discard char with frame/par error */
++#define C_PR_IGNORE	0x00000200	/* ignore frame/par error */
++
++/* comm_data_l - data length and stop bits */
++
++#define C_DL_CS5	0x00000001
++#define C_DL_CS6	0x00000002
++#define C_DL_CS7	0x00000004
++#define C_DL_CS8	0x00000008
++#define	C_DL_CS		0x0000000f
++#define C_DL_1STOP	0x00000010
++#define C_DL_15STOP	0x00000020
++#define C_DL_2STOP	0x00000040
++#define	C_DL_STOP	0x000000f0
++
++/* interrupt enabling/status */
++
++#define	C_IN_DISABLE	0x00000000	/* zero, disable interrupts */
++#define	C_IN_TXBEMPTY	0x00000001	/* tx buffer empty */
++#define	C_IN_TXLOWWM	0x00000002	/* tx buffer below LWM */
++#define	C_IN_RXHIWM	0x00000010	/* rx buffer above HWM */
++#define	C_IN_RXNNDT	0x00000020	/* rx no new data timeout */
++#define	C_IN_MDCD	0x00000100	/* modem DCD change */
++#define	C_IN_MDSR	0x00000200	/* modem DSR change */
++#define	C_IN_MRI	0x00000400	/* modem RI change */
++#define	C_IN_MCTS	0x00000800	/* modem CTS change */
++#define	C_IN_RXBRK	0x00001000	/* Break received */
++#define	C_IN_PR_ERROR	0x00002000	/* parity error */
++#define	C_IN_FR_ERROR	0x00004000	/* frame error */
++#define C_IN_OVR_ERROR  0x00008000      /* overrun error */
++#define C_IN_RXOFL	0x00010000      /* RX buffer overflow */
++#define C_IN_IOCTLW	0x00020000      /* I/O control w/ wait */
++#define C_IN_MRTS	0x00040000	/* modem RTS drop */
++#define C_IN_ICHAR	0x00080000
++
++/* flow control */
++
++#define	C_FL_OXX	0x00000001	/* output Xon/Xoff flow control */
++#define	C_FL_IXX	0x00000002	/* output Xon/Xoff flow control */
++#define C_FL_OIXANY	0x00000004	/* output Xon/Xoff (any xon) */
++#define	C_FL_SWFLOW	0x0000000f
++
++/* flow status */
++
++#define	C_FS_TXIDLE	0x00000000	/* no Tx data in the buffer or UART */
++#define	C_FS_SENDING	0x00000001	/* UART is sending data */
++#define	C_FS_SWFLOW	0x00000002	/* Tx is stopped by received Xoff */
++
++/* rs_control/rs_status RS-232 signals */
++
++#define C_RS_PARAM	0x80000000	/* Indicates presence of parameter in
++					   IOCTLM command */
++#define	C_RS_RTS	0x00000001	/* RTS */
++#define	C_RS_DTR	0x00000004	/* DTR */
++#define	C_RS_DCD	0x00000100	/* CD */
++#define	C_RS_DSR	0x00000200	/* DSR */
++#define	C_RS_RI		0x00000400	/* RI */
++#define	C_RS_CTS	0x00000800	/* CTS */
++
++/* commands Host <-> Board */
++
++#define	C_CM_RESET	0x01		/* reset/flush buffers */
++#define	C_CM_IOCTL	0x02		/* re-read CH_CTRL */
++#define	C_CM_IOCTLW	0x03		/* re-read CH_CTRL, intr when done */
++#define	C_CM_IOCTLM	0x04		/* RS-232 outputs change */
++#define	C_CM_SENDXOFF	0x10		/* send Xoff */
++#define	C_CM_SENDXON	0x11		/* send Xon */
++#define C_CM_CLFLOW	0x12		/* Clear flow control (resume) */
++#define	C_CM_SENDBRK	0x41		/* send break */
++#define	C_CM_INTBACK	0x42		/* Interrupt back */
++#define	C_CM_SET_BREAK	0x43		/* Tx break on */
++#define	C_CM_CLR_BREAK	0x44		/* Tx break off */
++#define	C_CM_CMD_DONE	0x45		/* Previous command done */
++#define C_CM_INTBACK2	0x46		/* Alternate Interrupt back */
++#define	C_CM_TINACT	0x51		/* set inactivity detection */
++#define	C_CM_IRQ_ENBL	0x52		/* enable generation of interrupts */
++#define	C_CM_IRQ_DSBL	0x53		/* disable generation of interrupts */
++#define	C_CM_ACK_ENBL	0x54		/* enable acknowledged interrupt mode */
++#define	C_CM_ACK_DSBL	0x55		/* disable acknowledged intr mode */
++#define	C_CM_FLUSH_RX	0x56		/* flushes Rx buffer */
++#define	C_CM_FLUSH_TX	0x57		/* flushes Tx buffer */
++#define C_CM_Q_ENABLE	0x58		/* enables queue access from the
++					   driver */
++#define C_CM_Q_DISABLE  0x59            /* disables queue access from the
++					   driver */
++
++#define	C_CM_TXBEMPTY	0x60		/* Tx buffer is empty */
++#define	C_CM_TXLOWWM	0x61		/* Tx buffer low water mark */
++#define	C_CM_RXHIWM	0x62		/* Rx buffer high water mark */
++#define	C_CM_RXNNDT	0x63		/* rx no new data timeout */
++#define	C_CM_TXFEMPTY	0x64
++#define	C_CM_ICHAR	0x65
++#define	C_CM_MDCD	0x70		/* modem DCD change */
++#define	C_CM_MDSR	0x71		/* modem DSR change */
++#define	C_CM_MRI	0x72		/* modem RI change */
++#define	C_CM_MCTS	0x73		/* modem CTS change */
++#define C_CM_MRTS	0x74		/* modem RTS drop */
++#define	C_CM_RXBRK	0x84		/* Break received */
++#define	C_CM_PR_ERROR	0x85		/* Parity error */
++#define	C_CM_FR_ERROR	0x86		/* Frame error */
++#define C_CM_OVR_ERROR  0x87            /* Overrun error */
++#define C_CM_RXOFL	0x88            /* RX buffer overflow */
++#define	C_CM_CMDERROR	0x90		/* command error */
++#define	C_CM_FATAL	0x91		/* fatal error */
++#define	C_CM_HW_RESET	0x92		/* reset board */
++
++/*
++ *	CH_CTRL - This per port structure contains all parameters
++ *	that control an specific port. It can be seen as the
++ *	configuration registers of a "super-serial-controller".
++ */
++
++struct CH_CTRL {
++	__u32	op_mode;	/* operation mode */
++	__u32	intr_enable;	/* interrupt masking */
++	__u32	sw_flow;	/* SW flow control */
++	__u32	flow_status;	/* output flow status */
++	__u32	comm_baud;	/* baud rate  - numerically specified */
++	__u32	comm_parity;	/* parity */
++	__u32	comm_data_l;	/* data length/stop */
++	__u32	comm_flags;	/* other flags */
++	__u32	hw_flow;	/* HW flow control */
++	__u32	rs_control;	/* RS-232 outputs */
++	__u32	rs_status;	/* RS-232 inputs */
++	__u32	flow_xon;	/* xon char */
++	__u32	flow_xoff;	/* xoff char */
++	__u32	hw_overflow;	/* hw overflow counter */
++	__u32	sw_overflow;	/* sw overflow counter */
++	__u32	comm_error;	/* frame/parity error counter */
++	__u32 ichar;
++	__u32 filler[7];
++};
++
++
++/*
++ *	BUF_CTRL - This per channel structure contains
++ *	all Tx and Rx buffer control for a given channel.
++ */
++
++struct	BUF_CTRL	{
++	__u32	flag_dma;	/* buffers are in Host memory */
++	__u32	tx_bufaddr;	/* address of the tx buffer */
++	__u32	tx_bufsize;	/* tx buffer size */
++	__u32	tx_threshold;	/* tx low water mark */
++	__u32	tx_get;		/* tail index tx buf */
++	__u32	tx_put;		/* head index tx buf */
++	__u32	rx_bufaddr;	/* address of the rx buffer */
++	__u32	rx_bufsize;	/* rx buffer size */
++	__u32	rx_threshold;	/* rx high water mark */
++	__u32	rx_get;		/* tail index rx buf */
++	__u32	rx_put;		/* head index rx buf */
++	__u32	filler[5];	/* filler to align structures */
++};
++
++/*
++ *	BOARD_CTRL - This per board structure contains all global
++ *	control fields related to the board.
++ */
++
++struct BOARD_CTRL {
++
++	/* static info provided by the on-board CPU */
++	__u32	n_channel;	/* number of channels */
++	__u32	fw_version;	/* firmware version */
++
++	/* static info provided by the driver */
++	__u32	op_system;	/* op_system id */
++	__u32	dr_version;	/* driver version */
++
++	/* board control area */
++	__u32	inactivity;	/* inactivity control */
++
++	/* host to FW commands */
++	__u32	hcmd_channel;	/* channel number */
++	__u32	hcmd_param;	/* pointer to parameters */
++
++	/* FW to Host commands */
++	__u32	fwcmd_channel;	/* channel number */
++	__u32	fwcmd_param;	/* pointer to parameters */
++	__u32	zf_int_queue_addr; /* offset for INT_QUEUE structure */
++
++	/* filler so the structures are aligned */
++	__u32	filler[6];
++};
++
++/* Host Interrupt Queue */
++
++#define QUEUE_SIZE	(10*MAX_CHAN)
++
++struct	INT_QUEUE {
++	unsigned char	intr_code[QUEUE_SIZE];
++	unsigned long	channel[QUEUE_SIZE];
++	unsigned long	param[QUEUE_SIZE];
++	unsigned long	put;
++	unsigned long	get;
++};
++
++/*
++ *	ZFW_CTRL - This is the data structure that includes all other
++ *	data structures used by the Firmware.
++ */
++
++struct ZFW_CTRL {
++	struct BOARD_CTRL	board_ctrl;
++	struct CH_CTRL		ch_ctrl[MAX_CHAN];
++	struct BUF_CTRL		buf_ctrl[MAX_CHAN];
++};
++
++/****************** ****************** *******************/
++#endif
++
++#endif /* _UAPI_LINUX_CYCLADES_H */
+Index: linux/include/uapi/linux/major.h
+===================================================================
+--- linux.orig/include/uapi/linux/major.h
++++ linux/include/uapi/linux/major.h
+@@ -34,6 +34,8 @@
+ #define GOLDSTAR_CDROM_MAJOR	16
+ #define OPTICS_CDROM_MAJOR	17
+ #define SANYO_CDROM_MAJOR	18
++#define CYCLADES_MAJOR		19	/* Obsolete */
++#define CYCLADESAUX_MAJOR	20	/* Obsolete */
+ #define MITSUMI_X_CDROM_MAJOR	20
+ #define MFM_ACORN_MAJOR		21	/* ARM Linux /dev/mfm */
+ #define SCSI_GENERIC_MAJOR	21
