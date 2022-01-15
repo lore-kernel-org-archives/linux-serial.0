@@ -2,90 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E636C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 15 Jan 2022 08:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD0EC433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 15 Jan 2022 08:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbiAOICO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 15 Jan 2022 03:02:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40208 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiAOICO (ORCPT
+        id S230298AbiAOIR1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 15 Jan 2022 03:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230260AbiAOIR0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 15 Jan 2022 03:02:14 -0500
+        Sat, 15 Jan 2022 03:17:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F65C061574;
+        Sat, 15 Jan 2022 00:17:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A8A60B52;
-        Sat, 15 Jan 2022 08:02:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCAFC36AE3;
-        Sat, 15 Jan 2022 08:02:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642233733;
-        bh=0KqPDW57D7RxOoM3/l/LET6IR4OCuIRVN31HdEijEBc=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=FNqkOME3qI0h702vh6HOoOiWFQqV3fHb+7MMqz3l2jjzgrLesjGFMO8VYor0zOijR
-         HJmgi1TaSlPzDBHWFgo2Bw3bRgSrpgkEtLo22j8OJLltXqOQ0Js00ezYUWNpe76mkg
-         0IyJwC7WK6fqQuwm1cgFUnVx4+mpkuACLMXFHa3c0P4xfnF5PSmc1uN2mftgeKl5fd
-         at72eWMd4kncZtw7Utlf52kuU6sgbSkwWKi0Zmk++VUpvvYA1wljNyWFkdK24WZvV9
-         FdzbJExdOEQOJ/iFqWexiSWpQeQuo/yGWgkI5ZzXaNP9yBUe8mJNM7U69ybAwRMyAh
-         P3fbjunpZYGfw==
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4194B8243A;
+        Sat, 15 Jan 2022 08:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73861C36AE3;
+        Sat, 15 Jan 2022 08:17:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642234643;
+        bh=h1NK/0c9wSXudnq0+BJzwUX/vX95yC1eyCQ24ml6b50=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gTVJy0eu8CJVM8raR3p2Twi0VyQ5HZtI65CjuFJQsR/qANUSwaFy/m9KMzV93yhQv
+         /d8TBWy9M8Gu+ogWWNQ8Px1cflkmJn2ealXCDjU7watTJ4AcRu41rJsXhdO+8KhGYk
+         0/5yBuUrGcG9Cnn29XemiqZaGMqvmORCfr9BU778=
+Date:   Sat, 15 Jan 2022 09:17:19 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] tty: Revert the removal of the Cyclades public API
+Message-ID: <YeKDD6imTh1Y6GuN@kroah.com>
+References: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20211016064210.7ahqfqcvf66wtt66@pali>
-References: <20210930095838.28145-1-pali@kernel.org> <20210930095838.28145-4-pali@kernel.org> <163425678347.1688384.10695189000353676651@swboyd.mtv.corp.google.com> <20211015090937.gnt66hgugrhwnkei@pali> <20211015093701.pfvkighxsndj4ujg@pali> <163433494758.1688384.5994009027317282677@swboyd.mtv.corp.google.com> <20211016064210.7ahqfqcvf66wtt66@pali>
-Subject: Re: [PATCH v7 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Vladimir Vid <vladimir.vid@sartura.hr>,
-        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-To:     Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>
-Date:   Sat, 15 Jan 2022 00:02:11 -0800
-User-Agent: alot/0.10
-Message-Id: <20220115080213.0CCAFC36AE3@smtp.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Pali Roh=C3=A1r (2021-10-15 23:42:10)
->=20
-> If I was designing this driver and DTS bindings I would have choose
-> something like this:
->=20
-> uart@0x12000 {
+On Fri, Jan 14, 2022 at 08:54:05PM +0000, Maciej W. Rozycki wrote:
+> Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+> cyclades, remove this orphan"), which removed a part of the API and 
+> caused compilation errors for user programs using said part, such as 
+> GCC 9 in its libsanitizer component[1]:
+> 
+> .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+>   160 | #include <linux/cyclades.h>
+>       |          ^~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 
-Drop the 0x
+So all we need is an empty header file?  Why bring back all of the
+unused structures?
 
->     reg =3D <0x12000 0x18>, <0x12200 0x30>;
->     clock-controller {
->         ...
->     };
+> Any part of the public API is a contract between the kernel and the 
+> userland and therefore once there it must not be removed even if its 
+> implementation side has gone and any relevant calls will now fail 
+> unconditionally.
 
-Drop this node and put whatever properties are inside into the parent
-node.
+Does this code actually use any of these structures?
 
->     serial1 {
->         ...
->         status =3D "disabled";
->     };
->     serial2 {
->         ...
->         status =3D "disabled";
->     };
-> };
->=20
-> Meaning that 0x12000 node would be 3 subnodes and all registers would be
-> defined in top level nodes and would be handled by one driver.
->=20
-> This is really how hardware block looks like. But it is not backward
-> compatible...
+> Revert the part of the commit referred then that affects the user API, 
+> bringing the most recent version of <linux/cyclades.h> back verbatim 
+> modulo the removal of trailing whitespace which used to be there, and 
+> updating <linux/major.h> accordingly.
 
-Sounds good to me. I presume we need the serial child nodes so we can
-reference them from the stdout-path?
+Why major.h?  What uses that?  No userspace code should care about that.
+
+Also, your text here is full of trailing whitespace, so I couldn't take
+this commit as-is anyway :(
+
+thanks,
+
+greg k-h
