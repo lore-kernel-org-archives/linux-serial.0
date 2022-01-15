@@ -2,141 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A43CCC4321E
-	for <linux-serial@archiver.kernel.org>; Sat, 15 Jan 2022 01:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E636C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 15 Jan 2022 08:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiAOBqs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:46:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiAOBqr (ORCPT
+        id S231241AbiAOICO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 15 Jan 2022 03:02:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40208 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229816AbiAOICO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:46:47 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F54C061574;
-        Fri, 14 Jan 2022 17:46:47 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id v186so28686783ybg.1;
-        Fri, 14 Jan 2022 17:46:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tWKYqjMToQiYNKjbuCtLFgDL3xooRgPiVQeOXmHwMgs=;
-        b=nwt9fdkM8Jjyr8Qk9lQ3nikJt45z3ZIWItehvNMCq582HhZP8/Oh6b6RjDfJmYArPe
-         ieCs/E6lFaO4d6AriWHvI+bzTth+kfSwjf1RnbHxYyyUKCIpNxKoe/QHJ9Q5jzcdFpfd
-         FbGlZuzaiA44s0JyKbeHGe8aFfrl4DydWRmdRXsCOFni4zYlF/L493G0jeeKCEW+f/o2
-         shvM/YO1PgtuMiXhu5GPDb4eobmjPwBx/YQMSvNEwy99/99y3mPq1RpE+EI9V9Zyoqe+
-         I5XffLZuCwrZ2TllmVItNccGKkOw8Ve/hLX7dU2qKMm6ar7xWxxke9c9amp96VLpnUB5
-         u7ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tWKYqjMToQiYNKjbuCtLFgDL3xooRgPiVQeOXmHwMgs=;
-        b=JzZDj96o6lX7kNjMFDSNhC0z3/j9GYl/544DuqZ5NEisNAU9C5ZTcnOTudbYWOjOkw
-         dbjRaYeRAI0d2BfC4LaZAJQjWM+tazgs3JhRpvKSZyE/TEY+6dhMA8+2EwEc06pg1O5Q
-         qdnke2dQg4dmyJdUWAjjrU7nPsjN1FO6Z8l+Lw7XdVRfbYQfi481AbhgOUCfXQ2d+w5N
-         DEOiPIC+FyuKNNL1MNkIOjzNn/1PIYhSPI3wVif17g/5cOsHi/6aTOaHmi2mtn88+wot
-         Vlw+Gik8QAmR6RE5tb4QFRPIwa4M9Dv88mPacmIRrx2OV4leY8nrurIKEJ6S3yCfGHRC
-         OKoA==
-X-Gm-Message-State: AOAM531/z/2M8M8qurQz34LOI9os+2GDjkx4N0xBpOrywUlAVYgtxdMA
-        mQD2xoAPBjrQFpu6VbStbJvjAIGI9DPcUKyafaU=
-X-Google-Smtp-Source: ABdhPJwgzZLZHSnjfCYS1rIjQLZjd5tRg1w+jXNopdsIY1kj6ZrznRiU7nGR8CaxCU3f3tXLpA+HKePIHs69ZRR2jjU=
-X-Received: by 2002:a25:874a:: with SMTP id e10mr16006654ybn.422.1642211206642;
- Fri, 14 Jan 2022 17:46:46 -0800 (PST)
+        Sat, 15 Jan 2022 03:02:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A8A60B52;
+        Sat, 15 Jan 2022 08:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCAFC36AE3;
+        Sat, 15 Jan 2022 08:02:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642233733;
+        bh=0KqPDW57D7RxOoM3/l/LET6IR4OCuIRVN31HdEijEBc=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=FNqkOME3qI0h702vh6HOoOiWFQqV3fHb+7MMqz3l2jjzgrLesjGFMO8VYor0zOijR
+         HJmgi1TaSlPzDBHWFgo2Bw3bRgSrpgkEtLo22j8OJLltXqOQ0Js00ezYUWNpe76mkg
+         0IyJwC7WK6fqQuwm1cgFUnVx4+mpkuACLMXFHa3c0P4xfnF5PSmc1uN2mftgeKl5fd
+         at72eWMd4kncZtw7Utlf52kuU6sgbSkwWKi0Zmk++VUpvvYA1wljNyWFkdK24WZvV9
+         FdzbJExdOEQOJ/iFqWexiSWpQeQuo/yGWgkI5ZzXaNP9yBUe8mJNM7U69ybAwRMyAh
+         P3fbjunpZYGfw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211221094717.16187-7-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdUB-wK_0Vqn4fmqQ0jaHWmo9OTRPT1bwWsZh76U1J729A@mail.gmail.com>
-In-Reply-To: <CAMuHMdUB-wK_0Vqn4fmqQ0jaHWmo9OTRPT1bwWsZh76U1J729A@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Sat, 15 Jan 2022 01:46:20 +0000
-Message-ID: <CA+V-a8sMfAT8DAxQJeAM6BvGOvrBE5sqVfm6ErS4y3wqT-UwVQ@mail.gmail.com>
-Subject: Re: [PATCH 06/16] dt-bindings: serial: renesas,scif: Document RZ/V2L SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211016064210.7ahqfqcvf66wtt66@pali>
+References: <20210930095838.28145-1-pali@kernel.org> <20210930095838.28145-4-pali@kernel.org> <163425678347.1688384.10695189000353676651@swboyd.mtv.corp.google.com> <20211015090937.gnt66hgugrhwnkei@pali> <20211015093701.pfvkighxsndj4ujg@pali> <163433494758.1688384.5994009027317282677@swboyd.mtv.corp.google.com> <20211016064210.7ahqfqcvf66wtt66@pali>
+Subject: Re: [PATCH v7 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+To:     Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>
+Date:   Sat, 15 Jan 2022 00:02:11 -0800
+User-Agent: alot/0.10
+Message-Id: <20220115080213.0CCAFC36AE3@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+Quoting Pali Roh=C3=A1r (2021-10-15 23:42:10)
+>=20
+> If I was designing this driver and DTS bindings I would have choose
+> something like this:
+>=20
+> uart@0x12000 {
 
-Thank you for the review.
+Drop the 0x
 
-On Tue, Jan 11, 2022 at 4:23 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Tue, Dec 21, 2021 at 10:48 AM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > From: Biju Das <biju.das.jz@bp.renesas.com>
-> >
-> > Add SCIF binding documentation for Renesas RZ/V2L SoC. SCIF block on RZ/V2L
-> > is identical to one found on the RZ/G2L SoC. No driver changes are required
-> > as RZ/G2L compatible string "renesas,scif-r9a07g044" will be used as a
-> > fallback.
-> >
-> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> > @@ -67,6 +67,12 @@ properties:
-> >        - items:
-> >            - enum:
-> >                - renesas,scif-r9a07g044      # RZ/G2{L,LC}
-> > +              - renesas,scif-r9a07g054      # RZ/V2L
->
-> As the idea is to rely on the RZ/G2L fallback for matching, cfr. below,
-> the above addition is not needed or wanted.
->
-Agreed I will drop that.
+>     reg =3D <0x12000 0x18>, <0x12200 0x30>;
+>     clock-controller {
+>         ...
+>     };
 
-> > +
-> > +      - items:
-> > +          - enum:
-> > +              - renesas,scif-r9a07g054      # RZ/V2L
-> > +          - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback for RZ/V2L
-> >
-> >    reg:
-> >      maxItems: 1
-> > @@ -154,6 +160,7 @@ if:
-> >            - renesas,rcar-gen2-scif
-> >            - renesas,rcar-gen3-scif
-> >            - renesas,scif-r9a07g044
-> > +          - renesas,scif-r9a07g054
->
-> This addition is not needed if the fallback is always present.
->
-Ditto.
-> >  then:
-> >    required:
-> >      - resets
->
-> Given Greg already applied your patch, I think you have to send a
-> follow-up patch.
-Will do.
+Drop this node and put whatever properties are inside into the parent
+node.
 
-Cheers,
-Prabhakar
+>     serial1 {
+>         ...
+>         status =3D "disabled";
+>     };
+>     serial2 {
+>         ...
+>         status =3D "disabled";
+>     };
+> };
+>=20
+> Meaning that 0x12000 node would be 3 subnodes and all registers would be
+> defined in top level nodes and would be handled by one driver.
+>=20
+> This is really how hardware block looks like. But it is not backward
+> compatible...
+
+Sounds good to me. I presume we need the serial child nodes so we can
+reference them from the stdout-path?
