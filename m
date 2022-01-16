@@ -2,98 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CC6C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 16 Jan 2022 08:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BBBC433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 16 Jan 2022 14:19:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234955AbiAPIgE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 16 Jan 2022 03:36:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234964AbiAPIf7 (ORCPT
+        id S235438AbiAPOTT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 16 Jan 2022 09:19:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50044 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229785AbiAPOTM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 16 Jan 2022 03:35:59 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB780C06173F;
-        Sun, 16 Jan 2022 00:35:59 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id i17so6896321pfk.11;
-        Sun, 16 Jan 2022 00:35:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lyLZTYSyuAn/6nSvG/d5MsLS1Bsklk+dE7iVisAOhLs=;
-        b=ou41Nv8kXRUgFv98bk62qYY81G+O013+KlO5b3dWuLsp8FQ3BCZLZRejRkF2bmWLBk
-         WP2u6ta/UyWGKxRzQwvbmN7mB3wMpHU+wzXAl6KvXL8Xp76v+HS9nCPmZn9+tauRu016
-         HdZOh8u6RS9B/lN0N9itsoK5FW9i8Zxdxfnm9Jem6j2+QWIKWtA32LVG3YkprBKUBUWq
-         hge2Hq9S+cHLg6yU2IAMnYWq8JXKFgMPtZsIvgmZEHISz0skYZ26OiCVKqDmw787gUvG
-         2UQf81EGsRkT/uLhEKA1oXjd0uceMN2vmZo7oHHDBhsJucYmdBDhxE6l1aQlPb/K2x+o
-         pNZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lyLZTYSyuAn/6nSvG/d5MsLS1Bsklk+dE7iVisAOhLs=;
-        b=ejeQzKiDg3NtCPg0T14pbV3OIT/kOD2IOJjn0INM/uuaSpusKKcvf7HZ6kzuN7qFkL
-         AA7EUGlE/YRVReO75RQlN+rdOYq90WvC9wukZRn6VSOVyKgJIV4LFGB3dWtkMosFFfae
-         WW3rTs5IMDaCZG+eTXmnL3ME4nRJ8JNtFqzgeQY+tQZUnrpiAUnBXQ1RcLa01T8suUvF
-         AQJWUgfAbN+ss1/ztEsv/h5GTceihWaiM93VYbpgxwI+fxrou+Bl6XSJrnIOX/wn2UsN
-         pOaq03Ky828cQmV40108LIFKSoayA4FYbVpKe/h17ve2pMIZccOkZYWcfI9cid3DaNdk
-         o60Q==
-X-Gm-Message-State: AOAM530YCcpTIKU93M5txFQ7Bf1CyAbz9f7KAF3/6YGV6vR7Q8TtRv1t
-        o9QLKTEQ63Po2Lm1GY1Gl8o=
-X-Google-Smtp-Source: ABdhPJzCTtBWFSIlmGVfq6v0JvCmEslFOuImFALxtxLfDwxvns/PqsoKIgK7MPegcLKd2C5Bi+Lhyw==
-X-Received: by 2002:a05:6a00:1905:b0:4a8:2f86:3f18 with SMTP id y5-20020a056a00190500b004a82f863f18mr16150087pfi.52.1642322159294;
-        Sun, 16 Jan 2022 00:35:59 -0800 (PST)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id x7sm3378391pfd.196.2022.01.16.00.35.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Jan 2022 00:35:58 -0800 (PST)
-Date:   Sun, 16 Jan 2022 17:35:56 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Alyssa Ross <hi@alyssa.is>
-Cc:     Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sun, 16 Jan 2022 09:19:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31DF260F2E;
+        Sun, 16 Jan 2022 14:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D360C36AE7;
+        Sun, 16 Jan 2022 14:19:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642342750;
+        bh=KujYZ44NbqHewC3hStYnBx16eqgxm1SsBiD7vgCzy1A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sKsNPdg/t/aehm0kbBx0+iaMt7Vs15thP7mY+lgsvv2wpHp7hhFp/CL3s/+VFunx8
+         VMGsJpG9T+206AG5qxqWiAVL+YwMP+lMdgO6G29sYG5yQOnXi5Wp9YcaTPGre6QZaH
+         1Q5W85dO5PtMcGij5VwJ57avVdKo6t7UZumaWiEk=
+Date:   Sun, 16 Jan 2022 15:19:06 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: liteuart: fix MODULE_ALIAS
-Message-ID: <YePY7EO5iLmbhh3R@antec>
-References: <20220104131030.1674733-1-hi@alyssa.is>
+        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-phy@lists.infradead.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        Robert Richter <rric@kernel.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+ (summary)
+Message-ID: <YeQpWu2sUVOSaT9I@kroah.com>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220104131030.1674733-1-hi@alyssa.is>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 01:10:28PM +0000, Alyssa Ross wrote:
-> modprobe can't handle spaces in aliases.
-> 
-> Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
-> Signed-off-by: Alyssa Ross <hi@alyssa.is>
-> ---
->  drivers/tty/serial/liteuart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-> index 2941659e5274..7f74bf7bdcff 100644
-> --- a/drivers/tty/serial/liteuart.c
-> +++ b/drivers/tty/serial/liteuart.c
-> @@ -436,4 +436,4 @@ module_exit(liteuart_exit);
->  MODULE_AUTHOR("Antmicro <www.antmicro.com>");
->  MODULE_DESCRIPTION("LiteUART serial driver");
->  MODULE_LICENSE("GPL v2");
-> -MODULE_ALIAS("platform: liteuart");
-> +MODULE_ALIAS("platform:liteuart");
+On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-König wrote:
+> A possible compromise: We can have both. We rename
+> platform_get_irq_optional() to platform_get_irq_silent() (or
+> platform_get_irq_silently() if this is preferred) and once all users are
+> are changed (which can be done mechanically), we reintroduce a
+> platform_get_irq_optional() with Sergey's suggested semantic (i.e.
+> return 0 on not-found, no error message printking).
 
-This looks fine to me.
+Please do not do that as anyone trying to forward-port an old driver
+will miss the abi change of functionality and get confused.  Make
+build-breaking changes, if the way a function currently works is
+changed in order to give people a chance.
 
-Acked-by: Stafford Horne <shorne@gmail.com>
+thanks,
 
-> base-commit: c9e6606c7fe92b50a02ce51dda82586ebdf99b48
-> -- 
-> 2.33.0
-> 
+greg k-h
