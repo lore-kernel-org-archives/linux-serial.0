@@ -2,275 +2,477 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20969C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Jan 2022 08:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F150BC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Jan 2022 09:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231473AbiAQItK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232084AbiAQItJ (ORCPT
+        id S233575AbiAQJDh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:03:37 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:35786 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232907AbiAQJDf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:49:09 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBA4C06161C
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jan 2022 00:49:08 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Ng2-0001gr-D1; Mon, 17 Jan 2022 09:47:46 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Nfp-00AmmL-Ku; Mon, 17 Jan 2022 09:47:32 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Nfo-0000aW-I8; Mon, 17 Jan 2022 09:47:32 +0100
-Date:   Mon, 17 Jan 2022 09:47:32 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117084732.cdy2sash5hxp4lwo@pengutronix.de>
-References: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
+        Mon, 17 Jan 2022 04:03:35 -0500
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 17 Jan
+ 2022 17:03:32 +0800
+Message-ID: <70307ecc-b251-6adc-66c2-f7600d237f08@amlogic.com>
+Date:   Mon, 17 Jan 2022 17:03:31 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2mz4a6sr5yneo75s"
-Content-Disposition: inline
-In-Reply-To: <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V4 3/5] tty: serial: meson: The UART baud rate
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220110085604.18042-1-yu.tu@amlogic.com>
+ <20220110085604.18042-4-yu.tu@amlogic.com>
+ <1j8rvnps11.fsf@starbuckisacylon.baylibre.com>
+ <c9bb2f8f-6169-b4ab-5637-56c185dbf254@amlogic.com>
+ <1j7dayn4vh.fsf@starbuckisacylon.baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <1j7dayn4vh.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+  Hi Jerome,
+	Thank you very much for your reply.
 
---2mz4a6sr5yneo75s
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2022/1/17 16:26, Jerome Brunet wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> 
+> On Tue 11 Jan 2022 at 15:04, Yu Tu <yu.tu@amlogic.com> wrote:
+> 
+>> Hi Jerome,
+>> 	Thank you very much for your reply.
+>>
+>> On 2022/1/10 22:29, Jerome Brunet wrote:
+>>> [ EXTERNAL EMAIL ]
+>>>
+>>> On Mon 10 Jan 2022 at 16:56, Yu Tu <yu.tu@amlogic.com> wrote:
+>>> Title is bad (like several other patches in this series) - Please fix it
+>>> Ok.
+>>>> Using the common Clock code to describe the UART baud rate clock
+>>>> makes it easier for the UART driver to be compatible with the
+>>>> baud rate requirements of the UART IP on different meson chips.
+>>>>
+>>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>>>> ---
+>>>>    drivers/tty/serial/meson_uart.c | 224 +++++++++++++++++++++++---------
+>>>>    1 file changed, 163 insertions(+), 61 deletions(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+>>>> index 7570958d010c..1004fd0b0c9e 100644
+>>>> --- a/drivers/tty/serial/meson_uart.c
+>>>> +++ b/drivers/tty/serial/meson_uart.c
+>>>> @@ -6,6 +6,7 @@
+>>>>     */
+>>>>      #include <linux/clk.h>
+>>>> +#include <linux/clk-provider.h>
+>>>>    #include <linux/console.h>
+>>>>    #include <linux/delay.h>
+>>>>    #include <linux/init.h>
+>>>> @@ -65,9 +66,7 @@
+>>>>    #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
+>>>>      /* AML_UART_REG5 bits */
+>>>> -#define AML_UART_BAUD_MASK		0x7fffff
+>>>>    #define AML_UART_BAUD_USE		BIT(23)
+>>>> -#define AML_UART_BAUD_XTAL		BIT(24)
+>>>>      #define AML_UART_PORT_NUM		12
+>>>>    #define AML_UART_PORT_OFFSET		6
+>>>> @@ -76,6 +75,13 @@
+>>>>    #define AML_UART_POLL_USEC		5
+>>>>    #define AML_UART_TIMEOUT_USEC		10000
+>>>>    +struct meson_uart_data {
+>>>> +	struct uart_port	port;
+>>>> +	struct clk		*pclk;
+>>>> +	struct clk		*baud_clk;
+>>>> +	bool			use_xtal_clk;
+>>>> +};
+>>>> +
+>>>>    static struct uart_driver meson_uart_driver;
+>>>>      static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>>>> @@ -268,14 +274,11 @@ static void meson_uart_reset(struct uart_port *port)
+>>>>    static int meson_uart_startup(struct uart_port *port)
+>>>>    {
+>>>>    	u32 val;
+>>>> -	int ret = 0;
+>>>> +	int ret;
+>>>>    -	val = readl(port->membase + AML_UART_CONTROL);
+>>>> -	val |= AML_UART_CLEAR_ERR;
+>>>> -	writel(val, port->membase + AML_UART_CONTROL);
+>>>> -	val &= ~AML_UART_CLEAR_ERR;
+>>>> -	writel(val, port->membase + AML_UART_CONTROL);
+>>>> +	meson_uart_reset(port);
+>>>>    +	val = readl(port->membase + AML_UART_CONTROL);
+>>>>    	val |= (AML_UART_RX_EN | AML_UART_TX_EN);
+>>>>    	writel(val, port->membase + AML_UART_CONTROL);
+>>>>    @@ -293,19 +296,17 @@ static int meson_uart_startup(struct uart_port
+>>>> *port)
+>>>>      static void meson_uart_change_speed(struct uart_port *port, unsigned
+>>>> long baud)
+>>>>    {
+>>>> +	struct meson_uart_data *private_data = port->private_data;
+>>>>    	u32 val;
+>>>>      	while (!meson_uart_tx_empty(port))
+>>>>    		cpu_relax();
+>>>>    -	if (port->uartclk == 24000000) {
+>>>> -		val = ((port->uartclk / 3) / baud) - 1;
+>>>> -		val |= AML_UART_BAUD_XTAL;
+>>>> -	} else {
+>>>> -		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
+>>>> -	}
+>>>> +	val = readl(port->membase + AML_UART_REG5);
+>>>>    	val |= AML_UART_BAUD_USE;
+>>>>    	writel(val, port->membase + AML_UART_REG5);
+>>>> +
+>>>> +	clk_set_rate(private_data->baud_clk, baud);
+>>>>    }
+>>>>      static void meson_uart_set_termios(struct uart_port *port,
+>>>> @@ -395,11 +396,27 @@ static int meson_uart_verify_port(struct uart_port *port,
+>>>>      static void meson_uart_release_port(struct uart_port *port)
+>>>>    {
+>>>> -	/* nothing to do */
+>>>> +	struct meson_uart_data *private_data = port->private_data;
+>>>> +
+>>>> +	clk_disable_unprepare(private_data->baud_clk);
+>>>> +	clk_disable_unprepare(private_data->pclk);
+>>>>    }
+>>>>      static int meson_uart_request_port(struct uart_port *port)
+>>>>    {
+>>>> +	struct meson_uart_data *private_data = port->private_data;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = clk_prepare_enable(private_data->pclk);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>> In the previous version of the series, you already been asked to the
+>>> enable of pclk in the probe. Optimization should not be mixed with this
+>>> series
+>>> Please make sure all comments are addressed before re-posting
+>>>
+>> I'm sorry. I misunderstood you earlier. I'm going to move into the probe
+>> function.
+>>>> +
+>>>> +	ret = clk_prepare_enable(private_data->baud_clk);
+>>>> +	if (ret) {
+>>>> +		clk_disable_unprepare(private_data->pclk);
+>>>> +		return ret;
+>>>> +	}
+>>>> +
+>>>>    	return 0;
+>>>>    }
+>>>>    @@ -629,55 +646,105 @@ static struct uart_driver meson_uart_driver = {
+>>>>    	.cons		= MESON_SERIAL_CONSOLE,
+>>>>    };
+>>>>    -static inline struct clk *meson_uart_probe_clock(struct device *dev,
+>>>> -						 const char *id)
+>>>> +#define CLK_NAME(name) \
+>>>> +({\
+>>>> +	char clk_name[32];\
+>>>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev), #name);\
+>>>> +	clk_name;\
+>>>> +})
+>>> 1) This result in some ugly code being inlined
+>>> 2) You return a pointer a local variable which is not gurantee to exist
+>>> anymore  outside of this ...
+>>> Please do this simply in the related function.
+>> I've overdone it. I'll move it to the meson_uart_probe_clocks function as
+>> you suggested.
+>>>
+>>>> +
+>>>> +static struct clk_div_table xtal_div_table[] = {
+>>>> +	{ 0, 3  },
+>>>> +	{ 1, 1  },
+>>>> +	{ 2, 2  },
+>>>> +	{ 3, 2  },
+>>>> +};
+>>>> +
+>>>> +static int meson_uart_probe_clocks(struct uart_port *port)
+>>>>    {
+>>>> -	struct clk *clk = NULL;
+>>>> -	int ret;
+>>>> +	struct meson_uart_data *private_data = port->private_data;
+>>>> +	struct clk *clk_baud, *clk_xtal;
+>>>> +	struct clk_hw *hw;
+>>>> +	struct clk_parent_data use_xtal_mux_parents[2] = {
+>>>> +		{ .index = -1, },
+>>>> +		{ .index = -1, },
+>>>> +	};
+>>>>    -	clk = devm_clk_get(dev, id);
+>>>> -	if (IS_ERR(clk))
+>>>> -		return clk;
+>>>> +	private_data->pclk = devm_clk_get(port->dev, "pclk");
+>>>> +	if (IS_ERR(private_data->pclk))
+>>>> +		return dev_err_probe(port->dev, PTR_ERR(private_data->pclk),
+>>>> +				     "Failed to get the 'pclk' clock\n");
+>>>>    -	ret = clk_prepare_enable(clk);
+>>>> -	if (ret) {
+>>>> -		dev_err(dev, "couldn't enable clk\n");
+>>>> -		return ERR_PTR(ret);
+>>>> +	clk_baud = devm_clk_get(port->dev, "baud");
+>>>> +	if (IS_ERR(clk_baud)) {
+>>>> +		dev_err(port->dev, "Failed to get the 'baud' clock\n");
+>>>> +		return PTR_ERR(clk_baud);
+>>>>    	}
+>>>>    -	devm_add_action_or_reset(dev,
+>>>> -			(void(*)(void *))clk_disable_unprepare,
+>>>> -			clk);
+>>>> -
+>>>> -	return clk;
+>>>> -}
+>>>> -
+>>>> -static int meson_uart_probe_clocks(struct platform_device *pdev,
+>>>> -				   struct uart_port *port)
+>>>> -{
+>>>> -	struct clk *clk_xtal = NULL;
+>>>> -	struct clk *clk_pclk = NULL;
+>>>> -	struct clk *clk_baud = NULL;
+>>>> -
+>>>> -	clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+>>>> -	if (IS_ERR(clk_pclk))
+>>>> -		return PTR_ERR(clk_pclk);
+>>>> -
+>>>> -	clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+>>>> +	clk_xtal = devm_clk_get(port->dev, "xtal");
+>>>>    	if (IS_ERR(clk_xtal))
+>>>> -		return PTR_ERR(clk_xtal);
+>>>> -
+>>>> -	clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+>>>> -	if (IS_ERR(clk_baud))
+>>>> -		return PTR_ERR(clk_baud);
+>>>> +		return dev_err_probe(port->dev, PTR_ERR(clk_xtal),
+>>>> +				     "Failed to get the 'xtal' clock\n");
+>>>> +
+>>>> +	if (private_data->use_xtal_clk) {
+>>>> +		hw = devm_clk_hw_register_divider_table(port->dev,
+>>>> +							CLK_NAME(xtal_div),
+>>>> +							__clk_get_name(clk_baud),
+>>>> +							CLK_SET_RATE_NO_REPARENT,
+>>>> +							port->membase + AML_UART_REG5,
+>>>> +							26, 2,
+>>>> +							CLK_DIVIDER_READ_ONLY,
+>>>> +							xtal_div_table, NULL);
+>>>> +		if (IS_ERR(hw))
+>>>> +			return PTR_ERR(hw);
+>>>> +
+>>>> +		use_xtal_mux_parents[1].hw = hw;
+>>>> +	} else {
+>>>> +		hw = devm_clk_hw_register_fixed_factor(port->dev,
+>>>> +						       CLK_NAME(clk81_div4),
+>>>> +						       __clk_get_name(clk_baud),
+>>>> +						       CLK_SET_RATE_NO_REPARENT,
+>>>> +						       1, 4);
+>>>> +		if (IS_ERR(hw))
+>>>> +			return PTR_ERR(hw);
+>>>> +
+>>>> +		use_xtal_mux_parents[0].hw = hw;
+>>>> +	}
+>>> Contradiction with previous series.
+>>> In the previous series we could clearly see that gxbb did not have the
+>>> /4 divider. It did not have bits 26 and 27 either.
+>>> Now gxbb get the /4 divider. It operated correctly without it so far, so
+>>> this is rather suspicious. Could you please comment on this ?
+>>>
+>> As Martin and I discussed earlier.
+>> meson6 and meson8b SoC.There are not have bits 26 and 27 either.
+>> CLK81 is recommended for this part of SOC.
+>>
+>> GXL,GXM,GXBB and AXG SOC.The UART_EE_A_REG5[26] is added.
+>> UART_EE_A_REG5[26]:
+>> - 0x0: divide the input clock by 3 (meaning: this internally works
+>> with an 8MHz clock)
+>> - 0x1: use the input clock directly without further division (meaning:
+>> this internally work with an 24MHz clock)
+>> 8MHz is recommended for this part of SOC. Their UART IP configuration is
+>> the same.
+>>
+>> G12A/B,,SM1,A1 and S4 SOC.The UART_EE_A_REG5[27] is added.
+>> UART_EE_A_REG5[27]:
+>> - 0x0: use the clock as configured in UART_EE_A_REG5[26]
+>> - 0x1: divide the input clock by 2 (meaning: this internally works
+>> with an 12MHz clock)
+>> 12MHz is recommended for this part of SOC.
+>>
+>> NOTE:
+>> 1. clk81 /4 divider.
+>> There is a 4 divider inside, this is what the internal SOC designer told
+>> me. But they forgot to document it. So it makes people feel suspicious.
+>>
+>> 2.The UART_EE_A_REG5 default value is 0,except for the console port(set in
+>> romcode).All the baud rate clocks supported by UART can work, but different
+>> chip usage scenarios suggest using that clock to reduce jitter.
+>>
+>> In summary, I would like to know your suggestions, including how to change
+>> compatible.
+>> Thank you so much!
+> 
+>  From your comment, gxbb should have "true" instead of false, isn't it ?
+> 
+Yes, You are right.
+I don't see the need to split "amlogic, meson-gx-uart" compatible right 
+now. I think the following change
+{
+.compatible = "amlogic,meson-gx-uart",
+.data = (void *)true,
+},
+can satisfy all UART IP using XTAL. Because CCF automatically selects an 
+appropriate clock source when setting baud rate.
 
-Hello,
-
-On Sun, Jan 16, 2022 at 09:15:20PM +0300, Sergey Shtylyov wrote:
-> On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
->=20
-> >>>>>>> To me it sounds much more logical for the driver to check if an
-> >>>>>>> optional irq is non-zero (available) or zero (not available), tha=
-n to
-> >>>>>>> sprinkle around checks for -ENXIO. In addition, you have to remem=
-ber
-> >>>>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -EN=
-OSYS
-> >>>>>>> (or some other error code) to indicate absence. I thought not hav=
-ing
-> >>>>>>> to care about the actual error code was the main reason behind the
-> >>>>>>> introduction of the *_optional() APIs.
-> >>>>>
-> >>>>>> No, the main benefit of gpiod_get_optional() (and clk_get_optional=
-()) is
-> >>>>>> that you can handle an absent GPIO (or clk) as if it were availabl=
-e.
-> >>>>
-> >>>>    Hm, I've just looked at these and must note that they match 1:1 w=
-ith
-> >>>> platform_get_irq_optional(). Unfortunately, we can't however behave =
-the
-> >>>> same way in request_irq() -- because it has to support IRQ0 for the =
-sake
-> >>>> of i8253 drivers in arch/...
-> >>>
-> >>> Let me reformulate your statement to the IMHO equivalent:
-> >>>
-> >>> 	If you set aside the differences between
-> >>> 	platform_get_irq_optional() and gpiod_get_optional(),
-> >>
-> >>    Sorry, I should make it clear this is actually the diff between a w=
-ould-be
-> >> platform_get_irq_optional() after my patch, not the current code...
-> >=20
-> > The similarity is that with your patch both gpiod_get_optional() and
-> > platform_get_irq_optional() return NULL and 0 on not-found. The relevant
-> > difference however is that for a gpiod NULL is a dummy value, while for
-> > irqs it's not. So the similarity is only syntactically, but not
-> > semantically.
->=20
->    I have noting to say here, rather than optional IRQ could well have a =
-different
-> meaning than for clk/gpio/etc.
->=20
-> [...]
-> >>> However for an interupt this cannot work. You will always have to che=
-ck
-> >>> if the irq is actually there or not because if it's not you cannot ju=
-st
-> >>> ignore that. So there is no benefit of an optional irq.
-> >>>
-> >>> Leaving error message reporting aside, the introduction of
-> >>> platform_get_irq_optional() allows to change
-> >>>
-> >>> 	irq =3D platform_get_irq(...);
-> >>> 	if (irq < 0 && irq !=3D -ENXIO) {
-> >>> 		return irq;
-> >>> 	} else if (irq >=3D 0) {
-> >>
-> >>    Rather (irq > 0) actually, IRQ0 is considered invalid (but still re=
-turned).
-> >=20
-> > This is a topic I don't feel strong for, so I'm sloppy here. If changing
-> > this is all that is needed to convince you of my point ...
->=20
->    Note that we should absolutely (and first of all) stop returning 0 fro=
-m platform_get_irq()
-> on a "real" IRQ0. Handling that "still good" zero absolutely doesn't scal=
-e e.g. for the subsystems
-> (like libata) which take 0 as an indication that the polling mode should =
-be used... We can't afford
-> to be sloppy here. ;-)
-
-Then maybe do that really first? I didn't recheck, but is this what the
-driver changes in your patch is about?
-
-After some more thoughts I wonder if your focus isn't to align
-platform_get_irq_optional to (clk|gpiod|regulator)_get_optional, but to
-simplify return code checking. Because with your change we have:
-
- - < 0 -> error
- - =3D=3D 0 -> no irq
- - > 0 -> irq
-
-For my part I'd say this doesn't justify the change, but at least I
-could better life with the reasoning. If you start at:
-
-	irq =3D platform_get_irq_optional(...)
-	if (irq < 0 && irq !=3D -ENXIO)
-		return irq
-	else if (irq > 0)
-		setup_irq(irq);
-	else
-		setup_polling()
-
-I'd change that to
-
-	irq =3D platform_get_irq_optional(...)
-	if (irq > 0) /* or >=3D 0 ? */
-		setup_irq(irq)
-	else if (irq =3D=3D -ENXIO)
-		setup_polling()
-	else
-		return irq
-
-This still has to mention -ENXIO, but this is ok and checking for 0 just
-hardcodes a different return value.
-
-Anyhow, I think if you still want to change platform_get_irq_optional
-you should add a few patches converting some drivers which demonstrates
-the improvement for the callers.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---2mz4a6sr5yneo75s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlLSEACgkQwfwUeK3K
-7AmyYgf/XGQlmMOUl2lAj4GQW7CiS0lV2TuFuhlnDJf7F3PzQ2L1ZVscbjBxxIXN
-fsZPjxz917pgWPixWRPYgXzkeU3If7KNJ5f9/292eCe0By1fl+utu3I9WysE1hdr
-PuW7Agx3O7iU6i4vgBzZwgsXhX1Lsmncj4/gBgrEr2pBghxy0BIv+tTmGrYXlmtJ
-XRwbdG3Vvwwo7wBrJhY1BQafu9cvLp3DwecEhMLBuavyKMrZxRg81gVHsuuox+Bp
-OCOzyMTz2kRs5wf3x8L6Hytaa9Qy6EHRw/hfHWaJJE1zZ6vs89ZNbD5agngTlucq
-HqzlfNxrLhuHolxSw3kKK9ueKcEycg==
-=bX8l
------END PGP SIGNATURE-----
-
---2mz4a6sr5yneo75s--
+I wonder if you agree with that. Or maybe you have a better idea. I'd 
+like to know your opinion
+>>
+>>   >>
+>>>> -	port->uartclk = clk_get_rate(clk_baud);
+>>>> +	hw = __devm_clk_hw_register_mux(port->dev, NULL,
+>>>> +					CLK_NAME(use_xtal),
+>>>> +					ARRAY_SIZE(use_xtal_mux_parents),
+>>>> +					NULL, NULL,
+>>>> +					use_xtal_mux_parents,
+>>>> +					CLK_SET_RATE_PARENT,
+>>>> +					port->membase + AML_UART_REG5,
+>>>> +					24, 0x1,
+>>>> +					CLK_MUX_READ_ONLY,
+>>>> +					NULL, NULL);
+>>>> +	if (IS_ERR(hw))
+>>>> +		return PTR_ERR(hw);
+>>>> +
+>>>> +	port->uartclk = clk_hw_get_rate(hw);
+>>>> +
+>>>> +	hw = devm_clk_hw_register_divider(port->dev,
+>>>> +					  CLK_NAME(baud_div),
+>>>> +					  clk_hw_get_name(hw),
+>>>> +					  CLK_SET_RATE_PARENT,
+>>>> +					  port->membase + AML_UART_REG5,
+>>>> +					  0, 23,
+>>>> +					  CLK_DIVIDER_ROUND_CLOSEST,
+>>>> +					  NULL);
+>>>> +	if (IS_ERR(hw))
+>>>> +		return PTR_ERR(hw);
+>>>> +
+>>>> +	private_data->baud_clk = clk_hw_get_clk(hw, "baud_rate");
+>>> I have already commented on the use of this function in the previous
+>>> version.
+>>> Please make sure all comments are addressed before re-posting
+>>>
+>> I'm sorry. I misunderstood you earlier. I will be changed to
+>> "private_data->baud_clk = hw->clk;".What do you think?
+> 
+> yes
+> 
+>>>>      	return 0;
+>>>>    }
+>>>>      static int meson_uart_probe(struct platform_device *pdev)
+>>>>    {
+>>>> +	struct meson_uart_data *private_data;
+>>>>    	struct resource *res_mem;
+>>>>    	struct uart_port *port;
+>>>>    	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>>>> @@ -716,18 +783,20 @@ static int meson_uart_probe(struct platform_device *pdev)
+>>>>    		return -EBUSY;
+>>>>    	}
+>>>>    -	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port),
+>>>> GFP_KERNEL);
+>>>> -	if (!port)
+>>>> +	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
+>>>> +				    GFP_KERNEL);
+>>>> +	if (!private_data)
+>>>>    		return -ENOMEM;
+>>>>    +	if (device_get_match_data(&pdev->dev))
+>>>> +		private_data->use_xtal_clk = true;
+>>>> +
+>>>> +	port = &private_data->port;
+>>>> +
+>>>>    	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
+>>>>    	if (IS_ERR(port->membase))
+>>>>    		return PTR_ERR(port->membase);
+>>>>    -	ret = meson_uart_probe_clocks(pdev, port);
+>>>> -	if (ret)
+>>>> -		return ret;
+>>>> -
+>>>>    	port->iotype = UPIO_MEM;
+>>>>    	port->mapbase = res_mem->start;
+>>>>    	port->mapsize = resource_size(res_mem);
+>>>> @@ -740,7 +809,11 @@ static int meson_uart_probe(struct platform_device *pdev)
+>>>>    	port->x_char = 0;
+>>>>    	port->ops = &meson_uart_ops;
+>>>>    	port->fifosize = fifosize;
+>>>> +	port->private_data = private_data;
+>>> port has private_data
+>>> private_data has port
+>>> Is it really necessary to have both ... looks to me that port in
+>>> private_data is overkill
+>>>
+>> It's very thoughtful of you. I'll delete it as you suggested.
+>>>>    +	ret = meson_uart_probe_clocks(port);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>>    	meson_ports[pdev->id] = port;
+>>>>    	platform_set_drvdata(pdev, port);
+>>>>    @@ -766,10 +839,39 @@ static int meson_uart_remove(struct
+>>>> platform_device *pdev)
+>>>>    }
+>>>>      static const struct of_device_id meson_uart_dt_match[] = {
+>>>> -	{ .compatible = "amlogic,meson6-uart" },
+>>>> -	{ .compatible = "amlogic,meson8-uart" },
+>>>> -	{ .compatible = "amlogic,meson8b-uart" },
+>>>> -	{ .compatible = "amlogic,meson-gx-uart" },
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson6-uart",
+>>>> +		.data = (void *)false,
+>>>> +	},
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson8-uart",
+>>>> +		.data = (void *)false,
+>>>> +	},
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson8b-uart",
+>>>> +		.data = (void *)false,
+>>>> +	},
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson-gxbb-uart",
+>>>> +		.data = (void *)false,
+>>>> +	},
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson-gxl-uart",
+>>>> +		.data = (void *)true,
+>>>> +	},
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson-g12a-uart",
+>>>> +		.data = (void *)true,
+>>>> +	},
+>>>> +	/*
+>>>> +	 * deprecated, don't use anymore because it doesn't differentiate
+>>>> +	 * between GXBB, GXL and G12A which have different revisions
+>>>> +	 * of the UART IP.
+>>>> +	 */
+>>>> +	{
+>>>> +		.compatible = "amlogic,meson-gx-uart",
+>>>> +		.data = (void *)false,
+>>>> +	},
+>>>>    	{ /* sentinel */ },
+>>>>    };
+>>>>    MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
+>>>
+>>
+>> _______________________________________________
+>> linux-amlogic mailing list
+>> linux-amlogic@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-amlogic
+> 
