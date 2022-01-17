@@ -2,141 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C958C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Jan 2022 17:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC69EC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Jan 2022 18:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238830AbiAQRzI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233445AbiAQRzH (ORCPT
+        id S238344AbiAQSOE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:14:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58378 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232426AbiAQSOD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:55:07 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7488AC06173E
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jan 2022 09:55:07 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id bu18so37570627lfb.5
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jan 2022 09:55:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=embecosm.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=cwLRKEGEpMI2ZE1H9bFkR9wzYdchQAM25oYHbDE2xJI=;
-        b=Z4uRl0MVRiirvaT9sJ1t9OkkLO3CHmIQ751lzUNYhxDx7ws/GTs5S/AZd0bN+BySCm
-         sHCN8MzJVc8iI5k2e2+EddfoXccN1yMRUhCYH59ncx2PDXEWyEYIHw+7c2dOaj0qNB3P
-         GOj+hBBdhVtdki2iaCxAQ+yuKM7iyJ4yL1e19IJTJLE6UIYY9IfWSeEQbC8wP940wkRV
-         zJBewdJ/7Kp02fYC4DiiOs+CnfRpwISGGu/+fTGOfjvcr3GEqSzuGwNcPom8k5eLLGOq
-         QZDfb/qb0XZdvcmEOqt8kU8GGJS4rkbc582DstuDCda8nODZj2cl7/hQ+U1LpgsR5bvi
-         8eDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=cwLRKEGEpMI2ZE1H9bFkR9wzYdchQAM25oYHbDE2xJI=;
-        b=h3VAGfX1sjFdAsyGRJeMP8voAM8a5Juq0P3FU10xlrwUbk9j0yC6JV12OL8C7nzXnW
-         XKcKuk+V//3w5UZzH4uU8rzkEhtcQQvs19lFaGBA2TiXybiy88k+aEUu7kDDfELf+juV
-         tsxOJYJlByah5fZbCuoxfAdHgRtygmB1eTW/VvZYWmi0e5VtwigkOaxAqczZkJNj0zUy
-         kgQsnU2Oo5GAghLqWKjXDEDMleApyRTepG4tabwmS/fCT23M1iG4a29I3lFE2ULzXtai
-         W4AKvh5mQ1ynCBHdC1++4DpgmW5ghkTj0gKbTbcZrnGvBS/L9k/BYbzqhOIeF3GF29y9
-         lI0w==
-X-Gm-Message-State: AOAM532IfUQgvbTtNoOCO7eJRIUEol+8+dMgM1Xo9CfTj4+1lARzM8mC
-        0ocpoxbmJ1NYPafKiHQVawK4bw==
-X-Google-Smtp-Source: ABdhPJy+LfZBkjXYa1Q5BuuXNEb0Ca47QVTVnKosBFub+2myWJLAzkrYXRRQbzGGN969EE+Zx/4Cgw==
-X-Received: by 2002:a05:6512:308c:: with SMTP id z12mr12242340lfd.35.1642442105820;
-        Mon, 17 Jan 2022 09:55:05 -0800 (PST)
-Received: from [192.168.219.3] ([78.8.192.131])
-        by smtp.gmail.com with ESMTPSA id i6sm756372lfb.76.2022.01.17.09.55.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jan 2022 09:55:05 -0800 (PST)
-Date:   Mon, 17 Jan 2022 17:55:02 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@embecosm.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Mon, 17 Jan 2022 13:14:03 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42FB0B81185;
+        Mon, 17 Jan 2022 18:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D950C36AE7;
+        Mon, 17 Jan 2022 18:14:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642443240;
+        bh=mYpBeMKz0JgpoIsxFchzZoJyloTy6gtFSseeegYIyP0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pTFLEjEmocRE2SIcod8His/u6iv/kbKnN6UeV9jbByqVXi5YI3UxABGFj4cI1Kk6X
+         Q4Ynm1+TYl1HDl2YqvcEfI8z4pQesFQPxCXGKgfSWIVo1XWJWWZk55OBEraVNE+sVT
+         wnrAL+GAVPIrivMYaRDLsZODxj7i9QFnf6ytIdsQ=
+Date:   Mon, 17 Jan 2022 19:13:57 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Subject: Re: [PATCH] tty: Revert the removal of the Cyclades public API
-In-Reply-To: <YeKDD6imTh1Y6GuN@kroah.com>
-Message-ID: <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk>
-References: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk> <YeKDD6imTh1Y6GuN@kroah.com>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+Message-ID: <YeWx5aKmG44sWPEI@kroah.com>
+References: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk>
+ <YeKDD6imTh1Y6GuN@kroah.com>
+ <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 15 Jan 2022, Greg Kroah-Hartman wrote:
-
-> On Fri, Jan 14, 2022 at 08:54:05PM +0000, Maciej W. Rozycki wrote:
-> > Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
-> > cyclades, remove this orphan"), which removed a part of the API and 
-> > caused compilation errors for user programs using said part, such as 
-> > GCC 9 in its libsanitizer component[1]:
+On Mon, Jan 17, 2022 at 05:55:02PM +0000, Maciej W. Rozycki wrote:
+> On Sat, 15 Jan 2022, Greg Kroah-Hartman wrote:
+> 
+> > On Fri, Jan 14, 2022 at 08:54:05PM +0000, Maciej W. Rozycki wrote:
+> > > Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+> > > cyclades, remove this orphan"), which removed a part of the API and 
+> > > caused compilation errors for user programs using said part, such as 
+> > > GCC 9 in its libsanitizer component[1]:
+> > > 
+> > > .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+> > >   160 | #include <linux/cyclades.h>
+> > >       |          ^~~~~~~~~~~~~~~~~~
+> > > compilation terminated.
+> > > make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 > > 
-> > .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
-> >   160 | #include <linux/cyclades.h>
-> >       |          ^~~~~~~~~~~~~~~~~~
-> > compilation terminated.
-> > make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
+> > So all we need is an empty header file?  Why bring back all of the
+> > unused structures?
 > 
-> So all we need is an empty header file?  Why bring back all of the
-> unused structures?
+>  Because they have become a part of the published API.  Someone may even 
+> use a system using headers from the most recent version of the Linux 
+> kernel (though not necessarily running such a kernel) to build software 
+> intended to run on an older version that still does implement the API.  
+> Times where people individually built pefectly matching software from 
+> sources to run on each system they looked after have largely long gone.
 
- Because they have become a part of the published API.  Someone may even 
-use a system using headers from the most recent version of the Linux 
-kernel (though not necessarily running such a kernel) to build software 
-intended to run on an older version that still does implement the API.  
-Times where people individually built pefectly matching software from 
-sources to run on each system they looked after have largely long gone.
+For hardware-specific things like this, it's not the same.  I can see
+adding the .h file as empty just to keep things building, but if no one
+is actually ever using the structures and definitions in the file, it
+should stay removed.
 
-> > Any part of the public API is a contract between the kernel and the 
-> > userland and therefore once there it must not be removed even if its 
-> > implementation side has gone and any relevant calls will now fail 
-> > unconditionally.
+In looking at the file itself, it just looks like it wants a single
+structure, struct cyclades_monitor, and then never actually does
+anything with it.
+
+So I guess I should submit a patch to the llvm developers to remove
+these lines and add back the single structure definition to allow this
+to keep building now?
+
+> > > Any part of the public API is a contract between the kernel and the 
+> > > userland and therefore once there it must not be removed even if its 
+> > > implementation side has gone and any relevant calls will now fail 
+> > > unconditionally.
+> > 
+> > Does this code actually use any of these structures?
 > 
-> Does this code actually use any of these structures?
+>  Well, they have been exported, so they have become a part of the API.  
+> This user program may not use them, another one will.  If you don't want 
+> an API to become public, then do not export it in the first place.
 
- Well, they have been exported, so they have become a part of the API.  
-This user program may not use them, another one will.  If you don't want 
-an API to become public, then do not export it in the first place.
+That happened a very long time ago, for hardware that no one has, sorry.
 
-> > Revert the part of the commit referred then that affects the user API, 
-> > bringing the most recent version of <linux/cyclades.h> back verbatim 
-> > modulo the removal of trailing whitespace which used to be there, and 
-> > updating <linux/major.h> accordingly.
+So the "ABI" broke when the driver was removed.  Given that no one has
+the hardware, no one noticed the breakage, so there is no breakage :)
+
+> > > Revert the part of the commit referred then that affects the user API, 
+> > > bringing the most recent version of <linux/cyclades.h> back verbatim 
+> > > modulo the removal of trailing whitespace which used to be there, and 
+> > > updating <linux/major.h> accordingly.
+> > 
+> > Why major.h?  What uses that?  No userspace code should care about that.
 > 
-> Why major.h?  What uses that?  No userspace code should care about that.
+>  So it shouldn't have been a part of the user API in the first place.  
+> Given that it has become a part of it it has to stay, that's the whole 
+> point of having a user API.
 
- So it shouldn't have been a part of the user API in the first place.  
-Given that it has become a part of it it has to stay, that's the whole 
-point of having a user API.
+But what user program uses that value?  I can't seem to find any, so
+pointers would be appreciated.
 
-> Also, your text here is full of trailing whitespace, so I couldn't take
-> this commit as-is anyway :(
+> > Also, your text here is full of trailing whitespace, so I couldn't take
+> > this commit as-is anyway :(
+> 
+>  Well, `git' is supposed to sort it automatically.  I've been routinely 
+> feeding my patches as posted to `git am' for other projects so as to push 
+> them and any trailing whitespace (added automatically by my e-mail client, 
+> I guess for presentation purposes; not to be confused with `format=flowed' 
+> arrangement as indicated by `Content-Type:', which I know to avoid) does 
+> get stripped as the command executes, clearly prepared for this situation.
+> 
+>  The same must have happened for my earlier Linux kernel submissions ever 
+> since the switch to `git' back in 2005 as they have been correctly applied 
+> and no maintainer including you had an issue with it before.  And I have 
+> been using the same e-mail client doing the same all over these years.
+> 
+>  To double-check I have just fed my submission as it to `git am' and it 
+> did strip all the unwanted trailing whitespace.  Does that not happen with 
+> your setup now?  Odd.
 
- Well, `git' is supposed to sort it automatically.  I've been routinely 
-feeding my patches as posted to `git am' for other projects so as to push 
-them and any trailing whitespace (added automatically by my e-mail client, 
-I guess for presentation purposes; not to be confused with `format=flowed' 
-arrangement as indicated by `Content-Type:', which I know to avoid) does 
-get stripped as the command executes, clearly prepared for this situation.
+I did not check, I only responded to your email and saw the whitespace
+in it.
 
- The same must have happened for my earlier Linux kernel submissions ever 
-since the switch to `git' back in 2005 as they have been correctly applied 
-and no maintainer including you had an issue with it before.  And I have 
-been using the same e-mail client doing the same all over these years.
+I'll gladly take a patch that just adds the one needed structure to keep
+this file building.  But that's all that is needed unless someone can
+point out other code that needs these definitions.
 
- To double-check I have just fed my submission as it to `git am' and it 
-did strip all the unwanted trailing whitespace.  Does that not happen with 
-your setup now?  Odd.
+thanks,
 
- Or did you get confused with the formatting issues the header itself used 
-to have that I did not address as preexisting code?  If so, then I could 
-reformat the body of the change, however due to the original defects it 
-wouldn't be a trivial revert anymore (arguably in that case there ought to 
-be two changes in a series then, first a genuine revert, followed by the 
-style fix).  Let me know if that is what you desire and I'll adapt v2 
-accordingly.
-
- Thank you for your review.
-
-  Maciej
+greg k-h
