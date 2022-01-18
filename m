@@ -2,47 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 137F3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860CFC433FE
 	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 02:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345143AbiARCta (ORCPT
+        id S1349336AbiARCt3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50454 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347598AbiARCli (ORCPT
+        Mon, 17 Jan 2022 21:49:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57188 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346667AbiARCjk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:41:38 -0500
+        Mon, 17 Jan 2022 21:39:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1A3AB81250;
-        Tue, 18 Jan 2022 02:41:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9490CC36AF2;
-        Tue, 18 Jan 2022 02:41:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF7AF611F1;
+        Tue, 18 Jan 2022 02:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED2DC36AF3;
+        Tue, 18 Jan 2022 02:39:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473695;
-        bh=nTQQoOcwOSWdtjW4HqwT3MpwSNGEGW1hkZI3TJyvSr4=;
+        s=k20201202; t=1642473579;
+        bh=AOczSnWdWced6oq1iyNUhjT2AeFnG/1hKhyVL7vUbzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Db5ae39ZKN+6pJo+YeIWmEtT78BGjMMFNs8BH+rQurykvWbTFV/FI8V3iariNzwXm
-         a5V92S8qoY0LvI5VRfg/I/UHMQ7uHSqEmAn9o+azEAPri/f7E9gf3yAxxhnWV1QPb4
-         kjEhz1/SPzzFcVFkgXXAMT2IJm4/PQMm4r2hPohQbpjpoaIXpcsfz6uF5Ymu9FxtgE
-         q9UjcAlog/D8wxQ0plOiNl3hhWTQrFDRdrz0nybEAynKZXo1uudy0Ut+KvSmMY3hk1
-         LKNLGWqKgfL8MdXyntULr5AiONPq00IRaMsBDBQtVYnOo6b3UDA4hIXNGSuh1Bns7/
-         50USrecL/hXzw==
+        b=RF1LPA3t7qv5FLAWyKLJNKDOSQrQARs6VPBr4CMbJAoLjuhdAzVbxYQmsUSJlmUXV
+         COm2GS6kuql1FcRZv9/yUukuWn/dwAOTRuL6DNsLUBEWKFd4EZSK/BRdz2hDcVQ/ec
+         SrDj5dnoaOQ1hwPJcOjeEtVn9xuZfctG769j4UO5qZXQmnV6gzbu8vSsIINVWP2OgP
+         70te6aaq5Q8rzpVZujeNJl7bszxtjgcLAjG6ojRYRKfVR1Bil9KQ6T1QJBdQ3Mrhjz
+         8xaUXITGGFrFafMu/1OVo8828NYjyRrlxN0DaTY/rOJHcjUMLpBjNBSuSSvHdYNYll
+         sQl4LItIyxrAA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>,
+Cc:     Lukas Wunner <lukas@wunner.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        shawnguo@kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 027/116] tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
-Date:   Mon, 17 Jan 2022 21:38:38 -0500
-Message-Id: <20220118024007.1950576-27-sashal@kernel.org>
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 178/188] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 17 Jan 2022 21:31:42 -0500
+Message-Id: <20220118023152.1948105-178-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,67 +50,51 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 028e083832b06fdeeb290e1e57dc1f6702c4c215 ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-The UCR4_OREN should be disabled before disabling the uart receiver in
-.stop_rx() instead of in the .shutdown().
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-Otherwise, if we have the overrun error during the receiver disable
-process, the overrun interrupt will keep trigging until we disable the
-OREN interrupt in the .shutdown(), because the ORE status can only be
-cleared when read the rx FIFO or reset the controller.  Although the
-called time between the receiver disable and OREN disable in .shutdown()
-is very short, there is still the risk of endless interrupt during this
-short period of time. So here change to disable OREN before the receiver
-been disabled in .stop_rx().
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Link: https://lore.kernel.org/r/20211125020349.4980-1-sherry.sun@nxp.com
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
+
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/imx.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 28cc328ddb6eb..93cd8ad57f385 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -508,18 +508,21 @@ static void imx_uart_stop_tx(struct uart_port *port)
- static void imx_uart_stop_rx(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
--	u32 ucr1, ucr2;
-+	u32 ucr1, ucr2, ucr4;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 61e3dd0222af1..9e7e624a6c9db 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2393,7 +2393,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
  
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	ucr2 = imx_uart_readl(sport, UCR2);
-+	ucr4 = imx_uart_readl(sport, UCR4);
- 
- 	if (sport->dma_is_enabled) {
- 		ucr1 &= ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
- 	} else {
- 		ucr1 &= ~UCR1_RRDYEN;
- 		ucr2 &= ~UCR2_ATEN;
-+		ucr4 &= ~UCR4_OREN;
- 	}
- 	imx_uart_writel(sport, ucr1, UCR1);
-+	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	ucr2 &= ~UCR2_RXEN;
- 	imx_uart_writel(sport, ucr2, UCR2);
-@@ -1576,7 +1579,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	imx_uart_writel(sport, ucr1, UCR1);
- 
- 	ucr4 = imx_uart_readl(sport, UCR4);
--	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
-+	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 		/*
 -- 
 2.34.1
 
