@@ -2,46 +2,45 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860CFC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 02:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106E0C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349336AbiARCt3 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57188 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346667AbiARCjk (ORCPT
+        id S236727AbiARDGK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:06:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55770 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344858AbiARCq6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:39:40 -0500
+        Mon, 17 Jan 2022 21:46:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF7AF611F1;
-        Tue, 18 Jan 2022 02:39:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED2DC36AF3;
-        Tue, 18 Jan 2022 02:39:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D757B812A8;
+        Tue, 18 Jan 2022 02:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535ADC36AF8;
+        Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473579;
-        bh=AOczSnWdWced6oq1iyNUhjT2AeFnG/1hKhyVL7vUbzw=;
+        s=k20201202; t=1642474015;
+        bh=3/QdR6SGlH1mYgnJ4NwJ66sQHw5xtbVGngxoo/WjW6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RF1LPA3t7qv5FLAWyKLJNKDOSQrQARs6VPBr4CMbJAoLjuhdAzVbxYQmsUSJlmUXV
-         COm2GS6kuql1FcRZv9/yUukuWn/dwAOTRuL6DNsLUBEWKFd4EZSK/BRdz2hDcVQ/ec
-         SrDj5dnoaOQ1hwPJcOjeEtVn9xuZfctG769j4UO5qZXQmnV6gzbu8vSsIINVWP2OgP
-         70te6aaq5Q8rzpVZujeNJl7bszxtjgcLAjG6ojRYRKfVR1Bil9KQ6T1QJBdQ3Mrhjz
-         8xaUXITGGFrFafMu/1OVo8828NYjyRrlxN0DaTY/rOJHcjUMLpBjNBSuSSvHdYNYll
-         sQl4LItIyxrAA==
+        b=SAu79wltTsU6A8cCPfX4KxefygQs4+jHZUUfr5iS/DNAGVkCLHN4+mgI89us7ptK8
+         1cca1+3ogqsrIgIqoaWfhHMA0BUXZQ29Wz7O7npJJ0vyXKq0+XnMWNgIH6+2IKOhuZ
+         FQLbiwY/gVPjQw0JiYJGmN9fvFySEcDgFoT+hJKYfHd2E6E17rZxm61soIHKbX671M
+         EX4MUGWye/STUk12z+WbXxDINKwidiwBYXgHgyN9ySIajoTHjFhqM6zhGqqTAS0HqH
+         VHmskWO2lMOUfkYcpEmj4TRB+0m5R0jlA8/gklFdLhe4nh5OIPJf9skTPFmO4V64mE
+         HKKUWJvfZCeLQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Lukas Wunner <lukas@wunner.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 178/188] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 17 Jan 2022 21:31:42 -0500
-Message-Id: <20220118023152.1948105-178-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 71/73] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 17 Jan 2022 21:44:30 -0500
+Message-Id: <20220118024432.1952028-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -82,10 +81,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 61e3dd0222af1..9e7e624a6c9db 100644
+index aad640b9e3f4b..c8a047ba76ebe 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -2393,7 +2393,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+@@ -2395,7 +2395,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
  		 * We probably don't need a spinlock around this, but
  		 */
  		spin_lock_irqsave(&port->lock, flags);
