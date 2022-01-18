@@ -2,108 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCF5C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 03:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C722C43217
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 03:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351056AbiARDR5 (ORCPT
+        id S1351090AbiARDR6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:17:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353246AbiARDIs (ORCPT
+        Mon, 17 Jan 2022 22:17:58 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:14899 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353759AbiARDJ6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C182CC061759;
-        Mon, 17 Jan 2022 18:51:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 309EC61348;
-        Tue, 18 Jan 2022 02:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBB7C36AEF;
-        Tue, 18 Jan 2022 02:51:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474270;
-        bh=zgJycrBY7VvfgIA9nrpGkp89cc0lhlwKiFUFwBPoQBU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EkfI83w7vaFIITe85s7QqbHmW5IPWUTOYPmyaWNWf6QytBpEQfjWD7TNVMueOew85
-         s80zdMn4j1ZRFwrxB31utUUVLfFTTNVDZ/U55VP4HSNQpJfLh6RixawM1fNGwQnDyx
-         vmIDtekgK8lHS+AZJSrdJp147W7n/5Q3z4gD5JdKLua4md9/zn/igxtQqvi9nRjqnh
-         GGgRNAIRSNGybM7vr2g6Ia+EgmfLNr56qcQXR+LVcv5Rbnjq9bHN5K//ioAU9M92hD
-         EWLGRFkzull6+QekDjGKGwa8lMA5NLw0G/1+wnpaFRnI8Q7HIY7WExaXzDWcqYi3Z0
-         zgh385EUfnxCg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 54/56] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:49:06 -0500
-Message-Id: <20220118024908.1953673-54-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:09:58 -0500
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Tue, 18 Jan 2022
+ 11:09:52 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V6 0/5] Use CCF to describe the UART baud rate clock
+Date:   Tue, 18 Jan 2022 11:09:06 +0800
+Message-ID: <20220118030911.12815-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+Using the common Clock code to describe the UART baud rate
+clock makes it easier for the UART driver to be compatible
+with the baud rate requirements of the UART IP on different
+meson chips. Add Meson S4 SoC compatible.
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+Yu Tu (5):
+  tty: serial: meson: Move request the register region to probe
+  tty: serial: meson: Use devm_ioremap_resource to get register mapped
+    memory
+  tty: serial: meson: Describes the calculation of the UART baud rate
+    clock using a clock frame
+  tty: serial: meson: Make some bit of the REG5 register writable
+  tty: serial: meson: Added S4 SOC compatibility
 
-pl010_set_termios() briefly resets the CR register to zero.
+V5 -> V6: Change error format as discussed in the email.
+V4 -> V5: Change error format.
+V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
+in the email.
+V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
+the DTS before it can be deleted
+V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
+discussed in the email
 
-Where does this register write come from?
+Link:https://lore.kernel.org/linux-amlogic/20220110104214.25321-4-yu.tu@amlogic.com/
 
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
+ drivers/tty/serial/meson_uart.c | 217 ++++++++++++++++++++++----------
+ 1 file changed, 149 insertions(+), 68 deletions(-)
 
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
 
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 9ec4b8d2879f7..0698fbf3b6d61 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
- 
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+base-commit: 4d66020dcef83314092f2c8c89152a8d122627e2
 -- 
-2.34.1
+2.33.1
 
