@@ -2,269 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F1CC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 14:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E144C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 16:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238197AbiARObB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:31:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237885AbiARObA (ORCPT
+        id S234067AbiARQny (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:43:54 -0500
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:55419 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232553AbiARQny (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:31:00 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC11C06161C
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jan 2022 06:31:00 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUj-0000wL-Of; Tue, 18 Jan 2022 15:29:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUY-00B1DJ-N0; Tue, 18 Jan 2022 15:29:45 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUX-0003HD-OO; Tue, 18 Jan 2022 15:29:45 +0100
-Date:   Tue, 18 Jan 2022 15:29:45 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Tue, 18 Jan 2022 11:43:54 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id C2CCB300097BA;
+        Tue, 18 Jan 2022 17:43:51 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id B4A3819385; Tue, 18 Jan 2022 17:43:51 +0100 (CET)
+Date:   Tue, 18 Jan 2022 17:43:51 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
-References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de>
- <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
- <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
- <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
- <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
- <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
- <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
- <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
+        linux@armlinux.org.uk, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.4 27/29] serial: pl010: Drop CR register reset
+ on set_termios
+Message-ID: <20220118164351.GA25478@wunner.de>
+References: <20220118030822.1955469-1-sashal@kernel.org>
+ <20220118030822.1955469-27-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="daitmup5biyyqkwr"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20220118030822.1955469-27-sashal@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Jan 17, 2022 at 10:08:20PM -0500, Sasha Levin wrote:
+> From: Lukas Wunner <lukas@wunner.de>
+> 
+> [ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+> 
+> pl010_set_termios() briefly resets the CR register to zero.
+> 
+> Where does this register write come from?
+> 
+> The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+> register without holding the port spinlock.  ambauart_set_termios() also
+> modified that register.  To prevent concurrent read-modify-writes by the
+> IRQ handler and to prevent transmission while changing baudrate,
+> ambauart_set_termios() had to disable interrupts.  That is achieved by
+> writing zero to the CR register.
+> 
+> However in 2004 the PL010 driver was amended to acquire the port
+> spinlock in the IRQ handler, obviating the need to disable interrupts in
+> ->set_termios():
+> https://git.kernel.org/history/history/c/157c0342e591
+> 
+> That rendered the CR register write obsolete.  Drop it.
 
---daitmup5biyyqkwr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'd recommend against backporting this particular patch for pl010
+as it's merely a cleanup that eases future work on the driver,
+but doesn't actually fix anything.
 
-On Tue, Jan 18, 2022 at 01:49:15PM +0100, Geert Uytterhoeven wrote:
-> nst the magic not-found value (so no implementation detail magic
-> > > > leaks into the caller code) and just pass it to the next API functi=
-on=3D
-> .
-> > > > (And my expectation would be that if you chose to represent not-fou=
-nd=3D
->  by
-> > > > (void *)66 instead of NULL, you won't have to adapt any user, just =
-th=3D
-> e
-> > > > framework internal checks. This is a good thing!)
-> > >
-> > > Ah, there is the wrong assumption: drivers sometimes do need to know
-> > > if the resource was found, and thus do need to know about (void *)66,
-> > > -ENODEV, or -ENXIO.  I already gave examples for IRQ and clk before.
-> > > I can imagine these exist for gpiod and regulator, too, as soon as
-> > > you go beyond the trivial "enable" and "disable" use-cases.
-> >
-> > My premise is that every user who has to check for "not found"
-> > explicitly should not use (clk|gpiod)_get_optional() but
-> > (clk|gpiod)_get() and do proper (and explicit) error handling for
-> > -ENODEV. (clk|gpiod)_get_optional() is only for these trivial use-cases.
-> >
-> > > And 0/NULL vs. > 0 is the natural check here: missing, but not
-> > > an error.
-> >
-> > For me it it 100% irrelevant if "not found" is an error for the query
-> > function or not. I just have to be able to check for "not found" and
-> > react accordingly.
-> >
-> > And adding a function
-> >
-> >         def platform_get_irq_opional():
-> >                 ret =3D3D platform_get_irq()
-> >                 if ret =3D3D=3D3D -ENXIO:
-> >                         return 0
-> >                 return ret
-> >
-> > it's not a useful addition to the API if I cannot use 0 as a dummy
-> > because it doesn't simplify the caller enough to justify the additional
-> > function.
-> >
-> > The only thing I need to be able is to distinguish the cases "there is
-> > an irq", "there is no irq" and anything else is "there is a problem I
-> > cannot handle and so forward it to my caller". The semantic of
-> > platform_get_irq() is able to satisfy this requirement[1], so why intro=
-du=3D
-> ce
-> > platform_get_irq_opional() for the small advantage that I can check for
-> > not-found using
-> >
-> >         if (!irq)
-> >
-> > instead of
-> >
-> >         if (irq !=3D3D -ENXIO)
-> >
-> > ? The semantic of platform_get_irq() is easier ("Either a usable
-> > non-negative irq number or a negative error number") compared to
-> > platform_get_irq_optional() ("Either a usable positive irq number or a
-> > negative error number or 0 meaning not found"). Usage of
-> > platform_get_irq() isn't harder or more expensive (neither for a human
-> > reader nor for a maching running the resulting compiled code).
-> > For a human reader
-> >
-> >         if (irq !=3D3D -ENXIO)
-> >
-> > is even easier to understand because for
-> >
-> >         if (!irq)
-> >
-> > they have to check where the value comes from, see it's
-> > platform_get_irq_optional() and understand that 0 means not-found.
->=20
-> "vIRQ zero does not exist."
+You've also auto-selected a patch for the pl011 driver with the
+same subject.  That other patch *does* actually fix an rs485
+Transmit Enable glitch, so backporting it makes sense.
 
-With that statement in mind I would expect that a function that gives me
-an (v)irq number never returns 0.
+Thanks,
 
-> > This function just adds overhead because as a irq framework user I have
-> > to understand another function. For me the added benefit is too small to
-> > justify the additional function. And you break out-of-tree drivers.
-> > These are all no major counter arguments, but as the advantage isn't
-> > major either, they still matter.
-> >
-> > Best regards
-> > Uwe
-> >
-> > [1] the only annoying thing is the error message.
->=20
-> So there's still a need for two functions.
+Lukas
 
-Or a single function not emitting an error message together with the
-callers being responsible for calling dev_err().
-
-So the options in my preference order (first is best) are:
-
- - Remove the printk from platform_get_irq() and remove
-   platform_get_irq_optional();
-
- - Rename platform_get_irq_optional() to platform_get_irq_silently()
-
- - Keep platform_get_irq_optional() as is
-
- - Collect underpants
-
- - ?
-
- - Change semantic of platform_get_irq_optional()
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---daitmup5biyyqkwr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmztAACgkQwfwUeK3K
-7AlRQAf6AhYDCHaOxGO6hZ2L8wLnlnF6sFrLHSkHS2GJOuagJzvJ418JJIk3zkkN
-JJX1REM8rmAXGwIKEat5Ea7goFSWiSw4fr7r3eq/xyxBos5XFH7REZd9Le7ac4e7
-BrLcQENmj/gFhEdGk+DOgvOWGWAvWnwp2yKMj33qTbKi72A831OIMsB3+kFwqMt9
-f4X3Ng5JNb59Tl0UXy4GhU/8JdsULov6t3SdBUSdZvjE5yXA5IdEctWoZTaW6Rf9
-NILpiVlIFQCBsJ9haLtjfp1/EXNVmkb4+5eTiJQndvnAZGDV6FBtRn4PPAYSc3L/
-bqjzqdfJVKCdlgfMrOrsPAv2a0DZGQ==
-=l/Sj
------END PGP SIGNATURE-----
-
---daitmup5biyyqkwr--
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/tty/serial/amba-pl010.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+> index 5d41d5b92619a..7f4ba92739663 100644
+> --- a/drivers/tty/serial/amba-pl010.c
+> +++ b/drivers/tty/serial/amba-pl010.c
+> @@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+>  	if ((termios->c_cflag & CREAD) == 0)
+>  		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+>  
+> -	/* first, disable everything */
+>  	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
+>  
+>  	if (UART_ENABLE_MS(port, termios->c_cflag))
+>  		old_cr |= UART010_CR_MSIE;
+>  
+> -	writel(0, uap->port.membase + UART010_CR);
+> -
+>  	/* Set baud rate */
+>  	quot -= 1;
+>  	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+> -- 
+> 2.34.1
