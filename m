@@ -2,102 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB31AC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 03:38:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6CBC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 06:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349128AbiARDif (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:38:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347042AbiARDeS (ORCPT
+        id S239962AbiARGDK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jan 2022 01:03:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55336 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229918AbiARGDK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:34:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91229C03702A;
-        Mon, 17 Jan 2022 19:09:36 -0800 (PST)
+        Tue, 18 Jan 2022 01:03:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 038BDB81235;
-        Tue, 18 Jan 2022 03:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9DBC36AE3;
-        Tue, 18 Jan 2022 03:09:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475373;
-        bh=bVUJF15LlFX41avPvtpvLU1etpW0ALCZyjgvlj4BjYY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CHLb2cHCKzNLnvFwB5lC0AUuNmqmrMltH9y4FTWHeQDqChFZmIIjQbHf2P5isMj/0
-         Jc4zgMN30v0pGK5BYxUwxxBwjke7KTSw33k3/VB++CnzoDaEQonMYADZbQbruGRwYv
-         /quppCs2Q6XFLHkdllUp5a3n9N7sGQjYWp4mdcL5igTeEy4vU5hIUqsPbz9SsGhDwv
-         e2lOCLxelJqjQ2Hyo7tRGD0iu4NyW1d90rSkA4t9Al4LgdjCJAYqt5fjWG/uU6RYqQ
-         gHRlc2L4RCX54ckv36XviAU/6h+MO7oX5S3oqtdHtH0K643x0upr9r0QRkPTqtrgtt
-         Ep2aPQhi8YjXA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F17866134B;
+        Tue, 18 Jan 2022 06:03:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE94FC00446;
+        Tue, 18 Jan 2022 06:03:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642485789;
+        bh=5nPliC6xbkGgI2haMXdKcA7mKvgxJ2arJHG9iqwiMF8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S8uJt7rC+tg52ImtzSj1gstSam+Edu5ckMk2KVw5+BkzZxZO/tnS5WQgKAdVZm9oK
+         ZCwoqUdDPE4D0294/HKl+8ksBt2GoluFcUYfR9r87belX/llTs91Y0XvuIaLF5oHeh
+         3z/jIiOEemFM0S9O1W2nuetVApN8VIxr5pFmjmTg=
+Date:   Tue, 18 Jan 2022 07:03:06 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 28/29] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 17 Jan 2022 22:08:21 -0500
-Message-Id: <20220118030822.1955469-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.4 28/29] serial: core: Keep mctrl register
+ state and cached copy in sync
+Message-ID: <YeZYGvxHxm1O3Ntn@kroah.com>
 References: <20220118030822.1955469-1-sashal@kernel.org>
+ <20220118030822.1955469-28-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118030822.1955469-28-sashal@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+On Mon, Jan 17, 2022 at 10:08:21PM -0500, Sasha Levin wrote:
+> From: Lukas Wunner <lukas@wunner.de>
+> 
+> [ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+> 
+> struct uart_port contains a cached copy of the Modem Control signals.
+> It is used to skip register writes in uart_update_mctrl() if the new
+> signal state equals the old signal state.  It also avoids a register
+> read to obtain the current state of output signals.
+> 
+> When a uart_port is registered, uart_configure_port() changes signal
+> state but neglects to keep the cached copy in sync.  That may cause
+> a subsequent register write to be incorrectly skipped.  Fix it before
+> it trips somebody up.
+> 
+> This behavior has been present ever since the serial core was introduced
+> in 2002:
+> https://git.kernel.org/history/history/c/33c0d1b0c3eb
+> 
+> So far it was never an issue because the cached copy is initialized to 0
+> by kzalloc() and when uart_configure_port() is executed, at most DTR has
+> been set by uart_set_options() or sunsu_console_setup().  Therefore,
+> a stable designation seems unnecessary.
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+As per the text here, this is not needed in any stable trees, so can you
+please drop it from all of your autosel queues now?
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+thanks,
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
-
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
-
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
-
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 013fb874c64e2..8142135a2eec4 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2247,7 +2247,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
- 
- 		/*
--- 
-2.34.1
-
+greg k-h
