@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D187C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57726C3525C
 	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354519AbiARDGf (ORCPT
+        id S1354539AbiARDGi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
+        Mon, 17 Jan 2022 22:06:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349277AbiARC4h (ORCPT
+        with ESMTP id S1353138AbiARDBN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:56:37 -0500
+        Mon, 17 Jan 2022 22:01:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DE7C02B748;
-        Mon, 17 Jan 2022 18:44:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121B7C08E87B;
+        Mon, 17 Jan 2022 18:46:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C4F7612CE;
-        Tue, 18 Jan 2022 02:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB84C36AEB;
-        Tue, 18 Jan 2022 02:44:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7280561311;
+        Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF65AC36B05;
+        Tue, 18 Jan 2022 02:46:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473858;
-        bh=RKSEmNaXGd0qqSaJBIwGtQiobulqLStSBkj1kyOlIzM=;
+        s=k20201202; t=1642474013;
+        bh=ybTUdVpSs4tP9fA30UA8SByCPb6Bm5xSjfuBftAAKl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZqU3bBei2vJ4H03X9yuTDo2lVmHPWhlfw4hmiw0eB+r+4gSXrvdr6deu/84PrlNOK
-         DUgVyd6hgc4b8682N8/Zj5x/kbfzig9kg+J/hbzpCIsOPSkp0qvC7KDBxY297nP09Z
-         xTBB0OXoGswPgGzv4ksVQSsH5GFvKoFYNWv5Ek5QlIcl3FwO3bLKyrugYxDewh634t
-         2oofACteKtuyi+aXP5b+iiqE/Gohwj0F975gaON3tZrl/r6Zi0pWH/cYB2FoiOq2wY
-         vDLzdv3vc70ORKGuq8tUKv2IBmg/Y7NA2azW0ALBcgbGpXcyxntTxPgvq7qmKkhNEu
-         RG55dB4QVVV0A==
+        b=aw7JRu10KH61hsQwq8/KEKWhH21O3+Jf7NaMM0AnvgqR0VNPE8+SfkYwyzAy+QuaE
+         GCXhH7AWejxTSd/sorgeOY/P0ZhlbTTk08y0LZ7fbN0MwRgOYFxp8oXHaizgsuN7IZ
+         IQBitUZK2SDbDmyhKbNTIM2YKbnNYpY8T+jBH7oZJTCMsOsPp6xrnI7/MVRxCAdNP0
+         U5K6vbQLlPM2KiHlvY946AbaIoIZUNpHGgj8lmsyHlCKtQD0LjtIpJTKIDgQXrNN5z
+         2BgY+bxfBhiU77h6ejLOAUbsiPzfGK9F7TDgxJ94wRB4z1A2uPeQVBsXbTYJOWCqGM
+         RslgDP+4U9S1Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Lukas Wunner <lukas@wunner.de>,
@@ -40,12 +40,12 @@ Cc:     Lukas Wunner <lukas@wunner.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
         jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 110/116] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:40:01 -0500
-Message-Id: <20220118024007.1950576-110-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 70/73] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 17 Jan 2022 21:44:29 -0500
+Message-Id: <20220118024432.1952028-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -86,10 +86,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 deletions(-)
 
 diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 3284f34e9dfe1..75d61e038a775 100644
+index 2c37d11726aba..13f882e5e7b76 100644
 --- a/drivers/tty/serial/amba-pl010.c
 +++ b/drivers/tty/serial/amba-pl010.c
-@@ -448,14 +448,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -452,14 +452,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
  	if ((termios->c_cflag & CREAD) == 0)
  		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
  
