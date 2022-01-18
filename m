@@ -2,142 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC69EC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Jan 2022 18:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA13EC4167B
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 02:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238344AbiAQSOE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:14:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58378 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiAQSOD (ORCPT
+        id S245010AbiARCZB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:25:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40166 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239178AbiARCXd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:14:03 -0500
+        Mon, 17 Jan 2022 21:23:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42FB0B81185;
-        Mon, 17 Jan 2022 18:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D950C36AE7;
-        Mon, 17 Jan 2022 18:14:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642443240;
-        bh=mYpBeMKz0JgpoIsxFchzZoJyloTy6gtFSseeegYIyP0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pTFLEjEmocRE2SIcod8His/u6iv/kbKnN6UeV9jbByqVXi5YI3UxABGFj4cI1Kk6X
-         Q4Ynm1+TYl1HDl2YqvcEfI8z4pQesFQPxCXGKgfSWIVo1XWJWWZk55OBEraVNE+sVT
-         wnrAL+GAVPIrivMYaRDLsZODxj7i9QFnf6ytIdsQ=
-Date:   Mon, 17 Jan 2022 19:13:57 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Maciej W. Rozycki" <macro@embecosm.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: Revert the removal of the Cyclades public API
-Message-ID: <YeWx5aKmG44sWPEI@kroah.com>
-References: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk>
- <YeKDD6imTh1Y6GuN@kroah.com>
- <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED17A608C0;
+        Tue, 18 Jan 2022 02:23:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C15C36AEB;
+        Tue, 18 Jan 2022 02:23:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642472612;
+        bh=k0ORuEQnGTqteUEkwb9luAXHUAo6NBshCwtibeD8tfA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VjZp2KSFeQUNxzEIs5227gZt2w4axRlSAQLE9gjP4NK62ujIBjHjMCWsFXJ/v/a76
+         6kqSogQ1w2vdQqXiSiEuhUFcQ7pwUBTXidzFDclOy+9z/mAlFyyRLRCLfRxRpDXSr1
+         aVLTClyyqxl3tJCAQXr/PJj/5vVL+FVLMwJAL16iylyKtU+GvzxQsFnuQQeT8LVifs
+         POL3bqkWTVtFTaVtvSU7LhdmUqomVj5D7yoFwqEFwv6C0Al50NqKL17f5CVddQF159
+         2rESS9zMK3vxiaYEhkV1lOq6sWLLX7HjWvtCpLf7swN8yWb8yKbxxmgqrrErlBNY4T
+         /O/BTe9IVV3LA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Fugang Duan <fugang.duan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        shawnguo@kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 070/217] tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
+Date:   Mon, 17 Jan 2022 21:17:13 -0500
+Message-Id: <20220118021940.1942199-70-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
+References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 05:55:02PM +0000, Maciej W. Rozycki wrote:
-> On Sat, 15 Jan 2022, Greg Kroah-Hartman wrote:
-> 
-> > On Fri, Jan 14, 2022 at 08:54:05PM +0000, Maciej W. Rozycki wrote:
-> > > Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
-> > > cyclades, remove this orphan"), which removed a part of the API and 
-> > > caused compilation errors for user programs using said part, such as 
-> > > GCC 9 in its libsanitizer component[1]:
-> > > 
-> > > .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
-> > >   160 | #include <linux/cyclades.h>
-> > >       |          ^~~~~~~~~~~~~~~~~~
-> > > compilation terminated.
-> > > make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
-> > 
-> > So all we need is an empty header file?  Why bring back all of the
-> > unused structures?
-> 
->  Because they have become a part of the published API.  Someone may even 
-> use a system using headers from the most recent version of the Linux 
-> kernel (though not necessarily running such a kernel) to build software 
-> intended to run on an older version that still does implement the API.  
-> Times where people individually built pefectly matching software from 
-> sources to run on each system they looked after have largely long gone.
+From: Fugang Duan <fugang.duan@nxp.com>
 
-For hardware-specific things like this, it's not the same.  I can see
-adding the .h file as empty just to keep things building, but if no one
-is actually ever using the structures and definitions in the file, it
-should stay removed.
+[ Upstream commit 028e083832b06fdeeb290e1e57dc1f6702c4c215 ]
 
-In looking at the file itself, it just looks like it wants a single
-structure, struct cyclades_monitor, and then never actually does
-anything with it.
+The UCR4_OREN should be disabled before disabling the uart receiver in
+.stop_rx() instead of in the .shutdown().
 
-So I guess I should submit a patch to the llvm developers to remove
-these lines and add back the single structure definition to allow this
-to keep building now?
+Otherwise, if we have the overrun error during the receiver disable
+process, the overrun interrupt will keep trigging until we disable the
+OREN interrupt in the .shutdown(), because the ORE status can only be
+cleared when read the rx FIFO or reset the controller.  Although the
+called time between the receiver disable and OREN disable in .shutdown()
+is very short, there is still the risk of endless interrupt during this
+short period of time. So here change to disable OREN before the receiver
+been disabled in .stop_rx().
 
-> > > Any part of the public API is a contract between the kernel and the 
-> > > userland and therefore once there it must not be removed even if its 
-> > > implementation side has gone and any relevant calls will now fail 
-> > > unconditionally.
-> > 
-> > Does this code actually use any of these structures?
-> 
->  Well, they have been exported, so they have become a part of the API.  
-> This user program may not use them, another one will.  If you don't want 
-> an API to become public, then do not export it in the first place.
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20211125020349.4980-1-sherry.sun@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/imx.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-That happened a very long time ago, for hardware that no one has, sorry.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 90f82e6c54e46..6f7f382d0b1fa 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -486,18 +486,21 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ static void imx_uart_stop_rx(struct uart_port *port)
+ {
+ 	struct imx_port *sport = (struct imx_port *)port;
+-	u32 ucr1, ucr2;
++	u32 ucr1, ucr2, ucr4;
+ 
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr2 = imx_uart_readl(sport, UCR2);
++	ucr4 = imx_uart_readl(sport, UCR4);
+ 
+ 	if (sport->dma_is_enabled) {
+ 		ucr1 &= ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
+ 	} else {
+ 		ucr1 &= ~UCR1_RRDYEN;
+ 		ucr2 &= ~UCR2_ATEN;
++		ucr4 &= ~UCR4_OREN;
+ 	}
+ 	imx_uart_writel(sport, ucr1, UCR1);
++	imx_uart_writel(sport, ucr4, UCR4);
+ 
+ 	ucr2 &= ~UCR2_RXEN;
+ 	imx_uart_writel(sport, ucr2, UCR2);
+@@ -1544,7 +1547,7 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
+ 	ucr4 = imx_uart_readl(sport, UCR4);
+-	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
++	ucr4 &= ~UCR4_TCEN;
+ 	imx_uart_writel(sport, ucr4, UCR4);
+ 
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+-- 
+2.34.1
 
-So the "ABI" broke when the driver was removed.  Given that no one has
-the hardware, no one noticed the breakage, so there is no breakage :)
-
-> > > Revert the part of the commit referred then that affects the user API, 
-> > > bringing the most recent version of <linux/cyclades.h> back verbatim 
-> > > modulo the removal of trailing whitespace which used to be there, and 
-> > > updating <linux/major.h> accordingly.
-> > 
-> > Why major.h?  What uses that?  No userspace code should care about that.
-> 
->  So it shouldn't have been a part of the user API in the first place.  
-> Given that it has become a part of it it has to stay, that's the whole 
-> point of having a user API.
-
-But what user program uses that value?  I can't seem to find any, so
-pointers would be appreciated.
-
-> > Also, your text here is full of trailing whitespace, so I couldn't take
-> > this commit as-is anyway :(
-> 
->  Well, `git' is supposed to sort it automatically.  I've been routinely 
-> feeding my patches as posted to `git am' for other projects so as to push 
-> them and any trailing whitespace (added automatically by my e-mail client, 
-> I guess for presentation purposes; not to be confused with `format=flowed' 
-> arrangement as indicated by `Content-Type:', which I know to avoid) does 
-> get stripped as the command executes, clearly prepared for this situation.
-> 
->  The same must have happened for my earlier Linux kernel submissions ever 
-> since the switch to `git' back in 2005 as they have been correctly applied 
-> and no maintainer including you had an issue with it before.  And I have 
-> been using the same e-mail client doing the same all over these years.
-> 
->  To double-check I have just fed my submission as it to `git am' and it 
-> did strip all the unwanted trailing whitespace.  Does that not happen with 
-> your setup now?  Odd.
-
-I did not check, I only responded to your email and saw the whitespace
-in it.
-
-I'll gladly take a patch that just adds the one needed structure to keep
-this file building.  But that's all that is needed unless someone can
-point out other code that needs these definitions.
-
-thanks,
-
-greg k-h
