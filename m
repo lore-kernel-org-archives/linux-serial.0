@@ -2,156 +2,269 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43703C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 14:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F1CC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 14:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243978AbiAROAb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:00:31 -0500
-Received: from mail-eopbgr80048.outbound.protection.outlook.com ([40.107.8.48]:64646
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243931AbiAROAa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:00:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e8Hh+c2cHMgLB0RQY9l8G1sz6fXnNGQpRv0CBq44NoCMhy/qn9sGChHGsH3LqtUC2Ba8pzOnVsHcR6/XEgSFWvGSmAtF1Yn4ocVYjusjg8AcOh4GE6j1kNxGhQH0kij+j5dAdjkOv/wEoV6geSr4/e2+WSHVHMSwr+5A8a0B56XX2o1510P02IhEkkb3cLyIKr4A7YZHXGRfsdi8JjRpVbFEWDFaHS6CeneupYfNNYzv2YItLXzHK6Ht4BAAIY0RKyb8AownM8ZQ6rLNUr8M6qBUsA7Dr/iubogf88lglyMJLX2zqvyBQMY1xKkh28w9nsal6hI6+dok/Is+LmJ3IQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e3T4U0MgHqADc52zxjTxNZ8W+GimxYXDuLDnDMTmDe8=;
- b=QpJMgZTAVKDHiN9czwclOlKzFvv594br7IowVDycbgmbTGIpVN3/0FqQF4oT9xnGk/FBDjlCADCeNPpeGxx6qVE37JF0sF8aZ15TsbYR4jR4gYQUgULRB+P2GNF+MrQMvxt+T3TKxy8jyFtf22HRHvhnrL+BwAbmdoqmYKRVTLkxP6yh1Fgwq513dy9UleWZbv7C9DHqFIi2UBi1cr/lXR3CA+NiJ5DPyoZmwaQ/RurrNm4pRHTsmmdGDz8rPKWBBeAJzg472ObHGvBrYLt9YNd/gzniD+uzciGK2SOLMP9UfxBW+NLjHST/AjH2gdgAGY/iNDZIOI6rFadBKSXrQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e3T4U0MgHqADc52zxjTxNZ8W+GimxYXDuLDnDMTmDe8=;
- b=IqAi/zd11Duisfew48U6Q47RRe/hu8xHujvqpefpbxnc2fncsoZS2NmwHwnmKk+7SuSdqyvhK3/MJ7VihOTA8Pxxah3bPjG4m75v9enE8hf21DCE0HzEv0Dtn3rcWT44Bt5f4+odsVGaP2ru5xCFmlLknKo1JwBu4AiMm0NzGa4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by AM6PR04MB5288.eurprd04.prod.outlook.com (2603:10a6:20b:5::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Tue, 18 Jan
- 2022 14:00:25 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::f853:4e9a:7ab6:dbf7]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::f853:4e9a:7ab6:dbf7%6]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 14:00:25 +0000
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        id S238197AbiARObB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 18 Jan 2022 09:31:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237885AbiARObA (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Jan 2022 09:31:00 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC11C06161C
+        for <linux-serial@vger.kernel.org>; Tue, 18 Jan 2022 06:31:00 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUj-0000wL-Of; Tue, 18 Jan 2022 15:29:57 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUY-00B1DJ-N0; Tue, 18 Jan 2022 15:29:45 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUX-0003HD-OO; Tue, 18 Jan 2022 15:29:45 +0100
+Date:   Tue, 18 Jan 2022 15:29:45 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        platform-driver-x86@vger.kernel.org,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH 2/2] arm64: dts: imx8qxp-ss-adma: Drop fsl,imx7ulp-lpuart comaptible
-Date:   Tue, 18 Jan 2022 15:59:18 +0200
-Message-Id: <20220118135918.2126010-2-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220118135918.2126010-1-abel.vesa@nxp.com>
-References: <20220118135918.2126010-1-abel.vesa@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0058.eurprd01.prod.exchangelabs.com
- (2603:10a6:803::35) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+Message-ID: <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
+References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
+ <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+ <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+ <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+ <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
+ <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
+ <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
+ <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
+ <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
+ <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: df3ad3fc-2644-4a51-570a-08d9da8ae03e
-X-MS-TrafficTypeDiagnostic: AM6PR04MB5288:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR04MB528820437C2E0CC95D65460AF6589@AM6PR04MB5288.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:989;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vlRpJaDn6+jcze4ExI6H718TFYub9d5Zsbt61JRaCBlbMYknIoKRkUHXiMshKCQXrBITcKvIqV+8+knQOd4Dp3lNwWmZ6JqYZQ/b3fvp/X0gXNTVB8fhhhRfsnXL9a9Fye2pIjIzZZqhh4mdnJ/Q3rM3xunxyS+g2DWf7AjO8fCUkf6xSi7ZOjRLbgvymy4y8tj9OF92Coi+s75qrIgiVJjAz8eaI14d29ktrtYIVN5WIQ3VJn5vx72Ukltrl3V8giXjMm20C4FzHKXS3Bi1qJZnMIiP6hb5onth44VZDsIAiqmGyBfRMfWwsjFjaHSo2mQJEvPvyklUHCL0eS9mqOVsiCxszVbLvTsr4wu8acXB9Co7M75CVctoio6YO+xmbPv7rJMOJmZA7mUPv9ixC4ds+ga4E+lD222V3L/dsegxAgOH8IcMUbmK7B7CAM3bT23NeQHmVSzLv4HlAOjn5W/eq49/khky9eYvpPO7JNz0iazar2tAbPVrYdXRxH4WOoM3A1breTMK3PIX8ynp6ClcCKF8aAkr73CORjJblwMqqgcJLHsGBXnEol59virDMJGbORuXBXkFdMn55bfJXH0CV5wpov3BudYvccxxYCOZCffgmN/GenYGZ3ik3CONPvqCxDEJIWtLXzuFibqOtgWE4BV4uqFGSt91lSD+uSsnocgZC/45sKqkDWeRUHLnzkFFbHvjFpN8blSB6MFUEY4KLBr+wlmNiWhme2Y8JqQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(7416002)(4326008)(508600001)(44832011)(86362001)(6486002)(6636002)(6666004)(1076003)(8676002)(6512007)(66556008)(66946007)(66476007)(8936002)(110136005)(38100700002)(38350700002)(6506007)(36756003)(2906002)(316002)(54906003)(26005)(52116002)(83380400001)(5660300002)(186003)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6FWOMzBMpgtyxpHXfOdV3R1ywRwcCC57wpg7TQw94M7ifWrRfL8XZy9QVfA4?=
- =?us-ascii?Q?3OMUYCmdtCES5jKtKO3Rwy7R8MpI+N/q6g0DmQ5ZYubgsZttsNcLFrRYme32?=
- =?us-ascii?Q?P0fA3HJLXPVXy+EaT8pvdxTDLrqfIT07CKzjnc8c7WraUI1Z4zZs195tFdph?=
- =?us-ascii?Q?ZSqXSX+Dj7c9+ej+Gv8S+pwEE4U2Dx1a1Kes2eg+IOsoxaw1g9946GvCAJsQ?=
- =?us-ascii?Q?rQx5Nds4ZsYKbE+3sAsHAYp5JpNSchqqwVYyT51o/5ZkR243Anf9w1dwi+pu?=
- =?us-ascii?Q?6RY2lA2Y+YrICTvMEsanNG4rnUdeAAhh2E8UYlyzomKQPftKqGRDWfVPvh8l?=
- =?us-ascii?Q?b6uXM4/iBuQzw7JoyMSIdhuREWznq+UYgj77tUYipaJwxKJWb3QKOZhzy00E?=
- =?us-ascii?Q?AutOAkTrfXUuObUWwNE3ZgCfxiNVruNWd+Xvb71DczvrtRCnrprhaH3TiDHV?=
- =?us-ascii?Q?kYUqO2IApgkzgTfh0ZsaV2xvWChKwlU9NniiDK+2UGXSWpmFpfka4oj3hMDp?=
- =?us-ascii?Q?8rlJo22uwA73tTM3f6q1VHBhWmuKlwu3YZnaHrZ6wdM+FoN087niN7pmFz0I?=
- =?us-ascii?Q?7R+5DnmGTl7WKpujGJe8Yz162jinM6f4QlxHGQuK6eHAWVx6JpmRNq33ch6K?=
- =?us-ascii?Q?q4tDlhPnqd+9gmzaDLEhQpqxPwlDDIg4/RPlDnSr4TwZ52xAaMI2XUacMyCQ?=
- =?us-ascii?Q?xJDTMYYW5DgJbwlP+PzZIC/Ch97TZNN3O8lTrvq7wm8BMZJOTc6hTs88P9To?=
- =?us-ascii?Q?4ql4LpMXeNAxcH3mW+V72JnfmvSPDSXnOxPoekSFvbbv4WwOa5SfxR8vPTxT?=
- =?us-ascii?Q?FReeK/SV5F/BEJpotWhs6JO0G6m4wcs8x5meazAilGLqT6Q9zsNUoU9hCbnd?=
- =?us-ascii?Q?IxOhxw2c2zibjmhg2jmWkyQ4K31Ax1g5r8T3/BdelcJI+vBm3Cccrp9j4DgK?=
- =?us-ascii?Q?GRJBkrjuSqa8WtMs3/7pHP5AlOMnpUVH67JmSumInRNSt5lHfJi7Wp6+mvct?=
- =?us-ascii?Q?ntKpwOfZhcE425dAKZaJWU5pJbBubDOqbQ5H07PVtomO1wcGyJfd33mL/RXX?=
- =?us-ascii?Q?fr+6cdifjlnZi50lx72Gej93mcwxPJlLzy4uiA+alDtHAzFZFUzSsbIS/dru?=
- =?us-ascii?Q?2BSdkZSz8wsTUNgO4Px10RkD/e/ZzR30V9CaHbPrQPGHpRZXdoV9Qbzlp9iG?=
- =?us-ascii?Q?cLRS82VS2w0xMttqwZd7+tFHPaZm8A4Pm/z49eoZ04DlJdz7qRGr8B8lilem?=
- =?us-ascii?Q?7vGTWU/8Sz7WLNaBzC/cbUBNgghRFHTe57LqChnAjz7NV69f+vLqb0mrL5gs?=
- =?us-ascii?Q?9FdsZ1BpoztJzI20hy9JFrNQTU7qEcmsaCw6jKJX8RG6X+4YAbbRejnj5Uf8?=
- =?us-ascii?Q?H9nQBvDRsTWKYn95zjXc7j0h2ibuNtgHrey9VKQhdthBZ2LOkveEQq4OgYIT?=
- =?us-ascii?Q?X6jZHsLQY2OyD2UTnjE8JcfEURreR7Fd/yPgKwhW0ZSha0yRteSpr0CTfGFn?=
- =?us-ascii?Q?mOM5zieFivF5/lNf2G85RqL2rQ5Qz4ICTGivSolnqdXLYBSV+wRCLW2x6BtZ?=
- =?us-ascii?Q?rD3DU2t5c8fX9YgM0ofEleHj+CzEErLkXHZI4iUi20qwwJYL011u4+hFoAw3?=
- =?us-ascii?Q?TYWehHzPCRqpIoYIFAFoLZs=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df3ad3fc-2644-4a51-570a-08d9da8ae03e
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 14:00:25.4659
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KyFtvYvQcRi0p1hs9HhycULWIMu7oIEKRBj/Oh0BJbvWaKq340I8NsPeqZCG9iuQ4UpqEGBXMYQ8ZBSwmUayvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5288
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="daitmup5biyyqkwr"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver differs from clocks point of view, so the i.MX8QXP
-is not backwards compatible with i.MX7ULP.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8qxp-ss-adma.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+--daitmup5biyyqkwr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8qxp-ss-adma.dtsi b/arch/arm64/boot/dts/freescale/imx8qxp-ss-adma.dtsi
-index dc1daa8dc72f..7bae516004bf 100644
---- a/arch/arm64/boot/dts/freescale/imx8qxp-ss-adma.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8qxp-ss-adma.dtsi
-@@ -5,19 +5,19 @@
-  */
- 
- &lpuart0 {
--	compatible = "fsl,imx8qxp-lpuart", "fsl,imx7ulp-lpuart";
-+	compatible = "fsl,imx8qxp-lpuart";
- };
- 
- &lpuart1 {
--	compatible = "fsl,imx8qxp-lpuart", "fsl,imx7ulp-lpuart";
-+	compatible = "fsl,imx8qxp-lpuart";
- };
- 
- &lpuart2 {
--	compatible = "fsl,imx8qxp-lpuart", "fsl,imx7ulp-lpuart";
-+	compatible = "fsl,imx8qxp-lpuart";
- };
- 
- &lpuart3 {
--	compatible = "fsl,imx8qxp-lpuart", "fsl,imx7ulp-lpuart";
-+	compatible = "fsl,imx8qxp-lpuart";
- };
- 
- &i2c0 {
--- 
-2.31.1
+On Tue, Jan 18, 2022 at 01:49:15PM +0100, Geert Uytterhoeven wrote:
+> nst the magic not-found value (so no implementation detail magic
+> > > > leaks into the caller code) and just pass it to the next API functi=
+on=3D
+> .
+> > > > (And my expectation would be that if you chose to represent not-fou=
+nd=3D
+>  by
+> > > > (void *)66 instead of NULL, you won't have to adapt any user, just =
+th=3D
+> e
+> > > > framework internal checks. This is a good thing!)
+> > >
+> > > Ah, there is the wrong assumption: drivers sometimes do need to know
+> > > if the resource was found, and thus do need to know about (void *)66,
+> > > -ENODEV, or -ENXIO.  I already gave examples for IRQ and clk before.
+> > > I can imagine these exist for gpiod and regulator, too, as soon as
+> > > you go beyond the trivial "enable" and "disable" use-cases.
+> >
+> > My premise is that every user who has to check for "not found"
+> > explicitly should not use (clk|gpiod)_get_optional() but
+> > (clk|gpiod)_get() and do proper (and explicit) error handling for
+> > -ENODEV. (clk|gpiod)_get_optional() is only for these trivial use-cases.
+> >
+> > > And 0/NULL vs. > 0 is the natural check here: missing, but not
+> > > an error.
+> >
+> > For me it it 100% irrelevant if "not found" is an error for the query
+> > function or not. I just have to be able to check for "not found" and
+> > react accordingly.
+> >
+> > And adding a function
+> >
+> >         def platform_get_irq_opional():
+> >                 ret =3D3D platform_get_irq()
+> >                 if ret =3D3D=3D3D -ENXIO:
+> >                         return 0
+> >                 return ret
+> >
+> > it's not a useful addition to the API if I cannot use 0 as a dummy
+> > because it doesn't simplify the caller enough to justify the additional
+> > function.
+> >
+> > The only thing I need to be able is to distinguish the cases "there is
+> > an irq", "there is no irq" and anything else is "there is a problem I
+> > cannot handle and so forward it to my caller". The semantic of
+> > platform_get_irq() is able to satisfy this requirement[1], so why intro=
+du=3D
+> ce
+> > platform_get_irq_opional() for the small advantage that I can check for
+> > not-found using
+> >
+> >         if (!irq)
+> >
+> > instead of
+> >
+> >         if (irq !=3D3D -ENXIO)
+> >
+> > ? The semantic of platform_get_irq() is easier ("Either a usable
+> > non-negative irq number or a negative error number") compared to
+> > platform_get_irq_optional() ("Either a usable positive irq number or a
+> > negative error number or 0 meaning not found"). Usage of
+> > platform_get_irq() isn't harder or more expensive (neither for a human
+> > reader nor for a maching running the resulting compiled code).
+> > For a human reader
+> >
+> >         if (irq !=3D3D -ENXIO)
+> >
+> > is even easier to understand because for
+> >
+> >         if (!irq)
+> >
+> > they have to check where the value comes from, see it's
+> > platform_get_irq_optional() and understand that 0 means not-found.
+>=20
+> "vIRQ zero does not exist."
 
+With that statement in mind I would expect that a function that gives me
+an (v)irq number never returns 0.
+
+> > This function just adds overhead because as a irq framework user I have
+> > to understand another function. For me the added benefit is too small to
+> > justify the additional function. And you break out-of-tree drivers.
+> > These are all no major counter arguments, but as the advantage isn't
+> > major either, they still matter.
+> >
+> > Best regards
+> > Uwe
+> >
+> > [1] the only annoying thing is the error message.
+>=20
+> So there's still a need for two functions.
+
+Or a single function not emitting an error message together with the
+callers being responsible for calling dev_err().
+
+So the options in my preference order (first is best) are:
+
+ - Remove the printk from platform_get_irq() and remove
+   platform_get_irq_optional();
+
+ - Rename platform_get_irq_optional() to platform_get_irq_silently()
+
+ - Keep platform_get_irq_optional() as is
+
+ - Collect underpants
+
+ - ?
+
+ - Change semantic of platform_get_irq_optional()
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--daitmup5biyyqkwr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmztAACgkQwfwUeK3K
+7AlRQAf6AhYDCHaOxGO6hZ2L8wLnlnF6sFrLHSkHS2GJOuagJzvJ418JJIk3zkkN
+JJX1REM8rmAXGwIKEat5Ea7goFSWiSw4fr7r3eq/xyxBos5XFH7REZd9Le7ac4e7
+BrLcQENmj/gFhEdGk+DOgvOWGWAvWnwp2yKMj33qTbKi72A831OIMsB3+kFwqMt9
+f4X3Ng5JNb59Tl0UXy4GhU/8JdsULov6t3SdBUSdZvjE5yXA5IdEctWoZTaW6Rf9
+NILpiVlIFQCBsJ9haLtjfp1/EXNVmkb4+5eTiJQndvnAZGDV6FBtRn4PPAYSc3L/
+bqjzqdfJVKCdlgfMrOrsPAv2a0DZGQ==
+=l/Sj
+-----END PGP SIGNATURE-----
+
+--daitmup5biyyqkwr--
