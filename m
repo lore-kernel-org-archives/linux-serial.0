@@ -2,106 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7174DC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 06:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B62C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 10:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239247AbiASGAt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 01:00:49 -0500
-Received: from mail-sh.amlogic.com ([58.32.228.43]:6385 "EHLO
-        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349845AbiASGAs (ORCPT
+        id S1353547AbiASK4Y (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jan 2022 05:56:24 -0500
+Received: from mxout04.lancloud.ru ([45.84.86.114]:57474 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240254AbiASK4V (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:00:48 -0500
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 19 Jan
- 2022 14:00:45 +0800
-Message-ID: <21eea0cd-5bf1-dec6-a776-f417aefa5bda@amlogic.com>
-Date:   Wed, 19 Jan 2022 14:00:44 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V6 3/5] tty: serial: meson: Describes the calculation of
- the UART baud rate clock using a clock frame
-Content-Language: en-US
-To:     Jiri Slaby <jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+        Wed, 19 Jan 2022 05:56:21 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru A771820D27E6
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+ (summary)
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>, <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        <alsa-devel@alsa-project.org>, Liam Girdwood <lgirdwood@gmail.com>,
+        "Guenter Roeck" <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        <linux-mtd@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>, Lee Jones <lee.jones@linaro.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Tony Luck" <tony.luck@intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        <bcm-kernel-feedback-list@broadcom.com>,
+        <linux-serial@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <platform-driver-x86@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        "Saravanan Sekar" <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>, <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "John Garry" <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Eric Auger <eric.auger@redhat.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        <openipmi-developer@lists.sourceforge.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220118030911.12815-1-yu.tu@amlogic.com>
- <20220118030911.12815-4-yu.tu@amlogic.com>
- <7a8016ba-730b-f599-2032-31cf03990a55@kernel.org>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <7a8016ba-730b-f599-2032-31cf03990a55@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        <linux-edac@vger.kernel.org>,
+        "Richard Weinberger" <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        "Hans de Goede" <hdegoede@redhat.com>, <netdev@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, <linux-mmc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de> <YeQpWu2sUVOSaT9I@kroah.com>
+ <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <b6038ec2-da4a-de92-b845-cac2be0efcd1@omp.ru>
+Date:   Wed, 19 Jan 2022 13:56:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri,
-	Thank you very much for your patient reply.I learned a lot from your 
-response.
+On 1/18/22 12:18 PM, Uwe Kleine-K�nig wrote:
+> On Sun, Jan 16, 2022 at 03:19:06PM +0100, Greg Kroah-Hartman wrote:
+>> On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-K�nig wrote:
+>>> A possible compromise: We can have both. We rename
+>>> platform_get_irq_optional() to platform_get_irq_silent() (or
+>>> platform_get_irq_silently() if this is preferred) and once all users are
+>>> are changed (which can be done mechanically), we reintroduce a
+>>> platform_get_irq_optional() with Sergey's suggested semantic (i.e.
+>>> return 0 on not-found, no error message printking).
+>>
+>> Please do not do that as anyone trying to forward-port an old driver
+>> will miss the abi change of functionality and get confused.  Make
+>> build-breaking changes, if the way a function currently works is
+>> changed in order to give people a chance.
+> 
+> Fine for me. I assume this is a Nack for Sergey's patch?
 
-On 2022/1/18 17:39, Jiri Slaby wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> On 18. 01. 22, 4:09, Yu Tu wrote:
->> Using the common Clock code to describe the UART baud rate clock
->> makes it easier for the UART driver to be compatible with the
->> baud rate requirements of the UART IP on different meson chips.
-> ...
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
-> ...
->> @@ -629,57 +640,105 @@ static struct uart_driver meson_uart_driver = {
->>       .cons        = MESON_SERIAL_CONSOLE,
->>   };
->> -static inline struct clk *meson_uart_probe_clock(struct device *dev,
->> -                         const char *id)
->> -{
->> -    struct clk *clk = NULL;
->> -    int ret;
->> -
->> -    clk = devm_clk_get(dev, id);
->> -    if (IS_ERR(clk))
->> -        return clk;
->> -
->> -    ret = clk_prepare_enable(clk);
->> -    if (ret) {
->> -        dev_err(dev, "couldn't enable clk\n");
->> -        return ERR_PTR(ret);
->> -    }
->> -
->> -    devm_add_action_or_reset(dev,
->> -            (void(*)(void *))clk_disable_unprepare,
->> -            clk);
->> -
->> -    return clk;
->> -}
->> +static struct clk_div_table xtal_div_table[] = {
-> 
-> This can be const, right?
-You are right.
-> 
->> +    {0, 3},
->> +    {1, 1},
->> +    {2, 2},
->> +    {3, 2},
-> 
-> Not sure if you didn't remove too much whitespace. I think it should be 
-> like: "{ 0, 3 },". But I actually don't care, it's a minor thing.
-> 
-Ok, I will correct it if it needs to be changed.
-> I cannot comment on the rest (clk and OF part) as my knowledge is pretty 
-> limited there. Leaving up to others.
-> 
-Anyway, thanks for your reply.
-> thanks,
+   Which patch do you mean? I'm starting to get really muddled... :-(
+
+> Best regards
+> Uwe
+
+MBR, Sergey
