@@ -2,100 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD315C4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 14:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B4AC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 14:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355025AbiASOFe (ORCPT
+        id S1355286AbiASOwe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 09:05:34 -0500
-Received: from mail-ot1-f42.google.com ([209.85.210.42]:36445 "EHLO
-        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350177AbiASOFd (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 09:05:33 -0500
-Received: by mail-ot1-f42.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso3234801otl.3;
-        Wed, 19 Jan 2022 06:05:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bA4lXk3bs4g992PO5jXPShXJCU4RdXIJFPt9TWuZvi8=;
-        b=Lo6knvrEtX/KFxyzA+UatqyecN5QpsDx2jKbnR1JQMxQ3bcNJo2x7FK73GNXu5GXKJ
-         yYKgWYLv3Bat1xQyACduvR5yesnyxdLIJfPRBbevYtjGJsI8kYT/DOOYXjL4eHBBbO+R
-         PLniaDtYQ3EnG1myqvhtQ9umRFjZiBTV9NmLO55lvCDwusqs/bUeElRp1FFgrQfTDGdY
-         8TLqyog2EgnFi0R7fgBlahwrkhILuvZfoneSBbGHBwdr49kCMrv9LuLonkP8wmVhid9G
-         LrC4t4Vfu7eWUshQDt5zg/W0OFja7Agx6wEVdsLyyXhbsHORSnKbbu/FijTfSa3Q8HTv
-         jOHg==
-X-Gm-Message-State: AOAM533yzZCwRxbFMdylPqi/P2zCj4YKcGZvxEJierkhhM8qc7yIHZyq
-        DfAcTMxlnUx7ejQu/JXr8w==
-X-Google-Smtp-Source: ABdhPJz+nPpKZ1wx/9MZBe3c2PWe70YAUIasbvLv9Mx8j0isWcefeBYdwrdxEdCzSxpX+Pr8JGIYZw==
-X-Received: by 2002:a9d:e88:: with SMTP id 8mr6044843otj.276.1642601132546;
-        Wed, 19 Jan 2022 06:05:32 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 186sm10018818oig.28.2022.01.19.06.05.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 06:05:31 -0800 (PST)
-Received: (nullmailer pid 3480173 invoked by uid 1000);
-        Wed, 19 Jan 2022 14:05:27 -0000
-Date:   Wed, 19 Jan 2022 08:05:27 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jesse Taube <mr.bossman075@gmail.com>
-Cc:     aisheng.dong@nxp.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        Mr.Bossman075@gmail.com, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
-        arnd@arndb.de, gregkh@linuxfoundation.org, adrian.hunter@intel.com,
-        abel.vesa@nxp.com, linux-serial@vger.kernel.org,
-        shawnguo@kernel.org, olof@lixom.net,
-        giulio.benetti@benettiengineering.com, linux-gpio@vger.kernel.org,
-        linux-clk@vger.kernel.org, linus.walleij@linaro.org,
-        festevam@gmail.com, sboyd@kernel.org, linux@armlinux.org.uk,
-        mturquette@baylibre.com, robh+dt@kernel.org,
-        ulf.hansson@linaro.org, stefan@agner.ch, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, soc@kernel.org, jirislaby@kernel.org,
-        linux-imx@nxp.com, s.hauer@pengutronix.de
-Subject: Re: [PATCH v8 2/7] ARM: dts: imxrt1050-pinfunc: Add pinctrl binding
- header
-Message-ID: <YegapycPxDdgTlXQ@robh.at.kernel.org>
-References: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
- <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
- <20220111215415.2075257-3-Mr.Bossman075@gmail.com>
+        Wed, 19 Jan 2022 09:52:34 -0500
+Received: from phobos.denx.de ([85.214.62.61]:37444 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234438AbiASOwe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Jan 2022 09:52:34 -0500
+Received: from maia.denx.de (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: hws@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 3D76980FE7;
+        Wed, 19 Jan 2022 15:52:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1642603952;
+        bh=f1UL5ZbqpBe65Hd8Hn6QP0WymJkVOmVAYuASZr8TNFQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OkwiJm0jfjgthaYU/zkcIuYEQDYgX7Zhxm37trT8rpS4Kdzyi1BmbISbABYMYH4il
+         fRQOpJ64TTmCa+t9E8XTqNg4Q70UI6UV++T1s40pRN08T7gHiwTXVng8ILS1j19s2n
+         o0mnpXpwp+s6Ls1KM3dGRol9FKm02XJE+CQ/bdmCXi6D/g48qaQ/cVco3GI0KWBBKH
+         RV8J7tZw5U/GyiYigFp4LpKWZZYusm7wV8nAKRmuP+OAJXDjMesi5Bkz1bjEAB+fc7
+         whFFmlnSdgevnpqP+AjlTPx9uTZ6W6rzMXUBDoKcK1Wi53TPlGFFp1Kj3fZSxnWrW/
+         SYpIUKT9ZJ1yg==
+From:   Harald Seiler <hws@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Harald Seiler <hws@denx.de>, Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
+Date:   Wed, 19 Jan 2022 15:52:03 +0100
+Message-Id: <20220119145204.238767-1-hws@denx.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220111215415.2075257-3-Mr.Bossman075@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 11 Jan 2022 16:54:10 -0500, Jesse Taube wrote:
-> From: Jesse Taube <mr.bossman075@gmail.com>
-> 
-> Add binding header for i.MXRT1050 pinctrl device tree.
-> 
-> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
-> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
-> [Jesse: move pinfunc from dt-bindings to dts folder]
-> ---
-> V1->V2:
-> * Move pinfunc from dt-binding to dts
-> * Change subject and description
-> * Change licence to "GPL-2.0+ OR MIT"
-> V2->V3:
-> * Change License comment style
-> V3->V4:
-> * Nothing done
-> V4->V5:
-> * Nothing done
-> V5->V6:
-> * Nothing done
-> V6->V7:
-> * Nothing done
-> V7->V8:
-> * Nothing done
-> ---
->  arch/arm/boot/dts/imxrt1050-pinfunc.h | 993 ++++++++++++++++++++++++++
->  1 file changed, 993 insertions(+)
->  create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
-> 
+Right now, even when `delay_rts_before_send` and `delay_rts_after_send`
+are 0, the hrtimer is triggered (with timeout 0) which can introduce a
+few 100us of additional overhead on slower i.MX platforms.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Implement a fast path when the delays are 0, where the RTS signal is
+toggled immediately instead of going through an hrtimer.  This fast path
+behaves identical to the code before delay support was implemented.
+
+Signed-off-by: Harald Seiler <hws@denx.de>
+---
+ drivers/tty/serial/imx.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index df8a0c8b8b29..67bbbb69229d 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -455,9 +455,14 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+ 		if (sport->tx_state == SEND) {
+ 			sport->tx_state = WAIT_AFTER_SEND;
+-			start_hrtimer_ms(&sport->trigger_stop_tx,
++
++			if (port->rs485.delay_rts_after_send > 0) {
++				start_hrtimer_ms(&sport->trigger_stop_tx,
+ 					 port->rs485.delay_rts_after_send);
+-			return;
++				return;
++			}
++
++			/* continue without any delay */
+ 		}
+ 
+ 		if (sport->tx_state == WAIT_AFTER_RTS ||
+@@ -698,9 +703,14 @@ static void imx_uart_start_tx(struct uart_port *port)
+ 				imx_uart_stop_rx(port);
+ 
+ 			sport->tx_state = WAIT_AFTER_RTS;
+-			start_hrtimer_ms(&sport->trigger_start_tx,
++
++			if (port->rs485.delay_rts_before_send > 0) {
++				start_hrtimer_ms(&sport->trigger_start_tx,
+ 					 port->rs485.delay_rts_before_send);
+-			return;
++				return;
++			}
++
++			/* continue without any delay */
+ 		}
+ 
+ 		if (sport->tx_state == WAIT_AFTER_SEND
+-- 
+2.34.1
+
