@@ -2,392 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC09C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Jan 2022 22:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74246C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 01:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349942AbiARW1I (ORCPT
+        id S1350722AbiASBsH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Jan 2022 17:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349010AbiARW1H (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Jan 2022 17:27:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080F9C061574
-        for <linux-serial@vger.kernel.org>; Tue, 18 Jan 2022 14:27:07 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9wvk-0000Vm-NM; Tue, 18 Jan 2022 23:26:20 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9wvY-00B4m8-19; Tue, 18 Jan 2022 23:26:07 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9wvX-0003U8-0E; Tue, 18 Jan 2022 23:26:07 +0100
-Date:   Tue, 18 Jan 2022 23:26:06 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Tue, 18 Jan 2022 20:48:07 -0500
+Received: from mail-vi1eur05on2089.outbound.protection.outlook.com ([40.107.21.89]:41824
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238680AbiASBsG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 18 Jan 2022 20:48:06 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PkPKirwCNe+LS918qVZbXLINQTdjR4gqyO9NV89pYK57OSYLOZqCinym5ruXAdRHx2+QhaAKAQyhjGcr2P6TMJDZwz11AX1NN+SsTbO9ZsqbLf7NoNBCvpq0yTcvcJQ2U/wkSP+yGtsnIcKtVBV2HFxY181pqHioU2JSGNBvb7y2M2ehrvvsKg4ldcpp9aKzpDYTJrd8/s2/Fxt+LZij6WIETd4+N4Kt6mBldBQ3tBBAcZU02zHugG1tjFHj1nd8ucuqnKt/mbrdg5Ecy+NJ3LcW6FlSRteJ1qsu5RF9BEmeBR5YfnD0tXPwHolVdEZHice54+WJGGuxxXZiB+ltfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=athG0omLLszGEKOIBNqh4eILY3bOgQrglj3V1BFMUas=;
+ b=NRRPhcfcpCjk6aQeYzkEc6d8cH5g5/M+UZMK7NQgKUChbKArf8JLWlvvDt15cVa0NUXiEXLAyT+JkRSSYy7ZZjZhOI+ZEft7QiImUq38e47MvEK9fVoDX2fIheAEyFNsAuBvUmC4TUA1klmJ2TvEjOji2L/yV5cPFomKU9mic7hkwSq8sj/4fMDnH9++dSf2q2/ZqmtDvkETio6iSGHCl+kRFeAouyFb3zGRxwQ2DLTu1HNMlws8wbrTcYD9MHl1clhWRyVzW3bgj1P9NrRvSoMCcFQmjJSnIp/9+hHfAgzvfB9RuxP3yp8ei5EJLg2FCJ7XISsDNO2K5CMZ+dUJjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=athG0omLLszGEKOIBNqh4eILY3bOgQrglj3V1BFMUas=;
+ b=ZJt4yWY+ydLTcAB4Q/+hL2DkkEWKjYUPOawa1TWkv3P4is5q4OXsTmGME7e6NQeo9bPNAUpK1xmYZ+KR0BLUtTa5PYYLupmMeIdN9hmSliWvE1VDhdsLNd7sjDy+9mjItWfXkamFGDiQ+xq7YWonzEKWRanKpDIc5RksrPifQHY=
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by DB8PR04MB6907.eurprd04.prod.outlook.com (2603:10a6:10:119::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Wed, 19 Jan
+ 2022 01:48:03 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d4dc:8c9a:55d0:81d8]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d4dc:8c9a:55d0:81d8%4]) with mapi id 15.20.4888.013; Wed, 19 Jan 2022
+ 01:48:03 +0000
+From:   Peng Fan <peng.fan@nxp.com>
+To:     Abel Vesa <abel.vesa@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Fugang Duan <fugang.duan@nxp.com>
+CC:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220118222606.3iwuzbenl7g6oeiq@pengutronix.de>
-References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
- <20220117084732.cdy2sash5hxp4lwo@pengutronix.de>
- <68d3bb7a-7572-7495-d295-e1d512ef509e@omp.ru>
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH v2] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
+ compatible
+Thread-Topic: [PATCH v2] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL
+ compatible
+Thread-Index: AQHYDG3HDZy63ejSQkytaGP58k4lUqxplDNw
+Date:   Wed, 19 Jan 2022 01:48:03 +0000
+Message-ID: <DU0PR04MB941773B00527243D9376DB2188599@DU0PR04MB9417.eurprd04.prod.outlook.com>
+References: <20220118131715.2051965-1-abel.vesa@nxp.com>
+In-Reply-To: <20220118131715.2051965-1-abel.vesa@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d0901cc3-7c18-47a9-30f1-08d9daedbb80
+x-ms-traffictypediagnostic: DB8PR04MB6907:EE_
+x-microsoft-antispam-prvs: <DB8PR04MB6907517157F306497CD03ED488599@DB8PR04MB6907.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1122;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TVXru/ZJc1pzLPcAAyqcCG7TGntb8F7LjQrbHNdAFdcIipF0pJg5dkUIfbFup7zd83myUiB/txoYH22EIvFhwnqkJX0JfdpMxFjQViwDiU6izBpf9ZJ06GJ+DYRimtu/2xD5R/iL0BP7aLJnMbl2eh71NhHr0q7nlrjHJEniR+ucjO3wcbAZM128YZ2XM7uAEHGBP9rzr4tyUKAGViEGwtPHOZe0E3d0uAjBJeGRxVvRw64aZUhpjky+dCg2hLatj1ZhXMS4ms5bgAApUOGHC+S2sJ/37YGX9kz605vANj35xktgCLp66RNi1jLTzaYddLJ/QpfuPb00QkOOoUo/tuTcAHMXEr1gWUtP1sPH2ReMTtOM9p2+FliTWM/e33e2+ByvJ6hlJjV3vJ8eoZ0ox4xPf0VrQAzCDhzhsNCXacmKki1OOAVVn5EIbfZ7YLilN10rWbneSbPeL1YjUsz8G86wZpEjGBPXSfIKSliKOvEF1NJK3yh2mKi/0Xv4sVefgP3Tmp9MCE1M3DPI7t+7MAfUTovzcrYipw8/An0nnkRJwLhnIbOCaF+SpvUUVYWiRaSZsW+QbrhmIKLkcF34voBWkhf1zA1tRL5Ewl9IJYce+743dDZ5brEP/kpjeS3y03yo5TbTMwB4WJvKK12u624VcDu4Bx6FGUuYvtj5Z9HGos79UMc8Z/sXXbqnmrXeUk7VPaRkEcRDdFhpNyScCH3sOVS+C+HVNxzSw+1Aw3aI3tUxtfoahcP1XvaUrPaNnn7HHWNADwf25JNBtCphZc4nDBbbyd4FvAxJubICKww=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(64756008)(66446008)(6636002)(66556008)(66476007)(54906003)(316002)(9686003)(76116006)(2906002)(4326008)(33656002)(110136005)(26005)(6506007)(8676002)(186003)(7696005)(86362001)(966005)(38070700005)(508600001)(55016003)(83380400001)(44832011)(52536014)(122000001)(5660300002)(38100700002)(8936002)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1CyfZO/UU/db326HnVep5lm6HJj3ddcSFG9k9XVx7O0If92VJ0s+wlbfTRIc?=
+ =?us-ascii?Q?ti0A9rg6iSmJHCnQ+E88wCiPvir6IxKXwvNGj50zGxnJ5gMLY0u7npRhkhE3?=
+ =?us-ascii?Q?MuNqOZnmPasZK62dBEa6FzmLrjWQv6a3YT4cOQlhMaEUNE0rzZ4i/HVuu4ZA?=
+ =?us-ascii?Q?qBUvMCjTttxss/PcqKMA+LvlcLRN1O09vP9fB22FxuLjbIszbbmLe9btJdfc?=
+ =?us-ascii?Q?hZOfcjEP2zHHcc/9uDefr5M1gvsmmIbTS3K2mtu0ieUzqFbv0ju/6N2wjuVM?=
+ =?us-ascii?Q?v6un7eu/sRbEemYx+G1zZH+HhXF0bhQOllmaHHiMP7yJ/8k0j49ZVWs5SsaS?=
+ =?us-ascii?Q?ENADjEYKEKyD3gqlmkX8KH+1vi54K8IhlRBrJIeU491SWnumEWSvCuzA1RfR?=
+ =?us-ascii?Q?IrJy4WrKT+ypaEfN/h96uoA4MqbV+jrwAQSqUZZLenG3NuKW3rOij/ESqRB/?=
+ =?us-ascii?Q?IVvf9lD6fzX+hJ2Iv/fpUub90VaKgDmweUUO7pLsE6dDHPaok3c/WCxE6fxF?=
+ =?us-ascii?Q?zLugOnGEQOpY/lfJViO7f4/aBkSTN8iak3UeEFCVJMClpHgkloKGlUgDQs3u?=
+ =?us-ascii?Q?XmcY0Lw2AGsw8bNfKNVL6P2e1pasMnK2DKU5Kv4KDbWquijQ19S64blb2sY3?=
+ =?us-ascii?Q?pmw43S5ER4/0DdtTMWUB7hLDtJjc9vyH5YQlQBhb/i7xN2Igm52RiSFrC598?=
+ =?us-ascii?Q?PgTvGvfSCx7ZoE+hiGijSSFFNwfJb0b5M4XJOiTZY69nb+WK/1ZY21yQMIrq?=
+ =?us-ascii?Q?LzzK1XxIHB8KwW4A1GotcADFV8TX9EE3j/SE+9O0CGZVVvEzjM/eyvG8Io78?=
+ =?us-ascii?Q?ex4p63orqOLUNj6OpH117vEzQi4KflnyT90rXgVMvjQKcz2eTQ4ZRjTcKq+J?=
+ =?us-ascii?Q?tvytPf8KmillAX8oE0FVEry3kwgGepk7uvXpttBW6gD8a6LfAnyUO3zT1th0?=
+ =?us-ascii?Q?zG7tHaWX6FmTyU33Onz5vDwkMv8aH4Bjylje4ZutY3S2OKElfUa8A+t7Dlpz?=
+ =?us-ascii?Q?6eYRLwA6se9v1j+f2ddrzv/q7NIQg/1OzV0V2Cf5RuwCrosQFXpMYQFCxCP0?=
+ =?us-ascii?Q?A+nYqE+OSFDXLHrCNstBKIIpzOCYIuvy1WS2201sw0mK086ZBDvg2gdmO2Bs?=
+ =?us-ascii?Q?pQXSt/c1sGHctuTJZd0RQCuAcM/wl0WbzMAD3XvJqybBrMex4E7RcHzvL3XL?=
+ =?us-ascii?Q?d++Or+yxuk7qZBqem+ve/lu5o+6N145EFZPiFAB1Jc+0yuAaV+iF+75akDD9?=
+ =?us-ascii?Q?dY92S5LGbFF3OtrppNoPxVBS7kmArkt3t+uCR/wPt39hTB3sl9pnzARLwkg/?=
+ =?us-ascii?Q?e4DNVsDak2LhXPgBzBVcVa6lTBObb+pAYHPiwQipeja+J3hXSuj4c2aVqfbh?=
+ =?us-ascii?Q?22B7L7vvKSGmb2MBYSKz5UHWWZKbjAUvXsFOom0p9Jv3hZlzjUZBIlkQhjDF?=
+ =?us-ascii?Q?fLsHOyh82Mzdz0Ft33El+ljewpJo/vtAQurb5Kd2VbVb9l4INDbfrf9ecapI?=
+ =?us-ascii?Q?SgikXvUZF9g78HV8MFpcmZGZ4M13KwaR2oQuw/08349t4RsiC1YrTAUv0dO2?=
+ =?us-ascii?Q?E7w7zeg9/Gb8Wv6U3lwZIjyXUYW+glbp3ZXwncYGMF2fIZI+qA4RUvZJWcwz?=
+ =?us-ascii?Q?NA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="a7pus3gvz76yet7d"
-Content-Disposition: inline
-In-Reply-To: <68d3bb7a-7572-7495-d295-e1d512ef509e@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0901cc3-7c18-47a9-30f1-08d9daedbb80
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2022 01:48:03.6218
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bu70fiw7sjLVQdByWCYcshknC9RSwis670iLxQs1TGLNIC8RQOyxnTOY/00/WcT0AwCDqEKC2CrbiVa5Fsp8Xg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6907
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
---a7pus3gvz76yet7d
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jan 18, 2022 at 11:21:45PM +0300, Sergey Shtylyov wrote:
-> Hello!
+> Subject: [PATCH v2] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL compati=
+ble
 >=20
-> On 1/17/22 11:47 AM, Uwe Kleine-K=F6nig wrote:
+> Add i.MX8DXL lpuart compatible to the bindings documentation.
 >=20
-> [...]
-> >>>>>>>>> To me it sounds much more logical for the driver to check if an
-> >>>>>>>>> optional irq is non-zero (available) or zero (not available), t=
-han to
-> >>>>>>>>> sprinkle around checks for -ENXIO. In addition, you have to rem=
-ember
-> >>>>>>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -=
-ENOSYS
-> >>>>>>>>> (or some other error code) to indicate absence. I thought not h=
-aving
-> >>>>>>>>> to care about the actual error code was the main reason behind =
-the
-> >>>>>>>>> introduction of the *_optional() APIs.
-> >>>>>>>
-> >>>>>>>> No, the main benefit of gpiod_get_optional() (and clk_get_option=
-al()) is
-> >>>>>>>> that you can handle an absent GPIO (or clk) as if it were availa=
-ble.
-> >>>>>>
-> >>>>>>    Hm, I've just looked at these and must note that they match 1:1=
- with
-> >>>>>> platform_get_irq_optional(). Unfortunately, we can't however behav=
-e the
-> >>>>>> same way in request_irq() -- because it has to support IRQ0 for th=
-e sake
-> >>>>>> of i8253 drivers in arch/...
-> >>>>>
-> >>>>> Let me reformulate your statement to the IMHO equivalent:
-> >>>>>
-> >>>>> 	If you set aside the differences between
-> >>>>> 	platform_get_irq_optional() and gpiod_get_optional(),
-> >>>>
-> >>>>    Sorry, I should make it clear this is actually the diff between a=
- would-be
-> >>>> platform_get_irq_optional() after my patch, not the current code...
-> >>>
-> >>> The similarity is that with your patch both gpiod_get_optional() and
-> >>> platform_get_irq_optional() return NULL and 0 on not-found. The relev=
-ant
-> >>> difference however is that for a gpiod NULL is a dummy value, while f=
-or
-> >>> irqs it's not. So the similarity is only syntactically, but not
-> >>> semantically.
-> >>
-> >>    I have noting to say here, rather than optional IRQ could well have=
- a different
-> >> meaning than for clk/gpio/etc.
-> >>
-> >> [...]
-> >>>>> However for an interupt this cannot work. You will always have to c=
-heck
-> >>>>> if the irq is actually there or not because if it's not you cannot =
-just
-> >>>>> ignore that. So there is no benefit of an optional irq.
-> >>>>>
-> >>>>> Leaving error message reporting aside, the introduction of
-> >>>>> platform_get_irq_optional() allows to change
-> >>>>>
-> >>>>> 	irq =3D platform_get_irq(...);
-> >>>>> 	if (irq < 0 && irq !=3D -ENXIO) {
-> >>>>> 		return irq;
-> >>>>> 	} else if (irq >=3D 0) {
-> >>>>
-> >>>>    Rather (irq > 0) actually, IRQ0 is considered invalid (but still =
-returned).
-> >>>
-> >>> This is a topic I don't feel strong for, so I'm sloppy here. If chang=
-ing
-> >>> this is all that is needed to convince you of my point ...
-> >>
-> >>    Note that we should absolutely (and first of all) stop returning 0 =
-=66rom platform_get_irq()
-> >> on a "real" IRQ0. Handling that "still good" zero absolutely doesn't s=
-cale e.g. for the subsystems
-> >> (like libata) which take 0 as an indication that the polling mode shou=
-ld be used... We can't afford
-> >> to be sloppy here. ;-)
-> >=20
-> > Then maybe do that really first?
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+
+> ---
 >=20
->    I'm doing it first already:
+> Changes since v1:
+>  * imx8dxl will only be backwards compatible with imx8qxp now,
+>    like imx8qm
 >=20
-> https://lore.kernel.org/all/5e001ec1-d3f1-bcb8-7f30-a6301fd9930c@omp.ru/
+> Here is the last version of this patch:
+> https://lore.kernel.org/all/1640085372-1972-1-git-send-email-abel.vesa@nx
+> p.com/
 >=20
->    This series is atop of the above patch...
-
-Ah, I missed that (probably because I didn't get the cover letter).
-
-> > I didn't recheck, but is this what the
-> > driver changes in your patch is about?
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 >=20
->    Partly, yes. We can afford to play with the meaning of 0 after the abo=
-ve patch.
-
-But the changes that are in patch 1 are all needed?
-=20
-> > After some more thoughts I wonder if your focus isn't to align
-> > platform_get_irq_optional to (clk|gpiod|regulator)_get_optional, but to
-> > simplify return code checking. Because with your change we have:
-> >=20
-> >  - < 0 -> error
-> >  - =3D=3D 0 -> no irq
-> >  - > 0 -> irq
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> index 6e04e3848261..c33e3af1b5ea 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> @@ -28,7 +28,9 @@ properties:
+>                - fsl,imx8ulp-lpuart
+>            - const: fsl,imx7ulp-lpuart
+>        - items:
+> -          - const: fsl,imx8qm-lpuart
+> +          - enum:
+> +              - fsl,imx8qm-lpuart
+> +              - fsl,imx8dxl-lpuart
+>            - const: fsl,imx8qxp-lpuart
 >=20
->    Mainly, yes. That's why the code examples were given in the descriptio=
-n.
->=20
-> > For my part I'd say this doesn't justify the change, but at least I
-> > could better life with the reasoning. If you start at:
-> >=20
-> > 	irq =3D platform_get_irq_optional(...)
-> > 	if (irq < 0 && irq !=3D -ENXIO)
-> > 		return irq
-> > 	else if (irq > 0)
-> > 		setup_irq(irq);
-> > 	else
-> > 		setup_polling()
-> >=20
-> > I'd change that to
-> >=20
-> > 	irq =3D platform_get_irq_optional(...)
-> > 	if (irq > 0) /* or >=3D 0 ? */
->=20
->    Not >=3D 0, no...
->=20
-> > 		setup_irq(irq)
-> > 	else if (irq =3D=3D -ENXIO)
-> > 		setup_polling()
-> > 	else
-> > 		return irq
-> >=20
-> > This still has to mention -ENXIO, but this is ok and checking for 0 just
-> > hardcodes a different return value.
->=20
->    I think comparing with 0 is simpler (and shorter) than with -ENXIO, if=
- you
-> consider the RISC CPUs, like e.g. MIPS...
+>    reg:
+> --
+> 2.31.1
 
-Hmm, I don't know MIPS good enough to judge. So I created a small C
-file:
-
-	$ cat test.c
-	#include <errno.h>
-
-	int platform_get_irq_optional(void);
-	void a(void);
-
-	int func_0()
-	{
-		int irq =3D platform_get_irq_optional();
-
-		if (irq =3D=3D 0)
-			a();
-	}
-
-	int func_enxio()
-	{
-		int irq =3D platform_get_irq_optional();
-
-		if (irq =3D=3D -ENXIO)
-			a();
-	}
-
-With some cross compilers as provided by Debian doing
-
-	$CC -c -O3 test.c
-	nm --size-sort test.o
-
-I get:
-
-  compiler			|  size of func_0  | size of func_enxio
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D|=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-aarch64-linux-gnu-gcc		| 0000000000000024 | 0000000000000028
-arm-linux-gnueabi-gcc		|         00000018 |         00000018
-arm-linux-gnueabihf-gcc		|         00000010 |         00000012
-i686-linux-gnu-gcc		|         0000002a |         0000002a
-mips64el-linux-gnuabi64-gcc	| 0000000000000054 | 000000000000005c
-powerpc-linux-gnu-gcc		|         00000058 |         00000058
-s390x-linux-gnu-gcc		| 000000000000002e | 0000000000000030
-x86_64-linux-gnu-gcc		| 0000000000000022 | 0000000000000022
-
-So you save some bytes indeed.
-
-> > Anyhow, I think if you still want to change platform_get_irq_optional
-> > you should add a few patches converting some drivers which demonstrates
-> > the improvement for the callers.
->=20
->    Mhm, I did include all the drivers where the IRQ checks have to be mod=
-ified,
-> not sure what else you want me to touch...
-
-I somehow expected that the changes that are now necessary (or possible)
-to callers makes them prettier somehow. Looking at your patch again:
-
- - drivers/counter/interrupt-cnt.c
-   This one is strange in my eyes because it tests the return value of
-   gpiod_get_optional against NULL :-(
-
- - drivers/edac/xgene_edac.c
-   This one just wants a silent irq lookup and then throws away the
-   error code returned by platform_get_irq_optional() to return -EINVAL.
-   Not so nice, is it?
-
- - drivers/gpio/gpio-altera.c
-   This one just wants a silent irq lookup. And maybe it should only
-   goto skip_irq if the irq was not found, but on an other error code
-   abort the probe?!
-
- - drivers/gpio/gpio-mvebu.c
-   Similar to gpio-altera.c: Wants a silent irq and improved error
-   handling.
-
- - drivers/i2c/busses/i2c-brcmstb.c
-   A bit ugly that we now have dev->irq =3D=3D 0 if the irq isn't available,
-   but if requesting the irq failed irq =3D -1 is used?
-
- - drivers/mmc/host/sh_mmcif.c
-   Broken error handling. This one wants to abort on irq[1] < 0 (with
-   your changed semantic).
-
-I stopped here.
-
-It seems quite common that drivers assume a value < 0 returned by
-platform_get_irq means not-found and don't care for -EPROBE_DEFER (what
-else can happen?) Changing a relevant function in that mess seems
-unfortunate here :-\
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---a7pus3gvz76yet7d
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHnPnoACgkQwfwUeK3K
-7Akqngf/deJcg5Z6920bXlYUCFdp2KylFxWHucfT0qIrwGnPq8zaZFS9gHqJ0sdG
-7jQQJZSuB0RvjbvoR65zpQdPHzf+L5Mt7RcHB97mz9RBI0icUJxXPyCM5R+JJztU
-FwvRMasJJTaWprdySpKQ2NBP//sovxwwmoujXrWnzumTfyLR1rw66bTkDxHqwQO0
-aWnbojhdu/efNMVD8vDGDRvmyeWv2jVpsINrc/BxPET+KGaMZQUKGtk2vnJSgprv
-w/qDSARMcG/2W0EAD65b/kO9COe957sWbn7Pj9ylMp1Eb4kziV8OLLT8WYWtLiHw
-zStNC4/q9uZn5kXN2bo45YckhIG/gg==
-=ZjV7
------END PGP SIGNATURE-----
-
---a7pus3gvz76yet7d--
