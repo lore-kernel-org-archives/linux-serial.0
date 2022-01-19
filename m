@@ -2,115 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D1AC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 17:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BA3C4167E
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 18:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356309AbiASRGB (ORCPT
+        id S1356767AbiASS3o (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:06:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356327AbiASRFs (ORCPT
+        Wed, 19 Jan 2022 13:29:44 -0500
+Received: from mxout02.lancloud.ru ([45.84.86.82]:60414 "EHLO
+        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356737AbiASS3l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:05:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4224CC061401;
-        Wed, 19 Jan 2022 09:05:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7672615E1;
-        Wed, 19 Jan 2022 17:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4727CC36AE3;
-        Wed, 19 Jan 2022 17:05:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642611947;
-        bh=KKlzc8c5w+fq1k4uKo5Qwf+gm47vjQ8VvRXIbggWzbM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tH9EpPZohuwPlNyLgUQaSh2/TW27U3dWzvT8E96QQ1O49ak8F6oMNPCIpNqEW6u1n
-         dno4NiQcqiNnwkUnBF8/tvCcMhP66hUVF6RTYDKU3v+8xqFAi8TdtN6XL/ylAhlILt
-         TnhUxgAWojwpxC/Dsfb4F/dviiWsXf/JdBPpji4ZWgxzZnRX9ueGnepCyDIe4pFs4l
-         NmSxMUQXXy/74/u9/yf4iVff4NeZELpdPSjjyWb9omwGSxu4DWdRPzdnqQD4rnrxEi
-         +yH1RrQB2RDDQPNYjPeFFlwst1/afn2F3oy/VExs437dhiu5qbqGw5hJ5WFF/2A3FN
-         5ggoBNeKHDe3g==
-Received: by mail-ed1-f43.google.com with SMTP id 30so15475680edv.3;
-        Wed, 19 Jan 2022 09:05:47 -0800 (PST)
-X-Gm-Message-State: AOAM533VzpG2cBvqTJzXCLsyNOCL/bc4xL42w2XGQVXyvreW8gjchzBU
-        RGzVEcw/o4b5rWn3G0iT2GMz1jMFgUL1MTkNwg==
-X-Google-Smtp-Source: ABdhPJzBgPPIvP9HvnVg4dyNMmI5ujybpyr1kYU14iE13zheGQ3O2xg88wkrkwxTCk6RnznZtYMkYbIeJD0Kzr0Ph78=
-X-Received: by 2002:a17:906:7801:: with SMTP id u1mr8446002ejm.82.1642611945572;
- Wed, 19 Jan 2022 09:05:45 -0800 (PST)
-MIME-Version: 1.0
-References: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-In-Reply-To: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 19 Jan 2022 11:05:31 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ4MqMYNiKNF_3rkbnR0CE9GhV-jzbxKn2jeJBvPGibLA@mail.gmail.com>
-Message-ID: <CAL_JsqJ4MqMYNiKNF_3rkbnR0CE9GhV-jzbxKn2jeJBvPGibLA@mail.gmail.com>
-Subject: Re: [PATCH] fix serdev bind/unbind
-To:     julian schroeder <julianmarcusschroeder@gmail.com>
-Cc:     bhanumaiya@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 19 Jan 2022 13:29:41 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru EFD8920BF006
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>
+CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        <platform-driver-x86@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        "Saravanan Sekar" <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Mark Brown" <broonie@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <openipmi-developer@lists.sourceforge.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, "Tony Luck" <tony.luck@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Linux MMC List" <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        "James Morse" <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        "Sebastian Reichel" <sre@kernel.org>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        "Brian Norris" <computersforpeace@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
+ <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+ <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+ <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+ <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
+ <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
+ <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
+ <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
+ <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
+ <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
+ <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
+ <6370798a-7a7e-243d-99f9-09bf772ddbac@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <96ff907a-4ad2-5b2e-9bcc-09592d65a6df@omp.ru>
+Date:   Wed, 19 Jan 2022 21:29:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <6370798a-7a7e-243d-99f9-09bf772ddbac@omp.ru>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+Johan
+On 1/19/22 7:12 PM, Sergey Shtylyov wrote:
 
-On Tue, Jan 18, 2022 at 1:47 PM julian schroeder
-<julianmarcusschroeder@gmail.com> wrote:
->
-> On some chromebooks, the serdev is used to communicate with
-> an embedded controller. When the controller is updated, the
-> regular ttyS* is needed. Therefore unbind/bind needs to work
-> to be able to switch between the two modes without having to
-> reboot. In the case of ACPI enabled platforms, the underlying
-> serial device is marked as enumerated but this is not cleared
-> upon remove (unbind). In this state it can not be bound as
-> serdev.
+[...]
+>>> So there's still a need for two functions.
+>>
+>> Or a single function not emitting an error message together with the
+>> callers being responsible for calling dev_err().
+>>
+>> So the options in my preference order (first is best) are:
+>>
+>>  - Remove the printk from platform_get_irq() and remove
+>>    platform_get_irq_optional();
+> 
+>    Strong NAK here:
+> - dev_err() in our function saves a lot of (repeatable!) comments;
 
-'fix' implies this was supposed to work and doesn't, but unbind/bind
-was never a feature of serdev. Or more specifically, switching between
-serdev and tty was not a feature. There have been some attempts to add
-that. I suspect it is more than a 4 line change based on those, but
-maybe I'm wrong.
+   s/comments/code/.
+   Actually, I think I can accept the removal of dev_err_probe() in platform_get_irq()
+as this is not a common practice anyway (yet? :-))...
 
-For your usecase, how does a given piece of h/w that needs and/or
-provides kernel support continue to work when the driver is unbound.
-Are you leaving any power controls that the serdev driver configured
-enabled so that the tty happens to keep working? What happens to
-interfaces the EC provides? The kernel doesn't deal with resources
-going away too well. I have to wonder if the existing serdev EC driver
-should learn to handle the 'update mode' itself or provide some sort
-of raw/passthru mode to userspace. A TTY, while standard, brings a lot
-of complexities.
+> - we've already discussed that it's more optimal to check againt 0 than
 
-> Signed-off-by: julian schroeder <julianmarcusschroeder@gmail.com>
-> ---
->  drivers/tty/serdev/core.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 92e3433276f8..668fa570bc07 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -138,7 +138,11 @@ EXPORT_SYMBOL_GPL(serdev_device_add);
->  void serdev_device_remove(struct serdev_device *serdev)
->  {
->         struct serdev_controller *ctrl = serdev->ctrl;
-> +       struct acpi_device *adev;
->
-> +       adev = ACPI_COMPANION(&serdev->dev);
-> +       if (adev)
-> +               acpi_device_clear_enumerated(adev);
->         device_unregister(&serdev->dev);
->         ctrl->serdev = NULL;
->  }
-> --
-> 2.20.1
->
+   Against. :-)
+
+>   against -ENXIO in the callers.
+
+   And we also aim to be the error code agnostic in the callers...
+
+>>  - Rename platform_get_irq_optional() to platform_get_irq_silently()
+> 
+>    NAK as well. We'd better off complaining about irq < 0 in this function.
+
+>>  - Keep platform_get_irq_optional() as is
+> 
+>    NAK, it's suboptimal in the call sites.
+
+   s/in/on/.
+
+[...]
+
+>> Best regards
+>> Uwe
+
+MBR, Sergey
