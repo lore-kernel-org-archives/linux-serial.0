@@ -2,164 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC09DC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 13:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD315C4321E
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 14:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236446AbiASNqc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:46:32 -0500
-Received: from mailgw.felk.cvut.cz ([147.32.82.15]:52094 "EHLO
-        mailgw.felk.cvut.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbiASNqb (ORCPT
+        id S1355025AbiASOFe (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jan 2022 09:05:34 -0500
+Received: from mail-ot1-f42.google.com ([209.85.210.42]:36445 "EHLO
+        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350177AbiASOFd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:46:31 -0500
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 4FDEA30B035B;
-        Wed, 19 Jan 2022 14:46:30 +0100 (CET)
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 4F5EF30ADE4A;
-        Wed, 19 Jan 2022 14:46:29 +0100 (CET)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 20JDkTMC020722;
-        Wed, 19 Jan 2022 14:46:29 +0100
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 20JDkSv9020721;
-        Wed, 19 Jan 2022 14:46:28 +0100
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Subject: Re: TTY layer discussion about generic FIFO depth and Rx iddle timeout control
-Date:   Wed, 19 Jan 2022 14:46:28 +0100
-User-Agent: KMail/1.9.10
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        linux-serial@vger.kernel.org,
-        Rostislav =?iso-8859-1?q?Lisov=FD?= <lisovy@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jiri Slaby <jslaby@suse.cz>
-References: <202201170006.31440.pisa@cmp.felk.cvut.cz> <YeVpFozoVQo1vbKS@kroah.com>
-In-Reply-To: <YeVpFozoVQo1vbKS@kroah.com>
-X-KMail-QuotePrefix: > 
+        Wed, 19 Jan 2022 09:05:33 -0500
+Received: by mail-ot1-f42.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso3234801otl.3;
+        Wed, 19 Jan 2022 06:05:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bA4lXk3bs4g992PO5jXPShXJCU4RdXIJFPt9TWuZvi8=;
+        b=Lo6knvrEtX/KFxyzA+UatqyecN5QpsDx2jKbnR1JQMxQ3bcNJo2x7FK73GNXu5GXKJ
+         yYKgWYLv3Bat1xQyACduvR5yesnyxdLIJfPRBbevYtjGJsI8kYT/DOOYXjL4eHBBbO+R
+         PLniaDtYQ3EnG1myqvhtQ9umRFjZiBTV9NmLO55lvCDwusqs/bUeElRp1FFgrQfTDGdY
+         8TLqyog2EgnFi0R7fgBlahwrkhILuvZfoneSBbGHBwdr49kCMrv9LuLonkP8wmVhid9G
+         LrC4t4Vfu7eWUshQDt5zg/W0OFja7Agx6wEVdsLyyXhbsHORSnKbbu/FijTfSa3Q8HTv
+         jOHg==
+X-Gm-Message-State: AOAM533yzZCwRxbFMdylPqi/P2zCj4YKcGZvxEJierkhhM8qc7yIHZyq
+        DfAcTMxlnUx7ejQu/JXr8w==
+X-Google-Smtp-Source: ABdhPJz+nPpKZ1wx/9MZBe3c2PWe70YAUIasbvLv9Mx8j0isWcefeBYdwrdxEdCzSxpX+Pr8JGIYZw==
+X-Received: by 2002:a9d:e88:: with SMTP id 8mr6044843otj.276.1642601132546;
+        Wed, 19 Jan 2022 06:05:32 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 186sm10018818oig.28.2022.01.19.06.05.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 06:05:31 -0800 (PST)
+Received: (nullmailer pid 3480173 invoked by uid 1000);
+        Wed, 19 Jan 2022 14:05:27 -0000
+Date:   Wed, 19 Jan 2022 08:05:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     aisheng.dong@nxp.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        Mr.Bossman075@gmail.com, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        arnd@arndb.de, gregkh@linuxfoundation.org, adrian.hunter@intel.com,
+        abel.vesa@nxp.com, linux-serial@vger.kernel.org,
+        shawnguo@kernel.org, olof@lixom.net,
+        giulio.benetti@benettiengineering.com, linux-gpio@vger.kernel.org,
+        linux-clk@vger.kernel.org, linus.walleij@linaro.org,
+        festevam@gmail.com, sboyd@kernel.org, linux@armlinux.org.uk,
+        mturquette@baylibre.com, robh+dt@kernel.org,
+        ulf.hansson@linaro.org, stefan@agner.ch, linux-mmc@vger.kernel.org,
+        devicetree@vger.kernel.org, soc@kernel.org, jirislaby@kernel.org,
+        linux-imx@nxp.com, s.hauer@pengutronix.de
+Subject: Re: [PATCH v8 2/7] ARM: dts: imxrt1050-pinfunc: Add pinctrl binding
+ header
+Message-ID: <YegapycPxDdgTlXQ@robh.at.kernel.org>
+References: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
+ <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
+ <20220111215415.2075257-3-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Message-Id: <202201191446.28415.pisa@cmp.felk.cvut.cz>
+In-Reply-To: <20220111215415.2075257-3-Mr.Bossman075@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Greg,
+On Tue, 11 Jan 2022 16:54:10 -0500, Jesse Taube wrote:
+> From: Jesse Taube <mr.bossman075@gmail.com>
+> 
+> Add binding header for i.MXRT1050 pinctrl device tree.
+> 
+> Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> [Jesse: move pinfunc from dt-bindings to dts folder]
+> ---
+> V1->V2:
+> * Move pinfunc from dt-binding to dts
+> * Change subject and description
+> * Change licence to "GPL-2.0+ OR MIT"
+> V2->V3:
+> * Change License comment style
+> V3->V4:
+> * Nothing done
+> V4->V5:
+> * Nothing done
+> V5->V6:
+> * Nothing done
+> V6->V7:
+> * Nothing done
+> V7->V8:
+> * Nothing done
+> ---
+>  arch/arm/boot/dts/imxrt1050-pinfunc.h | 993 ++++++++++++++++++++++++++
+>  1 file changed, 993 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/imxrt1050-pinfunc.h
+> 
 
-thanks for the reply.
-
-On Monday 17 of January 2022 14:03:18 Greg Kroah-Hartman wrote:
-> On Mon, Jan 17, 2022 at 12:06:31AM +0100, Pavel Pisa wrote:
-> >   https://github.com/lin-bus
-> >
-> > Kernel part - slLIN TTY discipline - can be found there
-> >
-> >   https://github.com/lin-bus/linux-lin/tree/master/sllin
->
-> So it's just a 2000 line kernel module?  That should be easy to turn
-> into a patch and submit for review, right?
->
-> Odds are it can be made much smaller based on an initial glance at it.
-> Review comments can help show what to do.
-
-Thanks for encouragement for mainlining or at least review on the list.
-I agree that it can shrink when patch for mainline without sections
-providing compatibility with old kernels is prepared.
-Generally, I think that it is doable and important is feedback
-from the user base that there is interrest... and time...
-
-I think that resolution of APO for the trigger/FIFO control
-is critical for thinking about mainlining. Rest is the usual
-work...
-
-> >   https://github.com/lin-bus/linux-lin/issues/13
-> >
-> Discuss it here by submitting patches please.  Links to random github
-> repos do not do much as we can do nothing with them, sorry.
-
-Yes, I understand but I would like to hear some suggestion
-the first where/into which object operations structure
-should be the function added.
-
-There is required functionality in 8250 driver linux/drivers/tty/serial/8250/8250_port.c
-
-     do_set_rxtrig(struct tty_port *port, unsigned char bytes)
-     do_serial8250_set_rxtrig(...)
-     serial8250_set_attr_rx_trig_bytes(...)
-     DEVICE_ATTR_RW(rx_trig_bytes)
-
-But to make slLIN generally usable, we would need to have functionality
-reachable from the line discipline
-
-Do you agree that right place is struct uart_ops?
-
-  https://elixir.bootlin.com/linux/latest/source/include/linux/serial_core.h#L38
-
-What should be a prototype?
-
-In general, it would worth to have possibility to set Rx trigger level
-and Rx iddle timeout. It would be ideal if the set function would
-adjust value down to the first equal or smaller level supported
-by uart HW and in the case of lack of support can switch FIFO off.
-The iddle time can be specified in microseconds, nanoseconds and or
-number of character times.
-
-So questions:
-
-Is more preferred to add two functions, one for iddle time, one
-for trigger level or combined function is better?
-
-How should work reporting of the supported values?
-
-Should there be more functions etc...
-
-I can imagine generic API which would provide all functionality
-by single function to not inflate struct uart_ops too much.
-
-  int (*rx_trigger)(struct uart_port *, int mode, int *rx_trigger_bytes,
-                  int *rx_trigger_iddle_time)
-
-The rx_trigger_bytes equal to 0 would mean switch FIFO off.
-Trigger time can be in nanoseconds??? and would be recomputed
-to number of character for some, most of the HW???
-
-The mode could have
-
-  UART_RX_TRIGGER_MODE_SET
-  UART_RX_TRIGGER_MODE_CHECK_ROUND_DOWN
-  UART_RX_TRIGGER_MODE_CHECK_ROUND_UP
-
-When specified parameters cannot be set, the function returns
-error. When called with ROUND_UP/DOWN it modifies parameters
-to the first available value in given direction
-and next call to UART_RX_TRIGGER_MODE_SET would be guaranteed
-to succeed.
-
-Other option is to combine functionality to set_termios
-call, but it is quite convoluted by its history and connection
-to user space API. Not that maintaining trigger levels from
-userspace is not usefull, but...
-
-I would be happy if you or somebody other with linux
-kernel and serial port style taste would comment.
-
-Best wishes ant thanks for your time and work,
-
-
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://dce.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
-
+Acked-by: Rob Herring <robh@kernel.org>
