@@ -2,88 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803EAC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 22:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0B5C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 23:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357543AbiASWhB (ORCPT
+        id S1344098AbiASXQ5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 17:37:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        Wed, 19 Jan 2022 18:16:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357529AbiASWhB (ORCPT
+        with ESMTP id S240379AbiASXQ5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 17:37:01 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711B1C06161C
-        for <linux-serial@vger.kernel.org>; Wed, 19 Jan 2022 14:37:01 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id n11so3561437plf.4
-        for <linux-serial@vger.kernel.org>; Wed, 19 Jan 2022 14:37:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=dxE4r1z1cIfSGWJM621bK96VrUIyVV92x6PrrwpFRXY=;
-        b=3jmCLS/O1Tvc4I9EcgW+vSU8+bHw3fiuSLb8QBBFgnjhcJ5TBVgWAsgBRkL3a3BYKD
-         B38FGcRvYxRCPVi9I//mp1Op4BJClqNBzMkBUd6cytmd/QdYvSp7N0XjWzvC8oGGsiZP
-         YIoTbzn7LIhb7DJlIo12jni+ncZcxIDEl1lNAtS8/IYRdIMQhyD1m6LD7ntzYNxIi4sn
-         7yK8JltnuRpVwKYL85hmJpwtSbixKHx9L9ZLo7vnpI6W7mzH8+gTgQ9XuKzBg0btwiD4
-         lqiBj8d7xmg1PSH6vq7/iRvjAhhGASBFqeIMA7g6mDLZ9NltVPocwZazaaUs043hvvCW
-         OQOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=dxE4r1z1cIfSGWJM621bK96VrUIyVV92x6PrrwpFRXY=;
-        b=jK84Qy4NxrIhpp73f+s4G+Kv7uOac9V88kxHjyB6vNw38B54Aef6+xTWv8BuQGPkPt
-         k9FjkV8x7S/LsQrb6s24wGP3obIgDS6MVOrzRnpp+UMv6rtZz/L/++qwea5GY2xJlWg3
-         vtfbIvo+KQgzMQFmnB35HLQhbzzep/1etbkvVSNxHC/ufKRVhL7V2GYcK3r84hJMQaSx
-         2P+U0wBtHLIckClzMe+tL3LT6TbCDVZtLJlDlskWK6K9m00f7z/NOiPEWcjiRW76K88O
-         yYHRNmb0fjAYMxdb0Cid3IBvviV5FSg9zLwJXq7vKI1eWdxz4W7HjCb79sYnFTYW+2T5
-         uWjw==
-X-Gm-Message-State: AOAM532rgcD52bUxpSBZRw78xbED8xUEW7ZktoqjnKlr5XzLCo7dR7/d
-        CVYD4bxJe0fdrq6IeQmFYbxwrg==
-X-Google-Smtp-Source: ABdhPJxv6F63q9VzJdxY0ckhpZZbC07AudfrnDivjIRxSeMR+ozHNzZi+g2TSfEoU169TmiRdyIcag==
-X-Received: by 2002:a17:90a:6288:: with SMTP id d8mr6922737pjj.199.1642631820957;
-        Wed, 19 Jan 2022 14:37:00 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id b9sm587995pfm.154.2022.01.19.14.37.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 14:37:00 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Yu Tu <yu.tu@amlogic.com>
-Subject: Re: [PATCH V6 0/5] Use CCF to describe the UART baud rate clock
-In-Reply-To: <20220118030911.12815-1-yu.tu@amlogic.com>
-References: <20220118030911.12815-1-yu.tu@amlogic.com>
-Date:   Wed, 19 Jan 2022 14:37:00 -0800
-Message-ID: <7hfspjqrn7.fsf@baylibre.com>
+        Wed, 19 Jan 2022 18:16:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EF0C061574;
+        Wed, 19 Jan 2022 15:16:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98A72614DE;
+        Wed, 19 Jan 2022 23:16:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFF3C004E1;
+        Wed, 19 Jan 2022 23:16:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642634216;
+        bh=4uRWizOBaKdIv4eU9IeBasCKBDNbDWDfxnzAhH/pWmA=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=X1gZj0K+EKHFwCdIhhAp3VDq76WY7t/Bs9cCB+zpi5VjmmifIdDGRqps1pyyx7HkS
+         zVhwkegi8UHZrFp0+Qp+PpAMdJzJrmZFaL9QLUOWnvzKs6xzcYPcPGYDXvnP+Q9KdZ
+         wP8oqelNhZpHZyMVkPKcGcB0uSIVKLnQGeahXW8s9d9Dkq9EOXYEXGnMX9eBqpl1ko
+         idXYWoZebJZnaf7uzEg6bQ9f1rUkKH/RZ8T64xtzqwb+g7ZoSVyTbP8Q4d6dG9JRxK
+         jstQK5Le9qmgf87xFOcK96D7cAw2ucX18ENoKRkIIE0ryvxsQCp1mVRsBknkp0QrG6
+         5KE/VZssUw4Ag==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220115122618.plhiqnjh2755bv5h@pali>
+References: <20210930095838.28145-1-pali@kernel.org> <163425678347.1688384.10695189000353676651@swboyd.mtv.corp.google.com> <20211015090937.gnt66hgugrhwnkei@pali> <20211015093701.pfvkighxsndj4ujg@pali> <163433494758.1688384.5994009027317282677@swboyd.mtv.corp.google.com> <20211016064210.7ahqfqcvf66wtt66@pali> <20220115080213.0CCAFC36AE3@smtp.kernel.org> <20220115115018.he4hnnhlvrb6kann@pali> <20220115130509.4a240730@thinkpad> <20220115122618.plhiqnjh2755bv5h@pali>
+Subject: Re: [PATCH v7 3/6] dt-bindings: mvebu-uart: document DT bindings for marvell,armada-3700-uart-clock
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+To:     Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>,
+        Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>
+Date:   Wed, 19 Jan 2022 15:16:54 -0800
+User-Agent: alot/0.10
+Message-Id: <20220119231655.EFFF3C004E1@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+Quoting Pali Roh=C3=A1r (2022-01-15 04:26:18)
+> On Saturday 15 January 2022 13:05:09 Marek Beh=C3=BAn wrote:
+> > On Sat, 15 Jan 2022 12:50:18 +0100
+> > Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> >=20
+> > > On Saturday 15 January 2022 00:02:11 Stephen Boyd wrote:
+> > > > Quoting Pali Roh=C3=A1r (2021-10-15 23:42:10) =20
+> > > > >=20
+> > > > > If I was designing this driver and DTS bindings I would have choo=
+se
+> > > > > something like this:
+> > > > >=20
+> > > > > uart@0x12000 { =20
+> > > >=20
+> > > > Drop the 0x
+> > > >  =20
+> > > > >     reg =3D <0x12000 0x18>, <0x12200 0x30>;
+> > > > >     clock-controller {
+> > > > >         ...
+> > > > >     }; =20
+> > > >=20
+> > > > Drop this node and put whatever properties are inside into the pare=
+nt
+> > > > node.
+> > > >  =20
+> > > > >     serial1 {
+> > > > >         ...
+> > > > >         status =3D "disabled";
+> > > > >     };
+> > > > >     serial2 {
+> > > > >         ...
+> > > > >         status =3D "disabled";
+> > > > >     };
+> > > > > };
+> > > > >=20
+> > > > > Meaning that 0x12000 node would be 3 subnodes and all registers w=
+ould be
+> > > > > defined in top level nodes and would be handled by one driver.
+> > > > >=20
+> > > > > This is really how hardware block looks like. But it is not backw=
+ard
+> > > > > compatible... =20
+> > > >=20
+> > > > Sounds good to me. I presume we need the serial child nodes so we c=
+an
+> > > > reference them from the stdout-path? =20
+> > >=20
+> > > Yes, exactly, separate nodes for serial1 and serial2 are still requir=
+ed.
+> > >=20
+> > > But dropping clock controller is not possible as for higher baudrates=
+ we
+> > > need to use and configure uart clock controller. Without it we just g=
+et
+> > > comparable feature support which is already present in driver.
+> >=20
+> > What Stephen means is making clock controller out of the uart node
+> > directly. No need to add separate subnode just for clock controller.
+>=20
+> This is already implemented in v7 patch series. Clock controller is
+> already outside of uart nodes.
 
-Yu Tu <yu.tu@amlogic.com> writes:
+I mean to combine the uart node and the clock-controller node together
 
-> Using the common Clock code to describe the UART baud rate
-> clock makes it easier for the UART driver to be compatible
-> with the baud rate requirements of the UART IP on different
-> meson chips. Add Meson S4 SoC compatible.
+	uart-wrapper {
+		reg =3D <0x12000 0x18>, <0x12200 0x30>;
+		#clock-cells ...
 
-Could you describe how this was tested and on which SoCs?  There seem to
-be some changes in this series that might affect previous SoCs.
+		serial1 {
+			...
+		};
 
-Thanks,
-
-Kevin
-
-
+		serial2 {
+			...
+		};
+	};
