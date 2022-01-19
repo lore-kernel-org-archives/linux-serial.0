@@ -2,148 +2,164 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACB5C4167D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 11:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC09DC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Jan 2022 13:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354288AbiASLm0 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:42:26 -0500
-Received: from mxout03.lancloud.ru ([45.84.86.113]:32826 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236274AbiASLmT (ORCPT
+        id S236446AbiASNqc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 19 Jan 2022 08:46:32 -0500
+Received: from mailgw.felk.cvut.cz ([147.32.82.15]:52094 "EHLO
+        mailgw.felk.cvut.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236230AbiASNqb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:42:19 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 3B47720D46BF
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
- (summary)
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>, <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        <linux-mtd@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>, <linux-spi@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        <openipmi-developer@lists.sourceforge.net>,
-        "Khuong Dinh" <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        "Jiri Slaby" <jirislaby@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        <bcm-kernel-feedback-list@broadcom.com>,
-        <linux-serial@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Jaroslav Kysela" <perex@perex.cz>, <linux-pwm@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>, <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "John Garry" <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>,
-        "Vinod Koul" <vkoul@kernel.org>, James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        "Brian Norris" <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de> <YeQpWu2sUVOSaT9I@kroah.com>
- <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
- <b6038ec2-da4a-de92-b845-cac2be0efcd1@omp.ru>
- <20220119113314.tpqfdgi6nurmzfun@pengutronix.de>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <a42e1c8b-2c3d-e3f2-e48c-ad145322ad3d@omp.ru>
-Date:   Wed, 19 Jan 2022 14:42:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 19 Jan 2022 08:46:31 -0500
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 4FDEA30B035B;
+        Wed, 19 Jan 2022 14:46:30 +0100 (CET)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 4F5EF30ADE4A;
+        Wed, 19 Jan 2022 14:46:29 +0100 (CET)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 20JDkTMC020722;
+        Wed, 19 Jan 2022 14:46:29 +0100
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 20JDkSv9020721;
+        Wed, 19 Jan 2022 14:46:28 +0100
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Subject: Re: TTY layer discussion about generic FIFO depth and Rx iddle timeout control
+Date:   Wed, 19 Jan 2022 14:46:28 +0100
+User-Agent: KMail/1.9.10
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        linux-serial@vger.kernel.org,
+        Rostislav =?iso-8859-1?q?Lisov=FD?= <lisovy@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jiri Slaby <jslaby@suse.cz>
+References: <202201170006.31440.pisa@cmp.felk.cvut.cz> <YeVpFozoVQo1vbKS@kroah.com>
+In-Reply-To: <YeVpFozoVQo1vbKS@kroah.com>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-In-Reply-To: <20220119113314.tpqfdgi6nurmzfun@pengutronix.de>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202201191446.28415.pisa@cmp.felk.cvut.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 1/19/22 2:33 PM, Uwe Kleine-König wrote:
+Dear Greg,
 
-[...]
->>>>> A possible compromise: We can have both. We rename
->>>>> platform_get_irq_optional() to platform_get_irq_silent() (or
->>>>> platform_get_irq_silently() if this is preferred) and once all users are
->>>>> are changed (which can be done mechanically), we reintroduce a
->>>>> platform_get_irq_optional() with Sergey's suggested semantic (i.e.
->>>>> return 0 on not-found, no error message printking).
->>>>
->>>> Please do not do that as anyone trying to forward-port an old driver
->>>> will miss the abi change of functionality and get confused.  Make
->>>> build-breaking changes, if the way a function currently works is
->>>> changed in order to give people a chance.
->>>
->>> Fine for me. I assume this is a Nack for Sergey's patch?
->>
->>    Which patch do you mean? I'm starting to get really muddled... :-(
-> 
-> I'm talking about "[PATCH 1/2] platform: make
-> platform_get_irq_optional() optional"
+thanks for the reply.
 
-   I thought GregKH was talking about your renaming patch... :-/
+On Monday 17 of January 2022 14:03:18 Greg Kroah-Hartman wrote:
+> On Mon, Jan 17, 2022 at 12:06:31AM +0100, Pavel Pisa wrote:
+> >   https://github.com/lin-bus
+> >
+> > Kernel part - slLIN TTY discipline - can be found there
+> >
+> >   https://github.com/lin-bus/linux-lin/tree/master/sllin
+>
+> So it's just a 2000 line kernel module?  That should be easy to turn
+> into a patch and submit for review, right?
+>
+> Odds are it can be made much smaller based on an initial glance at it.
+> Review comments can help show what to do.
 
-> because "trying to forward-port an
-> old driver will miss the abi" applies to it.
+Thanks for encouragement for mainlining or at least review on the list.
+I agree that it can shrink when patch for mainline without sections
+providing compatibility with old kernels is prepared.
+Generally, I think that it is doable and important is feedback
+from the user base that there is interrest... and time...
 
-   Mhm... why not tell me right from the start? Jr even tell that to Andy
-instead of merging his patch, so I wouldn't get sucked into this work? 
-I wouldn't bother with v2 and it would have saved a lot of time spent on
-email... :-(
-   Do we also remember that "the stable API is a nonsense" thing? :-)
+I think that resolution of APO for the trigger/FIFO control
+is critical for thinking about mainlining. Rest is the usual
+work...
 
-> Best regards
-> Uwe
+> >   https://github.com/lin-bus/linux-lin/issues/13
+> >
+> Discuss it here by submitting patches please.  Links to random github
+> repos do not do much as we can do nothing with them, sorry.
 
-MBR, Sergey
+Yes, I understand but I would like to hear some suggestion
+the first where/into which object operations structure
+should be the function added.
+
+There is required functionality in 8250 driver linux/drivers/tty/serial/8250/8250_port.c
+
+     do_set_rxtrig(struct tty_port *port, unsigned char bytes)
+     do_serial8250_set_rxtrig(...)
+     serial8250_set_attr_rx_trig_bytes(...)
+     DEVICE_ATTR_RW(rx_trig_bytes)
+
+But to make slLIN generally usable, we would need to have functionality
+reachable from the line discipline
+
+Do you agree that right place is struct uart_ops?
+
+  https://elixir.bootlin.com/linux/latest/source/include/linux/serial_core.h#L38
+
+What should be a prototype?
+
+In general, it would worth to have possibility to set Rx trigger level
+and Rx iddle timeout. It would be ideal if the set function would
+adjust value down to the first equal or smaller level supported
+by uart HW and in the case of lack of support can switch FIFO off.
+The iddle time can be specified in microseconds, nanoseconds and or
+number of character times.
+
+So questions:
+
+Is more preferred to add two functions, one for iddle time, one
+for trigger level or combined function is better?
+
+How should work reporting of the supported values?
+
+Should there be more functions etc...
+
+I can imagine generic API which would provide all functionality
+by single function to not inflate struct uart_ops too much.
+
+  int (*rx_trigger)(struct uart_port *, int mode, int *rx_trigger_bytes,
+                  int *rx_trigger_iddle_time)
+
+The rx_trigger_bytes equal to 0 would mean switch FIFO off.
+Trigger time can be in nanoseconds??? and would be recomputed
+to number of character for some, most of the HW???
+
+The mode could have
+
+  UART_RX_TRIGGER_MODE_SET
+  UART_RX_TRIGGER_MODE_CHECK_ROUND_DOWN
+  UART_RX_TRIGGER_MODE_CHECK_ROUND_UP
+
+When specified parameters cannot be set, the function returns
+error. When called with ROUND_UP/DOWN it modifies parameters
+to the first available value in given direction
+and next call to UART_RX_TRIGGER_MODE_SET would be guaranteed
+to succeed.
+
+Other option is to combine functionality to set_termios
+call, but it is quite convoluted by its history and connection
+to user space API. Not that maintaining trigger levels from
+userspace is not usefull, but...
+
+I would be happy if you or somebody other with linux
+kernel and serial port style taste would comment.
+
+Best wishes ant thanks for your time and work,
+
+
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://dce.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+
+
