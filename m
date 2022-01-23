@@ -2,61 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F36FC433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Jan 2022 13:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C0CC433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Jan 2022 13:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236443AbiAWNca (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Jan 2022 08:32:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        id S236450AbiAWNcu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 23 Jan 2022 08:32:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbiAWNc0 (ORCPT
+        with ESMTP id S236414AbiAWNcu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Jan 2022 08:32:26 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE19C061401
-        for <linux-serial@vger.kernel.org>; Sun, 23 Jan 2022 05:32:26 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id a25so4970439lji.9
-        for <linux-serial@vger.kernel.org>; Sun, 23 Jan 2022 05:32:26 -0800 (PST)
+        Sun, 23 Jan 2022 08:32:50 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16DCC06173B
+        for <linux-serial@vger.kernel.org>; Sun, 23 Jan 2022 05:32:49 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id a28so13757503lfl.7
+        for <linux-serial@vger.kernel.org>; Sun, 23 Jan 2022 05:32:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=embecosm.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=cE6Axky5J7q71j8VqIGIKtEH+qBJqkdNssC7NWs86H8=;
-        b=fxPH+CMyD8ijeP+PzzSwa9fAaxhxpX3i6NZy7SQ2LBTrTOcRyWNDJPMcDSWmtI84/F
-         i6fY5XaVrBqDe9GxipWwsn648QK5z96KzrOyFuQ1bUdG2he6eGH+4mgWfmuJeNFjy8sc
-         hmYB3qqTtBFlySvIP/RTTi/WK3wTtpET2vYWgWO5Zd8j3+uOBTsLqrg9X0lxJfcM6BUY
-         UBZchkynCaIrys3hcH8ZT08Mqpplxb9PJOgNmy8pTE5UdsH6MUgXBBV84SrufPVn2djO
-         aao+ytLeDTLvci62sXwZOSOmkvGMiVVLzNeZDMMKPYul6K1omosB0X9UGzUpnqjah6B+
-         gFmQ==
+        h=date:from:to:cc:subject:message-id:user-agent:mime-version;
+        bh=DgJZK3cUl7BMrj5rlxlO6UlwlkM/loYjlJWdtr0GJoY=;
+        b=Q0O21Re8JnLPbxfUWerN6Lg3yQOZSe0u+2lQHRn5RekRR4lXL0nHUTWDUanrP+Y57x
+         Ql1a3vpNS95JzGzHJiSepRiaHym3Z9HTtHSuqvxUz/KEkMkwf4NRluDtccNfIXm7MmTZ
+         SeLetTmfIGHwZtYbojObJ2ypFD6i17zrlBZMHq4PsTdOHr3FmRY9Ky1PFdeOylhCYriW
+         18qHnP52hn6H1hZccUBpNJbMPQz0kSTFJhDfSm/Htlp61N0xtnVlYRPX3S0Y1NvraSLU
+         aVww7pE6O7gtf5OwvtvEPyXhhvEpQoPu7FKoUN79sVk6FAfg93RFcvoGooeqBzaoQ9Ln
+         qjgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=cE6Axky5J7q71j8VqIGIKtEH+qBJqkdNssC7NWs86H8=;
-        b=HZzhIaEPqw0EDDpUpdytZxcfDWY32sxwB865C5iRnHsn6rtUBAFIXR380ntkS4xvpH
-         V4jZl6/IdrvWtKfC3geb2USM2nVOry3jjXKiO9jYAIcD5ERyr4rFleCWj9gS7VbsE488
-         3JcKDEiGn/9kFjzNsyPrKR17CpLtICFNKBt9VQBtpJRYIJ+VkCo/Alt1o9eOAx7vTa3m
-         +lqCiRB1PvPl/EdWjJ2hoBflHlnU4eKPEGQe6Ym2syfkJaR6+Jgqz68VuRtkewnYDb+k
-         x2BN9tPClMhcDAQyvun7kyqV8eBA2DatYX3/FRgNdyYPc1b4VKqEvpuKhZ1A62dKSci6
-         97Ew==
-X-Gm-Message-State: AOAM5303pEfZWfp4wck4Vxwe0zCBvSqmmRTRObKPOWSdXIKezaPlYNv+
-        lifCkP/KamfSE4Sc2iVJYaE9Hg==
-X-Google-Smtp-Source: ABdhPJwVKBBfitqoZV7BPsMNJS5lEhfb0kTHUARViYS1GnX/vzLgZD+rzB+8fN3ejh16YYF4XwGCIQ==
-X-Received: by 2002:a2e:9b9a:: with SMTP id z26mr8315854lji.381.1642944744222;
-        Sun, 23 Jan 2022 05:32:24 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :mime-version;
+        bh=DgJZK3cUl7BMrj5rlxlO6UlwlkM/loYjlJWdtr0GJoY=;
+        b=Xsr08/ebpqf1cMrLRvYbbVC+CcO6cCArujzRUSk25xElBYWndV3BBLOg2Mxl3vN5e6
+         z4bFQbj0nKuclJBT997W3pREukh1SPkkiXlWSDJ91dn4ZvFJxCIuezf1S4J35oBXTxya
+         3A1m0/kKOFiBdN0/p1YHYYcqUIQlU2SDA7Cm8ZCrKUNEJS40MLf0aVqhqpTpvfJJwEAR
+         m/2xHE223plUbEBobd01xpWxGin9XwZrkQlFaDBAX6hKcHngsXX+ot7eM7Ol4WDuOWdc
+         tFz3yzfEj1fpqLBi6oQKlixCbV/9kupkT3yeKGZreiqsf8YKX51Oc9/wM0V4/Cp+5tQI
+         bEfA==
+X-Gm-Message-State: AOAM532h65ccz/W8BhI6FLMhBm07kbPVH8KUu9RfUKO1vbZYdEm3rHjO
+        VHvE5z54lEjKtAv6hrRLrErAQ35qrZyP7fBF
+X-Google-Smtp-Source: ABdhPJxrrBThy4A7zTLsSM+XjyuOA3Msy67kGLUf3itrmMeHkGymJqIByspP1XpbbkustgvVhSiOmQ==
+X-Received: by 2002:ac2:5442:: with SMTP id d2mr2734150lfn.482.1642944768092;
+        Sun, 23 Jan 2022 05:32:48 -0800 (PST)
 Received: from [192.168.219.3] ([78.8.192.131])
-        by smtp.gmail.com with ESMTPSA id br24sm230913lfb.175.2022.01.23.05.32.22
+        by smtp.gmail.com with ESMTPSA id b18sm52831lff.109.2022.01.23.05.32.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 23 Jan 2022 05:32:23 -0800 (PST)
-Date:   Sun, 23 Jan 2022 13:32:21 +0000 (GMT)
+        Sun, 23 Jan 2022 05:32:47 -0800 (PST)
+Date:   Sun, 23 Jan 2022 13:32:45 +0000 (GMT)
 From:   "Maciej W. Rozycki" <macro@embecosm.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: Revert the removal of the Cyclades public API
-In-Reply-To: <YeWx5aKmG44sWPEI@kroah.com>
-Message-ID: <alpine.DEB.2.20.2201171827130.11348@tpp.orcam.me.uk>
-References: <alpine.DEB.2.20.2201141832330.11348@tpp.orcam.me.uk> <YeKDD6imTh1Y6GuN@kroah.com> <alpine.DEB.2.20.2201151231020.11348@tpp.orcam.me.uk> <YeWx5aKmG44sWPEI@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH v2] tty: Partially revert the removal of the Cyclades public
+ API
+Message-ID: <alpine.DEB.2.20.2201230148120.11348@tpp.orcam.me.uk>
 User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,86 +63,96 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 17 Jan 2022, Greg Kroah-Hartman wrote:
+Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+cyclades, remove this orphan"), which removed a part of the API and 
+caused compilation errors for user programs using said part, such as 
+GCC 9 in its libsanitizer component[1]:
 
-> >  Because they have become a part of the published API.  Someone may even 
-> > use a system using headers from the most recent version of the Linux 
-> > kernel (though not necessarily running such a kernel) to build software 
-> > intended to run on an older version that still does implement the API.  
-> > Times where people individually built pefectly matching software from 
-> > sources to run on each system they looked after have largely long gone.
-> 
-> For hardware-specific things like this, it's not the same.  I can see
-> adding the .h file as empty just to keep things building, but if no one
-> is actually ever using the structures and definitions in the file, it
-> should stay removed.
-> 
-> In looking at the file itself, it just looks like it wants a single
-> structure, struct cyclades_monitor, and then never actually does
-> anything with it.
+.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+  160 | #include <linux/cyclades.h>
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 
- According to the error messages I got when I added the missing structure 
-only it refers a number of ioctls as well, clearly making use of them 
-somehow:
+As the absolute minimum required bring `struct cyclades_monitor' and 
+ioctl numbers back then so as to make the library build again.
 
-.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:836:35: error: 'CYGETDEFTHRESH' was not declared in this scope; did you mean 'IOCTL_CYGETDEFTHRESH'?
+References:
+
+[1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel 
+    header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
+
+Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
+Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
+Cc: stable@vger.kernel.org # v5.13+
+---
+Hi Greg,
+
+ Only these ioctl numbers are referred by libsanitizer (quoted with source
+line numbers as printed by GCC):
+
   836 |   unsigned IOCTL_CYGETDEFTHRESH = CYGETDEFTHRESH;
-      |                                   ^~~~~~~~~~~~~~
-      |                                   IOCTL_CYGETDEFTHRESH
+  837 |   unsigned IOCTL_CYGETDEFTIMEOUT = CYGETDEFTIMEOUT;
+  838 |   unsigned IOCTL_CYGETMON = CYGETMON;
+  839 |   unsigned IOCTL_CYGETTHRESH = CYGETTHRESH;
+  840 |   unsigned IOCTL_CYGETTIMEOUT = CYGETTIMEOUT;
+  841 |   unsigned IOCTL_CYSETDEFTHRESH = CYSETDEFTHRESH;
+  842 |   unsigned IOCTL_CYSETDEFTIMEOUT = CYSETDEFTIMEOUT;
+  843 |   unsigned IOCTL_CYSETTHRESH = CYSETTHRESH;
+  844 |   unsigned IOCTL_CYSETTIMEOUT = CYSETTIMEOUT;
 
-etc.
+-- however I don't think it makes sense to bring them back selectively.  
 
-> So I guess I should submit a patch to the llvm developers to remove
-> these lines and add back the single structure definition to allow this
-> to keep building now?
-
- Side note: I've encountered it with libsanitizer bundled with GCC rather 
-than LLVM; I don't know what use of libsanitizer LLVM makes or what their 
-maintenance/release policies are.
-
- You can't add anything back to something that has been released long ago, 
-e.g. <ftp://ftp.gnu.org/gnu/gcc/gcc-9.1.0/gcc-9.1.0.tar.gz>.  OK, it's 
-less than 3 years ago, so not very long really, but the same applies: that 
-release has been cast in stone and `gcc-9.1.0.tar.gz' will be as it is 
-forever.  A user will expect to just download it and successfully build 
-with their system, be it now or in 10 years' time.
-
- Of course reality may vary, but that is only supposed to happen because 
-people make mistakes and not because they deliberately and unilaterally 
-terminate a contract such as an API is.
-
-> >  Well, they have been exported, so they have become a part of the API.  
-> > This user program may not use them, another one will.  If you don't want 
-> > an API to become public, then do not export it in the first place.
-> 
-> That happened a very long time ago, for hardware that no one has, sorry.
-> 
-> So the "ABI" broke when the driver was removed.  Given that no one has
-> the hardware, no one noticed the breakage, so there is no breakage :)
-
- The ABI is still there, that is if a binary that has been built according 
-to this API tries to use it the kernel with the driver obsoleted won't do 
-anything unexpected.  It will of course return some kind of an error, but 
-returning errors has been a part of the API and therefore any sane program 
-must have been prepared to handle anyway (e.g. driver not configured in, 
-hardware not present, device on fire, etc.).
-
-> >  So it shouldn't have been a part of the user API in the first place.  
-> > Given that it has become a part of it it has to stay, that's the whole 
-> > point of having a user API.
-> 
-> But what user program uses that value?  I can't seem to find any, so
-> pointers would be appreciated.
-
- Well, an API is an API.  A contract as I pointed out.  Such a program 
-need not be publicly available and we may not be able to trace it.
-
-> I'll gladly take a patch that just adds the one needed structure to keep
-> this file building.  But that's all that is needed unless someone can
-> point out other code that needs these definitions.
-
- Well, I don't feel like arguing even though I don't think it's the right 
-approach, so taking your word for acceptance I'm sending v2 adjusted to 
-your requirements right away.
+ Please apply.
 
   Maciej
+
+Changes from v1:
+
+- Adjust heading from "tty: Revert the removal of the Cyclades public API".
+
+- Only revert `struct cyclades_monitor' and ioctl numbers.
+
+- Properly format the change given that it's not a plain revert anymore.
+---
+ include/uapi/linux/cyclades.h |   32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+linux-uapi-cyclades.diff
+Index: linux/include/uapi/linux/cyclades.h
+===================================================================
+--- /dev/null
++++ linux/include/uapi/linux/cyclades.h
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++
++#ifndef _UAPI_LINUX_CYCLADES_H
++#define _UAPI_LINUX_CYCLADES_H
++
++struct cyclades_monitor {
++	unsigned long int_count;
++	unsigned long char_count;
++	unsigned long char_max;
++	unsigned long char_last;
++};
++
++#define CYGETMON		0x435901
++#define CYGETTHRESH		0x435902
++#define CYSETTHRESH		0x435903
++#define CYGETDEFTHRESH		0x435904
++#define CYSETDEFTHRESH		0x435905
++#define CYGETTIMEOUT		0x435906
++#define CYSETTIMEOUT		0x435907
++#define CYGETDEFTIMEOUT		0x435908
++#define CYSETDEFTIMEOUT		0x435909
++#define CYSETRFLOW		0x43590a
++#define CYGETRFLOW		0x43590b
++#define CYSETRTSDTR_INV		0x43590c
++#define CYGETRTSDTR_INV		0x43590d
++#define CYZSETPOLLCYCLE		0x43590e
++#define CYZGETPOLLCYCLE		0x43590f
++#define CYGETCD1400VER		0x435910
++#define CYSETWAIT		0x435912
++#define CYGETWAIT		0x435913
++
++#endif /* _UAPI_LINUX_CYCLADES_H */
