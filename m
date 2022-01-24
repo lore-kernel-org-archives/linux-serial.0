@@ -2,159 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F59C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 16:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16792C3527D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241085AbiAXQZN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:25:13 -0500
-Received: from mga11.intel.com ([192.55.52.93]:21201 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241078AbiAXQZN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:25:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643041513; x=1674577513;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r+zZ2dRQMqn/zhn532Bp1lCp8yNVug+JyWdiOLLqqHE=;
-  b=ky6KA3GMNCT9KsCqBWNJ/S9WjbNTFGPnBRcpzIRRANLCqSBFcjw8hlh3
-   sKH/TPFH7wolg51IlomwFoHpM5ctDJ+liJMuPNY2muZPFTsiULC5tBen+
-   2k20j9rp4J/fgmZWGYZhFxAlmdPXqvD+JJ7jsRHLHHaD/pV1Ym2xUNJbo
-   jU+B5XShhSIzNCDPqNWkduNzlb+2gTYtkJWnkqAWrqDMsEo1M+l0TTmqM
-   ZK2x9sjwn2U63efuhXjt9opa8BBg4v8MF8uyx7z5A+SRa+V3jhkUaOJCs
-   YRH789/ZNadmkeSBVYM/SQfPXwsyujLo+OreYqdqPKx6CUGDEATTwNbm8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="243681574"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="243681574"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 08:24:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="596833173"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2022 08:24:55 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC29G-000IbC-Kj; Mon, 24 Jan 2022 16:24:54 +0000
-Date:   Tue, 25 Jan 2022 00:23:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     kbuild-all@lists.01.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, johan@kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH 10/11] serial: make uart_console_write->putchar()'s
- character a char
-Message-ID: <202201250004.SHBbOjs3-lkp@intel.com>
-References: <20220124071430.14907-11-jslaby@suse.cz>
+        id S1346813AbiAXVMm (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jan 2022 16:12:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382985AbiAXUtE (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Jan 2022 15:49:04 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D4BC08C5C3
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id x37so13112823pfh.8
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=HVGqPcoZ6tA4nJhZfd9qY6ac55uc9ZaTu5VnzL123sM=;
+        b=UoZnDRjvtwLGL+ZkFcMTRUht5RIXtnBkTp4T6OG0AtGfMmQrPFl9oEQK+LSaOTD9Ff
+         4IgMBC8I2mCMgPlfBJQkK3VHrxcha3AZYVFNAwOwcZzAmgea+bvbp1UehK004oOm9ZDt
+         2GdGVRW/O0rVSL0okB2EzJHABeN+B+OCzbNa37efKF4UpKfDdcUMbdtqli79nb1lYgdB
+         AhkzshqI36hc2fxfBmdAMwT8yif1sH38wALztzkS/dESmgamvc5nJuOU9Q76HPIk9AwX
+         7kdNVBsNmfqu7WibSmnqSXB8wzieNrEyCiyFmZxO0kIq6vvmJSYZRLX9BvSnuIltj+iS
+         aGpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=HVGqPcoZ6tA4nJhZfd9qY6ac55uc9ZaTu5VnzL123sM=;
+        b=MX1T9MlTkM5RBz2D/MVaJcwAzstvDTwvApLonU7e96BGqyTk4h5M5cf5s1i5dlmnrh
+         +E1fbM1ODw6VqGeDIWUH1t71w+WjQPIz+iPnKtSDNFTdz/eZtQHP6ezs9O6WDOLaimzl
+         hhglIMShXZdbyEyWsVKQGy0fJfRJxHxKKS7UyZ/hn+OVFwH4s0GjFznoBgxA++WlcNDa
+         L99sif2RMl2tmPx9ZO0DKHe+NOZFS1959lrH3iAJHCnxWHj/y73B1UP9OuvGynjDrZGv
+         XlyGoemFkkY86N19f9QSRa+voJmh8b3CjbTD5GJW0M0+RW2yjcO/H5xv8k7wbAWCXLVs
+         2NNA==
+X-Gm-Message-State: AOAM531MIVAUoXVqR5FX+f+E0U6l4Iiv73Ov1f3Y6G0Ng2WqKc9s+hjW
+        zknet+/M72xiGKenpoknfPJnwg==
+X-Google-Smtp-Source: ABdhPJx7U6j+SQSA5xpuk5vCxWu3Ky4xUij2eceN7DEhp+Ycho/C63+AuVhP3jpxuBCnbaR6tX0zww==
+X-Received: by 2002:a62:e210:0:b0:4c9:1cff:15cc with SMTP id a16-20020a62e210000000b004c91cff15ccmr2941028pfi.55.1643054285206;
+        Mon, 24 Jan 2022 11:58:05 -0800 (PST)
+Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
+        by smtp.gmail.com with ESMTPSA id x18sm12866584pgj.41.2022.01.24.11.58.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 11:58:04 -0800 (PST)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V6 0/5] Use CCF to describe the UART baud rate clock
+In-Reply-To: <cc3b971f-c630-4ce2-e6dd-c13bcba89d22@amlogic.com>
+References: <20220118030911.12815-1-yu.tu@amlogic.com>
+ <7hfspjqrn7.fsf@baylibre.com>
+ <cc3b971f-c630-4ce2-e6dd-c13bcba89d22@amlogic.com>
+Date:   Mon, 24 Jan 2022 11:58:04 -0800
+Message-ID: <7hbl00ykhf.fsf@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124071430.14907-11-jslaby@suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri,
+Yu Tu <yu.tu@amlogic.com> writes:
 
-I love your patch! Yet something to improve:
+> Hi Kevin,
+> 	Thank you very much for your reply.
+>
+> On 2022/1/20 6:37, Kevin Hilman wrote:
+>> [ EXTERNAL EMAIL ]
+>> 
+>> Hello,
+>> 
+>> Yu Tu <yu.tu@amlogic.com> writes:
+>> 
+>>> Using the common Clock code to describe the UART baud rate
+>>> clock makes it easier for the UART driver to be compatible
+>>> with the baud rate requirements of the UART IP on different
+>>> meson chips. Add Meson S4 SoC compatible.
+>> 
+>> Could you describe how this was tested and on which SoCs?  There seem to
+>> be some changes in this series that might affect previous SoCs.
+>> 
+> For me, the board starts normally and prints. My intention was to add 
+> the S4 SOC UART compatible, but for the S4 our baud rate clock is 
+> calculated at 12MHz by default.So a series of changes were made at your 
+> suggestion.
+>
+> Since most SoCs are too old, I was able to find all the platforms myself 
+> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with 
+> G12A and S4.But when I talked to Martin earlier he tried meson8b's log.
+> The test patch is in the attachment.
+>
+> I have found that on some boards with this change, the initcall_debug 
+> Uart driver takes longer to initialize. Running the stty command to 
+> change the baud rate at the same time may cause a jam.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on v5.17-rc1 next-20220124]
-[cannot apply to shawnguo/for-next davem-sparc/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+This kind of detail is important to document in the cover letter,
+including a bit more detail on how to reproduce so that other can help
+test or may have ideas for how to solve.
 
-url:    https://github.com/0day-ci/linux/commits/Jiri-Slaby/TTY-patches-for-5-18/20220124-151758
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: arc-randconfig-r043-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250004.SHBbOjs3-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/45520d4f6db241db0b77f41162adba4a9977956c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jiri-Slaby/TTY-patches-for-5-18/20220124-151758
-        git checkout 45520d4f6db241db0b77f41162adba4a9977956c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/tty/serial/
+> I'd love to know what else you suggest.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I don't expect you to be able to test on all SoCs, but just to list what
+SoCs and which boards you tested on.  This way, those who have other
+boards can help test and we can have a better idea of how this was
+tested before merging.
 
-All errors (new ones prefixed by >>):
+Thanks,
 
-   drivers/tty/serial/omap-serial.c: In function 'serial_omap_console_write':
->> drivers/tty/serial/omap-serial.c:1272:49: error: passing argument 4 of 'uart_console_write' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    1272 |         uart_console_write(&up->port, s, count, serial_omap_console_putchar);
-         |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                                 |
-         |                                                 void (*)(struct uart_port *, int)
-   In file included from drivers/tty/serial/omap-serial.c:30:
-   include/linux/serial_core.h:402:32: note: expected 'void (*)(struct uart_port *, char)' but argument is of type 'void (*)(struct uart_port *, int)'
-     402 |                         void (*putchar)(struct uart_port *, char));
-         |                         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/uart_console_write +1272 drivers/tty/serial/omap-serial.c
-
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1248  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1249  static void
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1250  serial_omap_console_write(struct console *co, const char *s,
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1251  		unsigned int count)
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1252  {
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1253  	struct uart_omap_port *up = serial_omap_console_ports[co->index];
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1254  	unsigned long flags;
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1255  	unsigned int ier;
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1256  	int locked = 1;
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1257  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1258  	local_irq_save(flags);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1259  	if (up->port.sysrq)
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1260  		locked = 0;
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1261  	else if (oops_in_progress)
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1262  		locked = spin_trylock(&up->port.lock);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1263  	else
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1264  		spin_lock(&up->port.lock);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1265  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1266  	/*
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1267  	 * First save the IER then disable the interrupts
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1268  	 */
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1269  	ier = serial_in(up, UART_IER);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1270  	serial_out(up, UART_IER, 0);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1271  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27 @1272  	uart_console_write(&up->port, s, count, serial_omap_console_putchar);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1273  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1274  	/*
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1275  	 * Finally, wait for transmitter to become empty
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1276  	 * and restore the IER
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1277  	 */
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1278  	wait_for_xmitr(up);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1279  	serial_out(up, UART_IER, ier);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1280  	/*
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1281  	 * The receive handling will happen properly because the
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1282  	 * receive ready bit will still be set; it is not cleared
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1283  	 * on read.  However, modem control will not, we must
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1284  	 * call it if we have saved something in the saved flags
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1285  	 * while processing with interrupts off.
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1286  	 */
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1287  	if (up->msr_saved_flags)
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1288  		check_modem_status(up);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1289  
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1290  	if (locked)
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1291  		spin_unlock(&up->port.lock);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1292  	local_irq_restore(flags);
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1293  }
-b612633b592807 drivers/serial/omap-serial.c Govindraj.R 2010-09-27  1294  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Kevin
