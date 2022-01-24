@@ -2,49 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F19C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 07:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FB2C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 07:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241764AbiAXHOl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jan 2022 02:14:41 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:58064 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235952AbiAXHOe (ORCPT
+        id S241754AbiAXHOr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jan 2022 02:14:47 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:41176 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241769AbiAXHOl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jan 2022 02:14:34 -0500
+        Mon, 24 Jan 2022 02:14:41 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id D24F71F3A5;
-        Mon, 24 Jan 2022 07:14:32 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1910821902;
+        Mon, 24 Jan 2022 07:14:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643008472; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1643008480; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g2jHGQhYb1bp/hVAQP7G6GbfFvC58/zmtrgJPJDZ7Y0=;
-        b=RRRuWmCgWoOTrdrqZd5V23PAlIts8VKuOmWrvd1JiSj6I3IpibVyDF2dbsnoViKGI4q0TY
-        xTq5clbe15lqSUJtdZaHJMvfWR3aOq3H1seaKzaiqozQCD80I6572s/CX83Y9X1pM5kjcD
-        ja2ViHsMsiAXPsI1TtQ3TS0UI4tHVoE=
+        bh=FRMgZ5FDBy6Zkj47m+UUogIIvf9qagcdtK0/L6BvNPA=;
+        b=BtpSyL/z69pXszzVJdDm5iETX2Dd43UIy2dPNP8K7QvIRak2taUAFnz23cy2O1Jiqvr7Vq
+        zil0nXOw0KWWM9FQMst4zn++bwQL+KjI7ZWdNMHZBPUdQBU12QgPCHwcHIRcM2WkEXSQwA
+        5/hovVM5WaQBUy0sxlIJK8KCXg0l+A0=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643008472;
+        s=susede2_ed25519; t=1643008480;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g2jHGQhYb1bp/hVAQP7G6GbfFvC58/zmtrgJPJDZ7Y0=;
-        b=vJCiy5y8/EVbh2YC6pvUlVTbyjvkTZJJ9zVCDb8U6QXFlB2jFbTV+liJelTzlwP/Nxdw39
-        uRHhSZub2aXjRGAA==
+        bh=FRMgZ5FDBy6Zkj47m+UUogIIvf9qagcdtK0/L6BvNPA=;
+        b=+R4sp2+NfSpgTHzh5kh+TUg8nCcTaFu4fBkIOwCLvJ06/BNGATDp0j52dqCFL2jj2to1gA
+        UnN+r9YDm+qW8+AA==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9AC33A3B81;
-        Mon, 24 Jan 2022 07:14:32 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id CB112A3B85;
+        Mon, 24 Jan 2022 07:14:39 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         johan@kernel.org, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 03/11] tty: add kfifo to tty_port
-Date:   Mon, 24 Jan 2022 08:14:22 +0100
-Message-Id: <20220124071430.14907-4-jslaby@suse.cz>
+Subject: [PATCH 11/11] serial: mcf: use helpers in mcf_tx_chars()
+Date:   Mon, 24 Jan 2022 08:14:30 +0100
+Message-Id: <20220124071430.14907-12-jslaby@suse.cz>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124071430.14907-1-jslaby@suse.cz>
 References: <20220124071430.14907-1-jslaby@suse.cz>
@@ -54,74 +54,39 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Define a kfifo inside struct tty_port. We use DECLARE_KFIFO_PTR and let
-the preexisting tty_port::xmit_buf be also the buffer for the kfifo.
-And handle the initialization/decomissioning along with xmit_buf, i.e.
-in tty_port_alloc_xmit_buf() and tty_port_free_xmit_buf(), respectively.
-
-This allows for kfifo use in drivers which opt-in, while others still
-may use the old xmit_buf. mxser will be the first user in the next
-few patches.
+Use uart_circ_empty() instead of open-coding it via xmit->head & tail.
+Use preexisting mcf_stop_tx() to avoid stop-tx code duplication.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/tty_port.c   | 6 +++++-
- include/linux/tty_port.h | 3 +++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ drivers/tty/serial/mcf.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 7709ce655f44..7644834640f1 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -225,8 +225,11 @@ int tty_port_alloc_xmit_buf(struct tty_port *port)
- {
- 	/* We may sleep in get_zeroed_page() */
- 	mutex_lock(&port->buf_mutex);
--	if (port->xmit_buf == NULL)
-+	if (port->xmit_buf == NULL) {
- 		port->xmit_buf = (unsigned char *)get_zeroed_page(GFP_KERNEL);
-+		if (port->xmit_buf)
-+			kfifo_init(&port->xmit_fifo, port->xmit_buf, PAGE_SIZE);
-+	}
- 	mutex_unlock(&port->buf_mutex);
- 	if (port->xmit_buf == NULL)
- 		return -ENOMEM;
-@@ -240,6 +243,7 @@ void tty_port_free_xmit_buf(struct tty_port *port)
- 	if (port->xmit_buf != NULL) {
- 		free_page((unsigned long)port->xmit_buf);
- 		port->xmit_buf = NULL;
-+		INIT_KFIFO(port->xmit_fifo);
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index c7cec7d03620..2aec62b5d6c4 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -338,7 +338,7 @@ static void mcf_tx_chars(struct mcf_uart *pp)
  	}
- 	mutex_unlock(&port->buf_mutex);
- }
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index d3ea9ed0b98e..58e9619116b7 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -2,6 +2,7 @@
- #ifndef _LINUX_TTY_PORT_H
- #define _LINUX_TTY_PORT_H
  
-+#include <linux/kfifo.h>
- #include <linux/kref.h>
- #include <linux/mutex.h>
- #include <linux/tty_buffer.h>
-@@ -67,6 +68,7 @@ extern const struct tty_port_client_operations tty_port_default_client_ops;
-  * @mutex: locking, for open, shutdown and other port operations
-  * @buf_mutex: @xmit_buf alloc lock
-  * @xmit_buf: optional xmit buffer used by some drivers
-+ * @xmit_fifo: optional xmit buffer used by some drivers
-  * @close_delay: delay in jiffies to wait when closing the port
-  * @closing_wait: delay in jiffies for output to be sent before closing
-  * @drain_delay: set to zero if no pure time based drain is needed else set to
-@@ -110,6 +112,7 @@ struct tty_port {
- 	struct mutex		mutex;
- 	struct mutex		buf_mutex;
- 	unsigned char		*xmit_buf;
-+	DECLARE_KFIFO_PTR(xmit_fifo, unsigned char);
- 	unsigned int		close_delay;
- 	unsigned int		closing_wait;
- 	int			drain_delay;
+ 	while (readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY) {
+-		if (xmit->head == xmit->tail)
++		if (uart_circ_empty(xmit))
+ 			break;
+ 		writeb(xmit->buf[xmit->tail], port->membase + MCFUART_UTB);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE -1);
+@@ -348,9 +348,8 @@ static void mcf_tx_chars(struct mcf_uart *pp)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ 
+-	if (xmit->head == xmit->tail) {
+-		pp->imr &= ~MCFUART_UIR_TXREADY;
+-		writeb(pp->imr, port->membase + MCFUART_UIMR);
++	if (uart_circ_empty(xmit)) {
++		mcf_stop_tx(port);
+ 		/* Disable TX to negate RTS automatically */
+ 		if (port->rs485.flags & SER_RS485_ENABLED)
+ 			writeb(MCFUART_UCR_TXDISABLE,
 -- 
 2.34.1
 
