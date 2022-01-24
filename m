@@ -2,49 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F98AC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 07:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F19C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 07:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbiAXHOl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S241764AbiAXHOl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 24 Jan 2022 02:14:41 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:58082 "EHLO
+Received: from smtp-out2.suse.de ([195.135.220.29]:58064 "EHLO
         smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241696AbiAXHOe (ORCPT
+        with ESMTP id S235952AbiAXHOe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 24 Jan 2022 02:14:34 -0500
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id C583C1F3B6;
-        Mon, 24 Jan 2022 07:14:33 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id D24F71F3A5;
+        Mon, 24 Jan 2022 07:14:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643008473; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1643008472; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=L9a5B5RGVmJ6PZ7we55uVKingQ30djeTUqYcDv5kgvY=;
-        b=0sjKwF5c8FiS2KpPZTRL9Si8lqNFI5zSHu6Z24Mw/l75IrqwfVJqmIhzDTPbN4v327hKtw
-        R8BG1X4P3b3dwUP6huhppJTAJXQL404gKteW5Day/nOWR4zEbAzjpYStr4CzsSxoaDJc3M
-        4owRPASDfA+SAOaIW56YIEXTllVujvo=
+        bh=g2jHGQhYb1bp/hVAQP7G6GbfFvC58/zmtrgJPJDZ7Y0=;
+        b=RRRuWmCgWoOTrdrqZd5V23PAlIts8VKuOmWrvd1JiSj6I3IpibVyDF2dbsnoViKGI4q0TY
+        xTq5clbe15lqSUJtdZaHJMvfWR3aOq3H1seaKzaiqozQCD80I6572s/CX83Y9X1pM5kjcD
+        ja2ViHsMsiAXPsI1TtQ3TS0UI4tHVoE=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643008473;
+        s=susede2_ed25519; t=1643008472;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=L9a5B5RGVmJ6PZ7we55uVKingQ30djeTUqYcDv5kgvY=;
-        b=LgXxeYj1hXPl+LT5X5nZ0LRWQujhs/Y6iHgB2TtHYl4C4nGGvjajDVXjOZOCkbOhW68XJw
-        q01kz5BNuBWoqEAg==
+        bh=g2jHGQhYb1bp/hVAQP7G6GbfFvC58/zmtrgJPJDZ7Y0=;
+        b=vJCiy5y8/EVbh2YC6pvUlVTbyjvkTZJJ9zVCDb8U6QXFlB2jFbTV+liJelTzlwP/Nxdw39
+        uRHhSZub2aXjRGAA==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 90E84A3B84;
-        Mon, 24 Jan 2022 07:14:33 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 9AC33A3B81;
+        Mon, 24 Jan 2022 07:14:32 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         johan@kernel.org, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 06/11] mxser: use tty_port xmit_buf helpers
-Date:   Mon, 24 Jan 2022 08:14:25 +0100
-Message-Id: <20220124071430.14907-7-jslaby@suse.cz>
+Subject: [PATCH 03/11] tty: add kfifo to tty_port
+Date:   Mon, 24 Jan 2022 08:14:22 +0100
+Message-Id: <20220124071430.14907-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124071430.14907-1-jslaby@suse.cz>
 References: <20220124071430.14907-1-jslaby@suse.cz>
@@ -54,84 +54,74 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For the mxser driver to use kfifo, use tty_port_alloc_xmit_buf() and
-tty_port_free_xmit_buf() helpers in activate/shutdown, respectively.
+Define a kfifo inside struct tty_port. We use DECLARE_KFIFO_PTR and let
+the preexisting tty_port::xmit_buf be also the buffer for the kfifo.
+And handle the initialization/decomissioning along with xmit_buf, i.e.
+in tty_port_alloc_xmit_buf() and tty_port_free_xmit_buf(), respectively.
 
-As these calls have to be done in a non-atomic context, we have to move
-them outside spinlock and make sure irq is really stopped after we write
-to the ISR register.
+This allows for kfifo use in drivers which opt-in, while others still
+may use the old xmit_buf. mxser will be the first user in the next
+few patches.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/mxser.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+ drivers/tty/tty_port.c   | 6 +++++-
+ include/linux/tty_port.h | 3 +++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index fbb796f83753..4ddc12a63666 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -742,13 +742,12 @@ static void mxser_disable_and_clear_FIFO(struct mxser_port *info)
- static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 7709ce655f44..7644834640f1 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -225,8 +225,11 @@ int tty_port_alloc_xmit_buf(struct tty_port *port)
  {
- 	struct mxser_port *info = container_of(port, struct mxser_port, port);
--	unsigned long page;
- 	unsigned long flags;
- 	int ret;
- 
--	page = __get_free_page(GFP_KERNEL);
--	if (!page)
--		return -ENOMEM;
-+	ret = tty_port_alloc_xmit_buf(port);
-+	if (ret < 0)
-+		return ret;
- 
- 	spin_lock_irqsave(&info->slock, flags);
- 
-@@ -758,7 +757,6 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 		ret = 0;
- 		goto err_free_xmit;
+ 	/* We may sleep in get_zeroed_page() */
+ 	mutex_lock(&port->buf_mutex);
+-	if (port->xmit_buf == NULL)
++	if (port->xmit_buf == NULL) {
+ 		port->xmit_buf = (unsigned char *)get_zeroed_page(GFP_KERNEL);
++		if (port->xmit_buf)
++			kfifo_init(&port->xmit_fifo, port->xmit_buf, PAGE_SIZE);
++	}
+ 	mutex_unlock(&port->buf_mutex);
+ 	if (port->xmit_buf == NULL)
+ 		return -ENOMEM;
+@@ -240,6 +243,7 @@ void tty_port_free_xmit_buf(struct tty_port *port)
+ 	if (port->xmit_buf != NULL) {
+ 		free_page((unsigned long)port->xmit_buf);
+ 		port->xmit_buf = NULL;
++		INIT_KFIFO(port->xmit_fifo);
  	}
--	info->port.xmit_buf = (unsigned char *) page;
- 
- 	/*
- 	 * Clear the FIFO buffers and disable them
-@@ -825,8 +823,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 
- 	return 0;
- err_free_xmit:
--	free_page(page);
--	info->port.xmit_buf = NULL;
-+	tty_port_free_xmit_buf(port);
- 	return ret;
+ 	mutex_unlock(&port->buf_mutex);
  }
+diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+index d3ea9ed0b98e..58e9619116b7 100644
+--- a/include/linux/tty_port.h
++++ b/include/linux/tty_port.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_TTY_PORT_H
+ #define _LINUX_TTY_PORT_H
  
-@@ -862,14 +859,6 @@ static void mxser_shutdown_port(struct tty_port *port)
- 	 */
- 	wake_up_interruptible(&info->port.delta_msr_wait);
- 
--	/*
--	 * Free the xmit buffer, if necessary
--	 */
--	if (info->port.xmit_buf) {
--		free_page((unsigned long) info->port.xmit_buf);
--		info->port.xmit_buf = NULL;
--	}
--
- 	info->IER = 0;
- 	outb(0x00, info->ioaddr + UART_IER);
- 
-@@ -884,6 +873,11 @@ static void mxser_shutdown_port(struct tty_port *port)
- 		mxser_must_no_sw_flow_control(info->ioaddr);
- 
- 	spin_unlock_irqrestore(&info->slock, flags);
-+
-+	/* make sure ISR is not running while we free the buffer */
-+	synchronize_irq(info->board->irq);
-+
-+	tty_port_free_xmit_buf(port);
- }
- 
- /*
++#include <linux/kfifo.h>
+ #include <linux/kref.h>
+ #include <linux/mutex.h>
+ #include <linux/tty_buffer.h>
+@@ -67,6 +68,7 @@ extern const struct tty_port_client_operations tty_port_default_client_ops;
+  * @mutex: locking, for open, shutdown and other port operations
+  * @buf_mutex: @xmit_buf alloc lock
+  * @xmit_buf: optional xmit buffer used by some drivers
++ * @xmit_fifo: optional xmit buffer used by some drivers
+  * @close_delay: delay in jiffies to wait when closing the port
+  * @closing_wait: delay in jiffies for output to be sent before closing
+  * @drain_delay: set to zero if no pure time based drain is needed else set to
+@@ -110,6 +112,7 @@ struct tty_port {
+ 	struct mutex		mutex;
+ 	struct mutex		buf_mutex;
+ 	unsigned char		*xmit_buf;
++	DECLARE_KFIFO_PTR(xmit_fifo, unsigned char);
+ 	unsigned int		close_delay;
+ 	unsigned int		closing_wait;
+ 	int			drain_delay;
 -- 
 2.34.1
 
