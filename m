@@ -2,119 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA48C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 07:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE048C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 08:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241701AbiAXHQg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jan 2022 02:16:36 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:41092 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241520AbiAXHOe (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jan 2022 02:14:34 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 79AE3210FA;
-        Mon, 24 Jan 2022 07:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643008473; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mf6nIP41/uJ9yepSpLj+gZVMmwKjnorJahuQqH8Cd5Q=;
-        b=sVeWmLG3S4A/3K25MUljMW2v9qlS+T/9AAoT0pP1h0Flzo+dXdEtlBV0rTrLvyCoPbHI0t
-        7PC2Duuy454TvkOiTsXWyTpVYhMj56l8x27PVk1ZJxpHGPCwhcsZwXT1I+rheLWXaH9Tuh
-        8C0N6CO+3ggN1APxo6UBnH5xlpejmEg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643008473;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mf6nIP41/uJ9yepSpLj+gZVMmwKjnorJahuQqH8Cd5Q=;
-        b=mrooSUMtcZsTOm0HhfY6iDMd1s9uuzuj6X5HYHJh7eK/LEF7wUyvR0z+h968zHs+v8BhIs
-        xk+q084pOqLfz4Bg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 443AAA3B81;
-        Mon, 24 Jan 2022 07:14:33 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        johan@kernel.org, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 05/11] mxser: fix xmit_buf leak in activate when LSR == 0xff
-Date:   Mon, 24 Jan 2022 08:14:24 +0100
-Message-Id: <20220124071430.14907-6-jslaby@suse.cz>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124071430.14907-1-jslaby@suse.cz>
-References: <20220124071430.14907-1-jslaby@suse.cz>
+        id S232255AbiAXIqs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:46:48 -0500
+Received: from mout01.posteo.de ([185.67.36.141]:32999 "EHLO mout01.posteo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229550AbiAXIqr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:46:47 -0500
+Received: from submission (posteo.de [89.146.220.130]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id A580E240026
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jan 2022 09:46:46 +0100 (CET)
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4Jj3W85sYcz6tmB;
+        Mon, 24 Jan 2022 09:46:44 +0100 (CET)
+Message-ID: <f01d8a90-973f-9492-a89a-a6a82435b731@posteo.net>
+Date:   Mon, 24 Jan 2022 08:46:44 +0000
 MIME-Version: 1.0
+Subject: Re: [PATCH 02/11] serial: atmel_serial: include circ_buf.h
+Content-Language: fr-FR
+To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        johan@kernel.org, Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+References: <20220124071430.14907-1-jslaby@suse.cz>
+ <20220124071430.14907-3-jslaby@suse.cz>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <20220124071430.14907-3-jslaby@suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When LSR is 0xff in ->activate() (rather unlike), we return an error.
-Provided ->shutdown() is not called when ->activate() fails, nothing
-actually frees the buffer in this case.
 
-Fix this by properly freeing the buffer in a designated label. We jump
-there also from the "!info->type" if now too.
+Le 24/01/2022 à 08:14, Jiri Slaby a écrit :
+> atmel_uart_port::rx_ring is defined as struct circ_buf, but circ_buf.h
+> is not included explicitly in atmel_serial.c. It is included only
+> implicitly via serial_core.h. Fix this as serial_core.h might not
+> include that header in the future.
+> 
+> Signed-off-by:Jiri Slaby <jslaby@suse.cz>
+> Cc: Richard Genoud <richard.genoud@gmail.com>
+> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
 
-Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/mxser.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index c858aff721c4..fbb796f83753 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -744,6 +744,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	struct mxser_port *info = container_of(port, struct mxser_port, port);
- 	unsigned long page;
- 	unsigned long flags;
-+	int ret;
- 
- 	page = __get_free_page(GFP_KERNEL);
- 	if (!page)
-@@ -753,9 +754,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 
- 	if (!info->type) {
- 		set_bit(TTY_IO_ERROR, &tty->flags);
--		free_page(page);
- 		spin_unlock_irqrestore(&info->slock, flags);
--		return 0;
-+		ret = 0;
-+		goto err_free_xmit;
- 	}
- 	info->port.xmit_buf = (unsigned char *) page;
- 
-@@ -775,8 +776,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 		if (capable(CAP_SYS_ADMIN)) {
- 			set_bit(TTY_IO_ERROR, &tty->flags);
- 			return 0;
--		} else
--			return -ENODEV;
-+		}
-+
-+		ret = -ENODEV;
-+		goto err_free_xmit;
- 	}
- 
- 	/*
-@@ -821,6 +824,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	spin_unlock_irqrestore(&info->slock, flags);
- 
- 	return 0;
-+err_free_xmit:
-+	free_page(page);
-+	info->port.xmit_buf = NULL;
-+	return ret;
- }
- 
- /*
--- 
-2.34.1
-
+> ---
+>   drivers/tty/serial/atmel_serial.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index c370eddc651b..2d09a89974a2 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -8,6 +8,7 @@
+>    *
+>    *  DMA support added by Chip Coldwell.
+>    */
+> +#include <linux/circ_buf.h>
+>   #include <linux/tty.h>
+>   #include <linux/ioport.h>
+>   #include <linux/slab.h>
+Thanks !
