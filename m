@@ -2,53 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034C4C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 09:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2957CC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Jan 2022 09:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbiAXJQd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:16:33 -0500
-Received: from mail.portyid.pl ([192.36.61.58]:53844 "EHLO mail.portyid.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230333AbiAXJQd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:16:33 -0500
-Received: by mail.portyid.pl (Postfix, from userid 1001)
-        id D06DF413A6; Mon, 24 Jan 2022 10:16:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=portyid.pl; s=mail;
-        t=1643015791; bh=+PMi7irkA4XlRgpdW2HqpqcJeZNxKGysf407T0katTE=;
-        h=Date:From:To:Subject:From;
-        b=MxUAOGeoWD01Cr4wOVcEmpMJCKAAj+POhSeQ3vLgU8eM9m7qRNg/t9UmxuoSwgL38
-         FZfeRBMcNSsbqqAF8kZZIBP7vYzRimdU9HNLpFjdI71I5DUd0qzE5F9sLoqyRFDLt7
-         jgGrKVsNqXmRqK9MN9ibEume+ABPAVoV1t5/ES6Y4cIbKIOPTS2YKYv0u3+LyrEhur
-         TSwZm1dY3cf/lVePyLjlXn1eNA0MowdniYZX/9S4V0MFL0EkA/dhyZ6kw/LM+wonWO
-         X/25UEFNrXsvQwmofZtxGaqxApQjRaK4+buyL2ta+XdTJd0Hic/EqLDvXEqPp1sRhH
-         ylPzEuJKHnNUw==
-Received: by mail.portyid.pl for <linux-serial@vger.kernel.org>; Mon, 24 Jan 2022 09:16:23 GMT
-Message-ID: <20220124084500-0.1.1b.5fwr.0.s1709cq8wc@portyid.pl>
-Date:   Mon, 24 Jan 2022 09:16:23 GMT
-From:   =?UTF-8?Q? "Pawe=C5=82_Jasi=C5=84ski" ?= 
-        <pawel.jasinski@portyid.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Fotowoltaika - nowe warunki
-X-Mailer: mail.portyid.pl
+        id S233167AbiAXJWS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:22:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231851AbiAXJWR (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Jan 2022 04:22:17 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F398BC06173B;
+        Mon, 24 Jan 2022 01:22:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=rwUuQfNEdwxCQq/Ssl5OmKN2JZuyN3Dc7y/FK2VCJlg=; b=GD3wxa3RbB+vnusvPxeAOakeUp
+        pRpPk+La6wa0akFgfhudTIHnrnQzLXAeplpezWzp4MnGwhIcxrptNGTfVHiMGOK4jijEAkxqW0Zto
+        +PnPihR6342QQSldghmF9YYsfSxgvOTs4Au0X8OLnxHk9yzx238uLOCiRLAMrMIDZBxEcKBhhBudO
+        Y5QYOiSgKlQFz5t62iQL5AulDkC9lgDN3knzDizQbHC8Is6Misdu1Pi13CViwt0c6F8cHxcDij1Tr
+        UhHmUL/hChjUaDg1hFYQuxJonX4uC8dEXtlKrPzKguQU6QohAi2VaCpUwbXZBae8kXHDm+HGXZ09I
+        nF54zMpw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBvYF-002m3r-Tu; Mon, 24 Jan 2022 09:22:15 +0000
+Date:   Mon, 24 Jan 2022 01:22:15 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] tty: Partially revert the removal of the Cyclades
+ public API
+Message-ID: <Ye5vx/8CYH2zWK28@infradead.org>
+References: <alpine.DEB.2.20.2201230148120.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.20.2201230148120.11348@tpp.orcam.me.uk>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Sun, Jan 23, 2022 at 01:32:45PM +0000, Maciej W. Rozycki wrote:
+> Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+> cyclades, remove this orphan"), which removed a part of the API and 
+> caused compilation errors for user programs using said part, such as 
+> GCC 9 in its libsanitizer component[1]:
 
-jeszcze w pierwszej po=C5=82owie 2022 roku wzrosn=C4=85 ceny za wykup ene=
-rgii dla posiadaczy fotowoltaiki.=20
-
-Aby unikn=C4=85=C4=87 umowy na nowych zasadach trzeba zdecydowa=C4=87 si=C4=
-=99 na instalacj=C4=99 paneli PV do ko=C5=84ca marca.=20
-
-Jako firma specjalizuj=C4=85ca si=C4=99 w monta=C5=BCu i serwisie fotowol=
-taiki ch=C4=99tnie podejmiemy si=C4=99 realizacji ca=C5=82ego projektu. S=
-=C4=85 Pa=C5=84stwo zainteresowani?
-
-
-Pozdrawiam
-Pawe=C5=82 Jasi=C5=84ski
+This looks sensible, but a #warning might be useful to get people to
+stop including this random header.
