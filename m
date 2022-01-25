@@ -2,217 +2,162 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEB8C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306AAC43217
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351329AbiAYKY1 convert rfc822-to-8bit (ORCPT
+        id S1343626AbiAYKeB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:24:27 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:33293 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243263AbiAYKUa (ORCPT
+        Tue, 25 Jan 2022 05:34:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47474 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1356173AbiAYKaT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:20:30 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DC28B2000C;
-        Tue, 25 Jan 2022 10:19:29 +0000 (UTC)
-Date:   Tue, 25 Jan 2022 11:19:28 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        David Lechner <david@lechnology.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        Noralf =?UTF-8?B?VHLDuG5uZXM=?= <noralf@tronnes.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
-        Antti Palosaari <crope@iki.fi>,
-        Lee Jones <lee.jones@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        =?UTF-8?B?xYF1?= =?UTF-8?B?a2Fzeg==?= Stelmach 
-        <l.stelmach@samsung.com>, Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Benson Leung <bleung@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Ronald =?UTF-8?B?VHNjaGFsw6Ry?= <ronald@innovation.ch>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Schocher <hs@denx.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?UTF-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Yang Shen <shenyang39@huawei.com>,
-        dingsenjie <dingsenjie@yulong.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michael Walle <michael@walle.cc>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
-Message-ID: <20220125111928.781d0bb3@xps13>
-In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
-        <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 25 Jan 2022 05:30:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643106612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jeBI1CVeLHR/2y3eo4TQixtaNQgk+2mTQh79AAcu0Ig=;
+        b=LVWElisT1zXK2tYBC0K6NRkz9S457g0kTNk4hOPVbIrEnm7hx1N0O5cOlTLB2uONDytijC
+        5MAhu1WB/bZsqXkCMOl+8ULgJgzFSAysjma4MosrEH9892W4P4AzWRSCdiLEa4FyyMnLkO
+        ZsMYaQwih6/ouZPzogzKVxbQQ3aOe2g=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-122-BNKq08f8MxiaAhUMO64hLg-1; Tue, 25 Jan 2022 05:30:11 -0500
+X-MC-Unique: BNKq08f8MxiaAhUMO64hLg-1
+Received: by mail-ej1-f70.google.com with SMTP id p16-20020a170906785000b006b5d9c3d47fso3333802ejm.21
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:30:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jeBI1CVeLHR/2y3eo4TQixtaNQgk+2mTQh79AAcu0Ig=;
+        b=pG+LvuaJFpXovPjuJKLbMeQXZ67a2tdBhHWhv5PIswTV6q+BFa/rS8LsRpDxq1JR9V
+         5RoMWkP80H3zqLp546s5SBE/XhFPWJCIyvRS8W2N+lvkK9cgWkuTqzOgbpyg5NGQ/R3I
+         cI+sNZuF8BI679FLSRGRnyLQxmGv3Pl/o2qJgPtUoBog5/umXF049o0qQIVhXuaAmBoP
+         +UR/44OURwKdXMW5xwPlCbQO2X+SNR2JYgCA3uKRUqDzm+B6Ju4wQpcsGeJSAmYPwnLS
+         uaJMBxd03iHzFBhEBEZCJHiMoRd5fXjpFu5KG8kodp5/Sq8q3t40zq01nIdQ/Kn8GFPW
+         QUaw==
+X-Gm-Message-State: AOAM530tozWzjA5RKYE4ezz/+27gQ6nXRZZ4W0K76ykrcQzfl8Sns4CD
+        fVav64YGqkkUGg25Isyi2hQAj1obiHp9z1h6xzAbvKmLq15rwjFW+9PRstCyhnvBDxACubpSgbK
+        wiUNar4Us5x/glUYY+7Q0guC0HTGXZmI417Na2Arc
+X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr266806ejc.450.1643106609775;
+        Tue, 25 Jan 2022 02:30:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyvG7vL36kgfYbivxEIr4eAAB8fmCVxPFzEBQzYHM1SR7962CDd2iR6kwPpZKulQczpjmm/6nVzZn5pKQggguk=
+X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr266791ejc.450.1643106609559;
+ Tue, 25 Jan 2022 02:30:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20211029201402.428284-1-wander@redhat.com> <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org> <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+In-Reply-To: <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Tue, 25 Jan 2022 07:29:58 -0300
+Message-ID: <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Uwe,
+On Tue, Jan 25, 2022 at 7:06 AM Jon Hunter <jonathanh@nvidia.com> wrote:
+>
+>
+> On 25/01/2022 09:36, Jiri Slaby wrote:
+>
+> ...
+>
+> >> The test is bogus:
+> >>          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+> >>                  port->fifosize > 1 &&
+> >>                  (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
+> >>
+> >> FCR is write only. Reading it, one gets IIR contents.
+> >
+> > In particular, the test is checking whether there is no interrupt
+> > pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates
+> > between use_fifo and not, depending on the interrupt state of the chip.
+> >
+> > Could you change it into something like this:
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct
+> > uart_8250_port *up, const char *s,
+> >
+> >          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+> >                  port->fifosize > 1 &&
+> > -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
+> > +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+> >                  /*
+> >                   * After we put a data in the fifo, the controller will
+> > send
+> >                   * it regardless of the CTS state. Therefore, only use
+> > fifo
+> >
+> >
+> > And see whether it fixes the issue. Anyway, of what port type is the
+> > serial port (what says dmesg/setserial about that)?
+>
+>
+> Thanks. Unfortunately, this did not fix it. The port type is PORT_TEGRA ...
+>
+>   70006000.serial: ttyS0 at MMIO 0x70006000 (irq = 72, base_baud = 25500000) is a Tegra
 
-u.kleine-koenig@pengutronix.de wrote on Sun, 23 Jan 2022 18:52:01 +0100:
+I see PORT_TEGRA has different values for fifosize and tx_loadsz.
+Maybe we should use tx_loadsz.
+Could you please give a try to this patch:
 
-> The value returned by an spi driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
-> 
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
+diff --git a/drivers/tty/serial/8250/8250_port.c
+b/drivers/tty/serial/8250/8250_port.c
+index 2abb3de11a48..d3a93e5d55f7 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3343,7 +3343,7 @@ static void serial8250_console_fifo_write(struct
+uart_8250_port *up,
+ {
+        int i;
+        const char *end = s + count;
+-       unsigned int fifosize = up->port.fifosize;
++       unsigned int fifosize = up->tx_loadsz;
+        bool cr_sent = false;
 
-[...]
+        while (s != end) {
+@@ -3409,8 +3409,8 @@ void serial8250_console_write(struct
+uart_8250_port *up, const char *s,
+        }
 
->  drivers/mtd/devices/mchp23k256.c                      |  4 +---
->  drivers/mtd/devices/mchp48l640.c                      |  4 +---
->  drivers/mtd/devices/mtd_dataflash.c                   |  4 +---
->  drivers/mtd/devices/sst25l.c                          |  4 +---
+        use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+-               port->fifosize > 1 &&
+-               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
++               up->tx_loadsz > 1 &&
++               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+                /*
+                 * After we put a data in the fifo, the controller will send
+                 * it regardless of the CTS state. Therefore, only use fifo
 
-For MTD devices:
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
-Thanks,
-Miquèl
+
+>
+> Jon
+>
+> --
+> nvpublic
+>
+
