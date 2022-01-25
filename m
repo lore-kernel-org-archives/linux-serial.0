@@ -2,172 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 554C1C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C50C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240282AbiAYKQE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:16:04 -0500
-Received: from mail-sn1anam02on2065.outbound.protection.outlook.com ([40.107.96.65]:6976
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241362AbiAYKGy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:06:54 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZwQYf3/CW0oU1exBc6Q6oxyZQ+A2wWi2cyJdqgLRoTdMtbpLqYtW4pI0mJyO+g5GTYERHufgRQ/8smunDCZe1bUWC5AKr3uIvOUMvBkzoCK0ojpThYPQqk09m+3OuxLv/PNbrZP5JNW5leL/IX4hnIqXDfFBAhsmCZ8C4i2fs1KRBz1Dv5ULtmIa6UE4rkI8d0soKhEzS588pHOV0Vo8LFy6o12xtaqAanoQsll8tKHEVrZdHnMBO+vkcLBfHQPRFT9NE3ziqMx3CWBW+rP2s3CDClhxSASVVFH5PpPoUZwZKGcpjbIyknKknxEzCZkF2MCBBBbK8DaL3Rm6sMo2+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Acms36xYi3pM7Q6WyPtOwibM3CYnLEmVeNIEMNHpQPs=;
- b=Zpz+HL1K/4ZUDsxzP2S4L4RDxfvYQHEKfOufWTwNZAiX1GUHUtNP1WMUWaqV1tB1JuVNemmhwrBV1mbyRyTpPYuXRtRmWPe2DHw5n2SMBHgsf0gzPDz5Abkt8cb3QjQmtnFWHjcV/FVbNssjMzghT+YBCTQ61qVdyLD8K5shifsv6ApTHcuF8xxMmuZdDsTJ0Rb0TXJegReq+EpK38gCL0hBa69bZ6NRuEt1MzDPe5CuuD5LyZty+zmvPrP62AjSoCciJaLE/bzsXfG8qlCG9wS4SYoeYiEaNU3v7lR+9oC8PXyEqelRxA1sTfimiz3pVtewV9ut7W5hXjp4HmxLog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Acms36xYi3pM7Q6WyPtOwibM3CYnLEmVeNIEMNHpQPs=;
- b=hOmvEQcKKM+dGWnNpsHjoPYD9qxlIGwTGp+WDzASs9uVLUSabNCieJ2UK34Vx350Mj90Vy3U5XmT9h5CxKzwKTKg9wI+1I/Jo+jz2cZk5Z17TvhgS3UsxuIjCA8jWd2zyYmo/NRq23Wd4GtFMVk+flYB2KvzruNNxtiPA4F+CnayQDdZ86lmbqmztH5bHpA90CE3YeUsSOauPXn5oTTfglSf7di9U+EE389FtpSsyje8ePlbCBSmACp95vmILBRrdnZ5t32rM7qazhl9/ETh1VJBbBRTqxOLGhL0ChDO/tqZcBH3Lm3MdvWXTQrgUaawkqXcAaZgMRNL/I2AdcXc8A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- BYAPR12MB3495.namprd12.prod.outlook.com (2603:10b6:a03:ae::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4909.12; Tue, 25 Jan 2022 10:06:43 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b120:5877:dc4b:1a7e]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b120:5877:dc4b:1a7e%7]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
- 10:06:43 +0000
-Message-ID: <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
-Date:   Tue, 25 Jan 2022 10:06:34 +0000
+        id S242365AbiAYKU2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:20:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243556AbiAYKRq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:17:46 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F28C06175A
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:17:40 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id h133so97279wmh.5
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:17:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PxE0IEEXwYbByIBbdhrPsVtZPxKp3eu1XNz2U1gQ29w=;
+        b=QAOGxIUPb7iOXKQwl5Etdt4Tq9vpKg0neIg5jkVHEryR2jv1/SH+OUBoOtniql8XLU
+         bJRaZem3X138H36NWoe3xTXSqywneJrnLSF/BTgY4lqVlUJGaz49DruRYgYMB+6/EKdW
+         oNJIPR8ZEVeS8rPqM2R/XFudP+XqHmn4Dq/TdZ4Uya+7n2koQOrF7dUaaK3CGfRDA54i
+         QZZ8TLgBuv38nKZrbi9MkWwEutlG1vM6XC8xUIBiqCLLNDCQCxVjDCvOAD3woouK//jc
+         wcqmTBbZXluxRq/N7govb4xBVJDSj67l60eYWdeAiqymGA5+XMa6RWuJUYhIfh7JDGY2
+         QhTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PxE0IEEXwYbByIBbdhrPsVtZPxKp3eu1XNz2U1gQ29w=;
+        b=ttPgyjM2crG3qYBYRF8R/9QS+uDoFEC9y+VZevVtKOXpPIkkHFbLC0i3MFUrVWsJP1
+         BaUpFvISna4Rs3XYFbBdPHazmNjSweMAK3Bj+97714mEzMOmVFsCUyxORcths9f9LsGv
+         XxfH4RFPuhf5uAx+dE15cP+fqtRcKtClSCdjc/PGVmc2t6+arJCbSpox3O9nMyVPj2s6
+         K7/L7a5S5bHRzIeff2dcNPHJMzCsFiS+gPQQykSMKSJ4dn25LjeOuGqRp28s0U85ve7V
+         BSp5l8pN2JCG7XmI1TY5cugxWxf3k+KPFu80lZBtMWNz+4Xw1V0D7wT2zk18TlkCBFyh
+         hjXg==
+X-Gm-Message-State: AOAM533URo7BqBUXd7xkwECZCN/ALSB3nWz/uYyUsKLcuVFI4C8rCxCU
+        GyfqDSgL+0zOo8CXYF9/c6U=
+X-Google-Smtp-Source: ABdhPJz5QgmhC9tWOZfy0I941uQ+DZCNoiI1Et9xLp7NbZgWgZVWGZyl5Id19vDGhfAKDErUU1jl1w==
+X-Received: by 2002:a1c:e914:: with SMTP id q20mr2201479wmc.89.1643105859392;
+        Tue, 25 Jan 2022 02:17:39 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
+        by smtp.gmail.com with ESMTPSA id l10sm6913984wry.67.2022.01.25.02.17.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Jan 2022 02:17:38 -0800 (PST)
+Message-ID: <7b341732-d8ce-6ccd-34d3-3d706ba0faf3@gmail.com>
+Date:   Tue, 25 Jan 2022 11:17:38 +0100
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Content-Language: en-US
-To:     Jiri Slaby <jirislaby@kernel.org>, wander@redhat.com
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20211029201402.428284-1-wander@redhat.com>
- <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
- <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
- <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+Subject: Re: Modem control lines for RTSCTS hardware flow control via rts-gpio
+ and cts-gpio with IMX
+Content-Language: fr-FR
+To:     Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>
+Cc:     linux-serial@vger.kernel.org,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Huang Shijie <b32955@freescale.com>,
+        Dirk Behme <dirk.behme@googlemail.com>,
+        Jiri Slaby <jirislaby@kernel.org>
+References: <CAJ+vNU0CrD8091W5zH7ve9v3ZVAGXR6=6DGebd5LhHz4mzt4+w@mail.gmail.com>
+ <CAJ+vNU1tJ5W5RCUsPehgH7CS=v=7mttHgNOu-UdWGVpzf2LcBQ@mail.gmail.com>
+ <4bdbd9c0-8ce3-84b1-9f89-be89b686c652@camlingroup.com>
+ <CAJ+vNU27VQR6Bwp_KtYLubr_CBd30Ewgm6xxZtPiVXOFw8sEqg@mail.gmail.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <CAJ+vNU27VQR6Bwp_KtYLubr_CBd30Ewgm6xxZtPiVXOFw8sEqg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM5PR0601CA0060.eurprd06.prod.outlook.com
- (2603:10a6:206::25) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4a38de3e-31b8-4fb3-3a31-08d9dfea631e
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3495:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB349527E01B66324E43C0FE6FD95F9@BYAPR12MB3495.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zJAgVrlt9iD6aemKyzun3MNsFpzGcwtI7pVVRuIFQ40xROBGtbIsyaSXr7yLUcRmTY1wfPkfaBS1PkfzINZRLHxdxDbcgQ7vn0W/QO1/xJAsng6J/XmfRIzwLIG9DDb0+6ug2jNjIf/NydY+Xvz4t9hG94CNrlyPL8MCTD//8X7e8+IB/OAMbdnh4eT32HN9GnbZj+zaZWhx41k0YEMkkrSRLgKriK+HTTk3MJG3f+jTtBOP3jyechGAOlVgdOn2ugW/qcDypiKoueJOYlYQXz2dsYY73S2i8/BzGtI48KB4feqitc50XXo0bLBb0tQePEZQethKgyWzG+0b5StEE/gI1ydHBbxGLbDkGY1Ed4pw91hjUdM5g7lmR1HXryUcSnP20HT7B5kbosCT5VrBhVNOt0RzYunkzFWiXtv3lpD0YuCa+beFc6EvZFr3kfkOXWlWjjiVfsvRDq25pDiVM8tywN/zAkt7PiJnA/F2UpszNpLk26aq+DczSBoGJmOF6TnVrYt2O1u+moIAaHUSQecKlH9kN3SnRyLJfVaZCD1CnQynuscQ+VlJ176N4lY/koGna8/sRi7wT7JShQ15AuuvOO/xRhfM/Cq1iTwjyZOjjqoVAxVjsRY49AI1efmlbunuPv4gXTv57Sq9rRE5Nvm8CieIsuKMXNKRNK9egRCsmCaBxo7MXE0JEMILSCpvaKRNlkyOtGNUDRHAYS0XNm/rur79VFcoYVS1FpL/g0Y=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(66556008)(31686004)(7416002)(5660300002)(8936002)(53546011)(31696002)(66476007)(6506007)(36756003)(316002)(8676002)(2616005)(4326008)(6512007)(6486002)(508600001)(6666004)(186003)(55236004)(2906002)(38100700002)(26005)(86362001)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ni9VTEpCN2ZPMzVEczd2bjNkTUZNR1NIMUJ2VzBkdW1EUlBHbHl2RGRLd3lv?=
- =?utf-8?B?NVAyUE9EWVY3ZnVUSjI0NGt0UU1LMWt5UW1hd0grekwzTlpxcmdSS3ZJU203?=
- =?utf-8?B?cVNHeU90NG1GTHRIZkRqRkxJb2pLSkRUU2tXYTRyTVdoV2RZOTAxbWtOWVBJ?=
- =?utf-8?B?ZVpYbDNBNTB6Nkx4SCt0U3M0K280RWZTNUFvOXAzNkhaN1hKTDZvTVRnS3k5?=
- =?utf-8?B?ajlYYXErV3hwWFFLZmowNTB6aDlXaGNuL2h1VWYzMkZIMEw4cEdoekFHdUI3?=
- =?utf-8?B?RHhPbDBwUU8rN2VmYWRmS2JneTB0ckNzY0xwY1Jsb1VrRkFzVjNwcjJlSWNR?=
- =?utf-8?B?bUNidzFTMktzZENsekx2YmF5Z3Qycks4YkI2OFFoaG91aVhkcGhTK1V3TTB2?=
- =?utf-8?B?NFhsQWNaRGppbUk5VU9BeWNTSHJmRTI0Q2JMR2ZmQkFRUnJZdUJtNkNEYjRQ?=
- =?utf-8?B?Y1UxUi9aSFBrT2pxR3o2ZDlDUUlHSS9BR3pMM2o2UStXNmp0UFNLamd2c2po?=
- =?utf-8?B?OTUxWEZCRHRTeGhnRS9CaXk5cm5hcGk2ZDdpMmxoc0R1Ym5PM3FvUnd5RG5F?=
- =?utf-8?B?ODhSa1EyTXZPNFpkbjF2ZTRSR3cxUTZOanVhdmFDeFVQTDZLNEUydVJ3VzJR?=
- =?utf-8?B?ZXZLMVpnZmdaODhWT21wVDQwY3JlUEZHQS9FdmIvcE5EWmJudUtOV0xzWlh2?=
- =?utf-8?B?Z1VXVEdvbTArdjd6NG1yNmZJY0ZYek96UHo4WE9rU2ZwMXdKaTJCcXg4TEN1?=
- =?utf-8?B?YldtT3VBUndZbzR0YjhCTWpVWC9WeUliZkpCQlI3RWxMUHpyU3ZkVzZKc3NF?=
- =?utf-8?B?R0NYSERoaVNvZlZCYWdkbkk3S016dzJLZ2tiSCs2Y1BiM2xOV280b3lrU2xY?=
- =?utf-8?B?ZW5hUTZ1cnlEbnAxcDNkUEd1cFlyZkQyUVNwM1RUSFlkbkdDWkRscWdUeXJW?=
- =?utf-8?B?R0JxdUFoLzRYY0hjaHFkWXM5YkVTMzdtNCtERFh0M0JxL1BTeW9VWHNPVFg2?=
- =?utf-8?B?Y3JxcWpYQlp6bHRWc3RESjk5M0RkTTRtVnZGVEJsVms0TDlOV1prenJuM0FG?=
- =?utf-8?B?VDlCWXF4Y2Ftb0JJVHBRdGZ4QXJRdkZ4UVRab3NiYTk1UlMxajYxM1JkMy9t?=
- =?utf-8?B?dzhxK3RsTiswN1JoM0VITVhjbVAyR1RIcnNySGpRTmpzbllLOHQvNUlwNGQ3?=
- =?utf-8?B?aE1XeXF2T0E1N0hmUnliY3NQdDJrblVySDd0NFErUXI4STh3Z2RrZjJsZkJs?=
- =?utf-8?B?N21zZ0RtQk01cU5GQW9QTHY0d0RXL2NRQ3JyWjlXUC9hSG9EQTBEQk5CS2gw?=
- =?utf-8?B?eFpHcXErUDcyL1BFR1p6WVFUS2FVVDdXajl4bklMdnIyeVdweElUK3JNSVc4?=
- =?utf-8?B?YVZBVk1xZ1g2R25yUVJDMG1ta2J6WUxzMTdScXlDNUlkZ1BJT3dwTDhxT2RG?=
- =?utf-8?B?VzUzU09IY0JoWVEyQWF5VTBSQ1crYWFUdnhBdlJxdEp6RzgyNXNTWmdVNVly?=
- =?utf-8?B?MG1HVmc2eExDbXRDU2NHS0JTd0xzTUFpUzZ4ZytHcXRSbjROQzdjYWdnekhn?=
- =?utf-8?B?MEpYOGVVMmRnOVF3WFZtY3p4VWpzL29qaDRzS3VQYVg3UDBzdHNsdG9aUE5a?=
- =?utf-8?B?QnlNSGFXbDhnZHo1bmVOWjJMRHZSaEpoL0RQZElNUDNiRFBOT1N6OVMvRGxq?=
- =?utf-8?B?c0x3Zm5NdGxIZUdVMzhWRGU3NnR3dStLTnkyaHJ4NE8vTU41bWRpUU4zenl0?=
- =?utf-8?B?NDhtYWloa0trME16dHVjdW9tSDVvZXdlb3RORUk1N0dvWDNjTnVTeVY4dHRn?=
- =?utf-8?B?QjJRUnBvRkFEYU1kclA4R2lTQ0RCVVFtQ280Y1BXcTZYRXNHNWk4U2ZhKzB4?=
- =?utf-8?B?R3plR3l0ZDZ0VWlNNlE3QUpUWjJCaThlWTlxakJIYzg5QUNyV25FM3ZGNlY1?=
- =?utf-8?B?THh5Rlp5ckNLNEJTbHJxbTRzZ1AxK1RzMnpjR1diK2dYM3pDOWFHWGhIbm1t?=
- =?utf-8?B?V280WlBKRXMzU1prSDlJZkw1S2pLNGhNdmVBTkJtaSswempjN2FiNEtEamR3?=
- =?utf-8?B?bkFjYjErZDZFZHlDNS9ETW43LzlmQ2UyZ3BmUUxwWXZ4U3k3M0JRTVdRSmFC?=
- =?utf-8?B?K0dHR2NRQ3lGQ0ZIY0dsZm1FMG1GMGlhZGt6Y1VzNzRYUWtNUDZYWEpZeFpw?=
- =?utf-8?Q?ymuxkrJmoEXQ63lx8BdBSpQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a38de3e-31b8-4fb3-3a31-08d9dfea631e
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 10:06:42.9463
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IfkQfhkr4E2wJ9lkf+HLz/qm+zcstLanN0jkdUM/dD3nDBMMy7BKHFjOi9+X4v/IF/uARyU/LPaSFXvy59wHEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3495
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On 25/01/2022 09:36, Jiri Slaby wrote:
 
-...
 
->> The test is bogus:
->>          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
->>                  port->fifosize > 1 &&
->>                  (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
+Le 25/01/2022 à 00:56, Tim Harvey a écrit :
+> On Thu, Jan 13, 2022 at 10:19 PM Tomasz Moń <tomasz.mon@camlingroup.com> wrote:
 >>
->> FCR is write only. Reading it, one gets IIR contents.
+>> On 14.01.2022 04:08, Tim Harvey wrote:
+>>> So I believe in order to support using gpios for rts/cts in the imx
+>>> uart driver I must find the right place to call imx_uart_rts_active
+>>> and imx_uart_rts_inactive when the FIFO is not full and full
+>>> respectively. I'm not that familiar with the Linux uart driver
+>>> framework - am I on the right track and if so any ideas where this is
+>>> best done?
+>>
+>> It is not really the driver (and thus FIFO level), but rather the amount
+>> of free space in tty buffer (checked by Line Discipline workqueue) that
+>> determines when to throttle (set RTS inactive). This mostly works fine,
+>> but fails [1] when the RX interrupt frequency is too high [2].
+>>
+>> The throttle/unthrottle request, when termios CRTSCTS is set, is seen by
+>> the driver as the call to .set_mctrl (imx_uart_set_mctrl) with TIOCM_RTS
+>> bit cleared/set in mctrl parameter. Currently imx_uart_set_mctrl() only
+>> controls the UCR2_CTS and UCR2_CTSC bits based on mctrl.
+>>
+>> To support your case you would most likely have to add the gpio handling
+>> in imx_uart_set_mctrl(). However, I am unaware what other issues you
+>> might encounter (i.e. if it is not done there yet simply because nobody
+>> had that use case or if there is some deeper problem).
+>>
+>> [1] https://lore.kernel.org/linux-serial/10e723c0-a28b-de0d-0632-0bd250478313@camlingroup.com/
+>> [2] https://lore.kernel.org/linux-serial/20220104103203.2033673-1-tomasz.mon@camlingroup.com/
+>>
+>> Best Regards,
+>> Tomasz Mon
+>>
 > 
-> In particular, the test is checking whether there is no interrupt 
-> pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates 
-> between use_fifo and not, depending on the interrupt state of the chip.
+> Tomasz,
 > 
-> Could you change it into something like this:
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct 
-> uart_8250_port *up, const char *s,
+> Thanks for the info. Currently imx_uart_set_mctrl calls mctrl_gpio_set
+> which does toggle the rts-gpio per mctrl & TIOCM_RTS.
 > 
->          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
->                  port->fifosize > 1 &&
-> -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
-> +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
->                  /*
->                   * After we put a data in the fifo, the controller will 
-> send
->                   * it regardless of the CTS state. Therefore, only use 
-> fifo
+> Also, there's something in
+> Documentation/devicetree/bindings/serial/serial.yaml that puzzles me:
 > 
+> if:
+>    required:
+>      - uart-has-rtscts
+> then:
+>    properties:
+>      cts-gpios: false
+>      rts-gpios: false
 > 
-> And see whether it fixes the issue. Anyway, of what port type is the 
-> serial port (what says dmesg/setserial about that)?
+> That would seem to indicate to me that if you define 'uart-has-rtscts'
+> you should not be defining 'cts-gpios' or 'rts-gpios' but I found that
+> when I omitted 'uart-has-rtscts' I could no longer enable hardware
+> flow control. Is my understanding of the yaml wrong or is this just
+> not accurate?
+Yes, it seems that you're right
+cf older textual description :
+https://elixir.bootlin.com/linux/v4.20.17/source/Documentation/devicetree/bindings/serial/serial.txt
 
-
-Thanks. Unfortunately, this did not fix it. The port type is PORT_TEGRA ...
-
-  70006000.serial: ttyS0 at MMIO 0x70006000 (irq = 72, base_baud = 25500000) is a Tegra
-
-Jon
-
--- 
-nvpublic
+Regards,
+Richard
