@@ -2,142 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C50C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897F1C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242365AbiAYKU2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243556AbiAYKRq (ORCPT
+        id S245142AbiAYKVm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:21:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50630 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244878AbiAYKTK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 05:17:46 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F28C06175A
-        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:17:40 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id h133so97279wmh.5
-        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:17:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PxE0IEEXwYbByIBbdhrPsVtZPxKp3eu1XNz2U1gQ29w=;
-        b=QAOGxIUPb7iOXKQwl5Etdt4Tq9vpKg0neIg5jkVHEryR2jv1/SH+OUBoOtniql8XLU
-         bJRaZem3X138H36NWoe3xTXSqywneJrnLSF/BTgY4lqVlUJGaz49DruRYgYMB+6/EKdW
-         oNJIPR8ZEVeS8rPqM2R/XFudP+XqHmn4Dq/TdZ4Uya+7n2koQOrF7dUaaK3CGfRDA54i
-         QZZ8TLgBuv38nKZrbi9MkWwEutlG1vM6XC8xUIBiqCLLNDCQCxVjDCvOAD3woouK//jc
-         wcqmTBbZXluxRq/N7govb4xBVJDSj67l60eYWdeAiqymGA5+XMa6RWuJUYhIfh7JDGY2
-         QhTQ==
+        Tue, 25 Jan 2022 05:19:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643105947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q6LqklHRLIbthTQQ/rUdfdHvN2/Q+qVOvOtwYpemCwA=;
+        b=SyQGX9vPFpRuqeY/grZBuFpyWDSh7tnAKxePeBjJ3v536FGw/ZeEP88Kc35VPh8ZiCGLSa
+        3Gn4iY7ggvZWG7ZfVTb+A6FEj0ZudFfhzNT7xwQa8hZ0nry/Lxgjt1nztkSsZhiwQkN6io
+        dwtV/FQTUK+5aCTLin4urFNf3rVVeRQ=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-523-oxs5YoDGMxCDimo5Q1hFEQ-1; Tue, 25 Jan 2022 05:19:06 -0500
+X-MC-Unique: oxs5YoDGMxCDimo5Q1hFEQ-1
+Received: by mail-ej1-f71.google.com with SMTP id ky6-20020a170907778600b0068e4bd99fd1so3323824ejc.15
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 02:19:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PxE0IEEXwYbByIBbdhrPsVtZPxKp3eu1XNz2U1gQ29w=;
-        b=ttPgyjM2crG3qYBYRF8R/9QS+uDoFEC9y+VZevVtKOXpPIkkHFbLC0i3MFUrVWsJP1
-         BaUpFvISna4Rs3XYFbBdPHazmNjSweMAK3Bj+97714mEzMOmVFsCUyxORcths9f9LsGv
-         XxfH4RFPuhf5uAx+dE15cP+fqtRcKtClSCdjc/PGVmc2t6+arJCbSpox3O9nMyVPj2s6
-         K7/L7a5S5bHRzIeff2dcNPHJMzCsFiS+gPQQykSMKSJ4dn25LjeOuGqRp28s0U85ve7V
-         BSp5l8pN2JCG7XmI1TY5cugxWxf3k+KPFu80lZBtMWNz+4Xw1V0D7wT2zk18TlkCBFyh
-         hjXg==
-X-Gm-Message-State: AOAM533URo7BqBUXd7xkwECZCN/ALSB3nWz/uYyUsKLcuVFI4C8rCxCU
-        GyfqDSgL+0zOo8CXYF9/c6U=
-X-Google-Smtp-Source: ABdhPJz5QgmhC9tWOZfy0I941uQ+DZCNoiI1Et9xLp7NbZgWgZVWGZyl5Id19vDGhfAKDErUU1jl1w==
-X-Received: by 2002:a1c:e914:: with SMTP id q20mr2201479wmc.89.1643105859392;
-        Tue, 25 Jan 2022 02:17:39 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
-        by smtp.gmail.com with ESMTPSA id l10sm6913984wry.67.2022.01.25.02.17.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 02:17:38 -0800 (PST)
-Message-ID: <7b341732-d8ce-6ccd-34d3-3d706ba0faf3@gmail.com>
-Date:   Tue, 25 Jan 2022 11:17:38 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q6LqklHRLIbthTQQ/rUdfdHvN2/Q+qVOvOtwYpemCwA=;
+        b=HEbtB/fzdZ5iBx0Yikdy0e0EiB81G1bUxFX7St7Hep4nwD7z7jn9xokXa+QqH6kmGG
+         FFyc4/yJTl/C+TGMzIBSp8Iph5fy+bldkwYU9/fxcscRVkwlS//71yxFRPruZgxIzDel
+         8a448ZUqZ8Iz8b3jt0RvU77BdwfPp0MQD0gsNgsSwfb0SW0WCdarZetYN8cqBbmUA1+l
+         4fKWAHPMBDfy7NclylFrjhCusm5dWiCqW3nQ0/ZywKl2tPdLtvxpRLItqVANjHM3yyQ4
+         yr9YGiYNDaqccu/tdDIThtEF24XbCZALpVhrSm+u8cq3rO+UhYylw4vfmFE7iyhoPBD9
+         ouQw==
+X-Gm-Message-State: AOAM532pRFR3EpsyxmyDnfqG96cj7f8n0T91386i/ChwKGuHDMK1tuWn
+        PNVSkxur6gElXsBp2AxqnDPq8OHIhDk4YmQMM0CuxlawV7j5xqbLF+ibzT/BRSjShDUXLmrzCO0
+        V90TXrCYo0umyZmZAocREn7XUjFdSkFhYxd3lzfUL
+X-Received: by 2002:aa7:d916:: with SMTP id a22mr20101449edr.316.1643105944881;
+        Tue, 25 Jan 2022 02:19:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx1ZCiX9r1ZM7j98bMV6q/xlimOOlVJwPCaPGhxxe9DC6X3cZjpLy91XJEk3Z8ND92qEgxwEbuOH5xNlRDywwE=
+X-Received: by 2002:aa7:d916:: with SMTP id a22mr20101428edr.316.1643105944675;
+ Tue, 25 Jan 2022 02:19:04 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Modem control lines for RTSCTS hardware flow control via rts-gpio
- and cts-gpio with IMX
-Content-Language: fr-FR
-To:     Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?Q?Tomasz_Mo=c5=84?= <tomasz.mon@camlingroup.com>
-Cc:     linux-serial@vger.kernel.org,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Huang Shijie <b32955@freescale.com>,
-        Dirk Behme <dirk.behme@googlemail.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-References: <CAJ+vNU0CrD8091W5zH7ve9v3ZVAGXR6=6DGebd5LhHz4mzt4+w@mail.gmail.com>
- <CAJ+vNU1tJ5W5RCUsPehgH7CS=v=7mttHgNOu-UdWGVpzf2LcBQ@mail.gmail.com>
- <4bdbd9c0-8ce3-84b1-9f89-be89b686c652@camlingroup.com>
- <CAJ+vNU27VQR6Bwp_KtYLubr_CBd30Ewgm6xxZtPiVXOFw8sEqg@mail.gmail.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <CAJ+vNU27VQR6Bwp_KtYLubr_CBd30Ewgm6xxZtPiVXOFw8sEqg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211029201402.428284-1-wander@redhat.com> <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org> <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+In-Reply-To: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Tue, 25 Jan 2022 07:18:53 -0300
+Message-ID: <CAAq0SUm-NQ6kwxhSJsOwHaBsi7dagAy8Pj4vOHOd6wy33Nqp2g@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Jan 25, 2022 at 6:36 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+>
+> On 25. 01. 22, 10:08, Jiri Slaby wrote:
+> > On 25. 01. 22, 9:39, Jon Hunter wrote:
+> >>
+> >> On 29/10/2021 21:14, wander@redhat.com wrote:
+> >>> From: Wander Lairson Costa <wander@redhat.com>
+> >>>
+> >>> Note: I am using a small test app + driver located at [0] for the
+> >>> problem description. serco is a driver whose write function dispatches
+> >>> to the serial controller. sertest is a user-mode app that writes n bytes
+> >>> to the serial console using the serco driver.
+> ...
+> >>> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
+> >>
+> >>
+> >> On the current mainline and -next branches, I have noticed that the
+> >> serial output on many of our Tegra boards is corrupted and so
+> >> parsing the serial output is failing.
+> >>
+> >> Before this change the serial console would appear as follows ...
+> >>
+> >> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd071]
+> >> [    0.000000] Linux version 5.16.0-rc6-00091-gadbfddc757ae
+> >> (jonathanh@jonathanh-vm-01) (aarch64-linux-gnu-gcc (Linaro GCC
+> >> 6.4-2017.08) 6.4.1 20170707, GNU ld (Linaro_Binutils-2017.08)
+> >> 2.27.0.20161019) #15 SMP PREEMPT Tue Jan 25 00:15:25 PST 2022
+> >> [    0.000000] Machine model: NVIDIA Jetson TX1 Developer Kit
+> >>
+> >> And now I see ...
+> >>
+> >> [    0.000000] Booting Linux on physicalfd071]
+> >> [    0.000000] Linux version 5.16.0-rc6-athanh@j-linux-g017.08)
+> >> Linaro_B20161019n 25 00:[    0.000000] Machine model: NVIDIA Jet[
+> >> 0.000000] efi: UEFI not found.
+> >> [    0.000000] NUMA: No NUMA configurati[    0.000000] NUMA: Faking a
+> >> node at [m00000001[    0.000000] NUMA: NODE_DATA [mem 0x17[
+> >> 0.000000] Zone ranges:
+> >>
+> >> Bisecting is pointing to this commit. Let me know if there are any
+> >> tests I can run. Otherwise we may need to disable this at least
+> >> for Tegra.
+> >
+> >
+> > The test is bogus:
+> >          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+> >                  port->fifosize > 1 &&
+> >                  (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
+> >
+> > FCR is write only. Reading it, one gets IIR contents.
+>
+> In particular, the test is checking whether there is no interrupt
+> pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates
+> between use_fifo and not, depending on the interrupt state of the chip.
+>
+> Could you change it into something like this:
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct
+> uart_8250_port *up, const char *s,
+>
+>          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+>                  port->fifosize > 1 &&
+> -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
+> +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+>                  /*
+>                   * After we put a data in the fifo, the controller will
+> send
+>                   * it regardless of the CTS state. Therefore, only use fifo
+>
 
+Indeed I made a mistake here. Independent of the reported this, this
+should be fixed.
+Jiri, do you intend to send an official patch or should I do so?
 
+>
+> And see whether it fixes the issue. Anyway, of what port type is the
+> serial port (what says dmesg/setserial about that)?
+>
+> thanks,
+> --
+> js
+> suse labs
+>
 
-Le 25/01/2022 à 00:56, Tim Harvey a écrit :
-> On Thu, Jan 13, 2022 at 10:19 PM Tomasz Moń <tomasz.mon@camlingroup.com> wrote:
->>
->> On 14.01.2022 04:08, Tim Harvey wrote:
->>> So I believe in order to support using gpios for rts/cts in the imx
->>> uart driver I must find the right place to call imx_uart_rts_active
->>> and imx_uart_rts_inactive when the FIFO is not full and full
->>> respectively. I'm not that familiar with the Linux uart driver
->>> framework - am I on the right track and if so any ideas where this is
->>> best done?
->>
->> It is not really the driver (and thus FIFO level), but rather the amount
->> of free space in tty buffer (checked by Line Discipline workqueue) that
->> determines when to throttle (set RTS inactive). This mostly works fine,
->> but fails [1] when the RX interrupt frequency is too high [2].
->>
->> The throttle/unthrottle request, when termios CRTSCTS is set, is seen by
->> the driver as the call to .set_mctrl (imx_uart_set_mctrl) with TIOCM_RTS
->> bit cleared/set in mctrl parameter. Currently imx_uart_set_mctrl() only
->> controls the UCR2_CTS and UCR2_CTSC bits based on mctrl.
->>
->> To support your case you would most likely have to add the gpio handling
->> in imx_uart_set_mctrl(). However, I am unaware what other issues you
->> might encounter (i.e. if it is not done there yet simply because nobody
->> had that use case or if there is some deeper problem).
->>
->> [1] https://lore.kernel.org/linux-serial/10e723c0-a28b-de0d-0632-0bd250478313@camlingroup.com/
->> [2] https://lore.kernel.org/linux-serial/20220104103203.2033673-1-tomasz.mon@camlingroup.com/
->>
->> Best Regards,
->> Tomasz Mon
->>
-> 
-> Tomasz,
-> 
-> Thanks for the info. Currently imx_uart_set_mctrl calls mctrl_gpio_set
-> which does toggle the rts-gpio per mctrl & TIOCM_RTS.
-> 
-> Also, there's something in
-> Documentation/devicetree/bindings/serial/serial.yaml that puzzles me:
-> 
-> if:
->    required:
->      - uart-has-rtscts
-> then:
->    properties:
->      cts-gpios: false
->      rts-gpios: false
-> 
-> That would seem to indicate to me that if you define 'uart-has-rtscts'
-> you should not be defining 'cts-gpios' or 'rts-gpios' but I found that
-> when I omitted 'uart-has-rtscts' I could no longer enable hardware
-> flow control. Is my understanding of the yaml wrong or is this just
-> not accurate?
-Yes, it seems that you're right
-cf older textual description :
-https://elixir.bootlin.com/linux/v4.20.17/source/Documentation/devicetree/bindings/serial/serial.txt
-
-Regards,
-Richard
