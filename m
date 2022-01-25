@@ -2,307 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B846C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 13:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE57C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 13:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349686AbiAYM76 (ORCPT
+        id S1575422AbiAYNJe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 07:59:58 -0500
-Received: from mx1.tq-group.com ([93.104.207.81]:23582 "EHLO mx1.tq-group.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1359066AbiAYM4T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 07:56:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643115378; x=1674651378;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qmHH9G8TVCwWdo3uTby79rF+j0/3SailZLcBZpByLtg=;
-  b=MB4CtmBY/kKUZUkbx858aLxhxtieEwNP3ArjS4boMb6N8oV/9x7+oe+7
-   vBRLZ4YVEvZ/1JO2JM7klGULc8cKXlCkrMAODKUDhoRxB28SicAlb3MwA
-   z4BaKpNCiXG7OZsbwPxYNCX20Nvck+6x4Hz/LZ+ldX2fSU+OXD7ABJ1L3
-   qhCGVEW1kcKUCt7niPCL5EASKNk6v9jLS3splPrSApHD9OyMA3IK+xWnD
-   qyyDv4o+OVOldOqDDmEWH7qIkVMd4VmaPCCCi8zZkUsMRkMvEb3Tf3C3R
-   UUuaUcupgO11DYD/qAb/ED5oLYw/xNWULPE2SGkeHr9g/mXySY1kfHonr
-   w==;
-X-IronPort-AV: E=Sophos;i="5.88,315,1635199200"; 
-   d="scan'208";a="21697221"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 25 Jan 2022 13:56:08 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 25 Jan 2022 13:56:09 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 25 Jan 2022 13:56:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1643115368; x=1674651368;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qmHH9G8TVCwWdo3uTby79rF+j0/3SailZLcBZpByLtg=;
-  b=DZazWES6Z7qX74NIrM+i69skWo5ObJhdpFykKEns/urrKSV7FmjkeM2t
-   YnBYyu8w987PyL5eZzlJ5LqVC1ihXP16gqLHPxLAtK9NLfyfbbnxMJjnE
-   xkheSFbGqZGupY07RAOmoaOCOMZDwMnZDGO5NYbNANthuHRau78001vK2
-   zJddEGsKEXtkeB0hUhuWkr3kF7tYn69GziEH85Y5mupr+z4GI7q8lpN8I
-   tHnvDwxI2K5PUlNNRZSdV0LyBsYg2DAs8tg6Mfpsr/QsP6qCBNv225Vhv
-   9E6GQFdFpwV+AAWYlFUvOpxFqY72lFs4EOW/dDH0eW9QyDbiOHxD6zCA3
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,315,1635199200"; 
-   d="scan'208";a="21697220"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 25 Jan 2022 13:56:08 +0100
-Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.201.138])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 966B4280065;
-        Tue, 25 Jan 2022 13:56:07 +0100 (CET)
-Message-ID: <33e55c4c0a637b23d76db5d33872378ad04121bd.camel@ew.tq-group.com>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        Tue, 25 Jan 2022 08:09:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1575353AbiAYNHL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Jan 2022 08:07:11 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C82C061401;
+        Tue, 25 Jan 2022 05:07:10 -0800 (PST)
+Date:   Tue, 25 Jan 2022 14:07:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643116027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=embjUAgs3gi9i4P5ZgYkqf5dsjaVIQcBbySu5M2DZ/4=;
+        b=mPl51bvKhZD4jxXnaFxnUJPHpaaLtG8vCLhAnTQVaTfpvCnVIPa87OPGlNOdGL3HdIgSQY
+        U1ulizrh3+qZrI7g0Ydl/3xLCE1jPDXbzJGHeIuWhVosT6zMlq4D2wHZRozGmY6Cwx7rIC
+        hbducSS2Ik4JQc5IL+k8AuIgEGY7rm0xomkJfK3pZK//0opjeeNX6tnsseiYz5gGXXySpV
+        VsmcbGfzYpT/f21tcwT8xgmuM79N/cxfymcwo9FiiEuLvsjbAu3ZwTZ+rJIl6+Aoravj+n
+        0PScTorhlnSyPiuBNB4wfIXu0HZYoe3gxM0li5b/cYwMprTTiN1CU3fnZP309A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643116027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=embjUAgs3gi9i4P5ZgYkqf5dsjaVIQcBbySu5M2DZ/4=;
+        b=QRhSjCd5kEh1gkOHcrlGmjZJRU5C6GOlaePtfRPX1y5jGv9fkUX7MEnKjBdVi0F85dE1pb
+        JPBsfHnYFFzVyKCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Wander Lairson Costa <wander@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?ISO-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Tue, 25 Jan 2022 13:56:05 +0100
-In-Reply-To: <CAMuHMdXouECKa43OwUgQ6dA+gNeOqEZHZgOmQzqknzYiA924YA@mail.gmail.com>
-References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-         <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
-         <Yd9L9SZ+g13iyKab@sirena.org.uk>
-         <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
-         <YeA7CjOyJFkpuhz/@sirena.org.uk>
-         <20220113194358.xnnbhsoyetihterb@pengutronix.de>
-         <YeF05vBOzkN+xYCq@smile.fi.intel.com>
-         <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
-         <YehdsUPiOTwgZywq@smile.fi.intel.com>
-         <20220120075718.5qtrpc543kkykaow@pengutronix.de>
-         <Ye6/NgfxsZnpXE09@smile.fi.intel.com>
-         <15796e57-f7d4-9c66-3b53-0b026eaf31d8@omp.ru>
-         <CAMuHMdXouECKa43OwUgQ6dA+gNeOqEZHZgOmQzqknzYiA924YA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        open list <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v3 1/1] tty: serial: Use fifo in 8250 console driver
+Message-ID: <Ye/1+Z8mEzbKbrqG@linutronix.de>
+References: <20211222112831.1968392-1-wander@redhat.com>
+ <20211222112831.1968392-2-wander@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211222112831.1968392-2-wander@redhat.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 2022-01-25 at 09:25 +0100, Geert Uytterhoeven wrote:
-> Hi Sergey,
-> 
-> On Mon, Jan 24, 2022 at 10:02 PM Sergey Shtylyov <s.shtylyov@omp.ru>
-> wrote:
-> > On 1/24/22 6:01 PM, Andy Shevchenko wrote:
-> > > > > > > > > It'd certainly be good to name anything that doesn't
-> > > > > > > > > correspond to one
-> > > > > > > > > of the existing semantics for the API (!) something
-> > > > > > > > > different rather
-> > > > > > > > > than adding yet another potentially overloaded
-> > > > > > > > > meaning.
-> > > > > > > > 
-> > > > > > > > It seems we're (at least) three who agree about this.
-> > > > > > > > Here is a patch
-> > > > > > > > fixing the name.
-> > > > > > > 
-> > > > > > > And similar number of people are on the other side.
-> > > > > > 
-> > > > > > If someone already opposed to the renaming (and not only
-> > > > > > the name) I
-> > > > > > must have missed that.
-> > > > > > 
-> > > > > > So you think it's a good idea to keep the name
-> > > > > > platform_get_irq_optional() despite the "not found" value
-> > > > > > returned by it
-> > > > > > isn't usable as if it were a normal irq number?
-> > > > > 
-> > > > > I meant that on the other side people who are in favour of
-> > > > > Sergey's patch.
-> > > > > Since that I commented already that I opposed the renaming
-> > > > > being a standalone
-> > > > > change.
-> > > > > 
-> > > > > Do you agree that we have several issues with
-> > > > > platform_get_irq*() APIs?
-> > [...]
-> > > > > 2. The vIRQ0 handling: a) WARN() followed by b) returned
-> > > > > value 0
-> > > > 
-> > > > I'm happy with the vIRQ0 handling. Today platform_get_irq() and
-> > > > it's
-> > > > silent variant returns either a valid and usuable irq number or
-> > > > a
-> > > > negative error value. That's totally fine.
-> > > 
-> > > It might return 0.
-> > > Actually it seems that the WARN() can only be issued in two
-> > > cases:
-> > > - SPARC with vIRQ0 in one of the array member
-> > > - fallback to ACPI for GPIO IRQ resource with index 0
-> > 
-> >    You have probably missed the recent discovery that
-> > arch/sh/boards/board-aps4*.c
-> > causes IRQ0 to be passed as a direct IRQ resource?
-> 
-> So far no one reported seeing the big fat warning ;-)
+On 2021-12-22 08:28:30 [-0300], Wander Lairson Costa wrote:
+> Note: I am using a small test app + driver located at [0] for the
+> problem description. serco is a driver whose write function dispatches
+> to the serial controller. sertest is a user-mode app that writes n bytes
+> to the serial console using the serco driver.
+>=20
+> While investigating a bug in the RHEL kernel, I noticed that the serial
+> console throughput is way below the configured speed of 115200 bps in
+> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
+> I got 2.5KB/s.
+>=20
+> $ time ./sertest -n 2500 /tmp/serco
+>=20
+> real    0m0.997s
+> user    0m0.000s
+> sys     0m0.997s
+>=20
+> With the help of the function tracer, I then noticed the serial
+> controller was taking around 410us seconds to dispatch one single byte:
 
-FWIW, we had a similar issue with an IRQ resource passed from the
-tqmx86 MFD driver do the GPIO driver, which we noticed due to this
-warning, and which was fixed
-in a946506c48f3bd09363c9d2b0a178e55733bcbb6
-and 9b87f43537acfa24b95c236beba0f45901356eb2.
-I believe these changes are what promted this whole discussion and led
-to my "Reported-by" on the patch?
+was this the HW access or did this include the wait-for-fifo empty?
 
-It is not entirely clear to me when IRQ 0 is valid and when it isn't,
-but the warning seems useful to me. Maybe it would make more sense to
-warn when such an IRQ resource is registered for a platform device, and
-not when it is looked up?
+> $ trace-cmd record -p function_graph -g serial8250_console_write \
+>    ./sertest -n 1 /tmp/serco
+>=20
+> $ trace-cmd report
+>=20
+>             |  serial8250_console_write() {
+>  0.384 us   |    _raw_spin_lock_irqsave();
+>  1.836 us   |    io_serial_in();
+>  1.667 us   |    io_serial_out();
+>             |    uart_console_write() {
+>             |      serial8250_console_putchar() {
+>             |        wait_for_xmitr() {
+>  1.870 us   |          io_serial_in();
+>  2.238 us   |        }
+>  1.737 us   |        io_serial_out();
+>  4.318 us   |      }
+>  4.675 us   |    }
+>             |    wait_for_xmitr() {
+>  1.635 us   |      io_serial_in();
+>             |      __const_udelay() {
+>  1.125 us   |        delay_tsc();
+>  1.429 us   |      }
+> ...
+> ...
+> ...
+>  1.683 us   |      io_serial_in();
+>             |      __const_udelay() {
+>  1.248 us   |        delay_tsc();
+>  1.486 us   |      }
+>  1.671 us   |      io_serial_in();
+>  411.342 us |    }
 
-My opinion is that it would be very confusing if there are any places
-in the kernel (on some platforms) where IRQ 0 is valid, but for
-platform_get_irq() it would suddenly mean "not found". Keeping a
-negative return value seems preferable to me for this reason.
+So this includes waiting for empty slot. It is wait_for_xmitr() only.
 
-(An alternative, more involved idea would be to add 1 to all IRQ
-"cookies", so IRQ 0 would return 1, leaving 0 as a special value. I
-have absolutely no idea how big the API surface is that would need
-changes, and it is likely not worth the effort at all.)
+> In another machine, I measured a throughput of 11.5KB/s, with the serial
+> controller taking between 80-90us to send each byte. That matches the
+> expected throughput for a configuration of 115200 bps.
+>=20
+> This patch changes the serial8250_console_write to use the 16550 fifo
+> if available. In my benchmarks I got around 25% improvement in the slow
+> machine, and no performance penalty in the fast machine.
 
+Either the HW is slow on starting to work, or=E2=80=A6
 
-> 
-> > > The bottom line here is the SPARC case. Anybody familiar with the
-> > > platform
-> > > can shed a light on this. If there is no such case, we may remove
-> > > warning
-> > > along with ret = 0 case from platfrom_get_irq().
-> > 
-> >    I'm afraid you're too fast here... :-)
-> >    We'll have a really hard time if we continue to allow IRQ0 to be
-> > returned by
-> > platform_get_irq() -- we'll have oto fileter it out in the callers
-> > then...
-> 
-> So far no one reported seeing the big fat warning?
-> 
-> > > > > 3. The specific cookie for "IRQ not found, while no error
-> > > > > happened" case
-> > > > 
-> > > > Not sure what you mean here. I have no problem that a situation
-> > > > I can
-> > > > cope with is called an error for the query function. I just do
-> > > > error
-> > > > handling and continue happily. So the part "while no error
-> > > > happened" is
-> > > > irrelevant to me.
-> > > 
-> > > I meant that instead of using special error code, 0 is very much
-> > > good for
-> > > the cases when IRQ is not found. It allows to distinguish -ENXIO
-> > > from the
-> > > low layer from -ENXIO with this magic meaning.
-> > 
-> >    I don't see how -ENXIO can trickle from the lower layers,
-> > frankly...
-> 
-> It might one day, leading to very hard to track bugs.
+What I noticed now in -rc1 is this output during boot:
 
-As gregkh noted, changing the return value without also making the
-compile fail will be a huge PITA whenever driver patches are back- or
-forward-ported, as it would require subtle changes in error paths,
-which can easily slip through unnoticed, in particular with half-
-automated stable backports.
+|[    6.370196] ACPI: button: Power Button [PWRF]
+|[    6.443501] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+|[0I 15
+|      [0I 15
+|            [No
+|               [ld
+|                  [a2
+|                     [a20tm
+|                           [a2nct
+|                                 [s
+|[s
+|[s
+|[s
+=E2=80=A6
+|[sk65,
+|      [rt
+|         [Pe
+|            [a
+|               [    6.873611] ata1: SATA link down (SStatus 0 SControl 300)
+|[    6.879680] ata3: SATA link down (SStatus 0 SControl 300)
 
-Even if another return value like -ENODEV might be better aligned with
-...regulator_get_optional() and similar functions, or we even find a
-way to make 0 usable for this, none of the proposed changes strike me
-as big enough a win to outweigh the churn caused by making such a
-change at all.
+The kernel buffer reports here:
 
-Kind regards,
-Matthias
+|[    6.370196] ACPI: button: Power Button [PWRF]
+|[    6.443501] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+|[    6.450643] 00:03: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud =3D 115200)=
+ is a 16550A
+|[    6.451625] 00:04: ttyS1 at I/O 0x2f8 (irq =3D 3, base_baud =3D 115200)=
+ is a 16550A
+|[    6.453808] Non-volatile memory driver v1.3
+|[    6.475688] loop: module loaded
+|[    6.476401] ahci 0000:00:1f.2: version 3.0
+|[    6.487238] ahci 0000:00:1f.2: AHCI 0001.0300 32 slots 6 ports 6 Gbps 0=
+x3f impl SATA mode
 
+I did remove the last few lines but it appears that since the
+initialisation of the port some of the lines got lost.
 
+Do you see the same?
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- 
-> geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a
-> hacker. But
-> when I'm talking to journalists I just say "programmer" or something
-> like that.
->                                 -- Linus Torvalds
+> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 
+Sebastian
