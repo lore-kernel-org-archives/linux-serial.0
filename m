@@ -2,169 +2,264 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD15C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 09:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 523D5C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 09:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355312AbiAYJbR (ORCPT
+        id S1574929AbiAYJhV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 04:31:17 -0500
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:41818 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454759AbiAYJIq (ORCPT
+        Tue, 25 Jan 2022 04:37:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573966AbiAYJa4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:08:46 -0500
-Received: by mail-ej1-f46.google.com with SMTP id a8so28931898ejc.8;
-        Tue, 25 Jan 2022 01:08:42 -0800 (PST)
+        Tue, 25 Jan 2022 04:30:56 -0500
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4FEC0613DE
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 01:30:54 -0800 (PST)
+Received: by mail-ua1-x931.google.com with SMTP id u6so36323236uaq.0
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jan 2022 01:30:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1mm7+Qmz3LImo4aFwbhXIFkzVEgm/HAOzd6fbdAVMrg=;
+        b=kCmCEgQ+xOVJqgvY6mIiDwGpng9RE64Ri/x5bVEJVgfKmrbder8yB0SJa9j3j/iO6u
+         VSlwxJi1GtMfRaX9rz0Fi8V70QZmpTm/yg+yqKEhFTP/kvAigM6NlkG016BHxBuEGBud
+         aKKG3vXyGKhkWECz7g02ij5pN8RBjRbfSAGJhF2s+s/E8Wzq61/RmUZzmkHINs6y38kj
+         8W/C1tUsfkR71I5xYVxyEgRhxjIz/FmTGO/CwLqL3papla/+aWUpb3kyrOT/GpbDGqeC
+         c1kCPdzAMoEjl9Ka3L/ozlubTR502/GpTZoRLS5kuqKqPkl9NQ2lJSPzTzJVIDppuhpp
+         EfLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ypoRciFXETZg7D+mm/iMOvDTuDfcE51oTHl422AtP98=;
-        b=WK93OHzxp4QsjxtVWdKlEp9IDp3e888hQbhp92KJRivpJsaOzSDDo6V44a9Osew9+O
-         ZEpB63qZNbA9NLZrdluc7pyZ1oIRHPUwueBBGWxyLAL3PUuymwJvwoA9xOAkVwx68RLa
-         SCQWjrzX6nBRFMa78cf77AxduDBZu2p9AnrZYQBXb9KLfhCmT+44kLIdODGA+Rv17iqf
-         E66kZB8obrkjwIXryXX42xBgeeoa1QEgcfk/G0XeDLlrH0O8j8TSly20ZKXX/sS4oANo
-         2slNK/JuDP5Dxd/7aaI0Ob8UxicsriaIWgsFcb0uqTt7gVcbOR/W8I5xtt3mNTFcPv5i
-         y2rg==
-X-Gm-Message-State: AOAM531l6HdQ7KnwSVoAIN1YeAdvrB/imDb3x86Dje8IzRnRX9IwsvoT
-        UJLX2nQYIDQ4ytUK7Lx+KQ4=
-X-Google-Smtp-Source: ABdhPJz64chg3lj7jKSpU+1OmZsz8rAk/qzuHcbWwn5XSsVHTC4fnm5wdLdxr7s8RBhK3sEKwc6Sig==
-X-Received: by 2002:a17:906:3887:: with SMTP id q7mr15484527ejd.89.1643101717956;
-        Tue, 25 Jan 2022 01:08:37 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id d5sm5850708ejr.200.2022.01.25.01.08.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jan 2022 01:08:37 -0800 (PST)
-Message-ID: <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
-Date:   Tue, 25 Jan 2022 10:08:36 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1mm7+Qmz3LImo4aFwbhXIFkzVEgm/HAOzd6fbdAVMrg=;
+        b=w9K38Dpl6rzIrsPrJSGEkOVK2n16Ptr5VMotwE6+gSNekJOy0xwGs0AO6VUEK6LEEY
+         yN0soLwEw+FkJForEpsxaM+lc/ziRFtuE/ZzE4pwuUrz3KB+k9Qbo4zInXu2K+m+iLNr
+         8lukNIVmRVE6SaGB/+5Kke5NA86sxI1pegfW1fgDPlOpknO7112LOFJnttz1nBACzgG/
+         EMUyv0hUsq1Fp7ALks0MCHkj584sZZbJRdYRZaGNb2GoZ5IAyQSU+/LPLnfSxPgnvKEE
+         N2t/lwBwobq9rk15A79GWrLqdhneTBa25CgKKhfmd7VGy8BZdkeuVNNTBDK2XbhQEa6N
+         gAgg==
+X-Gm-Message-State: AOAM5325CgeMkj69r7yvCTOEw6yz+cRGVAkwrRIGpePGCUQar0JX8ZSe
+        4E0nIk4jESKuzvtkI+VeybU6V4eOvEPy6ZKRSW2vLA==
+X-Google-Smtp-Source: ABdhPJwHGGkAwOnsd7qe0zHQAqHAUzi5PBqvJQ90yr1sdZ5zdG5wkLeKm2Z8HhNpFMDsTHL1nOGUCrWQS9pCXlyV9Y0=
+X-Received: by 2002:a67:8c2:: with SMTP id 185mr712613vsi.19.1643103053912;
+ Tue, 25 Jan 2022 01:30:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Content-Language: en-US
-To:     Jon Hunter <jonathanh@nvidia.com>, wander@redhat.com
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20211029201402.428284-1-wander@redhat.com>
- <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+From:   Lee Jones <lee.jones@linaro.org>
+Date:   Tue, 25 Jan 2022 09:30:43 +0000
+Message-ID: <CAF2Aj3g0uxj7=m+USWz9QvmQ511DN83e9WsVDW-484aEdix4hg@mail.gmail.com>
+Subject: Re: [PATCH 0/5] spi: make remove callback a void function
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        David Lechner <david@lechnology.com>,
+        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        Antti Palosaari <crope@iki.fi>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Piel <eric.piel@tremplin-utc.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
+        Solomon Peachy <pizza@shaftnet.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Benson Leung <bleung@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        =?UTF-8?Q?Ronald_Tschal=C3=A4r?= <ronald@innovation.ch>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Schocher <hs@denx.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Tudor Ambarus <Tudor.Ambarus@microchip.com>,
+        Matt Kline <matt@bitbashing.io>,
+        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        Yang Shen <shenyang39@huawei.com>,
+        dingsenjie <dingsenjie@yulong.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Walle <michael@walle.cc>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Sidong Yang <realwakka@gmail.com>,
+        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        kernel@pengutronix.de, Noralf Tronnes <notro@tronnes.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Guenter Roeck <groeck@google.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25. 01. 22, 9:39, Jon Hunter wrote:
-> 
-> On 29/10/2021 21:14, wander@redhat.com wrote:
->> From: Wander Lairson Costa <wander@redhat.com>
->>
->> Note: I am using a small test app + driver located at [0] for the
->> problem description. serco is a driver whose write function dispatches
->> to the serial controller. sertest is a user-mode app that writes n bytes
->> to the serial console using the serco driver.
->>
->> While investigating a bug in the RHEL kernel, I noticed that the serial
->> console throughput is way below the configured speed of 115200 bps in
->> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
->> I got 2.5KB/s.
->>
->> $ time ./sertest -n 2500 /tmp/serco
->>
->> real    0m0.997s
->> user    0m0.000s
->> sys     0m0.997s
->>
->> With the help of the function tracer, I then noticed the serial
->> controller was taking around 410us seconds to dispatch one single byte:
->>
->> $ trace-cmd record -p function_graph -g serial8250_console_write \
->>     ./sertest -n 1 /tmp/serco
->>
->> $ trace-cmd report
->>
->>              |  serial8250_console_write() {
->>   0.384 us   |    _raw_spin_lock_irqsave();
->>   1.836 us   |    io_serial_in();
->>   1.667 us   |    io_serial_out();
->>              |    uart_console_write() {
->>              |      serial8250_console_putchar() {
->>              |        wait_for_xmitr() {
->>   1.870 us   |          io_serial_in();
->>   2.238 us   |        }
->>   1.737 us   |        io_serial_out();
->>   4.318 us   |      }
->>   4.675 us   |    }
->>              |    wait_for_xmitr() {
->>   1.635 us   |      io_serial_in();
->>              |      __const_udelay() {
->>   1.125 us   |        delay_tsc();
->>   1.429 us   |      }
->> ...
->> ...
->> ...
->>   1.683 us   |      io_serial_in();
->>              |      __const_udelay() {
->>   1.248 us   |        delay_tsc();
->>   1.486 us   |      }
->>   1.671 us   |      io_serial_in();
->>   411.342 us |    }
->>
->> In another machine, I measured a throughput of 11.5KB/s, with the serial
->> controller taking between 80-90us to send each byte. That matches the
->> expected throughput for a configuration of 115200 bps.
->>
->> This patch changes the serial8250_console_write to use the 16550 fifo
->> if available. In my benchmarks I got around 25% improvement in the slow
->> machine, and no performance penalty in the fast machine.
->>
->> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
-> 
-> 
-> On the current mainline and -next branches, I have noticed that the
-> serial output on many of our Tegra boards is corrupted and so
-> parsing the serial output is failing.
-> 
-> Before this change the serial console would appear as follows ...
-> 
-> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd071]
-> [    0.000000] Linux version 5.16.0-rc6-00091-gadbfddc757ae 
-> (jonathanh@jonathanh-vm-01) (aarch64-linux-gnu-gcc (Linaro GCC 
-> 6.4-2017.08) 6.4.1 20170707, GNU ld (Linaro_Binutils-2017.08) 
-> 2.27.0.20161019) #15 SMP PREEMPT Tue Jan 25 00:15:25 PST 2022
-> [    0.000000] Machine model: NVIDIA Jetson TX1 Developer Kit
-> 
-> And now I see ...
-> 
-> [    0.000000] Booting Linux on physicalfd071]
-> [    0.000000] Linux version 5.16.0-rc6-athanh@j-linux-g017.08) 
-> Linaro_B20161019n 25 00:[    0.000000] Machine model: NVIDIA Jet[    
-> 0.000000] efi: UEFI not found.
-> [    0.000000] NUMA: No NUMA configurati[    0.000000] NUMA: Faking a 
-> node at [m00000001[    0.000000] NUMA: NODE_DATA [mem 0x17[    0.000000] 
-> Zone ranges:
-> 
-> Bisecting is pointing to this commit. Let me know if there are any
-> tests I can run. Otherwise we may need to disable this at least
-> for Tegra.
+My usual mailer won't let me reply to this many people, so I'm using Gmail.
 
+No idea what chaos this will cause, but here goes ...
 
-The test is bogus:
-         use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-                 port->fifosize > 1 &&
-                 (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
+> The value returned by an spi driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+>
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
 
-FCR is write only. Reading it, one gets IIR contents.
+[...]
 
-regards,
--- 
-js
-suse labs
+>  drivers/mfd/arizona-spi.c                             |  4 +---
+>  drivers/mfd/da9052-spi.c                             |  3 +--
+>  drivers/mfd/ezx-pcap.c                                |  4 +---
+>  drivers/mfd/madera-spi.c                             |  4 +---
+>  drivers/mfd/mc13xxx-spi.c                           |  3 +--
+>  drivers/mfd/rsmu_spi.c                                |  4 +---
+>  drivers/mfd/stmpe-spi.c                               |  4 +---
+>  drivers/mfd/tps65912-spi.c                          |  4 +---
+
+>  drivers/video/backlight/ams369fg06.c         |  3 +--
+>  drivers/video/backlight/corgi_lcd.c               |  3 +--
+>  drivers/video/backlight/ili922x.c                    |  3 +--
+>  drivers/video/backlight/l4f00242t03.c           |  3 +--
+>  drivers/video/backlight/lms501kf03.c            |  3 +--
+>  drivers/video/backlight/ltv350qv.c                 |  3 +--
+>  drivers/video/backlight/tdo24m.c                  |  3 +--
+>  drivers/video/backlight/tosa_lcd.c                |  4 +---
+>  drivers/video/backlight/vgg2432a4.c            |  4 +---
+
+If it's okay with Mark, it's okay with me.
+
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+--=20
+Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
+Linaro Services Principle Technical Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
