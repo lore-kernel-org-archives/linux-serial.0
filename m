@@ -2,241 +2,172 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BDEC43219
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554C1C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Jan 2022 10:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238662AbiAYKAL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Jan 2022 05:00:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237552AbiAYJzY (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Jan 2022 04:55:24 -0500
-X-Greylist: delayed 644 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Jan 2022 01:55:22 PST
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC8AC06173D;
-        Tue, 25 Jan 2022 01:55:22 -0800 (PST)
-Received: from [IPV6:2003:e9:d71e:a9f7:7a7b:6f31:a637:f96b] (p200300e9d71ea9f77a7b6f31a637f96b.dip0.t-ipconnect.de [IPv6:2003:e9:d71e:a9f7:7a7b:6f31:a637:f96b])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id F07DEC038E;
-        Tue, 25 Jan 2022 10:44:29 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1643103874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GoIG+75u1/C8Q0IQMWQkza+f14Geqz2ci3clcv5LbbA=;
-        b=sGVaqmb8ajP7SMAimYbwmLeoz3qwgAKJtXKJhVBI6LVnprU3zcENtw8CSuIVtlDP12Ftcg
-        omtJC4WBLS9wYTTYBNtwuVwIpt9p+QXLrBu2J5mSbkoUdwkk6Q2U+dEAkWJcH84zrQEyei
-        x733CU2siv1QufCl/+nKqBu3Gb9hr+Y2jwgbd/nGY+h+cGoJ1aMrkQ/Xr04xLClVQrb7Zb
-        TfJLM6l+udOvFgWOaiKtuRju9kT+LL2mscfBK+X4SZcr+cFkeecEEkxb8wgAwr3nuwM406
-        TQmICGSC57YvMB7lqOtVDQPqzsvnI2bxJ1XBFEpgEaxjDEmWG5ZeH7Hj87MfNg==
-Message-ID: <c82b8cc0-ef82-9e8a-525c-8d811376bfae@datenfreihafen.org>
-Date:   Tue, 25 Jan 2022 10:44:28 +0100
-MIME-Version: 1.0
+        id S240282AbiAYKQE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 25 Jan 2022 05:16:04 -0500
+Received: from mail-sn1anam02on2065.outbound.protection.outlook.com ([40.107.96.65]:6976
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241362AbiAYKGy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Jan 2022 05:06:54 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZwQYf3/CW0oU1exBc6Q6oxyZQ+A2wWi2cyJdqgLRoTdMtbpLqYtW4pI0mJyO+g5GTYERHufgRQ/8smunDCZe1bUWC5AKr3uIvOUMvBkzoCK0ojpThYPQqk09m+3OuxLv/PNbrZP5JNW5leL/IX4hnIqXDfFBAhsmCZ8C4i2fs1KRBz1Dv5ULtmIa6UE4rkI8d0soKhEzS588pHOV0Vo8LFy6o12xtaqAanoQsll8tKHEVrZdHnMBO+vkcLBfHQPRFT9NE3ziqMx3CWBW+rP2s3CDClhxSASVVFH5PpPoUZwZKGcpjbIyknKknxEzCZkF2MCBBBbK8DaL3Rm6sMo2+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Acms36xYi3pM7Q6WyPtOwibM3CYnLEmVeNIEMNHpQPs=;
+ b=Zpz+HL1K/4ZUDsxzP2S4L4RDxfvYQHEKfOufWTwNZAiX1GUHUtNP1WMUWaqV1tB1JuVNemmhwrBV1mbyRyTpPYuXRtRmWPe2DHw5n2SMBHgsf0gzPDz5Abkt8cb3QjQmtnFWHjcV/FVbNssjMzghT+YBCTQ61qVdyLD8K5shifsv6ApTHcuF8xxMmuZdDsTJ0Rb0TXJegReq+EpK38gCL0hBa69bZ6NRuEt1MzDPe5CuuD5LyZty+zmvPrP62AjSoCciJaLE/bzsXfG8qlCG9wS4SYoeYiEaNU3v7lR+9oC8PXyEqelRxA1sTfimiz3pVtewV9ut7W5hXjp4HmxLog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Acms36xYi3pM7Q6WyPtOwibM3CYnLEmVeNIEMNHpQPs=;
+ b=hOmvEQcKKM+dGWnNpsHjoPYD9qxlIGwTGp+WDzASs9uVLUSabNCieJ2UK34Vx350Mj90Vy3U5XmT9h5CxKzwKTKg9wI+1I/Jo+jz2cZk5Z17TvhgS3UsxuIjCA8jWd2zyYmo/NRq23Wd4GtFMVk+flYB2KvzruNNxtiPA4F+CnayQDdZ86lmbqmztH5bHpA90CE3YeUsSOauPXn5oTTfglSf7di9U+EE389FtpSsyje8ePlbCBSmACp95vmILBRrdnZ5t32rM7qazhl9/ETh1VJBbBRTqxOLGhL0ChDO/tqZcBH3Lm3MdvWXTQrgUaawkqXcAaZgMRNL/I2AdcXc8A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ BYAPR12MB3495.namprd12.prod.outlook.com (2603:10b6:a03:ae::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4909.12; Tue, 25 Jan 2022 10:06:43 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::b120:5877:dc4b:1a7e]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::b120:5877:dc4b:1a7e%7]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
+ 10:06:43 +0000
+Message-ID: <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+Date:   Tue, 25 Jan 2022 10:06:34 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
 Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Cc:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        David Lechner <david@lechnology.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
-        Antti Palosaari <crope@iki.fi>,
-        Lee Jones <lee.jones@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        =?UTF-8?Q?=c5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Benson Leung <bleung@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?Q?Ronald_Tschal=c3=a4r?= <ronald@innovation.ch>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Schocher <hs@denx.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=c3=a4tje?= <stefan.maetje@esd.eu>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Yang Shen <shenyang39@huawei.com>,
-        dingsenjie <dingsenjie@yulong.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michael Walle <michael@walle.cc>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
- <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+To:     Jiri Slaby <jirislaby@kernel.org>, wander@redhat.com
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20211029201402.428284-1-wander@redhat.com>
+ <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
+ <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+From:   Jon Hunter <jonathanh@nvidia.com>
+In-Reply-To: <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM5PR0601CA0060.eurprd06.prod.outlook.com
+ (2603:10a6:206::25) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4a38de3e-31b8-4fb3-3a31-08d9dfea631e
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3495:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB349527E01B66324E43C0FE6FD95F9@BYAPR12MB3495.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zJAgVrlt9iD6aemKyzun3MNsFpzGcwtI7pVVRuIFQ40xROBGtbIsyaSXr7yLUcRmTY1wfPkfaBS1PkfzINZRLHxdxDbcgQ7vn0W/QO1/xJAsng6J/XmfRIzwLIG9DDb0+6ug2jNjIf/NydY+Xvz4t9hG94CNrlyPL8MCTD//8X7e8+IB/OAMbdnh4eT32HN9GnbZj+zaZWhx41k0YEMkkrSRLgKriK+HTTk3MJG3f+jTtBOP3jyechGAOlVgdOn2ugW/qcDypiKoueJOYlYQXz2dsYY73S2i8/BzGtI48KB4feqitc50XXo0bLBb0tQePEZQethKgyWzG+0b5StEE/gI1ydHBbxGLbDkGY1Ed4pw91hjUdM5g7lmR1HXryUcSnP20HT7B5kbosCT5VrBhVNOt0RzYunkzFWiXtv3lpD0YuCa+beFc6EvZFr3kfkOXWlWjjiVfsvRDq25pDiVM8tywN/zAkt7PiJnA/F2UpszNpLk26aq+DczSBoGJmOF6TnVrYt2O1u+moIAaHUSQecKlH9kN3SnRyLJfVaZCD1CnQynuscQ+VlJ176N4lY/koGna8/sRi7wT7JShQ15AuuvOO/xRhfM/Cq1iTwjyZOjjqoVAxVjsRY49AI1efmlbunuPv4gXTv57Sq9rRE5Nvm8CieIsuKMXNKRNK9egRCsmCaBxo7MXE0JEMILSCpvaKRNlkyOtGNUDRHAYS0XNm/rur79VFcoYVS1FpL/g0Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(66556008)(31686004)(7416002)(5660300002)(8936002)(53546011)(31696002)(66476007)(6506007)(36756003)(316002)(8676002)(2616005)(4326008)(6512007)(6486002)(508600001)(6666004)(186003)(55236004)(2906002)(38100700002)(26005)(86362001)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ni9VTEpCN2ZPMzVEczd2bjNkTUZNR1NIMUJ2VzBkdW1EUlBHbHl2RGRLd3lv?=
+ =?utf-8?B?NVAyUE9EWVY3ZnVUSjI0NGt0UU1LMWt5UW1hd0grekwzTlpxcmdSS3ZJU203?=
+ =?utf-8?B?cVNHeU90NG1GTHRIZkRqRkxJb2pLSkRUU2tXYTRyTVdoV2RZOTAxbWtOWVBJ?=
+ =?utf-8?B?ZVpYbDNBNTB6Nkx4SCt0U3M0K280RWZTNUFvOXAzNkhaN1hKTDZvTVRnS3k5?=
+ =?utf-8?B?ajlYYXErV3hwWFFLZmowNTB6aDlXaGNuL2h1VWYzMkZIMEw4cEdoekFHdUI3?=
+ =?utf-8?B?RHhPbDBwUU8rN2VmYWRmS2JneTB0ckNzY0xwY1Jsb1VrRkFzVjNwcjJlSWNR?=
+ =?utf-8?B?bUNidzFTMktzZENsekx2YmF5Z3Qycks4YkI2OFFoaG91aVhkcGhTK1V3TTB2?=
+ =?utf-8?B?NFhsQWNaRGppbUk5VU9BeWNTSHJmRTI0Q2JMR2ZmQkFRUnJZdUJtNkNEYjRQ?=
+ =?utf-8?B?Y1UxUi9aSFBrT2pxR3o2ZDlDUUlHSS9BR3pMM2o2UStXNmp0UFNLamd2c2po?=
+ =?utf-8?B?OTUxWEZCRHRTeGhnRS9CaXk5cm5hcGk2ZDdpMmxoc0R1Ym5PM3FvUnd5RG5F?=
+ =?utf-8?B?ODhSa1EyTXZPNFpkbjF2ZTRSR3cxUTZOanVhdmFDeFVQTDZLNEUydVJ3VzJR?=
+ =?utf-8?B?ZXZLMVpnZmdaODhWT21wVDQwY3JlUEZHQS9FdmIvcE5EWmJudUtOV0xzWlh2?=
+ =?utf-8?B?Z1VXVEdvbTArdjd6NG1yNmZJY0ZYek96UHo4WE9rU2ZwMXdKaTJCcXg4TEN1?=
+ =?utf-8?B?YldtT3VBUndZbzR0YjhCTWpVWC9WeUliZkpCQlI3RWxMUHpyU3ZkVzZKc3NF?=
+ =?utf-8?B?R0NYSERoaVNvZlZCYWdkbkk3S016dzJLZ2tiSCs2Y1BiM2xOV280b3lrU2xY?=
+ =?utf-8?B?ZW5hUTZ1cnlEbnAxcDNkUEd1cFlyZkQyUVNwM1RUSFlkbkdDWkRscWdUeXJW?=
+ =?utf-8?B?R0JxdUFoLzRYY0hjaHFkWXM5YkVTMzdtNCtERFh0M0JxL1BTeW9VWHNPVFg2?=
+ =?utf-8?B?Y3JxcWpYQlp6bHRWc3RESjk5M0RkTTRtVnZGVEJsVms0TDlOV1prenJuM0FG?=
+ =?utf-8?B?VDlCWXF4Y2Ftb0JJVHBRdGZ4QXJRdkZ4UVRab3NiYTk1UlMxajYxM1JkMy9t?=
+ =?utf-8?B?dzhxK3RsTiswN1JoM0VITVhjbVAyR1RIcnNySGpRTmpzbllLOHQvNUlwNGQ3?=
+ =?utf-8?B?aE1XeXF2T0E1N0hmUnliY3NQdDJrblVySDd0NFErUXI4STh3Z2RrZjJsZkJs?=
+ =?utf-8?B?N21zZ0RtQk01cU5GQW9QTHY0d0RXL2NRQ3JyWjlXUC9hSG9EQTBEQk5CS2gw?=
+ =?utf-8?B?eFpHcXErUDcyL1BFR1p6WVFUS2FVVDdXajl4bklMdnIyeVdweElUK3JNSVc4?=
+ =?utf-8?B?YVZBVk1xZ1g2R25yUVJDMG1ta2J6WUxzMTdScXlDNUlkZ1BJT3dwTDhxT2RG?=
+ =?utf-8?B?VzUzU09IY0JoWVEyQWF5VTBSQ1crYWFUdnhBdlJxdEp6RzgyNXNTWmdVNVly?=
+ =?utf-8?B?MG1HVmc2eExDbXRDU2NHS0JTd0xzTUFpUzZ4ZytHcXRSbjROQzdjYWdnekhn?=
+ =?utf-8?B?MEpYOGVVMmRnOVF3WFZtY3p4VWpzL29qaDRzS3VQYVg3UDBzdHNsdG9aUE5a?=
+ =?utf-8?B?QnlNSGFXbDhnZHo1bmVOWjJMRHZSaEpoL0RQZElNUDNiRFBOT1N6OVMvRGxq?=
+ =?utf-8?B?c0x3Zm5NdGxIZUdVMzhWRGU3NnR3dStLTnkyaHJ4NE8vTU41bWRpUU4zenl0?=
+ =?utf-8?B?NDhtYWloa0trME16dHVjdW9tSDVvZXdlb3RORUk1N0dvWDNjTnVTeVY4dHRn?=
+ =?utf-8?B?QjJRUnBvRkFEYU1kclA4R2lTQ0RCVVFtQ280Y1BXcTZYRXNHNWk4U2ZhKzB4?=
+ =?utf-8?B?R3plR3l0ZDZ0VWlNNlE3QUpUWjJCaThlWTlxakJIYzg5QUNyV25FM3ZGNlY1?=
+ =?utf-8?B?THh5Rlp5ckNLNEJTbHJxbTRzZ1AxK1RzMnpjR1diK2dYM3pDOWFHWGhIbm1t?=
+ =?utf-8?B?V280WlBKRXMzU1prSDlJZkw1S2pLNGhNdmVBTkJtaSswempjN2FiNEtEamR3?=
+ =?utf-8?B?bkFjYjErZDZFZHlDNS9ETW43LzlmQ2UyZ3BmUUxwWXZ4U3k3M0JRTVdRSmFC?=
+ =?utf-8?B?K0dHR2NRQ3lGQ0ZIY0dsZm1FMG1GMGlhZGt6Y1VzNzRYUWtNUDZYWEpZeFpw?=
+ =?utf-8?Q?ymuxkrJmoEXQ63lx8BdBSpQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a38de3e-31b8-4fb3-3a31-08d9dfea631e
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 10:06:42.9463
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IfkQfhkr4E2wJ9lkf+HLz/qm+zcstLanN0jkdUM/dD3nDBMMy7BKHFjOi9+X4v/IF/uARyU/LPaSFXvy59wHEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3495
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-Hello.
+On 25/01/2022 09:36, Jiri Slaby wrote:
 
-On 23.01.22 18:52, Uwe Kleine-König wrote:
-> The value returned by an spi driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
+...
+
+>> The test is bogus:
+>>          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+>>                  port->fifosize > 1 &&
+>>                  (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO)
+>>
+>> FCR is write only. Reading it, one gets IIR contents.
 > 
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
+> In particular, the test is checking whether there is no interrupt 
+> pending (UART_FCR_ENABLE_FIFO == UART_IIR_NO_INT). So it oscillates 
+> between use_fifo and not, depending on the interrupt state of the chip.
 > 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
+> Could you change it into something like this:
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -3396,7 +3396,7 @@ void serial8250_console_write(struct 
+> uart_8250_port *up, const char *s,
+> 
+>          use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+>                  port->fifosize > 1 &&
+> -               (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
+> +               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+>                  /*
+>                   * After we put a data in the fifo, the controller will 
+> send
+>                   * it regardless of the CTS state. Therefore, only use 
+> fifo
+> 
+> 
+> And see whether it fixes the issue. Anyway, of what port type is the 
+> serial port (what says dmesg/setserial about that)?
 
-[...]
 
->   drivers/net/ieee802154/adf7242.c                      |  4 +---
->   drivers/net/ieee802154/at86rf230.c                    |  4 +---
->   drivers/net/ieee802154/ca8210.c                       |  6 ++----
->   drivers/net/ieee802154/cc2520.c                       |  4 +---
->   drivers/net/ieee802154/mcr20a.c                       |  4 +---
->   drivers/net/ieee802154/mrf24j40.c                     |  4 +---
+Thanks. Unfortunately, this did not fix it. The port type is PORT_TEGRA ...
 
-[...]
+  70006000.serial: ttyS0 at MMIO 0x70006000 (irq = 72, base_baud = 25500000) is a Tegra
 
-For the ieee802154 drivers:
+Jon
 
-Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
-
-regards
-Stefan Schmidt
+-- 
+nvpublic
