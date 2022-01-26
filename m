@@ -2,162 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE0FC2BA4C
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 18:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E60EC2BA4C
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 19:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244074AbiAZSFU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 13:05:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiAZSFU (ORCPT
+        id S244588AbiAZTzn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 14:55:43 -0500
+Received: from cloudserver094114.home.pl ([79.96.170.134]:60956 "EHLO
+        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244579AbiAZTzm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 13:05:20 -0500
-X-Greylist: delayed 483 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Jan 2022 10:05:19 PST
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4E74C06161C
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 10:05:19 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id BD0C392009C; Wed, 26 Jan 2022 18:57:13 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id B869E92009B;
-        Wed, 26 Jan 2022 17:57:13 +0000 (GMT)
-Date:   Wed, 26 Jan 2022 17:57:13 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        johan@kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 10/11] serial: make uart_console_write->putchar()'s
- character a char
-In-Reply-To: <20220124071430.14907-11-jslaby@suse.cz>
-Message-ID: <alpine.DEB.2.21.2201261700460.58572@angie.orcam.me.uk>
-References: <20220124071430.14907-1-jslaby@suse.cz> <20220124071430.14907-11-jslaby@suse.cz>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Wed, 26 Jan 2022 14:55:42 -0500
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
+ id 891895715511f05e; Wed, 26 Jan 2022 20:55:41 +0100
+Received: from kreacher.localnet (unknown [213.134.162.63])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id 9948E66B35A;
+        Wed, 26 Jan 2022 20:55:40 +0100 (CET)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH] tty: Replace acpi_bus_get_device()
+Date:   Wed, 26 Jan 2022 20:55:39 +0100
+Message-ID: <7355105.EvYhyI6sBW@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.162.63
+X-CLIENT-HOSTNAME: 213.134.162.63
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrfedugddufedtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudeivddrieefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudeivddrieefpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeeipdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehjihhrihhs
+ lhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-DCC--Metrics: v370.home.net.pl 1024; Body=6 Fuz1=6 Fuz2=6
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 24 Jan 2022, Jiri Slaby wrote:
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-> diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-> index e9edabc5a211..3493e201d67f 100644
-> --- a/drivers/tty/serial/dz.c
-> +++ b/drivers/tty/serial/dz.c
-> @@ -802,7 +802,7 @@ static void __init dz_init_ports(void)
->   * restored.  Welcome to the world of PDP-11!
->   * -------------------------------------------------------------------
->   */
-> -static void dz_console_putchar(struct uart_port *uport, int ch)
-> +static void dz_console_putchar(struct uart_port *uport, char ch)
->  {
->  	struct dz_port *dport = to_dport(uport);
->  	unsigned long flags;
+Replace acpi_bus_get_device() that is going to be dropped with
+acpi_fetch_acpi_dev().
 
- Hmm, this is unsafe, because on the MIPS target the lone `char' type is 
-signed and therefore a call to `->putchar' will see `ch' sign-extended 
-from bit #7 to the width of the argument register used.  Which means that 
-if a character is sent to the console that has its bit #7 set, then the 
-call to:
+No intentional functional impact.
 
-		dz_out(dport, DZ_TDR, ch);
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/tty/serdev/core.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-i.e.:
+Index: linux-pm/drivers/tty/serdev/core.c
+===================================================================
+--- linux-pm.orig/drivers/tty/serdev/core.c
++++ linux-pm/drivers/tty/serdev/core.c
+@@ -704,13 +704,10 @@ static const struct acpi_device_id serde
+ static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
+ 					  void *data, void **return_value)
+ {
++	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
+ 	struct serdev_controller *ctrl = data;
+-	struct acpi_device *adev;
+ 
+-	if (acpi_bus_get_device(handle, &adev))
+-		return AE_OK;
+-
+-	if (acpi_device_enumerated(adev))
++	if (!adev || acpi_device_enumerated(adev))
+ 		return AE_OK;
+ 
+ 	/* Skip if black listed */
 
-static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
 
-will send a value to DZ_TDR with bits #15:8 set to all-ones.  And bits 
-#11:8 there are the BREAK control bits, active high, for serial lines #3:0 
-respectively.
 
- We could handle this with a preparatory change by calling:
-
-		dz_out(dport, DZ_TDR, ch & 0xffu);
-
-instead, but perhaps `->putchar' should simply take `unsigned char' or 
-maybe even `u8' as its third argument?
-
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index c58cc142d23f..68e62703eaa6 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -399,7 +399,7 @@ int uart_set_options(struct uart_port *port, struct console
-> *co, int baud,
->  struct tty_driver *uart_console_device(struct console *co, int *index);
->  void uart_console_write(struct uart_port *port, const char *s,
->  			unsigned int count,
-> -			void (*putchar)(struct uart_port *, int));
-> +			void (*putchar)(struct uart_port *, char));
->  
->  /*
->   * Port/driver registration/removal
-
- I.e.:
-
-			void (*putchar)(struct uart_port *, unsigned char));
-
-I can see we get it right already with:
-
-	unsigned char		x_char;			/* xon/xoff char */
-
-and for `dz_transmit_chars' we have:
-
-	unsigned char tmp;
-[...]
-	tmp = xmit->buf[xmit->tail];
-	xmit->tail = (xmit->tail + 1) & (DZ_XMIT_SIZE - 1);
-	dz_out(dport, DZ_TDR, tmp);
-
-(because `struct circ_buf' is generic and not limited to unsigned buffer 
-contents interpretation; it's not clear to me if that has been intended 
-though).
-
-  Maciej
