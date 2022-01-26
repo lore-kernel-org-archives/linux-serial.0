@@ -2,98 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7B0C28CF5
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 14:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54619C3526D
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 14:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238492AbiAZOH7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 09:07:59 -0500
-Received: from mga12.intel.com ([192.55.52.136]:18857 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235353AbiAZOH6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 09:07:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643206078; x=1674742078;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ATWiAh5adUik4jh9DAaJE+s1YCh+W1I+c+EDEhALlV0=;
-  b=QRZGS2JA7djqw65FCRjCn/huuSNPto02OUB8Y6UE+VAB3d5+uXxKx/wV
-   yvWriZ2Cy3cCmGQ0qXlrmGmmF5qtrFR9VjNmKhD93nCdTzm+eqgQpwD9i
-   RRH4sCZB7wgYU14dp1bwJ7UWrKxdVAbxMe9F79+fEk6cNgEor7VaZkzS7
-   jStoDckCasxXh3E5sRJIGw+gc9DQ+872EN+fzo+DG4wWWnbma3I0xA5IX
-   3aKclcBTZUyBec0Qq7RPbW12c8hnK/h1tG6yMjPNdKMcVU918ZyCdiJGv
-   8YPabIyMV7/PgcvB6IY4OYDrSombPvqyMMGTzq0ON4FVNNAFiQiTF9B5p
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226531926"
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="226531926"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 06:07:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
-   d="scan'208";a="628311015"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 26 Jan 2022 06:07:56 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nCixn-000LH9-Df; Wed, 26 Jan 2022 14:07:55 +0000
-Date:   Wed, 26 Jan 2022 22:07:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Maciej W. Rozycki" <macro@embecosm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     kbuild-all@lists.01.org, Christoph Hellwig <hch@infradead.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v3] tty: Partially revert the removal of the Cyclades
- public API
-Message-ID: <202201262147.FNYhDmDi-lkp@intel.com>
-References: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
+        id S241922AbiAZOLl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 09:11:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233834AbiAZOLj (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 26 Jan 2022 09:11:39 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F16C06161C
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 06:11:38 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id r25so9323458wrc.12
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 06:11:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0LjfliPV2lqniJ1GWy/KM8l8B0S0kAr864IiuW9ac4=;
+        b=JYOgK6Rt2GZ7TG1tOBJFZLRGb66DJLQmU4Oau5w5tWL9ucaWvtLb2/W+NpMpP2JpoF
+         APNFcmirysrGCHBgyzh1Loz/4dQ8K16r4WyADyFEdC5Lg2pcFPQLOtoxe5GT2T6pTqgo
+         QjYwhmiPDjtRujBad/6/dfC+TlpGRHE1n/NQHI+tSZMObg1y6wY7LD/JQbv5toShlAIr
+         mWjveGDxSPIo/RmeczKB9+ALF2CkU31jYhYEw70pQPo8TJREucNToLRnq8civou2B0+R
+         LVwH2bUZU7EIw3MJcPVKx7h9Y6X7Y0AFQyWf5+BuJU8u/D+A4Y4dCWZLozn5DOBXy884
+         47+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0LjfliPV2lqniJ1GWy/KM8l8B0S0kAr864IiuW9ac4=;
+        b=k7w9Sye3jH/7fCXijZwW/HvCA0lmTbbhjQFM8FRFJrhK6qJ/MqgjdH90qRNI/YYocS
+         Y0tNLzk2szV0iZnVmiDLC0yLdnOlcqGGRFYhYgFQJoHluzu63vb3GWX9HA50SEUnk0VP
+         FMtBwbSjFllV2MTyQ64comhCWoZTsbFNUeAwxDume5cJOy7CGp3y+GMxkelYk+wUVtZv
+         VthAzRgqS08fdB0fdh2tn79MWSbi/QNaFyDwW2mExGWqpPDXcDGSpFO16zuSexn0ZEOl
+         ADNEROOlduhplI9xZKkVNPYyWmgfsU2k7OHFlIvpfK1c/4aUxIoxaRZCjlr8IteRop6f
+         aRlg==
+X-Gm-Message-State: AOAM530VvKqhMuD4exwjJW0QooR7wMcys8YVR3Z8TGOJkPbmADSf5M/X
+        u7UlXFlC9VJxAFh/UXuHCSjeiA==
+X-Google-Smtp-Source: ABdhPJyJ5cXGvopPOp06Iko/KXy0KjBLBCkkfJjcsEyHGfEEQ8tTDBOwCnjsWsfiaVSTy9+Z8R2zhw==
+X-Received: by 2002:a05:6000:1568:: with SMTP id 8mr22141657wrz.635.1643206297012;
+        Wed, 26 Jan 2022 06:11:37 -0800 (PST)
+Received: from buildbot.pitowers.org ([2a00:1098:3142:14:ae1f:6bff:fedd:de54])
+        by smtp.gmail.com with ESMTPSA id o12sm3967150wmq.41.2022.01.26.06.11.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Jan 2022 06:11:36 -0800 (PST)
+From:   Phil Elwell <phil@raspberrypi.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Lukas Wunner <lukas@wunner.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+Cc:     Phil Elwell <phil@raspberrypi.com>
+Subject: [PATCH] serial: 8250: Fix ...console_fifo_write on BCM283x
+Date:   Wed, 26 Jan 2022 14:11:24 +0000
+Message-Id: <20220126141124.4086065-1-phil@raspberrypi.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi "Maciej,
+The mini-UART on BCM283x is doubly crippled - it has 8-byte FIFOs and
+the THRE bit indicates that the TX FIFO is not-full rather than empty.
 
-I love your patch! Perhaps something to improve:
+The optimisation to enable the use of the FIFO assumes that it is safe
+to write fifosize bytes whenever THRE is set, but the BCM283x quirk
+(indicated by the presence of UART_CAP_MINI) makes it necessary to
+check the FIFO state after each byte.
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master hch-configfs/for-next v5.17-rc1 next-20220125]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+See: https://github.com/raspberrypi/linux/issues/4849
 
-url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/tty-Partially-revert-the-removal-of-the-Cyclades-public-API/20220126-172520
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: i386-buildonly-randconfig-r002-20220124 (https://download.01.org/0day-ci/archive/20220126/202201262147.FNYhDmDi-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/c9e707e313f471adbe057300f4fb163113cf062c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Maciej-W-Rozycki/tty-Partially-revert-the-removal-of-the-Cyclades-public-API/20220126-172520
-        git checkout c9e707e313f471adbe057300f4fb163113cf062c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from <command-line>:32:
->> ./usr/include/linux/cyclades.h:6:2: warning: #warning "Support for features provided by this header has been removed" [-Wcpp]
-       6 | #warning "Support for features provided by this header has been removed"
-         |  ^~~~~~~
->> ./usr/include/linux/cyclades.h:7:2: warning: #warning "Please consider updating your code" [-Wcpp]
-       7 | #warning "Please consider updating your code"
-         |  ^~~~~~~
-
+Fixes: 5021d709b31b ("tty: serial: Use fifo in 8250 console driver")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/tty/serial/8250/8250_port.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 2abb3de11a48..8a2b462d363c 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3357,6 +3357,13 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
+ 				serial_out(up, UART_TX, *s++);
+ 				cr_sent = false;
+ 			}
++			/*
++			 * The BCM2835 MINI UART THRE bit is really a not-full
++			 * bit, so be prepared to bail out early.
++			 */
++			if ((up->capabilities & UART_CAP_MINI) &&
++			    !(serial_in(up, UART_LSR) & UART_LSR_THRE))
++				break;
+ 		}
+ 	}
+ }
+-- 
+2.25.1
+
