@@ -2,96 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C72EC28CF5
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 08:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39EDC28CF5
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 08:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238590AbiAZIwk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 03:52:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238583AbiAZIwj (ORCPT
+        id S238601AbiAZIzy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 03:55:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43336 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231182AbiAZIzx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 03:52:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38104C06161C;
-        Wed, 26 Jan 2022 00:52:39 -0800 (PST)
+        Wed, 26 Jan 2022 03:55:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E665EB81C10;
-        Wed, 26 Jan 2022 08:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C76C340E3;
-        Wed, 26 Jan 2022 08:52:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E81A6149A
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 08:55:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E5FC340E3;
+        Wed, 26 Jan 2022 08:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643187156;
-        bh=Dz16Rb8c2taqcOq9oJ+djyTRcUAitIfC8J2mz7ZIZis=;
+        s=korg; t=1643187353;
+        bh=woMrHaRKxCVwzgwiqq6x6b6DB29JcHJ6gmo1GyZ2l0Y=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Mt2vigRpuosNXieU2+Sr1W+0RxDKwhcrQWrPSaAGi/Sjvue7btasifqnhxC8KvIUt
-         TZrWMp3bhJoVFdXYlAy1T7mo6pzi35AMsK4DJlVcJsthIIODvFEMcXbQ/M2zVdv3Je
-         p+yZKSIBCEFsLAPHTdvVfUDNJMeMBKenBC9hno8g=
-Date:   Wed, 26 Jan 2022 09:52:26 +0100
+        b=KsefCHEpdYEOd/XAA1AZJH78Os5BP6Q9/ZLtCWPN3Z8g2TFQnNCflxkRhTIDzMR6F
+         qM19hm+SMsDC6kjJhFuajlhUUX7kyncnWaLwIz5XxXJNzVWdIYZ86Oos9Ipk+sn7jF
+         GrQLg3NWHo9I2TReocHBn5g21O0C4jGXTTC0CpVI=
+Date:   Wed, 26 Jan 2022 09:55:44 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Wander Costa <wcosta@redhat.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wander Lairson Costa <wander@redhat.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Message-ID: <YfELyq5AmxiZxjme@kroah.com>
-References: <20211029201402.428284-1-wander@redhat.com>
- <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
- <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
- <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
- <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
- <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
- <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
- <YfArHDfrVHw7ApDx@smile.fi.intel.com>
- <YfArWaKJ13+OC/7w@smile.fi.intel.com>
- <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        linux-serial@vger.kernel.org,
+        Rostislav =?iso-8859-1?Q?Lisov=FD?= <lisovy@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: Re: TTY layer discussion about generic FIFO depth and Rx iddle
+ timeout control
+Message-ID: <YfEMkHvDb6KJjh3h@kroah.com>
+References: <202201170006.31440.pisa@cmp.felk.cvut.cz>
+ <YeVpFozoVQo1vbKS@kroah.com>
+ <202201191446.28415.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+In-Reply-To: <202201191446.28415.pisa@cmp.felk.cvut.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 03:40:36PM -0300, Wander Costa wrote:
-> On Tue, Jan 25, 2022 at 1:56 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > On Tue, Jan 25, 2022 at 06:53:48PM +0200, Andy Shevchenko wrote:
-> > > On Tue, Jan 25, 2022 at 12:40:27PM +0000, Jon Hunter wrote:
-> > > > On 25/01/2022 10:29, Wander Costa wrote:
-> >
-> > ...
-> >
-> > > > Andy, does this work for X86?
-> > >
-> > > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > >
-> > > No, it does NOT fix an issue (I see it on a handful x86) with the legacy UART
-> > > (means the 8250_pnp is in use). And I believe the same will be the case on LPSS
-> > > ones (8250_dw / 8250_lpss) and HSU (8250_mid), because the patch influences on
-> > > all of them.
-> >
-> > Shall I send a revert and we can continue with a new approach later on?
-> >
+On Wed, Jan 19, 2022 at 02:46:28PM +0100, Pavel Pisa wrote:
+> Dear Greg,
 > 
-> Tomorrow (or maybe after tomorrow) I am going to post the fixes I
-> already have, and an additional patch adding a build option
-> (disabled to default) so people maybe if they want to use the FIFO on
-> console write. But I understand if people decide to go
-> ahead and revert the patch.
+> thanks for the reply.
+> 
+> On Monday 17 of January 2022 14:03:18 Greg Kroah-Hartman wrote:
+> > On Mon, Jan 17, 2022 at 12:06:31AM +0100, Pavel Pisa wrote:
+> > >   https://github.com/lin-bus
+> > >
+> > > Kernel part - slLIN TTY discipline - can be found there
+> > >
+> > >   https://github.com/lin-bus/linux-lin/tree/master/sllin
+> >
+> > So it's just a 2000 line kernel module?  That should be easy to turn
+> > into a patch and submit for review, right?
+> >
+> > Odds are it can be made much smaller based on an initial glance at it.
+> > Review comments can help show what to do.
+> 
+> Thanks for encouragement for mainlining or at least review on the list.
+> I agree that it can shrink when patch for mainline without sections
+> providing compatibility with old kernels is prepared.
+> Generally, I think that it is doable and important is feedback
+> from the user base that there is interrest... and time...
+> 
+> I think that resolution of APO for the trigger/FIFO control
+> is critical for thinking about mainlining. Rest is the usual
+> work...
+> 
+> > >   https://github.com/lin-bus/linux-lin/issues/13
+> > >
+> > Discuss it here by submitting patches please.  Links to random github
+> > repos do not do much as we can do nothing with them, sorry.
+> 
+> Yes, I understand but I would like to hear some suggestion
+> the first where/into which object operations structure
+> should be the function added.
+> 
+> There is required functionality in 8250 driver linux/drivers/tty/serial/8250/8250_port.c
+> 
+>      do_set_rxtrig(struct tty_port *port, unsigned char bytes)
+>      do_serial8250_set_rxtrig(...)
+>      serial8250_set_attr_rx_trig_bytes(...)
+>      DEVICE_ATTR_RW(rx_trig_bytes)
+> 
+> But to make slLIN generally usable, we would need to have functionality
+> reachable from the line discipline
+> 
+> Do you agree that right place is struct uart_ops?
+> 
+>   https://elixir.bootlin.com/linux/latest/source/include/linux/serial_core.h#L38
+> 
+> What should be a prototype?
 
-Let me revert this for now.  And no new config options please, this
-should "just work".
+For all of these questions, I do not know.  Try it out yourself first
+and see what you feel works best.  We will be glad to review working
+patches, but to discuss options before that is difficult and not
+something we normally worry about.
 
 thanks,
 
