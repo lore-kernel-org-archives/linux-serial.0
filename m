@@ -2,91 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2D0C28CF5
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 13:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8876EC28CF5
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 13:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240145AbiAZNrd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 08:47:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S235498AbiAZNuV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:50:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241568AbiAZNrc (ORCPT
+        with ESMTP id S241631AbiAZNuS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 08:47:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D6FC06173B;
-        Wed, 26 Jan 2022 05:47:31 -0800 (PST)
+        Wed, 26 Jan 2022 08:50:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ADCC06161C;
+        Wed, 26 Jan 2022 05:50:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B62CB81E10;
-        Wed, 26 Jan 2022 13:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8163EC340E3;
-        Wed, 26 Jan 2022 13:47:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EB7F6135E;
+        Wed, 26 Jan 2022 13:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC05BC340E3;
+        Wed, 26 Jan 2022 13:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643204849;
-        bh=J59HSbb1CYUQf2jadvuiVJSAI50FKAJ/JDdZfSRUuYE=;
+        s=korg; t=1643205017;
+        bh=9mDXCoeqsja8rXJhe52fHHw9XzlnXG7asjLqfZfZcZ4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=09AwusFHeokv+yKQNoSyPCUsa7T2m1PUFUtbdUDQmzfxUU3qWx1Hcwnw3eczazLse
-         x87m78Eoy1SiFlZ/HPRvOjBryNfg8cWGjh8pBhhpGfArFmEwUJO8HZnBQyaryU1HqG
-         4rBtkfvNLaC0xXZo3j/EYWMnNdBKa0rlQPvtR3ls=
-Date:   Wed, 26 Jan 2022 14:47:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     hammer hsieh <hammerh0314@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
-Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-Message-ID: <YfFQ7v4dXPMV7ypw@kroah.com>
-References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
- <1641979444-11661-3-git-send-email-hammerh0314@gmail.com>
- <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
- <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
- <d6d3aa07-7bf1-2b6d-356f-ae13c7b9d6cd@kernel.org>
- <CAOX-t57KZb0hNDuhPsabkmkf_qOOLqyH3yuvkHP6UNwhLodWDg@mail.gmail.com>
- <2cde3ff0-5180-7c1e-82fd-7b58e41d462a@kernel.org>
- <CAOX-t573QkixRC7xa1KUOYXfL12Q+Ltxph9rX7V8tm2BMoqxgA@mail.gmail.com>
+        b=taWxoPenqHi5/N2FoZdUABm1Z1CwBtaxeHzAMMuZzVlUoFzlgWwpbCyllHoNeLtXC
+         hsemCiRRI1YHCsuV0C3WAk+ZvS2d3ZDCxxV63in9EWXAA7VjjXRn9Waa8MD0Wx7PxU
+         Qd2Vs0LaylFbY5N3hnuPcy9vI8SMpbgr5jnz49zc=
+Date:   Wed, 26 Jan 2022 14:50:13 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Maciej W. Rozycki" <macro@embecosm.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] tty: Partially revert the removal of the Cyclades
+ public API
+Message-ID: <YfFRlbKw4cV+ISfk@kroah.com>
+References: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOX-t573QkixRC7xa1KUOYXfL12Q+Ltxph9rX7V8tm2BMoqxgA@mail.gmail.com>
+In-Reply-To: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 10:22:56AM +0800, hammer hsieh wrote:
-> Jiri Slaby <jirislaby@kernel.org> 於 2022年1月13日 週四 下午7:12寫道：
-> >
-> > On 13. 01. 22, 11:56, hammer hsieh wrote:
-> > >> Could you explain me what posted write is and how does it not matter in
-> > >> this case?
-> > >>
-> > >
-> > > Each UART ISC register contains
-> >
-> > No, you still don't follow what I write. Use your favorite web search
-> > for "posted write" and/or consult with your HW team.
-> >
+On Wed, Jan 26, 2022 at 09:22:54AM +0000, Maciej W. Rozycki wrote:
+> Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
+> cyclades, remove this orphan"), which removed a part of the API and 
+> caused compilation errors for user programs using said part, such as 
+> GCC 9 in its libsanitizer component[1]:
 > 
-> Maybe this time, we are on the same page.
-> Our SP7021 chipset is designed on ARM Cortex-A7 Quad core.
-> Register Access through AMBA(AXI bus), and it is non-cached.
+> .../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
+>   160 | #include <linux/cyclades.h>
+>       |          ^~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
 > 
-> Did you mean
-> case1 have concern about "posted write", and you want to know why it not matter?
-> case2 will be safer?
+> As the absolute minimum required bring `struct cyclades_monitor' and 
+> ioctl numbers back then so as to make the library build again.  Add a 
+> preprocessor warning as to the obsolescence of the features provided.
 > 
-> Case1 :
-> spin_lock_irq_save()
-> writel(0, target register)
-> spin_unlock_irqrestore()
+> References:
+> 
+> [1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel 
+>     header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
+> 
+> Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
+> Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
+> Cc: stable@vger.kernel.org # v5.13+
+> ---
+> Changes from v2:
+> 
+> - Add #warning directives.
 
-A lock does not mean that your write made it to the device.  Please talk
-to the hardware designers to properly determine how to correctly write
-to the hardware and "know" that the write succeeded or not.  This driver
-does not seem to take that into consideration at all.
-
-thanks,
+Thanks, that looks good, now queued up.
 
 greg k-h
