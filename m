@@ -2,143 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 514F9C2BA4C
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 11:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F330C5DF62
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 12:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241018AbiAZL7D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 06:59:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37327 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241021AbiAZL7D (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 06:59:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643198342;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tAFRX3Ll2EWOOf5SvwlveLi2EAh9zYL/C14r8isbSmc=;
-        b=BHvH8kPWVLoPjT7mpaF9cTQbmLuReOJr5XeJcl9DSfiVfHUR2qUiaAh8f7XPSx9wu1dMzz
-        BXjSDLrlERbCPRear7K5msxbWUPQ5S168hKMtuWxtDUW+uK4OoiSVPW/ncBwG9RJceQe8Z
-        pqa7HuCzfJ2aBBt8HtZU5T/rMk5KlJU=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-183-E1pMWjzAMYON58P6GYfPHQ-1; Wed, 26 Jan 2022 06:59:00 -0500
-X-MC-Unique: E1pMWjzAMYON58P6GYfPHQ-1
-Received: by mail-ed1-f70.google.com with SMTP id w3-20020a50c443000000b0040696821132so9539125edf.22
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 03:59:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tAFRX3Ll2EWOOf5SvwlveLi2EAh9zYL/C14r8isbSmc=;
-        b=AgbkQA6ohMfNlrm7vpgX/jdIvbG98tMK+VrLfg9p2LU4vAZHuWVq/zsmYAzGE/G7Ip
-         9xFt0qM/McZKo/G1+heciq3DQ9GFDTNHreFJQ7rw123kwsz3tEX9/UR+jeVB4CObWIOa
-         bkj6BFbvaX7IX1iaRhkc78EhWmUJ127hpnCxnE7DmP7+kA2Bj+m0SbqwEx0L1mLdwzmi
-         jyoD8OU5CKQFP6rpzvNfp8ZBSompkHrVoOnvMgk/ACWjjV6P92q5sPTXZnFm+SIK12sY
-         v211XzxrnSxrSFQhQVkepAO3wHLrrurN8FS9QbNg1jXReCTMlivKzmVSSKpzdW1AXgBi
-         +rfg==
-X-Gm-Message-State: AOAM530r41RCC8MccQwRFeYfRVuj68/QqKfF7lwHna9+h41WG0Ea3pCg
-        LwE7i+AywgXiYCAVOS1R2hfnFDE21EhkamgcG+IeZVfvpVcGeskssx8HhyuA7c8LumXe0yVpFc5
-        i/MXxXB4auv5Ne5wRzcL37E+kjAkk78HbiDhAN44W
-X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr4331403ejc.450.1643198338369;
-        Wed, 26 Jan 2022 03:58:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzUwyus9ZvysDcJHkMldzv4YPOHEEDKqqFKeSQezb1vPN+VSGYQ1CMkL5Ztv3mFaQJGPzX8zrEDu9o0U2rOMJI=
-X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr4331391ejc.450.1643198338173;
- Wed, 26 Jan 2022 03:58:58 -0800 (PST)
-MIME-Version: 1.0
-References: <202201170006.31440.pisa@cmp.felk.cvut.cz> <YeVpFozoVQo1vbKS@kroah.com>
- <202201191446.28415.pisa@cmp.felk.cvut.cz> <YfEMkHvDb6KJjh3h@kroah.com>
-In-Reply-To: <YfEMkHvDb6KJjh3h@kroah.com>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Wed, 26 Jan 2022 08:58:47 -0300
-Message-ID: <CAAq0SUneu6mgKjCSEa1pE--6WOFqXJb_d6zodtOGWnbor9-LVw@mail.gmail.com>
-Subject: Re: TTY layer discussion about generic FIFO depth and Rx iddle
- timeout control
+        id S241101AbiAZMKt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 07:10:49 -0500
+Received: from mga12.intel.com ([192.55.52.136]:10802 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241091AbiAZMKs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 26 Jan 2022 07:10:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643199048; x=1674735048;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0cSewon31q9T9uMO3sD6+fCdAQ/YjIB/6kr07CYlyLs=;
+  b=QAXiI8TmZ92CG++ppIMpvAaAUC6w/+jB1yPxIKyjRiqX2prkJm4rs7Ee
+   YRIaSDJlCRzR6eVLwvIg69/nhFqsYAcN+NGqCU91/uKjpXoXV6DEchDeF
+   d/m19i8wGgH9PYFee+csLzu4FEXSeffD+i8mZhCas0L4HPXBW+fF7asTN
+   KM2N54BM4EgnTsPUvFvopdi/FrNa+kCRlkdS8glisCfuNfWQfhf1uKcv7
+   kEinAZh+xjoMSj736wAIlhm4c1iXebNCPeJwrzaYoSJ4jlPpgec6LUddP
+   5ArpeV00ptOgTYIwAmJ5+NuwHc6LGSiO+rufwKOYgWeTtuChvOwy0lNh0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="226513224"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="226513224"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 04:10:48 -0800
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; 
+   d="scan'208";a="495339226"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2022 04:10:45 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nCh7L-00EaeP-Bp;
+        Wed, 26 Jan 2022 14:09:39 +0200
+Date:   Wed, 26 Jan 2022 14:09:38 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+Cc:     Wander Costa <wcosta@redhat.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Wander Lairson Costa <wander@redhat.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        =?UTF-8?Q?Rostislav_Lisov=C3=BD?= <lisovy@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jiri Slaby <jslaby@suse.cz>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+Message-ID: <YfE6AiIgXrd+5qvk@smile.fi.intel.com>
+References: <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
+ <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+ <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
+ <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
+ <YfArHDfrVHw7ApDx@smile.fi.intel.com>
+ <YfArWaKJ13+OC/7w@smile.fi.intel.com>
+ <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+ <YfELyq5AmxiZxjme@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfELyq5AmxiZxjme@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 5:55 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Jan 19, 2022 at 02:46:28PM +0100, Pavel Pisa wrote:
-> > Dear Greg,
-> >
-> > thanks for the reply.
-> >
-> > On Monday 17 of January 2022 14:03:18 Greg Kroah-Hartman wrote:
-> > > On Mon, Jan 17, 2022 at 12:06:31AM +0100, Pavel Pisa wrote:
-> > > >   https://github.com/lin-bus
-> > > >
-> > > > Kernel part - slLIN TTY discipline - can be found there
-> > > >
-> > > >   https://github.com/lin-bus/linux-lin/tree/master/sllin
+On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Jan 25, 2022 at 03:40:36PM -0300, Wander Costa wrote:
+> > On Tue, Jan 25, 2022 at 1:56 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
 > > >
-> > > So it's just a 2000 line kernel module?  That should be easy to turn
-> > > into a patch and submit for review, right?
+> > > On Tue, Jan 25, 2022 at 06:53:48PM +0200, Andy Shevchenko wrote:
+> > > > On Tue, Jan 25, 2022 at 12:40:27PM +0000, Jon Hunter wrote:
+> > > > > On 25/01/2022 10:29, Wander Costa wrote:
 > > >
-> > > Odds are it can be made much smaller based on an initial glance at it.
-> > > Review comments can help show what to do.
-> >
-> > Thanks for encouragement for mainlining or at least review on the list.
-> > I agree that it can shrink when patch for mainline without sections
-> > providing compatibility with old kernels is prepared.
-> > Generally, I think that it is doable and important is feedback
-> > from the user base that there is interrest... and time...
-> >
-> > I think that resolution of APO for the trigger/FIFO control
-> > is critical for thinking about mainlining. Rest is the usual
-> > work...
-> >
-> > > >   https://github.com/lin-bus/linux-lin/issues/13
+> > > ...
+> > >
+> > > > > Andy, does this work for X86?
 > > > >
-> > > Discuss it here by submitting patches please.  Links to random github
-> > > repos do not do much as we can do nothing with them, sorry.
-> >
-> > Yes, I understand but I would like to hear some suggestion
-> > the first where/into which object operations structure
-> > should be the function added.
-> >
-> > There is required functionality in 8250 driver linux/drivers/tty/serial/8250/8250_port.c
-> >
-> >      do_set_rxtrig(struct tty_port *port, unsigned char bytes)
-> >      do_serial8250_set_rxtrig(...)
-> >      serial8250_set_attr_rx_trig_bytes(...)
-> >      DEVICE_ATTR_RW(rx_trig_bytes)
-> >
-> > But to make slLIN generally usable, we would need to have functionality
-> > reachable from the line discipline
-> >
-> > Do you agree that right place is struct uart_ops?
-> >
-> >   https://elixir.bootlin.com/linux/latest/source/include/linux/serial_core.h#L38
-> >
-> > What should be a prototype?
->
-> For all of these questions, I do not know.  Try it out yourself first
-> and see what you feel works best.  We will be glad to review working
-> patches, but to discuss options before that is difficult and not
-> something we normally worry about.
->
+> > > > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > >
+> > > > No, it does NOT fix an issue (I see it on a handful x86) with the legacy UART
+> > > > (means the 8250_pnp is in use). And I believe the same will be the case on LPSS
+> > > > ones (8250_dw / 8250_lpss) and HSU (8250_mid), because the patch influences on
+> > > > all of them.
+> > >
+> > > Shall I send a revert and we can continue with a new approach later on?
+> > >
+> > 
+> > Tomorrow (or maybe after tomorrow) I am going to post the fixes I
+> > already have, and an additional patch adding a build option
+> > (disabled to default) so people maybe if they want to use the FIFO on
+> > console write. But I understand if people decide to go
+> > ahead and revert the patch.
+> 
+> Let me revert this for now.  And no new config options please, this
+> should "just work".
 
-That gives me some time to find more machines to test the fixes.
+Thanks!
 
-> thanks,
->
-> greg k-h
->
+Wander, if you need a test for something new, I may help to perform on
+our (sub)set of x86 machines.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
