@@ -2,374 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A62C28CF5
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 12:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BC2C28CF5
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 13:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241528AbiAZMyF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 07:54:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33916 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234499AbiAZMyF (ORCPT
+        id S239002AbiAZNYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 08:24:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:39922 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238940AbiAZNYL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 07:54:05 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CC3AB81CD5;
-        Wed, 26 Jan 2022 12:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CA69C340E3;
-        Wed, 26 Jan 2022 12:53:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643201642;
-        bh=ETfPsNyQEaV/a75wVcFhqh3rF6nlgsiJF01FaJDNS3M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Uy4PQg9sw/8NJ4F63OZimTr/qfEsHuAp6KpCn0LVHzjTikzNsOtrG6fWs+v+uaGEP
-         2kd+X5daWorJYB5wIe55Xe3+hbW7uu2PYTK3gM2S4sDP7+lASrLudfXJD0dC+xnVnS
-         vr7mP+9j2zXTTAgXgbBMTrO8tKcz0cyTKNrb9pZ87pC07SBakiU6v44cxOdjc30C56
-         cG1sjaLiqByg8tUMY3F99tXIH/vs2xDRjbqYZMGkjkRDVbmPV+zrS+yeQYRecBYRZ3
-         82+Ezwuf88bqYAV8FmbfP+V5Vn+Fut+IQfuvYocyTVlgfb5DXDf7kmR1j/QQVrtPqV
-         GxnyiIaoHdvDA==
-Date:   Wed, 26 Jan 2022 20:53:55 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Jacky Bai <ping.bai@nxp.com>
-Subject: Re: [RESEND v4 08/10] arm64: dts: imx8dxl: Add i.MX8DXL evk board
- support
-Message-ID: <20220126125355.GS4686@dragon>
-References: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
- <1639680494-23183-9-git-send-email-abel.vesa@nxp.com>
+        Wed, 26 Jan 2022 08:24:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643203451;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ANJWRqaJOsHeBahCZP1aUBPvVHukSwmTjnJxwO3XFi8=;
+        b=PI/U1at3D9yLh1M4kiJLHma8Zf9uTX0AiBX2ZdBytOPtvzSfoIHE4n/Pqpe0qU2ntqIIGy
+        enBQndMRPAnAOzNFUmFJXZUxErwBQDFkwOBnAss7DpLFY6r2E2G2vhDQUv3Ng+bH2DZ+pp
+        tUSr8L5iuNoIK9TH7LV3HnuqCM6ZYXo=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-643-stDAFt3iNV63_LdWAIWztw-1; Wed, 26 Jan 2022 08:24:10 -0500
+X-MC-Unique: stDAFt3iNV63_LdWAIWztw-1
+Received: by mail-ej1-f70.google.com with SMTP id v2-20020a1709062f0200b006a5f725efc1so4880421eji.23
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 05:24:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ANJWRqaJOsHeBahCZP1aUBPvVHukSwmTjnJxwO3XFi8=;
+        b=2naEWcc6TdxR8lvAzxscSmT76xKjX9xr2HGLbWzYzmzzBjEpTOTWXOFYos/HGPQRRn
+         RfxyR0QQ00ymbBQ7LGKt1NKyIsaSU06uPTyzWoSRBRldWcpXQ3wjYNNlmXqFm9hNbP8B
+         gemTk+scD6b1iZw+p++8+9ncCzpA4PC05Es1Zlf4BeddPny3zAYAVNZJytbQckiJ4szq
+         6OG9KtfR0X4W60yI/9XnwZMhnBmCMlwRbwNYeeqNumXyOvrRSYAv6EPgFiWw2nzZ8u9p
+         H8HI2Qsq6KQQCg/6bnri8aDLte3kYfbeEbBOq0hqAKZ5/W2Er+2WOHatCKAGzUByq8zi
+         HGiA==
+X-Gm-Message-State: AOAM5303S4drz+d7kqTZLm7omoDtzCowRtLmkyunMVHRyzYxCxHTihLU
+        5vOw1HAJ7q6UCDhXUOVoT0ob97aKg6vB3QwImGtbDFjbOqPJvQ92uuxS+mYdzk8tgU+ezC6CDPe
+        /co6INymGdE4i6KStlKQGU8IYiA5qHXwZRLRg8tY/
+X-Received: by 2002:aa7:d916:: with SMTP id a22mr25322804edr.316.1643203448928;
+        Wed, 26 Jan 2022 05:24:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzWwMrft4WxUun1ndbSR3lYX4QMq5cL7NVmEXsJv8NqcvjuTwDeS2EsnamlOpKPh8HCYWa/s4tUCv06avVPlVA=
+X-Received: by 2002:aa7:d916:: with SMTP id a22mr25322789edr.316.1643203448749;
+ Wed, 26 Jan 2022 05:24:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1639680494-23183-9-git-send-email-abel.vesa@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org> <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com> <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
+ <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com> <YfArHDfrVHw7ApDx@smile.fi.intel.com>
+ <YfArWaKJ13+OC/7w@smile.fi.intel.com> <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+ <YfELyq5AmxiZxjme@kroah.com> <YfE6AiIgXrd+5qvk@smile.fi.intel.com>
+In-Reply-To: <YfE6AiIgXrd+5qvk@smile.fi.intel.com>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Wed, 26 Jan 2022 10:23:57 -0300
+Message-ID: <CAAq0SU=ivwiGPZoD=BsD67A4A4pvuh0S02L2Udhg8vmjnmCAAw@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 08:48:12PM +0200, Abel Vesa wrote:
-> From: Jacky Bai <ping.bai@nxp.com>
-> 
-> Add i.MX8DXL EVK board support.
-> 
-> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  arch/arm64/boot/dts/freescale/Makefile        |   1 +
->  arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 266 ++++++++++++++++++
->  2 files changed, 267 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-> index 5018b8b1e5f2..f117d3e811ba 100644
-> --- a/arch/arm64/boot/dts/freescale/Makefile
-> +++ b/arch/arm64/boot/dts/freescale/Makefile
-> @@ -72,6 +72,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mq-pico-pi.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-thor96.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-rmb3.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-zest.dtb
-> +dtb-$(CONFIG_ARCH_MXC) += imx8dxl-evk.dtb
+On Wed, Jan 26, 2022 at 9:10 AM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
+> > On Tue, Jan 25, 2022 at 03:40:36PM -0300, Wander Costa wrote:
+> > > On Tue, Jan 25, 2022 at 1:56 PM Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com> wrote:
+> > > >
+> > > > On Tue, Jan 25, 2022 at 06:53:48PM +0200, Andy Shevchenko wrote:
+> > > > > On Tue, Jan 25, 2022 at 12:40:27PM +0000, Jon Hunter wrote:
+> > > > > > On 25/01/2022 10:29, Wander Costa wrote:
+> > > >
+> > > > ...
+> > > >
+> > > > > > Andy, does this work for X86?
+> > > > >
+> > > > > Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > > >
+> > > > > No, it does NOT fix an issue (I see it on a handful x86) with the legacy UART
+> > > > > (means the 8250_pnp is in use). And I believe the same will be the case on LPSS
+> > > > > ones (8250_dw / 8250_lpss) and HSU (8250_mid), because the patch influences on
+> > > > > all of them.
+> > > >
+> > > > Shall I send a revert and we can continue with a new approach later on?
+> > > >
+> > >
+> > > Tomorrow (or maybe after tomorrow) I am going to post the fixes I
+> > > already have, and an additional patch adding a build option
+> > > (disabled to default) so people maybe if they want to use the FIFO on
+> > > console write. But I understand if people decide to go
+> > > ahead and revert the patch.
+> >
+> > Let me revert this for now.  And no new config options please, this
+> > should "just work".
+>
+> Thanks!
+>
+> Wander, if you need a test for something new, I may help to perform on
+> our (sub)set of x86 machines.
+>
 
-Keep the list sorted.
+Thanks, Andy. I will let you know when I have new patches.
 
->  dtb-$(CONFIG_ARCH_MXC) += imx8qm-mek.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-ai_ml.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-colibri-eval-v3.dtb
-> diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> new file mode 100644
-> index 000000000000..68dfe722af6d
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> @@ -0,0 +1,266 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Copyright 2019-2021 NXP
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "imx8dxl.dtsi"
-> +
-> +/ {
-> +	model = "Freescale i.MX8DXL EVK";
-> +	compatible = "fsl,imx8dxl-evk", "fsl,imx8dxl";
-> +
-> +	chosen {
-> +		stdout-path = &lpuart0;
-> +	};
-> +
-> +	memory@80000000 {
-> +		device_type = "memory";
-> +		reg = <0x00000000 0x80000000 0 0x40000000>;
-> +	};
-> +
-> +	reserved-memory {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		/*
-> +		 * 0x8800_0000 ~ 0x8FFF_FFFF is reserved for M4
-> +		 * Shouldn't be used at A core and Linux side.
-> +		 *
-> +		 */
-> +		m4_reserved: m4@88000000 {
-> +			no-map;
-> +			reg = <0 0x88000000 0 0x8000000>;
-> +		};
-> +
-> +		/* global autoconfigured region for contiguous allocations */
-> +		linux,cma {
-> +			compatible = "shared-dma-pool";
-> +			reusable;
-> +			size = <0 0x14000000>;
-> +			alloc-ranges = <0 0x98000000 0 0x14000000>;
-> +			linux,cma-default;
-> +		};
-> +	};
-> +
-> +	reg_usdhc2_vmmc: usdhc2-vmmc {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "SD1_SPWR";
-> +		regulator-min-microvolt = <3000000>;
-> +		regulator-max-microvolt = <3000000>;
-> +		gpio = <&lsio_gpio4 30 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +		off-on-delay-us = <3480>;
-> +	};
-> +};
-> +
-> +&lpuart0 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_lpuart0>;
-> +	status = "okay";
-> +};
-> +
-> +&lpuart1 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_lpuart1>;
-> +	status = "okay";
-> +};
-> +
-> +&lsio_gpio4 {
-> +	status = "okay";
-> +};
-> +
-> +&lsio_gpio5 {
-> +	status = "okay";
-> +};
-> +
-> +&thermal_zones {
-> +	pmic-thermal0 {
-> +		polling-delay-passive = <250>;
-> +		polling-delay = <2000>;
-> +		thermal-sensors = <&tsens IMX_SC_R_PMIC_0>;
-
-Have a newline between property and child node.
-
-> +		trips {
-> +			pmic_alert0: trip0 {
-> +				temperature = <110000>;
-> +				hysteresis = <2000>;
-> +				type = "passive";
-> +			};
-
-Have a newline between nodes.
-
-> +			pmic_crit0: trip1 {
-> +				temperature = <125000>;
-> +				hysteresis = <2000>;
-> +				type = "critical";
-> +			};
-> +		};
-> +		cooling-maps {
-> +			map0 {
-> +				trip = <&pmic_alert0>;
-> +				cooling-device =
-> +					<&A35_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +					<&A35_1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +			};
-> +		};
-> +	};
-> +};
-> +
-> +&usdhc1 {
-> +		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-> +		pinctrl-0 = <&pinctrl_usdhc1>;
-> +		pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
-> +		pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
-> +		bus-width = <8>;
-> +		no-sd;
-> +		no-sdio;
-> +		non-removable;
-> +		status = "okay";
-
-One level of indent is good enough.
-
-> +};
-> +
-> +&usdhc2 {
-> +		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-> +		pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
-> +		pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
-> +		pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
-> +		bus-width = <4>;
-> +		vmmc-supply = <&reg_usdhc2_vmmc>;
-> +		cd-gpios = <&lsio_gpio5 1 GPIO_ACTIVE_LOW>;
-> +		wp-gpios = <&lsio_gpio5 0 GPIO_ACTIVE_HIGH>;
-> +		max-frequency = <100000000>;
-> +		status = "okay";
-> +};
-> +
-> +&iomuxc {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_hog>;
-> +
-> +	pinctrl_hog: hoggrp {
-> +		fsl,pins = <
-> +			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHB_PAD	0x000514a0
-> +			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHK_PAD	0x000014a0
-> +			IMX8DXL_SPI3_CS0_ADMA_ACM_MCLK_OUT1		0x0600004c
-> +			IMX8DXL_SNVS_TAMPER_OUT1_LSIO_GPIO2_IO05_IN	0x0600004c
-> +		>;
-> +	};
-> +
-> +	pinctrl_i2c2: i2c2grp {
-> +		fsl,pins = <
-> +			IMX8DXL_SPI1_SCK_ADMA_I2C2_SDA		0x06000021
-> +			IMX8DXL_SPI1_SDO_ADMA_I2C2_SCL		0x06000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_i2c3: i2c3grp {
-> +		fsl,pins = <
-> +			IMX8DXL_SPI1_CS0_ADMA_I2C3_SDA		0x06000021
-> +			IMX8DXL_SPI1_SDI_ADMA_I2C3_SCL		0x06000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_lpuart0: lpuart0grp {
-> +		fsl,pins = <
-> +			IMX8DXL_UART0_RX_ADMA_UART0_RX		0x06000020
-> +			IMX8DXL_UART0_TX_ADMA_UART0_TX		0x06000020
-> +		>;
-> +	};
-> +
-> +	pinctrl_lpuart1: lpuart1grp {
-> +		fsl,pins = <
-> +			IMX8DXL_UART1_TX_ADMA_UART1_TX          0x06000020
-> +			IMX8DXL_UART1_RX_ADMA_UART1_RX          0x06000020
-> +			IMX8DXL_UART1_RTS_B_ADMA_UART1_RTS_B    0x06000020
-> +			IMX8DXL_UART1_CTS_B_ADMA_UART1_CTS_B    0x06000020
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1: usdhc1grp {
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
-
-For sake of consistency, we probably should still end the node name with 'grp'.
-
-Shawn
-
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_TX_CTL_LSIO_GPIO4_IO30	0x00000040 /* RESET_B */
-> +			IMX8DXL_ENET0_RGMII_TXD1_LSIO_GPIO5_IO00	0x00000021 /* WP */
-> +			IMX8DXL_ENET0_RGMII_TXD2_LSIO_GPIO5_IO01	0x00000021 /* CD */
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2: usdhc2grp {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +};
-> -- 
-> 2.31.1
-> 
