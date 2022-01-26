@@ -2,145 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D45C63682
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 09:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 514F9C2BA4C
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Jan 2022 11:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239048AbiAZJXB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Jan 2022 04:23:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239050AbiAZJXA (ORCPT
+        id S241018AbiAZL7D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 26 Jan 2022 06:59:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37327 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241021AbiAZL7D (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Jan 2022 04:23:00 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDF3C061744
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 01:22:59 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id x23so14832887lfc.0
-        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 01:22:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=embecosm.com; s=google;
-        h=date:from:to:cc:subject:message-id:user-agent:mime-version;
-        bh=oxq3ONKXLg1Y/487Gqg3QW4aZf1mljCDJdrAW5I3mhg=;
-        b=cm7I7BsDJFNjJUBKlGv7hAAbHygibT6PoqAhpR6aAYwMTQEBAF1WB7rK8o7oHYXYOU
-         ikD/+UDIO/i5qjfstDYzj/ho0udxh2mzCez+ISQcE6a/RVKm3WcNFRhS2x76NmqtCbEW
-         3EKuZgOR0er4uK1qLbj4qwN+hSRpIVs0tGAV02ei9xC/CcVVSohtoCkMCakQPCOPB8G8
-         1mPRM4I9r6M4H4ZP9VFtNHNfw4/QU410drd0XFyuZu/bT9AbPwAxoPNqbyyHLsbHhNOm
-         fprFGCfiNPjG3bALCA8KT8n118j8KP6n8g9MJvLg1OlQvBGAGY76apf7TzVRnFeMyYvB
-         KbcA==
+        Wed, 26 Jan 2022 06:59:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643198342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tAFRX3Ll2EWOOf5SvwlveLi2EAh9zYL/C14r8isbSmc=;
+        b=BHvH8kPWVLoPjT7mpaF9cTQbmLuReOJr5XeJcl9DSfiVfHUR2qUiaAh8f7XPSx9wu1dMzz
+        BXjSDLrlERbCPRear7K5msxbWUPQ5S168hKMtuWxtDUW+uK4OoiSVPW/ncBwG9RJceQe8Z
+        pqa7HuCzfJ2aBBt8HtZU5T/rMk5KlJU=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-183-E1pMWjzAMYON58P6GYfPHQ-1; Wed, 26 Jan 2022 06:59:00 -0500
+X-MC-Unique: E1pMWjzAMYON58P6GYfPHQ-1
+Received: by mail-ed1-f70.google.com with SMTP id w3-20020a50c443000000b0040696821132so9539125edf.22
+        for <linux-serial@vger.kernel.org>; Wed, 26 Jan 2022 03:59:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :mime-version;
-        bh=oxq3ONKXLg1Y/487Gqg3QW4aZf1mljCDJdrAW5I3mhg=;
-        b=Ie6SdCTAhMJMdyWJFCqzw/Tzn0wX7xHbPchy/y/Jy1fUGwplzP3Md+zu1TLm7fUWDP
-         alN5QRpfWpYdRUtHHM+Uu5NqfFd5sIrWM1yBkJVTdSg44kOzVuCK1Zf/ikUsEKHMGui7
-         wel761nyPDVmqToyWvsXPpY1ZuLC5cT7gOW3CdRSXJCPvLolZWDvUpIQAtS9+LszDJbN
-         87RmZwyG3GcL2rCn/DXT4ZUWOVZfEZoUd0JbIvsu6D6Qzxs/ptOR1Qq25oMyFYa2Yelw
-         007Jv2n1I85Jojf8xtfkMXV043FsFYaKv7IlbzzRnO8VWvHl9phFqZ30AY1d4gPfU05P
-         TVBA==
-X-Gm-Message-State: AOAM531LgcCCBuH0uSD7Svk9hZ5cmIZqxw11kAP0Iv8RIC60XMY8JA1o
-        XBjCHyguyy9znP7Ha0PL6j+Ksg==
-X-Google-Smtp-Source: ABdhPJwvPaCPS5CLF98P0Mkrjfe4wx0bAVFGthGkIN7HKtRCzPMNhkIMroK0rCznCe3EahhIVvnW/A==
-X-Received: by 2002:a05:6512:132a:: with SMTP id x42mr3836612lfu.2.1643188978245;
-        Wed, 26 Jan 2022 01:22:58 -0800 (PST)
-Received: from [192.168.219.3] ([78.8.192.131])
-        by smtp.gmail.com with ESMTPSA id b39sm1501589ljr.88.2022.01.26.01.22.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jan 2022 01:22:57 -0800 (PST)
-Date:   Wed, 26 Jan 2022 09:22:54 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@embecosm.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-cc:     Christoph Hellwig <hch@infradead.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH v3] tty: Partially revert the removal of the Cyclades public
- API
-Message-ID: <alpine.DEB.2.20.2201260733430.11348@tpp.orcam.me.uk>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tAFRX3Ll2EWOOf5SvwlveLi2EAh9zYL/C14r8isbSmc=;
+        b=AgbkQA6ohMfNlrm7vpgX/jdIvbG98tMK+VrLfg9p2LU4vAZHuWVq/zsmYAzGE/G7Ip
+         9xFt0qM/McZKo/G1+heciq3DQ9GFDTNHreFJQ7rw123kwsz3tEX9/UR+jeVB4CObWIOa
+         bkj6BFbvaX7IX1iaRhkc78EhWmUJ127hpnCxnE7DmP7+kA2Bj+m0SbqwEx0L1mLdwzmi
+         jyoD8OU5CKQFP6rpzvNfp8ZBSompkHrVoOnvMgk/ACWjjV6P92q5sPTXZnFm+SIK12sY
+         v211XzxrnSxrSFQhQVkepAO3wHLrrurN8FS9QbNg1jXReCTMlivKzmVSSKpzdW1AXgBi
+         +rfg==
+X-Gm-Message-State: AOAM530r41RCC8MccQwRFeYfRVuj68/QqKfF7lwHna9+h41WG0Ea3pCg
+        LwE7i+AywgXiYCAVOS1R2hfnFDE21EhkamgcG+IeZVfvpVcGeskssx8HhyuA7c8LumXe0yVpFc5
+        i/MXxXB4auv5Ne5wRzcL37E+kjAkk78HbiDhAN44W
+X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr4331403ejc.450.1643198338369;
+        Wed, 26 Jan 2022 03:58:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzUwyus9ZvysDcJHkMldzv4YPOHEEDKqqFKeSQezb1vPN+VSGYQ1CMkL5Ztv3mFaQJGPzX8zrEDu9o0U2rOMJI=
+X-Received: by 2002:a17:907:7e93:: with SMTP id qb19mr4331391ejc.450.1643198338173;
+ Wed, 26 Jan 2022 03:58:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <202201170006.31440.pisa@cmp.felk.cvut.cz> <YeVpFozoVQo1vbKS@kroah.com>
+ <202201191446.28415.pisa@cmp.felk.cvut.cz> <YfEMkHvDb6KJjh3h@kroah.com>
+In-Reply-To: <YfEMkHvDb6KJjh3h@kroah.com>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Wed, 26 Jan 2022 08:58:47 -0300
+Message-ID: <CAAq0SUneu6mgKjCSEa1pE--6WOFqXJb_d6zodtOGWnbor9-LVw@mail.gmail.com>
+Subject: Re: TTY layer discussion about generic FIFO depth and Rx iddle
+ timeout control
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Wander Lairson Costa <wander@redhat.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        =?UTF-8?Q?Rostislav_Lisov=C3=BD?= <lisovy@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Jiri Slaby <jslaby@suse.cz>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fix a user API regression introduced with commit f76edd8f7ce0 ("tty: 
-cyclades, remove this orphan"), which removed a part of the API and 
-caused compilation errors for user programs using said part, such as 
-GCC 9 in its libsanitizer component[1]:
+On Wed, Jan 26, 2022 at 5:55 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Jan 19, 2022 at 02:46:28PM +0100, Pavel Pisa wrote:
+> > Dear Greg,
+> >
+> > thanks for the reply.
+> >
+> > On Monday 17 of January 2022 14:03:18 Greg Kroah-Hartman wrote:
+> > > On Mon, Jan 17, 2022 at 12:06:31AM +0100, Pavel Pisa wrote:
+> > > >   https://github.com/lin-bus
+> > > >
+> > > > Kernel part - slLIN TTY discipline - can be found there
+> > > >
+> > > >   https://github.com/lin-bus/linux-lin/tree/master/sllin
+> > >
+> > > So it's just a 2000 line kernel module?  That should be easy to turn
+> > > into a patch and submit for review, right?
+> > >
+> > > Odds are it can be made much smaller based on an initial glance at it.
+> > > Review comments can help show what to do.
+> >
+> > Thanks for encouragement for mainlining or at least review on the list.
+> > I agree that it can shrink when patch for mainline without sections
+> > providing compatibility with old kernels is prepared.
+> > Generally, I think that it is doable and important is feedback
+> > from the user base that there is interrest... and time...
+> >
+> > I think that resolution of APO for the trigger/FIFO control
+> > is critical for thinking about mainlining. Rest is the usual
+> > work...
+> >
+> > > >   https://github.com/lin-bus/linux-lin/issues/13
+> > > >
+> > > Discuss it here by submitting patches please.  Links to random github
+> > > repos do not do much as we can do nothing with them, sorry.
+> >
+> > Yes, I understand but I would like to hear some suggestion
+> > the first where/into which object operations structure
+> > should be the function added.
+> >
+> > There is required functionality in 8250 driver linux/drivers/tty/serial/8250/8250_port.c
+> >
+> >      do_set_rxtrig(struct tty_port *port, unsigned char bytes)
+> >      do_serial8250_set_rxtrig(...)
+> >      serial8250_set_attr_rx_trig_bytes(...)
+> >      DEVICE_ATTR_RW(rx_trig_bytes)
+> >
+> > But to make slLIN generally usable, we would need to have functionality
+> > reachable from the line discipline
+> >
+> > Do you agree that right place is struct uart_ops?
+> >
+> >   https://elixir.bootlin.com/linux/latest/source/include/linux/serial_core.h#L38
+> >
+> > What should be a prototype?
+>
+> For all of these questions, I do not know.  Try it out yourself first
+> and see what you feel works best.  We will be glad to review working
+> patches, but to discuss options before that is difficult and not
+> something we normally worry about.
+>
 
-.../libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cc:160:10: fatal error: linux/cyclades.h: No such file or directory
-  160 | #include <linux/cyclades.h>
-      |          ^~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[4]: *** [Makefile:664: sanitizer_platform_limits_posix.lo] Error 1
+That gives me some time to find more machines to test the fixes.
 
-As the absolute minimum required bring `struct cyclades_monitor' and 
-ioctl numbers back then so as to make the library build again.  Add a 
-preprocessor warning as to the obsolescence of the features provided.
+> thanks,
+>
+> greg k-h
+>
 
-References:
-
-[1] GCC PR sanitizer/100379, "cyclades.h is removed from linux kernel 
-    header files", <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100379>
-
-Signed-off-by: Maciej W. Rozycki <macro@embecosm.com>
-Fixes: f76edd8f7ce0 ("tty: cyclades, remove this orphan")
-Cc: stable@vger.kernel.org # v5.13+
----
-Changes from v2:
-
-- Add #warning directives.
-
-Changes from v1:
-
-- Adjust heading from "tty: Revert the removal of the Cyclades public API".
-
-- Only revert `struct cyclades_monitor' and ioctl numbers.
-
-- Properly format the change given that it's not a plain revert anymore.
----
- include/uapi/linux/cyclades.h |   35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
-
-linux-uapi-cyclades.diff
-Index: linux/include/uapi/linux/cyclades.h
-===================================================================
---- /dev/null
-+++ linux/include/uapi/linux/cyclades.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+
-+#ifndef _UAPI_LINUX_CYCLADES_H
-+#define _UAPI_LINUX_CYCLADES_H
-+
-+#warning "Support for features provided by this header has been removed"
-+#warning "Please consider updating your code"
-+
-+struct cyclades_monitor {
-+	unsigned long int_count;
-+	unsigned long char_count;
-+	unsigned long char_max;
-+	unsigned long char_last;
-+};
-+
-+#define CYGETMON		0x435901
-+#define CYGETTHRESH		0x435902
-+#define CYSETTHRESH		0x435903
-+#define CYGETDEFTHRESH		0x435904
-+#define CYSETDEFTHRESH		0x435905
-+#define CYGETTIMEOUT		0x435906
-+#define CYSETTIMEOUT		0x435907
-+#define CYGETDEFTIMEOUT		0x435908
-+#define CYSETDEFTIMEOUT		0x435909
-+#define CYSETRFLOW		0x43590a
-+#define CYGETRFLOW		0x43590b
-+#define CYSETRTSDTR_INV		0x43590c
-+#define CYGETRTSDTR_INV		0x43590d
-+#define CYZSETPOLLCYCLE		0x43590e
-+#define CYZGETPOLLCYCLE		0x43590f
-+#define CYGETCD1400VER		0x435910
-+#define CYSETWAIT		0x435912
-+#define CYGETWAIT		0x435913
-+
-+#endif /* _UAPI_LINUX_CYCLADES_H */
