@@ -2,126 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D226BC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 18:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FDDC43217
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238991AbiA0SGU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:06:20 -0500
-Received: from mga05.intel.com ([192.55.52.43]:25424 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236657AbiA0SGR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:06:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643306777; x=1674842777;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aAQSLnsFhUPTordpbiaInHqdpfNTKKO9IrT60Vc8DBU=;
-  b=JQovtNFVDfrOUfallVALl3O92zyMho82lWPtEE0WCLydvDgp/DrDH2IU
-   XrJISnyMTTplpyLcVscH1uF+zFiQVqctWazka+33eJQoKfQzqdxpCOxr4
-   4HJvffV1LfLIrFy5geC02U9mYs9sDoD7gS92ch3SxXrternlghTURBcJE
-   J7Thu02jHVjdoQsTUhYeaxSJkMnkyR2IZX6E/B4w1qggQIALnM3RPzAGg
-   XtXrqFKrayFZH16cPR1pZK8kEt3Ph9DKpLINPUhKZGQjAzu9ACM5/G3Xv
-   48Z3KZNjdhuOFIPXfrKjnZKnNzIOUPY6/N+cAHg9W4Bl3T6a1jm5ArVEN
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="333281985"
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="333281985"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 10:05:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
-   d="scan'208";a="533196457"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Jan 2022 10:05:57 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3C665167; Thu, 27 Jan 2022 20:06:10 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v2 1/1] serial: 8250_exar: derive nr_ports from PCI ID for Acces I/O cards
-Date:   Thu, 27 Jan 2022 20:06:08 +0200
-Message-Id: <20220127180608.71509-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        id S245058AbiA0SLM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Jan 2022 13:11:12 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:54622 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S244950AbiA0SKp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 27 Jan 2022 13:10:45 -0500
+Received: from callcc.thunk.org (static-74-43-95-34.fnd.frontiernet.net [74.43.95.34])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20RIAF2r014158
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jan 2022 13:10:17 -0500
+Received: by callcc.thunk.org (Postfix, from userid 15806)
+        id 64CBB420385; Thu, 27 Jan 2022 13:10:15 -0500 (EST)
+Date:   Thu, 27 Jan 2022 13:10:15 -0500
+From:   "Theodore Y. Ts'o" <tytso@mit.edu>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Wander Costa <wcosta@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
+Message-ID: <YfLgB/WsQcePTXlQ@mit.edu>
+References: <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
+ <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
+ <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
+ <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
+ <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
+ <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
+ <YfArHDfrVHw7ApDx@smile.fi.intel.com>
+ <YfArWaKJ13+OC/7w@smile.fi.intel.com>
+ <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
+ <YfELyq5AmxiZxjme@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YfELyq5AmxiZxjme@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In the similar way how it's done in 8250_pericom, derive the number of
-the UART ports from PCI ID for Acces I/O cards.
+On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
+> 
+> Let me revert this for now.  And no new config options please, this
+> should "just work".
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: fixed variable name (Ilpo)
- drivers/tty/serial/8250/8250_exar.c | 37 ++++++++++-------------------
- 1 file changed, 13 insertions(+), 24 deletions(-)
+I'm not sure the commit is actually worth the extra complexity, to be
+honest.  The reason for the FIFO is to improve interrupt latency, and
+in the console write path, we're busy looping.  There is something
+seriously wrong serial port of the HP Proliant DL380 Gen 9.  Per the
+commit description for 5021d709b31b: ("tty: serial: Use fifo in 8250
+console driver"), on the "fast machine" (read: the one with a
+propertly working serial port), we were getting over 10 KB/s without
+the patch.  And on the "slow machine" it was getting only 2.5 KB/s,
+and with the patch it only improved things by 25% (so only 3.1 KB/s).
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index a4508ac0cac9..a243f36c41fa 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -611,7 +611,12 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
- 
- 	maxnr = pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
- 
--	nr_ports = board->num_ports ? board->num_ports : pcidev->device & 0x0f;
-+	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO)
-+		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
-+	else if (board->num_ports)
-+		nr_ports = board->num_ports;
-+	else
-+		nr_ports = pcidev->device & 0x0f;
- 
- 	priv = devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), GFP_KERNEL);
- 	if (!priv)
-@@ -710,22 +715,6 @@ static int __maybe_unused exar_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
- 
--static const struct exar8250_board acces_com_2x = {
--	.num_ports	= 2,
--	.setup		= pci_xr17c154_setup,
--};
--
--static const struct exar8250_board acces_com_4x = {
--	.num_ports	= 4,
--	.setup		= pci_xr17c154_setup,
--};
--
--static const struct exar8250_board acces_com_8x = {
--	.num_ports	= 8,
--	.setup		= pci_xr17c154_setup,
--};
--
--
- static const struct exar8250_board pbn_fastcom335_2 = {
- 	.num_ports	= 2,
- 	.setup		= pci_fastcom335_setup,
-@@ -810,13 +799,13 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
- 	}
- 
- static const struct pci_device_id exar_pci_tbl[] = {
--	EXAR_DEVICE(ACCESSIO, COM_2S, acces_com_2x),
--	EXAR_DEVICE(ACCESSIO, COM_4S, acces_com_4x),
--	EXAR_DEVICE(ACCESSIO, COM_8S, acces_com_8x),
--	EXAR_DEVICE(ACCESSIO, COM232_8, acces_com_8x),
--	EXAR_DEVICE(ACCESSIO, COM_2SM, acces_com_2x),
--	EXAR_DEVICE(ACCESSIO, COM_4SM, acces_com_4x),
--	EXAR_DEVICE(ACCESSIO, COM_8SM, acces_com_8x),
-+	EXAR_DEVICE(ACCESSIO, COM_2S, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM_4S, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM_8S, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM232_8, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM_2SM, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM_4SM, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(ACCESSIO, COM_8SM, pbn_exar_XR17C15x),
- 
- 	CONNECT_DEVICE(XR17C152, UART_2_232, pbn_connect),
- 	CONNECT_DEVICE(XR17C154, UART_4_232, pbn_connect),
--- 
-2.34.1
+I assume what must be going on is this machine is emulating the UART
+and is extremely slow to set the Trasmitter Holding Register Empty
+(THRE) bit after the UART is finished sending the byte out the serial
+port.
 
+So we're adding a lot of complexity for what is obviously broken
+hardware, and we risk breaking the serial console for other machines
+with a properly implemented serial port.  How common are UART's which
+are broken in this way?  Is it unique to the HP Proliant DL380 Gen 9?
+Or is a common misimplementation which is unfortunately quite common?
+If it's the former, maybe the FIFO hack should only be done via a
+quirk?
+
+If it's really the case that the HP Proliant's nasty performance is
+due to a badly implemented emulation layer, is there any way to do
+better, perhaps via a more direct path to the serial port?  Or is the
+problem that the serial port on this motherboard is connected via some
+super-slow internal path and it would be faster if you could talk to
+it directly via a UEFI call, or some other mechanism?  Whether it's
+2.5 KB/s or 3.1 KB/s, it's really quite pathetic....
+
+     	      	     	   	       - Ted
