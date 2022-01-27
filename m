@@ -2,20 +2,20 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FEDC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 15:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 927CEC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 15:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242865AbiA0PRD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Jan 2022 10:17:03 -0500
-Received: from out29-99.mail.aliyun.com ([115.124.29.99]:36760 "EHLO
-        out29-99.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242847AbiA0PRC (ORCPT
+        id S242883AbiA0PRH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Jan 2022 10:17:07 -0500
+Received: from out28-125.mail.aliyun.com ([115.124.28.125]:36216 "EHLO
+        out28-125.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242874AbiA0PRG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Jan 2022 10:17:02 -0500
-X-Alimail-AntiSpam: AC=SUSPECT;BC=0.6349558|-1;BR=01201311R141b1;CH=blue;DM=|SUSPECT|false|;DS=CONTINUE|ham_system_inform|0.0327302-0.00826224-0.959008;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047192;MF=icenowy@nucleisys.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.Mj85OzO_1643296617;
-Received: from ice-e5v2.lan(mailfrom:icenowy@nucleisys.com fp:SMTPD_---.Mj85OzO_1643296617)
+        Thu, 27 Jan 2022 10:17:06 -0500
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.4156253|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0591787-0.000989701-0.939832;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047203;MF=icenowy@nucleisys.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.Mj85Ozx_1643296621;
+Received: from ice-e5v2.lan(mailfrom:icenowy@nucleisys.com fp:SMTPD_---.Mj85Ozx_1643296621)
           by smtp.aliyun-inc.com(33.45.46.134);
-          Thu, 27 Jan 2022 23:16:58 +0800
+          Thu, 27 Jan 2022 23:17:02 +0800
 From:   Icenowy Zheng <icenowy@nucleisys.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -24,9 +24,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, Icenowy Zheng <icenowy@nucleisys.com>
-Subject: [PATCH 02/12] RISC-V: add Nuclei SoC Kconfig option
-Date:   Thu, 27 Jan 2022 23:16:37 +0800
-Message-Id: <20220127151647.2375449-3-icenowy@nucleisys.com>
+Subject: [PATCH 04/12] dt-bindings: timer: add compatible for Nuclei UX600 CLINT-compat timer
+Date:   Thu, 27 Jan 2022 23:16:39 +0800
+Message-Id: <20220127151647.2375449-5-icenowy@nucleisys.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220127151647.2375449-1-icenowy@nucleisys.com>
 References: <20220127151647.2375449-1-icenowy@nucleisys.com>
@@ -36,33 +36,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As a CPU core vendor, Nuclei has some "DemoSoCs" that uses Nuclei CPU
-cores and modified peripherals from Hummingbird E203.
+Nuclei UX600's timer has a part which is compatible with CLINT.
 
-Add a Kconfig option for this.
+Add a DT compatible string for it.
 
 Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
 ---
- arch/riscv/Kconfig.socs | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index 6ec44a22278a..e4488ac8c72b 100644
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -7,6 +7,12 @@ config SOC_MICROCHIP_POLARFIRE
- 	help
- 	  This enables support for Microchip PolarFire SoC platforms.
+diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+index 8d5f4687add9..61a8bd8bde91 100644
+--- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
++++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+@@ -27,6 +27,7 @@ properties:
+           - sifive,fu540-c000-clint
+           - starfive,jh7100-clint
+           - canaan,k210-clint
++          - nuclei,ux600-clint
+       - const: sifive,clint0
  
-+config SOC_NUCLEI
-+	bool "Nuclei SoCs"
-+	select SIFIVE_PLIC
-+	help
-+	  This enables support for Nuclei SoC platform hardware.
-+
- config SOC_SIFIVE
- 	bool "SiFive SoCs"
- 	select SERIAL_SIFIVE if TTY
+     description:
 -- 
 2.30.2
 
