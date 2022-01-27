@@ -2,92 +2,292 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FDDC43217
-	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 18:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71699C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 27 Jan 2022 21:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245058AbiA0SLM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Jan 2022 13:11:12 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:54622 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S244950AbiA0SKp (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Jan 2022 13:10:45 -0500
-Received: from callcc.thunk.org (static-74-43-95-34.fnd.frontiernet.net [74.43.95.34])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20RIAF2r014158
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jan 2022 13:10:17 -0500
-Received: by callcc.thunk.org (Postfix, from userid 15806)
-        id 64CBB420385; Thu, 27 Jan 2022 13:10:15 -0500 (EST)
-Date:   Thu, 27 Jan 2022 13:10:15 -0500
-From:   "Theodore Y. Ts'o" <tytso@mit.edu>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Wander Costa <wcosta@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wander Lairson Costa <wander@redhat.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Johan Hovold <johan@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: Use fifo in 8250 console driver
-Message-ID: <YfLgB/WsQcePTXlQ@mit.edu>
-References: <a1ac6254-f79e-d131-fa2a-c7ad714c6d4a@nvidia.com>
- <f451e67d-adb9-01e8-bd11-bf7804863b4b@kernel.org>
- <8e57400f-d6a8-bd42-6214-fca1fe37a972@kernel.org>
- <11ec4350-b890-4949-cf8f-bc62d530d64f@nvidia.com>
- <CAAq0SU=9R3Y_SAdM+HaqavzWBRd1Li-b5bnZZLd5Opfgd0vnkQ@mail.gmail.com>
- <fa42a60c-954a-acc0-3962-f00427153f78@nvidia.com>
- <YfArHDfrVHw7ApDx@smile.fi.intel.com>
- <YfArWaKJ13+OC/7w@smile.fi.intel.com>
- <CAAq0SU=U3UY+DUdd1fjj25Yt_QZriShZTSFTsq5B4tPnOYhQvQ@mail.gmail.com>
- <YfELyq5AmxiZxjme@kroah.com>
+        id S236700AbiA0VoU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Jan 2022 16:44:20 -0500
+Received: from mga11.intel.com ([192.55.52.93]:49170 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230026AbiA0VoU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 27 Jan 2022 16:44:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643319860; x=1674855860;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XP8mBxkBFK4DCXxS4sQBuisBLwxopXXYwRl7tJfw1Ng=;
+  b=akRXQr+inQU3Rqib3PP9TQCnF9SdwnmelVDoBvBaiCyM2rsyj7b7p71A
+   WJmWJYRxkKcZcZmV9eku+OC4kPnu7rDDQW37FMS4A00djThL+MMdlyQCv
+   0Aze5XtQCtTUUvqwU9gPO/9MQAoL031u2f3nOSmjDD8qyZd6dbz2SrUcb
+   rpUVPUgBQrK+YDFgTDtIdTtgGjwRG3eeY2RULKm6zyjvubFiRPV3Z2hWe
+   nLyeYuCL5Apmk5PCV1/ak8IazKL3R1ZAWWpeMxj/ygVld5AlWq4kdEsI4
+   Hztt/XbEU4GupLveoOwFI/RwtVIi5RugQp48UvR3SOkBpNKuVnDdOlpGr
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10239"; a="244574970"
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="244574970"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2022 13:44:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,321,1635231600"; 
+   d="scan'208";a="767662251"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 27 Jan 2022 13:44:18 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nDCYz-000N4E-Kn; Thu, 27 Jan 2022 21:44:17 +0000
+Date:   Fri, 28 Jan 2022 05:43:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ d1ad2721b1eb05d54e81393a7ebc332d4a35c68f
+Message-ID: <61f31201.yh/DqDp0qeTTLZ7Z%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YfELyq5AmxiZxjme@kroah.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 09:52:26AM +0100, Greg Kroah-Hartman wrote:
-> 
-> Let me revert this for now.  And no new config options please, this
-> should "just work".
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: d1ad2721b1eb05d54e81393a7ebc332d4a35c68f  kbuild: remove include/linux/cyclades.h from header file check
 
-I'm not sure the commit is actually worth the extra complexity, to be
-honest.  The reason for the FIFO is to improve interrupt latency, and
-in the console write path, we're busy looping.  There is something
-seriously wrong serial port of the HP Proliant DL380 Gen 9.  Per the
-commit description for 5021d709b31b: ("tty: serial: Use fifo in 8250
-console driver"), on the "fast machine" (read: the one with a
-propertly working serial port), we were getting over 10 KB/s without
-the patch.  And on the "slow machine" it was getting only 2.5 KB/s,
-and with the patch it only improved things by 25% (so only 3.1 KB/s).
+elapsed time: 723m
 
-I assume what must be going on is this machine is emulating the UART
-and is extremely slow to set the Trasmitter Holding Register Empty
-(THRE) bit after the UART is finished sending the byte out the serial
-port.
+configs tested: 216
+configs skipped: 3
 
-So we're adding a lot of complexity for what is obviously broken
-hardware, and we risk breaking the serial console for other machines
-with a properly implemented serial port.  How common are UART's which
-are broken in this way?  Is it unique to the HP Proliant DL380 Gen 9?
-Or is a common misimplementation which is unfortunately quite common?
-If it's the former, maybe the FIFO hack should only be done via a
-quirk?
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-If it's really the case that the HP Proliant's nasty performance is
-due to a badly implemented emulation layer, is there any way to do
-better, perhaps via a more direct path to the serial port?  Or is the
-problem that the serial port on this motherboard is connected via some
-super-slow internal path and it would be faster if you could talk to
-it directly via a UEFI call, or some other mechanism?  Whether it's
-2.5 KB/s or 3.1 KB/s, it's really quite pathetic....
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220124
+powerpc                 mpc834x_itx_defconfig
+arm                         at91_dt_defconfig
+mips                         mpc30x_defconfig
+xtensa                              defconfig
+mips                        vocore2_defconfig
+sh                          kfr2r09_defconfig
+powerpc                mpc7448_hpc2_defconfig
+um                               alldefconfig
+sh                         ecovec24_defconfig
+arc                     nsimosci_hs_defconfig
+arc                      axs103_smp_defconfig
+arm                       imx_v6_v7_defconfig
+m68k                       m5275evb_defconfig
+um                             i386_defconfig
+h8300                    h8300h-sim_defconfig
+m68k                            q40_defconfig
+powerpc                 linkstation_defconfig
+arm                         s3c6400_defconfig
+m68k                           sun3_defconfig
+arm                        oxnas_v6_defconfig
+m68k                          multi_defconfig
+nios2                         10m50_defconfig
+xtensa                  audio_kc705_defconfig
+powerpc                      ppc40x_defconfig
+powerpc                 mpc837x_mds_defconfig
+sparc                            allyesconfig
+powerpc                       ppc64_defconfig
+m68k                        stmark2_defconfig
+xtensa                  nommu_kc705_defconfig
+mips                         rt305x_defconfig
+arm                            zeus_defconfig
+arc                        vdk_hs38_defconfig
+sh                          rsk7269_defconfig
+ia64                        generic_defconfig
+sh                           sh2007_defconfig
+um                                  defconfig
+parisc                generic-64bit_defconfig
+mips                        bcm47xx_defconfig
+arm                           sunxi_defconfig
+arm                        multi_v7_defconfig
+sparc                       sparc64_defconfig
+m68k                          hp300_defconfig
+nds32                               defconfig
+sh                ecovec24-romimage_defconfig
+m68k                       m5249evb_defconfig
+arm                             rpc_defconfig
+sh                               allmodconfig
+powerpc                  storcenter_defconfig
+arm                        keystone_defconfig
+sh                     sh7710voipgw_defconfig
+sh                 kfr2r09-romimage_defconfig
+parisc                generic-32bit_defconfig
+arm                           viper_defconfig
+arm                            xcep_defconfig
+sh                            shmin_defconfig
+ia64                      gensparse_defconfig
+arm                         lubbock_defconfig
+riscv                            allyesconfig
+powerpc                     rainier_defconfig
+mips                    maltaup_xpa_defconfig
+sh                        sh7763rdp_defconfig
+arm                          pxa910_defconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                       omap2plus_defconfig
+arm                           h5000_defconfig
+sh                   sh7724_generic_defconfig
+arc                            hsdk_defconfig
+arm                            hisi_defconfig
+powerpc                     tqm8541_defconfig
+mips                           xway_defconfig
+powerpc                      ppc6xx_defconfig
+arc                              alldefconfig
+arc                        nsimosci_defconfig
+powerpc                      tqm8xx_defconfig
+h8300                            alldefconfig
+h8300                     edosk2674_defconfig
+powerpc                     pq2fads_defconfig
+sh                             shx3_defconfig
+sh                             espt_defconfig
+arm                           corgi_defconfig
+powerpc                  iss476-smp_defconfig
+arm                  randconfig-c002-20220127
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+x86_64               randconfig-a001-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+i386                          randconfig-a003
+i386                          randconfig-a001
+i386                          randconfig-a005
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220127
+riscv                randconfig-r042-20220125
+arc                  randconfig-r043-20220127
+arc                  randconfig-r043-20220125
+arc                  randconfig-r043-20220124
+s390                 randconfig-r044-20220127
+s390                 randconfig-r044-20220125
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
-     	      	     	   	       - Ted
+clang tested configs:
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+arm                  colibri_pxa300_defconfig
+mips                         tb0219_defconfig
+mips                          malta_defconfig
+powerpc                 mpc836x_mds_defconfig
+powerpc                   bluestone_defconfig
+mips                           ip27_defconfig
+powerpc                      ppc44x_defconfig
+arm                     davinci_all_defconfig
+arm                   milbeaut_m10v_defconfig
+powerpc                          allmodconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                          g5_defconfig
+powerpc                      acadia_defconfig
+arm                        magician_defconfig
+mips                     cu1830-neo_defconfig
+i386                             allyesconfig
+powerpc                      walnut_defconfig
+powerpc                     kilauea_defconfig
+mips                malta_qemu_32r6_defconfig
+powerpc                 mpc832x_mds_defconfig
+powerpc                      katmai_defconfig
+powerpc                 mpc832x_rdb_defconfig
+arm                     am200epdkit_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+s390                 randconfig-r044-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r045-20220127
+hexagon              randconfig-r041-20220124
+hexagon              randconfig-r041-20220127
+hexagon              randconfig-r045-20220125
+hexagon              randconfig-r041-20220125
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
