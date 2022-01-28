@@ -2,155 +2,165 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B765FC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Jan 2022 03:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B30C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Jan 2022 04:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242087AbiA1Df7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 27 Jan 2022 22:35:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        id S233896AbiA1E70 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 27 Jan 2022 23:59:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241873AbiA1Df7 (ORCPT
+        with ESMTP id S231342AbiA1E7Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 27 Jan 2022 22:35:59 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2054FC061714;
-        Thu, 27 Jan 2022 19:35:59 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id k17so14704278ybk.6;
-        Thu, 27 Jan 2022 19:35:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+/kTnhBKtQ4o1xU7csKjZQb7FX9UZE3p6kbMBAjh3Wk=;
-        b=q8HRTGri4vkoWtkJFLbHs8ttvag2rveoJCuratu/swm4Zcj91Ls95siFkpHsin2rfM
-         m4or96fvnCLRAwoERvupN0taFx8Yww/YcDLdrOEACf0HMjddQA03W1sWjijLW+k5fxqP
-         uzURCDZmFAYOHUIpu5naivflJt4Eq1ZeTLsDSL29XzuEFGxPNkutMUVmP8OE/zEzcabm
-         NbVR8BbuTaJivFn/J990vVKqXBs1wAFh73y2HufyntxvX4EnreUwWaZvVfPU+gXsA2zy
-         KoswOrND7SNcaEWhZzslnywyz2J/GzU2a2+CgoptFx9Lm412DAj5/IyCNS6OtviKZEGY
-         Yafw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+/kTnhBKtQ4o1xU7csKjZQb7FX9UZE3p6kbMBAjh3Wk=;
-        b=XoR+iUOuNS3icskQdzt5O1LJ7U/LLahoEl+en6JlQFH5fkpo6shBKhvzGcyCxKNqVe
-         iUEeBdHpMfvyHeDmcSFQNL7yxAk+VylrDMpj7ZIYD4NZNMfdsE7M1CU1l4yRSTiBcIyy
-         ABDPuCga6vOXJ91UUKv9igIAX6LXCXSKvIV6S2vNnXyvUEnnT99WK+1A7iP/mmXv5v5Q
-         qeWcO8r2mWr9RsZdBiPgmjFnzEnbicZTkFvx0N2tkrKBjrdlc70DViJQjjroj1kIE8kC
-         2tA9eEe9uS0ZjasoPVg2cXc+gs5RiANGAcyLJcm2tIIfSM51mx1YV9pC5V8dd7T2ArjB
-         jbcQ==
-X-Gm-Message-State: AOAM531Mt4Iodrxngre+RJqp2FD0UwRbeyatHJHBhzgwnAocQu8PjONO
-        hmJ3rG2V9/TjJkcnkKcom44DlEY/7t4L9fKN3CpK8y2jYoc=
-X-Google-Smtp-Source: ABdhPJxn1B/pmprpk4xW1dtRGM2DfPjyfNF6kOlXx77LtURWiamxAX/bHf9jB7Pu4Aa4cusykGUESCOeq9jIaIJNAfc=
-X-Received: by 2002:a05:6902:1205:: with SMTP id s5mr11602929ybu.676.1643340958221;
- Thu, 27 Jan 2022 19:35:58 -0800 (PST)
+        Thu, 27 Jan 2022 23:59:25 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D30EC061714;
+        Thu, 27 Jan 2022 20:59:24 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nDJM1-0007kV-SD; Fri, 28 Jan 2022 05:59:21 +0100
+Message-ID: <47c53a2b-29c1-9e89-f15f-006c1454c249@leemhuis.info>
+Date:   Fri, 28 Jan 2022 05:59:19 +0100
 MIME-Version: 1.0
-References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
- <1641979444-11661-3-git-send-email-hammerh0314@gmail.com> <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
- <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
- <d6d3aa07-7bf1-2b6d-356f-ae13c7b9d6cd@kernel.org> <CAOX-t57KZb0hNDuhPsabkmkf_qOOLqyH3yuvkHP6UNwhLodWDg@mail.gmail.com>
- <2cde3ff0-5180-7c1e-82fd-7b58e41d462a@kernel.org> <CAOX-t573QkixRC7xa1KUOYXfL12Q+Ltxph9rX7V8tm2BMoqxgA@mail.gmail.com>
- <YfFQ7v4dXPMV7ypw@kroah.com>
-In-Reply-To: <YfFQ7v4dXPMV7ypw@kroah.com>
-From:   hammer hsieh <hammerh0314@gmail.com>
-Date:   Fri, 28 Jan 2022 11:36:10 +0800
-Message-ID: <CAOX-t54bRS0_kgg2DVoF3p8fx9VJh7xbyoTFcnAHnimLv40WbQ@mail.gmail.com>
-Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Regression with 5021d709b31b ("tty: serial: Use fifo in 8250
+ console driver")
+Content-Language: en-BS
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Wander Lairson Costa <wander@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <YfMpk7DM9zA7NfmI@debian>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <YfMpk7DM9zA7NfmI@debian>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1643345964;bf48cab5;
+X-HE-SMSGID: 1nDJM1-0007kV-SD
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Greg KH:
 
-I review all driver again.
-I think only startup and shutdown not good.
-I will modify like below.
-If you are ok, I will submit next patch.
+[TLDR: I'm adding this regression to regzbot, the Linux kernel
+regression tracking bot; most text you find below is compiled from a few
+templates paragraphs some of you might have seen already.]
 
-static int sunplus_startup(struct uart_port *port)
-{
-        unsigned long flags;
-        unsigned int isc;
-        int ret;
+Hi, this is your Linux kernel regression tracker speaking.
 
-        ret =3D request_irq(port->irq, sunplus_uart_irq, 0, "sunplus_uart",=
- port);
-        if (ret)
-                return ret;
+Adding the regression mailing list to the list of recipients, as it
+should be in the loop for all regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
 
-        spin_lock_irqsave(&port->lock, flags);
+On 28.01.22 00:24, Sudip Mukherjee wrote:
+> 
+> Not sure if this has been reported before but since last few weeks I am
+> seeing a problem with the rpi4 serial port on my test setup. The initial
+> boot message will be completely garbled as you can see at:
+> https://lava.qa.codethink.co.uk/scheduler/job/543#L380.
+> The last good boot was https://lava.qa.codethink.co.uk/scheduler/job/540#L390.
+> 
+> The bisect log:
+> 
+> # bad: [455e73a07f6e288b0061dfcf4fcf54fa9fe06458] Merge tag 'clk-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux
+> # good: [7e7b69654724c72bd3219b71f58937845dca0b2b] Merge tag 'dma-mapping-5.17' of git://git.infradead.org/users/hch/dma-mapping
+> git bisect start '455e73a07f6e288b0061dfcf4fcf54fa9fe06458' '7e7b69654724c72bd3219b71f58937845dca0b2b'
+> # bad: [342465f5337f7bd5b8bd3b6f939ac12b620cbb43] Merge tag 'tty-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty
+> git bisect bad 342465f5337f7bd5b8bd3b6f939ac12b620cbb43
+> # good: [6dc69d3d0d18d587ab9d809fe060ba4417cf0279] Merge tag 'driver-core-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core
+> git bisect good 6dc69d3d0d18d587ab9d809fe060ba4417cf0279
+> # good: [e269f7acdc53623769da31135f60afeb3a65eaff] staging: r8188eu: remove the private ioctl "wps_assoc_req_ie"
+> git bisect good e269f7acdc53623769da31135f60afeb3a65eaff
+> # bad: [ad234e2bac274a43c9fa540bde8cd9f0c627b71f] tty: serial: meson: Drop the legacy compatible strings and clock code
+> git bisect bad ad234e2bac274a43c9fa540bde8cd9f0c627b71f
+> # good: [c66453ce8af8bac78a72ba4e21fd9a86720127d7] tty: fix kernel-doc in n_tty.c
+> git bisect good c66453ce8af8bac78a72ba4e21fd9a86720127d7
+> # good: [0882b473b084df31288003b3bee974aabac9dcf9] tty: serial: samsung: Enable console as module
+> git bisect good 0882b473b084df31288003b3bee974aabac9dcf9
+> # bad: [b4a29b94804c4774f22555651296b838df6ec0e4] serial: 8250: Move Alpha-specific quirk out of the core
+> git bisect bad b4a29b94804c4774f22555651296b838df6ec0e4
+> # good: [e822b4973f49015e1c6f63b91c8641ed9bfaf229] tty/ldsem: Fix syntax errors in comments
+> git bisect good e822b4973f49015e1c6f63b91c8641ed9bfaf229
+> # good: [fb09d0ac07725b442b32dbf53f0ab0bea54804e9] tty: Fix the keyboard led light display problem
+> git bisect good fb09d0ac07725b442b32dbf53f0ab0bea54804e9
+> # bad: [5021d709b31b8a14317998a33cbc78be0de9ab30] tty: serial: Use fifo in 8250 console driver
+> git bisect bad 5021d709b31b8a14317998a33cbc78be0de9ab30
+> # good: [adbfddc757aec1ed54ccb35c4a7ca9170df827e0] docs/driver-api: Replace a comma in the n_gsm.rst with a double colon
+> git bisect good adbfddc757aec1ed54ccb35c4a7ca9170df827e0
+> # first bad commit: [5021d709b31b8a14317998a33cbc78be0de9ab30] tty: serial: Use fifo in 8250 console driver
+> 
+> And, indeed reverting 5021d709b31b ("tty: serial: Use fifo in 8250 console
+> driver") on top of 23a46422c561 ("Merge tag 'net-5.17-rc2' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net") fixes the problem
+> for me.
+> 
+> This is seen on every boot and I will be happy to test any patch.
 
-        isc =3D readl(port->membase + SUP_UART_ISC); //add this line
-        isc |=3D SUP_UART_ISC_RXM;
-        writel(isc, port->membase + SUP_UART_ISC);
+Thanks for the report.
 
-        spin_unlock_irqrestore(&port->lock, flags);
+To be sure this issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
 
-        return 0;
-}
+#regzbot ^introduced 5021d709b31b
+#regzbot title serial: boot message completely garbled with rpi4 serial port
+#regzbot ignore-activity
 
-static void sunplus_shutdown(struct uart_port *port)
-{
-        unsigned long flags;
-        unsigned int isc;
+Reminder: when fixing the issue, please add a 'Link:' tag with the URL
+to the report (the parent of this mail) as explained in
+'Documentation/process/submitting-patches.rst'. Regzbot then will
+automatically mark the regression as resolved once the fix lands in the
+appropriate tree. For more details about regzbot see footer.
 
-        spin_lock_irqsave(&port->lock, flags);
+Sending this to everyone that got the initial report, to make all aware
+of the tracking. I also hope that messages like this motivate people to
+directly get at least the regression mailing list and ideally even
+regzbot involved when dealing with regressions, as messages like this
+wouldn't be needed then.
 
-        isc =3D readl(port->membase + SUP_UART_ISC); //add this line
-        isc &=3D ~(SUP_UART_ISC_RXM | SUP_UART_ISC_TXM); //add this line
-        writel(isc, port->membase + SUP_UART_ISC); //modify this line
+Don't worry, I'll send further messages wrt to this regression just to
+the lists (with a tag in the subject so people can filter them away), as
+long as they are intended just for regzbot. With a bit of luck no such
+messages will be needed anyway.
 
-        spin_unlock_irqrestore(&port->lock, flags);
+Ciao, Thorsten (wearing his 'Linux kernel regression tracker' hat)
 
-        free_irq(port->irq, port);
-}
+P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
+on my table. I can only look briefly into most of them. Unfortunately
+therefore I sometimes will get things wrong or miss something important.
+I hope that's not the case here; if you think it is, don't hesitate to
+tell me about it in a public reply, that's in everyone's interest.
 
-Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2022=E5=B9=B41=E6=9C=8826=E6=
-=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=889:47=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Fri, Jan 14, 2022 at 10:22:56AM +0800, hammer hsieh wrote:
-> > Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B41=E6=9C=8813=
-=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=887:12=E5=AF=AB=E9=81=93=EF=BC=
-=9A
-> > >
-> > > On 13. 01. 22, 11:56, hammer hsieh wrote:
-> > > >> Could you explain me what posted write is and how does it not matt=
-er in
-> > > >> this case?
-> > > >>
-> > > >
-> > > > Each UART ISC register contains
-> > >
-> > > No, you still don't follow what I write. Use your favorite web search
-> > > for "posted write" and/or consult with your HW team.
-> > >
-> >
-> > Maybe this time, we are on the same page.
-> > Our SP7021 chipset is designed on ARM Cortex-A7 Quad core.
-> > Register Access through AMBA(AXI bus), and it is non-cached.
-> >
-> > Did you mean
-> > case1 have concern about "posted write", and you want to know why it no=
-t matter?
-> > case2 will be safer?
-> >
-> > Case1 :
-> > spin_lock_irq_save()
-> > writel(0, target register)
-> > spin_unlock_irqrestore()
->
-> A lock does not mean that your write made it to the device.  Please talk
-> to the hardware designers to properly determine how to correctly write
-> to the hardware and "know" that the write succeeded or not.  This driver
-> does not seem to take that into consideration at all.
->
-> thanks,
->
-> greg k-h
+BTW, I have no personal interest in this issue, which is tracked using
+regzbot, my Linux kernel regression tracking bot
+(https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
+this mail to get things rolling again and hence don't need to be CC on
+all further activities wrt to this regression.
+
+---
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and/or the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+tell #regzbot about it in the report, as that will ensure the regression
+gets on the radar of regzbot and the regression tracker. That's in your
+interest, as they will make sure the report won't fall through the
+cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include a 'Link:' tag to the report in the commit message, as explained
+in Documentation/process/submitting-patches.rst
+That aspect was recently was made more explicit in commit 1f57bd42b77c:
+https://git.kernel.org/linus/1f57bd42b77c
