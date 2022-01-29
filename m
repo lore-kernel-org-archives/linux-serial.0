@@ -2,72 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05742C433FE
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 13:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468A2C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 17:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350689AbiA2Nyv (ORCPT
+        id S1352724AbiA2Rxh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Jan 2022 08:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351563AbiA2Nyu (ORCPT
+        Sat, 29 Jan 2022 12:53:37 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:36090
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352733AbiA2Rxh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Jan 2022 08:54:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3E7C061714;
-        Sat, 29 Jan 2022 05:54:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 29 Jan 2022 12:53:37 -0500
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCC94B8120C;
-        Sat, 29 Jan 2022 13:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F899C340E5;
-        Sat, 29 Jan 2022 13:54:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643464487;
-        bh=8ktiDI5OIvg4Vo9rNyl8HLM4UCiquwXeRRr7v0knxTU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ShVgVX5btZkeMAhA77TXFTa6oIxpTk64uKZCWKWljfBYcI+2hrArvqnNL+2RVmw0u
-         LUAcKfAylavevwS2Si+2YNtH0tWrA22JFBonjx/M7nrD2U624csQ4xP44QwmTKeQw8
-         4M9Xd4qRaRwBIhnjiGgA0G+IGwMljXudIfG7TYv+5K4zYRyPuUY+w5u+jXvWdA9TJP
-         tnbTmGuLz5CZq/GE2CCkGsFLnvN1wukSWK3XQajhY+4CxCKy5ckDyNMPpDpn9/Ng2T
-         rjrPA/PhM9EDOqdKqoAKhdccKqfI6EjvvIgeBHWgz7QA5XkDJ/3ODPbvjNyuKWqa7Z
-         ILbIe1V1ohrVw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F576E5D07E;
-        Sat, 29 Jan 2022 13:54:47 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.17-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YfU9F+OwlK+Rso3T@kroah.com>
-References: <YfU9F+OwlK+Rso3T@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YfU9F+OwlK+Rso3T@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc2
-X-PR-Tracked-Commit-Id: d1ad2721b1eb05d54e81393a7ebc332d4a35c68f
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: bb37101b36332345a1e1c1f9f2f3bcc8ad7edb65
-Message-Id: <164346448758.28926.807775726529878733.pr-tracker-bot@kernel.org>
-Date:   Sat, 29 Jan 2022 13:54:47 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1ABCF3F1C4
+        for <linux-serial@vger.kernel.org>; Sat, 29 Jan 2022 17:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643478816;
+        bh=UuAmHmse5/7Zq3pHBrLReTIT8+GCT8GhUGa1FdMNyD0=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=C6D06qp0NZpK/cpAobfix1u4cWS0k2bIaNXKtyFaPAXOr1lIew2dUhWLXoa2Xvh/A
+         9rMYzjD2yGakCeumHg7B7JE5LvV+rJIZXb0piVxpIM7dIG3G4vQKU4tYf7c8CD0iEM
+         sNDZFRQcoHBIGL14tQExREN5LaezA2V53n2xvDrej0hDM0A6luZ/+QnQ7DoELZcjB3
+         72OxLlGIcM8AOdJGNohF66k8NEXSJqjzAaUX+bQZRP1zUJDflw4tjOhGQNkOV1d+z8
+         cwZYm34KYewgcyDr8EIxrOLU7Om8G2fqWMBAsfu3RuIr21C6TOxBruoDVrOPNe8w7u
+         iksG19IAm6haA==
+Received: by mail-ej1-f70.google.com with SMTP id q19-20020a1709064c9300b006b39291ff3eso3794032eju.5
+        for <linux-serial@vger.kernel.org>; Sat, 29 Jan 2022 09:53:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UuAmHmse5/7Zq3pHBrLReTIT8+GCT8GhUGa1FdMNyD0=;
+        b=jMf/8cXPeIM3nR/qQxx5YCxH10vSbjyYwGJ8TtCoxLf5Ck3gTtGKFArG2cIboh+/oO
+         C1cuJx0UzGk9PaCpsliFi1/X74TMCHu+tyEA71FQmGO2Uno1+c4eVGxCZV3BvAT48nL3
+         3c3QKJZvGn+CiOiHEr332yOtagXj4Xz0ou31RH5h5DFOPLcC9606zAmIMZD4LKu63MYJ
+         05fdv1zH9WKvsVYHmFmKr2Ld058JvDIMPqT2Zg3T36HnACjUOs+SHJy+BZtN02/SGZyt
+         +tasw54Knj/sSZ5c0+EcYckK4H61jeqxGCJcHJ5hPDv81mHeXfdIuyUR2O0lktwNB7WG
+         ieDA==
+X-Gm-Message-State: AOAM533Eadgkiv5CEtgCHX4Go5sIqNbGRXydOvJDMPtOxLwfpC5lmg0N
+        8V4/hQEfuy0DD6JJUEzkvlWgWDhF/NXeJjj68OwmjBjDQgx6wDaS/bf5OPagtEJsotfnK+AaSVu
+        5A9D8kVyrLiclrxcEPRPPmh6MAVRE0DGgK14r5vVYIw==
+X-Received: by 2002:a17:907:3e83:: with SMTP id hs3mr11405847ejc.16.1643478815350;
+        Sat, 29 Jan 2022 09:53:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzoYeYNFVHm8L57tWF3N04jNWX9vUgWvjjwCv32ktyz+5reypKzReeLBf3LNdZx/oGR3dBS5w==
+X-Received: by 2002:a17:907:3e83:: with SMTP id hs3mr11405836ejc.16.1643478815150;
+        Sat, 29 Jan 2022 09:53:35 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id s12sm11236266ejx.184.2022.01.29.09.53.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Jan 2022 09:53:34 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 1/5] arm64: dts: exynos: align pl330 node name with dtschema
+Date:   Sat, 29 Jan 2022 18:53:28 +0100
+Message-Id: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 29 Jan 2022 14:11:51 +0100:
+Fixes dtbs_check warnings like:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc2
+  pdma@15610000: $nodename:0: 'pdma@15610000' does not match '^dma-controller(@.*)?$'
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/bb37101b36332345a1e1c1f9f2f3bcc8ad7edb65
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi | 6 +++---
+ arch/arm64/boot/dts/exynos/exynos7.dtsi    | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Thank you!
-
+diff --git a/arch/arm64/boot/dts/exynos/exynos5433.dtsi b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
+index bfe4ed8a23d6..b4cde77e02d3 100644
+--- a/arch/arm64/boot/dts/exynos/exynos5433.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
+@@ -1858,7 +1858,7 @@ mshc_2: mshc@15560000 {
+ 			status = "disabled";
+ 		};
+ 
+-		pdma0: pdma@15610000 {
++		pdma0: dma-controller@15610000 {
+ 			compatible = "arm,pl330", "arm,primecell";
+ 			reg = <0x15610000 0x1000>;
+ 			interrupts = <GIC_SPI 228 IRQ_TYPE_LEVEL_HIGH>;
+@@ -1869,7 +1869,7 @@ pdma0: pdma@15610000 {
+ 			#dma-requests = <32>;
+ 		};
+ 
+-		pdma1: pdma@15600000 {
++		pdma1: dma-controller@15600000 {
+ 			compatible = "arm,pl330", "arm,primecell";
+ 			reg = <0x15600000 0x1000>;
+ 			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
+@@ -1891,7 +1891,7 @@ audio-subsystem@11400000 {
+ 			#size-cells = <1>;
+ 			ranges;
+ 
+-			adma: adma@11420000 {
++			adma: dma-controller@11420000 {
+ 				compatible = "arm,pl330", "arm,primecell";
+ 				reg = <0x11420000 0x1000>;
+ 				interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+index 960823b8247a..3364b09c3158 100644
+--- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
+@@ -142,7 +142,7 @@ gic: interrupt-controller@11001000 {
+ 				<0x11006000 0x2000>;
+ 		};
+ 
+-		pdma0: pdma@10e10000 {
++		pdma0: dma-controller@10e10000 {
+ 			compatible = "arm,pl330", "arm,primecell";
+ 			reg = <0x10E10000 0x1000>;
+ 			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
+@@ -153,7 +153,7 @@ pdma0: pdma@10e10000 {
+ 			#dma-requests = <32>;
+ 		};
+ 
+-		pdma1: pdma@10eb0000 {
++		pdma1: dma-controller@10eb0000 {
+ 			compatible = "arm,pl330", "arm,primecell";
+ 			reg = <0x10EB0000 0x1000>;
+ 			interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.32.0
+
