@@ -2,58 +2,59 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468A2C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 17:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3C5C433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 17:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352724AbiA2Rxh (ORCPT
+        id S1352782AbiA2Rxi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Jan 2022 12:53:37 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:36090
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352733AbiA2Rxh (ORCPT
+        Sat, 29 Jan 2022 12:53:38 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:58756
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346187AbiA2Rxh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sat, 29 Jan 2022 12:53:37 -0500
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1ABCF3F1C4
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D2C883F4B6
         for <linux-serial@vger.kernel.org>; Sat, 29 Jan 2022 17:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
         s=20210705; t=1643478816;
-        bh=UuAmHmse5/7Zq3pHBrLReTIT8+GCT8GhUGa1FdMNyD0=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=C6D06qp0NZpK/cpAobfix1u4cWS0k2bIaNXKtyFaPAXOr1lIew2dUhWLXoa2Xvh/A
-         9rMYzjD2yGakCeumHg7B7JE5LvV+rJIZXb0piVxpIM7dIG3G4vQKU4tYf7c8CD0iEM
-         sNDZFRQcoHBIGL14tQExREN5LaezA2V53n2xvDrej0hDM0A6luZ/+QnQ7DoELZcjB3
-         72OxLlGIcM8AOdJGNohF66k8NEXSJqjzAaUX+bQZRP1zUJDflw4tjOhGQNkOV1d+z8
-         cwZYm34KYewgcyDr8EIxrOLU7Om8G2fqWMBAsfu3RuIr21C6TOxBruoDVrOPNe8w7u
-         iksG19IAm6haA==
-Received: by mail-ej1-f70.google.com with SMTP id q19-20020a1709064c9300b006b39291ff3eso3794032eju.5
+        bh=bgWRA4jagXRIZ+87s8E1TzK9o6vneJUF41jOIzkhmn8=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=lA6FH8l1TyoTfuqt+fHS8HybtRsbmJAsNL33g8YwHcL1sTzIBZV+lEUGFk9RggAaX
+         0zWbTMSRtHDxir/pDR42dq//amV4NIDWkED2uFerSZ0JfAcACRI12OnvvbrIvKnpbz
+         JsaUgoN6p5Tm7pbAVU8dHrCp9V9W3r5VU1qtaHSGwTT5tcV39dk09oOqVSGZDj43KH
+         ffyOWeZwBWB2I1fLOTD07/e9+IXkVIb0l9wKGGamMhsbZlNo7iQ/NdRjKC7dLkCxup
+         lvR+KCqkcXn/glDkrYFbkAWRySTAhHrMy74RpOqd4RcWQHlTm+XdMhUG57KLmGuIO3
+         l1zZGAJxA+t0A==
+Received: by mail-ed1-f71.google.com with SMTP id v15-20020a50a44f000000b004094f4a8f3bso4719839edb.0
         for <linux-serial@vger.kernel.org>; Sat, 29 Jan 2022 09:53:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UuAmHmse5/7Zq3pHBrLReTIT8+GCT8GhUGa1FdMNyD0=;
-        b=jMf/8cXPeIM3nR/qQxx5YCxH10vSbjyYwGJ8TtCoxLf5Ck3gTtGKFArG2cIboh+/oO
-         C1cuJx0UzGk9PaCpsliFi1/X74TMCHu+tyEA71FQmGO2Uno1+c4eVGxCZV3BvAT48nL3
-         3c3QKJZvGn+CiOiHEr332yOtagXj4Xz0ou31RH5h5DFOPLcC9606zAmIMZD4LKu63MYJ
-         05fdv1zH9WKvsVYHmFmKr2Ld058JvDIMPqT2Zg3T36HnACjUOs+SHJy+BZtN02/SGZyt
-         +tasw54Knj/sSZ5c0+EcYckK4H61jeqxGCJcHJ5hPDv81mHeXfdIuyUR2O0lktwNB7WG
-         ieDA==
-X-Gm-Message-State: AOAM533Eadgkiv5CEtgCHX4Go5sIqNbGRXydOvJDMPtOxLwfpC5lmg0N
-        8V4/hQEfuy0DD6JJUEzkvlWgWDhF/NXeJjj68OwmjBjDQgx6wDaS/bf5OPagtEJsotfnK+AaSVu
-        5A9D8kVyrLiclrxcEPRPPmh6MAVRE0DGgK14r5vVYIw==
-X-Received: by 2002:a17:907:3e83:: with SMTP id hs3mr11405847ejc.16.1643478815350;
-        Sat, 29 Jan 2022 09:53:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzoYeYNFVHm8L57tWF3N04jNWX9vUgWvjjwCv32ktyz+5reypKzReeLBf3LNdZx/oGR3dBS5w==
-X-Received: by 2002:a17:907:3e83:: with SMTP id hs3mr11405836ejc.16.1643478815150;
-        Sat, 29 Jan 2022 09:53:35 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bgWRA4jagXRIZ+87s8E1TzK9o6vneJUF41jOIzkhmn8=;
+        b=GIFqfvjrYIujxzc5+SKrZW7Ksm0m+61mpClKTN8S8yRYJ3vHZfG+D9kT/47tenDPuK
+         U27djzAeMLNdg0T4Sx1QaJTYLsdT9F69yJlA2POj/Lk5v3szh/Si7TxSxrC7cj+JJRGW
+         x4PgITWhO4jy6yERba+QOiN+BUZasWxpZUQVWFDQjnhqcBv8AN87Bnaz3jvpGHnwYtB/
+         0QHlyyiUE+La607Id2TI1B7Ai4vsGAvcKnC6sB8lAbmXk5IyVMAD9Q7VlhMWx2rukgH9
+         PIErKRaob6OzUblOvGr8THapd0rEmzi3C4jocS2I+6WxB9qF3nTxajY6ZcvbKJKn7SdD
+         1YPw==
+X-Gm-Message-State: AOAM530c6jAxBF4lV8Po1Lq+YgZaG/Is+fsDbgtZpU9UPDKJGh5VEDz/
+        JJ+QLHzn1FyD1uWl5IZhpn7N+p24S+/OmIwTvJ5PGrRLKSPnzuXf+qot0WlETCt7OvpbvIpHUp8
+        jrmWhX+LwbtkrluWV9lTtkvRR/+2xgDJyBmHPIftXUA==
+X-Received: by 2002:a17:907:9726:: with SMTP id jg38mr3651950ejc.384.1643478816580;
+        Sat, 29 Jan 2022 09:53:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwaBAqEWxBwVQz5SVpuSS2UhkhrR1UFQZFLootOZ1zlNqZ0WYYIUdusgJTZcK3C6ZgqYdhF9A==
+X-Received: by 2002:a17:907:9726:: with SMTP id jg38mr3651939ejc.384.1643478816415;
+        Sat, 29 Jan 2022 09:53:36 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id s12sm11236266ejx.184.2022.01.29.09.53.34
+        by smtp.gmail.com with ESMTPSA id s12sm11236266ejx.184.2022.01.29.09.53.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Jan 2022 09:53:34 -0800 (PST)
+        Sat, 29 Jan 2022 09:53:35 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
@@ -64,79 +65,39 @@ To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 1/5] arm64: dts: exynos: align pl330 node name with dtschema
-Date:   Sat, 29 Jan 2022 18:53:28 +0100
-Message-Id: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 2/5] arm64: dts: exynos: drop unneeded syscon phandle in Exynos5433 LPASS
+Date:   Sat, 29 Jan 2022 18:53:29 +0100
+Message-Id: <20220129175332.298666-2-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fixes dtbs_check warnings like:
-
-  pdma@15610000: $nodename:0: 'pdma@15610000' does not match '^dma-controller(@.*)?$'
+Exynos5433 LPASS audio node does not use syscon phandle since commit
+addebf1588ab ("mfd: exynos-lpass: Remove pad retention control").  It
+was also dropped from bindings.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- arch/arm64/boot/dts/exynos/exynos5433.dtsi | 6 +++---
- arch/arm64/boot/dts/exynos/exynos7.dtsi    | 4 ++--
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/arch/arm64/boot/dts/exynos/exynos5433.dtsi b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
-index bfe4ed8a23d6..b4cde77e02d3 100644
+index b4cde77e02d3..661567d2dd7a 100644
 --- a/arch/arm64/boot/dts/exynos/exynos5433.dtsi
 +++ b/arch/arm64/boot/dts/exynos/exynos5433.dtsi
-@@ -1858,7 +1858,7 @@ mshc_2: mshc@15560000 {
- 			status = "disabled";
- 		};
- 
--		pdma0: pdma@15610000 {
-+		pdma0: dma-controller@15610000 {
- 			compatible = "arm,pl330", "arm,primecell";
- 			reg = <0x15610000 0x1000>;
- 			interrupts = <GIC_SPI 228 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1869,7 +1869,7 @@ pdma0: pdma@15610000 {
- 			#dma-requests = <32>;
- 		};
- 
--		pdma1: pdma@15600000 {
-+		pdma1: dma-controller@15600000 {
- 			compatible = "arm,pl330", "arm,primecell";
- 			reg = <0x15600000 0x1000>;
- 			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1891,7 +1891,7 @@ audio-subsystem@11400000 {
+@@ -1885,7 +1885,6 @@ audio-subsystem@11400000 {
+ 			reg = <0x11400000 0x100>, <0x11500000 0x08>;
+ 			clocks = <&cmu_aud CLK_PCLK_SFR0_CTRL>;
+ 			clock-names = "sfr0_ctrl";
+-			samsung,pmu-syscon = <&pmu_system_controller>;
+ 			power-domains = <&pd_aud>;
+ 			#address-cells = <1>;
  			#size-cells = <1>;
- 			ranges;
- 
--			adma: adma@11420000 {
-+			adma: dma-controller@11420000 {
- 				compatible = "arm,pl330", "arm,primecell";
- 				reg = <0x11420000 0x1000>;
- 				interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
-diff --git a/arch/arm64/boot/dts/exynos/exynos7.dtsi b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-index 960823b8247a..3364b09c3158 100644
---- a/arch/arm64/boot/dts/exynos/exynos7.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7.dtsi
-@@ -142,7 +142,7 @@ gic: interrupt-controller@11001000 {
- 				<0x11006000 0x2000>;
- 		};
- 
--		pdma0: pdma@10e10000 {
-+		pdma0: dma-controller@10e10000 {
- 			compatible = "arm,pl330", "arm,primecell";
- 			reg = <0x10E10000 0x1000>;
- 			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
-@@ -153,7 +153,7 @@ pdma0: pdma@10e10000 {
- 			#dma-requests = <32>;
- 		};
- 
--		pdma1: pdma@10eb0000 {
-+		pdma1: dma-controller@10eb0000 {
- 			compatible = "arm,pl330", "arm,primecell";
- 			reg = <0x10EB0000 0x1000>;
- 			interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.32.0
 
