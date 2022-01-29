@@ -2,69 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D38FC433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 06:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C19C433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 09:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiA2GPk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Jan 2022 01:15:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57680 "EHLO
+        id S233756AbiA2JeJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 29 Jan 2022 04:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiA2GPj (ORCPT
+        with ESMTP id S233096AbiA2JeI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Jan 2022 01:15:39 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A02C061714;
-        Fri, 28 Jan 2022 22:15:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC1F3CE19FC;
-        Sat, 29 Jan 2022 06:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43B23C340E5;
-        Sat, 29 Jan 2022 06:15:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643436933;
-        bh=37FbC17DlgaNGObxnVfDz3/68vRL+XAhVunNTu6zNFk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N2HnvLnFmABJtkwlrLmd0aVDrTbOSWfOD61u7k56tVnTNsEeyd84JxKkuh5SUcA11
-         xWAy0VdCGb9Hq+1zjt1s5wbMdKBDNtUWcMld3vgIP2/RDaN3/b4dhzH8SReSv2X5mT
-         qatGDvL13aUO63ZMWP+ttRspmpKcmYoiROiKwATEIgSB169a+xojEYVvFV2O/VLKjJ
-         ZgIZSu/LaaZsLrbV24OPkP3p0o+kPmwNiZhChOY2gyzszo4yh7srDX8MlmubbVrhMI
-         pVDbeav9Xy6QDveXRbJqj+aCVoX+CJNYj0FlhFXF1c2DxFiNsjVz/yXzYqPfVfKNd+
-         GhsJGqFypYrfQ==
-Date:   Sat, 29 Jan 2022 14:15:26 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH 2/2] arm64: dts: imx8qxp-ss-adma: Drop fsl,imx7ulp-lpuart
- comaptible
-Message-ID: <20220129061525.GR4686@dragon>
-References: <20220118135918.2126010-1-abel.vesa@nxp.com>
- <20220118135918.2126010-2-abel.vesa@nxp.com>
+        Sat, 29 Jan 2022 04:34:08 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF153C061714;
+        Sat, 29 Jan 2022 01:34:08 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id d187so8348996pfa.10;
+        Sat, 29 Jan 2022 01:34:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=e1+s0tV2NM8ycsoAVvvJcxRRSB8Uzk8N0RZeeZJQsso=;
+        b=kt6gKqVAY+cBpVjOfFNLBtBUEc8nMw7OglSpM5bVIByxFuPLATjnZfWszxFv4vLKFI
+         HhcIjvxG58KoWPX1vd0lcVTpsESMIOrQkArVC5RgQQ3zm3A8vQlaCgpsoVNsAzbI/CU3
+         ofV7vEKM6gB/7JpRPSRS23+tnJ9swYc9/S896sL1V14fjVU33a/mgIj7PutG9sLIqmFC
+         AxYxJ7Itm2400CqMSnWo2wk7V8CdNmiNe4FIPG1GoTuEAyu+PCJVfeKlt8oMHL/TsZab
+         WWM9jvNmaOaErCNSoqGHe0pI3wtBv2/Cnm/bdZ6TAkD2qIQgsPnzlM8JcpJCR3Li4fEx
+         AOAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=e1+s0tV2NM8ycsoAVvvJcxRRSB8Uzk8N0RZeeZJQsso=;
+        b=RpzRgambnnmNhwTb+6rb/qXFzC8hP7yBsp7cRgIGcX/E5fYUAclNa7RmaOW7feqEML
+         P7emCofh4slCsuhj0kV1zHL4KPuVsmfxtlSZiS8dF6lwBc7idD893n1YwlpS1HQNWICp
+         steejZ3Y9Wu74tHO8dRHoPiceLxj5wNqbMnIJi/d4XljPts8HTfk762NXoX5s8ttIsbq
+         J6n2CCv09RGy+Ceegrn8T0fpH8sZvpIR02GjAUkD0XY/6nyB3ILIK8ZGR7nl7c9Yb9w2
+         vl30//Ve21/Ba1+5QbcwUNn5ilXPW5NMRNvJT6wWWOQxbMCvmBe6ZVYEs4DCyUn08//t
+         MeYg==
+X-Gm-Message-State: AOAM533VbrgLJcuw8MnIPXEtr3itAzTqarvozpbCkQ568Ya8ZxOqLz4J
+        le5/f+XnHzP/2MP6TzwRcXLSLGS8gYY=
+X-Google-Smtp-Source: ABdhPJy4G8FisyqpC2Ulu4u+DCrnruoB6Ktq8bxKJ7ApwZGx2xEnqk82iS0MmDevTzj4HMPuVrIk2Q==
+X-Received: by 2002:aa7:95b2:: with SMTP id a18mr11718184pfk.39.1643448847776;
+        Sat, 29 Jan 2022 01:34:07 -0800 (PST)
+Received: from [192.168.1.101] ([166.111.139.99])
+        by smtp.gmail.com with ESMTPSA id x17sm11160250pfu.135.2022.01.29.01.34.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 29 Jan 2022 01:34:07 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] tty: serial: possible deadlock in uart_remove_one_port() and
+ uart_hangup()
+To:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
+Date:   Sat, 29 Jan 2022 17:34:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118135918.2126010-2-abel.vesa@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 03:59:18PM +0200, Abel Vesa wrote:
-> The driver differs from clocks point of view, so the i.MX8QXP
-> is not backwards compatible with i.MX7ULP.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Hello,
 
-Applied, thanks!
+My static analysis tool reports a possible deadlock in the tty driver in 
+Linux 5.10:
+
+uart_remove_one_port()
+   mutex_lock(&port->mutex); --> Line 3017 (Lock A)
+   wait_event(state->remove_wait, ...); --> Line 3019 (Wait X)
+   mutex_unlock(&port->mutex); --> Line 3021 (Unlock A)
+
+uart_hangup()
+   mutex_lock(&port->mutex); --> Line 1667 (Lock A)
+   uart_flush_buffer()
+     uart_port_unlock()
+       uart_port_deref()
+         wake_up(&uport->state->remove_wait); --> Line 68 (Wake X)
+   mutex_unlock(&port->mutex); --> Line 1684 (Unlock A)
+
+When uart_remove_one_port() is executed, "Wait X" is performed by 
+holding "Lock A". If uart_hangup() is executed at this time, "Wake X" 
+cannot be performed to wake up "Wait X" in uart_remove_one_port(), 
+because "Lock A" has been already hold by uart_remove_one_port(), 
+causing a possible deadlock.
+
+I am not quite sure whether this possible problem is real and how to fix 
+it if it is real.
+Maybe we can call wait_event() before mutex_lock() in 
+uart_remove_one_port().
+Any feedback would be appreciated, thanks :)
+
+
+Best wishes,
+Jia-Ju Bai
+
+
