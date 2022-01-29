@@ -2,88 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 153EBC433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 10:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 272B4C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Jan 2022 13:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236953AbiA2KBy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Jan 2022 05:01:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236342AbiA2KBx (ORCPT
+        id S1349137AbiA2NLz (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 29 Jan 2022 08:11:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46806 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239739AbiA2NLy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Jan 2022 05:01:53 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E826C061714;
-        Sat, 29 Jan 2022 02:01:53 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id i1so8326280pla.9;
-        Sat, 29 Jan 2022 02:01:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=z8+KRmkxtX9Pn8s0WmoIqShaNO0eoxFTiuBF3Bw+8cE=;
-        b=RzzUdMVC6W4uiMeG42YF6kL1iK/Jq1ElWsmi5uBTYch+feiPjWG8JcJPE1fA6mHzEP
-         1xsI9YKwFvp3UEmH0K9EHZjeTBFp5BLdPO091gT+Bgkrnk8FxdlU8Gs5P/iA0f4sSOv7
-         G7mhLB/3FDnYDY2pkQ9ppPmuFM5FBiWhRak/gjtdc5Dc8sB0g65H/IdLeSmHIoIWg1yx
-         mkTHJeQbObqwzXsIOPXcPxOxkwC2BaErbNo2p21yCqFgAoBjDyaUnDnfe0VNuHBgtGsr
-         PfjzbvZBYnARZxwEG+zI+ZuQEtw0206fV8CNFqlXVDUADFoCmWVk6bDguuThxupsE148
-         8x6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=z8+KRmkxtX9Pn8s0WmoIqShaNO0eoxFTiuBF3Bw+8cE=;
-        b=35OPRINc6Rx92I6PsA5OBdWf8sO/c+h6cgP2eoW95dwrYNeCMeL5QslyV1H2R+GWag
-         WweBuvdSOVTLZFZUrL3MOJzoDDWEu0126XCUHQxmQLI0FDTF41OPO4AKauaGuNxviLGb
-         j44asEPphfoSFn/j/g8KVYWpic1/xEdV0GoghZAm4WmZSU7MQXqsjQ6xqH1suq3hg0+e
-         Ou7M5WVfNKPB5CoJJ6Tzu2VuJL+wFtKYqYIiLeJmUzrzS1q+PCNQC5jZs9qx1KbxXxVp
-         G6IDCeQBPt5RbndJZRin9nst8mfUD3ZR/kychZaSzF/cFKoJxCzn8qeHPnIuRK8XDO/5
-         7BNQ==
-X-Gm-Message-State: AOAM530OHlZfU6YQehJcKlbDG/rLYYXdEMi5YNPsTsP7vD1uvzBKux91
-        m+iaME7DCnRuimJdPHLU3Qq4Z/zQXV0=
-X-Google-Smtp-Source: ABdhPJyTq9X/ASMu7i/VjN71kzFwZATO8/myfii0C5pmCteXY0GjxHMwsz0cG6gkADjKYULhxZKDTA==
-X-Received: by 2002:a17:902:d355:: with SMTP id l21mr11632323plk.128.1643450512221;
-        Sat, 29 Jan 2022 02:01:52 -0800 (PST)
-Received: from [192.168.1.101] ([166.111.139.99])
-        by smtp.gmail.com with ESMTPSA id o1sm13040187pfu.88.2022.01.29.02.01.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 29 Jan 2022 02:01:51 -0800 (PST)
-Subject: Re: [BUG] tty: serial: possible deadlock in uart_remove_one_port()
- and uart_hangup()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
- <YfUPlYwoWpMjhvpR@kroah.com>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <88c4529d-c3dc-c168-f15b-7ea01ef334cf@gmail.com>
-Date:   Sat, 29 Jan 2022 18:01:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Sat, 29 Jan 2022 08:11:54 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C38D60C75;
+        Sat, 29 Jan 2022 13:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91298C340E5;
+        Sat, 29 Jan 2022 13:11:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643461914;
+        bh=pVMrF2W04FDCluw+LRWB6W2yETOEVIUjr7cu3PrFO7E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=2FpmpiS+8t7JZJK2zR7Zegd52OVWpbCfZSUaOQ40UKAMMHWFTREICf/L1lKVvqNp1
+         K9dGywyQmkM/KBouM+OfoetNdUF5idZ/RPa/3lHdsrsX5VcdRNgdWZi1yeda8otiEZ
+         l77D8VP60sv6UaD06377qznv+dSB3HlyrCUQxgPY=
+Date:   Sat, 29 Jan 2022 14:11:51 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.17-rc2
+Message-ID: <YfU9F+OwlK+Rso3T@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <YfUPlYwoWpMjhvpR@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
-On 2022/1/29 17:57, Greg KH wrote:
-> On Sat, Jan 29, 2022 at 05:34:05PM +0800, Jia-Ju Bai wrote:
->> Hello,
->>
->> My static analysis tool reports a possible deadlock in the tty driver in
->> Linux 5.10:
-> 5.10 was released over a year ago and over 100 thousand changes ago.
-> Please redo your check on 5.16 at the oldest.
+are available in the Git repository at:
 
-Thanks, Greg.
-I will redo my check on 5.16.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc2
 
+for you to fetch changes up to d1ad2721b1eb05d54e81393a7ebc332d4a35c68f:
 
-Best wishes,
-Jia-Ju Bai
+  kbuild: remove include/linux/cyclades.h from header file check (2022-01-27 08:51:08 +0100)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 5.17-rc2
+
+Here are some small bug fixes and reverts for reported problems with the
+tty core and drivers.  They include:
+	- revert the fifo use for the 8250 console mode.  It caused too
+	  many regressions and problems, and had a bug in it as well.
+	  This is being reworked and should show up in a later -rc1
+	  release, but it's not ready for 5.17
+	- rpmsg tty race fix
+	- restore the cyclades.h uapi header file.  Turns out a compiler
+	  test suite used it for some unknown reason.  Bring it back
+	  just for the parts that are used by the builder test so they
+	  continue to build.  No functionality is restored as no one
+	  actually has this hardware anymore, nor is it really tested.
+	- stm32 driver fixes
+	- n_gsm flow control fixes
+	- pl011 driver fix
+	- rs485 initialization fix
+
+All of these have been in linux-next this week with no reported
+problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Arnaud Pouliquen (1):
+      tty: rpmsg: Fix race condition releasing tty port
+
+Cameron Williams (1):
+      tty: Add support for Brainboxes UC cards.
+
+Greg Kroah-Hartman (2):
+      Revert "tty: serial: Use fifo in 8250 console driver"
+      kbuild: remove include/linux/cyclades.h from header file check
+
+Jochen Mades (1):
+      serial: pl011: Fix incorrect rs485 RTS polarity on set_mctrl
+
+Lukas Wunner (1):
+      serial: core: Initialize rs485 RTS polarity already on probe
+
+Maciej W. Rozycki (1):
+      tty: Partially revert the removal of the Cyclades public API
+
+Robert Hancock (1):
+      serial: 8250: of: Fix mapped region size when using reg-offset property
+
+Valentin Caron (2):
+      serial: stm32: prevent TDR register overwrite when sending x_char
+      serial: stm32: fix software flow control transfer
+
+daniel.starke@siemens.com (1):
+      tty: n_gsm: fix SW flow control encoding/handling
+
+ drivers/tty/n_gsm.c                 |   4 +-
+ drivers/tty/rpmsg_tty.c             |  40 ++++++++++-----
+ drivers/tty/serial/8250/8250_of.c   |  11 +++-
+ drivers/tty/serial/8250/8250_pci.c  | 100 +++++++++++++++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_port.c |  61 +++-------------------
+ drivers/tty/serial/amba-pl011.c     |  11 +---
+ drivers/tty/serial/serial_core.c    |  34 +++++-------
+ drivers/tty/serial/stm32-usart.c    |  14 ++++-
+ include/uapi/linux/cyclades.h       |  35 +++++++++++++
+ usr/include/Makefile                |   1 +
+ 10 files changed, 205 insertions(+), 106 deletions(-)
+ create mode 100644 include/uapi/linux/cyclades.h
