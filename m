@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC95C43219
-	for <linux-serial@archiver.kernel.org>; Sun, 30 Jan 2022 07:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F47C433F5
+	for <linux-serial@archiver.kernel.org>; Sun, 30 Jan 2022 07:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354291AbiA3HR2 (ORCPT
+        id S1354310AbiA3HUk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 30 Jan 2022 02:17:28 -0500
-Received: from mailout3.samsung.com ([203.254.224.33]:24641 "EHLO
-        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354289AbiA3HR1 (ORCPT
+        Sun, 30 Jan 2022 02:20:40 -0500
+Received: from mailout1.samsung.com ([203.254.224.24]:44534 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354311AbiA3HUg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 30 Jan 2022 02:17:27 -0500
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220130071725epoutp033e0617a0d8d7344dbe20f4bf34bde280~O_yP0zKf32361423614epoutp03c
-        for <linux-serial@vger.kernel.org>; Sun, 30 Jan 2022 07:17:25 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220130071725epoutp033e0617a0d8d7344dbe20f4bf34bde280~O_yP0zKf32361423614epoutp03c
+        Sun, 30 Jan 2022 02:20:36 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220130072034epoutp01cac75141b9af8ba63277d03638cd9a39~O_0-KzQug1128011280epoutp01l
+        for <linux-serial@vger.kernel.org>; Sun, 30 Jan 2022 07:20:34 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220130072034epoutp01cac75141b9af8ba63277d03638cd9a39~O_0-KzQug1128011280epoutp01l
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643527045;
-        bh=OqVKBBDdQmDFundTIJwrdp/DGY2Qok3thjIBjRyDscI=;
+        s=mail20170921; t=1643527234;
+        bh=1yost2nb4QKF+LswDgDXOKPOEgZVrHtlpKyxrpDCbus=;
         h=From:To:In-Reply-To:Subject:Date:References:From;
-        b=fKGiciLE1Hkrn+/LIQDamSsIiulFCrJkw+idfzO/VSrBvUTsUIlgvzX7VPS8VS/sV
-         TbOM6bnadHO0RqvmnnjT3sVJYtJaS6HcvrBwQ8tD4VA6xKqlqmpiWMU4guH3Kn8foi
-         XfnczpU1lpGIl3DFeKdCG6ZJ+3ByMf5q81jpzZQY=
+        b=isBs76rzx6d8pA/OemZ2N61f9zRJRFSVWsjpbdQQeWNNmcqDHlureO8SvvkkbxoDt
+         l5TdbwNLeaz+ZuRRGb77shm3VVxhB7WtZ2X7Y674mCYstY68X72N6CiQ8m94MWwIch
+         QOQ9toKs2GMNwstmPZpnpPjNpbxxGjJs3IKvEi9c=
 Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
         epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220130071724epcas5p2e72fb4e5b62cf732e8e68cdbdae1057f~O_yO2JGKC3190031900epcas5p2M;
-        Sun, 30 Jan 2022 07:17:24 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.177]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4JmjFF20shz4x9Pq; Sun, 30 Jan
-        2022 07:17:21 +0000 (GMT)
+        20220130072032epcas5p293f88f81631d61ff74b46b9d24793aef~O_09pCLQg0335603356epcas5p2A;
+        Sun, 30 Jan 2022 07:20:32 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.181]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4JmjJs3f3Cz4x9Px; Sun, 30 Jan
+        2022 07:20:29 +0000 (GMT)
 Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A1.C2.06423.08B36F16; Sun, 30 Jan 2022 16:17:20 +0900 (KST)
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A5.16.05590.D3C36F16; Sun, 30 Jan 2022 16:20:29 +0900 (KST)
 Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220130071720epcas5p1521c11e9d6cb248e6a453a6a639db61c~O_yK81SUF3035830358epcas5p1K;
-        Sun, 30 Jan 2022 07:17:20 +0000 (GMT)
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220130072028epcas5p27d4050b2945fad377255c2bf7e01f1d5~O_051tDy10335603356epcas5p2_;
+        Sun, 30 Jan 2022 07:20:28 +0000 (GMT)
 Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
         epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220130071720epsmtrp298b5fe0004c389389e29ab38859429a2~O_yK7AL4Y2905329053epsmtrp22;
-        Sun, 30 Jan 2022 07:17:20 +0000 (GMT)
-X-AuditID: b6c32a49-b13ff70000001917-a7-61f63b805b42
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        20220130072028epsmtrp24bb3aa5cf85f1fc10175ee353b7cf74c~O_050iRhR2905329053epsmtrp2Y;
+        Sun, 30 Jan 2022 07:20:28 +0000 (GMT)
+X-AuditID: b6c32a4b-723ff700000015d6-c0-61f63c3dba66
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
         epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AB.A0.29871.08B36F16; Sun, 30 Jan 2022 16:17:20 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
+        21.B0.29871.C3C36F16; Sun, 30 Jan 2022 16:20:28 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
         (KnoxPortal) with ESMTPA id
-        20220130071718epsmtip2f490518c357877a1256185d624e2e7d2~O_yJV2cPk0887608876epsmtip2C;
-        Sun, 30 Jan 2022 07:17:18 +0000 (GMT)
+        20220130072026epsmtip1626855f094476baf3002776e95d28aa6~O_04H-X1U3074830748epsmtip12;
+        Sun, 30 Jan 2022 07:20:26 +0000 (GMT)
 From:   "Alim Akhtar" <alim.akhtar@samsung.com>
 To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
         "'Lee Jones'" <lee.jones@linaro.org>,
@@ -64,48 +64,48 @@ To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
 In-Reply-To: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
 Subject: RE: [PATCH 1/5] arm64: dts: exynos: align pl330 node name with
  dtschema
-Date:   Sun, 30 Jan 2022 12:47:17 +0530
-Message-ID: <00d601d815a9$6b509890$41f1c9b0$@samsung.com>
+Date:   Sun, 30 Jan 2022 12:50:25 +0530
+Message-ID: <00d801d815a9$db41f9a0$91c5ece0$@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQGkI64pg85Gv5s7Nhqj/7nYjMyAEQFgtqenrNgFj+A=
+Thread-Index: AQGkI64pg85Gv5s7Nhqj/7nYjMyAEQFgtqenrNgGeLA=
 Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBJsWRmVeSWpSXmKPExsWy7bCmhm6D9bdEg09fzCzmHznHatG8eD2b
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrBJsWRmVeSWpSXmKPExsWy7bCmhq6tzbdEgyu/uS3mHznHatG8eD2b
         xca3P5gs7n89ymix6fE1VovLu+awWcw4v4/J4sziXnaLtUfuslu07j3CbnH4TTurA7fHrIZe
         No9NqzrZPO5c28PmsX/uGnaPzUvqPfq2rGL0+LxJLoA9KtsmIzUxJbVIITUvOT8lMy/dVsk7
         ON453tTMwFDX0NLCXEkhLzE31VbJxSdA1y0zB+hGJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+
-        cYmtUmpBSk6BSYFecWJucWleul5eaomVoYGBkSlQYUJ2xuLDy5gLdkpU/Dj6kLGB8ahIFyMn
-        h4SAicSue1fYuhi5OIQEdjNKXPu5iR3C+cQo8X/LWUYI5xujxNHZ+9hgWvYeu8IKkdjLKHF3
-        0jUmCOclo0TT5RtgVWwCuhI7FreBDRYRuMkssWpLCwtIglPAQ2LPuelgRcICQRLP5/4Fs1kE
-        VCUmzTsJZvMKWEps/36WFcIWlDg58wlYL7OAvMT2t3OYIc5QkPj5dBlYjYiAlcTsy8/ZIGrE
-        JV4ePcIOUbOHQ2LezGAI20Vi9/btUHFhiVfHt0DZUhKf3+0F6uUAsrMlenYZQ4RrJJbOO8YC
-        YdtLHLgyhwWkhFlAU2L9Ln2ITXwSvb+fMEF08kp0tAlBVKtKNL+7CtUpLTGxu5sVwvaQaH34
-        EhpUs4FB1bGXaQKjwiwkT85C8uQsJM/MQti8gJFlFaNkakFxbnpqsWmBYV5qOTzCk/NzNzGC
-        k7CW5w7Guw8+6B1iZOJgPMQowcGsJMI7Y9OnRCHelMTKqtSi/Pii0pzU4kOMpsCQn8gsJZqc
-        D8wDeSXxhiaWBiZmZmYmlsZmhkrivKfTNyQKCaQnlqRmp6YWpBbB9DFxcEo1MOXxhRSFc3tx
-        dOx1ebvyq893bWtbmdWrs74uMAwqDAmKlPx3Wn/WHgW+//+v3Lv+a3bx47+nVi9YyWyvlxZ+
-        88dX8RkJa6TehBmYVzDxyd+4u+7xKxs/5VVf+D0Xak3JnV3+oiDh9sYjW7NCRB/ouK2auTRS
-        5oHg/8eaZ6P7Nt6buuWj0Vb3Wq8JtxUDXcX4jaIsr28+nMX4+LbDVFbHb+yptycnbv6Rpu7w
-        o/Ruufx5qXUyulMnrViWMK9jy+a7T5M5uw5PTPxyXL5xyXzDQAdr4Rz1uhce9i+P/kuUO23O
-        d7lOLcba8Nu0SevWCbFWrvhp65dVoXN90vUwXe/7L/dvFp4qIj5lz1b2U4rTlC4psRRnJBpq
-        MRcVJwIAEAjuzUsEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprCIsWRmVeSWpSXmKPExsWy7bCSvG6D9bdEgxOnBSzmHznHatG8eD2b
-        xca3P5gs7n89ymix6fE1VovLu+awWcw4v4/J4sziXnaLtUfuslu07j3CbnH4TTurA7fHrIZe
-        No9NqzrZPO5c28PmsX/uGnaPzUvqPfq2rGL0+LxJLoA9issmJTUnsyy1SN8ugStj8eFlzAU7
-        JSp+HH3I2MB4VKSLkZNDQsBEYu+xK6xdjFwcQgK7GSWaTx5ghEhIS1zfOIEdwhaWWPnvOTtE
-        0XNGiakHHrCBJNgEdCV2LG5jA0mICDxkltj1YxLUqJmMErdOzQOr4hTwkNhzbjqYLSwQIDFt
-        zyomEJtFQFVi0ryTYHFeAUuJ7d/PskLYghInZz5h6WLk4GAW0JNo2wh2EbOAvMT2t3OYIS5S
-        kPj5dBlYuYiAlcTsy8/ZIGrEJV4ePcI+gVFoFpJJsxAmzUIyaRaSjgWMLKsYJVMLinPTc4sN
-        CwzzUsv1ihNzi0vz0vWS83M3MYIjTktzB+P2VR/0DjEycTAeYpTgYFYS4Z2x6VOiEG9KYmVV
-        alF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NTC1KLYLJMHJxSDUzub2TX7vvtaLBqnm9z
-        TEXo0rtKtvw/f65ek1S5/+KT0y/vTk/mmr7n6uKIRzIM+fltpk1zm4xY30xm5DsioPnbxeB3
-        3K++ILWgmntObiXhhf2B7wO+fDeIFo2eVvbJv/L1nfp/dks6+qLEZD1jeiotld13uC65fVf5
-        TdeTzhD/9bcTc1KfvxJZ1y692NfrGp/w9pRi7dBj7qLm09bY5D6Sbw2+/7EsILjo/7wLv5+6
-        fM1kXhmgy3G16ESC8KzuT2dOXVVdtvB4EONGiwdSm4QtKkzsFk9pevnikuwULwclQz7u/PgY
-        DovTzn8viZ+K1W6/vS/qytFlr+8HHDimdHxafHSTU7XidXHzz1+2LldiKc5INNRiLipOBAAx
-        fYv2JwMAAA==
-X-CMS-MailID: 20220130071720epcas5p1521c11e9d6cb248e6a453a6a639db61c
+        cYmtUmpBSk6BSYFecWJucWleul5eaomVoYGBkSlQYUJ2xt7ru9gKNkpUzH30lbGB8YBIFyMn
+        h4SAicTB1y0sXYxcHEICuxkl3vVfZYVwPjFKtHf1MEM43xgltk3fxQTT8rHhOVTVXkaJmx+f
+        skE4Lxklrs26xghSxSagK7FjcRtYQkTgJrPEqi0gWzg5OAU8JPacm84GYgsLBEk8n/sXzGYR
+        UJX4uGojK4jNK2Ap8ffUL0YIW1Di5MwnYL3MAvIS29/OYYY4Q0Hi59NlYPUiAlYSy1auZoao
+        EZd4efQIO0TNDg6Jc/eKIGwXiV2z9kD1Cku8Or4FqkZK4vO7vUA3cADZ2RI9u4whwjUSS+cd
+        Y4Gw7SUOXJnDAlLCLKApsX6XPsQmPone30+YIDp5JTrahCCqVSWa312F6pSWmNjdzQphe0i0
+        PnzJBAmq2YwSTR17mSYwKsxC8uQsJE/OQvLMLITNCxhZVjFKphYU56anFpsWGOellsMjPDk/
+        dxMjOAlree9gfPTgg94hRiYOxkOMEhzMSiK8MzZ9ShTiTUmsrEotyo8vKs1JLT7EaAoM+YnM
+        UqLJ+cA8kFcSb2hiaWBiZmZmYmlsZqgkznsqfUOikEB6YklqdmpqQWoRTB8TB6dUA1Na6gv3
+        B4/6nhTLrTnpEeKx4ucdi6JTiZxhbV7Xf/yy/lS12u+H/N3Lc219Gpo0S+Tf1HhJPL6vN6eC
+        obSl4EXgiTtKLVcnvYiPEXL+zJTAbG+4m6HhjfYy/o3MDIdcJ+asb3nLtcVXMZg58VTdfCFd
+        kfkLi9bb92e/vhtx81frNLclK3Oc305UsLzsXJktOG3GFZdQcQ/L6cxvw4v4rgsarog1v9Ux
+        +7J6553tHe9N0+rmHOs5/uM419P00MaaxI39z9OW1Syvj5U+xJHUJ1Qc915ofdn+5wWnK5vE
+        zpVX9J0Rc9a7JMs/SclLZI/r8ebZ4rIWRh5/qvZev3hi49FKGWkPk9hTloeV2LY8VGIpzkg0
+        1GIuKk4EAIbC7atLBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprCIsWRmVeSWpSXmKPExsWy7bCSnK6NzbdEg7+trBbzj5xjtWhevJ7N
+        YuPbH0wW978eZbTY9Pgaq8XlXXPYLGac38dkcWZxL7vF2iN32S1a9x5htzj8pp3VgdtjVkMv
+        m8emVZ1sHneu7WHz2D93DbvH5iX1Hn1bVjF6fN4kF8AexWWTkpqTWZZapG+XwJWx9/outoKN
+        EhVzH31lbGA8INLFyMkhIWAi8bHhOWsXIxeHkMBuRonGfzOYIBLSEtc3TmCHsIUlVv57zg5R
+        9JxRYt/vBhaQBJuArsSOxW1sIAkRgYfMErt+TIIaNZNR4tapeWwgVZwCHhJ7zk0Hs4UFAiSm
+        7VkFtoJFQFXi46qNrCA2r4ClxN9TvxghbEGJkzOfAG3g4GAW0JNo2wgWZhaQl9j+dg4zxEUK
+        Ej+fLgNrFRGwkli2cjUzRI24xMujR9gnMArNQjJpFsKkWUgmzULSsYCRZRWjZGpBcW56brFh
+        gWFearlecWJucWleul5yfu4mRnDEaWnuYNy+6oPeIUYmDsZDjBIczEoivDM2fUoU4k1JrKxK
+        LcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqgamu+4hOY57fhBPTTO8v
+        fZg2/5yQhp61ltEeQX+X/a+ZFbv/+DrGz/8oHn59QouSWP/pvCOfv94+G+KZs62n8KW0m+CK
+        TaeMai11qxvmV7xq9xd2vsh6eVPl5R/XJzAZLIs72OrLrXbH2Uoi76ehCl/d5sUi5ik14jsc
+        H0u+PPz8u3xrmOv5RxELFk/qrTunIXOfLTmzpy87K6r1yifmW0Ur/u7RWj+pSfV+hvayNWLN
+        jx9/Z5/w+4x0wrpGJgOGC1GbUz+Eia3JS79hbNmyQbpUSfVCxqmi6ImeCxQ4zBWkXriz+V27
+        cz6Lo4Cl3OTIdgbNiQpxM86La/7bHv3pHPdH6a8VfZ3akdPvPD0rp8RSnJFoqMVcVJwIACk1
+        XrQnAwAA
+X-CMS-MailID: 20220130072028epcas5p27d4050b2945fad377255c2bf7e01f1d5
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 CMS-TYPE: 105P
@@ -118,7 +118,7 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof
+
 
 >-----Original Message-----
 >From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
@@ -141,8 +141,9 @@ Hi Krzysztof
 >
 >Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 >---
+Thanks
 
-Reviewed-by: Alim Akhtar <alim.akhtar@smasung.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
 
 > arch/arm64/boot/dts/exynos/exynos5433.dtsi | 6 +++---
