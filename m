@@ -2,117 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06ABC4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 31 Jan 2022 08:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CC3C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 31 Jan 2022 09:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347232AbiAaItN (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 31 Jan 2022 03:49:13 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:33530
+        id S234241AbiAaJC6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 31 Jan 2022 04:02:58 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:34048
         "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346972AbiAaItM (ORCPT
+        by vger.kernel.org with ESMTP id S233655AbiAaJC6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 31 Jan 2022 03:49:12 -0500
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        Mon, 31 Jan 2022 04:02:58 -0500
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F3E103F1FD
-        for <linux-serial@vger.kernel.org>; Mon, 31 Jan 2022 08:49:09 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F32773F1F0
+        for <linux-serial@vger.kernel.org>; Mon, 31 Jan 2022 09:02:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1643618950;
-        bh=svjshNSefoEJYwgVi4BAg4xIyTtW+DljH24XBOGceLE=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=J4mbK4rV4czGz0m3S17DJDhD7DWcwhB8Qfvvf9yFooKKX/z2VgNNSktf8FotwWA3/
-         2hp+5t+B6I28nQ3Wt7kOyTpt7hTeWLVAeBdE0xcHl7FF1Mt7sLI3e13Eck3yz2lfNJ
-         LAbBWyVKmon7p6W8k9dnJb8RMVSFknsGm3bJXhq1ZYa7o2b2labPYuoZsYlPw21w1q
-         A5knLSLdlageVNYEICrcdQGfP2A/WzZMaHbs5rFdsoLvgHieHkCaJRrCY8t7kNiDA5
-         ol7yTJyvrI/x+N51OSEj6QpgCShnSYVCSGMEw8TQrv3rAUQt60GXTsNgKreistccT2
-         VSYav/lwXs1dQ==
-Received: by mail-wr1-f72.google.com with SMTP id a6-20020adfbc46000000b001d7370ace6eso4532036wrh.9
-        for <linux-serial@vger.kernel.org>; Mon, 31 Jan 2022 00:49:09 -0800 (PST)
+        s=20210705; t=1643619776;
+        bh=VPxWUBO6RdX14HL+ygIvVwiE8ezYmob4dZE1Vs6HWz8=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=URCuYMpETv41RsKCe6JElvsYu2Xa8FwWLPJvJToP7hkADoEHdbfNeYOTjDRChx3rd
+         SFdoYd8s+y4H+oC1TCCFzGnOFhmdnjqHLQl3b3t1yNJseYDORYHBnYuH7x+crFtaJg
+         vx0/5Wn6tCcNfaf55sHFbO6U9HXAlkVYRDJo7dCquwTra6c+TVASTgbrfzz1Ufrm9o
+         VgNWnAF98M1SkV0Whxrz4WMB1Mpp6//IY4B6vAWpIcBG9BpscgqkTiYP97ywayRfmG
+         cjjatuVXoV5+97J2F/ICoVUnK3f1KvV3t1YHxyNNE00YHCBi1MaTYJIGNgQym/NyeE
+         BRmLxnnuwzu8w==
+Received: by mail-wm1-f70.google.com with SMTP id r83-20020a1c4456000000b00352cf8b74dcso781740wma.0
+        for <linux-serial@vger.kernel.org>; Mon, 31 Jan 2022 01:02:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=svjshNSefoEJYwgVi4BAg4xIyTtW+DljH24XBOGceLE=;
-        b=7Yrsk8fSfmvUeOlBCDiWGiv4/bKpShDOfnYIwD1hHyV5mf5hgFLhjAokRd/PjwtAHS
-         lwceKvQZtk9GK4w8ikEWnnN8uQsVHhAnREEyA+ZId+N2j22rFSXWW0B1F89q79H8tfJ3
-         PMTIpgAPE8cd/RnJ30AHYlTca1G7OrDudxEHyc+XZftRG8rVt+h4cSNl+ZYKr95vR/3+
-         9EGyDITwQ4BoDSr23e2O429Gk1yjEmltU0mrDBSvbEb27H1PqQD7QjlD3iRq8CpynW5g
-         /A5G/mAotQItpzS6Sb+7h7V+ww8/jAeEpu/YLH9yZeKedmNhuVKghMuhu7hdFgRSFUbn
-         hmXg==
-X-Gm-Message-State: AOAM533+UHG8FtOZj9xK9bIITcGLVRlvuG5wVFQfpw7Zfq9GXz/4FTCN
-        wNRczgfjDQIc9rLkDRhBL4JjXPWzeiEAXthiwTOFnT6Aa2T9T/NGhQus1MtrExUbZWlMw8Ba8Ji
-        zzvfnbo+cFCANzldMao609JSPh1TDGy4lUZ4QsPa4AA==
-X-Received: by 2002:a05:600c:1d85:: with SMTP id p5mr17270875wms.36.1643618949716;
-        Mon, 31 Jan 2022 00:49:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzTATDXDctIwTtRUD/606FhJvoSauau1EJCnIlBOADEWwRuCy3sgT02rkUzCFPNUfk/CwaMZA==
-X-Received: by 2002:a05:600c:1d85:: with SMTP id p5mr17270857wms.36.1643618949560;
-        Mon, 31 Jan 2022 00:49:09 -0800 (PST)
-Received: from [192.168.0.71] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id y6sm8169021wma.48.2022.01.31.00.49.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 00:49:08 -0800 (PST)
-Message-ID: <0e5263dc-d4ba-45e9-a38f-9db127d67334@canonical.com>
-Date:   Mon, 31 Jan 2022 09:49:07 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4/5] dt-bindings: mfd: samsung,exynos5433-lpass: Convert
- to dtschema
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-samsung-soc@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Lee Jones <lee.jones@linaro.org>
-References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
- <20220129175332.298666-4-krzysztof.kozlowski@canonical.com>
- <1643502137.259074.416953.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VPxWUBO6RdX14HL+ygIvVwiE8ezYmob4dZE1Vs6HWz8=;
+        b=C9X8NrjOt26Q010BJdM22zOhNBN8NTjts8NnfoVU7iBkS13dKq/qiNAtbaVhlyz1Aa
+         l4tmBy7njkhe1yLwnZOAF2QsJ3o6mKkTvy1q4JtLR3B3MOdGODBO15k8CMEgHSbcx/ku
+         da/DJzr3BBuRQmxdCtluQxQdmm/5So7te7zeWe1YpispYdzD3SxE8r+AOc5qPLkqIC04
+         wJhyFZrXxd0wpmRZH66qqBpexY+N9umDnwZj2EF+tle1VvziXwR/upqpMBpuZITweJlP
+         8jJszJNAwuos4Ds6ndR4MFVNMcdyN33Bcp26P2jGexcGLEBl9Te86SazeNTWhE7MOXm/
+         pNgw==
+X-Gm-Message-State: AOAM531/ZrYK4+1QbX4UHRdmJ5/lKG83YnwY7jPAcWzhbqWCPWLzlBWw
+        gx8K+o8MCss+kRuzRmlMI0B9HPilT5w59vSlHCvpEYihloLZMQ1LIECT1UU2gY2u7MtpLEpNd3k
+        tC1vN44RN/3bXJcOOegLfKEFadXCrMk/U9wfjPHYFDA==
+X-Received: by 2002:adf:f703:: with SMTP id r3mr16858349wrp.354.1643619776445;
+        Mon, 31 Jan 2022 01:02:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBrLJFSY4y+ymZIDvgLm9S/yZmXBOYfaqH+6ywjDWDjBGe7K6nX5M0jnkU0z/nyHAV8DaVrg==
+X-Received: by 2002:adf:f703:: with SMTP id r3mr16858318wrp.354.1643619776211;
+        Mon, 31 Jan 2022 01:02:56 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id c8sm9219866wmq.34.2022.01.31.01.02.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Jan 2022 01:02:55 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <1643502137.259074.416953.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Lee Jones <lee.jones@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: (subset) [PATCH 1/5] arm64: dts: exynos: align pl330 node name with dtschema
+Date:   Mon, 31 Jan 2022 10:02:53 +0100
+Message-Id: <164361966593.14585.5079368192105542217.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 30/01/2022 01:22, Rob Herring wrote:
-> On Sat, 29 Jan 2022 18:53:31 +0100, Krzysztof Kozlowski wrote:
->> Convert the Exynos5433 LPASS bindings to DT schema format.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->> ---
->>  .../bindings/mfd/samsung,exynos5433-lpass.txt |  72 -----------
->>  .../mfd/samsung,exynos5433-lpass.yaml         | 119 ++++++++++++++++++
->>  2 files changed, 119 insertions(+), 72 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
->>  create mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
->>
+On Sat, 29 Jan 2022 18:53:28 +0100, Krzysztof Kozlowski wrote:
+> Fixes dtbs_check warnings like:
 > 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>   pdma@15610000: $nodename:0: 'pdma@15610000' does not match '^dma-controller(@.*)?$'
 > 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.example.dt.yaml: audio-subsystem@11400000: serial@11460000:compatible:0: 'samsung,exynos5433-uart' is not one of ['apple,s5l-uart', 'samsung,s3c2410-uart', 'samsung,s3c2412-uart', 'samsung,s3c2440-uart', 'samsung,s3c6400-uart', 'samsung,s5pv210-uart', 'samsung,exynos4210-uart', 'samsung,exynos850-uart']
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
-> Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.example.dt.yaml:0:0: /example-0/audio-subsystem@11400000/serial@11460000: failed to match any schema with compatible: ['samsung,exynos5433-uart']
 > 
 
-This is false positive or rather my patch-ordering issue. I fixed it up
-in patch 5/5 of this series.
+Applied, thanks!
 
+[1/5] arm64: dts: exynos: align pl330 node name with dtschema
+      commit: 706d8df83c8ec9cbe948ff8c8bd082b7819f4196
 
 Best regards,
-Krzysztof
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
