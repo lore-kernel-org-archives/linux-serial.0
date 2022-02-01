@@ -2,282 +2,269 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBACC4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Feb 2022 17:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B09A9C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Feb 2022 18:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241552AbiBARiI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Feb 2022 12:38:08 -0500
-Received: from mail-oi1-f171.google.com ([209.85.167.171]:33468 "EHLO
-        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234997AbiBARiI (ORCPT
+        id S241963AbiBASu5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Feb 2022 13:50:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:24440 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236426AbiBASu5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Feb 2022 12:38:08 -0500
-Received: by mail-oi1-f171.google.com with SMTP id x193so34859337oix.0;
-        Tue, 01 Feb 2022 09:38:08 -0800 (PST)
+        Tue, 1 Feb 2022 13:50:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643741456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=CXMEPCO/uu0dla1c1qYh6jAoya9d0BWMm4xi0Tv2h6E=;
+        b=UgNUwr4STajbQ9iVk6+sMeEC09eKXL1vlLVUaH7hOigaUNEPowQi39+sF8ENJGeQIWN9To
+        uq9SvW85jVhCqHrlZox/JC1tpI33vlSkdHKHsL3c6DBiHGTE7Hvj8j80g3G0U+3UaKX2rN
+        +cYhb2Kj517PfgSDvWqWUBZ9w41yrM4=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-427-zc7Fc-2pPrOpJRMCGqT4tw-1; Tue, 01 Feb 2022 13:50:55 -0500
+X-MC-Unique: zc7Fc-2pPrOpJRMCGqT4tw-1
+Received: by mail-qv1-f69.google.com with SMTP id u15-20020a0cec8f000000b00425d89d8be0so14207077qvo.20
+        for <linux-serial@vger.kernel.org>; Tue, 01 Feb 2022 10:50:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cHoNkQnTJ3Avl2epzJ83yz/QEu+de6O6Uv9XnghOt8M=;
-        b=Tg7vx1xe44G+9rWbP8qijAo4jZaqPCKslEjPhTuPUUI0tV1QbITCMcEzKHDBduvjE3
-         4rCecH5spCIMac5rdH4wg03X4dgDFNB4NTNZYvM+nKV+D20NhaVryIBc0cdlT8MbYtRd
-         Hjfoxs6pt2U5rnPZxu9Qd5MSMugJkLCYCfx/CgArEzR4apsBafqKpMEe4gMO00S1qxhE
-         bC2BaeXkBeh+7Hk5iryxj++4QUermJbHX8dceHALJ76VFyAHaBEhEGVgk+38BEk+081e
-         S/Xw3ck+j24k4ICp1WJA1MjJ/2A9FQi2dFMsgNED6jXygtr/fuppz7LHfztbJyayLjXM
-         0b7g==
-X-Gm-Message-State: AOAM530qazOtXckNjpGP6R5UpmQcGmJE/cHAup+1FPT20kYSk8tMCiR1
-        LJ3fjwE2PsDFos55HRwfKQ==
-X-Google-Smtp-Source: ABdhPJy3PcnRWWExCkA1Q7YaKnJcZpLrButgXajcrq4DsxxKzDjJgnyvsRLQr7eukt+KDcAytPXbYQ==
-X-Received: by 2002:a54:4396:: with SMTP id u22mr1980602oiv.249.1643737087578;
-        Tue, 01 Feb 2022 09:38:07 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id m26sm12925241ooa.36.2022.02.01.09.38.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CXMEPCO/uu0dla1c1qYh6jAoya9d0BWMm4xi0Tv2h6E=;
+        b=t5NhV4c4Kzrs+Arl/RRK3jG6n+BdX7O7iFw0u8+oEVGicIh6LjNpSLxagkBuiKa83L
+         +fY2dHd9LuAnOHLxsMCPxg5U51Re6e6+ez6hjJ/8fpffM3+v/vaVxXpAfCH39J3rEgeQ
+         TqNUnuDs0fvOFx2CerMr5lpU3fQ4oUaiuKnoeHjheK3k4uCPl+0+jfzGGIWeEOp0tbjL
+         TujnsN78Zcc4wi38IlDpoLHnBFaBEmlOyrEcZgjvneYZzvuIO3dUx+KkaFd6UR2hUFFe
+         asJKdKHrgHnQJ8yPmiK3Jbv5nuIPj9tCaJXr8I/ollsindwsejeQX51oWqbUKr7SkLNa
+         Z8bA==
+X-Gm-Message-State: AOAM533CpINnmS+/ZeQnRMA4eYBPqmzE/gzwoiNVdIccN7yXYQdoYWp+
+        SjYLZwnh3dLFUz/6pyrxeqTyosmAlyVrxFK4dP7xpQsE28BdFOi9gKvZXUZQPFePs2mPULIfxkq
+        oy1SgBt2T5GPathmXyhPsmtQBsJABCLM9HRqZZTLOnb/k65Rl2B7F6ay3StNq35c8/uL9Be2wrU
+        wz
+X-Received: by 2002:a05:620a:2802:: with SMTP id f2mr16767639qkp.507.1643741453857;
+        Tue, 01 Feb 2022 10:50:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxeYTqpwtK/INgbSNiwXFDLjZ29hCQC22MnWYuwPikv73Imxyj7d0mLQowMRGUhnvmg77nScw==
+X-Received: by 2002:a05:620a:2802:: with SMTP id f2mr16767612qkp.507.1643741453530;
+        Tue, 01 Feb 2022 10:50:53 -0800 (PST)
+Received: from fedora.hitronhub.home (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id w22sm6225383qtk.7.2022.02.01.10.50.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Feb 2022 09:38:06 -0800 (PST)
-Received: (nullmailer pid 257576 invoked by uid 1000);
-        Tue, 01 Feb 2022 17:38:05 -0000
-Date:   Tue, 1 Feb 2022 11:38:05 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
+        Tue, 01 Feb 2022 10:50:53 -0800 (PST)
+From:   Adrien Thierry <athierry@redhat.com>
+To:     linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Adrien Thierry <athierry@redhat.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 4/5] dt-bindings: mfd: samsung,exynos5433-lpass: Convert
- to dtschema
-Message-ID: <Yflv/RaGyGyyr096@robh.at.kernel.org>
-References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
- <20220129175332.298666-4-krzysztof.kozlowski@canonical.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH] serial: 8250_bcm2835aux: Add ACPI support
+Date:   Tue,  1 Feb 2022 13:50:01 -0500
+Message-Id: <20220201185001.926338-1-athierry@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220129175332.298666-4-krzysztof.kozlowski@canonical.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=athierry@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jan 29, 2022 at 06:53:31PM +0100, Krzysztof Kozlowski wrote:
-> Convert the Exynos5433 LPASS bindings to DT schema format.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
->  .../bindings/mfd/samsung,exynos5433-lpass.txt |  72 -----------
->  .../mfd/samsung,exynos5433-lpass.yaml         | 119 ++++++++++++++++++
->  2 files changed, 119 insertions(+), 72 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
-> deleted file mode 100644
-> index 30ea27c3936d..000000000000
-> --- a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
-> +++ /dev/null
-> @@ -1,72 +0,0 @@
-> -Samsung Exynos SoC Low Power Audio Subsystem (LPASS)
-> -
-> -Required properties:
-> -
-> - - compatible		: "samsung,exynos5433-lpass"
-> - - reg			: should contain the LPASS top SFR region location
-> -			  and size
-> - - clock-names		: should contain following required clocks: "sfr0_ctrl"
-> - - clocks		: should contain clock specifiers of all clocks, which
-> -			  input names have been specified in clock-names
-> -			  property, in same order.
-> - - #address-cells	: should be 1
-> - - #size-cells		: should be 1
-> - - ranges		: must be present
-> -
-> -Each IP block of the Low Power Audio Subsystem should be specified as
-> -an optional sub-node. For "samsung,exynos5433-lpass" compatible this includes:
-> -UART, SLIMBUS, PCM, I2S, DMAC, Timers 0...4, VIC, WDT 0...1 devices.
-> -
-> -Bindings of the sub-nodes are described in:
-> -  ../serial/samsung_uart.yaml
-> -  ../sound/samsung-i2s.txt
-> -  ../dma/arm-pl330.txt
-> -
-> -
-> -Example:
-> -
-> -audio-subsystem {
-> -	compatible = "samsung,exynos5433-lpass";
-> -	reg = <0x11400000 0x100>, <0x11500000 0x08>;
-> -	clocks = <&cmu_aud CLK_PCLK_SFR0_CTRL>;
-> -	clock-names = "sfr0_ctrl";
-> -	#address-cells = <1>;
-> -	#size-cells = <1>;
-> -	ranges;
-> -
-> -	adma: adma@11420000 {
-> -		compatible = "arm,pl330", "arm,primecell";
-> -		reg = <0x11420000 0x1000>;
-> -		interrupts = <0 73 0>;
-> -		clocks = <&cmu_aud CLK_ACLK_DMAC>;
-> -		clock-names = "apb_pclk";
-> -		#dma-cells = <1>;
-> -		#dma-channels = <8>;
-> -		#dma-requests = <32>;
-> -	};
-> -
-> -	i2s0: i2s0@11440000 {
-> -		compatible = "samsung,exynos7-i2s";
-> -		reg = <0x11440000 0x100>;
-> -		dmas = <&adma 0 &adma 2>;
-> -		dma-names = "tx", "rx";
-> -		interrupts = <0 70 0>;
-> -		clocks = <&cmu_aud CLK_PCLK_AUD_I2S>,
-> -			 <&cmu_aud CLK_SCLK_AUD_I2S>,
-> -			 <&cmu_aud CLK_SCLK_I2S_BCLK>;
-> -		clock-names = "iis", "i2s_opclk0", "i2s_opclk1";
-> -		pinctrl-names = "default";
-> -		pinctrl-0 = <&i2s0_bus>;
-> -	};
-> -
-> -	serial_3: serial@11460000 {
-> -		compatible = "samsung,exynos5433-uart";
-> -		reg = <0x11460000 0x100>;
-> -		interrupts = <0 67 0>;
-> -		clocks = <&cmu_aud CLK_PCLK_AUD_UART>,
-> -			 <&cmu_aud CLK_SCLK_AUD_UART>;
-> -		clock-names = "uart", "clk_uart_baud0";
-> -		pinctrl-names = "default";
-> -		pinctrl-0 = <&uart_aud_bus>;
-> -	};
-> - };
-> diff --git a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
-> new file mode 100644
-> index 000000000000..96ef6113c8bf
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
-> @@ -0,0 +1,119 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/samsung,exynos5433-lpass.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Samsung Exynos SoC Low Power Audio Subsystem (LPASS)
-> +
-> +maintainers:
-> +  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> +  - Sylwester Nawrocki <s.nawrocki@samsung.com>
-> +
-> +properties:
-> +  compatible:
-> +    const: samsung,exynos5433-lpass
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    items:
-> +      - const: sfr0_ctrl
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  ranges: true
-> +
-> +  reg:
-> +    minItems: 2
-> +    maxItems: 2
-> +
-> +  '#size-cells':
-> +    const: 1
-> +
-> +patternProperties:
-> +  "^dma-controller@[0-9a-f]+$":
-> +    $ref: /schemas/dma/arm,pl330.yaml
-> +
-> +  "^i2s@[0-9a-f]+$":
-> +    $ref: /schemas/sound/samsung-i2s.yaml
-> +
-> +  "^serial@[0-9a-f]+$":
-> +    $ref: /schemas/serial/samsung_uart.yaml
-> +
-> +required:
-> +  - compatible
-> +  - '#address-cells'
-> +  - clocks
-> +  - clock-names
-> +  - ranges
-> +  - reg
-> +  - '#size-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/exynos5433.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    audio-subsystem@11400000 {
-> +        compatible = "samsung,exynos5433-lpass";
-> +        reg = <0x11400000 0x100>, <0x11500000 0x08>;
-> +        clocks = <&cmu_aud CLK_PCLK_SFR0_CTRL>;
-> +        clock-names = "sfr0_ctrl";
-> +        power-domains = <&pd_aud>;
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        ranges;
-> +
-> +        dma-controller@11420000 {
-> +            compatible = "arm,pl330", "arm,primecell";
-> +            reg = <0x11420000 0x1000>;
-> +            interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&cmu_aud CLK_ACLK_DMAC>;
-> +            clock-names = "apb_pclk";
-> +            #dma-cells = <1>;
-> +            #dma-channels = <8>;
-> +            #dma-requests = <32>;
-> +            power-domains = <&pd_aud>;
-> +        };
-> +
-> +        i2s@11440000 {
-> +            compatible = "samsung,exynos7-i2s";
-> +            reg = <0x11440000 0x100>;
-> +            dmas = <&adma 0>, <&adma 2>;
-> +            dma-names = "tx", "rx";
-> +            interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +            clocks = <&cmu_aud CLK_PCLK_AUD_I2S>,
-> +                     <&cmu_aud CLK_SCLK_AUD_I2S>,
-> +                     <&cmu_aud CLK_SCLK_I2S_BCLK>;
-> +            clock-names = "iis", "i2s_opclk0", "i2s_opclk1";
-> +            #clock-cells = <1>;
-> +            pinctrl-names = "default";
-> +            pinctrl-0 = <&i2s0_bus>;
-> +            power-domains = <&pd_aud>;
-> +            #sound-dai-cells = <1>;
-> +            status = "disabled";
+Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
+use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
+firmware.
 
-Drop 'status'.
+Signed-off-by: Adrien Thierry <athierry@redhat.com>
+---
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 103 +++++++++++++++++-----
+ 1 file changed, 83 insertions(+), 20 deletions(-)
 
-> +        };
-> +
-> +        serial@11460000 {
-> +            compatible = "samsung,exynos5433-uart";
-> +            reg = <0x11460000 0x100>;
-> +            interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&cmu_aud CLK_PCLK_AUD_UART>,
-> +                     <&cmu_aud CLK_SCLK_AUD_UART>;
-> +            clock-names = "uart", "clk_uart_baud0";
-> +            pinctrl-names = "default";
-> +            pinctrl-0 = <&uart_aud_bus>;
-> +            power-domains = <&pd_aud>;
-> +            status = "disabled";
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index fd95860cd..b904b321e 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -12,6 +12,7 @@
+  * simultaneously to rs485.
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/clk.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+@@ -44,6 +45,10 @@ struct bcm2835aux_data {
+ 	u32 cntl;
+ };
+ 
++struct bcm2835_aux_serial_acpi_driver_data {
++	resource_size_t offset;
++};
++
+ static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
+ {
+ 	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+@@ -82,8 +87,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ {
+ 	struct uart_8250_port up = { };
+ 	struct bcm2835aux_data *data;
++	struct bcm2835_aux_serial_acpi_driver_data *acpi_data;
+ 	struct resource *res;
+ 	int ret;
++	resource_size_t mapbase;
++	resource_size_t mapsize;
++	unsigned int uartclk;
+ 
+ 	/* allocate the custom structure */
+ 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+@@ -108,10 +117,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+-	/* get the clock - this also enables the HW */
+-	data->clk = devm_clk_get(&pdev->dev, NULL);
+-	if (IS_ERR(data->clk))
+-		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
++	if (dev_of_node(&pdev->dev)) {
++		/* get the clock - this also enables the HW */
++		data->clk = devm_clk_get(&pdev->dev, NULL);
++		if (IS_ERR(data->clk))
++			return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
++	}
+ 
+ 	/* get the interrupt */
+ 	ret = platform_get_irq(pdev, 0);
+@@ -125,20 +136,59 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "memory resource not found");
+ 		return -EINVAL;
+ 	}
+-	up.port.mapbase = res->start;
+-	up.port.mapsize = resource_size(res);
+-
+-	/* Check for a fixed line number */
+-	ret = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (ret >= 0)
+-		up.port.line = ret;
+-
+-	/* enable the clock as a last step */
+-	ret = clk_prepare_enable(data->clk);
+-	if (ret) {
+-		dev_err(&pdev->dev, "unable to enable uart clock - %d\n",
+-			ret);
+-		return ret;
++
++	mapbase = res->start;
++	mapsize = resource_size(res);
++
++	if (has_acpi_companion(&pdev->dev)) {
++		const struct acpi_device_id *match;
++
++		match = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev->dev);
++		if (!match)
++			return -ENODEV;
++
++		acpi_data = (struct bcm2835_aux_serial_acpi_driver_data *)match->driver_data;
++
++		/* Some UEFI implementations (e.g. tianocore/edk2 for the Raspberry Pi)
++		 * describe the miniuart with a base address that encompasses the auxiliary
++		 * registers shared between the miniuart and spi.
++		 *
++		 * This is due to historical reasons, see discussion here :
++		 * https://edk2.groups.io/g/devel/topic/87501357#84349
++		 *
++		 * We need to add the offset between the miniuart and auxiliary
++		 * registers to get the real miniuart base address.
++		 */
++		up.port.mapbase = mapbase + acpi_data->offset;
++		up.port.mapsize = mapsize - acpi_data->offset;
++	} else {
++		up.port.mapbase = mapbase;
++		up.port.mapsize = mapsize;
++	}
++
++	if (dev_of_node(&pdev->dev)) {
++		/* Check for a fixed line number */
++		ret = of_alias_get_id(pdev->dev.of_node, "serial");
++		if (ret >= 0)
++			up.port.line = ret;
++
++		/* enable the clock as a last step */
++		ret = clk_prepare_enable(data->clk);
++		if (ret) {
++			dev_err(&pdev->dev, "unable to enable uart clock - %d\n",
++				ret);
++			return ret;
++		}
++
++		uartclk = clk_get_rate(data->clk);
++
++
++	} else {
++		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
++		if (ret) {
++			dev_err(&pdev->dev, "unable to get clock frequency\n");
++			return ret;
++		}
+ 	}
+ 
+ 	/* the HW-clock divider for bcm2835aux is 8,
+@@ -146,7 +196,7 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	 * so we have to multiply the actual clock by 2
+ 	 * to get identical baudrates.
+ 	 */
+-	up.port.uartclk = clk_get_rate(data->clk) * 2;
++	up.port.uartclk = uartclk * 2;
+ 
+ 	/* register the port */
+ 	ret = serial8250_register_8250_port(&up);
+@@ -159,7 +209,9 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ dis_clk:
+-	clk_disable_unprepare(data->clk);
++	if (dev_of_node(&pdev->dev))
++		clk_disable_unprepare(data->clk);
++
+ 	return ret;
+ }
+ 
+@@ -173,16 +225,27 @@ static int bcm2835aux_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct bcm2835_aux_serial_acpi_driver_data bcm2835_acpi_data = {
++	.offset = 0x40
++};
++
+ static const struct of_device_id bcm2835aux_serial_match[] = {
+ 	{ .compatible = "brcm,bcm2835-aux-uart" },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, bcm2835aux_serial_match);
+ 
++static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
++	{ "BCM2836", (kernel_ulong_t)&bcm2835_acpi_data },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bcm2835aux_serial_acpi_match);
++
+ static struct platform_driver bcm2835aux_serial_driver = {
+ 	.driver = {
+ 		.name = "bcm2835-aux-uart",
+ 		.of_match_table = bcm2835aux_serial_match,
++		.acpi_match_table = bcm2835aux_serial_acpi_match,
+ 	},
+ 	.probe  = bcm2835aux_serial_probe,
+ 	.remove = bcm2835aux_serial_remove,
 
-Ditto.
+base-commit: 26291c54e111ff6ba87a164d85d4a4e134b7315c
+-- 
+2.34.1
 
-With that,
-
-Reviewed-by: Rob Herring <robh@kernel.org>
