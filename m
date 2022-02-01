@@ -2,114 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4A3C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Feb 2022 06:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A74C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Feb 2022 17:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiBAGv1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Feb 2022 01:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233800AbiBAGv0 (ORCPT
+        id S240579AbiBARgR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Feb 2022 12:36:17 -0500
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:33565 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233776AbiBARgQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Feb 2022 01:51:26 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EC0C061714;
-        Mon, 31 Jan 2022 22:51:26 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id f17so29978383wrx.1;
-        Mon, 31 Jan 2022 22:51:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=S05DVhqTbT+RB8o3R8uA/qBzUeAzOrmXjeGdK13aL5M=;
-        b=pY+DZqlkix3Hh7KLGHZ5P2UHhaSPBQYNmENarMRBgqL2biDOtWQSDSSf2QRXqqHlqK
-         DSGEdQIxuwNFFHU20+e39VMKU4Gosvw+R2CaF8NB2FUbgiBfwZAhKuXBihLDbGpcGd8M
-         PTJ6AeCxz9QFr41hWgCdpyNSCywA6XmBh9ANKi1BvBUXm5iCDdoojOf1Y3CwlNIf2QKq
-         ZV+WSyaDibJwTvan310JiI2sk+oHUCVNL9nCE0+bI/yZQ2SCVw0A3UPFUjJzwdfasbt+
-         i7NeiQQdsOsgLGxtkIm22/AfajQNzrS9F2Z013MptzwOa5SsCdE9kiNMgl8MSh8polT6
-         Kagg==
+        Tue, 1 Feb 2022 12:36:16 -0500
+Received: by mail-oi1-f175.google.com with SMTP id x193so34848949oix.0;
+        Tue, 01 Feb 2022 09:36:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=S05DVhqTbT+RB8o3R8uA/qBzUeAzOrmXjeGdK13aL5M=;
-        b=1YV9IuCqUlUdbJi9U1Fs2iD9HtaXyRbYfFh0O61H6sURBODKFm+16yq3Cr+YFp5x1c
-         1OgpJSP5T84+/kM6zvwQS25KOfq/Ue94waD+5xgMIEqnEc2PPVckv9g3MT8lQKjL4BBM
-         GWuowRf5ogJkc48qAUiWyWWiZrU5j3TBCB3X4Ju3gKt8CkM1WeflSwq0fG4d/YUCLQrY
-         Qe/h8JUBd57FIjtvgBoziY2EsdpNycuGdjnEGf8lXiKUkYIfH6SFSaX45mqKShuUgPAD
-         xXbDWlhmLiambZDGF2WzgYla/mI7Tzm4gKqiFlggYUX1EK/sl0PDZXDMelFk/ezZAkuP
-         xBsg==
-X-Gm-Message-State: AOAM530IhpkrcsMweMYVvBMxiesIF8igqytFDO2xMTr6ojOknavXVhx+
-        GQ/nLVfyW1T/H5TSi3nsaXmvncxHZdw=
-X-Google-Smtp-Source: ABdhPJxLGPjz01812V0ogRMuAlkgcOqgFWL13OeAHt6/+fHJqtPANawDYJy5IAOZPslwyZZ4zXMLVg==
-X-Received: by 2002:a05:6000:2c5:: with SMTP id o5mr20240075wry.225.1643698284851;
-        Mon, 31 Jan 2022 22:51:24 -0800 (PST)
-Received: from [10.152.0.6] ([85.203.46.180])
-        by smtp.gmail.com with ESMTPSA id f13sm14557268wri.44.2022.01.31.22.51.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Jan 2022 22:51:24 -0800 (PST)
-Subject: Re: [BUG] tty: serial: possible deadlock in uart_remove_one_port()
- and uart_hangup()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
- <YfUPlYwoWpMjhvpR@kroah.com>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <027e2ecd-ccb3-d772-dc31-951039fdeedf@gmail.com>
-Date:   Tue, 1 Feb 2022 14:51:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DbjyS1SU0OOrgkQcW0sX0PE+YVKxs+Zqjrqu7xDG60Y=;
+        b=epmKWqtekntGwFkBfa442Ly7mf0aX1lh0flwmD/5aBKJZPKWEnLGzLD9+wSM4b2kkb
+         MzoSFh8DUKjsXtayjm3bIQ6onL22CuqlUH+zSDfVy5l1B32QAeOzA/VTaoOEcDeqFqYJ
+         yNRzvxH1u1SKJ9hXBmtKrQanSx5VdwAnfF1ZFWzW6YvyGkNCELFzuoBwJBVTUzXlX/FK
+         AfABrSSl8tviSbmQA81XDGX3KMhMEq1QB8YLSjsCAM2taWKGzyjNWz0eG4EMSuTNexPO
+         Qs/p4d+UoUCO/K6v01s7/3hbAsVpgTJa9MejIZMml3H9f3sO0Arww0Am9lnhT86/d8Pl
+         udiA==
+X-Gm-Message-State: AOAM5320pZMSgS2i24sXZwaw00+WQxsuHnfbzn7fR/WUVLCfhQi63fyR
+        J/E8gtPlSONeTYbozCIkuA==
+X-Google-Smtp-Source: ABdhPJwceg72bbuf7VG/Ghn6k1y6nUaJQxvEwmZ2eCiNVWBDLHF8YxYua/a027qU1v9nRYXGFVYLfw==
+X-Received: by 2002:a54:4812:: with SMTP id j18mr1862557oij.276.1643736976189;
+        Tue, 01 Feb 2022 09:36:16 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id h2sm9172995ots.51.2022.02.01.09.36.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Feb 2022 09:36:15 -0800 (PST)
+Received: (nullmailer pid 254693 invoked by uid 1000);
+        Tue, 01 Feb 2022 17:36:14 -0000
+Date:   Tue, 1 Feb 2022 11:36:14 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 5/5] dt-bindings: serial: samsung_uart: Document
+ Exynos5433 compatible
+Message-ID: <Yflvjt9TcuTvIMqA@robh.at.kernel.org>
+References: <20220129175332.298666-1-krzysztof.kozlowski@canonical.com>
+ <20220129175332.298666-5-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <YfUPlYwoWpMjhvpR@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220129175332.298666-5-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sat, Jan 29, 2022 at 06:53:32PM +0100, Krzysztof Kozlowski wrote:
+> Document the Exynos5433 UART compatible, supported since commit
+> 31ec77aca72e ("serial: samsung: Add the support for Exynos5433 SoC").
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 
-
-On 2022/1/29 17:57, Greg KH wrote:
-> On Sat, Jan 29, 2022 at 05:34:05PM +0800, Jia-Ju Bai wrote:
->> Hello,
->>
->> My static analysis tool reports a possible deadlock in the tty driver in
->> Linux 5.10:
-> 5.10 was released over a year ago and over 100 thousand changes ago.
-> Please redo your check on 5.16 at the oldest.
-
-My static analysis tool checks the tty driver in Linux 5.16, and also 
-finds this possible deadlock:
-
-uart_remove_one_port()
-   mutex_lock(&port->mutex); --> Line 3032 (Lock A)
-   wait_event(state->remove_wait, ...); --> Line 3034 (Wait X)
-   mutex_unlock(&port->mutex); --> Line 3036 (Unlock A)
-
-uart_hangup()
-   mutex_lock(&port->mutex); --> Line 1669 (Lock A)
-   uart_flush_buffer()
-     uart_port_unlock()
-       uart_port_deref()
-         wake_up(&uport->state->remove_wait); --> Line 68 (Wake X)
-   mutex_unlock(&port->mutex); --> Line 1686 (Unlock A)
-
-When uart_remove_one_port() is executed, "Wait X" is performed by 
-holding "Lock A". If uart_hangup() is executed at this time, "Wake X" 
-cannot be performed to wake up "Wait X" in uart_remove_one_port(), 
-because "Lock A" has been already hold by uart_remove_one_port(), 
-causing a possible deadlock.
-
-I am not quite sure whether this possible problem is real and how to fix 
-it if it is real.
-Maybe we can call wait_event() before mutex_lock() in 
-uart_remove_one_port().
-Any feedback would be appreciated, thanks :)
-
-
-Best wishes,
-Jia-Ju Bai
-
+Acked-by: Rob Herring <robh@kernel.org>
