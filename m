@@ -2,74 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A530C433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Feb 2022 21:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BDEC433FE
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Feb 2022 03:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348797AbiBEVbZ (ORCPT
+        id S1381263AbiBFDao (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 5 Feb 2022 16:31:25 -0500
-Received: from [194.99.46.237] ([194.99.46.237]:53598 "EHLO
-        slot0.bluewaterleisure.com" rhost-flags-FAIL-FAIL-OK-OK)
-        by vger.kernel.org with ESMTP id S232507AbiBEVbW (ORCPT
+        Sat, 5 Feb 2022 22:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381130AbiBFDan (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 5 Feb 2022 16:31:22 -0500
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=bluewaterleisure.com;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=ker.mon@bluewaterleisure.com;
- bh=denc+fw3YEfwkWEaxcQFH5lE5wU=;
- b=vLc2f3S86JALjlLpStasxQedbJIN30dqh5xrAwFRoAekjZ/WpOg3lsz7u9NBRN4UktLI2TY+cJXS
-   hNznO81XPni6VROPWWWhRtdBWKMUoqVeKV3HcbPN0njK+GUqetRPVGhzUBsrQswq4k5xdLrrMxhT
-   cFsqQ+QBZdqktccXxImVc3k+V19Hh8zA8sVXu+c43RmH2jAFvCAsEFt2bbMmEicz9WcW7i6qIKz3
-   sU4AiRgY3uO+JcKWjur4vgy6mc8wUD73oEDdUd6xaVOJbZlXRyB2+wzziEbonqnYagkYcKRcjYVs
-   3aSsX1rljrbKkbeeaHRjwE8Pp4/6UWfxTFZKyg==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=bluewaterleisure.com;
- b=KzsoAMV8x76YvX+5Nn16gH7ur19mmIPQetFyHAHpgVJIKlsiD0ueibi4+LcWNJ6ykp/FWDEumM6u
-   9rBQoeHVGhzr0TziGkM54n8GbBQj+tqA777akIQh+rpurY+iG21wCJAxPNm/dONUbRAdEVZ0Etok
-   YtusgoJ05NU3F8doIqmr82E13mrFdWZz6boVY9kPqv8f5iX1X99Fv6ue0AgwxJZEwNp+B8yY+Wd+
-   PCP6+wbVPDKNx0IsfA2RRDjKHACTWKW51eWWhD/LjklHhh8JtCz71RxyIpC6WtdY2BgqDsg1Fr+r
-   WeOyM9/IICDdQoEz3IQ0snEKKOjVZakcz8Sesg==;
-Reply-To: tomander231@gmail.com
-From:   "Barrister Mustafa" <ker.mon@bluewaterleisure.com>
-To:     linux-serial@vger.kernel.org
-Subject: Aufmerksamkeit:
-Date:   5 Feb 2022 22:04:17 +0100
-Message-ID: <20220205220417.02B77E51F08344F3@bluewaterleisure.com>
+        Sat, 5 Feb 2022 22:30:43 -0500
+X-Greylist: delayed 10803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Feb 2022 19:30:42 PST
+Received: from mx2.smtp.larsendata.com (mx2.smtp.larsendata.com [91.221.196.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31212C0401C5
+        for <linux-serial@vger.kernel.org>; Sat,  5 Feb 2022 19:30:41 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx2.smtp.larsendata.com (Halon) with ESMTPS
+        id 12f502cb-8454-11ec-ac19-0050568cd888;
+        Wed, 02 Feb 2022 18:15:17 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 67A6F194BFA;
+        Wed,  2 Feb 2022 19:14:11 +0100 (CET)
+Date:   Wed, 2 Feb 2022 19:14:08 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     nick.hawkins@hpe.com
+Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Corey Minyard <minyard@acm.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Message-ID: <YfrJ8JWjyH9ptV4z@ravnborg.org>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220202165315.18282-1-nick.hawkins@hpe.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lieb linux-serial,
+Hi Nick,
 
-Ich bin Barrister Mustafa Ayvaz, hoffe, diese E-Mail findet Sie=20
-gut. Ich bin Anwalt des verstorbenen Herrn Robert, der aufgrund=20
-des Coronavirus sein Leben verlor, kontaktierte er w=C3=A4hrend seiner=20
-Gesch=C3=A4ftsreise in China. Ich kontaktiere Sie, um mit mir=20
-zusammenzuarbeiten, um die =C3=9Cberweisung eines Fonds von vier=20
-Millionen vierhundertzwanzigtausend Dollar zu sichern, verlie=C3=9F=20
-er.
+good to see all this stuff coming mainline,
 
-Ich habe nach dem n=C3=A4chsten Angeh=C3=B6rigen meines verstorbenen Kunden=
-=20
-gesucht, ohne Erfolg, da ich seinen aktuellen Wohnsitz und seine=20
-Kontaktdaten nicht habe. Als ich suchte, stie=C3=9F ich auf Ihr Profil=20
-mit dem gleichen Nachnamen und am selben Ort mit den N=C3=A4chsten=20
-Angeh=C3=B6rigen. Ich beschloss, dich zu kontaktieren und dich als=20
-Bonafide Next Of Kin zu benutzen.
+On Wed, Feb 02, 2022 at 10:52:50AM -0600, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> GXP is the name of the HPE SoC.
+> This SoC is used to implement BMC features of HPE servers
+> (all ProLiant, Synergy, and many Apollo, and Superdome machines)
+> It does support many features including:
+> 	ARMv7 architecture, and it is based on a Cortex A9 core
+> 	Use an AXI bus to which
+> 		a memory controller is attached, as well as
+>                  multiple SPI interfaces to connect boot flash,
+>                  and ROM flash, a 10/100/1000 Mac engine which
+>                  supports SGMII (2 ports) and RMII
+> 		Multiple I2C engines to drive connectivity with a host infrastructure
+> 		A video engine which support VGA and DP, as well as
+>                  an hardware video encoder
+> 		Multiple PCIe ports
+> 		A PECI interface, and LPC eSPI
+> 		Multiple UART for debug purpose, and Virtual UART for host connectivity
+> 		A GPIO engine
+> This Patch Includes:
+> 	Documentation for device tree bindings
+> 	Device Tree Bindings
+> 	GXP Timer Support
+> 	GXP Architecture Support
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> ---
+>  .../bindings/display/hpe,gxp-thumbnail.txt    |  21 +
+>  .../devicetree/bindings/gpio/hpe,gxp-gpio.txt |  16 +
+...
 
-Ich bitte Sie um Ihre Zustimmung, Sie als Next Of Kin meines=20
-verstorbenen Kunden zu pr=C3=A4sentieren, da Sie beide den gleichen=20
-Nachnamen tragen. Die Gelder werden dann an Sie als Beg=C3=BCnstigten=20
-in Ihrem Land =C3=BCberwiesen und im Verh=C3=A4ltnis 60:40 geteilt, das=20
-sind 60% f=C3=BCr mich und 40% f=C3=BCr Sie. F=C3=BCr weitere Details=20
-kontaktieren Sie mich bitte sofort f=C3=BCr weitere Informationen =C3=BCber=
-=20
-diese meine E-Mail. 
+All new bindings must be in the DT-schema format (yaml files).
+This enables a lot of syntax checks and validation.
 
-Danach sende ich Ihnen die Details, wie die Transaktion beginnen=20
-wird
+We are slowly migrating away from the .txt based bindings.
 
-Gr=C3=BC=C3=9Fe
-Mustafa Ayvaz
+Also, for new bindings please follow the guide lines listed in
+Documentation/devicetree/bindings/submitting-patches.rst
+
+Consider including the bindings with the drivers using the bindings so
+things have a more natural split.
+
+	Sam
