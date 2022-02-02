@@ -2,72 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EF9C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Feb 2022 14:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758EFC433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Feb 2022 15:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344928AbiBBO1T (ORCPT
+        id S1345346AbiBBPNa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Feb 2022 09:27:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59336 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237320AbiBBO1S (ORCPT
+        Wed, 2 Feb 2022 10:13:30 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:51494
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235187AbiBBPNa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Feb 2022 09:27:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 2 Feb 2022 10:13:30 -0500
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29FA1B83104;
-        Wed,  2 Feb 2022 14:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28731C340EB;
-        Wed,  2 Feb 2022 14:27:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643812035;
-        bh=Py5hbDI7QFg9kVgjWXWbp00X8G2g7PgLmwuqyEPZHcE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y6WNv3ThAYd/x/EDjfwGovlFMA408t9XdMxIed4ZEGXGGpud+xxJI10oeC77BeuxT
-         a8D20GPdAXdKobH+GNm/wjm4/k84/hKbkkVpcr/8Ain/mfz3ouSWBV/HxVZpE3aTDh
-         8oTVBs/oGBCEGCGFlwtdEbxD2NsOsDGuRcNMDL38Y0IoqkriqecZJrcpI7TO7OCcu0
-         BfKet0eHIx60TX4k7cyj770tBbY09hCqcDa1Xh5eeE0wTqxiYyxAjUG++Ios4P0O0f
-         PRf6TuUm6Qf5Eq9CHvgVAI4MlGgFRGGs81AWgSF1iDDxccoxLJaxdZw+bBui1IESoC
-         76Phn4iNqZyiA==
-Date:   Wed, 2 Feb 2022 19:57:12 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 23A7A3F07D
+        for <linux-serial@vger.kernel.org>; Wed,  2 Feb 2022 15:13:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643814809;
+        bh=YJ9YnHNEPxBxTIX7K3p85sEN160l6hrMJhkR8AhNv4Q=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=DpOo8d8iZgWXc+2QoJfaNT/fB4RfjqIxOiD3g0rVEMozlSYiWiOsuhVP2vNJI5Bw0
+         quTwxStPXLYKJIqRTMDmBgaDqqmsfR02K6G7nXiBoLTkHiuRxRhGOrIkD0XYQ23odT
+         O3juUXIecR9Y+wn/ZeFreZZhhLj6ko3vEvXKmqJWnyyRcVbctWDJuJwgDHraigUuZe
+         Goz7EPAWEBGFusBoo8cppB0wj3Tg/gsRWO4CIhrTDR5XXqftDuXdb6uOn7M8y4azS+
+         1bM+tBAfuQpLYFzwklXYqVRTpMEm6h1mn7mtEtQ1qfco/OVipYlEWjvjpLzsFpbBvr
+         ZMNlkQGYEYi8w==
+Received: by mail-wr1-f72.google.com with SMTP id i25-20020adfaad9000000b001e01f5804abso4273184wrc.2
+        for <linux-serial@vger.kernel.org>; Wed, 02 Feb 2022 07:13:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YJ9YnHNEPxBxTIX7K3p85sEN160l6hrMJhkR8AhNv4Q=;
+        b=JrhqxS5cKMBqmH8vOCcPbWbggb8dFmIZOfgHZYjGbgC7eGgLi2G82GtI+wYidroafW
+         3kyi8R56TvjJCFTmiSa7mzjRSvpuCBfoI1AGgAOyiYdWRj+xAqLtK9ATQyYgVjwZQrl0
+         PgmT5P4JPemTE5YskZu6cK2ybUCO19p4459AT0XDnxpungTpEx/A3CjIe5jO4xKf553P
+         Gz4sSpe4EYBh8DxerMN6Ja0Ms3+uVYhWbwRcW64DPPKxhJYiizxi9U5aHytM/83Rt3hS
+         LyuFgvFrmjgI5ITKKguiUPQwVv+u5fGtL9+pwnw4st1dEHsDCX+ka2YhJNY08+OcJ/ss
+         XFUA==
+X-Gm-Message-State: AOAM532fQbtrI1ZjmoMDeUGgao9XLBkTnD+34m3N6UbItHNwIW/Mx2oD
+        20tiTGVdbHR2a0M6XCpFOxYDhVxu1tz9JGAZgYyj8KgJT+D32vYQR3KuYJumTNLvOhls6zkrOFl
+        JqLJHYgCu1kwHVZOIDrvY5WryXxzbGTSoP7fL6mvHfA==
+X-Received: by 2002:a1c:6a11:: with SMTP id f17mr6488441wmc.183.1643814808853;
+        Wed, 02 Feb 2022 07:13:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxE4lqiPEwpWnCogM4pbQtMPV771KOvD2vfdWQZ8tkszyF1yAE4cMQofrNZkHtOQpTFuzBK8Q==
+X-Received: by 2002:a1c:6a11:: with SMTP id f17mr6488426wmc.183.1643814808705;
+        Wed, 02 Feb 2022 07:13:28 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id p7sm5098872wmq.20.2022.02.02.07.13.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Feb 2022 07:13:28 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>, hsinyi@chromium.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v3 5/7] dt-bindings: phy: Add compatible for Mediatek
- MT8186
-Message-ID: <YfqUwO16KxmBE7vP@matsya>
-References: <20220128062050.23978-1-allen-kh.cheng@mediatek.com>
- <20220128062050.23978-6-allen-kh.cheng@mediatek.com>
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v2 0/3] mfd/serial: dt-bindings: samsung,exynos5433-lpass: Convert to dtschema
+Date:   Wed,  2 Feb 2022 16:13:07 +0100
+Message-Id: <20220202151310.285561-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128062050.23978-6-allen-kh.cheng@mediatek.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 28-01-22, 14:20, allen-kh.cheng wrote:
-> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
-> 
-> This commit adds dt-binding documentation of T-Phy for Mediatek MT8186 SoC
-> Platform.
+Hi,
 
-Applied, thanks
+Patches are independent. Sending them together to avoid undocumented
+"samsung,exynos5433-uart" warning.
+
+Changes since v1:
+1. Drop arm64 DTS patches - applied.
+2. Remove 'status' from example.
+3. Add tags.
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (3):
+  dt-bindings: serial: samsung_uart: Document Exynos5433 compatible
+  mfd: exynos-lpass: Drop unneeded syscon.h include
+  dt-bindings: mfd: samsung,exynos5433-lpass: Convert to dtschema
+
+ .../bindings/mfd/samsung,exynos5433-lpass.txt |  72 -----------
+ .../mfd/samsung,exynos5433-lpass.yaml         | 117 ++++++++++++++++++
+ .../bindings/serial/samsung_uart.yaml         |   2 +
+ drivers/mfd/exynos-lpass.c                    |   1 -
+ 4 files changed, 119 insertions(+), 73 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
 
 -- 
-~Vinod
+2.32.0
+
