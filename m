@@ -2,196 +2,190 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCBCC433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Feb 2022 14:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1204C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Feb 2022 14:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351151AbiBCOYF (ORCPT
+        id S1351609AbiBCO4Q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:24:05 -0500
-Received: from eu-smtp-delivery-197.mimecast.com ([185.58.86.197]:46843 "EHLO
-        eu-smtp-delivery-197.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241793AbiBCOYD (ORCPT
+        Thu, 3 Feb 2022 09:56:16 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:33980
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1351580AbiBCO4L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Feb 2022 09:24:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-        s=mimecast20210310; t=1643898242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JIyxdN1GZKcIlb1coKfUC1aRsHrZn/JF+uDSjqCaehA=;
-        b=R7/visKTvRSI1uyOGaPSKuFDfEyMG0iEmu35bQlWV9b2QVBDEpH756MDnvS32vv5DEuJTO
-        rzgUGOJfktS4N7d01G99lSQkAp8tvK4ox2+6yt5nzNpx+pYhreKpo5eXd4gjHTWGO+sSv+
-        jCqB0/MM6Zqw5OWS7zVxUsLo2VHJhXc=
-Received: from GBR01-CWL-obe.outbound.protection.outlook.com
- (mail-cwlgbr01lp2054.outbound.protection.outlook.com [104.47.20.54]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-213-71wKAPr0NcCd7qOPMG5_4g-1; Thu, 03 Feb 2022 14:24:00 +0000
-X-MC-Unique: 71wKAPr0NcCd7qOPMG5_4g-1
-Received: from CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:16b::6)
- by CWXP123MB3288.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:31::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 3 Feb
- 2022 14:23:59 +0000
-Received: from CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6dad:8602:45c5:6747]) by CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
- ([fe80::6dad:8602:45c5:6747%8]) with mapi id 15.20.4951.012; Thu, 3 Feb 2022
- 14:23:59 +0000
-From:   =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
-To:     linux-serial@vger.kernel.org
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?q?Krzysztof=20Drobi=C5=84ski?= 
-        <k.drobinski@camlintechnologies.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Subject: [RFC PATCH] serial: core: fix tcdrain() with CTS enabled
-Date:   Thu,  3 Feb 2022 15:23:37 +0100
-Message-ID: <20220203142337.1993024-1-tomasz.mon@camlingroup.com>
-X-Mailer: git-send-email 2.25.1
-X-ClientProxiedBy: LO2P265CA0461.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a2::17) To CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:400:16b::6)
+        Thu, 3 Feb 2022 09:56:11 -0500
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 94A3440326
+        for <linux-serial@vger.kernel.org>; Thu,  3 Feb 2022 14:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643900170;
+        bh=JKwlxtatWZQCVG4GF4BszucWwjVQTt2PxoebrxL5ciY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=rltei9Ru4gIglU2x++cOWijrRp0EQ9w2zzu32ru9wgBMSOMjo0aYMynG/q01y8/z7
+         dDPyAAEr6WzlUdOyhgAFuqJ0Jbhmj/B82Ea6Hakwl5qEPfNWHvZQJIr5zIkafdEkML
+         UF/rriwpdKkRdxsKkYwi7oOJxI3fcAiXbTmlssiAfD4pgcrK4WAEMYZXGwnDvOuHwe
+         Bm4bh1rDD4mNKeXSFkG0U6xIWXYmcyaLQ0nSWbDI67BcjMr+//cMqd08ypDI+MmmBf
+         JXb59Qr1qiSpgqFlT1ku6XXKfqwmify11dcZZFO/JNgDjsp67hHzc7pv3/ul8uRWAY
+         8bLhpFdfQkX0Q==
+Received: by mail-wr1-f72.google.com with SMTP id h2-20020adfa4c2000000b001e26b5f1ec5so728663wrb.13
+        for <linux-serial@vger.kernel.org>; Thu, 03 Feb 2022 06:56:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JKwlxtatWZQCVG4GF4BszucWwjVQTt2PxoebrxL5ciY=;
+        b=aIMr8exei2AAseucj5hfrI8U2cTWBfRmHbf5sM3Oc0ykrMGarJnGsf8E2fLXB7Tho9
+         /JkcR9eM/1RWefWY0Mn++rYiUdfOYvWfE+iNWYxUOg3bzN+z4qpXyFeBGY7HXWbaDTch
+         Gd0aXsv6MHd1tgSyY47BhWo19wqge8gqYfqqOET4LV/+DRgwcT3zamT/6rvx5gJlM8fA
+         oiZHGvR0HpHrQbyVJlNP1M140FUVigaIsZAoqSpXPPyGce/YvH8grc8JdSaidb5QtWVQ
+         J07kie1ogjm4Gbh+QnwenK8bCT1Z5L6rJwtVj7VURm4Bu0rDhnDd35HpwpGJLHt4Zixt
+         eu9w==
+X-Gm-Message-State: AOAM5316VAPVeR8l8z+wNUMS1tttBXKSvCa6dNmWun1BBFsUakaUh8/q
+        sqT4XabbDUE3x+4FpiLyqaxnHtW5AeiNVNoHixA0+q+O7i+qpGIxOdEPZjP5SoUd+H00BgrgSwa
+        b+iX/k37g/SbFuAvrz6v606KPCoLcZ1dF2vzxC/DeAw==
+X-Received: by 2002:a17:907:c14:: with SMTP id ga20mr1992524ejc.243.1643900159600;
+        Thu, 03 Feb 2022 06:55:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxET41+skPJ0t2ws3cpvdAuE3SIGtoLLzPApxhNtKVWxdECIqy/nqXcAWE2tMCANk5h/+crhA==
+X-Received: by 2002:a17:907:c14:: with SMTP id ga20mr1992450ejc.243.1643900159293;
+        Thu, 03 Feb 2022 06:55:59 -0800 (PST)
+Received: from [192.168.0.81] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id z19sm7573934eja.18.2022.02.03.06.55.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Feb 2022 06:55:58 -0800 (PST)
+Message-ID: <e79133f2-f872-3ed6-4038-526e94e84909@canonical.com>
+Date:   Thu, 3 Feb 2022 15:55:56 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a438e1f-da7f-4479-cee7-08d9e720d1cd
-X-MS-TrafficTypeDiagnostic: CWXP123MB3288:EE_
-X-Microsoft-Antispam-PRVS: <CWXP123MB3288455E66508CA69831278D92289@CWXP123MB3288.GBRP123.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: /FB+BmVwfViK4iDLvlKb5biNiF652I9S1zmqbRlrkFUYmTy86yhqOSpnxmz23gSAEdmSIlIFWz5Melnmy0eo01C/YZp34YCaLS7yYewXbMq7soMJqa5zp3btv0R4kQVr84vwWEywov9Mgcs0aF7i5E2RIUridjQJsqwl9aWUHvpDO5E0nI/iFyPwYHw+8oDGXd7mSJ0BDONUX40YnSDmMPjDUgnwibwLXlqAHu6twHwTEspAREaEY5aXwQPx7BMTior5Qo6BDrgBSsaGFaS1snjdv3S7C5TR4FeWuh3dJ9bP05Zh+5ZN8NSCaEHaEKB0Wpus438bCQLUBWUxuInfPHhQyVWU4qhBrhji4RS1QbK+ZB+M5+1RiNef5va0b8ECPijdV+x1gajdfBGPrYZbXkZWHgCmE9Aj5uJ7iHAol7s0Xgmvyerz+XkddyekSCgDsbPMHYepmhWcBQMUR9bh8EuUDK7IE4/AMUn3AOdsZ66zwKVd6JykRg66poEbFMLWE6/q5q1p/ey6Q/xh0LAtTYphSnW1TknnC4CdbOcv2/0gOlD4Id9kGooRk+BXyoR9SAjtUepwJxZXN0AQqAoK7sIYrmR+NpscFMQenxtVrkceEM9vAtb31kzSWSX2xoKNcHDJ7cViEThDY6TxN3CnC3u3DxkSZc6+1oYkyQHV819q0EJARKbPmklspFvAYGz5FlztGVoIoTO8aOg9h2DnoQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(5660300002)(2906002)(186003)(26005)(1076003)(36756003)(86362001)(6486002)(6512007)(8936002)(8676002)(38350700002)(6916009)(508600001)(66556008)(66476007)(66946007)(2616005)(107886003)(316002)(4326008)(52116002)(54906003)(6666004)(38100700002)(6506007);DIR:OUT;SFP:1101
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lIlhoKVE0LZLfQql5i+78D5cXtbzIhe3cp01nYChmY48uzFTsTQLeue9M/Te?=
- =?us-ascii?Q?0U5imlBvshEZDxMZj0lTDHu1cV7SVe9NFAneC3mOIbL4uwSS4nlNtDEvrtDm?=
- =?us-ascii?Q?t8paBR+IDlHBb1LZ3eS5y4Bhf1wiP8MstglFao5JaDBJQ09GHCwD8Yl7jB5a?=
- =?us-ascii?Q?76YPDZSA89YUcSEWa+lO2HhAPat1css7gHhTFC5sLZwUteHKmSsqc5MT0f4j?=
- =?us-ascii?Q?UInW7ayLu/lkohZSinh3pVP8N85K8AinmMAwy2iHxDCvyXK7DC6um+PW9sle?=
- =?us-ascii?Q?mnNVi22VoLEtFbeMSK8kSNighLt0qu5dJqMtu3FZnr9hD+NJevDA2ZjGzndO?=
- =?us-ascii?Q?TxatKDJxEPTyEPO9vTUu6TttNP1d331QFmJT7IzDBw82XyZGm7gRqti9Qq/H?=
- =?us-ascii?Q?hDFzpCMLreirt2H7VxVj/x+z24Tkk0hZ4uMYERQn/FZ66pkyFzbiiZZczmJk?=
- =?us-ascii?Q?RZw+bNpiMjqfirfqN/NlFCt4N9+t3G5On9WGZui+a9YBj2vukcHnWG69DTt9?=
- =?us-ascii?Q?huzrA1H7shP5shB3SHJuw+imYOfFBQk48a7Pik/2Vu/ySAu2QoZ1kf5Xr+Y0?=
- =?us-ascii?Q?NPeWinFR0jCV6mlDMIyWLCkpATKxaBAhdNcwYtumi1SeQlWW+SLPpI9UFjHU?=
- =?us-ascii?Q?8jmOhT2EAIu4qAMJw+vgabGK2pw2h5Zk3KbXYFCgAvKPDn88au+tmDtFVFc4?=
- =?us-ascii?Q?mPTd0WJ2Cva/hEDdU0UNnyDMCwxZuxfwqP/wC8KtXcn7q/cK97B+0DcWmxyb?=
- =?us-ascii?Q?TJ5TL1KM6zpFKwjWBt/+L6ifkkpQiM+QDt3na0ah7THWLZrrJw8+50cCl8cg?=
- =?us-ascii?Q?je40rdjziJeirevd4YaY2J13raI7b/AFbs7mQAZt0lINvonD/A6UJp3s9ZzV?=
- =?us-ascii?Q?K9OjoD8So/nj8veAHNIwDY9izsSzixBlcmVJE9llDFTm6Sy9og0q6ZhGvM4Q?=
- =?us-ascii?Q?HDAjW2Ark+pCVWhnm2fy1ya77Mk3u+OCFXC2hpbo4BgyBYgX/KkGdhH2VL6O?=
- =?us-ascii?Q?1niziR4GgXgWtkUEZjC+vdIWbl8+jJNYxdUVpAA9RX04YwB3hLgI5LRbxtxh?=
- =?us-ascii?Q?8svZRmEk1qWnn+hxCxlX+lXnSs/evXEPbRTY1R0LlOtmVpHaT4ZmY8aAjYqZ?=
- =?us-ascii?Q?UG794oMaLacHYe/A1Zn5X3LM4uqX+M2eJtixswNYp90kPVK923zyadYtJC9Q?=
- =?us-ascii?Q?nc4AILIEc/6apUb6VLwVy4Ahd2fB/nRXW6rJ8B3p2Q3hexDzFaCnh90Djxi7?=
- =?us-ascii?Q?z8Vy5PMGmqZPf63kNplWSjWs6ACAO5fqhqhU5cxFca2w47Z0zf7rhEabKJy/?=
- =?us-ascii?Q?GCNtMNzn9woe0ZHPnezXzTCp2PBuMQ3KeQeMArNUaICoCuc3D9XLwGvQhnDG?=
- =?us-ascii?Q?eUMYizZuPhWVgtD2/3jql0m20DS+HW0MsmiFOs0N1LRaflCZtcfmL7cKILWV?=
- =?us-ascii?Q?Wnjo4e0rI5pm7IdzYj+05Yb10U9l9WflfX0wEDpUoo1z/w37IlvM1UDHAkOa?=
- =?us-ascii?Q?QE64fX0myUbvuWQgazp1B+DAAx62HxboEX64N+2749pbY9ctD5h9wUsxq3aw?=
- =?us-ascii?Q?GsZdrC1jObElrGVSDuTHypOqaqFYyj4hGxgL4AMClRSSY6IT41ZoAKyXAggj?=
- =?us-ascii?Q?tDv7igi4Zb9QTPigcNUsB0bvmfzHNKFDCP6r9EeSMuAmELAG1tQYthrQfJuj?=
- =?us-ascii?Q?2amY3g=3D=3D?=
-X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a438e1f-da7f-4479-cee7-08d9e720d1cd
-X-MS-Exchange-CrossTenant-AuthSource: CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2022 14:23:59.5781
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KhTAU350Q04vA96p3Dl7NWQG9iyb6WdCF9SZVHcuHL0g3AADSY6DOc89AyDeLxybFFrnJbzaCJkj/HAPgDpiRiq8MCjfzpZ7em7yP47Hsy4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWXP123MB3288
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUK97A341 smtp.mailfrom=tomasz.mon@camlingroup.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: camlingroup.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Content-Language: en-US
+To:     Rob Herring <robh+dt@kernel.org>, nick.hawkins@hpe.com
+Cc:     verdun@hpe.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Corey Minyard <minyard@acm.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        SoC Team <soc@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
+ <CAL_Jsq+K2t5WYE056so1iZgZr7CBKvDEjAwnJVTyUFQcK-VFSA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <CAL_Jsq+K2t5WYE056so1iZgZr7CBKvDEjAwnJVTyUFQcK-VFSA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Do not set timeout to twice the approximate amount of time to send the
-entire FIFO if CTS is enabled. If the caller requested no timeout, e.g.
-when userspace program called tcdrain(), then wait without any timeout.
+On 03/02/2022 15:29, Rob Herring wrote:
+> On Wed, Feb 2, 2022 at 10:55 AM <nick.hawkins@hpe.com> wrote:
+>>
+>> From: Nick Hawkins <nick.hawkins@hpe.com>
+>>
 
-Premature return from tcdrain() was observed on imx based system which
-has 32 character long transmitter FIFO with hardware CTS handling.
+(...)
 
-Simple userspace application that reproduces problem has to:
-  * Open tty device, enable hardware flow control (CRTSCTS)
-  * Write data, e.g. 26 bytes
-  * Call tcdrain() to wait for the transmitter
-  * Close tty device
+>> +
+>> +       vuart_a: vuart_a@80fd0200 {
+> 
+> serial@...
 
-The other side of serial connection has to:
-  * Receive some data, e.g. 10 bytes
-  * Set RTS output (CTS input from sender perspective) inactive for
-    at least twice the port timeout
-  * Try to receive remaining data
+Maybe it does not look like, but this is actually a v2. Nick was asked
+to change the naming for the nodes already in v1. Unfortunately it did
+not happen, so we have vuart, spifi, vic and more.
 
-Without this patch, userspace application will finish without any error
-while the other side of connection will never receive remaining data.
+It is a waste of reviewers' time to ask them to perform the same review
+twice or to ignore their comments.
 
-Signed-off-by: Tomasz Mo=C5=84 <tomasz.mon@camlingroup.com>
----
- drivers/tty/serial/serial_core.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+> 
+>> +               compatible = "hpe,gxp-vuart";
+>> +               reg = <0x80fd0200 0x100>;
+>> +               interrupts = <2>;
+>> +               interrupt-parent = <&vic1>;
+>> +               clock-frequency = <1846153>;
+>> +               reg-shift = <0>;
+>> +               status = "okay";
+>> +               serial-line = <3>;
+>> +               vuart_cfg = <&vuart_a_cfg>;
+>> +       };
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_c=
-ore.c
-index ba4baa756d51..4687c9d586df 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1605,17 +1605,19 @@ static void uart_wait_until_sent(struct tty_struct =
-*tty, int timeout)
- =09if (timeout && timeout < char_time)
- =09=09char_time =3D timeout;
-=20
--=09/*
--=09 * If the transmitter hasn't cleared in twice the approximate
--=09 * amount of time to send the entire FIFO, it probably won't
--=09 * ever clear.  This assumes the UART isn't doing flow
--=09 * control, which is currently the case.  Hence, if it ever
--=09 * takes longer than port->timeout, this is probably due to a
--=09 * UART bug of some kind.  So, we clamp the timeout parameter at
--=09 * 2*port->timeout.
--=09 */
--=09if (timeout =3D=3D 0 || timeout > 2 * port->timeout)
--=09=09timeout =3D 2 * port->timeout;
-+=09if (!uart_cts_enabled(port)) {
-+=09=09/*
-+=09=09 * If the transmitter hasn't cleared in twice the approximate
-+=09=09 * amount of time to send the entire FIFO, it probably won't
-+=09=09 * ever clear.  This assumes the UART isn't doing flow
-+=09=09 * control, which is currently the case.  Hence, if it ever
-+=09=09 * takes longer than port->timeout, this is probably due to a
-+=09=09 * UART bug of some kind.  So, we clamp the timeout parameter at
-+=09=09 * 2*port->timeout.
-+=09=09 */
-+=09=09if (timeout =3D=3D 0 || timeout > 2 * port->timeout)
-+=09=09=09timeout =3D 2 * port->timeout;
-+=09}
-=20
- =09expire =3D jiffies + timeout;
-=20
-@@ -1631,7 +1633,7 @@ static void uart_wait_until_sent(struct tty_struct *t=
-ty, int timeout)
- =09=09msleep_interruptible(jiffies_to_msecs(char_time));
- =09=09if (signal_pending(current))
- =09=09=09break;
--=09=09if (time_after(jiffies, expire))
-+=09=09if (timeout && time_after(jiffies, expire))
- =09=09=09break;
- =09}
- =09uart_port_deref(port);
---=20
-2.25.1
+(...)
 
+>> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>> index 294093d45a23..913f722a6b8d 100644
+>> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>> @@ -514,7 +514,9 @@ patternProperties:
+>>    "^hoperun,.*":
+>>      description: Jiangsu HopeRun Software Co., Ltd.
+>>    "^hp,.*":
+>> -    description: Hewlett Packard
+>> +    description: Hewlett Packard Inc.
+> 
+> Why are you changing this one?
+
+I guess this is squashing of my patch:
+https://lore.kernel.org/all/20220127075229.10299-1-krzysztof.kozlowski@canonical.com/
+
+which is fine to me, but vendor changve should be a separate commit with
+its own explanation. Now it looks indeed weird.
+
+> 
+>> +  "^hpe,.*":
+> 
+> You used HPE elsewhere... Lowercase is preferred.
+
+
+
+
+Best regards,
+Krzysztof
