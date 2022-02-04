@@ -2,86 +2,180 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8C9CC433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Feb 2022 21:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E16C433FE
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Feb 2022 08:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349501AbiBCVjj (ORCPT
+        id S1357205AbiBDIwP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Feb 2022 16:39:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32071 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231713AbiBCVji (ORCPT
+        Fri, 4 Feb 2022 03:52:15 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:38062
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1357200AbiBDIwO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Feb 2022 16:39:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643924378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+aX6flYCGlec8MUmzayK91nF9NO+GezhygAiZUc4qds=;
-        b=XDdmpiKbXyceFjFUG9OEyj4QKgjEh2jzCK94RUP+xTl15s2QxgrSXKeagBmd/jgT5xywfW
-        wQb3jnsaMiL9PqA61K63rC1j5nlArHUc4LM96eV/rOZ3VsNxLprmmaJDcoQeuUucrbH6Pr
-        s2PKujrDKuCO60SquntVEpfplTHFF0I=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-nJ4mMu9dOWKBbsC-4IkUdg-1; Thu, 03 Feb 2022 16:39:37 -0500
-X-MC-Unique: nJ4mMu9dOWKBbsC-4IkUdg-1
-Received: by mail-qv1-f72.google.com with SMTP id ej14-20020ad45a4e000000b00425d03eabe4so3660912qvb.9
-        for <linux-serial@vger.kernel.org>; Thu, 03 Feb 2022 13:39:37 -0800 (PST)
+        Fri, 4 Feb 2022 03:52:14 -0500
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 88C204003D
+        for <linux-serial@vger.kernel.org>; Fri,  4 Feb 2022 08:52:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1643964733;
+        bh=iqZrLHxxMKYXcwDk+JH/xBRKoG0uPSeGw2pYz3/v6kY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=eBIHCkKi09tjJqdWDZBoh6iZZuDeagxiGhsi8PTmN4ZBY1JFJ1plEen9alndKBpaa
+         rZa25r7WemVcr/Bx6NCtnLoPmcYSswxky+lK1Vprp5zULdncJTDlsj1jhr9unEL+37
+         CgMZr3cuaInfjFgXPkhtTMkhf90SGkA4DcHjETpJOlai5o6oC6dhVu5GCEn7VKpEjI
+         em2yORSiXEHkXjyJWrN9LxinOyu8AyEXoRk1zfMSqqqEq9EL0xS4kzuezxyQSLbgmG
+         RXKUWjiTX6UVV2h+jy9Q48+0w78TVhk0SnYeH1JBQPaASjUrgyx5Z+aTKPi3YAcZ2c
+         67T+4OKW7Zwzw==
+Received: by mail-ed1-f69.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so2957116eds.1
+        for <linux-serial@vger.kernel.org>; Fri, 04 Feb 2022 00:52:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+aX6flYCGlec8MUmzayK91nF9NO+GezhygAiZUc4qds=;
-        b=U+Gp4CcShBQm3GgRjnk06B+VyNBVlZb7lpjmqwCkYrCVNF2xDOJlvc+2VrHb3SdUQm
-         qf22iKs/G3jm1ce/qCEUp6DjrOiNDW9SkgrQDB9zJ2z/0CZFCXMP3N+mdznEv3eZU1YA
-         ZEj+os5grDYYN1FQULw5lUETj1I08P6SQ4x34pJEzHxMdQgNU2rYZ/qOFrnI8vb/k+j6
-         buWxQY3h32pSwpDMlqOIcnwz2pF7Pao1lgoFHiw/TsO7pZd0GHKaiIHyinJTfSfViH0J
-         d3PjRbPttP2B1GbsuqhIZYRYpqSSLX0yF8yLg4MydiEGhV7o/2wjRkvqM0ulVqoZp3cG
-         iYig==
-X-Gm-Message-State: AOAM533qTOVKON2xIPFdZh1EJNM7e3DjoOV8KEII3J5kKfYsoe3GUOgd
-        lLQicKrRG0ucXwAJEaBE4B0hYt+E985r3aaq49ZPfXcVrlus7TeBoDA8K14+q95Rl/BhNCCRYUP
-        WsBgKVFFbG4mEyjp7WnLqLqil
-X-Received: by 2002:a05:622a:1aa0:: with SMTP id s32mr86333qtc.145.1643924377051;
-        Thu, 03 Feb 2022 13:39:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyuJzUTTqRgkam6YpJQj0YsDVjx8yNmuoFMgpLG51XVIvp7iv7xlN6IdGc1fnZzDvFnEuKkIA==
-X-Received: by 2002:a05:622a:1aa0:: with SMTP id s32mr86319qtc.145.1643924376896;
-        Thu, 03 Feb 2022 13:39:36 -0800 (PST)
-Received: from fedora (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
-        by smtp.gmail.com with ESMTPSA id u17sm22096qkp.90.2022.02.03.13.39.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Feb 2022 13:39:36 -0800 (PST)
-Date:   Thu, 3 Feb 2022 16:39:34 -0500
-From:   Adrien Thierry <athierry@redhat.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [PATCH] serial: 8250_bcm2835aux: Add ACPI support
-Message-ID: <YfxLlkQsHEb2qbjW@fedora>
-References: <20220201185001.926338-1-athierry@redhat.com>
- <412a456d-7294-a124-8a01-f052915348b4@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iqZrLHxxMKYXcwDk+JH/xBRKoG0uPSeGw2pYz3/v6kY=;
+        b=pkxhprYluK2kLB+W4Nf3UHOpQf7lDyN78dbeGh2YCCOm3a9vxZBczmQ/v7WJfQxL1k
+         s3G4ZyNa1/0yvcW5nU7zNRzu/XiJastuMC78I+DwvoB5HoMSpxCfW2ZnkGGPeCoep3Yu
+         ZnaMfVNPZxJSzoe19DlzkBLKcMqulpipgWmWxTi7gcohJs+DixGsFmWTw3AO5KpkDwJ0
+         1bB2r9n9TEoMemM7M3KBHqWARxyXIPdo3tQYZ+SYxitO3KFZI/wIrFk22ksEFHJ7xaVC
+         8p4sTS7Zq1vtYx68jcwHQqU6kNGHl45rgf90zHf/ZBxQ40XfOhOJ+LR3Pd74jBBommk1
+         Tswg==
+X-Gm-Message-State: AOAM5307EnUWKeNokDvu7BGZfPAXJ7NcsbPcGumjJrM3sl1H4vlY2vwe
+        0bSLA+ZPKCC1TfN0WnAUL0imD2HHYv6rVJni2l08Zy/RBdWLgjKs9JjlyR96AIZzYKYvHNE5TMk
+        fcmSkEbc5s7Uz8X4e9fqlebpLmLmWaGAj159BI4aemw==
+X-Received: by 2002:a05:6402:3492:: with SMTP id v18mr1976635edc.345.1643964732809;
+        Fri, 04 Feb 2022 00:52:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwVcZDvspQCzKUyW5YG8zjDVQmYqY/DEAG3sfjKSfnQIzLHqmc3NlVf9LlkkFskfuUgLPJavA==
+X-Received: by 2002:a05:6402:3492:: with SMTP id v18mr1976597edc.345.1643964732578;
+        Fri, 04 Feb 2022 00:52:12 -0800 (PST)
+Received: from [192.168.0.81] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id z8sm418238ejc.197.2022.02.04.00.52.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 00:52:11 -0800 (PST)
+Message-ID: <ed615fdb-5c30-697e-f197-a3a93c5336b9@canonical.com>
+Date:   Fri, 4 Feb 2022 09:52:10 +0100
 MIME-Version: 1.0
-In-Reply-To: <412a456d-7294-a124-8a01-f052915348b4@gmail.com>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=athierry@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] HPE BMC GXP SUPPORT
+Content-Language: en-US
+To:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Corey Minyard <minyard@acm.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        SoC Team <soc@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "openipmi-developer@lists.sourceforge.net" 
+        <openipmi-developer@lists.sourceforge.net>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+References: <nick.hawkins@hpe.com>
+ <20220202165315.18282-1-nick.hawkins@hpe.com>
+ <CAL_Jsq+K2t5WYE056so1iZgZr7CBKvDEjAwnJVTyUFQcK-VFSA@mail.gmail.com>
+ <e79133f2-f872-3ed6-4038-526e94e84909@canonical.com>
+ <1FEAAC19-1DD7-40D7-98FD-30C2659E7C0F@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1FEAAC19-1DD7-40D7-98FD-30C2659E7C0F@hpe.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thanks Florian for your feedback! I have submitted a v2 with the changes
-you required.
+On 03/02/2022 18:07, Verdun, Jean-Marie wrote:
+> 
+>    > Maybe it does not look like, but this is actually a v2. Nick was asked
+>    > to change the naming for the nodes already in v1. Unfortunately it did
+>    > not happen, so we have vuart, spifi, vic and more.
+> 
+>    > It is a waste of reviewers' time to ask them to perform the same review
+>    > twice or to ignore their comments.
+> 
+>     Hi Krysztof,
+> 
+>     Accept our apologies if you think you lose your time, it is clearly not our
+>     intent. 
+> 
+>     This is the first time that we (I mean the team) introduce a new arch into
+>     the linux kernel and I must admit that we had hard time to understand
+>     from which angle we needed to start.
+> 
+>     I will probably write a Documentation afterward, as it is easy to find doc
+>     on how to introduce a patch or a driver, but not when you want to 
+>     introduce a new chip. 
+> 
+>     We are trying to do our best, and clearly want to follow all of your inputs.
+>     Mistakes happen and they are clearly not intentional and not driven in 
+>     a way to make you lose your time.
+> 
+>     Helping others, and teaching something new is definitely a way to 
+>     optimize your time and this is what you are currently doing with us.
+> 
+>     We appreciate it and hope you will too.
 
-Adrien
+I understand, I also maybe over-reacted on this. Just please go through
+the comments you got for first submission and either apply them or
+respond why you disagree.
 
+The next submissions (patchset split into several commits) should be a
+v3, preferably with cover letter (git format-patch --cover-letter -v3
+...) where you can document also changes you did to the patchset.
+
+It looks for example like this:
+https://lore.kernel.org/linux-samsung-soc/31da451b-a36c-74fb-5667-d4193284c6cd@canonical.com/T/#mf98d2ac27a8481dc69dd110f9861c8318cade252
+
+or like this (where changelogs are in each patch, although ordering is
+not correct because dt-bindings should be the first in the series):
+https://lore.kernel.org/all/20220103233948.198119-1-Mr.Bossman075@gmail.com/
+
+
+Best regards,
+Krzysztof
