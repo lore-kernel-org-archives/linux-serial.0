@@ -2,131 +2,253 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D9FC433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Feb 2022 04:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724FFC433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Feb 2022 04:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238030AbiBEEaK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Feb 2022 23:30:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiBEEaK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Feb 2022 23:30:10 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E736C061346;
-        Fri,  4 Feb 2022 20:30:09 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so1721102pjv.5;
-        Fri, 04 Feb 2022 20:30:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
-        b=j9qAotRGY/7fKs3UWaQ0fpx+2aDAmtUO0BCb56HWk4grGDuMdZWibXN6onB7r2P8Th
-         RECzjqwUdgYy6uiMNAg/lBekmZZaoRPvC/mcCwr+7TXz1USNal5osLtyRjw3Pwdy7PXk
-         9mS6bbubtRkGWVbicwUfr7GPE/i5OhbfiDHqlVAnUi8uDdlnbbrMYeNHQY9yInFqnWQ9
-         HtkttX+YapE6mZaahJ3668jxF/bKAglpcFT7WS/iaMVeMp81VvslfJVD6pX1Ba99kU2Y
-         Qf0c+CbkXWRxAl6JbJW5jfz+kE444tL6UF5fQnxhjT00u5r7JSN0eAzYnh/E4RLhNQ6p
-         18ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
-        b=qSoezHZdIxfVMqyyqpXgVeydFFyjn9pp9xfC2rrKZMvuumcAbl+rAOWv8LY9s2QCdK
-         FpupyoNurYrxWAMnVrCnxSOm1GUx79DZC5JoQ6ygdwhxRn1sCU5lPD0LB2ACZlidiqv7
-         Ha5EmzhSHWX5wGDrCbza2ETkJGt1NDIGIeR7nXvS/FQf5KTWlFdjf5RoVP/SxdXmu5kx
-         3luLL8R8h71APoTUcIIqll/QqfXJtKemhT5i6u+B6TD9aSwIpYbaKC5cQn4lJp4k28Rk
-         htava9Vt8zVS0hwkiOM3y/Qm41PbbsAoCwkqej/F+5ezrM2c3soqXqs5NIPr1YSK5XbR
-         sN0w==
-X-Gm-Message-State: AOAM532vYbJrCmwZV+vkxAz5IExXWKQmu0LACHvTEB7uBHMXd7Tp9BBB
-        Rr8QKYe4wFJImVY6ppKNcpE=
-X-Google-Smtp-Source: ABdhPJwJX1Az1UyBa9GY+1a1lB82aokfjMozL/I3PzEefaueVHighT1EcehoNrH//oPTBaUPO8SHHA==
-X-Received: by 2002:a17:902:8504:: with SMTP id bj4mr6593706plb.108.1644035408882;
-        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
-Received: from [10.200.0.14] ([85.203.23.14])
-        by smtp.gmail.com with ESMTPSA id h27sm2776413pgb.20.2022.02.04.20.30.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
-Message-ID: <97667b25-11e6-d918-2468-2cf17532c3ad@gmail.com>
-Date:   Sat, 5 Feb 2022 12:30:03 +0800
+        id S1379480AbiBEEoN (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Feb 2022 23:44:13 -0500
+Received: from mga17.intel.com ([192.55.52.151]:62247 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232009AbiBEEoN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Feb 2022 23:44:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644036253; x=1675572253;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NOe+SHcuDMcJzU+frfVhx8Jal+h/tDvw9MLOSVihnVg=;
+  b=aeA/TUffq67v5xixBjoL2qt+dShnmijNA3+d1d6+EoGRnDZU1YAFeKey
+   S0NZW6alNzUuZEtP+ktXcSuq75pBfPHdmLTLv+n+hV2L6OznBHLHiBGZ2
+   7QHX6ubX0ddzqiOVXo8TWyTEwar7C8cI6xpvxDH7tbIK6pg8R6dZJr8Bx
+   azIFeCwicHnJcOwCbVMz4DpyAWVCVy0FS2aMs9ETZUUGPHhi/FKwP0h86
+   92hkaZNoWkNwRN8+CQi/6JBfhaUR7fia+XlCDpL7rQ1xXIpz2jP0HvbEy
+   ZhhNJStWEALdid/vSbKDBv7XtQixmSKHuk1vOixaX+2nh7Faom3yL1vhw
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="229138159"
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="229138159"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2022 20:44:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; 
+   d="scan'208";a="677286537"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Feb 2022 20:44:11 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nGCvi-000YZZ-Te; Sat, 05 Feb 2022 04:44:10 +0000
+Date:   Sat, 05 Feb 2022 12:43:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 186ab09930aac24fad59a56d22ea507c8505b84f
+Message-ID: <61fe007b.vP+2+Re5AOrESyEz%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [BUG] tty: serial: possible deadlock in uart_remove_one_port()
- and uart_hangup()
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
- <YfUPlYwoWpMjhvpR@kroah.com> <20220201090740.3816-1-hdanton@sina.com>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-In-Reply-To: <20220201090740.3816-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 186ab09930aac24fad59a56d22ea507c8505b84f  serial: core: Drop duplicate NULL check in uart_*shutdown()
 
+elapsed time: 730m
 
-On 2022/2/1 17:07, Hillf Danton wrote:
-> On Tue, 1 Feb 2022 14:51:09 +0800 Jia-Ju Bai wrote:
->> On 2022/1/29 17:57, Greg KH wrote:
->>> On Sat, Jan 29, 2022 at 05:34:05PM +0800, Jia-Ju Bai wrote:
->>>> Hello,
->>>>
->>>> My static analysis tool reports a possible deadlock in the tty driver in
->>>> Linux 5.10:
->>> 5.10 was released over a year ago and over 100 thousand changes ago.
->>> Please redo your check on 5.16 at the oldest.
->> My static analysis tool checks the tty driver in Linux 5.16, and also
->> finds this possible deadlock:
->>
->> uart_remove_one_port()
->>     mutex_lock(&port->mutex); --> Line 3032 (Lock A)
->>     wait_event(state->remove_wait, ...); --> Line 3034 (Wait X)
->>     mutex_unlock(&port->mutex); --> Line 3036 (Unlock A)
->>
->> uart_hangup()
->>     mutex_lock(&port->mutex); --> Line 1669 (Lock A)
->>     uart_flush_buffer()
->>       uart_port_unlock()
->>         uart_port_deref()
->>           wake_up(&uport->state->remove_wait); --> Line 68 (Wake X)
->>     mutex_unlock(&port->mutex); --> Line 1686 (Unlock A)
->>
->> When uart_remove_one_port() is executed, "Wait X" is performed by
->> holding "Lock A". If uart_hangup() is executed at this time, "Wake X"
->> cannot be performed to wake up "Wait X" in uart_remove_one_port(),
->> because "Lock A" has been already hold by uart_remove_one_port(),
->> causing a possible deadlock.
->>
->> I am not quite sure whether this possible problem is real and how to fix
->> it if it is real.
->> Maybe we can call wait_event() before mutex_lock() in
->> uart_remove_one_port().
->> Any feedback would be appreciated, thanks :)
->>
->>
->> Best wishes,
->> Jia-Ju Bai
-> Hey Jia-Ju
->
-> Thank you for reporting it.
->
-> In uart_flush_buffer(), uart_port_unlock() pairs with uart_port_lock()
-> which bumps refcount up. OTOH no wakep is needed without refcount
-> incremented, so the wakeup above in the hangup path is not waited for
-> in the remove path.
+configs tested: 179
+configs skipped: 3
 
-Hi Hillf,
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Thanks for the explanation :)
-So I wonder which wait_event() can be paired with 
-wake_up(&uport->state->remove_wait) in uart_port_deref()?
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220131
+i386                          randconfig-c001
+sh                             shx3_defconfig
+sh                     sh7710voipgw_defconfig
+arc                    vdk_hs38_smp_defconfig
+powerpc                        warp_defconfig
+mips                         tb0226_defconfig
+um                               alldefconfig
+powerpc                        cell_defconfig
+mips                 decstation_r4k_defconfig
+sh                          r7780mp_defconfig
+sh                ecovec24-romimage_defconfig
+xtensa                    smp_lx200_defconfig
+arm                            hisi_defconfig
+arm                           tegra_defconfig
+openrisc                  or1klitex_defconfig
+sparc64                             defconfig
+arc                           tb10x_defconfig
+sh                         ap325rxa_defconfig
+mips                  maltasmvp_eva_defconfig
+mips                         db1xxx_defconfig
+arm                       aspeed_g5_defconfig
+arm                        clps711x_defconfig
+sh                          landisk_defconfig
+mips                     loongson1b_defconfig
+powerpc                      chrp32_defconfig
+arm                         lpc18xx_defconfig
+powerpc                      ep88xc_defconfig
+arm                        mini2440_defconfig
+sh                           se7619_defconfig
+sh                      rts7751r2d1_defconfig
+parisc                generic-64bit_defconfig
+arm                      footbridge_defconfig
+sparc64                          alldefconfig
+microblaze                      mmu_defconfig
+arm                           corgi_defconfig
+xtensa                    xip_kc705_defconfig
+arc                     nsimosci_hs_defconfig
+mips                           gcw0_defconfig
+powerpc                    klondike_defconfig
+mips                      loongson3_defconfig
+xtensa                  cadence_csp_defconfig
+m68k                          multi_defconfig
+ia64                                defconfig
+arm                            zeus_defconfig
+powerpc                     redwood_defconfig
+sh                              ul2_defconfig
+mips                            gpr_defconfig
+sh                        sh7757lcr_defconfig
+arm                        shmobile_defconfig
+m68k                        m5407c3_defconfig
+ia64                        generic_defconfig
+sh                          polaris_defconfig
+sh                           se7780_defconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                         s3c6400_defconfig
+sh                            hp6xx_defconfig
+arc                          axs103_defconfig
+arm                  randconfig-c002-20220130
+arm                  randconfig-c002-20220131
+arm                  randconfig-c002-20220202
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a004-20220131
+x86_64               randconfig-a003-20220131
+x86_64               randconfig-a001-20220131
+x86_64               randconfig-a006-20220131
+x86_64               randconfig-a005-20220131
+x86_64               randconfig-a002-20220131
+i386                 randconfig-a006-20220131
+i386                 randconfig-a005-20220131
+i386                 randconfig-a003-20220131
+i386                 randconfig-a002-20220131
+i386                 randconfig-a001-20220131
+i386                 randconfig-a004-20220131
+i386                          randconfig-a003
+i386                          randconfig-a001
+i386                          randconfig-a005
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
+clang tested configs:
+riscv                randconfig-c006-20220201
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220201
+mips                 randconfig-c004-20220201
+i386                          randconfig-c001
+arm                  randconfig-c002-20220201
+riscv                randconfig-c006-20220130
+arm                  randconfig-c002-20220130
+powerpc              randconfig-c003-20220130
+mips                 randconfig-c004-20220130
+mips                         tb0287_defconfig
+powerpc                     skiroot_defconfig
+powerpc                        icon_defconfig
+mips                        bcm63xx_defconfig
+powerpc                  mpc866_ads_defconfig
+mips                          rm200_defconfig
+powerpc                      acadia_defconfig
+mips                      maltaaprp_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a013-20220131
+x86_64               randconfig-a015-20220131
+x86_64               randconfig-a014-20220131
+x86_64               randconfig-a016-20220131
+x86_64               randconfig-a011-20220131
+x86_64               randconfig-a012-20220131
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                 randconfig-a011-20220131
+i386                 randconfig-a013-20220131
+i386                 randconfig-a014-20220131
+i386                 randconfig-a012-20220131
+i386                 randconfig-a015-20220131
+i386                 randconfig-a016-20220131
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+riscv                randconfig-r042-20220131
+hexagon              randconfig-r045-20220203
+hexagon              randconfig-r041-20220203
+hexagon              randconfig-r045-20220130
+hexagon              randconfig-r045-20220131
+hexagon              randconfig-r041-20220130
+hexagon              randconfig-r041-20220131
 
-Best wishes,
-Jia-Ju Bai
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
