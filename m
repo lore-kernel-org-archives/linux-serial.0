@@ -2,213 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE54C433FE
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Feb 2022 15:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D9FC433F5
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Feb 2022 04:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359804AbiBDPmQ (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Feb 2022 10:42:16 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:40296 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1359806AbiBDPmP (ORCPT
+        id S238030AbiBEEaK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Feb 2022 23:30:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229969AbiBEEaK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Feb 2022 10:42:15 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 214Ebxgf011945;
-        Fri, 4 Feb 2022 16:42:00 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=1UBZ1HQMJGwj58sI+h9K8wE/T4Yj+VGIcEnThWRmLs0=;
- b=SZHUpTBe91uhtNz4Yw90DSS8oqBMB7FjuBQ8DhYZ5x4JUwaJ0mXFa9k/V/eHMHgjqcdg
- 9pRCScPVnSVPxWOa4G3e01SM9nM/NV7UkPf6axX0kh9p/kL8pdN1WtJzUOpM8MKZ69E/
- lI/RdxoXOKTCDXzRQowACfiHc3HtGBwy/UnpJDmWRTbuDYnsNq2ZfxnWLIc5O6TbfVrG
- F8oQ4brpgyz8d5pZUQuO4hAM7z7SY3nZC5e3u9zE5zyXLKngQ08gg+Lp9S2yTxJ+WfCA
- 8EagOzRcZ6LLc/Pbc9zpJGr4phBQdsy/zVUM+XECpDRYENAtthnmpjP/3Xhag2sH0+MC SQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e0ejjew8a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Feb 2022 16:42:00 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EE4BD10002A;
-        Fri,  4 Feb 2022 16:41:59 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E59B9229A8C;
-        Fri,  4 Feb 2022 16:41:59 +0100 (CET)
-Received: from lmecxl0566.lme.st.com (10.75.127.49) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 4 Feb
- 2022 16:41:59 +0100
-Subject: Re: [PATCH 1/2] serial: mctrl_gpio: add a new API to enable / disable
- wake_irq
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220203171644.12231-1-erwan.leray@foss.st.com>
- <20220203171644.12231-2-erwan.leray@foss.st.com>
- <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
-From:   Erwan LE RAY <erwan.leray@foss.st.com>
-Message-ID: <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
-Date:   Fri, 4 Feb 2022 16:41:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 4 Feb 2022 23:30:10 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E736C061346;
+        Fri,  4 Feb 2022 20:30:09 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id p22-20020a17090adf9600b001b8783b2647so1721102pjv.5;
+        Fri, 04 Feb 2022 20:30:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
+        b=j9qAotRGY/7fKs3UWaQ0fpx+2aDAmtUO0BCb56HWk4grGDuMdZWibXN6onB7r2P8Th
+         RECzjqwUdgYy6uiMNAg/lBekmZZaoRPvC/mcCwr+7TXz1USNal5osLtyRjw3Pwdy7PXk
+         9mS6bbubtRkGWVbicwUfr7GPE/i5OhbfiDHqlVAnUi8uDdlnbbrMYeNHQY9yInFqnWQ9
+         HtkttX+YapE6mZaahJ3668jxF/bKAglpcFT7WS/iaMVeMp81VvslfJVD6pX1Ba99kU2Y
+         Qf0c+CbkXWRxAl6JbJW5jfz+kE444tL6UF5fQnxhjT00u5r7JSN0eAzYnh/E4RLhNQ6p
+         18ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ULZ4mupthaZMgaibmp4OG2WYJdz6Bd+6gS+dmGIdwTQ=;
+        b=qSoezHZdIxfVMqyyqpXgVeydFFyjn9pp9xfC2rrKZMvuumcAbl+rAOWv8LY9s2QCdK
+         FpupyoNurYrxWAMnVrCnxSOm1GUx79DZC5JoQ6ygdwhxRn1sCU5lPD0LB2ACZlidiqv7
+         Ha5EmzhSHWX5wGDrCbza2ETkJGt1NDIGIeR7nXvS/FQf5KTWlFdjf5RoVP/SxdXmu5kx
+         3luLL8R8h71APoTUcIIqll/QqfXJtKemhT5i6u+B6TD9aSwIpYbaKC5cQn4lJp4k28Rk
+         htava9Vt8zVS0hwkiOM3y/Qm41PbbsAoCwkqej/F+5ezrM2c3soqXqs5NIPr1YSK5XbR
+         sN0w==
+X-Gm-Message-State: AOAM532vYbJrCmwZV+vkxAz5IExXWKQmu0LACHvTEB7uBHMXd7Tp9BBB
+        Rr8QKYe4wFJImVY6ppKNcpE=
+X-Google-Smtp-Source: ABdhPJwJX1Az1UyBa9GY+1a1lB82aokfjMozL/I3PzEefaueVHighT1EcehoNrH//oPTBaUPO8SHHA==
+X-Received: by 2002:a17:902:8504:: with SMTP id bj4mr6593706plb.108.1644035408882;
+        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
+Received: from [10.200.0.14] ([85.203.23.14])
+        by smtp.gmail.com with ESMTPSA id h27sm2776413pgb.20.2022.02.04.20.30.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Feb 2022 20:30:08 -0800 (PST)
+Message-ID: <97667b25-11e6-d918-2468-2cf17532c3ad@gmail.com>
+Date:   Sat, 5 Feb 2022 12:30:03 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [BUG] tty: serial: possible deadlock in uart_remove_one_port()
+ and uart_hangup()
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <ab5d9322-6bea-9845-c61b-fb68e3bb3a87@gmail.com>
+ <YfUPlYwoWpMjhvpR@kroah.com> <20220201090740.3816-1-hdanton@sina.com>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+In-Reply-To: <20220201090740.3816-1-hdanton@sina.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-04_07,2022-02-03_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
 
-On 2/4/22 10:07 AM, Andy Shevchenko wrote:
-> 
-> 
-> On Thursday, February 3, 2022, Erwan Le Ray <erwan.leray@foss.st.com 
-> <mailto:erwan.leray@foss.st.com>> wrote:
-> 
->     Add a new API to enable / disable wake_irq in order to enable gpio
->     irqs as
->     wakeup irqs for the uart port.
-> 
->     Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com
->     <mailto:erwan.leray@foss.st.com>>
-> 
->     diff --git a/drivers/tty/serial/serial_mctrl_gpio.c
->     b/drivers/tty/serial/serial_mctrl_gpio.c
->     index c41d8911ce95..1663b3afc3a0 100644
->     --- a/drivers/tty/serial/serial_mctrl_gpio.c
->     +++ b/drivers/tty/serial/serial_mctrl_gpio.c
->     @@ -299,4 +299,42 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios
->     *gpios)
->       }
->       EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
-> 
->     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
->     +{
->     +       enum mctrl_gpio_idx i;
->     +
->     +       if (!gpios)
->     +               return;
->     +
->     +       if (!gpios->mctrl_on)
->     +               return;
->     +
->     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
->     +               if (!gpios->irq[i])
->     +                       continue;
-> 
-> 
-> 
-> Why not simply
-> 
->    if (gpios[])
->      enable_irq_...
-> 
-> ?
-> 
-> And same for disabling.
-> 
->     +
->     +               enable_irq_wake(gpios->irq[i]);
->     +       }
->     +}
->     +EXPORT_SYMBOL_GPL(mctrl_gpio_enable_irq_wake);
->     +
->     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios)
->     +{
->     +       enum mctrl_gpio_idx i;
->     +
->     +       if (!gpios)
->     +               return;
->     +
->     +       if (!gpios->mctrl_on)
->     +               return;
->     +
->     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
->     +               if (!gpios->irq[i])
->     +                       continue;
->     +
->     +               disable_irq_wake(gpios->irq[i]);
->     +       }
->     +}
->     +EXPORT_SYMBOL_GPL(mctrl_gpio_disable_irq_wake);
->     +
->       MODULE_LICENSE("GPL");
->     diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
->     b/drivers/tty/serial/serial_mctrl_gpio.h
->     index b134a0ffc894..fc76910fb105 100644
->     --- a/drivers/tty/serial/serial_mctrl_gpio.h
->     +++ b/drivers/tty/serial/serial_mctrl_gpio.h
->     @@ -91,6 +91,16 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
->        */
->       void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
-> 
->     +/*
->     + * Enable gpio wakeup interrupts to enable wake up source.
->     + */
->     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios);
->     +
->     +/*
->     + * Disable gpio wakeup interrupts to enable wake up source.
->     + */
->     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios);
->     +
->       #else /* GPIOLIB */
-> 
->       static inline
->     @@ -142,6 +152,14 @@ static inline void mctrl_gpio_disable_ms(struct
->     mctrl_gpios *gpios)
->       {
->       }
-> 
->     +static inline void mctrl_gpio_enable_irq_wake(struct mctrl_gpios
->     *gpios)
->     +{
->     +}
->     +
->     +static inline void mctrl_gpio_disable_irq_wake(struct mctrl_gpios
->     *gpios)
->     +{
->     +}
->     +
->       #endif /* GPIOLIB */
-> 
->       #endif
->     -- 
->     2.17.1
-> 
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
 
-Thanks for your review.
-I fully agree with your comment, but I wrote this code like it is to 
-keep the same structure than all the other ops of serial_mcrtrl_gpio 
-driver. I preferred keeping an homogeneous code in the driver rather 
-than breaking the driver homogeneity with the addition of an optimized code.
+On 2022/2/1 17:07, Hillf Danton wrote:
+> On Tue, 1 Feb 2022 14:51:09 +0800 Jia-Ju Bai wrote:
+>> On 2022/1/29 17:57, Greg KH wrote:
+>>> On Sat, Jan 29, 2022 at 05:34:05PM +0800, Jia-Ju Bai wrote:
+>>>> Hello,
+>>>>
+>>>> My static analysis tool reports a possible deadlock in the tty driver in
+>>>> Linux 5.10:
+>>> 5.10 was released over a year ago and over 100 thousand changes ago.
+>>> Please redo your check on 5.16 at the oldest.
+>> My static analysis tool checks the tty driver in Linux 5.16, and also
+>> finds this possible deadlock:
+>>
+>> uart_remove_one_port()
+>>     mutex_lock(&port->mutex); --> Line 3032 (Lock A)
+>>     wait_event(state->remove_wait, ...); --> Line 3034 (Wait X)
+>>     mutex_unlock(&port->mutex); --> Line 3036 (Unlock A)
+>>
+>> uart_hangup()
+>>     mutex_lock(&port->mutex); --> Line 1669 (Lock A)
+>>     uart_flush_buffer()
+>>       uart_port_unlock()
+>>         uart_port_deref()
+>>           wake_up(&uport->state->remove_wait); --> Line 68 (Wake X)
+>>     mutex_unlock(&port->mutex); --> Line 1686 (Unlock A)
+>>
+>> When uart_remove_one_port() is executed, "Wait X" is performed by
+>> holding "Lock A". If uart_hangup() is executed at this time, "Wake X"
+>> cannot be performed to wake up "Wait X" in uart_remove_one_port(),
+>> because "Lock A" has been already hold by uart_remove_one_port(),
+>> causing a possible deadlock.
+>>
+>> I am not quite sure whether this possible problem is real and how to fix
+>> it if it is real.
+>> Maybe we can call wait_event() before mutex_lock() in
+>> uart_remove_one_port().
+>> Any feedback would be appreciated, thanks :)
+>>
+>>
+>> Best wishes,
+>> Jia-Ju Bai
+> Hey Jia-Ju
+>
+> Thank you for reporting it.
+>
+> In uart_flush_buffer(), uart_port_unlock() pairs with uart_port_lock()
+> which bumps refcount up. OTOH no wakep is needed without refcount
+> incremented, so the wakeup above in the hangup path is not waited for
+> in the remove path.
 
-Greg, can you please indicate which solution you recommend ?
+Hi Hillf,
 
-Cheers, Erwan.
+Thanks for the explanation :)
+So I wonder which wait_event() can be paired with 
+wake_up(&uport->state->remove_wait) in uart_port_deref()?
+
+
+Best wishes,
+Jia-Ju Bai
