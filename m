@@ -2,88 +2,343 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A3AC43219
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACFBC4167E
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 01:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240380AbiBHBFX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
+        id S229674AbiBHBFU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Feb 2022 20:05:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238617AbiBGXX5 (ORCPT
+        with ESMTP id S241609AbiBGX3j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Feb 2022 18:23:57 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4E3C061355;
-        Mon,  7 Feb 2022 15:23:56 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so806273pjh.3;
-        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
-        b=J9okMS8ibcD1d6kJ2AV43EegsSK00dpFoJfenatFVPg3mCkxf6l0+R3KeKcPlGYez+
-         vQgnpulyimR7MCNqt+YXLjIlKV4LHj03g6aGZoMAqs4bcns2qnl0gaUP59bcSVXBHzL/
-         tkWNYc/PKe/hrSnSZRyBEYR6Wee615vJTjgOERc241bmGaQY/4EwN6uvacVIbTKN0klS
-         5BhbvzJklY71KS1pj+/lXpLopOIyPTqGIH+/MK5NP9ySZANtgrTtCeOQa0+lcWicw2bl
-         loIsuUo2QSUSZEaofaom3wAidnQ0/QA2nR+U50syrh/GwTkTFBTgyzcIFCHW/RGcL2PE
-         asmA==
+        Mon, 7 Feb 2022 18:29:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0EF2C0612A4
+        for <linux-serial@vger.kernel.org>; Mon,  7 Feb 2022 15:29:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644276576;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Dl50fvdeDVHYYafqXS8rgfNHdVMJ0arMNo9zcfmZaw=;
+        b=D5Vq5GP0XdidXehhk5wUgsR6tU7vKRFerTlZZYumPIZ/pn/5dQJL+UPElYobQkw1whkODp
+        EMPZW+svzqTgLDOfLHVF01BjlxPZFOEZl9c4r7hSbdwqDN9ZXEOldc/smd866G6t39HKEv
+        bERlmXmPMQW7fKNxcEpUFnxObDxKcW0=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-146-JMTPg5PdOm6Nr0JyChc0qA-1; Mon, 07 Feb 2022 18:29:35 -0500
+X-MC-Unique: JMTPg5PdOm6Nr0JyChc0qA-1
+Received: by mail-qt1-f200.google.com with SMTP id s1-20020ac85ec1000000b002cf7c93d56dso12244185qtx.21
+        for <linux-serial@vger.kernel.org>; Mon, 07 Feb 2022 15:29:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Q4NGVfnZcTyTN7uyU45OoCJgZ8qSuaDFnbB0+R0yaoU=;
-        b=qZ26S2aPK/BFav5nuPedhnca6DgASy6QdZEYR81n2BJcE1lyukuN6Bq6HqvBTUVdU+
-         87nqHZsi0gPzq0G9QYFKwyIHw7RPS7HHBm/Cjx//etupKbahJn5CaeiKFzSod5Kjzh1b
-         18RRHJqTD1GHF8Km8l66MB3iDyMDnmPKPbMadrrdCF2dX7+gH3bxn9d74aEkhCfWRYyy
-         ySjcuywNt/RFnoU3ZK1HSrXogfeCSqYzJAVhl0JWYbdlIU7aQRGajrhPvUkLEMRoSXnX
-         IvkrIdKuiNm6nyJQkKbnYmUq+drThEAuQhlCPN/dGf4LFaFiCjaespVO2DI25WlkTEAQ
-         FvGQ==
-X-Gm-Message-State: AOAM530nEOUT1JlKBTvmBSdLyS0LujuZqlXJKfPoFhrjvwsPbH5iEBaB
-        /ZvuJ01AsubpkZ3CIkfuS4A=
-X-Google-Smtp-Source: ABdhPJzPi+18QP61QkBD3QrQXZf2jGk9fBmgd2jZB23uHQUcVAWcdNe2AYk0ZeYIUsujebh3SGrVlQ==
-X-Received: by 2002:a17:902:e545:: with SMTP id n5mr1855955plf.129.1644276236236;
-        Mon, 07 Feb 2022 15:23:56 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id md9sm429343pjb.6.2022.02.07.15.23.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 15:23:55 -0800 (PST)
-Subject: Re: [PATCH v3] serial: 8250_bcm2835aux: Add ACPI support
-To:     Adrien Thierry <athierry@redhat.com>, linux-serial@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9Dl50fvdeDVHYYafqXS8rgfNHdVMJ0arMNo9zcfmZaw=;
+        b=q8i6Xg9E4zd1CtAGVJl3azmOOObLrMBq69Lgd5JsqjC1fZYUmquLfbk4QuesPE8sef
+         7PVO4tWugfXcgJ/jwmtDnk/DdbsCyIuteqcvUlOzAQMOfWWjA5jxcyqeeImXZ1klGqqg
+         x0W6Zbq8e7JEG1+4vQkyJ2cqlKMEUzWb//YB36x77q4wI3hdBs6AFvlviC07Nmjl/ZOX
+         RyqqbE0bCxbg/Y8K+4XhIEf2DVjW2AZklPd81Bd+lEtC9/1LexnRcNOfg18rmZaE9AFe
+         QR+DI3ee145XzxzBva3uSPUf8PSctJqkL883vaQ4NXaD8XgssXtedr0dqWt2Wyhl5+Je
+         FNbA==
+X-Gm-Message-State: AOAM533/99F8oFekNEcw09hMdBel7/s/wMp5riG3lmMJ/1pjqt4WhbNT
+        Hcudr3egyfvimEvkos+QixPTuewKYlaVrSumHregrLmeeTTHLrgfiDwMccOi6x+vdKG25ADaSru
+        h5EIhOMNzHe9KGTCP9j7B0BMJ
+X-Received: by 2002:a05:620a:109c:: with SMTP id g28mr1301541qkk.560.1644276574640;
+        Mon, 07 Feb 2022 15:29:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxRCWy8A39FHJDiaR3HWfSH2PQB5nFtWfWVP+5EnDyIq9AZyugGWgg4wvMnqxvuxjrnVcI/LA==
+X-Received: by 2002:a05:620a:109c:: with SMTP id g28mr1301534qkk.560.1644276574401;
+        Mon, 07 Feb 2022 15:29:34 -0800 (PST)
+Received: from fedora (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id 195sm6132729qkf.30.2022.02.07.15.29.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Feb 2022 15:29:34 -0800 (PST)
+Date:   Mon, 7 Feb 2022 18:29:32 -0500
+From:   Adrien Thierry <athierry@redhat.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-rpi-kernel@lists.infradead.org" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Ray Jui <rjui@broadcom.com>,
         Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com
-References: <20220207232129.402882-1-athierry@redhat.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8b19f824-cd4f-10fc-c13b-0b177324294c@gmail.com>
-Date:   Mon, 7 Feb 2022 15:23:51 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>
+Subject: Re: [PATCH v2] serial: 8250_bcm2835aux: Add ACPI support
+Message-ID: <YgGrXFCsmt4vPcRm@fedora>
+References: <20220203213408.441407-1-athierry@redhat.com>
+ <CAHp75VcCza4A5Yn+yn1HTpyPxuxbyheFQKZFZ_U6UHxcyHY0fQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220207232129.402882-1-athierry@redhat.com>
+In-Reply-To: <CAHp75VcCza4A5Yn+yn1HTpyPxuxbyheFQKZFZ_U6UHxcyHY0fQ@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=athierry@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2/7/22 3:21 PM, Adrien Thierry wrote:
-> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
-> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
-> firmware.
+On Sat, Feb 05, 2022 at 01:58:43AM +0200, Andy Shevchenko wrote:
+> On Thursday, February 3, 2022, Adrien Thierry <athierry@redhat.com> wrote:
 > 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> > Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
+> > use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
+> > firmware.
+> >
+> > Signed-off-by: Adrien Thierry <athierry@redhat.com>
+> > ---
+> > V1 -> V2: Refactored code to remove unnecessary conditional paths and
+> > intermediate variables
+> >
+> >  drivers/tty/serial/8250/8250_bcm2835aux.c | 87 ++++++++++++++++++-----
+> >  1 file changed, 69 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> > b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> > index fd95860cd661..b7cec2a3b5f7 100644
+> > --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> > +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> > @@ -12,6 +12,7 @@
+> >   * simultaneously to rs485.
+> >   */
+> >
+> > +#include <linux/acpi.h>
+> 
+> 
+> For what purposes?
+> Can’t you use device_get_match_data()?
+> 
+> 
+> 
+> >  #include <linux/clk.h>
+> >  #include <linux/io.h>
+> >  #include <linux/module.h>
+> 
+> 
+> property.h?
+> 
+> 
+> > @@ -44,6 +45,10 @@ struct bcm2835aux_data {
+> >         u32 cntl;
+> >  };
+> >
+> > +struct bcm2835_aux_serial_acpi_driver_data {
+> > +       resource_size_t offset;
+> > +};
+> > +
+> >  static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
+> >  {
+> >         if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+> > @@ -82,8 +87,11 @@ static int bcm2835aux_serial_probe(struct
+> > platform_device *pdev)
+> >  {
+> >         struct uart_8250_port up = { };
+> >         struct bcm2835aux_data *data;
+> > +       struct bcm2835_aux_serial_acpi_driver_data *acpi_data;
+> >         struct resource *res;
+> >         int ret;
+> > +       resource_size_t offset = 0;
+> > +       unsigned int uartclk;
+> 
+> 
+> 
+> Keep reversed Xmas tree order?
+> 
+> 
+> 
+> >
+> >         /* allocate the custom structure */
+> >         data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> > @@ -110,8 +118,11 @@ static int bcm2835aux_serial_probe(struct
+> > platform_device *pdev)
+> >
+> >         /* get the clock - this also enables the HW */
+> >         data->clk = devm_clk_get(&pdev->dev, NULL);
+> > -       if (IS_ERR(data->clk))
+> > -               return dev_err_probe(&pdev->dev, PTR_ERR(data->clk),
+> > "could not get clk\n");
+> > +       if (IS_ERR(data->clk)) {
+> > +               ret = device_property_read_u32(&pdev->dev,
+> > "clock-frequency", &uartclk);
+> > +               if (ret)
+> > +                       return dev_err_probe(&pdev->dev, ret, "could not
+> > get clk\n");
+> > +       }
+> >
+> >         /* get the interrupt */
+> >         ret = platform_get_irq(pdev, 0);
+> > @@ -125,20 +136,47 @@ static int bcm2835aux_serial_probe(struct
+> > platform_device *pdev)
+> >                 dev_err(&pdev->dev, "memory resource not found");
+> >                 return -EINVAL;
+> >         }
+> > -       up.port.mapbase = res->start;
+> > -       up.port.mapsize = resource_size(res);
+> > -
+> > -       /* Check for a fixed line number */
+> > -       ret = of_alias_get_id(pdev->dev.of_node, "serial");
+> > -       if (ret >= 0)
+> > -               up.port.line = ret;
+> > -
+> > -       /* enable the clock as a last step */
+> > -       ret = clk_prepare_enable(data->clk);
+> > -       if (ret) {
+> > -               dev_err(&pdev->dev, "unable to enable uart clock - %d\n",
+> > -                       ret);
+> > -               return ret;
+> > +
+> > +       if (has_acpi_companion(&pdev->dev)) {
+> > +               const struct acpi_device_id *match;
+> > +
+> > +               match = acpi_match_device(pdev->dev.driver->acpi_match_table,
+> > &pdev->dev);
+> > +               if (!match)
+> > +                       return -ENODEV;
+> > +
+> > +               acpi_data = (struct bcm2835_aux_serial_acpi_driver_data
+> > *)match->driver_data;
+> 
+> 
+> acpi_data naming is fragile. Use something with local namespace or without
+> it completely (bcm_data, data, ddata, etc).
+> 
+> 
+> > +
+> > +               /* Some UEFI implementations (e.g. tianocore/edk2 for the
+> > Raspberry Pi)
+> > +                * describe the miniuart with a base address that
+> > encompasses the auxiliary
+> > +                * registers shared between the miniuart and spi.
+> > +                *
+> > +                * This is due to historical reasons, see discussion here :
+> > +                * https://edk2.groups.io/g/devel/topic/87501357#84349
+> > +                *
+> > +                * We need to add the offset between the miniuart and
+> > auxiliary
+> > +                * registers to get the real miniuart base address.
+> > +                */
+> > +               offset = acpi_data->offset;
+> 
+> 
+> 
+> 
+> > +       }
+> > +
+> > +       up.port.mapbase = res->start + offset;
+> > +       up.port.mapsize = resource_size(res) - offset;
+> > +
+> > +       if (dev_of_node(&pdev->dev)) {
+> > +               /* Check for a fixed line number */
+> > +               ret = of_alias_get_id(pdev->dev.of_node, "serial");
+> > +               if (ret >= 0)
+> > +                       up.port.line = ret;
+> > +
+> > +               /* enable the clock as a last step */
+> > +               ret = clk_prepare_enable(data->clk);
+> > +               if (ret) {
+> > +                       dev_err(&pdev->dev, "unable to enable uart clock -
+> > %d\n",
+> > +                               ret);
+> > +                       return ret;
+> > +               }
+> > +
+> > +               uartclk = clk_get_rate(data->clk);
+> >         }
+> >
+> >         /* the HW-clock divider for bcm2835aux is 8,
+> > @@ -146,7 +184,7 @@ static int bcm2835aux_serial_probe(struct
+> > platform_device *pdev)
+> >          * so we have to multiply the actual clock by 2
+> >          * to get identical baudrates.
+> >          */
+> > -       up.port.uartclk = clk_get_rate(data->clk) * 2;
+> > +       up.port.uartclk = uartclk * 2;
+> >
+> >         /* register the port */
+> >         ret = serial8250_register_8250_port(&up);
+> > @@ -159,7 +197,9 @@ static int bcm2835aux_serial_probe(struct
+> > platform_device *pdev)
+> >         return 0;
+> >
+> >  dis_clk:
+> > -       clk_disable_unprepare(data->clk);
+> > +       if (dev_of_node(&pdev->dev))
+> > +               clk_disable_unprepare(data->clk);
+> > +
+> 
+> 
+> Why do you change this? CCF is null-aware.
+> 
+> 
+> >         return ret;
+> >  }
+> >
+> > @@ -173,16 +213,27 @@ static int bcm2835aux_serial_remove(struct
+> > platform_device *pdev)
+> >         return 0;
+> >  }
+> >
+> > +static const struct bcm2835_aux_serial_acpi_driver_data
+> > bcm2835_acpi_data = {
+> > +       .offset = 0x40
+> 
+> 
+> 
+>  + comma
+> 
+> 
+> +};
+> > +
+> >  static const struct of_device_id bcm2835aux_serial_match[] = {
+> >         { .compatible = "brcm,bcm2835-aux-uart" },
+> >         { },
+> >  };
+> >  MODULE_DEVICE_TABLE(of, bcm2835aux_serial_match);
+> >
+> > +static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
+> > +       { "BCM2836", (kernel_ulong_t)&bcm2835_acpi_data },
+> > +       { },
+> 
+> 
+> No comma for terminator entry.
+> 
+> 
+> > +};
+> > +MODULE_DEVICE_TABLE(acpi, bcm2835aux_serial_acpi_match);
+> > +
+> >  static struct platform_driver bcm2835aux_serial_driver = {
+> >         .driver = {
+> >                 .name = "bcm2835-aux-uart",
+> >                 .of_match_table = bcm2835aux_serial_match,
+> > +               .acpi_match_table = bcm2835aux_serial_acpi_match,
+> >         },
+> >         .probe  = bcm2835aux_serial_probe,
+> >         .remove = bcm2835aux_serial_remove,
+> >
+> > base-commit: 1f2cfdd349b7647f438c1e552dc1b983da86d830
+> > --
+> > 2.34.1
+> >
+> >
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Thanks for your feedback! I've submitted a v3 addressing your comments.
 
-Looks a lot better, thanks!
--- 
-Florian
+Adrien
+
