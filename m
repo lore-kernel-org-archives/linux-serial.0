@@ -2,57 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E06A2C35295
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15257C35296
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Feb 2022 13:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239408AbiBGNwC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S235279AbiBGNwD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:52:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388549AbiBGNYp (ORCPT
+        with ESMTP id S1449341AbiBGNZl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Feb 2022 08:24:45 -0500
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0C0C043188;
-        Mon,  7 Feb 2022 05:24:42 -0800 (PST)
-Received: by mail-vk1-f176.google.com with SMTP id o11so6890186vkl.11;
-        Mon, 07 Feb 2022 05:24:42 -0800 (PST)
+        Mon, 7 Feb 2022 08:25:41 -0500
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C891BC043181;
+        Mon,  7 Feb 2022 05:25:39 -0800 (PST)
+Received: by mail-ua1-f54.google.com with SMTP id w18so19414123uar.8;
+        Mon, 07 Feb 2022 05:25:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=j/nYR6LcLqtyOADxJCKrH/DHwPPbnTgPo5bzD3HSNiU=;
-        b=IZUcO8xtR6vRxStTYqQkwBD0M1SGQvXoCvWNL2njNQPSnvbs+2IzHqkS07geB7siGi
-         SO0cQJK/mSOyZeLgN62jL0wb3R7zEFJYVgLpM9THimtYRtAMTkwUqQT+hBkXwCs0xQ70
-         Vdz0MDu/uHHB/6gerxRAM7r2VAfryqUZUB7t8nG7rAlKfJ6uGDaTk3z6S2yJ1l5Ts1dm
-         ehOcLq0HxOLgKTv8ArjCa811tZafK7ki1Y62Vl606dgC7+HGhcZ6v+CcdSdPBlFOrJEP
-         e8pC7wC0xIF2w0lPFdYrwcRRlva7zk6hYBFYCQ27E6/tcoFyeaLf3iCpsLu2qsNMRbQd
-         ansQ==
-X-Gm-Message-State: AOAM530xoFAYBtAlte8+YFGBalbKpNMLTojEFjH5Ptig+e3eo4buKdJq
-        JrHF4b/MyD5oQEp5EK5WisBqKW9OjJo7Jg==
-X-Google-Smtp-Source: ABdhPJyUOMPGV8fsuczzntS9oGUufecEK7f0FKLbT1YyZzw996hnUFRRHRZgvTIL9X4JODrJDtxGSQ==
-X-Received: by 2002:a05:6122:588:: with SMTP id i8mr5266433vko.41.1644240281421;
-        Mon, 07 Feb 2022 05:24:41 -0800 (PST)
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
-        by smtp.gmail.com with ESMTPSA id v71sm2192075vsv.1.2022.02.07.05.24.40
+        bh=Wd3WPkRmWQkvJcLllFtReOXpDqEuuoBl0LhJt/0llQU=;
+        b=Rsae0927/6vFkqsu8jqH837/6nd3zD0mhiIYjNfhwrDSSN6ix0vAPoLyM9kadm+7yl
+         m+R88G9wjRtA9XSBLFp+ZWJ1LIl1K9uvUPy36sEC1CPdmaywFUGZ/VzwnCepj+A83Cgx
+         np/N3DJ5EAe6qS11RCVAINVkp3FESxG4fBYMOMzlyCC5ZM3Oj0+GPa7u7GYDBu1vALDx
+         +nbnVmWes8WylVy696pBAIJREgkq60lr0xTJJo/YxBDKUrowQ0p2tELksdMMs5p7eTkY
+         pruIj3OxSb9xNc+E7+tVter8wF29hHfuxpShGB1sVsvuFKuWwowqNRht4FJo3SbdIczg
+         4ymA==
+X-Gm-Message-State: AOAM533Ngg5G73l+DOXt67+9SUpbHOgFqhYGN9R3Famym12g3AklJeCE
+        BhqqP74Efz0HqwQI6MHKbccKX1rGgF+1DA==
+X-Google-Smtp-Source: ABdhPJyRWNFVY779latvad8uC2fI9gA/e8HlbopuAFYZWXCktk1GOG0zHKYlAnDeJXTBcDwJsuVfBA==
+X-Received: by 2002:ab0:6851:: with SMTP id a17mr507703uas.97.1644240338922;
+        Mon, 07 Feb 2022 05:25:38 -0800 (PST)
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com. [209.85.221.171])
+        by smtp.gmail.com with ESMTPSA id y12sm2496968uai.11.2022.02.07.05.25.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Feb 2022 05:24:40 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id u25so7773903vkk.3;
-        Mon, 07 Feb 2022 05:24:40 -0800 (PST)
-X-Received: by 2002:a1f:b496:: with SMTP id d144mr323407vkf.20.1644240280557;
- Mon, 07 Feb 2022 05:24:40 -0800 (PST)
+        Mon, 07 Feb 2022 05:25:38 -0800 (PST)
+Received: by mail-vk1-f171.google.com with SMTP id u25so7775615vkk.3;
+        Mon, 07 Feb 2022 05:25:38 -0800 (PST)
+X-Received: by 2002:a05:6122:c8f:: with SMTP id ba15mr5085345vkb.39.1644240338388;
+ Mon, 07 Feb 2022 05:25:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20220206184749.11532-1-biju.das.jz@bp.renesas.com> <20220206184749.11532-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20220206184749.11532-2-biju.das.jz@bp.renesas.com>
+References: <20220206184749.11532-1-biju.das.jz@bp.renesas.com> <20220206184749.11532-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20220206184749.11532-3-biju.das.jz@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 7 Feb 2022 14:24:29 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVPOjQLBZ+F6b7Wb4HoASxfM_9Cr6PPmeGmsArr=WnjqA@mail.gmail.com>
-Message-ID: <CAMuHMdVPOjQLBZ+F6b7Wb4HoASxfM_9Cr6PPmeGmsArr=WnjqA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: serial: renesas,scif: Document RZ/G2UL SoC
+Date:   Mon, 7 Feb 2022 14:25:27 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUGS9fzJo8D-g8NC-A6ST3-eh=DDa_sdLHnwiUBeRa8Qw@mail.gmail.com>
+Message-ID: <CAMuHMdUGS9fzJo8D-g8NC-A6ST3-eh=DDa_sdLHnwiUBeRa8Qw@mail.gmail.com>
+Subject: Re: [PATCH 3/3] dt-bindings: serial: renesas,sci: Document RZ/G2UL SoC
 To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
         <devicetree@vger.kernel.org>,
@@ -65,33 +64,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Biju,
-
 On Sun, Feb 6, 2022 at 7:48 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> Add SCIF binding documentation for Renesas RZ/G2UL SoC. SCIF block on
-> RZ/G2UL is identical to one found on the RZ/G2L SoC. No driver changes
-> are required as RZ/G2L compatible string "renesas,scif-r9a07g044" will
-> be used as a fallback.
+> Add SCI binding documentation for Renesas RZ/G2UL SoC. No driver changes
+> are required as generic compatible string "renesas,sci" will be used as
+> a fallback.
 >
 > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-
-Thanks for your patch!
-
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -76,8 +76,9 @@ properties:
->
->        - items:
->            - enum:
-> +              - renesas,scif-r9a07g043      # RZ/G2UL
->                - renesas,scif-r9a07g054      # RZ/V2L
-> -          - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback for RZ/V2L
-> +          - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback for RZ/{G2UL,V2L}
-
-To avoid having to update this comment over and over again,
-perhaps the "for ..." should be dropped?
-
-The rest looks good to me.
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
