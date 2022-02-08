@@ -2,119 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B39EC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D193C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356464AbiBHLah (ORCPT
+        id S1356683AbiBHLal (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
+        Tue, 8 Feb 2022 06:30:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357010AbiBHLQj (ORCPT
+        with ESMTP id S244906AbiBHKEE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Feb 2022 06:16:39 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54857C03FEC0;
-        Tue,  8 Feb 2022 03:16:39 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id g14so48689794ybs.8;
-        Tue, 08 Feb 2022 03:16:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nu7/YVH6EUneCQklBZ5MS41to049uINEDS/3iIPXoMM=;
-        b=AVCxW/K+sd6X3H3McN/ORZimi27QyU+E4rTwL57qwrLaqRtOYtASwb9CTB+41zgtlB
-         xsJ7e6yG/UHvktqGc/lV3qQxjDllvsSpw6DGTj7ot7BG8+AbgGh955xF73s5CHEhwAbB
-         QjhuGYGXEOCir9YbXYCxEKtHmzgew0aUgfRGbcrjKgiz1+T387Qokq7ufwJm7ZnP45pE
-         PWDSukRXZnBK/z5R1Eu2rJIf7Kq0NqI3J9gQuklL2fKz6hOQx2/4M9fG39iXb122NQMg
-         ZgvMG9BjYz29MfLVgsNHI/CIWdvqf7QStFMajgKL9LBjixChFljGNn5I1s1AX4pe1Sz5
-         IVMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nu7/YVH6EUneCQklBZ5MS41to049uINEDS/3iIPXoMM=;
-        b=3rvetcpUbeRg7+wQNoqEDV//+9jNp/RpATY1y9ZKNHGoyDllD05uXrTS4bR58Jg/6y
-         S33k4YYxmUxzeST6a7PaSfoN33J9pMIv2kD/BaGup2DXHekV8+qd0rrWZvEEVEKncvvj
-         zFfdbvU8I/ERbpW63gDHxMUDM3WTekhBPvEZARYec9dAj+2vPIYOjtjuK0hdo8dgV37C
-         xTuFluiL6JlCSqnE5Z9gcBJSw6PoBN8vCHD1CoSXDDHyuKsx6nEAgIUH4zwqea1WKQva
-         8aE6VnN9bCavGbgArBBoRU3z8qTXYmQnT/AIXDfddkOCvgNz8kq4GYEzcEoMml2UIyTT
-         YPlQ==
-X-Gm-Message-State: AOAM5317I5b9Gb5hRnMAIZY/lZtd2QOJT16ObZf3XhTHDcb2c7bbAxxn
-        QNFUcrRgX7+fbm3jnKlw6NnyqcqHOhADwtZGYOI=
-X-Google-Smtp-Source: ABdhPJz06wEjYiXp/Zki0OtcMPFFilsPoeZ54FGyMmqZbxwlJBCVPRQ+mK6VPpT2h7ZZnDVf/HoHKhSgfOq+O6jr5hg=
-X-Received: by 2002:a81:ac09:: with SMTP id k9mr4332831ywh.356.1644318998417;
- Tue, 08 Feb 2022 03:16:38 -0800 (PST)
+        Tue, 8 Feb 2022 05:04:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3497FC03FEC0;
+        Tue,  8 Feb 2022 02:04:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C82C5B819AA;
+        Tue,  8 Feb 2022 10:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D1CC340ED;
+        Tue,  8 Feb 2022 10:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644314639;
+        bh=9XRxX5n5xmPLXTFls/kdqprhfHPlsurq93wudUcHvmI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ydMfYgvttYlxl9uRj9Idy5Mfb8u3n3OXW3As+08WOsMeVgyEFsIELiokvKXAza88c
+         q+ArZi2JeMzdkwiYIC0h7rfZzDkecdHEsCX5Opcb2I4tCAzLDMedbto4z8meqsvHsG
+         itZ329OsvY3CyLkSCy7t5yq0VrQU3vmhnOF9VhfA=
+Date:   Tue, 8 Feb 2022 11:03:56 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Harald Seiler <hws@denx.de>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-serial@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
+Message-ID: <YgJADKxWfOZroS35@kroah.com>
+References: <20220119145204.238767-1-hws@denx.de>
+ <20220119151145.zft47rzebnabiej2@pengutronix.de>
+ <0df5d9ea2081f5d798f80297efb973f542dae183.camel@denx.de>
+ <20220119162122.jmnz2hxid76p4hli@pengutronix.de>
+ <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
 MIME-Version: 1.0
-References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
- <1644213481-20321-3-git-send-email-hammerh0314@gmail.com> <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
-In-Reply-To: <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
-From:   hammer hsieh <hammerh0314@gmail.com>
-Date:   Tue, 8 Feb 2022 19:16:52 +0800
-Message-ID: <CAOX-t569-0aTu73eGSY3k+btAuVgueRY91Jd5b9kbpjmxPp+Dw@mail.gmail.com>
-Subject: Re: [PATCH v7 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=97=
-=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=882:27=E5=AF=AB=E9=81=93=EF=BC=9A
->
+On Wed, Jan 19, 2022 at 05:59:46PM +0100, Harald Seiler wrote:
 > Hi,
->
-> On 07. 02. 22, 6:58, Hammer Hsieh wrote:
-> > +static void sunplus_shutdown(struct uart_port *port)
-> > +{
-> > +     unsigned long flags;
-> > +     unsigned int isc;
-> > +
-> > +     spin_lock_irqsave(&port->lock, flags);
-> > +
-> > +     isc =3D readl(port->membase + SUP_UART_ISC);
-> > +     isc &=3D ~(SUP_UART_ISC_RXM | SUP_UART_ISC_TXM);
->
-> Is this correct? I mean: will the SUP_UART_ISC read contain the control
-> bits, not only status bits?
->
+> 
+> On Wed, 2022-01-19 at 17:21 +0100, Uwe Kleine-König wrote:
+> > On Wed, Jan 19, 2022 at 04:20:12PM +0100, Harald Seiler wrote:
+> > > Hi,
+> > > 
+> > > On Wed, 2022-01-19 at 16:11 +0100, Uwe Kleine-König wrote:
+> > > > On Wed, Jan 19, 2022 at 03:52:03PM +0100, Harald Seiler wrote:
+> > > > > Right now, even when `delay_rts_before_send` and `delay_rts_after_send`
+> > > > > are 0, the hrtimer is triggered (with timeout 0) which can introduce a
+> > > > > few 100us of additional overhead on slower i.MX platforms.
+> > > > > 
+> > > > > Implement a fast path when the delays are 0, where the RTS signal is
+> > > > > toggled immediately instead of going through an hrtimer.  This fast path
+> > > > > behaves identical to the code before delay support was implemented.
+> > > > > 
+> > > > > Signed-off-by: Harald Seiler <hws@denx.de>
+> > > > > ---
+> > > > >  drivers/tty/serial/imx.c | 18 ++++++++++++++----
+> > > > >  1 file changed, 14 insertions(+), 4 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > > > index df8a0c8b8b29..67bbbb69229d 100644
+> > > > > --- a/drivers/tty/serial/imx.c
+> > > > > +++ b/drivers/tty/serial/imx.c
+> > > > > @@ -455,9 +455,14 @@ static void imx_uart_stop_tx(struct uart_port *port)
+> > > > >  	if (port->rs485.flags & SER_RS485_ENABLED) {
+> > > > >  		if (sport->tx_state == SEND) {
+> > > > >  			sport->tx_state = WAIT_AFTER_SEND;
+> > > > > -			start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > > > +
+> > > > > +			if (port->rs485.delay_rts_after_send > 0) {
+> > > > > +				start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > > >  					 port->rs485.delay_rts_after_send);
+> > > > > -			return;
+> > > > > +				return;
+> > > > > +			}
+> > > > > +
+> > > > > +			/* continue without any delay */
+> > > > 
+> > > > Is it right to keep the assignment sport->tx_state = WAIT_AFTER_SEND ?
+> > > 
+> > > I am keeping the assignment intentionally, to fall into the
+> > > if(state == WAIT_AFTER_RTS) below (which then sets the state to OFF).
+> > > I originally had the code structured like this:
+> > > 
+> > > 	if (port->rs485.delay_rts_after_send > 0) {
+> > > 		sport->tx_state = WAIT_AFTER_SEND;
+> > > 		start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > 			 port->rs485.delay_rts_after_send);
+> > > 		return;
+> > > 	} else {
+> > > 		/* continue without any delay */
+> > > 		sport->tx_state = WAIT_AFTER_SEND;
+> > > 	}
+> > > 
+> > > This is functionally identical, but maybe a bit more explicit.
+> > > 
+> > > Not sure what is more clear to read?
+> > 
+> > I didn't oppose to the readability thing. With your patch you skip
+> > starting the stop_tx timer and that would usually care for calling
+> > imx_uart_stop_tx and setting sport->tx_state = OFF. This doesn't happen
+> > with your patch any more.
+> 
+> Not starting the timer is the entire point of the patch - instead, the
+> code which would run inside the timer callback now runs immediately. To
+> do this, I set the tx_state to WAIT_AFTER_SEND and _don't_ do the early
+> return which leads into the if(tx_state == WAIT_AFTER_SEND) below.  This
+> is the code-path which normally runs later in the hrtimer callback.
+> 
+> I suppose it would have been good to provide more context lines in the
+> patch... Here is the relevant bit (in the changed version now):
+> 
+> 	if (sport->tx_state == SEND) {
+> 		sport->tx_state = WAIT_AFTER_SEND;
+> 
+> 		if (port->rs485.delay_rts_after_send > 0) {
+> 			start_hrtimer_ms(&sport->trigger_stop_tx,
+> 				 port->rs485.delay_rts_after_send);
+> 			return;
+> 		}
+> 
+> 		/* continue without any delay */
+> 	}
+> 
+> 	if (sport->tx_state == WAIT_AFTER_RTS ||
+> 	    sport->tx_state == WAIT_AFTER_SEND) {
+> 		/* ... actual rts toggling ... */
+> 
+> 		sport->tx_state = OFF;
+> 	}
+> 
 
-I assume reviewers don't like writel(0,xxx).
-So I use definition to let the code easy to read.
-The purpose is to clear all interrupt.
-Bit[3:0] status bit only for read, write 1 or 0 no effect.
+Uwe, any thoughts about if this patch should be taken or not?
 
-> > +     writel(isc, port->membase + SUP_UART_ISC);
-> > +
-> > +     spin_unlock_irqrestore(&port->lock, flags);
-> > +
-> > +     free_irq(port->irq, port);
->
-> I am still waiting for explanation why this is safe with respect to
-> posted writes.
->
+thanks,
 
-Actually I'm not IC designer, not expert for bus design.
-About data incoherence issue between memory bus and peripheral bus.
-In case of AXI bus, use non-posted write can avoid data incoherence issue.
-What if in case of posted write:
-Send a specific command after last write command.
-SDCTRL identify specific command, means previous write command done.
-Then send interrupt signal to interrupt controller.
-And then interrupt controller send done signal to Master.
-Master receive done signal, means write command done.
-Then issue a interrupt or proceed next write command.
-
-IC designer told us no problem, and as a uart driver maintainer.
-It is not my concern, but glad you ask.
-Let me have chance to know it from IC designer.
-
-> regards,
-> --
-> js
-> suse labs
+greg k-h
