@@ -2,141 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D94C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B39EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347940AbiBHLag (ORCPT
+        id S1356464AbiBHLah (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
+        Tue, 8 Feb 2022 06:30:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356333AbiBHKc2 (ORCPT
+        with ESMTP id S1357010AbiBHLQj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:32:28 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58749C03FEC0;
-        Tue,  8 Feb 2022 02:32:27 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id co28so9394010edb.1;
-        Tue, 08 Feb 2022 02:32:27 -0800 (PST)
+        Tue, 8 Feb 2022 06:16:39 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54857C03FEC0;
+        Tue,  8 Feb 2022 03:16:39 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id g14so48689794ybs.8;
+        Tue, 08 Feb 2022 03:16:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v3+9Y32cf+Ax3G/iWkV5vM08y7nrpNijPcp38VaOUAE=;
-        b=Kw06RO75rbLUFrLHJ93ga19ZxxshO5/eizKWNfLYjMLV3cJLg4d6s+I98J5q0VdCGo
-         NS6bdVcwDSY89lrxKuzs2BAoT4Fpucs1BIEecy7QnncI/TKM2grUufsKf8mumEt7xgzB
-         gElndbyM+A7LeU83VNqK8dqsVA2jgtQfpn0Ew0uTKWbBmFbbM9waSxznq4LOd2UFOfIi
-         5AoAAcr/B87VPn5AjrWpUQgsdKowxCKuJIGRJwVMstEcDgP+PZ/CajWf3g7IBNv9uLXt
-         1s0Ml5wnJw0nag6BMDmDNPHTcbRIdl6rALNKSZTP67OzwrJaU5Q7Edci0gw/YsRFEyCp
-         XiQg==
+         :cc:content-transfer-encoding;
+        bh=nu7/YVH6EUneCQklBZ5MS41to049uINEDS/3iIPXoMM=;
+        b=AVCxW/K+sd6X3H3McN/ORZimi27QyU+E4rTwL57qwrLaqRtOYtASwb9CTB+41zgtlB
+         xsJ7e6yG/UHvktqGc/lV3qQxjDllvsSpw6DGTj7ot7BG8+AbgGh955xF73s5CHEhwAbB
+         QjhuGYGXEOCir9YbXYCxEKtHmzgew0aUgfRGbcrjKgiz1+T387Qokq7ufwJm7ZnP45pE
+         PWDSukRXZnBK/z5R1Eu2rJIf7Kq0NqI3J9gQuklL2fKz6hOQx2/4M9fG39iXb122NQMg
+         ZgvMG9BjYz29MfLVgsNHI/CIWdvqf7QStFMajgKL9LBjixChFljGNn5I1s1AX4pe1Sz5
+         IVMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v3+9Y32cf+Ax3G/iWkV5vM08y7nrpNijPcp38VaOUAE=;
-        b=pYlp37jRKIhFlVBCUt9GLmcknxEzsOO1OzQ5+iBlcqzwuXhXFVDTxiM+iInwIvPgiZ
-         FY+Ccuj8mCVzscoQ9M4wCxpLZIvwIa9VPeKCOnrfZ6+dhvnoBw3fVQ2wnmbmseoDT5ic
-         3LfdygKlaQIE+4YZ93iun+XiRbseuig9ynwkIGnryMkcKXxD/Yb3V+KX+ez1mPygIK3x
-         vdk1IUs8hYOEM1PzuhOvNnG1es0tlsRHvay3nQrmloxwAz72wwCEV91WnZj7bnKYgA8i
-         jd0nO4pNIy6aT+0Q44CcuW0KiyNnQ9IPYa4ywj4ETG2VJODz5+qvqC8AgBKy1tdvNVyn
-         RyQw==
-X-Gm-Message-State: AOAM530gdBl8apMDHCHG83EFqJFWjFXFqplOlolnvDo+qwoXsP+Xgfek
-        g/t4Qus1AhnDuI9XyVh0SmIopHrRAbrYMAz6jtY=
-X-Google-Smtp-Source: ABdhPJwz3uJ6NB6o/NiskBls8cso3tajnnfMcijvIzyd4aD0huokx70+fDoPUd5tajwSs1cuxL+FwQ51hqdYoSjLnWo=
-X-Received: by 2002:a05:6402:2741:: with SMTP id z1mr3760419edd.264.1644316345736;
- Tue, 08 Feb 2022 02:32:25 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nu7/YVH6EUneCQklBZ5MS41to049uINEDS/3iIPXoMM=;
+        b=3rvetcpUbeRg7+wQNoqEDV//+9jNp/RpATY1y9ZKNHGoyDllD05uXrTS4bR58Jg/6y
+         S33k4YYxmUxzeST6a7PaSfoN33J9pMIv2kD/BaGup2DXHekV8+qd0rrWZvEEVEKncvvj
+         zFfdbvU8I/ERbpW63gDHxMUDM3WTekhBPvEZARYec9dAj+2vPIYOjtjuK0hdo8dgV37C
+         xTuFluiL6JlCSqnE5Z9gcBJSw6PoBN8vCHD1CoSXDDHyuKsx6nEAgIUH4zwqea1WKQva
+         8aE6VnN9bCavGbgArBBoRU3z8qTXYmQnT/AIXDfddkOCvgNz8kq4GYEzcEoMml2UIyTT
+         YPlQ==
+X-Gm-Message-State: AOAM5317I5b9Gb5hRnMAIZY/lZtd2QOJT16ObZf3XhTHDcb2c7bbAxxn
+        QNFUcrRgX7+fbm3jnKlw6NnyqcqHOhADwtZGYOI=
+X-Google-Smtp-Source: ABdhPJz06wEjYiXp/Zki0OtcMPFFilsPoeZ54FGyMmqZbxwlJBCVPRQ+mK6VPpT2h7ZZnDVf/HoHKhSgfOq+O6jr5hg=
+X-Received: by 2002:a81:ac09:: with SMTP id k9mr4332831ywh.356.1644318998417;
+ Tue, 08 Feb 2022 03:16:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20220207232129.402882-1-athierry@redhat.com>
-In-Reply-To: <20220207232129.402882-1-athierry@redhat.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 8 Feb 2022 12:31:49 +0200
-Message-ID: <CAHp75VexSp1kijGHoOijSHB44fHTWqj6LZPzhSBhN2ms2huh-g@mail.gmail.com>
-Subject: Re: [PATCH v3] serial: 8250_bcm2835aux: Add ACPI support
-To:     Adrien Thierry <athierry@redhat.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
+References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
+ <1644213481-20321-3-git-send-email-hammerh0314@gmail.com> <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
+In-Reply-To: <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Tue, 8 Feb 2022 19:16:52 +0800
+Message-ID: <CAOX-t569-0aTu73eGSY3k+btAuVgueRY91Jd5b9kbpjmxPp+Dw@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 11:13 AM Adrien Thierry <athierry@redhat.com> wrote:
+Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=97=
+=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=882:27=E5=AF=AB=E9=81=93=EF=BC=9A
 >
-> Add ACPI support to 8250_bcm2835aux driver. This makes it possible to
-> use the miniuart on the Raspberry Pi with the tianocore/edk2 UEFI
+> Hi,
+>
+> On 07. 02. 22, 6:58, Hammer Hsieh wrote:
+> > +static void sunplus_shutdown(struct uart_port *port)
+> > +{
+> > +     unsigned long flags;
+> > +     unsigned int isc;
+> > +
+> > +     spin_lock_irqsave(&port->lock, flags);
+> > +
+> > +     isc =3D readl(port->membase + SUP_UART_ISC);
+> > +     isc &=3D ~(SUP_UART_ISC_RXM | SUP_UART_ISC_TXM);
+>
+> Is this correct? I mean: will the SUP_UART_ISC read contain the control
+> bits, not only status bits?
+>
 
-TianoCore EDK II
+I assume reviewers don't like writel(0,xxx).
+So I use definition to let the code easy to read.
+The purpose is to clear all interrupt.
+Bit[3:0] status bit only for read, write 1 or 0 no effect.
 
-> firmware.
+> > +     writel(isc, port->membase + SUP_UART_ISC);
+> > +
+> > +     spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> > +     free_irq(port->irq, port);
+>
+> I am still waiting for explanation why this is safe with respect to
+> posted writes.
+>
 
-...
+Actually I'm not IC designer, not expert for bus design.
+About data incoherence issue between memory bus and peripheral bus.
+In case of AXI bus, use non-posted write can avoid data incoherence issue.
+What if in case of posted write:
+Send a specific command after last write command.
+SDCTRL identify specific command, means previous write command done.
+Then send interrupt signal to interrupt controller.
+And then interrupt controller send done signal to Master.
+Master receive done signal, means write command done.
+Then issue a interrupt or proceed next write command.
 
->         /* get the clock - this also enables the HW */
-> -       data->clk = devm_clk_get(&pdev->dev, NULL);
+IC designer told us no problem, and as a uart driver maintainer.
+It is not my concern, but glad you ask.
+Let me have chance to know it from IC designer.
 
-> -       if (IS_ERR(data->clk))
-> -               return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
-
-You shouldn't remove the error handling. Even if optional there may be
-other types of errors that need to be reported.
-
-> +       data->clk = devm_clk_get_optional(&pdev->dev, NULL);
-
-...
-
-
-> +       bcm_data = device_get_match_data(&pdev->dev);
-
-Move this closer to the condition where it's used the first time.
-
-> +       /* Some UEFI implementations (e.g. tianocore/edk2 for the Raspberry Pi)
-.
-If there are some not doing that, can we end up in the situation when
-for the same ID we have different offset?
-Also, Why not go and fix that implementation?
-Can you provide a DSDT excerpt to show how it looks there?
-
-TianoCore EDK II
-
-/*
- * Multi-line comments should look
- * like this.
- */
-
-> +        * describe the miniuart with a base address that encompasses the auxiliary
-> +        * registers shared between the miniuart and spi.
-
-SPI
-
-> +        *
-> +        * This is due to historical reasons, see discussion here :
-> +        * https://edk2.groups.io/g/devel/topic/87501357#84349
-> +        *
-> +        * We need to add the offset between the miniuart and auxiliary
-> +        * registers to get the real miniuart base address.
-> +        */
-> +       if (bcm_data)
-> +               offset = bcm_data->offset;
-
-...
-
-> +static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
-> +       { "BCM2836", (kernel_ulong_t)&bcm2835_acpi_data },
-> +       { }
-> +};
-
-I believe this ID is allocated by Broadcom. Can we have a confirmation, please?
-
--- 
-With Best Regards,
-Andy Shevchenko
+> regards,
+> --
+> js
+> suse labs
