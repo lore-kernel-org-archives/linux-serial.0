@@ -2,160 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D193C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37DF9C4167E
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356683AbiBHLal (ORCPT
+        id S1356938AbiBHLan (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        Tue, 8 Feb 2022 06:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244906AbiBHKEE (ORCPT
+        with ESMTP id S1356063AbiBHKHK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:04:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3497FC03FEC0;
-        Tue,  8 Feb 2022 02:04:02 -0800 (PST)
+        Tue, 8 Feb 2022 05:07:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC26C03FEC0;
+        Tue,  8 Feb 2022 02:07:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C82C5B819AA;
-        Tue,  8 Feb 2022 10:04:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D1CC340ED;
-        Tue,  8 Feb 2022 10:03:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51E25B81802;
+        Tue,  8 Feb 2022 10:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55214C340EF;
+        Tue,  8 Feb 2022 10:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644314639;
-        bh=9XRxX5n5xmPLXTFls/kdqprhfHPlsurq93wudUcHvmI=;
+        s=korg; t=1644314827;
+        bh=OikrdX8FMNiMLuMVEJTQbFg4yac0GkRiulyJsMntNGY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ydMfYgvttYlxl9uRj9Idy5Mfb8u3n3OXW3As+08WOsMeVgyEFsIELiokvKXAza88c
-         q+ArZi2JeMzdkwiYIC0h7rfZzDkecdHEsCX5Opcb2I4tCAzLDMedbto4z8meqsvHsG
-         itZ329OsvY3CyLkSCy7t5yq0VrQU3vmhnOF9VhfA=
-Date:   Tue, 8 Feb 2022 11:03:56 +0100
+        b=jiP1EPaq3l/aJLJwYUcK5NMYqW2KzAtVaLuE9HOb9vDiTt92PUE12lcvGYU6E6zqt
+         XcPHv5v36KfoKOmKMk4R3I/1iVdMxdBG53W5NftkumO7AlhhmCtBDucZk4S+gPHloK
+         ss7Xe7jZpLAI2h8sTcfxDRByeIUNzXrPHSohN2ps=
+Date:   Tue, 8 Feb 2022 11:07:04 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Harald Seiler <hws@denx.de>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        linux-serial@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+To:     Erwan LE RAY <erwan.leray@foss.st.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
-Message-ID: <YgJADKxWfOZroS35@kroah.com>
-References: <20220119145204.238767-1-hws@denx.de>
- <20220119151145.zft47rzebnabiej2@pengutronix.de>
- <0df5d9ea2081f5d798f80297efb973f542dae183.camel@denx.de>
- <20220119162122.jmnz2hxid76p4hli@pengutronix.de>
- <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serial: mctrl_gpio: add a new API to enable /
+ disable wake_irq
+Message-ID: <YgJAyAZFJBFXQGvf@kroah.com>
+References: <20220203171644.12231-1-erwan.leray@foss.st.com>
+ <20220203171644.12231-2-erwan.leray@foss.st.com>
+ <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
+ <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
+In-Reply-To: <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 05:59:46PM +0100, Harald Seiler wrote:
-> Hi,
+On Fri, Feb 04, 2022 at 04:41:58PM +0100, Erwan LE RAY wrote:
+> Hi Andy,
 > 
-> On Wed, 2022-01-19 at 17:21 +0100, Uwe Kleine-König wrote:
-> > On Wed, Jan 19, 2022 at 04:20:12PM +0100, Harald Seiler wrote:
-> > > Hi,
-> > > 
-> > > On Wed, 2022-01-19 at 16:11 +0100, Uwe Kleine-König wrote:
-> > > > On Wed, Jan 19, 2022 at 03:52:03PM +0100, Harald Seiler wrote:
-> > > > > Right now, even when `delay_rts_before_send` and `delay_rts_after_send`
-> > > > > are 0, the hrtimer is triggered (with timeout 0) which can introduce a
-> > > > > few 100us of additional overhead on slower i.MX platforms.
-> > > > > 
-> > > > > Implement a fast path when the delays are 0, where the RTS signal is
-> > > > > toggled immediately instead of going through an hrtimer.  This fast path
-> > > > > behaves identical to the code before delay support was implemented.
-> > > > > 
-> > > > > Signed-off-by: Harald Seiler <hws@denx.de>
-> > > > > ---
-> > > > >  drivers/tty/serial/imx.c | 18 ++++++++++++++----
-> > > > >  1 file changed, 14 insertions(+), 4 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > > > index df8a0c8b8b29..67bbbb69229d 100644
-> > > > > --- a/drivers/tty/serial/imx.c
-> > > > > +++ b/drivers/tty/serial/imx.c
-> > > > > @@ -455,9 +455,14 @@ static void imx_uart_stop_tx(struct uart_port *port)
-> > > > >  	if (port->rs485.flags & SER_RS485_ENABLED) {
-> > > > >  		if (sport->tx_state == SEND) {
-> > > > >  			sport->tx_state = WAIT_AFTER_SEND;
-> > > > > -			start_hrtimer_ms(&sport->trigger_stop_tx,
-> > > > > +
-> > > > > +			if (port->rs485.delay_rts_after_send > 0) {
-> > > > > +				start_hrtimer_ms(&sport->trigger_stop_tx,
-> > > > >  					 port->rs485.delay_rts_after_send);
-> > > > > -			return;
-> > > > > +				return;
-> > > > > +			}
-> > > > > +
-> > > > > +			/* continue without any delay */
-> > > > 
-> > > > Is it right to keep the assignment sport->tx_state = WAIT_AFTER_SEND ?
-> > > 
-> > > I am keeping the assignment intentionally, to fall into the
-> > > if(state == WAIT_AFTER_RTS) below (which then sets the state to OFF).
-> > > I originally had the code structured like this:
-> > > 
-> > > 	if (port->rs485.delay_rts_after_send > 0) {
-> > > 		sport->tx_state = WAIT_AFTER_SEND;
-> > > 		start_hrtimer_ms(&sport->trigger_stop_tx,
-> > > 			 port->rs485.delay_rts_after_send);
-> > > 		return;
-> > > 	} else {
-> > > 		/* continue without any delay */
-> > > 		sport->tx_state = WAIT_AFTER_SEND;
-> > > 	}
-> > > 
-> > > This is functionally identical, but maybe a bit more explicit.
-> > > 
-> > > Not sure what is more clear to read?
+> On 2/4/22 10:07 AM, Andy Shevchenko wrote:
 > > 
-> > I didn't oppose to the readability thing. With your patch you skip
-> > starting the stop_tx timer and that would usually care for calling
-> > imx_uart_stop_tx and setting sport->tx_state = OFF. This doesn't happen
-> > with your patch any more.
+> > 
+> > On Thursday, February 3, 2022, Erwan Le Ray <erwan.leray@foss.st.com
+> > <mailto:erwan.leray@foss.st.com>> wrote:
+> > 
+> >     Add a new API to enable / disable wake_irq in order to enable gpio
+> >     irqs as
+> >     wakeup irqs for the uart port.
+> > 
+> >     Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com
+> >     <mailto:erwan.leray@foss.st.com>>
+> > 
+> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.c
+> >     b/drivers/tty/serial/serial_mctrl_gpio.c
+> >     index c41d8911ce95..1663b3afc3a0 100644
+> >     --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> >     @@ -299,4 +299,42 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios
+> >     *gpios)
+> >       }
+> >       EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
+> > 
+> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
+> >     +{
+> >     +       enum mctrl_gpio_idx i;
+> >     +
+> >     +       if (!gpios)
+> >     +               return;
+> >     +
+> >     +       if (!gpios->mctrl_on)
+> >     +               return;
+> >     +
+> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+> >     +               if (!gpios->irq[i])
+> >     +                       continue;
+> > 
+> > 
+> > 
+> > Why not simply
+> > 
+> >    if (gpios[])
+> >      enable_irq_...
+> > 
+> > ?
+> > 
+> > And same for disabling.
+> > 
+> >     +
+> >     +               enable_irq_wake(gpios->irq[i]);
+> >     +       }
+> >     +}
+> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_enable_irq_wake);
+> >     +
+> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios)
+> >     +{
+> >     +       enum mctrl_gpio_idx i;
+> >     +
+> >     +       if (!gpios)
+> >     +               return;
+> >     +
+> >     +       if (!gpios->mctrl_on)
+> >     +               return;
+> >     +
+> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
+> >     +               if (!gpios->irq[i])
+> >     +                       continue;
+> >     +
+> >     +               disable_irq_wake(gpios->irq[i]);
+> >     +       }
+> >     +}
+> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_disable_irq_wake);
+> >     +
+> >       MODULE_LICENSE("GPL");
+> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
+> >     b/drivers/tty/serial/serial_mctrl_gpio.h
+> >     index b134a0ffc894..fc76910fb105 100644
+> >     --- a/drivers/tty/serial/serial_mctrl_gpio.h
+> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.h
+> >     @@ -91,6 +91,16 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
+> >        */
+> >       void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
+> > 
+> >     +/*
+> >     + * Enable gpio wakeup interrupts to enable wake up source.
+> >     + */
+> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios);
+> >     +
+> >     +/*
+> >     + * Disable gpio wakeup interrupts to enable wake up source.
+> >     + */
+> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios);
+> >     +
+> >       #else /* GPIOLIB */
+> > 
+> >       static inline
+> >     @@ -142,6 +152,14 @@ static inline void mctrl_gpio_disable_ms(struct
+> >     mctrl_gpios *gpios)
+> >       {
+> >       }
+> > 
+> >     +static inline void mctrl_gpio_enable_irq_wake(struct mctrl_gpios
+> >     *gpios)
+> >     +{
+> >     +}
+> >     +
+> >     +static inline void mctrl_gpio_disable_irq_wake(struct mctrl_gpios
+> >     *gpios)
+> >     +{
+> >     +}
+> >     +
+> >       #endif /* GPIOLIB */
+> > 
+> >       #endif
+> >     --     2.17.1
+> > 
+> > 
+> > 
+> > -- 
+> > With Best Regards,
+> > Andy Shevchenko
+> > 
+> > 
 > 
-> Not starting the timer is the entire point of the patch - instead, the
-> code which would run inside the timer callback now runs immediately. To
-> do this, I set the tx_state to WAIT_AFTER_SEND and _don't_ do the early
-> return which leads into the if(tx_state == WAIT_AFTER_SEND) below.  This
-> is the code-path which normally runs later in the hrtimer callback.
+> Thanks for your review.
+> I fully agree with your comment, but I wrote this code like it is to keep
+> the same structure than all the other ops of serial_mcrtrl_gpio driver. I
+> preferred keeping an homogeneous code in the driver rather than breaking the
+> driver homogeneity with the addition of an optimized code.
 > 
-> I suppose it would have been good to provide more context lines in the
-> patch... Here is the relevant bit (in the changed version now):
-> 
-> 	if (sport->tx_state == SEND) {
-> 		sport->tx_state = WAIT_AFTER_SEND;
-> 
-> 		if (port->rs485.delay_rts_after_send > 0) {
-> 			start_hrtimer_ms(&sport->trigger_stop_tx,
-> 				 port->rs485.delay_rts_after_send);
-> 			return;
-> 		}
-> 
-> 		/* continue without any delay */
-> 	}
-> 
-> 	if (sport->tx_state == WAIT_AFTER_RTS ||
-> 	    sport->tx_state == WAIT_AFTER_SEND) {
-> 		/* ... actual rts toggling ... */
-> 
-> 		sport->tx_state = OFF;
-> 	}
-> 
+> Greg, can you please indicate which solution you recommend ?
 
-Uwe, any thoughts about if this patch should be taken or not?
+Sadly, this is the format in this file, so I'll take this as-is.
 
 thanks,
 
