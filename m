@@ -2,202 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37DF9C4167E
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B93C4321E
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Feb 2022 11:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356938AbiBHLan (ORCPT
+        id S1357104AbiBHLao (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Feb 2022 06:30:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
+        Tue, 8 Feb 2022 06:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356063AbiBHKHK (ORCPT
+        with ESMTP id S1356912AbiBHLMW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Feb 2022 05:07:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC26C03FEC0;
-        Tue,  8 Feb 2022 02:07:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51E25B81802;
-        Tue,  8 Feb 2022 10:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55214C340EF;
-        Tue,  8 Feb 2022 10:07:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644314827;
-        bh=OikrdX8FMNiMLuMVEJTQbFg4yac0GkRiulyJsMntNGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jiP1EPaq3l/aJLJwYUcK5NMYqW2KzAtVaLuE9HOb9vDiTt92PUE12lcvGYU6E6zqt
-         XcPHv5v36KfoKOmKMk4R3I/1iVdMxdBG53W5NftkumO7AlhhmCtBDucZk4S+gPHloK
-         ss7Xe7jZpLAI2h8sTcfxDRByeIUNzXrPHSohN2ps=
-Date:   Tue, 8 Feb 2022 11:07:04 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Erwan LE RAY <erwan.leray@foss.st.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Tue, 8 Feb 2022 06:12:22 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91897C03FEC6
+        for <linux-serial@vger.kernel.org>; Tue,  8 Feb 2022 03:12:20 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHOPo-0003m2-J3; Tue, 08 Feb 2022 12:12:08 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHOPo-00FHrC-0B; Tue, 08 Feb 2022 12:12:07 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHOPm-00BpnB-FQ; Tue, 08 Feb 2022 12:12:06 +0100
+Date:   Tue, 8 Feb 2022 12:12:03 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Harald Seiler <hws@denx.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] serial: mctrl_gpio: add a new API to enable /
- disable wake_irq
-Message-ID: <YgJAyAZFJBFXQGvf@kroah.com>
-References: <20220203171644.12231-1-erwan.leray@foss.st.com>
- <20220203171644.12231-2-erwan.leray@foss.st.com>
- <CAHp75VfxGj=3mKvjcRpQjyXBCM0szsidHVuJGdAL8yP5SmdBzw@mail.gmail.com>
- <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
+Message-ID: <20220208111203.qi6fpo2l6um6znkz@pengutronix.de>
+References: <20220119145204.238767-1-hws@denx.de>
+ <20220119151145.zft47rzebnabiej2@pengutronix.de>
+ <0df5d9ea2081f5d798f80297efb973f542dae183.camel@denx.de>
+ <20220119162122.jmnz2hxid76p4hli@pengutronix.de>
+ <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
+ <YgJADKxWfOZroS35@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cofqnvm6jpalvn3e"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cb09a49a-37f8-9e3f-168c-4c5dd62e2c07@foss.st.com>
+In-Reply-To: <YgJADKxWfOZroS35@kroah.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 04:41:58PM +0100, Erwan LE RAY wrote:
-> Hi Andy,
-> 
-> On 2/4/22 10:07 AM, Andy Shevchenko wrote:
-> > 
-> > 
-> > On Thursday, February 3, 2022, Erwan Le Ray <erwan.leray@foss.st.com
-> > <mailto:erwan.leray@foss.st.com>> wrote:
-> > 
-> >     Add a new API to enable / disable wake_irq in order to enable gpio
-> >     irqs as
-> >     wakeup irqs for the uart port.
-> > 
-> >     Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com
-> >     <mailto:erwan.leray@foss.st.com>>
-> > 
-> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.c
-> >     b/drivers/tty/serial/serial_mctrl_gpio.c
-> >     index c41d8911ce95..1663b3afc3a0 100644
-> >     --- a/drivers/tty/serial/serial_mctrl_gpio.c
-> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.c
-> >     @@ -299,4 +299,42 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios
-> >     *gpios)
-> >       }
-> >       EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
-> > 
-> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
-> >     +{
-> >     +       enum mctrl_gpio_idx i;
-> >     +
-> >     +       if (!gpios)
-> >     +               return;
-> >     +
-> >     +       if (!gpios->mctrl_on)
-> >     +               return;
-> >     +
-> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
-> >     +               if (!gpios->irq[i])
-> >     +                       continue;
-> > 
-> > 
-> > 
-> > Why not simply
-> > 
-> >    if (gpios[])
-> >      enable_irq_...
-> > 
-> > ?
-> > 
-> > And same for disabling.
-> > 
-> >     +
-> >     +               enable_irq_wake(gpios->irq[i]);
-> >     +       }
-> >     +}
-> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_enable_irq_wake);
-> >     +
-> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios)
-> >     +{
-> >     +       enum mctrl_gpio_idx i;
-> >     +
-> >     +       if (!gpios)
-> >     +               return;
-> >     +
-> >     +       if (!gpios->mctrl_on)
-> >     +               return;
-> >     +
-> >     +       for (i = 0; i < UART_GPIO_MAX; ++i) {
-> >     +               if (!gpios->irq[i])
-> >     +                       continue;
-> >     +
-> >     +               disable_irq_wake(gpios->irq[i]);
-> >     +       }
-> >     +}
-> >     +EXPORT_SYMBOL_GPL(mctrl_gpio_disable_irq_wake);
-> >     +
-> >       MODULE_LICENSE("GPL");
-> >     diff --git a/drivers/tty/serial/serial_mctrl_gpio.h
-> >     b/drivers/tty/serial/serial_mctrl_gpio.h
-> >     index b134a0ffc894..fc76910fb105 100644
-> >     --- a/drivers/tty/serial/serial_mctrl_gpio.h
-> >     +++ b/drivers/tty/serial/serial_mctrl_gpio.h
-> >     @@ -91,6 +91,16 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
-> >        */
-> >       void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
-> > 
-> >     +/*
-> >     + * Enable gpio wakeup interrupts to enable wake up source.
-> >     + */
-> >     +void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios);
-> >     +
-> >     +/*
-> >     + * Disable gpio wakeup interrupts to enable wake up source.
-> >     + */
-> >     +void mctrl_gpio_disable_irq_wake(struct mctrl_gpios *gpios);
-> >     +
-> >       #else /* GPIOLIB */
-> > 
-> >       static inline
-> >     @@ -142,6 +152,14 @@ static inline void mctrl_gpio_disable_ms(struct
-> >     mctrl_gpios *gpios)
-> >       {
-> >       }
-> > 
-> >     +static inline void mctrl_gpio_enable_irq_wake(struct mctrl_gpios
-> >     *gpios)
-> >     +{
-> >     +}
-> >     +
-> >     +static inline void mctrl_gpio_disable_irq_wake(struct mctrl_gpios
-> >     *gpios)
-> >     +{
-> >     +}
-> >     +
-> >       #endif /* GPIOLIB */
-> > 
-> >       #endif
-> >     --     2.17.1
-> > 
-> > 
-> > 
-> > -- 
-> > With Best Regards,
-> > Andy Shevchenko
-> > 
-> > 
-> 
-> Thanks for your review.
-> I fully agree with your comment, but I wrote this code like it is to keep
-> the same structure than all the other ops of serial_mcrtrl_gpio driver. I
-> preferred keeping an homogeneous code in the driver rather than breaking the
-> driver homogeneity with the addition of an optimized code.
-> 
-> Greg, can you please indicate which solution you recommend ?
 
-Sadly, this is the format in this file, so I'll take this as-is.
+--cofqnvm6jpalvn3e
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-thanks,
+Hello Greg,
 
-greg k-h
+On Tue, Feb 08, 2022 at 11:03:56AM +0100, Greg Kroah-Hartman wrote:
+> On Wed, Jan 19, 2022 at 05:59:46PM +0100, Harald Seiler wrote:
+> > On Wed, 2022-01-19 at 17:21 +0100, Uwe Kleine-K=F6nig wrote:
+> > > On Wed, Jan 19, 2022 at 04:20:12PM +0100, Harald Seiler wrote:
+> > > > Hi,
+> > > >=20
+> > > > On Wed, 2022-01-19 at 16:11 +0100, Uwe Kleine-K=F6nig wrote:
+> > > > > On Wed, Jan 19, 2022 at 03:52:03PM +0100, Harald Seiler wrote:
+> > > > > > Right now, even when `delay_rts_before_send` and `delay_rts_aft=
+er_send`
+> > > > > > are 0, the hrtimer is triggered (with timeout 0) which can intr=
+oduce a
+> > > > > > few 100us of additional overhead on slower i.MX platforms.
+> > > > > >=20
+> > > > > > Implement a fast path when the delays are 0, where the RTS sign=
+al is
+> > > > > > toggled immediately instead of going through an hrtimer.  This =
+fast path
+> > > > > > behaves identical to the code before delay support was implemen=
+ted.
+> > > > > >=20
+> > > > > > Signed-off-by: Harald Seiler <hws@denx.de>
+> > > > > > ---
+> > > > > >  drivers/tty/serial/imx.c | 18 ++++++++++++++----
+> > > > > >  1 file changed, 14 insertions(+), 4 deletions(-)
+> > > > > >=20
+> > > > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > > > > index df8a0c8b8b29..67bbbb69229d 100644
+> > > > > > --- a/drivers/tty/serial/imx.c
+> > > > > > +++ b/drivers/tty/serial/imx.c
+> > > > > > @@ -455,9 +455,14 @@ static void imx_uart_stop_tx(struct uart_p=
+ort *port)
+> > > > > >  	if (port->rs485.flags & SER_RS485_ENABLED) {
+> > > > > >  		if (sport->tx_state =3D=3D SEND) {
+> > > > > >  			sport->tx_state =3D WAIT_AFTER_SEND;
+> > > > > > -			start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > > > > +
+> > > > > > +			if (port->rs485.delay_rts_after_send > 0) {
+> > > > > > +				start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > > > >  					 port->rs485.delay_rts_after_send);
+> > > > > > -			return;
+> > > > > > +				return;
+> > > > > > +			}
+> > > > > > +
+> > > > > > +			/* continue without any delay */
+> > > > >=20
+> > > > > Is it right to keep the assignment sport->tx_state =3D WAIT_AFTER=
+_SEND ?
+> > > >=20
+> > > > I am keeping the assignment intentionally, to fall into the
+> > > > if(state =3D=3D WAIT_AFTER_RTS) below (which then sets the state to=
+ OFF).
+> > > > I originally had the code structured like this:
+> > > >=20
+> > > > 	if (port->rs485.delay_rts_after_send > 0) {
+> > > > 		sport->tx_state =3D WAIT_AFTER_SEND;
+> > > > 		start_hrtimer_ms(&sport->trigger_stop_tx,
+> > > > 			 port->rs485.delay_rts_after_send);
+> > > > 		return;
+> > > > 	} else {
+> > > > 		/* continue without any delay */
+> > > > 		sport->tx_state =3D WAIT_AFTER_SEND;
+> > > > 	}
+> > > >=20
+> > > > This is functionally identical, but maybe a bit more explicit.
+> > > >=20
+> > > > Not sure what is more clear to read?
+> > >=20
+> > > I didn't oppose to the readability thing. With your patch you skip
+> > > starting the stop_tx timer and that would usually care for calling
+> > > imx_uart_stop_tx and setting sport->tx_state =3D OFF. This doesn't ha=
+ppen
+> > > with your patch any more.
+> >=20
+> > Not starting the timer is the entire point of the patch - instead, the
+> > code which would run inside the timer callback now runs immediately. To
+> > do this, I set the tx_state to WAIT_AFTER_SEND and _don't_ do the early
+> > return which leads into the if(tx_state =3D=3D WAIT_AFTER_SEND) below. =
+ This
+> > is the code-path which normally runs later in the hrtimer callback.
+> >=20
+> > I suppose it would have been good to provide more context lines in the
+> > patch... Here is the relevant bit (in the changed version now):
+> >=20
+> > 	if (sport->tx_state =3D=3D SEND) {
+> > 		sport->tx_state =3D WAIT_AFTER_SEND;
+> >=20
+> > 		if (port->rs485.delay_rts_after_send > 0) {
+> > 			start_hrtimer_ms(&sport->trigger_stop_tx,
+> > 				 port->rs485.delay_rts_after_send);
+> > 			return;
+> > 		}
+> >=20
+> > 		/* continue without any delay */
+> > 	}
+> >=20
+> > 	if (sport->tx_state =3D=3D WAIT_AFTER_RTS ||
+> > 	    sport->tx_state =3D=3D WAIT_AFTER_SEND) {
+> > 		/* ... actual rts toggling ... */
+> >=20
+> > 		sport->tx_state =3D OFF;
+> > 	}
+> >=20
+>=20
+> Uwe, any thoughts about if this patch should be taken or not?
+
+I will take a deeper look later today and tell you my thoughts.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--cofqnvm6jpalvn3e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmICUAAACgkQwfwUeK3K
+7AkCVggAiaCfK44uF1z68o5GGrLoOxmCBoUtRqyKPMZpAfss1DpikhesyhQfors+
+HsNakAxm+vUb7LX5ABOQpOQ8RCE8RaHN/y/NP0adsItH3ncycnUUZF/hQ2p1CE0F
+8GNSjkgorw6KI+49JoSLIZS2f662FMRJHHpkZopdbg5cTHajB/uyLhbmeavrvI5h
+8oN+P4hiDLb28frPesEw+qDkm2mh8sVdv+mvsiY78ILd6EDf/f2JCe35s1MLNd45
+rITAcLeUkQEEWKZnlR2h3wfaznBl8lm2FkVDqelhhuld0+EJIL9ZVb0zLTebV6Sx
+I8/3kveSia/OPuLzIa4Sy8BM6Mm/gw==
+=xTHA
+-----END PGP SIGNATURE-----
+
+--cofqnvm6jpalvn3e--
