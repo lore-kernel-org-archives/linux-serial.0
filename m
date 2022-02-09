@@ -2,82 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816E4C433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Feb 2022 15:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A913C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Feb 2022 15:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235476AbiBIPFF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:05:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
+        id S235825AbiBIPaL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:30:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235482AbiBIPFA (ORCPT
+        with ESMTP id S230004AbiBIPaK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:05:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B43CC06157B;
-        Wed,  9 Feb 2022 07:05:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3E9EB81FFB;
-        Wed,  9 Feb 2022 15:05:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD3ABC340F0;
-        Wed,  9 Feb 2022 15:05:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644419100;
-        bh=UpmdKE+FAEUDCpd84WVrU8vXwvXmnS9fqkRQF7MlYCk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fm1rscbSWAvPYky3Oqj0WI/wHkLlCW0gIRIW1OwQm0FHClPf7qKSFCZSVfWRflvdw
-         Oyy5QlUX9fOMfv7BGGc9n6mAM1z55Z3nQrrmQH9+/Tyr/sFZ4hDce/QxucHDXt5n8M
-         quPyW+qPgJ34SG2ogvhZsHSBpCfWK/adVn57CiBE4YGZt0W8Kez4CMPjkv2ZTZm+B9
-         5ILSlNZ738PtuID6zbFs2YA0A61NHcGi8c4Q7JfMcCTqEUZS4S56o837ppmbfEe5Lf
-         TPdf77Xjbv0fymxDYJk/ikFmtLbIdQMVB6NLl16mUpwTRXe15jb001/kzPTEs3Y9su
-         6JP6nr2W8XC9A==
-Received: by mail-ej1-f52.google.com with SMTP id y3so8275392ejf.2;
-        Wed, 09 Feb 2022 07:05:00 -0800 (PST)
-X-Gm-Message-State: AOAM531DJMg26kyQUJPwRC9UM79vdZZVIA/Xq1riDG2msvzMJJHMQM+/
-        oU1YeqH90faO/v3EHmIfrjeTAhzSAhdFYs9x+g==
-X-Google-Smtp-Source: ABdhPJzns7zVz28y4D67gQ8s0rvNVw71WOHhT2Jxl44ZXol/CnXKBDMw2ppS/LCgWhMeXpYI/2QuBDrlplZg3FK+frQ=
-X-Received: by 2002:a17:907:6284:: with SMTP id nd4mr2329421ejc.423.1644419099004;
- Wed, 09 Feb 2022 07:04:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20220118135918.2126010-1-abel.vesa@nxp.com> <20220209065029.GA4909@dragon>
-In-Reply-To: <20220209065029.GA4909@dragon>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 9 Feb 2022 09:04:46 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL7aa+3+xEWAzOpbwLu=Df7bqohdHVcWKWR-vafw3vpyg@mail.gmail.com>
-Message-ID: <CAL_JsqL7aa+3+xEWAzOpbwLu=Df7bqohdHVcWKWR-vafw3vpyg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: fsl-lpuart: Drop i.MX8QXP
- backwards compatibility
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Abel Vesa <abel.vesa@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 9 Feb 2022 10:30:10 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D66C0613C9
+        for <linux-serial@vger.kernel.org>; Wed,  9 Feb 2022 07:30:13 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov5-0003JE-JH; Wed, 09 Feb 2022 16:30:11 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov5-00FX3x-4S; Wed, 09 Feb 2022 16:30:10 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nHov3-00DMcu-Px; Wed, 09 Feb 2022 16:30:09 +0100
+Date:   Wed, 9 Feb 2022 16:30:08 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-serial@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>,
+        linux-kernel@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+        Harald Seiler <hws@denx.de>, Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: imx: Add fast path when rs485 delays are 0
+Message-ID: <20220209153008.6qmt2t33ru7lhi6x@pengutronix.de>
+References: <20220119145204.238767-1-hws@denx.de>
+ <20220119151145.zft47rzebnabiej2@pengutronix.de>
+ <0df5d9ea2081f5d798f80297efb973f542dae183.camel@denx.de>
+ <20220119162122.jmnz2hxid76p4hli@pengutronix.de>
+ <5cab27cab5a39ef5e19992bc54e57c3f6106dafe.camel@denx.de>
+ <YgJADKxWfOZroS35@kroah.com>
+ <20220208111203.qi6fpo2l6um6znkz@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zhegztmaioghtjqo"
+Content-Disposition: inline
+In-Reply-To: <20220208111203.qi6fpo2l6um6znkz@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 12:50 AM Shawn Guo <shawnguo@kernel.org> wrote:
->
-> On Tue, Jan 18, 2022 at 03:59:17PM +0200, Abel Vesa wrote:
-> > Drop the i.MX8QXP backwards compatibility with i.MX7ULP since they
-> > differ from clocks handling point of view.
-> >
-> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
->
-> I tried to pick up the patch, but it failed to apply to my imx/bindings
-> branch.  Could you rebase?
 
-Shouldn't Greg be picking this up?
+--zhegztmaioghtjqo
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Rob
+Hello Greg,
+
+On Tue, Feb 08, 2022 at 12:12:03PM +0100, Uwe Kleine-K=F6nig wrote:
+> On Tue, Feb 08, 2022 at 11:03:56AM +0100, Greg Kroah-Hartman wrote:
+> > Uwe, any thoughts about if this patch should be taken or not?
+>=20
+> I will take a deeper look later today and tell you my thoughts.
+
+It took a bit longer, but after looking again with the driver open in my
+editor I agree that patch is fine.
+
+Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--zhegztmaioghtjqo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmID3f0ACgkQwfwUeK3K
+7AnwFAf/ak9YeP1DkOhL48uqmiyD6N1JIZCpjcPhBVlJEoUgkxH/Qb5ThAb13R4r
+tng7DlvdRKS6WHWiaILv6BmEw1rgOh4oyNaYdAI/8L9n8gC/YGDA03S6WI5MYQBj
+Q5kKUH34OGSvZGLPkKZ4EkSgjFZkkcwo+Ozr+Cr1knn1nJByTlYRTuzigua1Qu+X
+8h6hAeqM0RgBUbynzkmbRFtTU95hADWqDuARQuwHf5sLE6MrewZ0YKRjq0ynS8Ty
+TU0dvraeEI+COPFuP0pxCx3TVcCMIKhKA+zXlZf4IHwjQCi25sa6dMfmalAgnxWP
+OOdSBC8XMiDMdz5gQ7Xxn6Vz+/P8DQ==
+=RMjQ
+-----END PGP SIGNATURE-----
+
+--zhegztmaioghtjqo--
