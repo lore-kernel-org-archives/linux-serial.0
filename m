@@ -2,139 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B01C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Feb 2022 11:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33789C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Feb 2022 12:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbiBILzZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:55:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
+        id S232173AbiBIMD5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:03:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbiBILzV (ORCPT
+        with ESMTP id S232259AbiBIMDc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:55:21 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08FDE00F7CA;
-        Wed,  9 Feb 2022 02:52:49 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id m6so4625592ybc.9;
-        Wed, 09 Feb 2022 02:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=t9EOjDsFOoIpRxTzANo3FHWi1tKOlZeMj74re1dNnPQ=;
-        b=nol7K09L15nrTX8SbqhMA+n0uZ+Yv4qdgTEbQlIwvG7Pfmwj+9HWeqJLBSiMOkhi+6
-         exJdUcqqguQ9yQ27PdHc7yGPCVQ/2NovbX3RY0jCctPxdRbBwZ73gPci7bDwkh6MgbDR
-         NAp+wZOXbneBp/fyy80J6WJ3XPS6A27E8k2TpUpCnmlzvee9I/Yq+fsDNxmXPW9LYJHi
-         RT+nvRQE0EiUed3kBmTlNUAfsggE4fq6QRL8rXruXQnmphPwMxMUhdfQHShsEVqWFghj
-         K2ihaP+3K+nH6FePNUm346AGKRehV63ydLAibn3zs+J+TEorkSzztJ16Qjx9Vqt7/pVx
-         zh7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=t9EOjDsFOoIpRxTzANo3FHWi1tKOlZeMj74re1dNnPQ=;
-        b=uQP7/pE9+g4z9gAUdu/SAPV1wDqvaCq+gii8ncT/7N+3zd1ud7p9TCgPoWUQToJWr9
-         X76DcGBHCKGJQ4Lqki1koVDWvbY8hWM20NuNkTJ4doP0LXXZ/P2R0F1d5XgI3lHEStjp
-         cCpWlY68Z3YpAKkKJoZFvdPZf5Vn5qBZsKo7P0LtsyEeha/1++XVlw42Cl5g/65VF9NC
-         Z+9rmqP85bsXxKVSmFds1f3uDFMzYw1FA+HdZYkGd8PxH0mSPZcf4jSHcqYh1oU2b1Y5
-         NwhibK7Zi5DX6Is2GDjCjbiYuKXkawgjJztKPBeMJ4bDkXcvf2/GMeRWcPdrg45320QI
-         BTeg==
-X-Gm-Message-State: AOAM53123z0M19Oki8hVHBFmUTYAQwapY0JbKJ7sWfu8QXdHfm/kZJbf
-        oKLjrwGhTEC3nG38bGHl7mzKn7wC14wFtdEsBTk=
-X-Google-Smtp-Source: ABdhPJzYXzffFdYHs1OiBDSctVnmzVRTGomr66e7l7mljK4dP+oSHHewJhdr9uxcryg9p/0WcDqyTRDd/hFJxzUDL7k=
-X-Received: by 2002:a81:cf07:: with SMTP id u7mr1431288ywi.221.1644403968911;
- Wed, 09 Feb 2022 02:52:48 -0800 (PST)
+        Wed, 9 Feb 2022 07:03:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80518DF28ADF
+        for <linux-serial@vger.kernel.org>; Wed,  9 Feb 2022 03:30:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19809B8203E
+        for <linux-serial@vger.kernel.org>; Wed,  9 Feb 2022 11:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B0EC340E7;
+        Wed,  9 Feb 2022 11:30:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644406252;
+        bh=+o1peUzqHoB2kOycrTBvPMWbnbTJdM7wmBzQA1hJiJw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y/U8P1JJMOO2qffiyHkzLVcwrbU0T4CQqmCi77DNPwqt8mPmX0eN5dse+HO4kNNBe
+         CeOQLwnMc+Cl9bINK63MtU2tCG/LdIzu5F+vvSKc2UqutD/crn3zEiqf5mp0lWTO9c
+         +0YpesDcAdJfs0nMZG+5l89eEz2idTGG4FCjw2m4=
+Date:   Wed, 9 Feb 2022 12:30:49 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel.Thiagarajan@microchip.com
+Cc:     linux-serial@vger.kernel.org, Sundararaman.H@microchip.com,
+        Ronnie.Kunin@microchip.com, Tharunkumar.Pasumarthi@microchip.com,
+        Annirudh.D@microchip.com, Pragash.Mangalapandian@microchip.com
+Subject: Re: Reg: Serial port driver for microchip's new PCIe UART device
+Message-ID: <YgOl6SFsKnZxkbFy@kroah.com>
+References: <CH0PR11MB538034CCE6C1868DB7BD8127E92E9@CH0PR11MB5380.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
- <1644213481-20321-3-git-send-email-hammerh0314@gmail.com> <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
- <CAOX-t569-0aTu73eGSY3k+btAuVgueRY91Jd5b9kbpjmxPp+Dw@mail.gmail.com> <YgJUiegS2Cc9MyHc@kroah.com>
-In-Reply-To: <YgJUiegS2Cc9MyHc@kroah.com>
-From:   hammer hsieh <hammerh0314@gmail.com>
-Date:   Wed, 9 Feb 2022 18:53:03 +0800
-Message-ID: <CAOX-t54HXyty96UYYDHVLc4TieQsY3wEq-JT66amXgHb=SB0wg@mail.gmail.com>
-Subject: Re: [PATCH v7 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CH0PR11MB538034CCE6C1868DB7BD8127E92E9@CH0PR11MB5380.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Ok, thanks for your explaination, I got it now.
-I will document "posted write" info in the top of the file or top of
-startup/shutdown function.
+On Wed, Feb 09, 2022 at 10:38:34AM +0000, Kumaravel.Thiagarajan@microchip.com wrote:
+> Dear Greg KH,
+> 
+> I am Kumaravel Thiagarajan from Microchip India.
+> 
+> We are working on a PCIe based multi-instance UART device.
+> Based on the Linux community feedback few months back, we had written it as a custom driver inside drivers/tty/serial/8250.
+> Now this custom driver is requiring a DWORD FIFO access for both Tx and Rx, and I am in the process of changing my driver code.
 
-And kernel test robot report me build error and warning with gcc
-11.2.0 ia64 / powerpc.
-I will fix it and send next patch.
+Why does the hardware not follow the normal standard here?
 
-Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=
-=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=887:31=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Tue, Feb 08, 2022 at 07:16:52PM +0800, hammer hsieh wrote:
-> > Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=
-=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=882:27=E5=AF=AB=E9=81=93=EF=BC=9A
-> > >
-> > > Hi,
-> > >
-> > > On 07. 02. 22, 6:58, Hammer Hsieh wrote:
-> > > > +static void sunplus_shutdown(struct uart_port *port)
-> > > > +{
-> > > > +     unsigned long flags;
-> > > > +     unsigned int isc;
-> > > > +
-> > > > +     spin_lock_irqsave(&port->lock, flags);
-> > > > +
-> > > > +     isc =3D readl(port->membase + SUP_UART_ISC);
-> > > > +     isc &=3D ~(SUP_UART_ISC_RXM | SUP_UART_ISC_TXM);
-> > >
-> > > Is this correct? I mean: will the SUP_UART_ISC read contain the contr=
-ol
-> > > bits, not only status bits?
-> > >
-> >
-> > I assume reviewers don't like writel(0,xxx).
-> > So I use definition to let the code easy to read.
-> > The purpose is to clear all interrupt.
-> > Bit[3:0] status bit only for read, write 1 or 0 no effect.
-> >
-> > > > +     writel(isc, port->membase + SUP_UART_ISC);
-> > > > +
-> > > > +     spin_unlock_irqrestore(&port->lock, flags);
-> > > > +
-> > > > +     free_irq(port->irq, port);
-> > >
-> > > I am still waiting for explanation why this is safe with respect to
-> > > posted writes.
-> > >
-> >
-> > Actually I'm not IC designer, not expert for bus design.
-> > About data incoherence issue between memory bus and peripheral bus.
-> > In case of AXI bus, use non-posted write can avoid data incoherence iss=
-ue.
-> > What if in case of posted write:
-> > Send a specific command after last write command.
-> > SDCTRL identify specific command, means previous write command done.
-> > Then send interrupt signal to interrupt controller.
-> > And then interrupt controller send done signal to Master.
-> > Master receive done signal, means write command done.
-> > Then issue a interrupt or proceed next write command.
->
-> But how does the kernel know when the write is completed?  The kernel
-> seems to ignore that here entirely, so the write could actually complete
-> seconds later, which would not be a good thing, right?
->
-> Traditionally, we want to ensure that a write() completes, so on some
-> busses, we have to do a read to ensure that the write made it to the
-> hardware before we can continue on.  That is not happening here which is
-> why Jiri keeps bringing it up.  It looks broken to us, and you need to
-> document it somewhere (in the changelog?  In the top of the file?) as to
-> why this is not needed.
->
-> thanks,
->
-> greg k-h
+And are you sure it will still not fit into the 8250 format?
+
+> Can I model my custom driver on serial drivers present in drivers/tty/serial/ directory?
+
+You could, but it would be much smaller and easier to use the 8250
+framework given that you probably do have an 8250-like device, right?
+
+> I am implementing my functions for uart_ops structure and the necessary ISR in a separate file mchp_pci1xxxx_uart.c inside the drivers/tty/serial/ directory.
+> 
+> I wish this custom UART driver to get through Linux community submission.
+> Do you see any risk in this approach? Do you have any suggestions?
+
+Let's see the code before we can give you any firm answers.
+
+good luck!
+
+greg k-h
