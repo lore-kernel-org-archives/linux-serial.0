@@ -2,172 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47197C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 09:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DD1C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238433AbiBJJWM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:22:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47298 "EHLO
+        id S239809AbiBJKfS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:35:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235335AbiBJJWL (ORCPT
+        with ESMTP id S239917AbiBJKfM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:22:11 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4856E1039;
-        Thu, 10 Feb 2022 01:22:13 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 537DA283;
-        Thu, 10 Feb 2022 01:22:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1644484932;
-        bh=YYp49ln6qDD6oDwCC4EQTXa3MheUKZJ27LXDjoYZpLo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZwHj0U8EiiyLti7wh/GpeLfS81YfJ6qhA6Ey/xOmQV3Gt9+jRIjd3mg9Rw+bTMpth
-         BqMOB3Dbr0+KfEsXwqR0OrA3aopUioSA+oQfisTOCb0hBwZ7hzsmo0FlVlonFLJQgo
-         NHNkku0Sf1uc7IcnysI2wiJ6hQ0X8TcUKvmOmYtg=
-Date:   Thu, 10 Feb 2022 01:22:09 -0800
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Konstantin Aladyshev <aladyshev22@gmail.com>,
-        Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port
- type
-Message-ID: <YgTZQQuTkLjnkeyB@hatter.bewilderbeest.net>
-References: <20220209203414.23491-1-zev@bewilderbeest.net>
- <YgTBennInxX3fE3X@kroah.com>
- <YgTDm5qKUJyzciR2@hatter.bewilderbeest.net>
- <YgTKvIqTIOomFSsF@kroah.com>
+        Thu, 10 Feb 2022 05:35:12 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D7BFF1;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id n23so9501155pfo.1;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OyHKEWDVKlKy9kwRRGPyuapqQZ9EQT0MCaFn+0fLSY4=;
+        b=KamH/nE7RyCGAJiELKI8ttpxAJ9wkggTJ5s0F/Y9wop+T3gwUgiqgAhfmpOoLrzghl
+         HHMFronttCK7irfax/sVkRSs4TvRVaDclnH/+hJtc9lRpJ7WR4KpJRRkTnR7bGqm8IpH
+         1rJeZr4InqU66DRe5dK8jEg8oysCN5u0uEPLLRuHg5gqHLfQVgeap/XnOOEimXVQm8qj
+         JrmcdPeh97sq3w/tXGzK4VLZ8VfQWF1UtGTEVSwxX+vCCDOzINd6nBfbKy2DulL+C1xB
+         z2fO8zUunZ+wqe404S7xjpHFgrI3UUlzG9iHpKis5Gs/fOXWg7aDFVJeP9fC/DtW+vL8
+         wV3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OyHKEWDVKlKy9kwRRGPyuapqQZ9EQT0MCaFn+0fLSY4=;
+        b=67/h6wlJBlu8ktifa8MMrUgfFUtkp4uhJb0VZGRKaAsYMZaSN2CGAaRAWm0NgfMxKb
+         KI1c60Z7mjO1nnor7Mwg5+ACLZEn8QDvR7CKgK5LXx0Ejrd/DRmrk9yYs8FDQ5tdEgrU
+         YNxSSjoo0GLWiWQXnRXIaYR2B5FwoiM6JmLqDRD3lyoUwJGUlDWknrWTw3Mz8hRnXxIV
+         PEku2tnkQ21zY6RJB+SUfE/e+GL366/qzKd2CbramTcVj2iNV6q+XfseYIxaWe7vR18D
+         t7wP6kQxaPMMoIrq0P5P1YCyLda1O8yfPCXEKzzJWsX6iimgOlH3R3SaAm0FFcWC/UwS
+         wHng==
+X-Gm-Message-State: AOAM532mi7imh7Qvt18Z56EVtLWJKye5l4ABngl+aKX7sJkmb+K/3Y+Q
+        deYehv7FY6ptVD6eVLLexfY=
+X-Google-Smtp-Source: ABdhPJyHB7MuV96LGULlUp4tGXnFXjvLg7pzcsrt/mwATW5OK7J1WrWnm4frTCS4r2tuWK+a4RMWEA==
+X-Received: by 2002:a63:4e:: with SMTP id 75mr5682216pga.461.1644489312338;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
+        by smtp.gmail.com with ESMTPSA id y20sm23063496pfi.78.2022.02.10.02.35.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+From:   davidcomponentone@gmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     davidcomponentone@gmail.com, jirislaby@kernel.org, joel@jms.id.au,
+        andrew@aj.id.au, zev@bewilderbeest.net, johan@kernel.org,
+        yang.guang5@zte.com.cn, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH v2] serial: 8259_aspeed_vuart: replace snprintf with sysfs_emit
+Date:   Thu, 10 Feb 2022 18:34:45 +0800
+Message-Id: <a0f3e5d6d438710413d1909365f99ae4d2a4bacc.1644399683.git.yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YgTKvIqTIOomFSsF@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 12:20:12AM PST, Greg Kroah-Hartman wrote:
->On Wed, Feb 09, 2022 at 11:49:47PM -0800, Zev Weiss wrote:
->> On Wed, Feb 09, 2022 at 11:40:42PM PST, Greg Kroah-Hartman wrote:
->> > On Wed, Feb 09, 2022 at 12:34:14PM -0800, Zev Weiss wrote:
->> > > Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
->> > > set up register mapping") fixed a bug that had, as a side-effect,
->> > > prevented the 8250_aspeed_vuart driver from enabling the VUART's
->> > > FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
->> > > turn revealed what appears to be a hardware bug in the ASPEED VUART in
->> > > which the host-side THRE bit doesn't get if the BMC-side receive FIFO
->> > > trigger level is set to anything but one byte.  This causes problems
->> > > for polled-mode writes from the host -- for example, Linux kernel
->> > > console writes proceed at a glacial pace (less than 100 bytes per
->> > > second) because the write path waits for a 10ms timeout to expire
->> > > after every character instead of being able to continue on to the next
->> > > character upon seeing THRE asserted.  (GRUB behaves similarly.)
->> > >
->> > > As a workaround, introduce a new port type for the ASPEED VUART that's
->> > > identical to PORT_16550A as it had previously been using, but with
->> > > UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
->> > > one byte, which (experimentally) seems to avoid the problematic THRE
->> > > behavior.
->> > >
->> > > Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
->> > > Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
->> >
->> > Do we need a "Fixes:" tag here as well?
->>
->> I was wondering the same -- I left it out because it didn't seem like it was
->> strictly a bug in the earlier commit that's really being fixed per se, but
->> perhaps that's an overly pedantic distinction.  I can certainly add it if
->> you'd prefer.
->
->This obviously fixes an issue, if you don't have a specific commit that
->caused it, a cc: stable@vger.kernel.org should be added so we know to
->backport this to all stable kernels.
->
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-Okay -- well, I suppose it's a fix in the sense that if you have the 
-earlier commit, you'll also want this one, so I'll add the tag.
+coccinelle report:
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:85:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:174:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:127:8-16:
+WARNING: use scnprintf or sprintf
 
->>
->> >
->> > > ---
->> > >  drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
->> > >  drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
->> > >  include/uapi/linux/serial_core.h            | 3 +++
->> > >  3 files changed, 12 insertions(+), 1 deletion(-)
->> > >
->> > > diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
->> > > index 2350fb3bb5e4..c2cecc6f47db 100644
->> > > --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
->> > > +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
->> > > @@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
->> > >  	port.port.irq = irq_of_parse_and_map(np, 0);
->> > >  	port.port.handle_irq = aspeed_vuart_handle_irq;
->> > >  	port.port.iotype = UPIO_MEM;
->> > > -	port.port.type = PORT_16550A;
->> > > +	port.port.type = PORT_ASPEED_VUART;
->> > >  	port.port.uartclk = clk;
->> > >  	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
->> > >  		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
->> > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
->> > > index 3b12bfc1ed67..973870ebff69 100644
->> > > --- a/drivers/tty/serial/8250/8250_port.c
->> > > +++ b/drivers/tty/serial/8250/8250_port.c
->> > > @@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
->> > >  		.rxtrig_bytes	= {1, 32, 64, 112},
->> > >  		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
->> > >  	},
->> > > +	[PORT_ASPEED_VUART] = {
->> > > +		.name		= "ASPEED VUART",
->> > > +		.fifo_size	= 16,
->> > > +		.tx_loadsz	= 16,
->> > > +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
->> > > +		.rxtrig_bytes	= {1, 4, 8, 14},
->> > > +		.flags		= UART_CAP_FIFO,
->> > > +	},
->> > >  };
->> > >
->> > >  /* Uart divisor latch read */
->> > > diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
->> > > index c4042dcfdc0c..cd11748833e6 100644
->> > > --- a/include/uapi/linux/serial_core.h
->> > > +++ b/include/uapi/linux/serial_core.h
->> > > @@ -274,4 +274,7 @@
->> > >  /* Freescale LINFlexD UART */
->> > >  #define PORT_LINFLEXUART	122
->> > >
->> > > +/* ASPEED AST2x00 virtual UART */
->> > > +#define PORT_ASPEED_VUART	123
->> >
->> > Why does this value have to be in a uapi header file?  What userspace
->> > tool is going to need this?
->> >
->>
->> I only put it there because that was where all the other port type constants
->> were defined, and wondered the same thing about the lot of them.  Is there a
->> userspace tool that makes use of any of these?
->
->Not really, please don't add it if you do not require it.
->
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-It seems like an odd inconsistency to put this one particular definition 
-somewhere else when the other 100+ of its siblings are in the uapi 
-header; would you want a preceding patch to move them all somewhere 
-under include/linux?  (Which in turn doesn't really seem like a change 
-for -stable I'd think.)
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+CC: David Yang <davidcomponentone@gmail.com>
 
-Though actually, on further investigation I see those constants are in 
-fact exposed to userspace in struct serial_struct->type (via 
-TIOCGSERIAL/TIOCSSERIAL), and via the 'type' sysfs attribute, so I'd 
-think we'd probably want to keep them as they are?
+---
+Change from v1-v2:
+- Modify the patch title
+- Use the CC for patch sender
 
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Zev
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 2350fb3bb5e4..36c39b8ea7af 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -82,7 +82,7 @@ static ssize_t lpc_address_show(struct device *dev,
+ 	addr = (aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRH) << 8) |
+ 		(aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRL));
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
++	return sysfs_emit(buf, "0x%x\n", addr);
+ }
+ 
+ static int aspeed_vuart_set_lpc_address(struct aspeed_vuart *vuart, u32 addr)
+@@ -124,7 +124,7 @@ static ssize_t sirq_show(struct device *dev,
+ 	reg &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
+ 	reg >>= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg);
++	return sysfs_emit(buf, "%u\n", reg);
+ }
+ 
+ static int aspeed_vuart_set_sirq(struct aspeed_vuart *vuart, u32 sirq)
+@@ -171,7 +171,7 @@ static ssize_t sirq_polarity_show(struct device *dev,
+ 	reg = aspeed_vuart_readb(vuart, ASPEED_VUART_GCRA);
+ 	reg &= ASPEED_VUART_GCRA_HOST_SIRQ_POLARITY;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg ? 1 : 0);
++	return sysfs_emit(buf, "%u\n", reg ? 1 : 0);
+ }
+ 
+ static void aspeed_vuart_set_sirq_polarity(struct aspeed_vuart *vuart,
+-- 
+2.30.2
 
