@@ -2,83 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E875AC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 11:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C0AC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 11:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236743AbiBJLMo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Feb 2022 06:12:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45668 "EHLO
+        id S240677AbiBJLPA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Feb 2022 06:15:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235688AbiBJLMn (ORCPT
+        with ESMTP id S240674AbiBJLO7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Feb 2022 06:12:43 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2562FBC4;
-        Thu, 10 Feb 2022 03:12:45 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id k25so14393664ejp.5;
-        Thu, 10 Feb 2022 03:12:45 -0800 (PST)
+        Thu, 10 Feb 2022 06:14:59 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F68CCA;
+        Thu, 10 Feb 2022 03:15:01 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id cz16so10231302edb.8;
+        Thu, 10 Feb 2022 03:15:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6U7aF4ObJyDWzraFLe5UBX3z5gmmdFgy9SvdwQK+hYc=;
-        b=EAXLFc6K1/fUlqnuYsnYxz8TjOZVV/1KEIUlIoGQ3ooaxcfslXNgeamlgXfKCE6/IX
-         KtldEVRsBfUiya46pfk7348CKRCngQH5KAR0itpR3qpzFxTi8pN9GA7fo0+V5vard7b/
-         13EFBMBjx3yEkzDHUDUOoXi5OMmFNPa7zn53emwPYgdk2VOCXfBwD2eiwZy1P43Q+1Pf
-         M9WsEm3BlX/YcZLULPuqORQ6SCOOaJRo1DAQQypowq4v2pI3I/ytl+3SR5Y6LJgibKSi
-         OaTfnmVrFx4ffTsL9GT7+57+Zctq+EyMXuyqc7J1loPDzAdS8RLpxX0+Ejk+/fmhCrQM
-         ZbaQ==
+        bh=86WvMXZHLjkGbiJZp5ccobLzsZbB0pdZcrhUodCwW5E=;
+        b=jbBWNeFpcaENFcXzIP+FtT16BHbVbBhNZ8K2JjRHALDwTKGfZd94WmyMuhUTeSVcyt
+         t4TfJ4Ql6XAQ86Wy9jqNgMthktqHp8XwXmcrCUp2OMVrjjs7y9coNUd/tursxZzXQ1Cv
+         t81NxiWRlVc1q6CIxQzv0DWYtfjlT9ATbIfXX57rjYiGEAx2NHTYoB5Kkqs+QEjwAC6N
+         Cs/VMcgAcGHZnIToTNwxG/3ro+MnwBd5aw+55RhGytRlEmGamtSnTtGMi9lQPb89EI4U
+         NrBj3LwMyti1KEPBaBLta2RaUHPUkcYy6CBLKyrTQgN6WRTx0ewpxkuqGxFlh/5vpGVe
+         5TfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6U7aF4ObJyDWzraFLe5UBX3z5gmmdFgy9SvdwQK+hYc=;
-        b=BOCHxUN6xdmdRGo/PCRTW1RZIATtNU6AyoIiimNbfV4ybhf6jIsQ/qss2bXFE8AANU
-         U4715Rgxsz8+Bjcd2TUUXdapPTl+DZkqrVAe6Yft8hPIde1IjDFHdNPuzSTAiOS2Owc1
-         RALJ41JOWjKyelZhm/rkqsdUGstGyQG/WZjykhh2998IdJDkH0Gvw4QTj7IS9TA1Exg+
-         fAy4tiSlE2Q4/JRiOcqiU7SJ4Y46GcgVRqCxVKvyjBCO7yJ5782sSMOCcJZWZJ32k/Lr
-         6kHNfR4vZ7iP8Y7CLhfP78EOwLoeWFQ0K77RlJMKlRFVYhAgaaPrM+2n0OlvlY9L+Tk6
-         j56Q==
-X-Gm-Message-State: AOAM533VsvjH5pXfPJfncbgCPLVsfwsKu16OaEH4J+eK+RGVRcDxJbYN
-        qdo/cI7YIH+/nvG++0s0SZjlJXyk3+etXEr248U=
-X-Google-Smtp-Source: ABdhPJzkCMLdqG6Vw9eSFrwRrEkPH1p/y0OytAcfu9aOTrlRegu6yU/rynP8zS9Bzp6xR2qqoTrAXc3CgnWrSabIfCY=
-X-Received: by 2002:a17:907:2d92:: with SMTP id gt18mr5741496ejc.579.1644491563562;
- Thu, 10 Feb 2022 03:12:43 -0800 (PST)
+        bh=86WvMXZHLjkGbiJZp5ccobLzsZbB0pdZcrhUodCwW5E=;
+        b=LFxt/krCB59yni4XRTq3yE20uRoeXmS0MLevpH740S7C+WtJecynZdIEZt5tvb/gn6
+         nEqN9tvQ7gHVu5JrPc8/nk58dpuqrNu7VWKt2Ncj7RMI14sv44q/lFawhEvBiH3ERUJS
+         wUWcXs984sBhzURYUvuxdUPag/fblGA7ZUMd9UP+NOEFIzoQplha803bVq41N0zJPMuw
+         lh1uCR4v5QKwo7SGSFTDgJuVKoF0t9VdrHaCnZ22b9dO1Rga6jQaLFQeqVzCOw7gtbEK
+         b9O7fK/lJhDWws5+L9Uh5z+a/i/aMfjAdBxrIaXyU6DWI6reT70Zza/4480N6Xzn/Puw
+         TYyw==
+X-Gm-Message-State: AOAM533zvqVQ2t2cC0XW6N1j0rUXiOzoGYUTwu6Vw4dsOlFPZZNaZV11
+        MAZKzukCkuNS4bfM/Nv0OaDVtRY1d7hlHpIQR8c=
+X-Google-Smtp-Source: ABdhPJwt4DzuSAvUl6+QCoPSNRZVDryR+G7Pk+UnooBQRefAASpZeECFwgpI2N0KRWI9tN4IO2kRQIA5cNfNs1sDIhs=
+X-Received: by 2002:aa7:c413:: with SMTP id j19mr7838615edq.200.1644491699638;
+ Thu, 10 Feb 2022 03:14:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20220209203414.23491-1-zev@bewilderbeest.net>
-In-Reply-To: <20220209203414.23491-1-zev@bewilderbeest.net>
+References: <a0f3e5d6d438710413d1909365f99ae4d2a4bacc.1644399683.git.yang.guang5@zte.com.cn>
+In-Reply-To: <a0f3e5d6d438710413d1909365f99ae4d2a4bacc.1644399683.git.yang.guang5@zte.com.cn>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 10 Feb 2022 13:11:13 +0200
-Message-ID: <CAHp75VdyNsrm8oeO0KvyPXNR23VdQEMd9LHks20bLbkE_g7kuw@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
-To:     Zev Weiss <zev@bewilderbeest.net>
+Date:   Thu, 10 Feb 2022 13:13:28 +0200
+Message-ID: <CAHp75Vd-Zszg1j6aVrX_oEJdiq4m=69JqE4RvyPMqEu30RFaTA@mail.gmail.com>
+Subject: Re: [PATCH v2] serial: 8259_aspeed_vuart: replace snprintf with sysfs_emit
+To:     davidcomponentone@gmail.com
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Joel Stanley <joel@jms.id.au>,
         Andrew Jeffery <andrew@aj.id.au>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Konstantin Aladyshev <aladyshev22@gmail.com>,
-        Oskar Senft <osk@google.com>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Zev Weiss <zev@bewilderbeest.net>,
+        Johan Hovold <johan@kernel.org>,
+        Yang Guang <yang.guang5@zte.com.cn>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         "moderated list:ARM/ASPEED MACHINE SUPPORT" 
         <linux-aspeed@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 10:53 PM Zev Weiss <zev@bewilderbeest.net> wrote:
+On Thu, Feb 10, 2022 at 12:54 PM <davidcomponentone@gmail.com> wrote:
+>
+> From: Yang Guang <yang.guang5@zte.com.cn>
+>
+> coccinelle report:
+> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:85:8-16:
+> WARNING: use scnprintf or sprintf
+> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:174:8-16:
+> WARNING: use scnprintf or sprintf
+> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:127:8-16:
+> WARNING: use scnprintf or sprintf
+>
+> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+sysfs_emit()
+scnprintf()
+sprintf()
 
 ...
 
-> +/* ASPEED AST2x00 virtual UART */
-> +#define PORT_ASPEED_VUART      123
+> CC: David Yang <davidcomponentone@gmail.com>
 
-If you are going to put it here, use the existing gap first, no need
-to expand the last number.
+> - Use the CC for patch sender
+
+This is incorrect. The submitter must have (the last) SoB tag.
+Question was about authorship just to be clear.
 
 -- 
 With Best Regards,
