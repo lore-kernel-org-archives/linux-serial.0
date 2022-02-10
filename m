@@ -2,246 +2,280 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6352AC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 21:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3435DC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Feb 2022 21:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiBJV10 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Feb 2022 16:27:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45282 "EHLO
+        id S244283AbiBJVaq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Feb 2022 16:30:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243233AbiBJV1Z (ORCPT
+        with ESMTP id S230287AbiBJVaq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Feb 2022 16:27:25 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140084.outbound.protection.outlook.com [40.107.14.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DC626CD;
-        Thu, 10 Feb 2022 13:27:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fchNVMknc1gm4LWGdbxVWU1zBf8pi+f1Ktkkky6C8hZmVxhaCUlWsIan9u9Cyc1zGgtrtxcqg1++VV0XvM0diukOcNsrkvdccq13GXizmJGiS8ZGrr3iLc9xzpmFLYsg6ET2iW9lh39GCfea6pXIgrfbdnymgdw5uexWRev3g0wlmog+cj6KYvPVHlq85WTYHJ0Vwx8OVb0tLFFbJ3vs12BC3Ec6x3U6Ffx60SWfpz7TUz/wJOyX+NcYmE3pfAfYmoBFcMbIfnBwsL/O0xSCbH/U7G//W9OwUe6u2yA7IuYqkKIfkU6zWoTslUjR59HEoBg9h+vS8dkNKKhRcRHoIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gv89HjljmZ7gXki4JKuZ7etbR6eDMXYakRjhn9H98HE=;
- b=BWMZM6kqrz6A/MPac9xQPgFEBGr3+UDRokWufs0wAUehRGBnuY5T9ZrQ4KxQneRuuCF9yFOn3IOLWeFnwyuSnDeibU3yk2Uq1a+ZF4qC+SKQmWBN9cHBDeYsklYokDwB93Fdnqfhglu7R+k//dtuKEbOBhPN+s9Rs9SqEmtH/7BCaDGHt22QYxWgPBMVSnFWqFppeR/wYG9UpT1rbBPdFSY2SWHr3iW9t3JoOp+OBNf5tC0xuTdcTLXvM84Cra4uO0R8kiGbGfvWrO4DJxgSYdnJhJzFD+bCDgmRGq0TKQkquFj6Wt9eoOWzZjkg4nhWKAxFmP773rFVQ5oJuApqOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gv89HjljmZ7gXki4JKuZ7etbR6eDMXYakRjhn9H98HE=;
- b=r8LSFi8lnBgn2whI/tO1UgUfks7SDJzk83G/EjdaYUn0VyRuKgq42VJE4a4eHi7wGkabHJMhmXe99jvYWOTlyt+p9oHBU+3o+sLtQpyN/jsPi8DL3kG+A1BXdkAFGgx8J6wu+nZ+aiKxgUSuGb4tOZb5kF/hg3pNlYaamxB80hA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM6PR04MB4679.eurprd04.prod.outlook.com (2603:10a6:20b:15::32)
- by DBBPR04MB6075.eurprd04.prod.outlook.com (2603:10a6:10:c4::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
- 2022 21:27:15 +0000
-Received: from AM6PR04MB4679.eurprd04.prod.outlook.com
- ([fe80::28f3:36a7:fc3c:b9aa]) by AM6PR04MB4679.eurprd04.prod.outlook.com
- ([fe80::28f3:36a7:fc3c:b9aa%5]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
- 21:27:14 +0000
-Date:   Thu, 10 Feb 2022 23:27:10 +0200
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Rob Herring <robh@kernel.org>, Dong Aisheng <aisheng.dong@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Jacky Bai <ping.bai@nxp.com>
-Subject: Re: [RESEND v4 08/10] arm64: dts: imx8dxl: Add i.MX8DXL evk board
- support
-Message-ID: <YgWDLo/+bdoyqOAY@abelvesa>
-References: <1639680494-23183-1-git-send-email-abel.vesa@nxp.com>
- <1639680494-23183-9-git-send-email-abel.vesa@nxp.com>
- <20220126125355.GS4686@dragon>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126125355.GS4686@dragon>
-X-ClientProxiedBy: VE1PR08CA0009.eurprd08.prod.outlook.com
- (2603:10a6:803:104::22) To AM6PR04MB4679.eurprd04.prod.outlook.com
- (2603:10a6:20b:15::32)
+        Thu, 10 Feb 2022 16:30:46 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C718FAF
+        for <linux-serial@vger.kernel.org>; Thu, 10 Feb 2022 13:30:45 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id a39so11761151pfx.7
+        for <linux-serial@vger.kernel.org>; Thu, 10 Feb 2022 13:30:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5sSuTv01uKJX2BSY7gXajvrbiy249c2MdujX+HPxpDI=;
+        b=lopQbUk3YDraN3JAFtk//t1xpsV+xisZ64cmsRReuJq20Ku5VgzE7eEUQ5+IGxUuDz
+         SL0P4OxNgFhByw6TKTcOLJiEfNaOTrTeB5l5Hrv+8tzoMsff6Sm4iQtmHaFs/2Yslu+G
+         N/paGZ62h8ytYx/l8R3Lc0ekbcZ2Imib03ZU5FE+5jioGxOTDUq5M3rE3Q+a4/eOSzFl
+         xFLeFNuXAASTNovZs94pOEpI6g2yLhyTy2oT2lm353f3DIVmUEIO9eWvUTwGbdmQaKdr
+         8Kq6SlPWqnjfEeppVKcSq9iJbvmVKxgT3AkqCovqUxP50LoIV1Qs2jMhjYcNtwF+w/2b
+         JeWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5sSuTv01uKJX2BSY7gXajvrbiy249c2MdujX+HPxpDI=;
+        b=5SsguQT/h0jd21Vboe2UqwS5TRO4ub0LsCZW5S41P1RwThshhu3QO0jF59oiWC8Yuc
+         397vRoF/NTK7IUCo42DoyUiLviHjXSPKL00BhSP/OXi5KhjOF5KEhmRmWVba9rp4+eKE
+         kjgh3LoJkOJcTaTy7rHf6tDLRMtXWa1CId15tUEsNJzDZ4LcHQ9FO3VTLYAIYOatXQsH
+         v+8F2rD18beuvJV9BBKgMzbLT1oW6yz9z1NdJoMDgtvzaAsJblgsv6yM2360Yr4lDOwu
+         HPCkZ2FWth8JrvTcXEmiEXhc33+SOdpwmMStcTMg3JaJTHZqa2dw0WhdjR1Udjh/Iz4e
+         Xgng==
+X-Gm-Message-State: AOAM533oo6lNidnzEW5Tju3fza7ybGjxkabTwMdaFoiYF6hvQOwuLqzB
+        Co3R4fVJayVnnljaC0pjhTFDc6dcjVtft37MEeBMbJttprpVRA==
+X-Google-Smtp-Source: ABdhPJxZ068WqeKiQ8jA0eV+KVQ67f4cucCBjR4NafSv2eqwSxGF1Efgx4uR7Um/JFd5A8JcU5FwkrB4XdalMj4vSWY=
+X-Received: by 2002:a63:874a:: with SMTP id i71mr4039591pge.440.1644528644898;
+ Thu, 10 Feb 2022 13:30:44 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bfd032de-c52a-41e9-ec7a-08d9ecdc1b4f
-X-MS-TrafficTypeDiagnostic: DBBPR04MB6075:EE_
-X-Microsoft-Antispam-PRVS: <DBBPR04MB607586558E63DD402D6DFADEF62F9@DBBPR04MB6075.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qyd9wBRA04k8+F/DGfDRRpX2uhVqMgRQzRYDZ9qZ2kKU3Mh5v8FvKpfmZMV/SzEaaTpzb5E2X1hYHoQKa0mld/iSTorEyeUSffdvfFBtXG9kudmBNW2R1nSpR088/6vmpYi9B4eIgylX+3MZZqGRMykflSZkWnFSLuCypxPkvz40zJ2WXcAPk49L5AsxIiCbTSivnag6Oo64qzsL7Qwdgw2jl+UV8oBm7N6VUtwOuFUKWFewACypyCh2t29jSpDCvXmaill8KWax0NlVJtYjFgERTL8F0zV6bnLq6zgxSXuhEmP3L8+FnzERtItcRqMLr/J8aht13vXDRaBtkfATCI0wduUaqupIKpRCq7LhwY7gK/pUpB1lCGI047vsbgnuQNfrrJTAFFJzWL/qNGkc9oXnWtSAE3Dxp8hQOcxeu4g7pkJunIvoIFgyYzmeOZjCmF5wETcgMr530rOIub5n0rKFnWXJoaHaGHDLpcXMnvE1DZBO9DrVMXSbQlGg1xvwD1aAYS+Zt1VDwxmwYaySiTmQ9GzYjKnrJaC13Ddapitf59VkJy1yPl68jAkFbk6FTe2ab2tFgdtYfKYdYY8UuDLKZCkzuUtsr6BKo23fQrFTZzVtSiksZ012Pr5fRm3iW7T8Xrl6IJLdAuY1bkouDitAaL3IfKKIZZci2th+04niCIH/jvhzLUkgdxl5LuwdkwdHkbCVWid4pKky+OV9ez6hYDhYoquOFGH3O6NYbXBw++Q7G462rYkFpWGXEC6i
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB4679.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(316002)(26005)(8936002)(6916009)(54906003)(186003)(38350700002)(38100700002)(8676002)(86362001)(7416002)(5660300002)(44832011)(2906002)(66946007)(66556008)(66476007)(9686003)(6512007)(4326008)(6486002)(52116002)(6666004)(6506007)(53546011)(508600001)(33716001)(32563001)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7m++7mO3vWMyNwSmxtIwOuqho1oCinYZHNR3GKKPrgdulSxulyLSjPHDcGxk?=
- =?us-ascii?Q?pBmiLdgT3gbKQr46HklQ0oxy6KXhggcYIFzGWNY9kXLwicFd0reAg8WWiV6A?=
- =?us-ascii?Q?CZ/eYS3+dqfahUoycJ4SjD17/uv+ZxQ5U5+YRoZCExlW/ldK3CQLTWwKfiwu?=
- =?us-ascii?Q?9aLwt0OHz1WDiOE6lAO6rcV/z6E6eJ46YItRgDTQmMJDr7K9jPFnTcisASCv?=
- =?us-ascii?Q?Z7yQzY76GIH2fU2SqOrTlYb27mlUbXWkDA41M2yRtJyVGKQSWUh1Mvphx0hw?=
- =?us-ascii?Q?Xyq9GGf3ZTY3o+959oRqYAgbXxwwImVCAHTksz6Iq1Hk7xempgFdotOrUWvQ?=
- =?us-ascii?Q?5sbQsdgvnz0MCnQPvBVflKUoEdqDgDOvspV/xjx0ijJf7ptXGhsMhRZzrH3W?=
- =?us-ascii?Q?Ykrt19dphWwAXg3G5AJGGCDsUHngUQIv+y3Y7mnb3/VRAocFUYEsHdd9Jm44?=
- =?us-ascii?Q?e021e05pHKm2/iYVmrquYLnRLKpXbXesf5LvMCJSo1GydVuv6EJhaBwbB1YC?=
- =?us-ascii?Q?DMz2BS4FtEmAHTec1B/8UF1L7sxz0hM+UcWEDT3L9Azz2Vx+lqvPDhjqA4I2?=
- =?us-ascii?Q?oCOb7n7Vnyshhsx4UNe5GSEUt4dJ0YKxXuViTdnKjY+/ZrwXJatXC8e4yAYN?=
- =?us-ascii?Q?ZSEX7g5OfU7kN3fdT7AxaX0Ddg6Dl6OOUzOYWpGDPvar1CuiOXDvmHDuJaM8?=
- =?us-ascii?Q?gvJPxSVJbuuW9ve3qAxKNpCqmDFVX1QymslLIRehZtagC8d+WKxAlvMNG7gq?=
- =?us-ascii?Q?DoqT5xevziYcYpxE9jTm9IQyYhqVsV4nptGaUDOrxszkU+H5/hzrOHLPJ7Bg?=
- =?us-ascii?Q?9gKT563o7YOr72uz0H86N0yXqoAveHVvYq1h2PfEq/6GCJTlidO48BjqAcRD?=
- =?us-ascii?Q?kmew+qJqFWDh0IhKXG1HYtsjDEEDALxXMGPcnERYmOcV3lKPMh4Y4vaEnNRy?=
- =?us-ascii?Q?S0MplzUHgRfBnyNd/vcpVDngNhVhIgyTS7MCY3xQOY2N8QldhgnY3V87wAB8?=
- =?us-ascii?Q?Ti6wpntrNBO+QdcCcoEGDhX07/+E6wiUVyUxbIVQUYPrWf+WfgvLamGNhCGW?=
- =?us-ascii?Q?KyN0dwp5X9vLDL+fr8GsYZYZIkn0qfzmqIbQQz5tmpB8Wwpe7yT8OMAaD+2o?=
- =?us-ascii?Q?0Sa2G1Ftyrx83ztR345QCUTliO/e3Zq6fwelW/CMgCv/Cg1UM5pdudacGNRE?=
- =?us-ascii?Q?g+z7XgcGIctrIMuUZZNyJtRB1FU1zGBHptA8Jq1Fa19WxsIdf5W4UnZtMsS7?=
- =?us-ascii?Q?nZiM+5RJbFQnfKi13pzFFhChdXsHXPuguDGFqp8HoCEe53Sb6gGObrVestiM?=
- =?us-ascii?Q?lEwYetbVeRGsdZzhAj8t22HfcsC0e842Fkb8dTXziI2WyhDvznsbg3QsMS7n?=
- =?us-ascii?Q?4NQ7BCX0e/tw9ioMBUYiv7w9hpqqcYJx/hy8QFJ6Y+XyMueKDrV+YV+s4du5?=
- =?us-ascii?Q?0IFOTRFdvyX6h8ThsFLRZfjXuPwuWbwzQYgfBs5QK10wh0eSsEZ8ON/JNzRv?=
- =?us-ascii?Q?JS0hODY6ApNIfRheFTOp6a1nPvUyexIAsE5zr7bkJuLq5POw4v4u+tJNHr3g?=
- =?us-ascii?Q?IoOvyouSeVIt1ioHIGQWxFnS+fWWfei+58APJGNXRiKen+/mg5+2dg6DNsO9?=
- =?us-ascii?Q?6YCMUP3TnMWTBU39TrVrbzI=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfd032de-c52a-41e9-ec7a-08d9ecdc1b4f
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB4679.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 21:27:14.7474
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZnmLK9ReYSE2bOFkUuFPu0Al/j+HUUH87YR6niB+oRS4jKtEUMNoqrAZlzyYRgIp383M1l/BWd+djPIZ1oHGKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6075
+References: <CAJ+vNU0CrD8091W5zH7ve9v3ZVAGXR6=6DGebd5LhHz4mzt4+w@mail.gmail.com>
+ <CAJ+vNU1tJ5W5RCUsPehgH7CS=v=7mttHgNOu-UdWGVpzf2LcBQ@mail.gmail.com>
+ <4bdbd9c0-8ce3-84b1-9f89-be89b686c652@camlingroup.com> <c66ae9ce-7345-736c-010e-1dd5602b67df@gmail.com>
+ <CAJ+vNU2qk6G_YLAr-1_FP1czBe8wF2OUOTu914zLVNN0Lm9UFQ@mail.gmail.com>
+In-Reply-To: <CAJ+vNU2qk6G_YLAr-1_FP1czBe8wF2OUOTu914zLVNN0Lm9UFQ@mail.gmail.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Thu, 10 Feb 2022 13:30:33 -0800
+Message-ID: <CAJ+vNU2ra8g90ZWcwS0xnRq3LO_4Q2PFJo-OuXuBgCpPsXcXkg@mail.gmail.com>
+Subject: Re: Modem control lines for RTSCTS hardware flow control via rts-gpio
+ and cts-gpio with IMX
+To:     Richard Genoud <richard.genoud@gmail.com>
+Cc:     =?UTF-8?Q?Tomasz_Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Huang Shijie <b32955@freescale.com>,
+        Dirk Behme <dirk.behme@googlemail.com>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22-01-26 20:53:55, Shawn Guo wrote:
-> On Thu, Dec 16, 2021 at 08:48:12PM +0200, Abel Vesa wrote:
-> > From: Jacky Bai <ping.bai@nxp.com>
-> > 
-> > Add i.MX8DXL EVK board support.
-> > 
-> > Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-> > Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> > ---
-> >  arch/arm64/boot/dts/freescale/Makefile        |   1 +
-> >  arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 266 ++++++++++++++++++
-> >  2 files changed, 267 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> > 
-> > diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-> > index 5018b8b1e5f2..f117d3e811ba 100644
-> > --- a/arch/arm64/boot/dts/freescale/Makefile
-> > +++ b/arch/arm64/boot/dts/freescale/Makefile
-> > @@ -72,6 +72,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mq-pico-pi.dtb
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8mq-thor96.dtb
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-rmb3.dtb
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-zest.dtb
-> > +dtb-$(CONFIG_ARCH_MXC) += imx8dxl-evk.dtb
-> 
-> Keep the list sorted.
-> 
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8qm-mek.dtb
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-ai_ml.dtb
-> >  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-colibri-eval-v3.dtb
-> > diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> > new file mode 100644
-> > index 000000000000..68dfe722af6d
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> > @@ -0,0 +1,266 @@
-> > +// SPDX-License-Identifier: GPL-2.0+
-> > +/*
-> > + * Copyright 2019-2021 NXP
-> > + */
-> > +
-> > +/dts-v1/;
-> > +
-> > +#include "imx8dxl.dtsi"
-> > +
-> > +/ {
-> > +	model = "Freescale i.MX8DXL EVK";
-> > +	compatible = "fsl,imx8dxl-evk", "fsl,imx8dxl";
-> > +
-> > +	chosen {
-> > +		stdout-path = &lpuart0;
-> > +	};
-> > +
-> > +	memory@80000000 {
-> > +		device_type = "memory";
-> > +		reg = <0x00000000 0x80000000 0 0x40000000>;
-> > +	};
-
- ...
-
-> > +	pinctrl_usdhc1: usdhc1grp {
-> > +		fsl,pins = <
-> > +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> > +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> > +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> > +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> > +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> > +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> > +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> > +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> > +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> > +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> > +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> > +		>;
-> > +	};
-> > +
-> > +	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
-> 
-> For sake of consistency, we probably should still end the node name with 'grp'.
-> 
-
-I think we should either leave as is or use usdhc1-100mhz-grp.
-
-I, for one, would leave as is and then maybe we can do a replace for all imx
-platforms as a separate patch at some point.
-
-Let me know what you would prefer.
-
-All other comments will be addressed in the next version of this
-patchset.
-
-> Shawn
-> 
-> > +		fsl,pins = <
-> > +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> > +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> > +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> > +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> > +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> > +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> > +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> > +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> > +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> > +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> > +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> > +		>;
-> > +	};
-> > +
-
- ...
-
-> > +	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
-> > +		fsl,pins = <
-> > +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> > +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> > +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> > +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> > +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> > +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> > +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> > +		>;
-> > +	};
-> > +};
-> > -- 
-> > 2.31.1
+On Wed, Jan 26, 2022 at 4:00 PM Tim Harvey <tharvey@gateworks.com> wrote:
+>
+> On Mon, Jan 24, 2022 at 1:52 AM Richard Genoud <richard.genoud@gmail.com>=
+ wrote:
 > >
+> >
+> > Hi,
+> >
+> > Le 14/01/2022 =C3=A0 07:19, Tomasz Mo=C5=84 a =C3=A9crit :
+> > > On 14.01.2022 04:08, Tim Harvey wrote:
+> > >> So I believe in order to support using gpios for rts/cts in the imx
+> > >> uart driver I must find the right place to call imx_uart_rts_active
+> > >> and imx_uart_rts_inactive when the FIFO is not full and full
+> > >> respectively. I'm not that familiar with the Linux uart driver
+> > >> framework - am I on the right track and if so any ideas where this i=
+s
+> > >> best done?
+> > >
+> > > It is not really the driver (and thus FIFO level), but rather the amo=
+unt
+> > > of free space in tty buffer (checked by Line Discipline workqueue) th=
+at
+> > > determines when to throttle (set RTS inactive). This mostly works fin=
+e,
+> > > but fails [1] when the RX interrupt frequency is too high [2].
+> > >
+> > > The throttle/unthrottle request, when termios CRTSCTS is set, is seen=
+ by
+> > > the driver as the call to .set_mctrl (imx_uart_set_mctrl) with TIOCM_=
+RTS
+> > > bit cleared/set in mctrl parameter. Currently imx_uart_set_mctrl() on=
+ly
+> > > controls the UCR2_CTS and UCR2_CTSC bits based on mctrl.
+> > >
+> > > To support your case you would most likely have to add the gpio handl=
+ing
+> > > in imx_uart_set_mctrl(). However, I am unaware what other issues you
+> > > might encounter (i.e. if it is not done there yet simply because nobo=
+dy
+> > > had that use case or if there is some deeper problem).
+> > >
+> > > [1] https://lore.kernel.org/linux-serial/10e723c0-a28b-de0d-0632-0bd2=
+50478313@camlingroup.com/
+> > > [2] https://lore.kernel.org/linux-serial/20220104103203.2033673-1-tom=
+asz.mon@camlingroup.com/
+> > >
+> > > Best Regards,
+> > > Tomasz Mon
+> > >
+> >
+> > I'd suggest to start testing with a serial port connected to nothing, a=
+nd check the pins values
+> > with a scope or a voltmeter.
+> > Setting pins values from userspace can done quite easily with :
+> > #include <unistd.h>
+> > #include <termios.h>
+> > #include <stdio.h>
+> > #include <sys/ioctl.h>
+> > #include <sys/types.h>
+> > #include <sys/stat.h>
+> > #include <fcntl.h>
+> >
+> > void usage(char *prog)
+> > {
+> >         printf("usage: %s serial_port id 0/1 sleep_time_sec\n", prog);
+> >         printf("%s\n", "1:DTR   DTR (data terminal ready)");
+> >         printf("%s\n", "2:RTS   RTS (request to send)");
+> >         printf("%s\n", "3:Both");
+> > }
+> >
+> > int main(int argc, char **argv)
+> > {
+> >         int fd;
+> >         unsigned status =3D 0;
+> >         int enable;
+> >         int err;
+> >
+> >         if (argc < 5) {
+> >                 usage(argv[0]);
+> >                 return -1;
+> >         }
+> >
+> >         fd =3D open(argv[1], O_RDWR | O_NOCTTY);
+> >
+> >         enable =3D atoi(argv[3]);
+> >
+> >         if (fd < 0)
+> >                 return -1;
+> >
+> >
+> >         switch(atoi(argv[2])) {
+> >         case 0:
+> >                 if (enable)
+> >                         status |=3D TIOCM_LE;
+> >                 break;
+> >         case 1:
+> >                 if (enable)
+> >                         status |=3D TIOCM_DTR;
+> >                 break;
+> >         case 2:
+> >                 if (enable)
+> >                         status |=3D TIOCM_RTS;
+> >                 break;
+> >         case 3:
+> >                 if (enable)
+> >                         status |=3D TIOCM_DTR | TIOCM_RTS;
+> >                 break;
+> >         default:
+> >                 printf("unknown signal\n");
+> >         }
+> >
+> >         err =3D ioctl(fd, TIOCMSET, &status);
+> >         sleep(atoi(argv[4]));
+> > out:
+> >         if (fd > -1)
+> >                 close(fd);
+> >
+> >         return err;
+> > }
+> >
+>
+> Richard,
+>
+> Thanks, I've been able to use this as well as terminal apps like
+> picocom and a scope to ensure that the RTS gpio is getting asserted
+> properly and that the CTS gpio is getting handled accordingly. Both
+> these signals are configured with internal pull-ups.
+>
+> With for example:
+>         cts-gpios =3D <&gpio6 2 GPIO_ACTIVE_LOW>; // input to IMX
+>         rts-gpios =3D <&gpio6 3 GPIO_ACTIVE_LOW>; // output from IMX
+>
+> I see that when rts is set to 1 (ie 'uart_test /dev/ttymxc3 2 1 3' or
+> 'picocom /dev/ttymxc3 --flow h') the normally pulled-up logic high RTS
+> gpio goes to 0V and when rts is set to 0 it goes back to 3.3V via the
+> pull-up.
+>
+> I've also been able to add debugging to ensure that when the CTS
+> signal is manually grounded that mctrl_gpio_irq_handle is called with
+> CTS=3D1 and imx_uart_start_tx is called to enable transmission and when
+> CTS signal is released from GND going back to 3.3V via the pull-up
+> mctrl_gpio_irq_handle is called with CTS=3D0 and imx_uart_stop_tx is
+> called to halt transmission.
+>
+> I've also verified that changing the gpio descriptor in the dts above
+> to GPIO_ACTIVE_HIGH negates the above logic which is clearly wrong as
+> these are active-low signals.
+>
+> In this specific case the device I am connecting the IMX
+> UART3_TX/UART3_RX and the GPIO's for RTS/CTS to is a Laird
+> Sterling-LWB wifi/BT chip. The datasheet [1] shows:
+> pin 31: BT_UART_RTS_L output UART Request-to-send
+> pin 32: BT_UART_CTS_L input UART Clear-to-send
+> pin 33: BT_UART_TXD output UART transmit
+> pin 34: BT_UART_RXD input UART input
+>
+> They are connected to the IMX as:
+> BT_UART_RXD(pin34) <- IMX CSI0_DAT12_UART4_TXD
+> BT_UART_TXD(pin33) -> IMX CSI0_DAT13_UART4_RXD
+> BT_UART_CTS_L(pin32) <- IMX CSI0_DAT17_UART4_RTS_B (GPIO6_IO3)
+> BT_UART_RTS_L(pin31) -> IMX CSI0_DAT16_UART4_CTS_B (GPIO6_IO2)
+>
+> And again if pinmuxed as RTS/CTS communication with the BT HCI is fine
+> but if pinmuxed as GPIO and configured as the following BT HCI
+> communication fails:
+>         cts-gpios =3D <&gpio6 2 GPIO_ACTIVE_LOW>; /* in to IMX from HCI
+> BT_UART_RTS_L output */
+>         rts-gpios =3D <&gpio6 3 GPIO_ACTIVE_LOW>; /* out from IMX to HCI
+> BT_UART_CTS_L input */
+>
+> I'm not sure what else to look at here.
+>
+> Best regards,
+>
+> Tim
+> [1] - https://www.lairdconnect.com/documentation/datasheet-sterling-lwb
+
+I have found the issue here which causes hardware flow control when
+using GPIO's with the imx UART driver to fail. The
+imx_uart_set_termios() function clears the UCR2_IRTS whenver hardware
+flow control is enabled which configures the transmitter to only send
+with the RTS pin is asserted. In the case of a GPIO being used instead
+of the dedicated internal RTS pin for the uart, this will keep the
+transmitter from ever transmitting. In the hardware flow control case
+where a GPIO is used UCR2_IRTS must be set to ignore the RTS pin. We
+can use the have_rtsgpio flag which is set when 'rts-gpios' property
+is used as a qualifier for this.
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index df8a0c8b8b29..d506cbd679dd 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1674,8 +1674,7 @@ imx_uart_set_termios(struct uart_port *port,
+struct ktermios *termios,
+                if (ucr2 & UCR2_CTS)
+                        ucr2 |=3D UCR2_CTSC;
+        }
+-
+-       if (termios->c_cflag & CRTSCTS)
++       if (!sport->have_rtsgpio && termios->c_cflag & CRTSCTS)
+                ucr2 &=3D ~UCR2_IRTS;
+        if (termios->c_cflag & CSTOPB)
+                ucr2 |=3D UCR2_STPB;
+
+If this makes sense, I'll send a patch.
+
+Best regards,
+
+Tim
