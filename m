@@ -2,118 +2,243 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB53DC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 20:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 379FBC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 23:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349874AbiBKUmn (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Feb 2022 15:42:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40588 "EHLO
+        id S239391AbiBKXic (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Feb 2022 18:38:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbiBKUmm (ORCPT
+        with ESMTP id S238960AbiBKXia (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Feb 2022 15:42:42 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B539FC55;
-        Fri, 11 Feb 2022 12:42:40 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 07AED425;
-        Fri, 11 Feb 2022 12:42:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1644612160;
-        bh=NcOgnI4XVfpjdB5tu79X+6ZPVwodL2Y1hcUhjUhpw9w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KfUd4S7cGL8zKJd82OGDd1XIqCApewYFWIxJI5wLhD903V4RL8n0s2Cm76sHf6R1i
-         zhGdpyg4u988T8ydyEMqDch6dmqiLAK09eZHet/sISpXXK0wuSY/KRuRSAc634kUEr
-         EQorTx2VE6+tCSUdsTYEdI2WzP5Znhm/gUcMgEtc=
-Date:   Fri, 11 Feb 2022 12:42:38 -0800
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Konstantin Aladyshev <aladyshev22@gmail.com>,
-        Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port
- type
-Message-ID: <YgbKPmZIpfRPKg1k@hatter.bewilderbeest.net>
-References: <20220211004203.14915-1-zev@bewilderbeest.net>
- <YgY4IODZlKTG7yzn@smile.fi.intel.com>
+        Fri, 11 Feb 2022 18:38:30 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFE838D
+        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 15:38:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644622708; x=1676158708;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ay5rZWJv8+FLjjCHVHHLgNPQcpY7W6lnHboXNSCM+Fk=;
+  b=OQn9YpS2A2JQJctK7GNnmySQuBHhwE9dFarau0jjj7klOEH96ACv8mk1
+   AqAc73gS+HUCZWEu7kajoA8vVb7l06K4dL87p74QWZYAaO6FyaZtIYOot
+   7g0J4LGR5+bzYrxg91zi30JC8TXy8hrXUExMl928PovPZUvbYLvc2HB7X
+   rgo1fQSqg9rnRarqmwY++lTPkOBKGkeKrfthqaVP3ZWLClpvikbeoZbGk
+   /XQtHrh83fw2xdf7uJDnlreNAK99QFEpbXaWeQJ87gx3FqvD3QI1Lb4Yz
+   8NWejwBqpKgksGdmcwYcQL9HUu5URAt4x9ivi5EzD+pRh34QOgpHn+Yrd
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="237234658"
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="237234658"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 15:38:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="702271546"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 11 Feb 2022 15:38:14 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nIfUT-0005MN-Fi; Fri, 11 Feb 2022 23:38:13 +0000
+Date:   Sat, 12 Feb 2022 07:37:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ ad30d108a5135af584ff47f5ff81be971b6c26f1
+Message-ID: <6206f355.ixZPWILEOjJqW4+7%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YgY4IODZlKTG7yzn@smile.fi.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 02:19:12AM PST, Andy Shevchenko wrote:
->On Thu, Feb 10, 2022 at 04:42:03PM -0800, Zev Weiss wrote:
->> Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
->> set up register mapping") fixed a bug that had, as a side-effect,
->> prevented the 8250_aspeed_vuart driver from enabling the VUART's
->> FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
->> turn revealed what appears to be a hardware bug in the ASPEED VUART in
->> which the host-side THRE bit doesn't get if the BMC-side receive FIFO
->> trigger level is set to anything but one byte.  This causes problems
->> for polled-mode writes from the host -- for example, Linux kernel
->> console writes proceed at a glacial pace (less than 100 bytes per
->> second) because the write path waits for a 10ms timeout to expire
->> after every character instead of being able to continue on to the next
->> character upon seeing THRE asserted.  (GRUB behaves similarly.)
->>
->> As a workaround, introduce a new port type for the ASPEED VUART that's
->> identical to PORT_16550A as it had previously been using, but with
->> UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
->> one byte, which (experimentally) seems to avoid the problematic THRE
->> behavior.
->
->...
->
->> +	[PORT_ASPEED_VUART] = {
->> +		.name		= "ASPEED VUART",
->> +		.fifo_size	= 16,
->> +		.tx_loadsz	= 16,
->> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
->> +		.rxtrig_bytes	= {1, 4, 8, 14},
->> +		.flags		= UART_CAP_FIFO,
->> +	},
->
->This is quite similar to AR7 type. Can that be (re-)used?
->
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: ad30d108a5135af584ff47f5ff81be971b6c26f1  dt-bindings: serial: fsl-lpuart: Remove i.MX8QM from enum
 
-I suppose that could work if there's a strong preference for it, but I'd 
-sort of prefer to keep it as a separate entry if that's alright.
+elapsed time: 720m
 
-Firstly, I haven't yet heard back from ASPEED confirming the nature of 
-the underlying problem, so it seems entirely possible we'll end up 
-wanting to tweak it further if they can suggest a better workaround, and 
-I believe having rxtrig_bytes defined (which AR7 doesn't) enables 
-adjusting the trigger-level FCR bits from userspace via sysfs, which 
-could be useful for experiments relating to that.
+configs tested: 163
+configs skipped: 5
 
-Secondly, there are a half-dozen or so other existing entries in the 
-uart_config[] array that differ only in name, so it doesn't seem to be 
-something that's generally been deemed worth optimizing thus far, and 
-now that the constant value has been shifted down it's just filling in a 
-previously-empty slot in the array instead of expanding it further.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-But mostly it strikes me as a bit...gratuitously confusing to label the 
-port as something it ultimately isn't, even if they're functionally 
-"close enough" (calling it an 8250 or 16550A is a bit different, as 
-those are well-established, widely-emulated ones that have become 
-generic nomenclature, which isn't so much the case for AR7).  While in 
-the source code it could be explained with a comment, having 
-/proc/tty/driver/serial (and wherever else that name might end up) 
-referencing a totally unrelated MIPS SoC just seems kind of weird to me.
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220211
+arc                           tb10x_defconfig
+mips                       bmips_be_defconfig
+ia64                         bigsur_defconfig
+powerpc                 mpc834x_mds_defconfig
+m68k                             allyesconfig
+powerpc                      chrp32_defconfig
+xtensa                    xip_kc705_defconfig
+openrisc                            defconfig
+mips                          rb532_defconfig
+sh                               allmodconfig
+m68k                          hp300_defconfig
+mips                        bcm47xx_defconfig
+xtensa                  cadence_csp_defconfig
+sh                           se7722_defconfig
+m68k                        m5407c3_defconfig
+sh                        dreamcast_defconfig
+nios2                            alldefconfig
+powerpc                      pasemi_defconfig
+sh                        sh7785lcr_defconfig
+sh                          lboxre2_defconfig
+sh                          kfr2r09_defconfig
+arm                           h3600_defconfig
+sh                        edosk7760_defconfig
+powerpc                     stx_gp3_defconfig
+mips                        vocore2_defconfig
+ia64                        generic_defconfig
+xtensa                       common_defconfig
+ia64                             alldefconfig
+xtensa                         virt_defconfig
+arm                         axm55xx_defconfig
+m68k                       m5475evb_defconfig
+arm                     eseries_pxa_defconfig
+m68k                        m5307c3_defconfig
+powerpc64                           defconfig
+powerpc                      cm5200_defconfig
+mips                            gpr_defconfig
+nds32                             allnoconfig
+arm                          simpad_defconfig
+m68k                          multi_defconfig
+alpha                            allyesconfig
+mips                           ip32_defconfig
+m68k                        stmark2_defconfig
+xtensa                          iss_defconfig
+openrisc                 simple_smp_defconfig
+powerpc                         ps3_defconfig
+powerpc                      ep88xc_defconfig
+h8300                    h8300h-sim_defconfig
+arm                          pxa3xx_defconfig
+xtensa                generic_kc705_defconfig
+arm                           sama5_defconfig
+powerpc                      bamboo_defconfig
+arc                     nsimosci_hs_defconfig
+sh                                  defconfig
+arm                           corgi_defconfig
+mips                     loongson1b_defconfig
+sh                           se7721_defconfig
+alpha                            alldefconfig
+sh                          landisk_defconfig
+sh                              ul2_defconfig
+m68k                        mvme16x_defconfig
+xtensa                    smp_lx200_defconfig
+arm                        realview_defconfig
+m68k                        mvme147_defconfig
+riscv                               defconfig
+nds32                               defconfig
+sh                          rsk7264_defconfig
+mips                      loongson3_defconfig
+sh                          rsk7203_defconfig
+arc                      axs103_smp_defconfig
+mips                           ci20_defconfig
+arm                  randconfig-c002-20220211
+arm                  randconfig-c002-20220212
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
+clang tested configs:
+riscv                randconfig-c006-20220211
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220211
+arm                  randconfig-c002-20220211
+i386                          randconfig-c001
+mips                 randconfig-c004-20220211
+powerpc                          allyesconfig
+mips                          malta_defconfig
+riscv                          rv32_defconfig
+powerpc                   lite5200b_defconfig
+arm                     am200epdkit_defconfig
+arm                         orion5x_defconfig
+mips                      malta_kvm_defconfig
+arm                         bcm2835_defconfig
+arm                      tct_hammer_defconfig
+arm                         s3c2410_defconfig
+powerpc                     mpc5200_defconfig
+powerpc                     akebono_defconfig
+powerpc                      katmai_defconfig
+powerpc                      ppc44x_defconfig
+mips                        maltaup_defconfig
+arm                          collie_defconfig
+powerpc                 mpc8272_ads_defconfig
+arm                             mxs_defconfig
+mips                            e55_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220211
+hexagon              randconfig-r041-20220211
+riscv                randconfig-r042-20220211
 
-Zev
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
