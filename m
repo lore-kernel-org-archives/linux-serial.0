@@ -2,139 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4DCC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 11:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23CCC433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 12:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240655AbiBKLIM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:08:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36592 "EHLO
+        id S1349790AbiBKMDM (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Feb 2022 07:03:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234420AbiBKLIL (ORCPT
+        with ESMTP id S1349882AbiBKMDH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:08:11 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605E3B77
-        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 03:08:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644577691; x=1676113691;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=aLzWE5vfxOolW4FYoX8ZvynZO5To349ovXQl8lUg8C0=;
-  b=MLfn0QP+v3uNAE0V+/v+ggC5bbxk8FF3DBi+4NKUtkHTvo9x0Tivd36h
-   zZY+zqgABnd3XJSN0R3I4uoF38zyLjXg0xq5c3X0cGRHyW1SVRNZPBaKG
-   U+YvwJlVt6l+/A/8wbuk8nB4yUH1ZtoaX9ADLWexxoiH9ZmSzm+1Nciy2
-   bhOc6gOerIY2Hawqq/QeHQnfiw69XCuhy52SNrwW4vCG33MoAYGkyhtro
-   RR5zVXUZYZcv0tw/5lYSttWJWtMbeVfL4/olT87/gqK76wzoiHe0llM46
-   Agtv3rmi9MNVjeDSPgGOqkV2IxW+R7Caz3LIgirrqpKgfRp5eutuHiDhC
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="233268233"
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="233268233"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:08:11 -0800
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="542046146"
-Received: from nkosecih-mobl1.ger.corp.intel.com ([10.251.211.81])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:08:08 -0800
-Date:   Fri, 11 Feb 2022 13:08:02 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Eric Tremblay <etremblay@distech-controls.com>,
-        linux-serial <linux-serial@vger.kernel.org>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 1/3] serial: 8250: Handle UART without interrupt on
- TEMT using em485
-In-Reply-To: <20210204161158.643-2-etremblay () distech-controls ! com>
-Message-ID: <91154b2-e3ce-78c2-d74-bcd8aba9a3fe@linux.intel.com>
-References: <20210204161158.643-2-etremblay () distech-controls ! com>
+        Fri, 11 Feb 2022 07:03:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF44BE4
+        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 04:03:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3810BB8294F
+        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 12:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEBA3C340E9;
+        Fri, 11 Feb 2022 12:02:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644580946;
+        bh=B7S6Nht4YEJD3EkKnDtdsz/IZN5Eo6mSDt0NHhWEu/c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p5Vce3Fiq102FxU8LAJD466axNPztwNpfaX1+GarOyeyPE/jHDH4UZonv78OtHSoP
+         5wMuQODbI+NkQTBFUJuj3qIy3nXIlMoXj1XI8gK4zrjcEk8fYjU55mjXu31/AyySyC
+         eLLNBlAxCQ0vBOBYqxHQIy0YJQXHIpgvZ9S6pd/w=
+Date:   Fri, 11 Feb 2022 13:02:23 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kumaravel.Thiagarajan@microchip.com
+Cc:     Richard.Petrie@microchip.com, linux-serial@vger.kernel.org,
+        Sundararaman.H@microchip.com, Ronnie.Kunin@microchip.com,
+        Tharunkumar.Pasumarthi@microchip.com, Annirudh.D@microchip.com,
+        Pragash.Mangalapandian@microchip.com
+Subject: Re: Reg: Serial port driver for microchip's new PCIe UART device
+Message-ID: <YgZQT9SFWQcXm9C7@kroah.com>
+References: <CH0PR11MB538034CCE6C1868DB7BD8127E92E9@CH0PR11MB5380.namprd11.prod.outlook.com>
+ <YgOl6SFsKnZxkbFy@kroah.com>
+ <CH0PR11MB5380EE38DD9B8BF9EE5F1796E92F9@CH0PR11MB5380.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CH0PR11MB5380EE38DD9B8BF9EE5F1796E92F9@CH0PR11MB5380.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 4 Feb 2021, Eric Tremblay wrote:
+On Thu, Feb 10, 2022 at 10:38:39AM +0000, Kumaravel.Thiagarajan@microchip.com wrote:
+> > > We are working on a PCIe based multi-instance UART device.
+> > > Based on the Linux community feedback few months back, we had written
+> > it as a custom driver inside drivers/tty/serial/8250.
+> > > Now this custom driver is requiring a DWORD FIFO access for both Tx and
+> > Rx, and I am in the process of changing my driver code.
+> > 
+> > Why does the hardware not follow the normal standard here?
+> We are building a PCIe 8250 based UART.  We can absolutely support the normal 8250 framework and standard drivers. 
+> However, the challenges we see are the round-trip delays introduced by PCIe reads and writes having an impact on throughput, particularly if you are downstream of a PCIe tree with multiple hops.
+> The sizes of the payloads are limited to 32-bit by the processor PIO, however, even going from 8-bit payloads to 32-bit payloads improves throughput dramatically.
 
-> The patch introduce the UART_CAP_NOTEMT capability. The capability
-> indicate that the UART doesn't have an interrupt available on TEMT.
-> 
-> In the case where the device does not support it, we calculate the
-> maximum time it could take for the transmitter to empty the
-> shift register. When we get in the situation where we get the
-> THRE interrupt, we check if the TEMT bit is set. If it's not, we start
-> the a timer and recall __stop_tx() after the delay.
-> 
-> The transmit sequence is a bit modified when the capability is set. The
-> new timer is used between the last interrupt(THRE) and a potential
-> stop_tx timer.
-> 
-> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
-> [moved to use added UART_CAP_TEMT]
-> Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> [moved to use added UART_CAP_NOTEMT, improve timeout]
-> Signed-off-by: Eric Tremblay <etremblay@distech-controls.com>
-> ---
+What specific reads are you having problems with?
 
-> @@ -1531,8 +1560,19 @@ static inline void __stop_tx(struct uart_8250_port *p)
->  		 * shift register are empty. It is for device driver to enable
->  		 * interrupt on TEMT.
->  		 */
-> -		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
-> +		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
-> +			if (!(p->capabilities & UART_CAP_NOTEMT))
-> +				return;
-> +
-> +			/*
-> +			 * On devices with no TEMT interrupt available, start
-> +			 * a timer for a byte time. The timer will recall
-> +			 * __stop_tx().
-> +			 */
-> +			em485->active_timer = &em485->no_temt_timer;
-> +			start_hrtimer_ns(&em485->no_temt_timer, em485->no_temt_delay);
+Why not just use DMA like other PCIe serial port cards do, which we have
+supported for decades now.
 
-Is it ok to start the timer here without first confirming UART_LSR_THRE?
+> > And are you sure it will still not fit into the 8250 format?
+> As mentioned our hardware can support this, however, we see that it is less efficient due to the requirement for single byte reads and writes.
 
->  			return;
-> +		}
->  
->  		__stop_tx_rs485(p);
->  	}
-> @@ -1631,6 +1671,27 @@ static inline void start_tx_rs485(struct uart_port *port)
->  	__start_tx(port);
->  }
->  
-> +static enum hrtimer_restart serial8250_em485_handle_no_temt(struct hrtimer *t)
-> +{
-> +	struct uart_8250_em485 *em485;
-> +	struct uart_8250_port *p;
-> +	unsigned long flags;
-> +
-> +	em485 = container_of(t, struct uart_8250_em485, no_temt_timer);
-> +	p = em485->port;
-> +
-> +	serial8250_rpm_get(p);
-> +	spin_lock_irqsave(&p->port.lock, flags);
-> +	if (em485->active_timer == &em485->no_temt_timer) {
-> +		__stop_tx(p);
-> +		em485->active_timer = NULL;
+Again, which reads/writes are taking a long time?  And again, why not
+use DMA for the data instead?
 
-If BOTH_EMPTY is still not set when calling __stop_tx from here,
-__stop_tx ends up just starting the timer again and the timer won't do 
-anything useful when expiring because active_timer is now NULL.
+> > > Can I model my custom driver on serial drivers present in drivers/tty/serial/
+> > directory?
+> > 
+> > You could, but it would be much smaller and easier to use the 8250
+> > framework given that you probably do have an 8250-like device, right?
+> Adding DWORD reads/writes to the hardware is a necessary enhancement for improved performance over PCIe.
+> But 8250 framework looks very closely tied with reading character by character from the FIFO and I was not able to find a place in that framework where I could hook my own DWORD based Rx and Tx logic.
+> Is there any DWORD based UART FIFO driver example with 8250 framework available?
 
-> +	}
-> +
-> +	spin_unlock_irqrestore(&p->port.lock, flags);
-> +	serial8250_rpm_put(p);
-> +	return HRTIMER_NORESTART;
-> +}
+All of the code is there for you to read :)
 
+thanks,
 
--- 
- i.
-
+greg k-h
