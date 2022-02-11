@@ -2,88 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A23CCC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 12:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CE0C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 19:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349790AbiBKMDM (ORCPT
+        id S1343568AbiBKTMr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Feb 2022 07:03:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50170 "EHLO
+        Fri, 11 Feb 2022 14:12:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349882AbiBKMDH (ORCPT
+        with ESMTP id S234187AbiBKTMr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Feb 2022 07:03:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF44BE4
-        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 04:03:06 -0800 (PST)
+        Fri, 11 Feb 2022 14:12:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8596938F;
+        Fri, 11 Feb 2022 11:12:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3810BB8294F
-        for <linux-serial@vger.kernel.org>; Fri, 11 Feb 2022 12:02:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEBA3C340E9;
-        Fri, 11 Feb 2022 12:02:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644580946;
-        bh=B7S6Nht4YEJD3EkKnDtdsz/IZN5Eo6mSDt0NHhWEu/c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p5Vce3Fiq102FxU8LAJD466axNPztwNpfaX1+GarOyeyPE/jHDH4UZonv78OtHSoP
-         5wMuQODbI+NkQTBFUJuj3qIy3nXIlMoXj1XI8gK4zrjcEk8fYjU55mjXu31/AyySyC
-         eLLNBlAxCQ0vBOBYqxHQIy0YJQXHIpgvZ9S6pd/w=
-Date:   Fri, 11 Feb 2022 13:02:23 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kumaravel.Thiagarajan@microchip.com
-Cc:     Richard.Petrie@microchip.com, linux-serial@vger.kernel.org,
-        Sundararaman.H@microchip.com, Ronnie.Kunin@microchip.com,
-        Tharunkumar.Pasumarthi@microchip.com, Annirudh.D@microchip.com,
-        Pragash.Mangalapandian@microchip.com
-Subject: Re: Reg: Serial port driver for microchip's new PCIe UART device
-Message-ID: <YgZQT9SFWQcXm9C7@kroah.com>
-References: <CH0PR11MB538034CCE6C1868DB7BD8127E92E9@CH0PR11MB5380.namprd11.prod.outlook.com>
- <YgOl6SFsKnZxkbFy@kroah.com>
- <CH0PR11MB5380EE38DD9B8BF9EE5F1796E92F9@CH0PR11MB5380.namprd11.prod.outlook.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40E1CB82C0E;
+        Fri, 11 Feb 2022 19:12:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A4DC340ED;
+        Fri, 11 Feb 2022 19:12:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644606762;
+        bh=8mkUbS5/eb9njDiC5YQ9RiPIC0sVkH1EcbyzWZEu/ZE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QYADHZXg4w6ohZhB8o6Lvw2BwpqQwVh49m/1thAzio/0ZqZpwpEHz5s5hsLmTK9dP
+         3V93ktgFkOnRbbqmTDO0vGgBVYQJyhVqJVdwGP/HLF0/zuriA3nnP3A2ybGTE7NoRr
+         HLyzw7BuRzc4xNwWQUYKZ/2iSv6xuj1oUJihwjfaOH8kYAC1qktFV/pR9MkRlUmmud
+         +uV4VvEK8E0xDyYnaEm4xpwVQ3iAOb6K+kcoh12NsOuWJGg+Pw6DpwvFRp9C3ANMlf
+         1l1czLsTgbwda4Nx2PgxeDwFLEuimc7HmCK62TQBAoBSWPk6/aWe7Qy/VSIlmbNFZH
+         RgSCpUYDDlmqQ==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Clement <gregory.clement@bootlin.com>
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH v8 0/6] serial: mvebu-uart: Support for higher baudrates
+Date:   Fri, 11 Feb 2022 20:12:32 +0100
+Message-Id: <20220211191238.2142-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CH0PR11MB5380EE38DD9B8BF9EE5F1796E92F9@CH0PR11MB5380.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 10:38:39AM +0000, Kumaravel.Thiagarajan@microchip.com wrote:
-> > > We are working on a PCIe based multi-instance UART device.
-> > > Based on the Linux community feedback few months back, we had written
-> > it as a custom driver inside drivers/tty/serial/8250.
-> > > Now this custom driver is requiring a DWORD FIFO access for both Tx and
-> > Rx, and I am in the process of changing my driver code.
-> > 
-> > Why does the hardware not follow the normal standard here?
-> We are building a PCIe 8250 based UART.  We can absolutely support the normal 8250 framework and standard drivers. 
-> However, the challenges we see are the round-trip delays introduced by PCIe reads and writes having an impact on throughput, particularly if you are downstream of a PCIe tree with multiple hops.
-> The sizes of the payloads are limited to 32-bit by the processor PIO, however, even going from 8-bit payloads to 32-bit payloads improves throughput dramatically.
+Hello Greg, Stephen, Gregory,
 
-What specific reads are you having problems with?
+at Pali's request I have reviewed, updated and tested his series adding
+support for higher baudrates on Marvell Armada A37xx boards.
 
-Why not just use DMA like other PCIe serial port cards do, which we have
-supported for decades now.
+I have updated commit messages, some comments and indentation at some
+places. As per Stephen Boyd's request, commit message of patch 3 now
+contains more information about why we need to have UART
+clock-controller binding defined in such a way (due to backwards
+compatibility).
 
-> > And are you sure it will still not fit into the 8250 format?
-> As mentioned our hardware can support this, however, we see that it is less efficient due to the requirement for single byte reads and writes.
+Marek
 
-Again, which reads/writes are taking a long time?  And again, why not
-use DMA for the data instead?
+Changes in v7:
+* fixed lint errors in yaml binding file
+* added Reviewed-by tags
+* changed commit messages and comments a little
+* fixed indentation at some places
+* swapped patch 2 and 3 (dt-binding defining new binding should go
+  before the driver adding usage of that new binding)
 
-> > > Can I model my custom driver on serial drivers present in drivers/tty/serial/
-> > directory?
-> > 
-> > You could, but it would be much smaller and easier to use the 8250
-> > framework given that you probably do have an 8250-like device, right?
-> Adding DWORD reads/writes to the hardware is a necessary enhancement for improved performance over PCIe.
-> But 8250 framework looks very closely tied with reading character by character from the FIFO and I was not able to find a place in that framework where I could hook my own DWORD based Rx and Tx logic.
-> Is there any DWORD based UART FIFO driver example with 8250 framework available?
+Changes in v6:
+* fixed yaml binding file and dts files
 
-All of the code is there for you to read :)
+Changes in v5:
+* fixed yaml binding file
 
-thanks,
+Changes in v4:
+* converted armada3700-uart-clock documentation to YAML
+* split documentation changes into two commits:
+  - first which adds clock documentation
+  - second which updates UART documentation
 
-greg k-h
+Changes in v3:
+v3 is rebased on top of Linus master branch and all already applied patches
+were dropped. There are no changes in patches itself since v2.
+
+Pali Rohár (6):
+  math64: New DIV_U64_ROUND_CLOSEST helper
+  dt-bindings: mvebu-uart: document DT bindings for
+    marvell,armada-3700-uart-clock
+  serial: mvebu-uart: implement UART clock driver for configuring UART
+    base clock
+  dt-bindings: mvebu-uart: update information about UART clock
+  arm64: dts: marvell: armada-37xx: add device node for UART clock and
+    use it
+  serial: mvebu-uart: implement support for baudrates higher than 230400
+    Bd
+
+ .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
+ .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/mvebu-uart.c               | 596 +++++++++++++++++-
+ include/linux/math64.h                        |  13 +
+ 6 files changed, 671 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
+
+-- 
+2.34.1
+
