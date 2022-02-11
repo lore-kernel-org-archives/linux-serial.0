@@ -2,135 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDC6C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 00:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A0CC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Feb 2022 10:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346442AbiBKAmP (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:42:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36294 "EHLO
+        id S233650AbiBKKUZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Feb 2022 05:20:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346470AbiBKAmP (ORCPT
+        with ESMTP id S229671AbiBKKUZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:42:15 -0500
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [71.19.156.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098C45F89;
-        Thu, 10 Feb 2022 16:42:14 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 55E2162B;
-        Thu, 10 Feb 2022 16:42:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1644540133;
-        bh=Ta0bKrnVBjEojR4M2PA4jcJfw31PpTOxYdrRpm+5yrU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cQ5QUebwav7+E00VUUvtPQjJwWOFt8RGUU0OwNxWEgWknPhevFmwHsmcVCo5C77y+
-         Q9kK4/TPJp8aMdbqUfEt+ijPkTPg5diOzdgEfakGyWkalKQgeZqpk1xGWob0a4AlYX
-         HJ0uauMmF3rGoTLP3cBEfGexM/imzM0HP+92URj4=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, Joel Stanley <joel@jms.id.au>,
+        Fri, 11 Feb 2022 05:20:25 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146F82A5;
+        Fri, 11 Feb 2022 02:20:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644574823; x=1676110823;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RJ+0ZmlVTd1NI8J1ND1o+WTJfa5qruEZ7EtRTsDra1o=;
+  b=nbCIxheDepA12YuGBuiLfifyx6PXQOa49hfOofMdqt6bI4D44jGHmDQI
+   wlgpDGiXK13XFEw1qidcsCmSnbI63f/3iikT4b91xpgnY/G4039m0OlpQ
+   hsKxRmNIm31f93u/xWrTg/Ccamg/2SO9awkF41q0lRRwzkGhRSx9TSost
+   q69Pj/V4/HQwDOtigVUYAG2rvbYVHTkjTgg28r5LPsiiz5Xk9maZ+HjTZ
+   cLBg9SSBCAg1xSFvdLfazTJdsEBHfYIsFKxDwv/jqwdJJZVHDt6MepHGJ
+   QMattY31J7bAU27APUgpgKQwLleGdOhWj4u/oYE9A1VGMtQAvmvGLxHwc
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="248538209"
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="248538209"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 02:20:13 -0800
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="568999001"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 02:20:10 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nIT1F-003PAX-4u;
+        Fri, 11 Feb 2022 12:19:13 +0200
+Date:   Fri, 11 Feb 2022 12:19:12 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joel Stanley <joel@jms.id.au>,
         Andrew Jeffery <andrew@aj.id.au>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Konstantin Aladyshev <aladyshev22@gmail.com>,
         Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
-Date:   Thu, 10 Feb 2022 16:42:03 -0800
-Message-Id: <20220211004203.14915-1-zev@bewilderbeest.net>
-X-Mailer: git-send-email 2.35.1
+Subject: Re: [PATCH v2] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port
+ type
+Message-ID: <YgY4IODZlKTG7yzn@smile.fi.intel.com>
+References: <20220211004203.14915-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211004203.14915-1-zev@bewilderbeest.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
-set up register mapping") fixed a bug that had, as a side-effect,
-prevented the 8250_aspeed_vuart driver from enabling the VUART's
-FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
-turn revealed what appears to be a hardware bug in the ASPEED VUART in
-which the host-side THRE bit doesn't get if the BMC-side receive FIFO
-trigger level is set to anything but one byte.  This causes problems
-for polled-mode writes from the host -- for example, Linux kernel
-console writes proceed at a glacial pace (less than 100 bytes per
-second) because the write path waits for a 10ms timeout to expire
-after every character instead of being able to continue on to the next
-character upon seeing THRE asserted.  (GRUB behaves similarly.)
+On Thu, Feb 10, 2022 at 04:42:03PM -0800, Zev Weiss wrote:
+> Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
+> set up register mapping") fixed a bug that had, as a side-effect,
+> prevented the 8250_aspeed_vuart driver from enabling the VUART's
+> FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
+> turn revealed what appears to be a hardware bug in the ASPEED VUART in
+> which the host-side THRE bit doesn't get if the BMC-side receive FIFO
+> trigger level is set to anything but one byte.  This causes problems
+> for polled-mode writes from the host -- for example, Linux kernel
+> console writes proceed at a glacial pace (less than 100 bytes per
+> second) because the write path waits for a 10ms timeout to expire
+> after every character instead of being able to continue on to the next
+> character upon seeing THRE asserted.  (GRUB behaves similarly.)
+> 
+> As a workaround, introduce a new port type for the ASPEED VUART that's
+> identical to PORT_16550A as it had previously been using, but with
+> UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
+> one byte, which (experimentally) seems to avoid the problematic THRE
+> behavior.
 
-As a workaround, introduce a new port type for the ASPEED VUART that's
-identical to PORT_16550A as it had previously been using, but with
-UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
-one byte, which (experimentally) seems to avoid the problematic THRE
-behavior.
+...
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
-Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
----
+> +	[PORT_ASPEED_VUART] = {
+> +		.name		= "ASPEED VUART",
+> +		.fifo_size	= 16,
+> +		.tx_loadsz	= 16,
+> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
+> +		.rxtrig_bytes	= {1, 4, 8, 14},
+> +		.flags		= UART_CAP_FIFO,
+> +	},
 
-Changes since v1 [0]:
- - Added Fixes: tag
- - Shifted PORT_* constant down into an unused gap
+This is quite similar to AR7 type. Can that be (re-)used?
 
-[0] https://lore.kernel.org/all/20220209203414.23491-1-zev@bewilderbeest.net/
-
- drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
- drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
- include/uapi/linux/serial_core.h            | 3 +++
- 3 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index 2350fb3bb5e4..c2cecc6f47db 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
- 	port.port.irq = irq_of_parse_and_map(np, 0);
- 	port.port.handle_irq = aspeed_vuart_handle_irq;
- 	port.port.iotype = UPIO_MEM;
--	port.port.type = PORT_16550A;
-+	port.port.type = PORT_ASPEED_VUART;
- 	port.port.uartclk = clk;
- 	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3b12bfc1ed67..973870ebff69 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 32, 64, 112},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
-+	[PORT_ASPEED_VUART] = {
-+		.name		= "ASPEED VUART",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
- 
- /* Uart divisor latch read */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index c4042dcfdc0c..8885e69178bd 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -68,6 +68,9 @@
- /* NVIDIA Tegra Combined UART */
- #define PORT_TEGRA_TCU	41
- 
-+/* ASPEED AST2x00 virtual UART */
-+#define PORT_ASPEED_VUART	42
-+
- /* Intel EG20 */
- #define PORT_PCH_8LINE	44
- #define PORT_PCH_2LINE	45
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
