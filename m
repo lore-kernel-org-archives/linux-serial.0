@@ -2,164 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CF2C433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 11:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3CAC433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 11:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbiBLLAt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Feb 2022 06:00:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60056 "EHLO
+        id S234093AbiBLLua (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Feb 2022 06:50:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbiBLLAs (ORCPT
+        with ESMTP id S232024AbiBLLu3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Feb 2022 06:00:48 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCF924BD6;
-        Sat, 12 Feb 2022 03:00:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644663645; x=1676199645;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qTc5GJOOUJ9y5m3YOgoyTQTdlQ6SLtEu1OqnYMW0m1U=;
-  b=jDsF33+LwweLvPyCxPC5MwUIrrkElIOv6o02FrYzSn0l1ieAtJQVoSC4
-   aLBhd+HWlRmFn/Hg4Y3SHxWKUzqpwQUKHlwHKzmWVGrCKWLHsZKjS5Rh1
-   YU/YrNC79zFND5JxtH0gJwpiHb4fUSw4Uuqz8KvCwibNK6cWJ37fjK/HS
-   vcD1eWn320/B6EDmU9+cv/ZQms+tdbZBxFUCH/e3+8wm0OigvhfO6D6Nb
-   Fg1c2V81tv2OOgJdk+aHm/y+wAra9GFmEAS6m4To2Z7fVY2q4od8Lna7U
-   V3xXHsIWUXHGxQaDffN2Soglf4XFU0l839KZq5sl832+ydGQDDVo3FtG9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="230512834"
-X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="230512834"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 03:00:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="569304982"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 12 Feb 2022 03:00:42 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nIq8w-00063o-0N; Sat, 12 Feb 2022 11:00:42 +0000
-Date:   Sat, 12 Feb 2022 19:00:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250: Report which option to enable for
- blacklisted PCI devices
-Message-ID: <202202121838.P5rALKEy-lkp@intel.com>
-References: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
+        Sat, 12 Feb 2022 06:50:29 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E121D2613A
+        for <linux-serial@vger.kernel.org>; Sat, 12 Feb 2022 03:50:25 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id 13so21340153lfp.7
+        for <linux-serial@vger.kernel.org>; Sat, 12 Feb 2022 03:50:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=lIrQqj6Xy+e0vqsK1Llae1q8ogM+CHQ1TW9A74hQUsU=;
+        b=VN0K7/jsrmWwElXQwr92xxfIacKCbTJECuTZVgSzJV/RKjm21dDZvXnkT1QRgGfA6T
+         UdtWSai0wo1dtR8hmGFsHa58/oS8k5YJCu/Fd9i8QBxyXWfbJJcyI8KqQR0BQqaxCgX9
+         MRkY4oq0pr/pZa53d7O6Qs7Tm5/9opSzkBNJqvqpYosdTwdjgHKMGB0jHuMcZ4PgMQr3
+         /JF7isvJL/uQaK0SN+a1483WkB/NDYVxgjOBKSbUfC8vp2NkSWEqlwnbFlaMnjV/sQTu
+         UZE2iAXCXrpc0rnoDAtXhgXzxiSfhR0BDLaqjP6d+LlMBJb7f1qBWh8yi/708ThJWM4z
+         cgGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=lIrQqj6Xy+e0vqsK1Llae1q8ogM+CHQ1TW9A74hQUsU=;
+        b=ldovWsjWPnNYNhji1pAKVMQ6AhuCIa7ZE22kVY1wYnPCBFM31MU7Dga3/UiYF+d7MO
+         tCV+PdUtMB5OAEl49E2hVRpQ09XJBnSaI6c4eKXe6PCT7TbExAM85LeSjRq9MVGlWcZM
+         PeodNlzxKc7/a2KDjt5PRHskygFtPfEVZoK+MF9UgbE3iRO50U/JxBlWSheGUcp3YAeD
+         u0OKIDm5cjbEBB3WxqB67wymluBDUNkdpjle/jE4D7tuuYKuoHeOPwzsfKhWczT3ZMxX
+         KAF8XDUCtzODhaMs6lHZ37wxYoW2bPCAxaVvHz37n2lSTY27OurqohoXIChSx1/+uKkC
+         rmng==
+X-Gm-Message-State: AOAM5332xZC305vT8h/i8KjeCqVY7IQAVrGJRzQC1j5kEnHGO+RR8urU
+        jIcfv1o+o2ldNA8crStex/1Iu1LUta0=
+X-Google-Smtp-Source: ABdhPJwfCN4ujbAY8UQqmZYMJ+GRp7cO7MVeCdY87PapQaSQrNDqjW8jlO1yOrQxxTthGFP92x4IvQ==
+X-Received: by 2002:ac2:4304:: with SMTP id l4mr4398222lfh.304.1644666623885;
+        Sat, 12 Feb 2022 03:50:23 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id m26sm3460096lfo.62.2022.02.12.03.50.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 03:50:23 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Richard Genoud <richard.genoud@gmail.com>,
+        Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Huang Shijie <b32955@freescale.com>,
+        Dirk Behme <dirk.behme@googlemail.com>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: Modem control lines for RTSCTS hardware flow control via
+ rts-gpio and cts-gpio with IMX
+References: <CAJ+vNU0CrD8091W5zH7ve9v3ZVAGXR6=6DGebd5LhHz4mzt4+w@mail.gmail.com>
+        <CAJ+vNU1tJ5W5RCUsPehgH7CS=v=7mttHgNOu-UdWGVpzf2LcBQ@mail.gmail.com>
+        <4bdbd9c0-8ce3-84b1-9f89-be89b686c652@camlingroup.com>
+        <c66ae9ce-7345-736c-010e-1dd5602b67df@gmail.com>
+        <CAJ+vNU2qk6G_YLAr-1_FP1czBe8wF2OUOTu914zLVNN0Lm9UFQ@mail.gmail.com>
+        <CAJ+vNU2ra8g90ZWcwS0xnRq3LO_4Q2PFJo-OuXuBgCpPsXcXkg@mail.gmail.com>
+Date:   Sat, 12 Feb 2022 14:50:22 +0300
+In-Reply-To: <CAJ+vNU2ra8g90ZWcwS0xnRq3LO_4Q2PFJo-OuXuBgCpPsXcXkg@mail.gmail.com>
+        (Tim Harvey's message of "Thu, 10 Feb 2022 13:30:33 -0800")
+Message-ID: <87k0e0z4ld.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi "Maciej,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on usb/usb-testing v5.17-rc3 next-20220211]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220212/202202121838.P5rALKEy-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c7eb84634519e6497be42f5fe323f9a04ed67127)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/aa68e36c332457acb464b083c920d10f0e5a9865
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
-        git checkout aa68e36c332457acb464b083c920d10f0e5a9865
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/tty/serial/8250/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/8250/8250_pci.c:3535:32: error: initializer element is not a compile-time constant
-           { PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
-                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/8250/8250_pci.c:3522:2: note: expanded from macro 'REPORT_CONFIG'
-           (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
+Tim Harvey <tharvey@gateworks.com> writes:
 
 
-vim +3535 drivers/tty/serial/8250/8250_pci.c
+[...]
 
-  3520	
-  3521	#define REPORT_CONFIG(option) \
-  3522		(IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
-  3523	#define REPORT_8250_CONFIG(option) \
-  3524		(IS_ENABLED(CONFIG_SERIAL_8250_##option) ? \
-  3525		 0 : (kernel_ulong_t)&"SERIAL_8250_"#option)
-  3526	
-  3527	static const struct pci_device_id blacklist[] = {
-  3528		/* softmodems */
-  3529		{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
-  3530		{ PCI_VDEVICE(MOTOROLA, 0x3052), }, /* Motorola Si3052-based modem */
-  3531		{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
-  3532	
-  3533		/* multi-io cards handled by parport_serial */
-  3534		/* WCH CH353 2S1P */
-> 3535		{ PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
-  3536		/* WCH CH353 1S1P */
-  3537		{ PCI_DEVICE(0x4348, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
-  3538		/* WCH CH382 2S1P */
-  3539		{ PCI_DEVICE(0x1c00, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
-  3540	
-  3541		/* Intel platforms with MID UART */
-  3542		{ PCI_VDEVICE(INTEL, 0x081b), REPORT_8250_CONFIG(MID), },
-  3543		{ PCI_VDEVICE(INTEL, 0x081c), REPORT_8250_CONFIG(MID), },
-  3544		{ PCI_VDEVICE(INTEL, 0x081d), REPORT_8250_CONFIG(MID), },
-  3545		{ PCI_VDEVICE(INTEL, 0x1191), REPORT_8250_CONFIG(MID), },
-  3546		{ PCI_VDEVICE(INTEL, 0x18d8), REPORT_8250_CONFIG(MID), },
-  3547		{ PCI_VDEVICE(INTEL, 0x19d8), REPORT_8250_CONFIG(MID), },
-  3548	
-  3549		/* Intel platforms with DesignWare UART */
-  3550		{ PCI_VDEVICE(INTEL, 0x0936), REPORT_8250_CONFIG(LPSS), },
-  3551		{ PCI_VDEVICE(INTEL, 0x0f0a), REPORT_8250_CONFIG(LPSS), },
-  3552		{ PCI_VDEVICE(INTEL, 0x0f0c), REPORT_8250_CONFIG(LPSS), },
-  3553		{ PCI_VDEVICE(INTEL, 0x228a), REPORT_8250_CONFIG(LPSS), },
-  3554		{ PCI_VDEVICE(INTEL, 0x228c), REPORT_8250_CONFIG(LPSS), },
-  3555		{ PCI_VDEVICE(INTEL, 0x4b96), REPORT_8250_CONFIG(LPSS), },
-  3556		{ PCI_VDEVICE(INTEL, 0x4b97), REPORT_8250_CONFIG(LPSS), },
-  3557		{ PCI_VDEVICE(INTEL, 0x4b98), REPORT_8250_CONFIG(LPSS), },
-  3558		{ PCI_VDEVICE(INTEL, 0x4b99), REPORT_8250_CONFIG(LPSS), },
-  3559		{ PCI_VDEVICE(INTEL, 0x4b9a), REPORT_8250_CONFIG(LPSS), },
-  3560		{ PCI_VDEVICE(INTEL, 0x4b9b), REPORT_8250_CONFIG(LPSS), },
-  3561		{ PCI_VDEVICE(INTEL, 0x9ce3), REPORT_8250_CONFIG(LPSS), },
-  3562		{ PCI_VDEVICE(INTEL, 0x9ce4), REPORT_8250_CONFIG(LPSS), },
-  3563	
-  3564		/* Exar devices */
-  3565		{ PCI_VDEVICE(EXAR, PCI_ANY_ID), REPORT_8250_CONFIG(EXAR), },
-  3566		{ PCI_VDEVICE(COMMTECH, PCI_ANY_ID), REPORT_8250_CONFIG(EXAR), },
-  3567	
-  3568		/* Pericom devices */
-  3569		{ PCI_VDEVICE(PERICOM, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
-  3570		{ PCI_VDEVICE(ACCESSIO, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
-  3571	
-  3572		/* End of the black list */
-  3573		{ }
-  3574	};
-  3575	
+> I have found the issue here which causes hardware flow control when
+> using GPIO's with the imx UART driver to fail. The
+> imx_uart_set_termios() function clears the UCR2_IRTS whenver hardware
+> flow control is enabled which configures the transmitter to only send
+> with the RTS pin is asserted. In the case of a GPIO being used instead
+> of the dedicated internal RTS pin for the uart, this will keep the
+> transmitter from ever transmitting. In the hardware flow control case
+> where a GPIO is used UCR2_IRTS must be set to ignore the RTS pin. We
+> can use the have_rtsgpio flag which is set when 'rts-gpios' property
+> is used as a qualifier for this.
+>
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index df8a0c8b8b29..d506cbd679dd 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1674,8 +1674,7 @@ imx_uart_set_termios(struct uart_port *port,
+> struct ktermios *termios,
+>                 if (ucr2 & UCR2_CTS)
+>                         ucr2 |= UCR2_CTSC;
+>         }
+> -
+> -       if (termios->c_cflag & CRTSCTS)
+> +       if (!sport->have_rtsgpio && termios->c_cflag & CRTSCTS)
+>                 ucr2 &= ~UCR2_IRTS;
+>         if (termios->c_cflag & CSTOPB)
+>                 ucr2 |= UCR2_STPB;
+>
+> If this makes sense, I'll send a patch.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+To me it does make sense. Driver should stay away from UCR2_IRTS indeed
+if software (GPIO) RTS/CTS management is in use.
+
+-- Sergey Organov
