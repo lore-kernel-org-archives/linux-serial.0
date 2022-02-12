@@ -2,173 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C496FC433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 17:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F59BC433F5
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 18:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237713AbiBLRbI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Feb 2022 12:31:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45698 "EHLO
+        id S230153AbiBLSXw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Feb 2022 13:23:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237722AbiBLRbD (ORCPT
+        with ESMTP id S230104AbiBLSXs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Feb 2022 12:31:03 -0500
-X-Greylist: delayed 31778 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Feb 2022 09:30:59 PST
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0F5C240A6;
-        Sat, 12 Feb 2022 09:30:59 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 3E99892009C; Sat, 12 Feb 2022 18:30:59 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 3A56E92009B;
-        Sat, 12 Feb 2022 17:30:59 +0000 (GMT)
-Date:   Sat, 12 Feb 2022 17:30:59 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] serial: 8250: Report which option to enable for
- blacklisted PCI devices
-In-Reply-To: <alpine.DEB.2.21.2202121646020.34636@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2202121706060.34636@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202121646020.34636@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Sat, 12 Feb 2022 13:23:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D7E6005A;
+        Sat, 12 Feb 2022 10:23:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4539660B2C;
+        Sat, 12 Feb 2022 18:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AC1D8C340F0;
+        Sat, 12 Feb 2022 18:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644690195;
+        bh=C+JYODbdRTe7+6oAUcjzgmpcrgwyVON6/eu6Zw23bGc=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=daAeQmdV0raGUpPlkV3wxXAczBpzSxGdAWTGOTFhoSqQKRaTJkxAsbM/i/3IBcEQz
+         8VsDd6gj3+PXk9H2iepkyTcAGFvifqh5abT+YKkNDyzRZOcWq94pzMRSX2tXHxepeS
+         d0jRsUZBAi/SAmyqtL4aS/lpEIidhqX5vRJP3qV1Zqbjz+iQMyU/GLJLde3lm0j8tT
+         WxonFcs7V8QLqAu3sN9blsa2NrXglQH27OSVi4Rd/1LYMy00yJnukVsfe5iwHd9zUy
+         63k0S0QxP+ZFjy9ii/bC2metLP6OuAPZDo2Bk1TtwXr+LaMvCv/AaD8PvMnJFggM3r
+         /NllbePvPMImg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9981EE6BB38;
+        Sat, 12 Feb 2022 18:23:15 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.17-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YgeMYDjVOe8n4Cis@kroah.com>
+References: <YgeMYDjVOe8n4Cis@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YgeMYDjVOe8n4Cis@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc4
+X-PR-Tracked-Commit-Id: 28cb138f559f8c1a1395f5564f86b8bbee83631b
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 522e7d03f7d286cde06bee51982121f63bb03097
+Message-Id: <164469019562.16091.14351815014249516432.pr-tracker-bot@kernel.org>
+Date:   Sat, 12 Feb 2022 18:23:15 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Provide information in the kernel log as to what configuration option to 
-enable for PCI UART devices that have been blacklisted in the generic 
-PCI 8250 UART driver and which have a dedicated driver available to 
-handle that has been disabled.  The rationale is there is no easy way 
-for the user to map a specific PCI vendor:device pair to an individual 
-dedicated driver while the generic driver has this information readily 
-available and it will likely be confusing that the generic driver does 
-not register such a port.
+The pull request you sent on Sat, 12 Feb 2022 11:30:56 +0100:
 
-A message is then printed like:
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc4
 
-serial 0000:04:00.3: ignoring port, enable SERIAL_8250_PERICOM to handle
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/522e7d03f7d286cde06bee51982121f63bb03097
 
-when an affected device is encountered and the generic driver rejects it.
+Thank you!
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
----
-Hi,
-
- Verified in a simulated environment as obviously I don't have a Pericom 
-device.
-
-  Maciej
-
-Changes from v1:
-
-- Add missing filler struct member initialisers for PCI_DEVICE entries.
----
- drivers/tty/serial/8250/8250_pci.c |   67 ++++++++++++++++++++++---------------
- 1 file changed, 40 insertions(+), 27 deletions(-)
-
-linux-serial-8250-pci-blacklist-config.diff
-Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
-===================================================================
---- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
-+++ linux-macro/drivers/tty/serial/8250/8250_pci.c
-@@ -3518,6 +3518,12 @@ static struct pciserial_board pci_boards
- 	},
- };
- 
-+#define REPORT_CONFIG(option) \
-+	(IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
-+#define REPORT_8250_CONFIG(option) \
-+	(IS_ENABLED(CONFIG_SERIAL_8250_##option) ? \
-+	 0 : (kernel_ulong_t)&"SERIAL_8250_"#option)
-+
- static const struct pci_device_id blacklist[] = {
- 	/* softmodems */
- 	{ PCI_VDEVICE(AL, 0x5457), }, /* ALi Corporation M5457 AC'97 Modem */
-@@ -3525,40 +3531,43 @@ static const struct pci_device_id blackl
- 	{ PCI_DEVICE(0x1543, 0x3052), }, /* Si3052-based modem, default IDs */
- 
- 	/* multi-io cards handled by parport_serial */
--	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
--	{ PCI_DEVICE(0x4348, 0x5053), }, /* WCH CH353 1S1P */
--	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
-+	/* WCH CH353 2S1P */
-+	{ PCI_DEVICE(0x4348, 0x7053), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
-+	/* WCH CH353 1S1P */
-+	{ PCI_DEVICE(0x4348, 0x5053), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
-+	/* WCH CH382 2S1P */
-+	{ PCI_DEVICE(0x1c00, 0x3250), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
- 
- 	/* Intel platforms with MID UART */
--	{ PCI_VDEVICE(INTEL, 0x081b), },
--	{ PCI_VDEVICE(INTEL, 0x081c), },
--	{ PCI_VDEVICE(INTEL, 0x081d), },
--	{ PCI_VDEVICE(INTEL, 0x1191), },
--	{ PCI_VDEVICE(INTEL, 0x18d8), },
--	{ PCI_VDEVICE(INTEL, 0x19d8), },
-+	{ PCI_VDEVICE(INTEL, 0x081b), REPORT_8250_CONFIG(MID), },
-+	{ PCI_VDEVICE(INTEL, 0x081c), REPORT_8250_CONFIG(MID), },
-+	{ PCI_VDEVICE(INTEL, 0x081d), REPORT_8250_CONFIG(MID), },
-+	{ PCI_VDEVICE(INTEL, 0x1191), REPORT_8250_CONFIG(MID), },
-+	{ PCI_VDEVICE(INTEL, 0x18d8), REPORT_8250_CONFIG(MID), },
-+	{ PCI_VDEVICE(INTEL, 0x19d8), REPORT_8250_CONFIG(MID), },
- 
- 	/* Intel platforms with DesignWare UART */
--	{ PCI_VDEVICE(INTEL, 0x0936), },
--	{ PCI_VDEVICE(INTEL, 0x0f0a), },
--	{ PCI_VDEVICE(INTEL, 0x0f0c), },
--	{ PCI_VDEVICE(INTEL, 0x228a), },
--	{ PCI_VDEVICE(INTEL, 0x228c), },
--	{ PCI_VDEVICE(INTEL, 0x4b96), },
--	{ PCI_VDEVICE(INTEL, 0x4b97), },
--	{ PCI_VDEVICE(INTEL, 0x4b98), },
--	{ PCI_VDEVICE(INTEL, 0x4b99), },
--	{ PCI_VDEVICE(INTEL, 0x4b9a), },
--	{ PCI_VDEVICE(INTEL, 0x4b9b), },
--	{ PCI_VDEVICE(INTEL, 0x9ce3), },
--	{ PCI_VDEVICE(INTEL, 0x9ce4), },
-+	{ PCI_VDEVICE(INTEL, 0x0936), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x0f0a), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x0f0c), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x228a), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x228c), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b96), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b97), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b98), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b99), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b9a), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x4b9b), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x9ce3), REPORT_8250_CONFIG(LPSS), },
-+	{ PCI_VDEVICE(INTEL, 0x9ce4), REPORT_8250_CONFIG(LPSS), },
- 
- 	/* Exar devices */
--	{ PCI_VDEVICE(EXAR, PCI_ANY_ID), },
--	{ PCI_VDEVICE(COMMTECH, PCI_ANY_ID), },
-+	{ PCI_VDEVICE(EXAR, PCI_ANY_ID), REPORT_8250_CONFIG(EXAR), },
-+	{ PCI_VDEVICE(COMMTECH, PCI_ANY_ID), REPORT_8250_CONFIG(EXAR), },
- 
- 	/* Pericom devices */
--	{ PCI_VDEVICE(PERICOM, PCI_ANY_ID), },
--	{ PCI_VDEVICE(ACCESSIO, PCI_ANY_ID), },
-+	{ PCI_VDEVICE(PERICOM, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
-+	{ PCI_VDEVICE(ACCESSIO, PCI_ANY_ID), REPORT_8250_CONFIG(PERICOM), },
- 
- 	/* End of the black list */
- 	{ }
-@@ -3840,8 +3849,12 @@ pciserial_init_one(struct pci_dev *dev,
- 	board = &pci_boards[ent->driver_data];
- 
- 	exclude = pci_match_id(blacklist, dev);
--	if (exclude)
-+	if (exclude) {
-+		if (exclude->driver_data)
-+			pci_warn(dev, "ignoring port, enable %s to handle\n",
-+				 (const char *)exclude->driver_data);
- 		return -ENODEV;
-+	}
- 
- 	rc = pcim_enable_device(dev);
- 	pci_save_state(dev);
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
