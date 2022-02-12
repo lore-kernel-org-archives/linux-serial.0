@@ -2,87 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 080CFC433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 10:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E715C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Feb 2022 10:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233484AbiBLKbD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Feb 2022 05:31:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38198 "EHLO
+        id S233678AbiBLKjx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 12 Feb 2022 05:39:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230224AbiBLKbD (ORCPT
+        with ESMTP id S233577AbiBLKjr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Feb 2022 05:31:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D2426130;
-        Sat, 12 Feb 2022 02:31:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 109E960B78;
-        Sat, 12 Feb 2022 10:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD437C340E7;
-        Sat, 12 Feb 2022 10:30:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644661859;
-        bh=AZ7gppmh0+EiNtTyIVc8Zwcw1EbDUPBE3RcP3FL6ZEk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=XnH2HTs9alN041sKR4RHOVRdtVmxCWSWvIC85uij30KW2np+nK4kCz9CxENMPD8Rz
-         idRgkqd5fIZ9Ngmgyx25yUA4Wed6tIqImPJrDaSxBUa4v0Qrt6WIkLLkTcSZll/0Nn
-         sUdb1ZpmX6Wa5QSUet3n11zHBiBe4zRT0SitJvNY=
-Date:   Sat, 12 Feb 2022 11:30:56 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.17-rc4
-Message-ID: <YgeMYDjVOe8n4Cis@kroah.com>
+        Sat, 12 Feb 2022 05:39:47 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D308026544;
+        Sat, 12 Feb 2022 02:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644662384; x=1676198384;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=i2kFxobRZrFp47lN9RhnaWjJfWwlZNp7bRVEfKX/jtc=;
+  b=PS4K/jQwCHvEqVr5CpG0IF0yxBkIk9S6Y+cP4vClYcK/8dNpB58ZSvBB
+   K+HypB7nFCF7YLXTndJRCmR+Oyuz6lZNzGDUReQC3da0Ye4eiMbq8C7eq
+   0I/Jrm+umoXksFUbHG2ceueaMjKNVsDwaj1csP67vdq9hx+rRwH7WH8VD
+   9AYwcDzP6ibw+y1lFkL+SLG8/IOXje+irBquo4GnfpTW59C542zIQjrN3
+   jgr5d7IOGBH3c6e5hY+ucluDE240qu6rGSpmhxsGqxww/B76tjzrt0Geq
+   a3SiUK8qbNaRDPIDPI+OEkKEGQieLXscUtZkMNgXeZ94Nih7kqHlY0v8/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="230511977"
+X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
+   d="scan'208";a="230511977"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 02:39:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
+   d="scan'208";a="623458386"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Feb 2022 02:39:41 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nIpob-00061O-1i; Sat, 12 Feb 2022 10:39:41 +0000
+Date:   Sat, 12 Feb 2022 18:39:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] serial: 8250: Report which option to enable for
+ blacklisted PCI devices
+Message-ID: <202202121734.Zc1GlUwC-lkp@intel.com>
+References: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
+Hi "Maciej,
 
-  Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
+I love your patch! Yet something to improve:
 
-are available in the Git repository at:
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing v5.17-rc3 next-20220211]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc4
+url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220212/202202121734.Zc1GlUwC-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/aa68e36c332457acb464b083c920d10f0e5a9865
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
+        git checkout aa68e36c332457acb464b083c920d10f0e5a9865
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/tty/
 
-for you to fetch changes up to 28cb138f559f8c1a1395f5564f86b8bbee83631b:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-  vt_ioctl: add array_index_nospec to VT_ACTIVATE (2022-02-04 15:36:02 +0100)
+All errors (new ones prefixed by >>):
 
-----------------------------------------------------------------
-TTY/Serial fixes for 5.17-rc4
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3535:39: note: in expansion of macro 'REPORT_CONFIG'
+    3535 |         { PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[3].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3535:39: note: in expansion of macro 'REPORT_CONFIG'
+    3535 |         { PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3537:39: note: in expansion of macro 'REPORT_CONFIG'
+    3537 |         { PCI_DEVICE(0x4348, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[4].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3537:39: note: in expansion of macro 'REPORT_CONFIG'
+    3537 |         { PCI_DEVICE(0x4348, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3539:39: note: in expansion of macro 'REPORT_CONFIG'
+    3539 |         { PCI_DEVICE(0x1c00, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[5].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3539:39: note: in expansion of macro 'REPORT_CONFIG'
+    3539 |         { PCI_DEVICE(0x1c00, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
 
-Here are 4 small tty/serial fixes for 5.17-rc4.  They are:
-	- 8250_pericom change revert to fix a reported regression
-	- 2 speculation fixes for vt_ioctl
-	- n_tty regression fix for polling
 
-All of these have been in linux-next for a while with no reported
-issues.
+vim +3522 drivers/tty/serial/8250/8250_pci.c
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  3520	
+  3521	#define REPORT_CONFIG(option) \
+> 3522		(IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+  3523	#define REPORT_8250_CONFIG(option) \
+  3524		(IS_ENABLED(CONFIG_SERIAL_8250_##option) ? \
+  3525		 0 : (kernel_ulong_t)&"SERIAL_8250_"#option)
+  3526	
 
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      serial: 8250_pericom: Revert "Re-enable higher baud rates"
-
-Jakob Koschel (2):
-      vt_ioctl: fix array_index_nospec in vt_setactivate
-      vt_ioctl: add array_index_nospec to VT_ACTIVATE
-
-TATSUKAWA KOSUKE (立川 江介) (1):
-      n_tty: wake up poll(POLLRDNORM) on receiving data
-
- drivers/tty/n_tty.c                    | 4 ++--
- drivers/tty/serial/8250/8250_pericom.c | 2 +-
- drivers/tty/vt/vt_ioctl.c              | 3 ++-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
