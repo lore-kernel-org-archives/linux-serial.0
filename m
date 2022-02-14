@@ -2,177 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE98FC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 16:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE91C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 17:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356261AbiBNQT0 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:19:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60384 "EHLO
+        id S233722AbiBNRsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 12:48:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiBNQTZ (ORCPT
+        with ESMTP id S233364AbiBNRsH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:19:25 -0500
-X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 08:19:16 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC9142EE7;
-        Mon, 14 Feb 2022 08:19:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644855555;
-        bh=uSiLH41ols2or+PlxwtXv6HH6qStx8ca3yFi6b4NLDA=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=ZC7ys4YhFML+XPJP4mpPLukOKwb3QxulUMHO1uX8Hq+HpNupjBq/FCaMNZWCyzOrC
-         j4XAOTnkQ82dP5VK3x9FkaVwl9jvII4DfttWmiXFtUL3EXEeKXVKBdSWBH71mgYOo8
-         29J1VuwkZ/58p81/nn9SE5mDcQhIMg3Fxj+h3Vas=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.70] ([149.172.237.68]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4hzZ-1oK5ig2JyZ-011et8; Mon, 14
- Feb 2022 17:13:21 +0100
-Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
- drivers into core
-To:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
-References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
- <20220213222737.15709-2-LinoSanfilippo@gmx.de>
- <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <9791fb9a-0c27-bfeb-5ff8-fb70f1968048@gmx.de>
-Date:   Mon, 14 Feb 2022 17:13:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 14 Feb 2022 12:48:07 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8265513D24;
+        Mon, 14 Feb 2022 09:47:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=jf26SR0VOk2Ttx4bLUgslnrc0FG1tgPsF93W1r8Fc3g=; b=K/N2UQO5molLQ1PtwJu4bqdv4o
+        9UTyh9eK6Q8XZpBGqa7moqNNS6aHZnDEvlikUY2ao3blfvJbxAv0SbBHRMBtz1NSiM8J2uIPvcV1s
+        ZjGU5dxiKBdguPvrZWHaWkORdPW5vPss7hMOymxMJIlPLjdNboW1lre7TfNRzR9q5lNpfNNysqZEa
+        gAeI2uok73jm2eWuS64GGB01vUPzsvCHCrMqb/gojDAUTvEzU09q2iMGAWn4aonc29fg3o3laj/wU
+        R1DITYgLffCgCec8O2+SaAJCZsCq8Abe3++WfGgRLjFf4CVyCX57rJbt1wXOI2R/BCHBFGa0ih6zk
+        X3+5ei2w==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJfS7-009xdB-KQ; Mon, 14 Feb 2022 17:47:55 +0000
+Message-ID: <e99b77aa-7742-08f5-8acc-3ff381d1b17f@infradead.org>
+Date:   Mon, 14 Feb 2022 09:47:49 -0800
 MIME-Version: 1.0
-In-Reply-To: <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] serial: parisc: GSC: fix build when PCI_LBA is not set
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:YBdfvrtYI85+zaH+ORjAj6/z8NhLNObYZSKxNdCEkYmHpFKgUBz
- cvg3dOdbbi7AbkXhFtpSGhjhlkoJcur1g466o350MRispTjbtggc/xvrNm0IEnPKTmC4Fkg
- ROY/D/pVATsNvg4nEopPdn+DX0L1U4hzKUnMq65l9KuxdLJPNytzgJQ4VZ54vUVWFPmvQlR
- C3w+lEE3o7q8OAa4qDaLQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:pSOpZ7x17Fc=:woJNeKPRbcarBQfg1Sp6p7
- EZIgFKw/ObO5hG40inIuLkbDrW1Cy7/VwTqs4SL8vVgokDaexgmTkVpPcpfkMVgEGXaC+131K
- 4MOJ40qg77xhl/2+g7sROXl0Gpev4OgRHgi8d8TOCHryUcg0C+xeH3jJUQ4rsAMO43iFAwH8F
- 75Toj4COP0vB9E19Bwik9eh0ykb+6Kf4ASJttjlHCAXoe0XfAdyyBSunQKrlCAglRtZe9HzUK
- oi1hvv9ayePRgRydJopIP6VlkO4I548O+ARH7wjVq1nTcLYa/y6XJaepY4Xa785OyxBEeK97Q
- r4HO7QJ0NVzeQmMR/TaaMX5d+1SBy3p7iXyk+fGvAALLUQIEwGDmjC80me3wmv25Y09Thsd+P
- r3TDp5YYU5zxoH0fDwewDIB0NN00k/daykXSa5lZEryBsk7L2KFj6LavAYexzwxTtkfWzNJJk
- FbWUzMRTW1utAZqfn79VzUjdHp8CyChiPxrEvTxxkBaAXqgn5bWjXGSLe79ZnvHjtbdi/INY1
- rFGKejQMMz7kUqwAYqTf2ZqwAyvKR8csmuMT7fcvk1NAvx7bFgXd6MQUIBrrumCAGpmMyfmvU
- aZz2Ly5EU7gSzjXoeKvKZEuqiTKRH63DGcBKlFEUIk3RaRoeW6oi6byeqAHBmR+iXwBcHbKu6
- a/G9Hv63wvfuUBBDVJCwWQztHY7+uOg+KlLHzLqKfqoDXAVZfyuvWOJKiuAS+redDyvtLbQGB
- V2eXimZUERoDCGoFgvy2jkR0q2k2wg82foqSOhBQTbMvJVf4eMnPCSTTaO/c5b+HzflTN8VlF
- 24OW7D3XS9fDozKPj5Z3MYrX3GKAkiDzuEbp2vbXBndwDASH3mm0UVetIVI+g/39rI+UwN9YM
- GWJbDrnRsL3NKXXssaoqD8JtDdPk3F/jMtg8Naw8KEnJBfPmuHkZjIoptMzEymDsDpWZGZljI
- er4IGuIcrlknVgq173Hrr1C+2dX5woLtmBq7AXP3JnUfZs3Qowf4HQAWUPPEAkV/rJ7fTMs52
- br0Rg8YOY1vLM1kQ58Gt+ffgs02crf7kRhTh2xwNgKGy3tnH4D2fPtXZsKNMQGm4LrkbAVBoH
- wngwmUzMkytIXs=
+To:     Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        linux-parisc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+References: <20220213193903.8815-1-rdunlap@infradead.org>
+ <0baabcbc-196e-08fa-e2db-b7e925993cc1@gmx.de>
+ <55c73cb4-21ae-7307-7b14-a19cf270f4d6@infradead.org>
+ <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
+ <0ffc9f5f-546a-a797-01bf-d62953e6d26c@infradead.org>
+ <e8781486-b3ce-b2dd-2c84-f0b2a651556f@gmx.de>
+ <4c716eda-a081-2ae3-9358-a5e35bd4d951@gmx.de>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <4c716eda-a081-2ae3-9358-a5e35bd4d951@gmx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Helge,
 
-Hi,
-
-On 14.02.22 at 06:41, Jiri Slaby wrote:
-> On 13. 02. 22, 23:27, Lino Sanfilippo wrote:
->> Several drivers that support setting the RS485 configuration via usersp=
-ace
->> implement on or more of the following tasks:
+On 2/14/22 04:24, Helge Deller wrote:
+> On 2/14/22 13:05, Helge Deller wrote:
+>> On 2/14/22 01:15, Randy Dunlap wrote:
+>>> Hi,
+>>>
+>>> On 2/13/22 14:15, Helge Deller wrote:
+>>>> On 2/13/22 22:07, Randy Dunlap wrote:
+>>>>>
+>>>>>
+>>>>> On 2/13/22 12:35, Helge Deller wrote:
+>>>>>> Hi Randy,
+>>>>>>
+>>>>>> On 2/13/22 20:39, Randy Dunlap wrote:
+>>>>>>> There is a build error when using a kernel .config file from
+>>>>>>> 'kernel test robot' for a different build problem:
+>>>>>>>
+>>>>>>> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+>>>>>>> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
+>>>>>>>
+>>>>>>> when:
+>>>>>>>   CONFIG_GSC=y
+>>>>>>>   CONFIG_SERIO_GSCPS2=y
+>>>>>>>   CONFIG_SERIAL_8250_GSC=y
+>>>>>>>   CONFIG_PCI is not set
+>>>>>>>     and hence PCI_LBA is not set.
+>>>>>>>   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
+>>>>>>>
+>>>>>>> Making SERIAL_8250_GSC depend on PCI_LBA prevents the build error.
+>>>>>>
+>>>>>> It maybe makes the build error go away, but ...
+>>>>>>
+>>>>>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>>>>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>>>>> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+>>>>>>> Cc: Helge Deller <deller@gmx.de>
+>>>>>>> Cc: linux-parisc@vger.kernel.org
+>>>>>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>>>> Cc: linux-serial@vger.kernel.org
+>>>>>>> Cc: Jiri Slaby <jirislaby@kernel.org>
+>>>>>>> Cc: Johan Hovold <johan@kernel.org>
+>>>>>>> ---
+>>>>>>>  drivers/tty/serial/8250/Kconfig |    2 +-
+>>>>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>>>
+>>>>>>> --- linux-next-20220211.orig/drivers/tty/serial/8250/Kconfig
+>>>>>>> +++ linux-next-20220211/drivers/tty/serial/8250/Kconfig
+>>>>>>> @@ -118,7 +118,7 @@ config SERIAL_8250_CONSOLE
+>>>>>>>
+>>>>>>>  config SERIAL_8250_GSC
+>>>>>>>  	tristate
+>>>>>>> -	depends on SERIAL_8250 && GSC
+>>>>>>> +	depends on SERIAL_8250 && GSC && PCI_LBA
+>>>>>>>  	default SERIAL_8250
+>>>>>>
+>>>>>> The serial device is on the GSC bus, so if you make it
+>>>>>> dependend on the PCI bus it will not be useable on machines
+>>>>>> which only have a GSC bus...
+>>>>>>
+>>>>>> We need another patch.
+>>>>>> Do you have a link to the build error?
+>>>>>
+>>>>>
+>>>>> No, it's from the other build error that you just replied to,
+>>>>> where the incorrect compiler was used.
+>>>>>
+>>>>> I'll recheck it and reconsider what to do, if anything.
+>>>>
+>>>> Ok, thank you!
+>>>
+>>> I dunno what to do. This:
+>>>
+>>> #ifdef CONFIG_64BIT
+>>> 	if (!dev->irq && (dev->id.sversion == 0xad))
+>>> 		dev->irq = iosapic_serial_irq(dev);
+>>> #endif
+>>>
+>>> makes it look like 64BIT requires IOSAPIC (hence PCI_LBA).
 >>
->> - in case of an invalid RTS configuration (both RTS after send and RTS =
-on
->> =C2=A0=C2=A0 send set or both unset) fall back to enable RTS on send an=
-d disable RTS
->> =C2=A0=C2=A0 after send
+>> Although I think all 64bit machines have a PCI bus, the better
+>> fix is that the driver should only call iosapic_serial_irq(dev)
+>> if CONFIG_IOSAPIC is set. This patch fixes the build:
 >>
->> - nullify the padding field of the returned serial_rs485 struct
->>
->> - copy the configuration into the uart port struct
->>
->> - limit RTS delays to 100 ms
->>
->> Move these tasks into the serial core to make them generic and to provi=
-de
->> a consistent beheviour among all drivers.
->>
->> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
->> ---
->> =C2=A0 drivers/tty/serial/serial_core.c | 13 +++++++++++++
->> =C2=A0 1 file changed, 13 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
->> index 846192a7b4bf..3fab4070359c 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -1282,8 +1282,21 @@ static int uart_set_rs485_config(struct uart_por=
-t *port,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (copy_from_user(&rs485, rs485_user, s=
-izeof(*rs485_user)))
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT;
->> =C2=A0 +=C2=A0=C2=A0=C2=A0 /* pick sane settings if the user hasn't */
->> +=C2=A0=C2=A0=C2=A0 if (!(rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !(rs485.flags & SER_RS485_R=
-TS_AFTER_SEND)) {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags |=3D SER_RS485_=
-RTS_ON_SEND;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags &=3D ~SER_RS485=
-_RTS_AFTER_SEND;
->> +=C2=A0=C2=A0=C2=A0 }
->> +=C2=A0=C2=A0=C2=A0 /* clamp the delays to [0, 100ms] */
->> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_before_send =3D min(rs485.delay_rts=
-_before_send, 100U);
->> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_after_send =3D min(rs485.delay_rts_=
-after_send, 100U);
->
-> Why is this magic 100?
+>> -#ifdef CONFIG_64BIT
+>> +#ifdef CONFIG_IOSAPIC
+>>         if (!dev->irq && (dev->id.sversion == 0xad))
+>>                 dev->irq = iosapic_serial_irq(dev);
+>>  #endif
+> 
+> That was not fully correct.
+> It needs to be:
+> 
+> #if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
+> 
+> Otherwise you'll get an undefined reference in the 32-bit build.
 
-The only drivers that seem to care about a max value for the RTS delays us=
-e 100 ms
-(omap-serial, amba pl011, 8250) so I chose this to stay compatible with th=
-e current
-driver implementations. 100 ms also seems large enough to be used as a gen=
-eral max value.
+Sure, I can send such a patch.
+I would have used a bigger hammer and done something like
 
-> Can we have that number somehow documented? You should define a macro fo=
-r that anyway.
+	depends on IOSAPIC if 64BIT
 
-Ok, I will do so.
 
->
->> +=C2=A0=C2=A0=C2=A0 memset(rs485.padding, 0, sizeof(rs485.padding));
->
-> What is this memset good for?
+Just for info, how would dev->irq be set for CONFIG_64BIT
+when CONFIG_IOSAPIC is not set?
 
-Drivers like max310x, amba-pl011, 8250_pci, 8250_fintek, 8250_lpc18xx seem=
- to care about
-returning a serial_rs485 struct with cleared padding field to userspace. S=
-o they all clear
-that field on their own. Although not really necessary, to me this seems t=
-o be a good
-default behavior, so I added it to the serial core.
 
->
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock_irqsave(&port->lock, flags);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, &rs485)=
-;
->> +=C2=A0=C2=A0=C2=A0 if (!ret)
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 port->rs485 =3D rs485;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irqrestore(&port->lock, flag=
-s);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
->
-> thanks,
-
-Thanks for the review!
-
-Regards,
-Lino
+thanks.
+-- 
+~Randy
