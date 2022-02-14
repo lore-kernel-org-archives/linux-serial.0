@@ -2,168 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE91C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 17:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DD9C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 18:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiBNRsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:48:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37862 "EHLO
+        id S237122AbiBNSA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 13:00:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233364AbiBNRsH (ORCPT
+        with ESMTP id S232358AbiBNSA3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:48:07 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8265513D24;
-        Mon, 14 Feb 2022 09:47:59 -0800 (PST)
+        Mon, 14 Feb 2022 13:00:29 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE47C65171;
+        Mon, 14 Feb 2022 10:00:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=jf26SR0VOk2Ttx4bLUgslnrc0FG1tgPsF93W1r8Fc3g=; b=K/N2UQO5molLQ1PtwJu4bqdv4o
-        9UTyh9eK6Q8XZpBGqa7moqNNS6aHZnDEvlikUY2ao3blfvJbxAv0SbBHRMBtz1NSiM8J2uIPvcV1s
-        ZjGU5dxiKBdguPvrZWHaWkORdPW5vPss7hMOymxMJIlPLjdNboW1lre7TfNRzR9q5lNpfNNysqZEa
-        gAeI2uok73jm2eWuS64GGB01vUPzsvCHCrMqb/gojDAUTvEzU09q2iMGAWn4aonc29fg3o3laj/wU
-        R1DITYgLffCgCec8O2+SaAJCZsCq8Abe3++WfGgRLjFf4CVyCX57rJbt1wXOI2R/BCHBFGa0ih6zk
-        X3+5ei2w==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJfS7-009xdB-KQ; Mon, 14 Feb 2022 17:47:55 +0000
-Message-ID: <e99b77aa-7742-08f5-8acc-3ff381d1b17f@infradead.org>
-Date:   Mon, 14 Feb 2022 09:47:49 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] serial: parisc: GSC: fix build when PCI_LBA is not set
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=HygV3XynhCWrLpKM8VJKHu9+X1H4p6aYXQjio6QBpNQ=; b=deznadcEnTnsRwCjyeG/X5REA4
+        Sgx4C3jljYLtS61dg9r+fGYuXtq8p6i9+KXM0N6IL1bMS0FaoCAKHMQAWnwEqpjPiIpt9aeBVGeTL
+        KeXlfV3RyYlvf2DdAmP6PJ7LNttLivHoy975w2qUAJkj6mAhOg1RLpAQ4U5HWDadMON3d9/FunguZ
+        OaIYF3Uqfhf4/mM3kzPxVns5Jq7rzM6f8vPu4H7AfXlE4l8+JzUNVzIP2gkxvNYcD89uaBiiipsfv
+        svS/72ZEM+SqWlbjl3YhVYs7SlPa7CgGKpSR9IT2nBwL5L0kl+FWspdZUBnQOgS/Y5mpdiw9I6nK5
+        24A+t8sA==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJfe8-00GSyp-2F; Mon, 14 Feb 2022 18:00:20 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        linux-parisc@vger.kernel.org,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>
-References: <20220213193903.8815-1-rdunlap@infradead.org>
- <0baabcbc-196e-08fa-e2db-b7e925993cc1@gmx.de>
- <55c73cb4-21ae-7307-7b14-a19cf270f4d6@infradead.org>
- <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
- <0ffc9f5f-546a-a797-01bf-d62953e6d26c@infradead.org>
- <e8781486-b3ce-b2dd-2c84-f0b2a651556f@gmx.de>
- <4c716eda-a081-2ae3-9358-a5e35bd4d951@gmx.de>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <4c716eda-a081-2ae3-9358-a5e35bd4d951@gmx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v2] serial: parisc: GSC: fix build when IOSAPIC is not set
+Date:   Mon, 14 Feb 2022 10:00:19 -0800
+Message-Id: <20220214180019.20384-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Helge,
+There is a build error when using a kernel .config file from
+'kernel test robot' for a different build problem:
 
-On 2/14/22 04:24, Helge Deller wrote:
-> On 2/14/22 13:05, Helge Deller wrote:
->> On 2/14/22 01:15, Randy Dunlap wrote:
->>> Hi,
->>>
->>> On 2/13/22 14:15, Helge Deller wrote:
->>>> On 2/13/22 22:07, Randy Dunlap wrote:
->>>>>
->>>>>
->>>>> On 2/13/22 12:35, Helge Deller wrote:
->>>>>> Hi Randy,
->>>>>>
->>>>>> On 2/13/22 20:39, Randy Dunlap wrote:
->>>>>>> There is a build error when using a kernel .config file from
->>>>>>> 'kernel test robot' for a different build problem:
->>>>>>>
->>>>>>> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
->>>>>>> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
->>>>>>>
->>>>>>> when:
->>>>>>>   CONFIG_GSC=y
->>>>>>>   CONFIG_SERIO_GSCPS2=y
->>>>>>>   CONFIG_SERIAL_8250_GSC=y
->>>>>>>   CONFIG_PCI is not set
->>>>>>>     and hence PCI_LBA is not set.
->>>>>>>   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
->>>>>>>
->>>>>>> Making SERIAL_8250_GSC depend on PCI_LBA prevents the build error.
->>>>>>
->>>>>> It maybe makes the build error go away, but ...
->>>>>>
->>>>>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->>>>>>> Reported-by: kernel test robot <lkp@intel.com>
->>>>>>> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
->>>>>>> Cc: Helge Deller <deller@gmx.de>
->>>>>>> Cc: linux-parisc@vger.kernel.org
->>>>>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>>>>> Cc: linux-serial@vger.kernel.org
->>>>>>> Cc: Jiri Slaby <jirislaby@kernel.org>
->>>>>>> Cc: Johan Hovold <johan@kernel.org>
->>>>>>> ---
->>>>>>>  drivers/tty/serial/8250/Kconfig |    2 +-
->>>>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>>
->>>>>>> --- linux-next-20220211.orig/drivers/tty/serial/8250/Kconfig
->>>>>>> +++ linux-next-20220211/drivers/tty/serial/8250/Kconfig
->>>>>>> @@ -118,7 +118,7 @@ config SERIAL_8250_CONSOLE
->>>>>>>
->>>>>>>  config SERIAL_8250_GSC
->>>>>>>  	tristate
->>>>>>> -	depends on SERIAL_8250 && GSC
->>>>>>> +	depends on SERIAL_8250 && GSC && PCI_LBA
->>>>>>>  	default SERIAL_8250
->>>>>>
->>>>>> The serial device is on the GSC bus, so if you make it
->>>>>> dependend on the PCI bus it will not be useable on machines
->>>>>> which only have a GSC bus...
->>>>>>
->>>>>> We need another patch.
->>>>>> Do you have a link to the build error?
->>>>>
->>>>>
->>>>> No, it's from the other build error that you just replied to,
->>>>> where the incorrect compiler was used.
->>>>>
->>>>> I'll recheck it and reconsider what to do, if anything.
->>>>
->>>> Ok, thank you!
->>>
->>> I dunno what to do. This:
->>>
->>> #ifdef CONFIG_64BIT
->>> 	if (!dev->irq && (dev->id.sversion == 0xad))
->>> 		dev->irq = iosapic_serial_irq(dev);
->>> #endif
->>>
->>> makes it look like 64BIT requires IOSAPIC (hence PCI_LBA).
->>
->> Although I think all 64bit machines have a PCI bus, the better
->> fix is that the driver should only call iosapic_serial_irq(dev)
->> if CONFIG_IOSAPIC is set. This patch fixes the build:
->>
->> -#ifdef CONFIG_64BIT
->> +#ifdef CONFIG_IOSAPIC
->>         if (!dev->irq && (dev->id.sversion == 0xad))
->>                 dev->irq = iosapic_serial_irq(dev);
->>  #endif
-> 
-> That was not fully correct.
-> It needs to be:
-> 
-> #if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
-> 
-> Otherwise you'll get an undefined reference in the 32-bit build.
+hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
 
-Sure, I can send such a patch.
-I would have used a bigger hammer and done something like
+when:
+  CONFIG_GSC=y
+  CONFIG_SERIO_GSCPS2=y
+  CONFIG_SERIAL_8250_GSC=y
+  CONFIG_PCI is not set
+    and hence PCI_LBA is not set.
+  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
 
-	depends on IOSAPIC if 64BIT
+Make the use of iosapic_serial_irq() conditional to fix the build error.
 
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-parisc@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Suggested-by: Helge Deller <deller@gmx.de>
+---
+v2: make the call to iosapic_serial_irq() conditional based on
+    CONFIG_ settings (thanks, Helge)
 
-Just for info, how would dev->irq be set for CONFIG_64BIT
-when CONFIG_IOSAPIC is not set?
+ drivers/tty/serial/8250/8250_gsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-thanks.
--- 
-~Randy
+--- linux-next-20220211.orig/drivers/tty/serial/8250/8250_gsc.c
++++ linux-next-20220211/drivers/tty/serial/8250/8250_gsc.c
+@@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
+ 	unsigned long address;
+ 	int err;
+ 
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
+ 	if (!dev->irq && (dev->id.sversion == 0xad))
+ 		dev->irq = iosapic_serial_irq(dev);
+ #endif
