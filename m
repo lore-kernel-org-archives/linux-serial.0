@@ -2,96 +2,187 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686D3C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 13:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062B9C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 13:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354242AbiBNNhi (ORCPT
+        id S1354709AbiBNN6H (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:37:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50418 "EHLO
+        Mon, 14 Feb 2022 08:58:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354241AbiBNNhg (ORCPT
+        with ESMTP id S1350528AbiBNN57 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:37:36 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B26C4EA20
-        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 05:37:27 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id p9so6363164wra.12
-        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 05:37:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DVb0TjCZn7Jwz2Kvb88Txv79YRQ7aVyO7Xh13MCDcfU=;
-        b=o/luYf0gyID+7LZyTrPreb7cMHrVoJghgl647Qt37SSGJyT4ry6EEACx/kQW4wLs6z
-         +sKA6Rx0H4CfQlgVjAc2cSUY2rEXOrRE7zbuMu5X8QvmrvSwQVGHqJqpkP74HDMF/K1Q
-         sWVtvpmyfq6keIpFaAFzKv52BP8PAdNZyxSX/DvY8EWa9wP1q9L53+icRsFTNd5jAj2M
-         Nu5FoAEP7fcyuSyAxROnKDigjG7d1ddtiBHTz/Gkv29A39pbGIN21f4PlN1uixb/2R42
-         w3R3AlR9EiS2RGR1hb3KZsJaNQOcfGJP/Y1HJozfyX6pTcxCs1GfVLx8jQUu460Xr8/f
-         Hv2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DVb0TjCZn7Jwz2Kvb88Txv79YRQ7aVyO7Xh13MCDcfU=;
-        b=vvc65sHLUzJ+mXsa9QfQqKNQl6ryVqW6NrEuZsEOb7YnHc+JWzCQRTKz/+3ENLDT/O
-         4IJgxT3kGl8+NVbxPsceCSi+5BduL9BBFtZZyYI905MrbRH2W9Iy3tfh8WOtqZISvDC0
-         qqnCSM5kIBcf1i9xNA8ZxwkAC8TjH8Jx4lf0iXiqnTlVtzz0ArQAHwAKb7EYtxo6cMJP
-         xeceOCF2r/AlYfeK4jzRXAF6ldKS27s7/m3fc8wFQgdozSkJlkBZn0iqKNDyWOx93+JM
-         x71L1S2hEbyTx47yxrieCUEXwAddQ8LhjdcBVflDIh3SvU2Y+4xhIl0jReWkPz081rhr
-         b5aA==
-X-Gm-Message-State: AOAM5303ATY4lsTKu6rniEAvSrLLVPAOlcq8HoW5Lzskbjt6ERhp1+PG
-        +79roItLYmy9u6hLq0/JdfRzaA==
-X-Google-Smtp-Source: ABdhPJyApp5kdwLN/OTISwHFu7CwGa8aipnhNkJvlBAgJXesku784CqUVnug80kdEUvSt8t4tke8wA==
-X-Received: by 2002:a5d:46c5:: with SMTP id g5mr10974611wrs.406.1644845845568;
-        Mon, 14 Feb 2022 05:37:25 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id b10sm30996044wrd.8.2022.02.14.05.37.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 05:37:25 -0800 (PST)
-Date:   Mon, 14 Feb 2022 13:37:23 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
+        Mon, 14 Feb 2022 08:57:59 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B6825DD
+        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 05:57:52 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJbqA-0006T5-AI; Mon, 14 Feb 2022 14:56:30 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJbq0-00GYf6-Ms; Mon, 14 Feb 2022 14:56:19 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJbpy-0038Nh-VX; Mon, 14 Feb 2022 14:56:18 +0100
+Date:   Mon, 14 Feb 2022 14:56:18 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>, kvm@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>, linux-gpio@vger.kernel.org,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Eric Auger <eric.auger@redhat.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Jaroslav Kysela <perex@perex.cz>,
+        Benson Leung <bleung@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 3/3] dt-bindings: mfd: samsung,exynos5433-lpass:
- Convert to dtschema
-Message-ID: <YgpbE+xn/AL8R11J@google.com>
-References: <20220202151310.285561-1-krzysztof.kozlowski@canonical.com>
- <20220202151310.285561-4-krzysztof.kozlowski@canonical.com>
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Brian Norris <computersforpeace@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional()
+ optional
+Message-ID: <20220214135618.kdiikxi3j4j4erks@pengutronix.de>
+References: <20220212201631.12648-1-s.shtylyov@omp.ru>
+ <20220212201631.12648-2-s.shtylyov@omp.ru>
+ <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
+ <YgorLXUr8aT+1ttv@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="woc7fbustut2ntcm"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220202151310.285561-4-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <YgorLXUr8aT+1ttv@smile.fi.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 02 Feb 2022, Krzysztof Kozlowski wrote:
 
-> Convert the Exynos5433 LPASS bindings to DT schema format.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/mfd/samsung,exynos5433-lpass.txt |  72 -----------
->  .../mfd/samsung,exynos5433-lpass.yaml         | 117 ++++++++++++++++++
->  2 files changed, 117 insertions(+), 72 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml
+--woc7fbustut2ntcm
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks.
+Hello Andy,
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+On Mon, Feb 14, 2022 at 12:13:01PM +0200, Andy Shevchenko wrote:
+> On Mon, Feb 14, 2022 at 08:13:51AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Sat, Feb 12, 2022 at 11:16:30PM +0300, Sergey Shtylyov wrote:
+> > > This patch is based on the former Andy Shevchenko's patch:
+> > >=20
+> > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko=
+@linux.intel.com/
+> > >=20
+> > > Currently platform_get_irq_optional() returns an error code even if I=
+RQ
+> > > resource simply has not been found.  It prevents the callers from bei=
+ng
+> > > error code agnostic in their error handling:
+> > >=20
+> > > 	ret =3D platform_get_irq_optional(...);
+> > > 	if (ret < 0 && ret !=3D -ENXIO)
+> > > 		return ret; // respect deferred probe
+> > > 	if (ret > 0)
+> > > 		...we get an IRQ...
+> > >=20
+> > > All other *_optional() APIs seem to return 0 or NULL in case an optio=
+nal
+> > > resource is not available.  Let's follow this good example, so that t=
+he
+> > > callers would look like:
+> > >=20
+> > > 	ret =3D platform_get_irq_optional(...);
+> > > 	if (ret < 0)
+> > > 		return ret;
+> > > 	if (ret > 0)
+> > > 		...we get an IRQ...
+> > >=20
+> > > Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> > > Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> >=20
+> > While this patch is better than v1, I still don't like it for the
+> > reasons discussed for v1. (i.e. 0 isn't usable as a dummy value which I
+> > consider the real advantage for the other _get_optional() functions.)
+>=20
+> I think you haven't reacted anyhow to my point that you mixing apples and
+> bananas together when comparing this 0 to the others _optional APIs.
+
+Is this a question to me or Sergey?
+
+I fully agree, when the 0 of platform_get_irq_optional is an apple and
+the NULL of gpio_get_optional is a banana, I doubt "All other
+*_optional() APIs seem to return 0 or NULL in case an optional resource
+is not available.  Let's follow this good example, [...]".
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--woc7fbustut2ntcm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIKX38ACgkQwfwUeK3K
+7AnLpgf9EdBYBZTRjJVoNGFFTEqmmhehKa4KFk5v/UfvgXZenr00B/u2K/MHO4lF
+HHazTdjZ6XfXR0zlckqQaisXEU2TXb/YxxUC3K7hBgh1k2dtS14XlUQHbh2zQXQI
+HKw3Yitn6vDghQH9WkSROTJNBOvMg3PcAg8i5h8g17e0D9BI5sdJERnMTFNeMzpz
+cY95lA6BqyVoJn2GW+QxAKYiYCMB5CSNw3yIxV8nd8CKPKMUQNt4aX4EFwglsJKP
+dB7ddBCRW0+mJcywV7mjkU7B7q6hTtPyAkNBQrWYtaAY4xcsIH7E2T64AaNc4Rah
+C/iCiRD7LGScn9QG72fV+C+upY3/gg==
+=VmOP
+-----END PGP SIGNATURE-----
+
+--woc7fbustut2ntcm--
