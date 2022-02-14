@@ -2,92 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DD9C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 18:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAEAC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 18:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237122AbiBNSA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:00:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51834 "EHLO
+        id S235555AbiBNSXr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 13:23:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232358AbiBNSA3 (ORCPT
+        with ESMTP id S1357454AbiBNSXn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:00:29 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE47C65171;
-        Mon, 14 Feb 2022 10:00:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=HygV3XynhCWrLpKM8VJKHu9+X1H4p6aYXQjio6QBpNQ=; b=deznadcEnTnsRwCjyeG/X5REA4
-        Sgx4C3jljYLtS61dg9r+fGYuXtq8p6i9+KXM0N6IL1bMS0FaoCAKHMQAWnwEqpjPiIpt9aeBVGeTL
-        KeXlfV3RyYlvf2DdAmP6PJ7LNttLivHoy975w2qUAJkj6mAhOg1RLpAQ4U5HWDadMON3d9/FunguZ
-        OaIYF3Uqfhf4/mM3kzPxVns5Jq7rzM6f8vPu4H7AfXlE4l8+JzUNVzIP2gkxvNYcD89uaBiiipsfv
-        svS/72ZEM+SqWlbjl3YhVYs7SlPa7CgGKpSR9IT2nBwL5L0kl+FWspdZUBnQOgS/Y5mpdiw9I6nK5
-        24A+t8sA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJfe8-00GSyp-2F; Mon, 14 Feb 2022 18:00:20 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH v2] serial: parisc: GSC: fix build when IOSAPIC is not set
-Date:   Mon, 14 Feb 2022 10:00:19 -0800
-Message-Id: <20220214180019.20384-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 14 Feb 2022 13:23:43 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6BD60DB7
+        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 10:23:34 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg0S-00063J-6p; Mon, 14 Feb 2022 19:23:24 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg0K-00GbDc-9H; Mon, 14 Feb 2022 19:23:15 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nJg0I-003BDB-Qj; Mon, 14 Feb 2022 19:23:14 +0100
+Date:   Mon, 14 Feb 2022 19:23:11 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     alexandre.belloni@bootlin.com, festevam@gmail.com,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+        s.hauer@pengutronix.de, linux@armlinux.org.uk,
+        nicolas.ferre@microchip.com, alexandre.torgue@foss.st.com,
+        ludovic.desroches@microchip.com, lukas@wunner.de,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        linux-serial@vger.kernel.org, shawnguo@kernel.org,
+        jirislaby@kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+Message-ID: <20220214182311.xaxkdgw5x66vubvv@pengutronix.de>
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+ <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+ <20220214070622.rz5cv6yy3aarvrjv@pengutronix.de>
+ <edbb9e1d-bed4-0850-08f4-029c4fcbfd5c@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5yzygnvea2gsyqvu"
+Content-Disposition: inline
+In-Reply-To: <edbb9e1d-bed4-0850-08f4-029c4fcbfd5c@gmx.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is a build error when using a kernel .config file from
-'kernel test robot' for a different build problem:
 
-hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
-(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
+--5yzygnvea2gsyqvu
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-when:
-  CONFIG_GSC=y
-  CONFIG_SERIO_GSCPS2=y
-  CONFIG_SERIAL_8250_GSC=y
-  CONFIG_PCI is not set
-    and hence PCI_LBA is not set.
-  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
+Hello Lino,
 
-Make the use of iosapic_serial_irq() conditional to fix the build error.
+On Mon, Feb 14, 2022 at 04:09:53PM +0100, Lino Sanfilippo wrote:
+> On 14.02.22 at 08:06, Uwe Kleine-K=F6nig wrote:
+> > I was only Cc:d for the imx patch (patch #7) and tried to verify the
+> > claim there that "the serial core already assigns the passed
+> > configuration to the uart port". That failed when I looked at my kernel
+> > tree.
+> >
+> > So it would be great, if you sent dependencies (or at least a cover
+> > letter) to all recipients of a given patch to ease review. Also I want
+> > to suggest to mention uart_set_rs485_config() in the commit log of the
+> > imx patch (and probably the others) to simplify verifying the claim
+> > there.
+>=20
+> Thanks for the review, I will correct the typos in the next version.
+> I will also cc you directly for the next version if you dont mind.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-parisc@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Suggested-by: Helge Deller <deller@gmx.de>
----
-v2: make the call to iosapic_serial_irq() conditional based on
-    CONFIG_ settings (thanks, Helge)
+I don't mind. I get so many patches by mail, I'm good at ignoring them
+;-)
 
- drivers/tty/serial/8250/8250_gsc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> get_maintainers only spit out "Pengutronix Kernel Team" so I used that
+> address for the whole series (including the cover letter).
 
---- linux-next-20220211.orig/drivers/tty/serial/8250/8250_gsc.c
-+++ linux-next-20220211/drivers/tty/serial/8250/8250_gsc.c
-@@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
- 	unsigned long address;
- 	int err;
- 
--#ifdef CONFIG_64BIT
-+#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
- 	if (!dev->irq && (dev->id.sversion == 0xad))
- 		dev->irq = iosapic_serial_irq(dev);
- #endif
+That's why I eventually found the whole series and could reply to patch
+#1.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--5yzygnvea2gsyqvu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIKngwACgkQwfwUeK3K
+7An98wf/bBKlqhAAMwMSKVu53e8nF1ZTSQ/QjAhBecE3mD4HgqyKTzgmzkKeHYFj
+KFZpNW2T05fcPMre0otOoR+7X1a2jOMv9lg2c11F6zor06DU6+RrIbtgMuzCFKJW
+tpM9//kD8f+OcUSESal/ZRzAS683pu+nO0x2N06+h4kRiUVfb6y2UToQhiCniQjO
+PtPtboM3S+ZistvDYzuo2sVXaYA7C8pTcGVbY8fO2dhWqvbwb//kIQt3ZsFvDnhj
+g8xi+7QVAJvKcQy9FpB0SKAcCpIx/gy+AnoezVMbbshQejDbrVQ+SYPq7wtka2PB
+L9NSe4gLIQM2kMMxpd8Fprm67oy+Rw==
+=KXKx
+-----END PGP SIGNATURE-----
+
+--5yzygnvea2gsyqvu--
