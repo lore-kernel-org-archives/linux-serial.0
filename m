@@ -2,169 +2,300 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B853C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B43C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 21:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiBNVCT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:02:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39952 "EHLO
+        id S230354AbiBNVs7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:48:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiBNVCS (ORCPT
+        with ESMTP id S230380AbiBNVs6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:02:18 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27039B65FB;
-        Mon, 14 Feb 2022 13:02:10 -0800 (PST)
+        Mon, 14 Feb 2022 16:48:58 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27944192F2D
+        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 13:48:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644872530; x=1676408530;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OPsg9/jpppi/LY2t/Fw9MvKZpBWLmJurE/YRhV48e5M=;
-  b=kTVSOK0ZxUkFKfCvwjGZVyYcQm++sQzlB4CeQAow52Sm3gnloHZLsZ6V
-   Q3ya5Z8fr0aKAzdcI8wKfSaGEvQeBNnbJ8QwMiDbW9icQvVmDI7oqNeqq
-   8afj/vxRFSh1oVLDXatO5Kd3sfGtxQfeKgDod3TjTQ2HGJVzbZ4RT6+Ap
-   B/EDp2acHTDB4N5CcnNOOV3vBScGLg1fbvYA4gw1jvzAZBMQe8pK2pACg
-   5Wk+RgdMTvEn/rgTqji8ZOZLhiAO11GfEhOSishFI2dz7tloyAX7aZ7bt
-   0ykCMPMekSgBsGJOmX2YpQvfbY/BEb2OwNyiXAYZtNu3r9e9HaBNEN4Bu
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230128955"
+  t=1644875330; x=1676411330;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=V6Rc1kdjHr+Xc6VwjwdfduJRkpeBYKuSkzQSqcv/ngc=;
+  b=g0Jn2J2Req824ERduzQOnpJLWhIa3wBTDCGH/gB+JfRbeovxf7rDrHNr
+   0jwK4iYymIoroY0ilEap15YFxWm6Xh9yMkn+cJmmyefpF1fqTMnmk71qk
+   YV2ydr1g0mmwVvVt4ypWrKEs9uyRxDhCFV2ikEF0wHp/eg1H6eLFkc75d
+   CBu99yPD8Vv/B6EgZ5fJ7w80uxLqLGg7I2MsD62hrlxviRBORPbhJ6ZdP
+   X3gu02Lv7nAU7WhoP1mMSxQWcNbs07ZXDZln6xf7OY4BlMp3Qljfv1IZl
+   8qmMGLDvUJqCH2gQkY78b7Tfh38/+LpTvCq7djrDmEpb9U37Qk6dg3Nzk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250125321"
 X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="230128955"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:13:18 -0800
+   d="scan'208";a="250125321"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 12:26:20 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="485651771"
+   d="scan'208";a="773217146"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 11:13:16 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 14 Feb 2022 12:26:18 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nJgmh-0008qn-Mw; Mon, 14 Feb 2022 19:13:15 +0000
-Date:   Tue, 15 Feb 2022 03:12:27 +0800
+        id 1nJhvO-0008uy-8K; Mon, 14 Feb 2022 20:26:18 +0000
+Date:   Tue, 15 Feb 2022 04:25:35 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
-Message-ID: <202202150314.3Ybl4jns-lkp@intel.com>
-References: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 802d00bd774b77fe132e9e83462b96fb9919411c
+Message-ID: <620ababf.+xEEoh9TALZbNZVp%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 802d00bd774b77fe132e9e83462b96fb9919411c  Merge 5.17-rc4 into tty-next
 
-I love your patch! Yet something to improve:
+elapsed time: 735m
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on usb/usb-testing linux/master linus/master v5.17-rc4 next-20220214]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+configs tested: 222
+configs skipped: 3
 
-url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: hexagon-buildonly-randconfig-r001-20220214 (https://download.01.org/0day-ci/archive/20220215/202202150314.3Ybl4jns-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/810910d324cc80b092207d043651de696d293cbd
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
-        git checkout 810910d324cc80b092207d043651de696d293cbd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+gcc tested configs:
+arm                                 defconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm64                            allyesconfig
+i386                 randconfig-c001-20220214
+sh                          rsk7264_defconfig
+arm                           h3600_defconfig
+openrisc                            defconfig
+nios2                            alldefconfig
+sh                          r7780mp_defconfig
+sh                            titan_defconfig
+ia64                         bigsur_defconfig
+m68k                        mvme147_defconfig
+sh                            hp6xx_defconfig
+powerpc64                        alldefconfig
+sh                               alldefconfig
+arm                           tegra_defconfig
+powerpc                     stx_gp3_defconfig
+mips                        vocore2_defconfig
+powerpc                     pq2fads_defconfig
+m68k                         apollo_defconfig
+ia64                        generic_defconfig
+mips                      maltasmvp_defconfig
+i386                             alldefconfig
+sh                          sdk7780_defconfig
+powerpc                    klondike_defconfig
+powerpc                       ppc64_defconfig
+arm                        trizeps4_defconfig
+xtensa                         virt_defconfig
+arc                     haps_hs_smp_defconfig
+xtensa                              defconfig
+arm                          lpd270_defconfig
+csky                                defconfig
+powerpc                     mpc83xx_defconfig
+arm                          pxa910_defconfig
+arm                           corgi_defconfig
+mips                     decstation_defconfig
+sh                ecovec24-romimage_defconfig
+sh                              ul2_defconfig
+mips                         rt305x_defconfig
+sh                        edosk7705_defconfig
+powerpc                      cm5200_defconfig
+powerpc                       eiger_defconfig
+arm                        shmobile_defconfig
+arc                 nsimosci_hs_smp_defconfig
+arm                         lubbock_defconfig
+parisc                           allyesconfig
+arm                      integrator_defconfig
+mips                          rb532_defconfig
+s390                       zfcpdump_defconfig
+sh                          polaris_defconfig
+m68k                       m5475evb_defconfig
+mips                     loongson1b_defconfig
+sparc64                             defconfig
+sh                             shx3_defconfig
+sh                         apsh4a3a_defconfig
+m68k                            mac_defconfig
+mips                         tb0226_defconfig
+sparc                               defconfig
+arm64                            alldefconfig
+arm                        mvebu_v7_defconfig
+sparc64                          alldefconfig
+mips                            gpr_defconfig
+arm                         axm55xx_defconfig
+sh                           se7721_defconfig
+powerpc                     rainier_defconfig
+s390                                defconfig
+powerpc                 linkstation_defconfig
+m68k                        stmark2_defconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+sh                           se7722_defconfig
+mips                         db1xxx_defconfig
+powerpc                      ppc40x_defconfig
+h8300                               defconfig
+arm                         lpc18xx_defconfig
+powerpc                      bamboo_defconfig
+arc                        nsimosci_defconfig
+powerpc                      tqm8xx_defconfig
+sh                         ap325rxa_defconfig
+powerpc                    adder875_defconfig
+m68k                       bvme6000_defconfig
+arm                      jornada720_defconfig
+mips                            ar7_defconfig
+sparc                       sparc64_defconfig
+xtensa                           alldefconfig
+mips                 decstation_r4k_defconfig
+powerpc                  iss476-smp_defconfig
+arm                  randconfig-c002-20220214
+arm                  randconfig-c002-20220213
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64               randconfig-a013-20220214
+x86_64               randconfig-a014-20220214
+x86_64               randconfig-a012-20220214
+x86_64               randconfig-a015-20220214
+x86_64               randconfig-a011-20220214
+x86_64               randconfig-a016-20220214
+x86_64                        randconfig-a006
+i386                 randconfig-a013-20220214
+i386                 randconfig-a016-20220214
+i386                 randconfig-a012-20220214
+i386                 randconfig-a015-20220214
+i386                 randconfig-a011-20220214
+i386                 randconfig-a014-20220214
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                randconfig-r042-20220214
+arc                  randconfig-r043-20220214
+s390                 randconfig-r044-20220214
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                           allyesconfig
 
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/sh-sci.c:3205:83: error: too few arguments to function call, expected 4, have 3
-                   return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
-                          ~~~~~~~~~~~~~~~~~                                                        ^
-   include/linux/device.h:988:7: note: 'dev_err_probe_ptr' declared here
-   void *dev_err_probe_ptr(const struct device *dev, int err, const char *fmt, va_list args)
-         ^
-   1 error generated.
-
-
-vim +3205 drivers/tty/serial/sh-sci.c
-
-  3187	
-  3188	static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
-  3189						  unsigned int *dev_id)
-  3190	{
-  3191		struct device_node *np = pdev->dev.of_node;
-  3192		struct reset_control *rstc;
-  3193		struct plat_sci_port *p;
-  3194		struct sci_port *sp;
-  3195		const void *data;
-  3196		int id, ret;
-  3197	
-  3198		if (!IS_ENABLED(CONFIG_OF) || !np)
-  3199			return ERR_PTR(-EINVAL);
-  3200	
-  3201		data = of_device_get_match_data(&pdev->dev);
-  3202	
-  3203		rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
-  3204		if (IS_ERR(rstc))
-> 3205			return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
-  3206	
-  3207		ret = reset_control_deassert(rstc);
-  3208		if (ret) {
-  3209			dev_err(&pdev->dev, "failed to deassert reset %d\n", ret);
-  3210			return ERR_PTR(ret);
-  3211		}
-  3212	
-  3213		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
-  3214		if (ret) {
-  3215			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
-  3216				ret);
-  3217			return ERR_PTR(ret);
-  3218		}
-  3219	
-  3220		p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
-  3221		if (!p)
-  3222			return ERR_PTR(-ENOMEM);
-  3223	
-  3224		/* Get the line number from the aliases node. */
-  3225		id = of_alias_get_id(np, "serial");
-  3226		if (id < 0 && ~sci_ports_in_use)
-  3227			id = ffz(sci_ports_in_use);
-  3228		if (id < 0) {
-  3229			dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
-  3230			return ERR_PTR(-EINVAL);
-  3231		}
-  3232		if (id >= ARRAY_SIZE(sci_ports)) {
-  3233			dev_err(&pdev->dev, "serial%d out of range\n", id);
-  3234			return ERR_PTR(-EINVAL);
-  3235		}
-  3236	
-  3237		sp = &sci_ports[id];
-  3238		*dev_id = id;
-  3239	
-  3240		p->type = SCI_OF_TYPE(data);
-  3241		p->regtype = SCI_OF_REGTYPE(data);
-  3242	
-  3243		sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
-  3244	
-  3245		return p;
-  3246	}
-  3247	
+clang tested configs:
+riscv                randconfig-c006-20220214
+i386                 randconfig-c001-20220214
+x86_64               randconfig-c007-20220214
+powerpc              randconfig-c003-20220214
+arm                  randconfig-c002-20220214
+mips                 randconfig-c004-20220214
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220213
+arm                  randconfig-c002-20220213
+i386                          randconfig-c001
+mips                 randconfig-c004-20220213
+riscv                randconfig-c006-20220213
+arm                       aspeed_g4_defconfig
+hexagon                             defconfig
+mips                        workpad_defconfig
+arm                         s3c2410_defconfig
+powerpc                     ppa8548_defconfig
+powerpc                     pseries_defconfig
+powerpc                      ppc64e_defconfig
+arm                        spear3xx_defconfig
+powerpc                     tqm8560_defconfig
+powerpc                     kmeter1_defconfig
+arm                         socfpga_defconfig
+powerpc                    socrates_defconfig
+powerpc                          allmodconfig
+mips                          ath25_defconfig
+powerpc                        icon_defconfig
+powerpc                     mpc5200_defconfig
+arm                  colibri_pxa300_defconfig
+arm                         bcm2835_defconfig
+powerpc                 mpc836x_mds_defconfig
+powerpc                  mpc885_ads_defconfig
+mips                     loongson1c_defconfig
+arm                        magician_defconfig
+mips                         tb0287_defconfig
+powerpc                     tqm8540_defconfig
+powerpc                    gamecube_defconfig
+powerpc                 mpc832x_rdb_defconfig
+mips                           rs90_defconfig
+mips                          ath79_defconfig
+mips                     cu1000-neo_defconfig
+arm                            dove_defconfig
+mips                            e55_defconfig
+x86_64               randconfig-a002-20220214
+x86_64               randconfig-a006-20220214
+x86_64               randconfig-a005-20220214
+x86_64               randconfig-a004-20220214
+x86_64               randconfig-a003-20220214
+x86_64               randconfig-a001-20220214
+i386                 randconfig-a004-20220214
+i386                 randconfig-a005-20220214
+i386                 randconfig-a006-20220214
+i386                 randconfig-a002-20220214
+i386                 randconfig-a003-20220214
+i386                 randconfig-a001-20220214
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a015
+i386                          randconfig-a013
+i386                          randconfig-a011
+hexagon              randconfig-r045-20220213
+hexagon              randconfig-r045-20220214
+hexagon              randconfig-r041-20220214
+hexagon              randconfig-r041-20220213
+riscv                randconfig-r042-20220213
+s390                 randconfig-r044-20220213
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
