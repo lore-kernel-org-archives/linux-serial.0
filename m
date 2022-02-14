@@ -2,140 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C16C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 00:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E6FC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 05:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238839AbiBNAPn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 13 Feb 2022 19:15:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36110 "EHLO
+        id S240541AbiBNFl3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 00:41:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230195AbiBNAPm (ORCPT
+        with ESMTP id S238010AbiBNFlY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 13 Feb 2022 19:15:42 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8354251E6B;
-        Sun, 13 Feb 2022 16:15:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=Z0izQ77ae4vChC3LwyWqgLvukFSg3zMmsdvzhzmiFoA=; b=G4PjChidQJRQi2NVbEZyyeTMh0
-        X3UnnyyM3mGdXXgMo0LWl183MPMT8g3EXPa3KE0DjsPHnONFIk222ugmAT5hhJDMvFz8UICd6/ZDx
-        iqv0fCaOtwmv7OM4QCJ+Nxg+mBTEtuYgxHzuLl6im3XTnRr8LfuVEASoC7gSty9nGAlSyUgnfcBqv
-        VCQsfW6XkWeUqKEtOWVULZ3ofuIbx2tQ4WoQKEGa06pbwQBg5uoGB8t3rWQ6zX6GPRxXuhWobPNaU
-        lqs+zlhZL9P+P+hpMmwyPjmD8WO0JsFOjY++AHcqKPu6E5Ux0aDg2ZiwkXS7DJwwWT5j64DiASMin
-        A+ji6evw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJP1g-00CNcF-C5; Mon, 14 Feb 2022 00:15:32 +0000
-Message-ID: <0ffc9f5f-546a-a797-01bf-d62953e6d26c@infradead.org>
-Date:   Sun, 13 Feb 2022 16:15:27 -0800
+        Mon, 14 Feb 2022 00:41:24 -0500
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058004EA11;
+        Sun, 13 Feb 2022 21:41:17 -0800 (PST)
+Received: by mail-ed1-f43.google.com with SMTP id s7so25345862edd.3;
+        Sun, 13 Feb 2022 21:41:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UODiaWTZTO5qlU00FWM6CcCRa/ILiX84iGscvUMk8+E=;
+        b=4dNGZcEdM9ivYr8sDJYwX1XGsJCj96kux7tnoy2JAjSdTvciZuzaAiLGGcnM0418RK
+         0GYpc68aU7V0Dfpu5szHT6UtUXSAh04bKiPU6MOtgNiJGnRXp2tN1MHeQ5wS3L2wcQTD
+         Uu4SdIwyqUrIAUjhvUSm3pOeAkQ+mbPBGp0dG/REVkW0yDm1BarKflvOvsADyhjcIJ9P
+         KXCIVFHLLbo6nA/bsdzZoGWE+h0I1qZpul98w9ivDWSPKf0Z+/F+3XxgH8cEO9uG5fAS
+         LnpKVOiaw1QkrqJ0s1g/WGEKqTg21ohMJ2no2G5sx5XPPpeDsgYdVd+bB+1Ol51nt5aS
+         1BMA==
+X-Gm-Message-State: AOAM530QqWT7EQ7FW/y7AhaMmT+nZpbuejP2cw2jPXBFYYltDKtQyBT9
+        5qHqWfKqijbLJEPjSWhIrAk=
+X-Google-Smtp-Source: ABdhPJyuQDIOMXfuuo91JtjsHZ+mln7dCRyvjT6jZY72fda4wnY2b4VSFc1jdoPxFKGHjsLgq4GZ0A==
+X-Received: by 2002:a05:6402:190f:: with SMTP id e15mr13795490edz.195.1644817275463;
+        Sun, 13 Feb 2022 21:41:15 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id jz17sm10240567ejb.195.2022.02.13.21.41.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Feb 2022 21:41:14 -0800 (PST)
+Message-ID: <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
+Date:   Mon, 14 Feb 2022 06:41:13 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] serial: parisc: GSC: fix build when PCI_LBA is not set
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
 Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        linux-parisc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-References: <20220213193903.8815-1-rdunlap@infradead.org>
- <0baabcbc-196e-08fa-e2db-b7e925993cc1@gmx.de>
- <55c73cb4-21ae-7307-7b14-a19cf270f4d6@infradead.org>
- <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
-Content-Type: text/plain; charset=UTF-8
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+ <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 2/13/22 14:15, Helge Deller wrote:
-> On 2/13/22 22:07, Randy Dunlap wrote:
->>
->>
->> On 2/13/22 12:35, Helge Deller wrote:
->>> Hi Randy,
->>>
->>> On 2/13/22 20:39, Randy Dunlap wrote:
->>>> There is a build error when using a kernel .config file from
->>>> 'kernel test robot' for a different build problem:
->>>>
->>>> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
->>>> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
->>>>
->>>> when:
->>>>   CONFIG_GSC=y
->>>>   CONFIG_SERIO_GSCPS2=y
->>>>   CONFIG_SERIAL_8250_GSC=y
->>>>   CONFIG_PCI is not set
->>>>     and hence PCI_LBA is not set.
->>>>   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
->>>>
->>>> Making SERIAL_8250_GSC depend on PCI_LBA prevents the build error.
->>>
->>> It maybe makes the build error go away, but ...
->>>
->>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->>>> Reported-by: kernel test robot <lkp@intel.com>
->>>> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
->>>> Cc: Helge Deller <deller@gmx.de>
->>>> Cc: linux-parisc@vger.kernel.org
->>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>> Cc: linux-serial@vger.kernel.org
->>>> Cc: Jiri Slaby <jirislaby@kernel.org>
->>>> Cc: Johan Hovold <johan@kernel.org>
->>>> ---
->>>>  drivers/tty/serial/8250/Kconfig |    2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> --- linux-next-20220211.orig/drivers/tty/serial/8250/Kconfig
->>>> +++ linux-next-20220211/drivers/tty/serial/8250/Kconfig
->>>> @@ -118,7 +118,7 @@ config SERIAL_8250_CONSOLE
->>>>
->>>>  config SERIAL_8250_GSC
->>>>  	tristate
->>>> -	depends on SERIAL_8250 && GSC
->>>> +	depends on SERIAL_8250 && GSC && PCI_LBA
->>>>  	default SERIAL_8250
->>>
->>> The serial device is on the GSC bus, so if you make it
->>> dependend on the PCI bus it will not be useable on machines
->>> which only have a GSC bus...
->>>
->>> We need another patch.
->>> Do you have a link to the build error?
->>
->>
->> No, it's from the other build error that you just replied to,
->> where the incorrect compiler was used.
->>
->> I'll recheck it and reconsider what to do, if anything.
+On 13. 02. 22, 23:27, Lino Sanfilippo wrote:
+> Several drivers that support setting the RS485 configuration via userspace
+> implement on or more of the following tasks:
 > 
-> Ok, thank you!
+> - in case of an invalid RTS configuration (both RTS after send and RTS on
+>    send set or both unset) fall back to enable RTS on send and disable RTS
+>    after send
+> 
+> - nullify the padding field of the returned serial_rs485 struct
+> 
+> - copy the configuration into the uart port struct
+> 
+> - limit RTS delays to 100 ms
+> 
+> Move these tasks into the serial core to make them generic and to provide
+> a consistent beheviour among all drivers.
+> 
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> ---
+>   drivers/tty/serial/serial_core.c | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 846192a7b4bf..3fab4070359c 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1282,8 +1282,21 @@ static int uart_set_rs485_config(struct uart_port *port,
+>   	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
+>   		return -EFAULT;
+>   
+> +	/* pick sane settings if the user hasn't */
+> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
+> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
+> +		rs485.flags |= SER_RS485_RTS_ON_SEND;
+> +		rs485.flags &= ~SER_RS485_RTS_AFTER_SEND;
+> +	}
+> +	/* clamp the delays to [0, 100ms] */
+> +	rs485.delay_rts_before_send = min(rs485.delay_rts_before_send, 100U);
+> +	rs485.delay_rts_after_send = min(rs485.delay_rts_after_send, 100U);
 
-I dunno what to do. This:
+Why is this magic 100? Can we have that number somehow documented? You 
+should define a macro for that anyway.
 
-#ifdef CONFIG_64BIT
-	if (!dev->irq && (dev->id.sversion == 0xad))
-		dev->irq = iosapic_serial_irq(dev);
-#endif
+> +	memset(rs485.padding, 0, sizeof(rs485.padding));
 
-makes it look like 64BIT requires IOSAPIC (hence PCI_LBA).
+What is this memset good for?
 
+>   	spin_lock_irqsave(&port->lock, flags);
+>   	ret = port->rs485_config(port, &rs485);
+> +	if (!ret)
+> +		port->rs485 = rs485;
+>   	spin_unlock_irqrestore(&port->lock, flags);
+>   	if (ret)
+>   		return ret;
 
-> By the way, I just sent another patch (and added it to the parisc for-next tree)
-> which should at least give a better error message if someone uses the wrong compiler:
-> https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git/commit/?h=for-next&id=b160628e9ebcdc85d0db9d7f423c26b3c7c179d0
-
-Yes, I applied that, but that's not the problem here.
-It is a 64BIT config and parisc64 compiler.
-
+thanks,
 -- 
-~Randy
+js
+suse labs
