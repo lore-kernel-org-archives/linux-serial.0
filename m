@@ -2,129 +2,170 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A230EC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 18:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B853C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiBNSpN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:45:13 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37898 "EHLO
+        id S230050AbiBNVCT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:02:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiBNSpN (ORCPT
+        with ESMTP id S229685AbiBNVCS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:45:13 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B646E2AB
-        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 10:44:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644864244;
-        bh=XY5ZWnZvUHBRCFSdMYdlfBTZB4KKA6S7EhwJTQMpBuo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=NnI0Kzv+jFbijb2GmqUoZ8nNCdMSjKwKSYFOxH70mG6EY1bbzmyKTBQrW+JwHvkea
-         AORbwm/dp/SvmFKg9aThtXvOO6nRsa8C83XTQqxZ6U4K7QdL61Gzf4Zar2t44OIqSv
-         h4VExZ/uaauc/qQcEK3YO0LFkmq55/eu+iXTbRHI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.168.11]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N2E1M-1oHXPx3CBi-013fLl; Mon, 14
- Feb 2022 19:38:35 +0100
-Message-ID: <5d710a45-1924-1a52-fe48-097deb12cb1c@gmx.de>
-Date:   Mon, 14 Feb 2022 19:38:29 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2] serial: parisc: GSC: fix build when IOSAPIC is not set
-Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        linux-parisc@vger.kernel.org,
+        Mon, 14 Feb 2022 16:02:18 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27039B65FB;
+        Mon, 14 Feb 2022 13:02:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644872530; x=1676408530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OPsg9/jpppi/LY2t/Fw9MvKZpBWLmJurE/YRhV48e5M=;
+  b=kTVSOK0ZxUkFKfCvwjGZVyYcQm++sQzlB4CeQAow52Sm3gnloHZLsZ6V
+   Q3ya5Z8fr0aKAzdcI8wKfSaGEvQeBNnbJ8QwMiDbW9icQvVmDI7oqNeqq
+   8afj/vxRFSh1oVLDXatO5Kd3sfGtxQfeKgDod3TjTQ2HGJVzbZ4RT6+Ap
+   B/EDp2acHTDB4N5CcnNOOV3vBScGLg1fbvYA4gw1jvzAZBMQe8pK2pACg
+   5Wk+RgdMTvEn/rgTqji8ZOZLhiAO11GfEhOSishFI2dz7tloyAX7aZ7bt
+   0ykCMPMekSgBsGJOmX2YpQvfbY/BEb2OwNyiXAYZtNu3r9e9HaBNEN4Bu
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230128955"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="230128955"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:13:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="485651771"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 11:13:16 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJgmh-0008qn-Mw; Mon, 14 Feb 2022 19:13:15 +0000
+Date:   Tue, 15 Feb 2022 03:12:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-References: <20220214180019.20384-1-rdunlap@infradead.org>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220214180019.20384-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:egCZaBxnkD9Tc7+dELp3P4BzdSFTt1jByG9kWcU2NDGK/MsWf0B
- wOSrH28Hacb+LzLoSzCfBM3AMbdybWiKiHN0adPQYHrBocu8vXcBy7J4WRHWOCQADmLVH2A
- P/hGe/tj8XQXoviHRQ41yuvmm4OYPeKHeH9ZxwBzxnWwtE7YVeyQGCHywWiY9i5YPUPY2+5
- 3njKxCFO2lu45JlRx5RSQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NAnWi6p+m+I=:t2WRxtjmWoEC6QlNMFnHfP
- tmhJo2PX4auMomJr74oXb/ZF9gMsNa0ooyMM7U1Gd2s5wNPaFECzbOwhIFbKaE6f5nW/hL1HR
- 3vsyIHrOhFEYM3YeWytyNzdj376/cXva6Zy/xWDaxiBwo2WXWDGeUYnDLsBFfkQ3hiV2dltME
- X8h6JAacWPS+SIRubSafF2P3k7qIuXnvnqHyCr/+HDZ82/L993TgnvTsom0ORvgq7z35YNgHw
- /guE6H+kJjXQ0AuQY3qJu+otsIPy7Jg5Gzvs29UDG/1sQ1IfVPTIGOZ/ygBXgQjvc1qwPLLQ2
- fcOBJlfoi4T8lE+LnvuPIzTWSnPxhD5Q+UuGaifwpEIHry5hV20A9RJows1h84XBTJTdhXqw9
- VtlDsSGQq0Cyreti272h318Z4EyCZ+viE+ut+TiOgh5+wQi0/CTBR/Pu5kIBI53xu3bK1bScO
- bQmTOHXfcNGvmy+W/yxbDxWlXrwznmlKi2KDb3zSHjwYxYp/O2dtbkFY0KA+tznVwTeyvqS4c
- lHCjkNZXXJtO1d7JdOBXNnFuTtZeXZvZGAIHbMX7Krca6rBIgy8WmVUAfPysxgypdmX8Y0IiX
- zEF2Bc2v2R8iOQeF7WaXP5zxZCxtZYzA9H6VPayt0yLfXCFYr5PWz4C6HLGpvuCjKXzuEHRbD
- JxKnIudDUV/ILNg8kHGn4BC5po3FpgAcfayPhWLz9iHzRAq25R+kGkyn+sgkOjRMDphwKxhKe
- eoWpOxDeHIJOUBaIPHxysF994119Oag5VrefXWzQ9WNdd21Cnmoi5tP8+Snpus0fK4VoT2ret
- aJp9+Sb2igFp5eIC71zcrfrMtVPsfxWDB4nAa9FpJH6hMGr9LNraz31kDaO7IKIJlxCKvK/Q9
- zaCRuUkSrbsiOqWPaX+pnauCRGli9OiyafwFsSa8DM/g60zoblvBj+gRj6xJlzWLIjsu+855z
- ZX7CuYam9wuMGPpvADHhwfWLeOmP11e3e1Hmk/YkQ8yKWQky6pl6kyJrNTqXlJr4W2sdmxMNX
- udLGQkwO2I2najdXaqwKYMuMCf493Ouik21iCRkeT5jB7BVyucVRB1Tme64nnHfBwkLO/hPRE
- hcv1G/OElC/W58=
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
+Message-ID: <202202150314.3Ybl4jns-lkp@intel.com>
+References: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2/14/22 19:00, Randy Dunlap wrote:
-> There is a build error when using a kernel .config file from
-> 'kernel test robot' for a different build problem:
->
-> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
-> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
->
-> when:
->   CONFIG_GSC=3Dy
->   CONFIG_SERIO_GSCPS2=3Dy
->   CONFIG_SERIAL_8250_GSC=3Dy
->   CONFIG_PCI is not set
->     and hence PCI_LBA is not set.
->   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
->
-> Make the use of iosapic_serial_irq() conditional to fix the build error.
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-> Cc: Helge Deller <deller@gmx.de>
-> Cc: linux-parisc@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-serial@vger.kernel.org
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Johan Hovold <johan@kernel.org>
-> Suggested-by: Helge Deller <deller@gmx.de>
+Hi Andy,
 
-Thank you Randy!
+I love your patch! Yet something to improve:
 
-Acked-by: Helge Deller <deller@gmx.de>
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing linux/master linus/master v5.17-rc4 next-20220214]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Since this patch only affects the parisc platform, I've added it
-to the parisc for-next tree (with a stable tag), unless people want it
-to go through another subsystem tree...
+url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: hexagon-buildonly-randconfig-r001-20220214 (https://download.01.org/0day-ci/archive/20220215/202202150314.3Ybl4jns-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/810910d324cc80b092207d043651de696d293cbd
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+        git checkout 810910d324cc80b092207d043651de696d293cbd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
 
-Helge
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
-> v2: make the call to iosapic_serial_irq() conditional based on
->     CONFIG_ settings (thanks, Helge)
->
->  drivers/tty/serial/8250/8250_gsc.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> --- linux-next-20220211.orig/drivers/tty/serial/8250/8250_gsc.c
-> +++ linux-next-20220211/drivers/tty/serial/8250/8250_gsc.c
-> @@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
->  	unsigned long address;
->  	int err;
->
-> -#ifdef CONFIG_64BIT
-> +#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
->  	if (!dev->irq && (dev->id.sversion =3D=3D 0xad))
->  		dev->irq =3D iosapic_serial_irq(dev);
->  #endif
->
+All errors (new ones prefixed by >>):
 
+>> drivers/tty/serial/sh-sci.c:3205:83: error: too few arguments to function call, expected 4, have 3
+                   return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+                          ~~~~~~~~~~~~~~~~~                                                        ^
+   include/linux/device.h:988:7: note: 'dev_err_probe_ptr' declared here
+   void *dev_err_probe_ptr(const struct device *dev, int err, const char *fmt, va_list args)
+         ^
+   1 error generated.
+
+
+vim +3205 drivers/tty/serial/sh-sci.c
+
+  3187	
+  3188	static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+  3189						  unsigned int *dev_id)
+  3190	{
+  3191		struct device_node *np = pdev->dev.of_node;
+  3192		struct reset_control *rstc;
+  3193		struct plat_sci_port *p;
+  3194		struct sci_port *sp;
+  3195		const void *data;
+  3196		int id, ret;
+  3197	
+  3198		if (!IS_ENABLED(CONFIG_OF) || !np)
+  3199			return ERR_PTR(-EINVAL);
+  3200	
+  3201		data = of_device_get_match_data(&pdev->dev);
+  3202	
+  3203		rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+  3204		if (IS_ERR(rstc))
+> 3205			return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+  3206	
+  3207		ret = reset_control_deassert(rstc);
+  3208		if (ret) {
+  3209			dev_err(&pdev->dev, "failed to deassert reset %d\n", ret);
+  3210			return ERR_PTR(ret);
+  3211		}
+  3212	
+  3213		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
+  3214		if (ret) {
+  3215			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
+  3216				ret);
+  3217			return ERR_PTR(ret);
+  3218		}
+  3219	
+  3220		p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
+  3221		if (!p)
+  3222			return ERR_PTR(-ENOMEM);
+  3223	
+  3224		/* Get the line number from the aliases node. */
+  3225		id = of_alias_get_id(np, "serial");
+  3226		if (id < 0 && ~sci_ports_in_use)
+  3227			id = ffz(sci_ports_in_use);
+  3228		if (id < 0) {
+  3229			dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
+  3230			return ERR_PTR(-EINVAL);
+  3231		}
+  3232		if (id >= ARRAY_SIZE(sci_ports)) {
+  3233			dev_err(&pdev->dev, "serial%d out of range\n", id);
+  3234			return ERR_PTR(-EINVAL);
+  3235		}
+  3236	
+  3237		sp = &sci_ports[id];
+  3238		*dev_id = id;
+  3239	
+  3240		p->type = SCI_OF_TYPE(data);
+  3241		p->regtype = SCI_OF_REGTYPE(data);
+  3242	
+  3243		sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
+  3244	
+  3245		return p;
+  3246	}
+  3247	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
