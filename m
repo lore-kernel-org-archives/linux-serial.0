@@ -2,286 +2,159 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84101C4167D
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 08:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5F3C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 09:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242485AbiBNIyh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:54:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51256 "EHLO
+        id S233505AbiBNJrE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:47:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232624AbiBNIyf (ORCPT
+        with ESMTP id S1343536AbiBNJqK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 03:54:35 -0500
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36695F8F7;
-        Mon, 14 Feb 2022 00:54:27 -0800 (PST)
-Received: by mail-ua1-f45.google.com with SMTP id d22so7786120uaw.2;
-        Mon, 14 Feb 2022 00:54:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PlmHX1HHokXQyxG79YUgUTlDvUDqxBtLYhszaegEBgU=;
-        b=h3i1Z8nzAqun82XBV2fD/ig2HLw+teGNCAASQWMQCFHDqI9t1uT19oEhh5zEZcIuU+
-         Bq3M8b9AmuTXFPT84yAOeBuUNlrysibURMR6OFHVHsD4WrkQnARv4DbIUAbb6fVafQYz
-         n172V7K6PZnDeeErnHT3ZVLSeODa4Uxr7vKqr+4Qh3IZkb1Lwq4hfOUAq6oanfaahh4c
-         ghhcMiriuy/5i9xtOyfs2wSI6J4suyWEIwgNarLHNyUsNJeti7MrmGpdUw77pFM2B3V0
-         /VJlWZc3rJUCup9upp+0A3Mec9VHJCM+6ibN/KD5zeMv88Z6ScxHA1wIuvLnRfmNFN+n
-         aU6A==
-X-Gm-Message-State: AOAM532F4oFYgfApr/7sdQbGuIoS9AFkHxff6rc6B32WlsyWg9I0qJIE
-        ufp0G3r2jjEdlorzDZU2+umJO9CvkAFUt1FE
-X-Google-Smtp-Source: ABdhPJxG80+yVkBa/7DTSNK/cqa8g80w345JgDTQHyE4Tngp2pMgRHKbDaroOYU2h5FNY9Fr2rotSQ==
-X-Received: by 2002:a05:6130:413:: with SMTP id ba19mr3797932uab.4.1644828866592;
-        Mon, 14 Feb 2022 00:54:26 -0800 (PST)
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
-        by smtp.gmail.com with ESMTPSA id q131sm2271072vkq.23.2022.02.14.00.54.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 00:54:26 -0800 (PST)
-Received: by mail-vk1-f177.google.com with SMTP id l14so8568053vko.12;
-        Mon, 14 Feb 2022 00:54:25 -0800 (PST)
-X-Received: by 2002:a05:6122:c8f:: with SMTP id ba15mr3731293vkb.39.1644828865522;
- Mon, 14 Feb 2022 00:54:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20220212201631.12648-1-s.shtylyov@omp.ru> <20220212201631.12648-2-s.shtylyov@omp.ru>
-In-Reply-To: <20220212201631.12648-2-s.shtylyov@omp.ru>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Feb 2022 09:54:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUPxX7Tja6BCjEb4KDobNFPMcM66Fk7Z+VsO7pgb8JnjA@mail.gmail.com>
-Message-ID: <CAMuHMdUPxX7Tja6BCjEb4KDobNFPMcM66Fk7Z+VsO7pgb8JnjA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional() optional
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
+        Mon, 14 Feb 2022 04:46:10 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C5E723E9;
+        Mon, 14 Feb 2022 01:39:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644831581; x=1676367581;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3/09I1n8tM0mZCHQ3uFQ3S+6UyEYzwV22RF7qUJV4DY=;
+  b=NzDA0CwAq4Tsfslfq+QZIVTBEWaQI7FWp9E4bnA35haslCFqCsPQDzRu
+   vDZrfK35TEBEwvioZLZ0wCcAbpbiIRUupnKUzdciYY5/VJsww/S7vXoxu
+   W60MBrebHG5yhMY1tk0TjQkLlYiv2TJJAyB0i+sRsHYbhiGG8PNvkHL1C
+   r4HQGBtWJo3mkXNkiO9KN5+vICSUk2lZ0mK/g9VUb8MbKYnht8WkEf2+Y
+   RYgchvbxfDL8ajyzGDHv4naZXhdr/Jhva+F93/3Ocs3STC/gPfop4aiEn
+   OgXHl79VkWuDxi5xY/Hdnc6AptBy7T7R7oxxXaWkJ5uz0jOC4QY+bhEhx
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="310790309"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="310790309"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:39:38 -0800
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="702986357"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:39:32 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nJXoa-004Obi-LW;
+        Mon, 14 Feb 2022 11:38:36 +0200
+Date:   Mon, 14 Feb 2022 11:38:36 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Zev Weiss <zev@bewilderbeest.net>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Corey Minyard <minyard@acm.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        openipmi-developer@lists.sourceforge.net,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-phy@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-serial@vger.kernel.org, kvm@vger.kernel.org,
-        alsa-devel@alsa-project.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Content-Type: text/plain; charset="UTF-8"
+        Konstantin Aladyshev <aladyshev22@gmail.com>,
+        Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port
+ type
+Message-ID: <YgojHCCeeNbSx+9K@smile.fi.intel.com>
+References: <20220211004203.14915-1-zev@bewilderbeest.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211004203.14915-1-zev@bewilderbeest.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Sergey,
+On Thu, Feb 10, 2022 at 04:42:03PM -0800, Zev Weiss wrote:
+> Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
+> set up register mapping") fixed a bug that had, as a side-effect,
+> prevented the 8250_aspeed_vuart driver from enabling the VUART's
+> FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
+> turn revealed what appears to be a hardware bug in the ASPEED VUART in
+> which the host-side THRE bit doesn't get if the BMC-side receive FIFO
+> trigger level is set to anything but one byte.  This causes problems
+> for polled-mode writes from the host -- for example, Linux kernel
+> console writes proceed at a glacial pace (less than 100 bytes per
+> second) because the write path waits for a 10ms timeout to expire
+> after every character instead of being able to continue on to the next
+> character upon seeing THRE asserted.  (GRUB behaves similarly.)
+> 
+> As a workaround, introduce a new port type for the ASPEED VUART that's
+> identical to PORT_16550A as it had previously been using, but with
+> UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
+> one byte, which (experimentally) seems to avoid the problematic THRE
+> behavior.
 
-On Sat, Feb 12, 2022 at 9:17 PM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
-> This patch is based on the former Andy Shevchenko's patch:
->
-> https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
->
-> Currently platform_get_irq_optional() returns an error code even if IRQ
-> resource simply has not been found.  It prevents the callers from being
-> error code agnostic in their error handling:
->
->         ret = platform_get_irq_optional(...);
->         if (ret < 0 && ret != -ENXIO)
->                 return ret; // respect deferred probe
->         if (ret > 0)
->                 ...we get an IRQ...
->
-> All other *_optional() APIs seem to return 0 or NULL in case an optional
-> resource is not available.  Let's follow this good example, so that the
-> callers would look like:
->
->         ret = platform_get_irq_optional(...);
->         if (ret < 0)
->                 return ret;
->         if (ret > 0)
->                 ...we get an IRQ...
->
-> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
+> Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
 > ---
-> Changes in version 2:
+> 
+> Changes since v1 [0]:
+>  - Added Fixes: tag
+>  - Shifted PORT_* constant down into an unused gap
+> 
+> [0] https://lore.kernel.org/all/20220209203414.23491-1-zev@bewilderbeest.net/
+> 
+>  drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
+>  drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
+>  include/uapi/linux/serial_core.h            | 3 +++
+>  3 files changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> index 2350fb3bb5e4..c2cecc6f47db 100644
+> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> @@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+>  	port.port.irq = irq_of_parse_and_map(np, 0);
+>  	port.port.handle_irq = aspeed_vuart_handle_irq;
+>  	port.port.iotype = UPIO_MEM;
+> -	port.port.type = PORT_16550A;
+> +	port.port.type = PORT_ASPEED_VUART;
+>  	port.port.uartclk = clk;
+>  	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+>  		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 3b12bfc1ed67..973870ebff69 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
+>  		.rxtrig_bytes	= {1, 32, 64, 112},
+>  		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
+>  	},
+> +	[PORT_ASPEED_VUART] = {
+> +		.name		= "ASPEED VUART",
+> +		.fifo_size	= 16,
+> +		.tx_loadsz	= 16,
+> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
+> +		.rxtrig_bytes	= {1, 4, 8, 14},
+> +		.flags		= UART_CAP_FIFO,
+> +	},
+>  };
+>  
+>  /* Uart divisor latch read */
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> index c4042dcfdc0c..8885e69178bd 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -68,6 +68,9 @@
+>  /* NVIDIA Tegra Combined UART */
+>  #define PORT_TEGRA_TCU	41
+>  
+> +/* ASPEED AST2x00 virtual UART */
+> +#define PORT_ASPEED_VUART	42
+> +
+>  /* Intel EG20 */
+>  #define PORT_PCH_8LINE	44
+>  #define PORT_PCH_2LINE	45
+> -- 
+> 2.35.1
+> 
 
-Thanks for the update!
+-- 
+With Best Regards,
+Andy Shevchenko
 
->  drivers/base/platform.c                  | 60 +++++++++++++++---------
 
-The core change LGTM.
-
-I'm only looking at Renesas drivers below...
-
-> --- a/drivers/mmc/host/sh_mmcif.c
-> +++ b/drivers/mmc/host/sh_mmcif.c
-> @@ -1465,14 +1465,14 @@ static int sh_mmcif_probe(struct platform_device *pdev)
->         sh_mmcif_sync_reset(host);
->         sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
->
-> -       name = irq[1] < 0 ? dev_name(dev) : "sh_mmc:error";
-> +       name = irq[1] <= 0 ? dev_name(dev) : "sh_mmc:error";
-
-"== 0" should be sufficient here, if the code above would bail out
-on errors returned by platform_get_irq_optional(), which it currently
-doesn't do.
-As this adds missing error handling, this is to be fixed by a separate
-patch later?
-
->         ret = devm_request_threaded_irq(dev, irq[0], sh_mmcif_intr,
->                                         sh_mmcif_irqt, 0, name, host);
->         if (ret) {
->                 dev_err(dev, "request_irq error (%s)\n", name);
->                 goto err_clk;
->         }
-> -       if (irq[1] >= 0) {
-> +       if (irq[1] > 0) {
-
-OK.
-
->                 ret = devm_request_threaded_irq(dev, irq[1],
->                                                 sh_mmcif_intr, sh_mmcif_irqt,
->                                                 0, "sh_mmc:int", host);
-
-> --- a/drivers/phy/renesas/phy-rcar-gen3-usb2.c
-> +++ b/drivers/phy/renesas/phy-rcar-gen3-usb2.c
-> @@ -439,7 +439,7 @@ static int rcar_gen3_phy_usb2_init(struct phy *p)
->         u32 val;
->         int ret;
->
-> -       if (!rcar_gen3_is_any_rphy_initialized(channel) && channel->irq >= 0) {
-> +       if (!rcar_gen3_is_any_rphy_initialized(channel) && channel->irq > 0) {
->                 INIT_WORK(&channel->work, rcar_gen3_phy_usb2_work);
->                 ret = request_irq(channel->irq, rcar_gen3_phy_usb2_irq,
->                                   IRQF_SHARED, dev_name(channel->dev), channel);
-> @@ -486,7 +486,7 @@ static int rcar_gen3_phy_usb2_exit(struct phy *p)
->                 val &= ~USB2_INT_ENABLE_UCOM_INTEN;
->         writel(val, usb2_base + USB2_INT_ENABLE);
->
-> -       if (channel->irq >= 0 && !rcar_gen3_is_any_rphy_initialized(channel))
-> +       if (channel->irq > 0 && !rcar_gen3_is_any_rphy_initialized(channel))
->                 free_irq(channel->irq, channel);
->
->         return 0;
-
-LGTM, but note that all errors returned by platform_get_irq_optional()
-are currently ignored, even real errors, which should be propagated
-up.
-As this adds missing error handling, this is to be fixed by a separate
-patch later?
-
-> --- a/drivers/thermal/rcar_gen3_thermal.c
-> +++ b/drivers/thermal/rcar_gen3_thermal.c
-> @@ -432,6 +432,8 @@ static int rcar_gen3_thermal_request_irqs(struct rcar_gen3_thermal_priv *priv,
->                 irq = platform_get_irq_optional(pdev, i);
->                 if (irq < 0)
->                         return irq;
-> +               if (!irq)
-> +                       return -ENXIO;
-
-While correct, and preserving existing behavior, this looks strange
-to me.  Probably this should return zero instead (i.e. the check
-above should be changed to "<= 0"), and the caller should start caring
-about and propagating up real errors.
-As this adds missing error handling, this is to be fixed by a separate
-patch later?
-
->
->                 irqname = devm_kasprintf(dev, GFP_KERNEL, "%s:ch%d",
->                                          dev_name(dev), i);
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> index fb65dc601b23..328ab074fd89 100644
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-
-I think you missed
-
-    #define SCIx_IRQ_IS_MUXED(port)                 \
-            ((port)->irqs[SCIx_ERI_IRQ] ==  \
-             (port)->irqs[SCIx_RXI_IRQ]) || \
-            ((port)->irqs[SCIx_ERI_IRQ] &&  \
-             ((port)->irqs[SCIx_RXI_IRQ] < 0))
-
-above? The last condition should become "<= 0".
-
-> @@ -1915,7 +1915,7 @@ static int sci_request_irq(struct sci_port *port)
->                          * Certain port types won't support all of the
->                          * available interrupt sources.
->                          */
-> -                       if (unlikely(irq < 0))
-> +                       if (unlikely(irq <= 0))
->                                 continue;
->                 }
->
-> @@ -1963,7 +1963,7 @@ static void sci_free_irq(struct sci_port *port)
->                  * Certain port types won't support all of the available
->                  * interrupt sources.
->                  */
-> -               if (unlikely(irq < 0))
-> +               if (unlikely(irq <= 0))
->                         continue;
->
->                 /* Check if already freed (irq was muxed) */
-> @@ -2875,7 +2875,7 @@ static int sci_init_single(struct platform_device *dev,
->         if (sci_port->irqs[0] < 0)
->                 return -ENXIO;
->
-> -       if (sci_port->irqs[1] < 0)
-> +       if (sci_port->irqs[1] <= 0)
->                 for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
->                         sci_port->irqs[i] = sci_port->irqs[0];
->
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
