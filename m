@@ -2,86 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835E3C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 13 Feb 2022 22:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C16C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 00:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238695AbiBMWeM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 13 Feb 2022 17:34:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52514 "EHLO
+        id S238839AbiBNAPn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 13 Feb 2022 19:15:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238693AbiBMWeJ (ORCPT
+        with ESMTP id S230195AbiBNAPm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 13 Feb 2022 17:34:09 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D54A54BE0;
-        Sun, 13 Feb 2022 14:33:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644791634;
-        bh=qLYG3ShC2H3ubPzsSwJCdlMrSsl/GQcb1NMteyXFxUQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=A4tA82OppBmIjt8/B6k4xEFGXfP9PH82xsLuWBrRi0yxA6c+IDNGtwsu/oymvy2kb
-         eggeK0lbLBZRmRCLJL1+fLAxmogiNEtbNQ3M011n4zwE/rkIoMmjynjvqFW4WmGLI1
-         SafSW2vu3AdeTvYCNwCXfG+mCRMZ5cy5FM9CdKgU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MHGCu-1nWcsj2aye-00DExV; Sun, 13
- Feb 2022 23:28:09 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 6/9] serial: max310: remove redundant code in rs485_config
-Date:   Sun, 13 Feb 2022 23:27:34 +0100
-Message-Id: <20220213222737.15709-7-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
-References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+        Sun, 13 Feb 2022 19:15:42 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8354251E6B;
+        Sun, 13 Feb 2022 16:15:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=Z0izQ77ae4vChC3LwyWqgLvukFSg3zMmsdvzhzmiFoA=; b=G4PjChidQJRQi2NVbEZyyeTMh0
+        X3UnnyyM3mGdXXgMo0LWl183MPMT8g3EXPa3KE0DjsPHnONFIk222ugmAT5hhJDMvFz8UICd6/ZDx
+        iqv0fCaOtwmv7OM4QCJ+Nxg+mBTEtuYgxHzuLl6im3XTnRr8LfuVEASoC7gSty9nGAlSyUgnfcBqv
+        VCQsfW6XkWeUqKEtOWVULZ3ofuIbx2tQ4WoQKEGa06pbwQBg5uoGB8t3rWQ6zX6GPRxXuhWobPNaU
+        lqs+zlhZL9P+P+hpMmwyPjmD8WO0JsFOjY++AHcqKPu6E5Ux0aDg2ZiwkXS7DJwwWT5j64DiASMin
+        A+ji6evw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJP1g-00CNcF-C5; Mon, 14 Feb 2022 00:15:32 +0000
+Message-ID: <0ffc9f5f-546a-a797-01bf-d62953e6d26c@infradead.org>
+Date:   Sun, 13 Feb 2022 16:15:27 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:pNx+oEQyE87SI8SUhuYE/49GQx6eFVSP9sCHmwT/ditRcv0ylZN
- rkC/z0D7Q2MUrIrRUkpVmA71yNbDTddrfPtrt8KCP/4yOZ2GPb61Nh3ULguiKqL0WQstrUN
- QGKtvqxZref4S6azX7N1AacR+IVk1yMV8IHdwiZZEUXR+W4Bo/HkFSxPoooN5TYo9XQpjMZ
- K15CBILg6Irsn1kmnCbgg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KFVBimZyooQ=:g3yHkv5cYs/FUFqcfKZs9z
- Y2pq5lZjKOPHeUVnvVOrp7UzHqauIgGU7WkACWjIK4T8qR56umvUiZlccERTv1k2vNeSLxdX/
- TwA3p9aA/vIOBYe5ThqRFsQfYRLvhgnjSVQzS6u/RkKlrps4E2pSejrk10GdfADWqGeK10H7t
- +K4lkkGJX++AyPaL4/QQasQFUUJi+ZbYBOIoVDtmIyjhjGiQ93TK8P34L/BQDA12umb3YK1fM
- nqbMwgeTmxb9MNObQ9miQjCXbr/8svARONA17eiK8Lbht+8R05lzzUKMdJub0/8QnKhw7qDfu
- CYwx2vW9kg3UFs+TPcQ34Nx5m0Wwe5ck+T3YwdIH/GvooJ5wNW2+coeCNAvvpbYHCz8AYPBNR
- offq2ubqRZ/ZMvJxOxbRbnf9nM5sn50HYj16dbQvwu696yGaM2r2hHUXjlEODdk9xQYVvZIZY
- cmTeTU/dg7/h+8JwVlZa/3bSMJl67gcjK5i70kqxO4tiphTEz7tXLDM2s48P1WATNJaJjkDNs
- 8N6Taq0UhJC6w2BieAft9CuEwvlJGu6lDbiprc8c1mAmZ6Df4nNlF+M6LAcAUjmeBdkgcpHwi
- /QRBdMrnk3l+PPlzonwSpZI4hLtVgcEIPJcsFHVHpJ9DgI12d/TLqVd96zd6jG5La721fnpv7
- DMWMobnWqVOmjKpOgGA6EEzadU4IKD8cOr6TD770H15C5ZIyXeO3N+nLZKrQMjxeHhnF5n47e
- FhpJI5rXqr+C2QtPbLVTTNIHYiqyj8IO5XE340lw+5RoKBrhPKuAMbgD+Am9SCmB8nY5KnMYA
- umV4MCeNhrHXyqIZGj6zg5ygckJyL/N/QTNkZTIjK9tnu4o7eLa7MmftSpvp3xlZL77Wnltnd
- zuD4rIOZunWSPHJtYWpzw+JoLDAzXMwaT9tRdAr/p76ZS1xg9myQzVRXtE6goJJgvbyBcsxr4
- /1jj/uw+hlDZXXoglf87akB8Lzo9KdNIKPWa5MBVUz44DwqXT86iAnJoUpccAU2JmgXg+UTUK
- oBr1iBcqofPTLF3NDQilGRN7hBcWLyeFUgNfxY9iP0xfN37jM8OFXf5oJcSiUMfu7xOddXAVW
- UnK0ShGsRhg6VU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] serial: parisc: GSC: fix build when PCI_LBA is not set
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        linux-parisc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+References: <20220213193903.8815-1-rdunlap@infradead.org>
+ <0baabcbc-196e-08fa-e2db-b7e925993cc1@gmx.de>
+ <55c73cb4-21ae-7307-7b14-a19cf270f4d6@infradead.org>
+ <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <1e43c3b9-c5b7-de77-dd28-981d60a4d97d@gmx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-V2hlbiBSUzQ4NSBpcyBjb25maWd1cmVkIGJ5IHVzZXJzcGFjZSB0aGUgc2VyaWFsIGNvcmUgYWxy
-ZWFkeSBudWxsaWZpZXMgdGhlCnBhZGRpbmcgZmllbGQgb2YgdGhlIHJldHVybmVkIGNvbmZpZ3Vy
-YXRpb24gc3RydWN0LiBEb2luZyB0aGUgc2FtZSBpbiB0aGUKZHJpdmVycyByczQ4NV9jb25maWcg
-ZnVuY3Rpb24gaXMgcmVkdW5kYW50LCBzbyByZW1vdmUgdGhlIGNvbmNlcm5pbmcKY29kZSBpbiB0
-aGlzIGZ1bmN0aW9uLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmls
-aXBwb0BnbXguZGU+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL21heDMxMHguYyB8IDEgLQogMSBm
-aWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
-YWwvbWF4MzEweC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL21heDMxMHguYwppbmRleCBkZGUwODI0
-YjJmYTUuLjJlY2M1ZjY2ZGVhZiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL21heDMx
-MHguYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWF4MzEweC5jCkBAIC0xMDM3LDcgKzEwMzcs
-NiBAQCBzdGF0aWMgaW50IG1heDMxMHhfcnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0X3BvcnQgKnBv
-cnQsCiAKIAlyczQ4NS0+ZmxhZ3MgJj0gU0VSX1JTNDg1X1JUU19PTl9TRU5EIHwgU0VSX1JTNDg1
-X1JYX0RVUklOR19UWCB8CiAJCQlTRVJfUlM0ODVfRU5BQkxFRDsKLQltZW1zZXQocnM0ODUtPnBh
-ZGRpbmcsIDAsIHNpemVvZihyczQ4NS0+cGFkZGluZykpOwogCXBvcnQtPnJzNDg1ID0gKnJzNDg1
-OwogCiAJc2NoZWR1bGVfd29yaygmb25lLT5yc193b3JrKTsKLS0gCjIuMzQuMQoK
+Hi,
+
+On 2/13/22 14:15, Helge Deller wrote:
+> On 2/13/22 22:07, Randy Dunlap wrote:
+>>
+>>
+>> On 2/13/22 12:35, Helge Deller wrote:
+>>> Hi Randy,
+>>>
+>>> On 2/13/22 20:39, Randy Dunlap wrote:
+>>>> There is a build error when using a kernel .config file from
+>>>> 'kernel test robot' for a different build problem:
+>>>>
+>>>> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+>>>> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
+>>>>
+>>>> when:
+>>>>   CONFIG_GSC=y
+>>>>   CONFIG_SERIO_GSCPS2=y
+>>>>   CONFIG_SERIAL_8250_GSC=y
+>>>>   CONFIG_PCI is not set
+>>>>     and hence PCI_LBA is not set.
+>>>>   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
+>>>>
+>>>> Making SERIAL_8250_GSC depend on PCI_LBA prevents the build error.
+>>>
+>>> It maybe makes the build error go away, but ...
+>>>
+>>>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+>>>> Cc: Helge Deller <deller@gmx.de>
+>>>> Cc: linux-parisc@vger.kernel.org
+>>>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>> Cc: linux-serial@vger.kernel.org
+>>>> Cc: Jiri Slaby <jirislaby@kernel.org>
+>>>> Cc: Johan Hovold <johan@kernel.org>
+>>>> ---
+>>>>  drivers/tty/serial/8250/Kconfig |    2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> --- linux-next-20220211.orig/drivers/tty/serial/8250/Kconfig
+>>>> +++ linux-next-20220211/drivers/tty/serial/8250/Kconfig
+>>>> @@ -118,7 +118,7 @@ config SERIAL_8250_CONSOLE
+>>>>
+>>>>  config SERIAL_8250_GSC
+>>>>  	tristate
+>>>> -	depends on SERIAL_8250 && GSC
+>>>> +	depends on SERIAL_8250 && GSC && PCI_LBA
+>>>>  	default SERIAL_8250
+>>>
+>>> The serial device is on the GSC bus, so if you make it
+>>> dependend on the PCI bus it will not be useable on machines
+>>> which only have a GSC bus...
+>>>
+>>> We need another patch.
+>>> Do you have a link to the build error?
+>>
+>>
+>> No, it's from the other build error that you just replied to,
+>> where the incorrect compiler was used.
+>>
+>> I'll recheck it and reconsider what to do, if anything.
+> 
+> Ok, thank you!
+
+I dunno what to do. This:
+
+#ifdef CONFIG_64BIT
+	if (!dev->irq && (dev->id.sversion == 0xad))
+		dev->irq = iosapic_serial_irq(dev);
+#endif
+
+makes it look like 64BIT requires IOSAPIC (hence PCI_LBA).
+
+
+> By the way, I just sent another patch (and added it to the parisc for-next tree)
+> which should at least give a better error message if someone uses the wrong compiler:
+> https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git/commit/?h=for-next&id=b160628e9ebcdc85d0db9d7f423c26b3c7c179d0
+
+Yes, I applied that, but that's not the problem here.
+It is a 64BIT config and parisc64 compiler.
+
+-- 
+~Randy
