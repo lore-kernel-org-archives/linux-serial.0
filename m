@@ -2,131 +2,177 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3BDC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 15:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE98FC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 16:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355992AbiBNPx3 (ORCPT
+        id S1356261AbiBNQT0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:53:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44486 "EHLO
+        Mon, 14 Feb 2022 11:19:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355985AbiBNPx3 (ORCPT
+        with ESMTP id S235279AbiBNQTZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:53:29 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC74C49261;
-        Mon, 14 Feb 2022 07:53:20 -0800 (PST)
-Received: from relay1-d.mail.gandi.net (unknown [217.70.183.193])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 7FC07CEE4A;
-        Mon, 14 Feb 2022 15:46:31 +0000 (UTC)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F3629240006;
-        Mon, 14 Feb 2022 15:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644853586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6ywu1zL9TscboOTL+KoPo7dZ6f2fEaqerWdTVr9qxik=;
-        b=A4CnLIzQ5f3D5+0+ZyuCP8fGLUGNr3eCLcIRf21jidFewb//SlR/zb7Lyd0/MOE8NLVvVa
-        sTDqJpZchwZd8AC4M1eDjlR6E+X1I3Ie61VNE7VW9RZ5MlcWLIVVen8yJ0zQfddAxaWfLK
-        iuymkZZEOra8qtl/QUyEza2pc6mlD4S/GXvcQSDlyL2BrswAzLeo5z7S8Tblj26PDs7rkI
-        LWtXjgHLPPM10VL5MzpMBm3JZXErjsRlw5JylQQn3HMir4dQNXgjzXd1nd9pVP4W7jxeor
-        kw2AG71XY9qOvX9sMqZub7Vgo8zNVBxEz0yWWA/XseLaufRAmKk6r6fkOv/krA==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>
-Subject: Re: [PATCH v8 5/6] arm64: dts: marvell: armada-37xx: add device
- node for UART clock and use it
-In-Reply-To: <20220211191238.2142-6-kabel@kernel.org>
-References: <20220211191238.2142-1-kabel@kernel.org>
- <20220211191238.2142-6-kabel@kernel.org>
-Date:   Mon, 14 Feb 2022 16:46:25 +0100
-Message-ID: <87leydjvse.fsf@BL-laptop>
+        Mon, 14 Feb 2022 11:19:25 -0500
+X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 08:19:16 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC9142EE7;
+        Mon, 14 Feb 2022 08:19:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644855555;
+        bh=uSiLH41ols2or+PlxwtXv6HH6qStx8ca3yFi6b4NLDA=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=ZC7ys4YhFML+XPJP4mpPLukOKwb3QxulUMHO1uX8Hq+HpNupjBq/FCaMNZWCyzOrC
+         j4XAOTnkQ82dP5VK3x9FkaVwl9jvII4DfttWmiXFtUL3EXEeKXVKBdSWBH71mgYOo8
+         29J1VuwkZ/58p81/nn9SE5mDcQhIMg3Fxj+h3Vas=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.70] ([149.172.237.68]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4hzZ-1oK5ig2JyZ-011et8; Mon, 14
+ Feb 2022 17:13:21 +0100
+Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+To:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+ <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+ <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <9791fb9a-0c27-bfeb-5ff8-fb70f1968048@gmx.de>
+Date:   Mon, 14 Feb 2022 17:13:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
 Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:YBdfvrtYI85+zaH+ORjAj6/z8NhLNObYZSKxNdCEkYmHpFKgUBz
+ cvg3dOdbbi7AbkXhFtpSGhjhlkoJcur1g466o350MRispTjbtggc/xvrNm0IEnPKTmC4Fkg
+ ROY/D/pVATsNvg4nEopPdn+DX0L1U4hzKUnMq65l9KuxdLJPNytzgJQ4VZ54vUVWFPmvQlR
+ C3w+lEE3o7q8OAa4qDaLQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pSOpZ7x17Fc=:woJNeKPRbcarBQfg1Sp6p7
+ EZIgFKw/ObO5hG40inIuLkbDrW1Cy7/VwTqs4SL8vVgokDaexgmTkVpPcpfkMVgEGXaC+131K
+ 4MOJ40qg77xhl/2+g7sROXl0Gpev4OgRHgi8d8TOCHryUcg0C+xeH3jJUQ4rsAMO43iFAwH8F
+ 75Toj4COP0vB9E19Bwik9eh0ykb+6Kf4ASJttjlHCAXoe0XfAdyyBSunQKrlCAglRtZe9HzUK
+ oi1hvv9ayePRgRydJopIP6VlkO4I548O+ARH7wjVq1nTcLYa/y6XJaepY4Xa785OyxBEeK97Q
+ r4HO7QJ0NVzeQmMR/TaaMX5d+1SBy3p7iXyk+fGvAALLUQIEwGDmjC80me3wmv25Y09Thsd+P
+ r3TDp5YYU5zxoH0fDwewDIB0NN00k/daykXSa5lZEryBsk7L2KFj6LavAYexzwxTtkfWzNJJk
+ FbWUzMRTW1utAZqfn79VzUjdHp8CyChiPxrEvTxxkBaAXqgn5bWjXGSLe79ZnvHjtbdi/INY1
+ rFGKejQMMz7kUqwAYqTf2ZqwAyvKR8csmuMT7fcvk1NAvx7bFgXd6MQUIBrrumCAGpmMyfmvU
+ aZz2Ly5EU7gSzjXoeKvKZEuqiTKRH63DGcBKlFEUIk3RaRoeW6oi6byeqAHBmR+iXwBcHbKu6
+ a/G9Hv63wvfuUBBDVJCwWQztHY7+uOg+KlLHzLqKfqoDXAVZfyuvWOJKiuAS+redDyvtLbQGB
+ V2eXimZUERoDCGoFgvy2jkR0q2k2wg82foqSOhBQTbMvJVf4eMnPCSTTaO/c5b+HzflTN8VlF
+ 24OW7D3XS9fDozKPj5Z3MYrX3GKAkiDzuEbp2vbXBndwDASH3mm0UVetIVI+g/39rI+UwN9YM
+ GWJbDrnRsL3NKXXssaoqD8JtDdPk3F/jMtg8Naw8KEnJBfPmuHkZjIoptMzEymDsDpWZGZljI
+ er4IGuIcrlknVgq173Hrr1C+2dX5woLtmBq7AXP3JnUfZs3Qowf4HQAWUPPEAkV/rJ7fTMs52
+ br0Rg8YOY1vLM1kQ58Gt+ffgs02crf7kRhTh2xwNgKGy3tnH4D2fPtXZsKNMQGm4LrkbAVBoH
+ wngwmUzMkytIXs=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Marek and Pali,
 
-> From: Pali Roh=C3=A1r <pali@kernel.org>
+Hi,
+
+On 14.02.22 at 06:41, Jiri Slaby wrote:
+> On 13. 02. 22, 23:27, Lino Sanfilippo wrote:
+>> Several drivers that support setting the RS485 configuration via usersp=
+ace
+>> implement on or more of the following tasks:
+>>
+>> - in case of an invalid RTS configuration (both RTS after send and RTS =
+on
+>> =C2=A0=C2=A0 send set or both unset) fall back to enable RTS on send an=
+d disable RTS
+>> =C2=A0=C2=A0 after send
+>>
+>> - nullify the padding field of the returned serial_rs485 struct
+>>
+>> - copy the configuration into the uart port struct
+>>
+>> - limit RTS delays to 100 ms
+>>
+>> Move these tasks into the serial core to make them generic and to provi=
+de
+>> a consistent beheviour among all drivers.
+>>
+>> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+>> ---
+>> =C2=A0 drivers/tty/serial/serial_core.c | 13 +++++++++++++
+>> =C2=A0 1 file changed, 13 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+>> index 846192a7b4bf..3fab4070359c 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1282,8 +1282,21 @@ static int uart_set_rs485_config(struct uart_por=
+t *port,
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (copy_from_user(&rs485, rs485_user, s=
+izeof(*rs485_user)))
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT;
+>> =C2=A0 +=C2=A0=C2=A0=C2=A0 /* pick sane settings if the user hasn't */
+>> +=C2=A0=C2=A0=C2=A0 if (!(rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !(rs485.flags & SER_RS485_R=
+TS_AFTER_SEND)) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags |=3D SER_RS485_=
+RTS_ON_SEND;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags &=3D ~SER_RS485=
+_RTS_AFTER_SEND;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +=C2=A0=C2=A0=C2=A0 /* clamp the delays to [0, 100ms] */
+>> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_before_send =3D min(rs485.delay_rts=
+_before_send, 100U);
+>> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_after_send =3D min(rs485.delay_rts_=
+after_send, 100U);
 >
-> Define DT node for UART clock "marvell,armada-3700-uart-clock" and use
-> this UART clock as a base clock for all UART devices.
+> Why is this magic 100?
+
+The only drivers that seem to care about a max value for the RTS delays us=
+e 100 ms
+(omap-serial, amba pl011, 8250) so I chose this to stay compatible with th=
+e current
+driver implementations. 100 ms also seems large enough to be used as a gen=
+eral max value.
+
+> Can we have that number somehow documented? You should define a macro fo=
+r that anyway.
+
+Ok, I will do so.
+
 >
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-
-However for keeping bisectability we have to ensure that this patch will
-be applied after the drivers changes.
-
-Thanks,
-
-Gregory
-
-
-> ---
-> Changes since v7:
-> - changed commit message ("This change defines" -> "Define")
-> - added Marek's Reviewed-by tag
-> ---
->  arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
+>> +=C2=A0=C2=A0=C2=A0 memset(rs485.padding, 0, sizeof(rs485.padding));
 >
-> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/bo=
-ot/dts/marvell/armada-37xx.dtsi
-> index 673f4906eef9..4cf6c8aa0ac2 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> @@ -132,10 +132,20 @@ avs: avs@11500 {
->  				reg =3D <0x11500 0x40>;
->  			};
->=20=20
-> +			uartclk: clock-controller@12010 {
-> +				compatible =3D "marvell,armada-3700-uart-clock";
-> +				reg =3D <0x12010 0x4>, <0x12210 0x4>;
-> +				clocks =3D <&tbg 0>, <&tbg 1>, <&tbg 2>,
-> +					 <&tbg 3>, <&xtalclk>;
-> +				clock-names =3D "TBG-A-P", "TBG-B-P", "TBG-A-S",
-> +					      "TBG-B-S", "xtal";
-> +				#clock-cells =3D <1>;
-> +			};
-> +
->  			uart0: serial@12000 {
->  				compatible =3D "marvell,armada-3700-uart";
->  				reg =3D <0x12000 0x18>;
-> -				clocks =3D <&xtalclk>;
-> +				clocks =3D <&uartclk 0>;
->  				interrupts =3D
->  				<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
->  				<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-> @@ -147,7 +157,7 @@ uart0: serial@12000 {
->  			uart1: serial@12200 {
->  				compatible =3D "marvell,armada-3700-uart-ext";
->  				reg =3D <0x12200 0x30>;
-> -				clocks =3D <&xtalclk>;
-> +				clocks =3D <&uartclk 1>;
->  				interrupts =3D
->  				<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
->  				<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
-> --=20
-> 2.34.1
->
+> What is this memset good for?
 
---=20
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+Drivers like max310x, amba-pl011, 8250_pci, 8250_fintek, 8250_lpc18xx seem=
+ to care about
+returning a serial_rs485 struct with cleared padding field to userspace. S=
+o they all clear
+that field on their own. Although not really necessary, to me this seems t=
+o be a good
+default behavior, so I added it to the serial core.
+
+>
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock_irqsave(&port->lock, flags);
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, &rs485)=
+;
+>> +=C2=A0=C2=A0=C2=A0 if (!ret)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 port->rs485 =3D rs485;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irqrestore(&port->lock, flag=
+s);
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>
+> thanks,
+
+Thanks for the review!
+
+Regards,
+Lino
