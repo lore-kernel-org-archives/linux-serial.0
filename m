@@ -2,89 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A12C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 09:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A645C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 10:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiBOJz5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 04:55:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57686 "EHLO
+        id S235480AbiBOKJZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:09:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236128AbiBOJz4 (ORCPT
+        with ESMTP id S233726AbiBOKJZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 04:55:56 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82ED10DA46;
-        Tue, 15 Feb 2022 01:55:46 -0800 (PST)
+        Tue, 15 Feb 2022 05:09:25 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782E17E5B5;
+        Tue, 15 Feb 2022 02:09:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644918946; x=1676454946;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LBjk0RGRItnnfUS2rGh0O1oLABxwlG/YheagFyaRlhk=;
-  b=VD6QoH7/mtUFCYbEcayDLNLHSEK/YekLWGzfvhTI4sAOl+ZOi4j9GX7T
-   3xytuR3KGXfYYPumIP/XwuP0jxxZ8EhG6mcLyKgyfkogH/Oxg2iRzYWPj
-   U0PBqoxKAtw8w4EF8U9W0lzjRxRpx1qYzC/Sr14yEb8UWamLgyI8KRJsd
-   QQ8mbkiSfTzTradBZi8CUg4BTJQEFNQWpHiIH+H+KCmQg4SLRZTle8n6C
-   4UUwDQP9zMg1J+2ZIuINEAuvAY7kmEtL3K03BtOrevv3FO3xGVTewGo1C
-   HDRen+nPmdxjSlQWhEwPbuEqtHjeQrNMKiwgVkBeDxAPA08rwq4TrHOxM
+  t=1644919755; x=1676455755;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iKSugSTzhAgmnrUb+huONBw4qYKiV+qWTA06Wj19HFo=;
+  b=gRa4EmscDVw/l4rC6ntbMAr+O9UMdTStzOFyYhVK62pVdLQkZVy+k75J
+   OabLuV8JDgnxCQR+vPOZL1OPyeyma6UmbNui3mFfgt55b1TZt746kqxRS
+   OOK00CBwlWwB8OmIUPrSbB5nUO35zNLf4FqyybKHLOxy5f1jGXbobxWHQ
+   8XCQRXQqfEhbKAnR0pf1GfzaZ4SGscdqWXO9u9FZoDL4r6VFqkVcL6O3u
+   L0RPGn/KaurQrE0lbue1/YB1JTj5VC3Flxgv+jAnDY1hJ+5SjRopnEYuK
+   cfi+d15tsaaGMiUFgdk3hJUD+8BfLrsiBWNnRCHF/COvCOh2nNxfpWJpz
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="249147387"
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="237721627"
 X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="249147387"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:55:46 -0800
+   d="scan'208";a="237721627"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 02:09:15 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="544222329"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 01:55:44 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJuXp-004s9E-Rz;
-        Tue, 15 Feb 2022 11:54:49 +0200
-Date:   Tue, 15 Feb 2022 11:54:49 +0200
+   d="scan'208";a="587602451"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Feb 2022 02:09:13 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DA42315B; Tue, 15 Feb 2022 12:09:28 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Qing Wang <wangqing@vivo.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: 8250: add missing pci_dev_put() before
- return
-Message-ID: <Ygt4aUMVKM8ZcW/5@smile.fi.intel.com>
-References: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
- <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
- <621e2079-567c-6954-9744-c51748dd48dd@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Qing Wang <wangqing@vivo.com>
+Subject: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI DMA device
+Date:   Tue, 15 Feb 2022 12:09:20 +0200
+Message-Id: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <621e2079-567c-6954-9744-c51748dd48dd@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 07:02:57AM +0100, Jiri Slaby wrote:
-> On 15. 02. 22, 6:55, Jiri Slaby wrote:
-> > On 15. 02. 22, 3:00, Qing Wang wrote:
-> > > From: Wang Qing <wangqing@vivo.com>
-> > > 
-> > > pci_get_slot() increases its reference count, the caller must
-> > > decrement the reference count by calling pci_dev_put()
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-Wang, thank you for the report!
+Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
+Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
+Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-...
-
-> > What about the "return -ENODEV" few lines above?
-> 
-> On the top of that, the code stores the pointer to the dev:
-> param->dma_dev = &dma_dev->dev;
-> 
-> So we should likely put the device in ->exit(), not ->setup().
-
-I think I may fix all these and send a new version.
-
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index efa0515139f8..e6c1791609dd 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void pnw_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int tng_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void tng_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int dnv_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pdev, mid);
+ 	return 0;
++
+ err:
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ 	return ret;
+ }
+ 
+@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(mid->line);
+ 
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
++	.exit = pnw_exit,
+ };
+ 
+ static const struct mid8250_board tng_board = {
+@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
++	.exit = tng_exit,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
