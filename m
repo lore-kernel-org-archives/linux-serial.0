@@ -2,146 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317CEC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 10:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEE8C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 10:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236325AbiBOKLy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:11:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45744 "EHLO
+        id S236051AbiBOK27 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 05:28:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236313AbiBOKLx (ORCPT
+        with ESMTP id S235573AbiBOK26 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:11:53 -0500
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5656E4D8;
-        Tue, 15 Feb 2022 02:11:44 -0800 (PST)
-Received: by mail-ed1-f53.google.com with SMTP id w2so12536171edc.8;
-        Tue, 15 Feb 2022 02:11:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cKQXKyaFZ5kuu1GMgfND0ggs03Lr5z/PMoX+zi4JYlY=;
-        b=Sj6m85QT+HhlgReHDvDFautuFXtTgD+6aIudyP9znIR++OWXqWOr8smRBlmoeWvu5t
-         WCtaXD3aS73hAMm9kScBszddE06tNTG+tlCVIVlMnzqsTMgZkQahRv8pLB1v5vO7sQXV
-         //SQsh1gmhf/AnDvWCsSq5uJtkfv8xVLy69gVN0lepQ9w4EUbDN8LAWJV8PaKoczoF5a
-         W5c1TLSjMCFlg4B9YnngsXiL3AdVkGIHWmN2n/6K+uZne8V0IaE4rfG71Aervz15u0aD
-         e+Nex0z1Ol0pJ4V+zDzMG1EB8bw0NjzuFJnQkbtvfIJtXSwmNTqWSLDP82bGjMlozZNa
-         DEhA==
-X-Gm-Message-State: AOAM533OUWGmscx/4tz2a/VXON+uFsFvBgXMEwJtL3Zmz133jp9VTRH+
-        rnVmYB11uHWyjmO3MjiStdM=
-X-Google-Smtp-Source: ABdhPJwO1Rq3s9uIHAB2p/5amRbesGSASP5c0ln4yMfqEjLyiYGzsLu5YWIKTDrLZ2b3KRwJ00/LxA==
-X-Received: by 2002:a50:d5cd:: with SMTP id g13mr3098975edj.268.1644919902724;
-        Tue, 15 Feb 2022 02:11:42 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id y16sm8747049ejd.72.2022.02.15.02.11.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Feb 2022 02:11:42 -0800 (PST)
-Message-ID: <db576c63-73e2-b5f8-bc8b-057bdab2264d@kernel.org>
-Date:   Tue, 15 Feb 2022 11:11:41 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI
- DMA device
-Content-Language: en-US
+        Tue, 15 Feb 2022 05:28:58 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112702B182;
+        Tue, 15 Feb 2022 02:28:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644920929; x=1676456929;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=85wKYWEI0PZAYipWC8gNEf3x2a/vJuUB3PU/diIazfo=;
+  b=IwbAHPWrCD2xc+uq0/CrmSn7Co2J1fP5F+kraVI4/8T3t1S95CwutuXO
+   NLTwfMcq6DA7y8uI9575b4sAB+lAXNWSoohoC+SnUkpCZM9/zmWK/Uvv5
+   h26iSJL9NSut4Oa8EQt/5qMBAZUxIkOd11kzsPx+iXVXOb/w7bcqBsYi+
+   56g5UKeLrnrob2d36763iBTjZIFPpdeRwmRVmYdqvi9XWCqnjpR56AWM0
+   B7pdjB+85hG0bFzR5C6sXMhsaDKMeG3wxwYwcFC3EBsjx1uMjCKnKTz9b
+   U5br87nx0Iu+FtUjUrO3LVJVFNjWtvr+W5sG8pE1w21Na6UUJ2iiBcujh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230285315"
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="230285315"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 02:28:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
+   d="scan'208";a="773468790"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 15 Feb 2022 02:28:47 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id D7FF715B; Tue, 15 Feb 2022 12:29:02 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Qing Wang <wangqing@vivo.com>
-References: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Qing Wang <wangqing@vivo.com>
+Subject: [PATCH v1 1/1] serial: 8250_lpss: Balance reference count for PCI DMA device
+Date:   Tue, 15 Feb 2022 12:28:59 +0200
+Message-Id: <20220215102859.69123-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 15. 02. 22, 11:09, Andy Shevchenko wrote:
-> The pci_get_slot() increases its reference count, the caller
-> must decrement the reference count by calling pci_dev_put().
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-And what about the -EINVAL case?
+Fixes: 9a1870ce812e ("serial: 8250: don't use slave_id of dma_slave_config")
+Depends-on: a13e19cf3dc1 ("serial: 8250_lpss: split LPSS driver to separate module")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-> Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-> Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-> Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-> Reported-by: Qing Wang <wangqing@vivo.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->   drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
->   1 file changed, 15 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-> index efa0515139f8..e6c1791609dd 100644
-> --- a/drivers/tty/serial/8250/8250_mid.c
-> +++ b/drivers/tty/serial/8250/8250_mid.c
-> @@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
->   	return 0;
->   }
->   
-> +static void pnw_exit(struct mid8250 *mid)
-> +{
-> +	pci_dev_put(mid->dma_dev);
-> +}
-> +
->   static int tng_handle_irq(struct uart_port *p)
->   {
->   	struct mid8250 *mid = p->private_data;
-> @@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
->   	return 0;
->   }
->   
-> +static void tng_exit(struct mid8250 *mid)
-> +{
-> +	pci_dev_put(mid->dma_dev);
-> +}
-> +
->   static int dnv_handle_irq(struct uart_port *p)
->   {
->   	struct mid8250 *mid = p->private_data;
-> @@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   
->   	pci_set_drvdata(pdev, mid);
->   	return 0;
-> +
->   err:
-> -	if (mid->board->exit)
-> -		mid->board->exit(mid);
-> +	mid->board->exit(mid);
->   	return ret;
->   }
->   
-> @@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
->   
->   	serial8250_unregister_port(mid->line);
->   
-> -	if (mid->board->exit)
-> -		mid->board->exit(mid);
-> +	mid->board->exit(mid);
->   }
->   
->   static const struct mid8250_board pnw_board = {
-> @@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
->   	.freq = 50000000,
->   	.base_baud = 115200,
->   	.setup = pnw_setup,
-> +	.exit = pnw_exit,
->   };
->   
->   static const struct mid8250_board tng_board = {
-> @@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
->   	.freq = 38400000,
->   	.base_baud = 1843200,
->   	.setup = tng_setup,
-> +	.exit = tng_exit,
->   };
->   
->   static const struct mid8250_board dnv_board = {
-
-
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index d3bafec7619d..96a4dc709bce 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -152,6 +152,14 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static void byt_serial_exit(struct lpss8250 *lpss)
++{
++	struct dw_dma_slave *param = &lpss->dma_param;
++
++	/* Paired with pci_get_slot() in the byt_serial_setup() above */
++	put_device(param->dma_dev);
++}
++
+ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct uart_8250_dma *dma = &lpss->data.dma;
+@@ -170,6 +178,10 @@ static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
+ 
++static void ehl_serial_exit(struct lpss8250 *lpss)
++{
++}
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.nr_channels = 2,
+@@ -344,8 +356,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return 0;
+ 
+ err_exit:
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ 	return ret;
+ }
+@@ -356,8 +367,7 @@ static void lpss8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(lpss->data.line);
+ 
+-	if (lpss->board->exit)
+-		lpss->board->exit(lpss);
++	lpss->board->exit(lpss);
+ 	pci_free_irq_vectors(pdev);
+ }
+ 
+@@ -365,12 +375,14 @@ static const struct lpss8250_board byt_board = {
+ 	.freq = 100000000,
+ 	.base_baud = 2764800,
+ 	.setup = byt_serial_setup,
++	.exit = byt_serial_exit,
+ };
+ 
+ static const struct lpss8250_board ehl_board = {
+ 	.freq = 200000000,
+ 	.base_baud = 12500000,
+ 	.setup = ehl_serial_setup,
++	.exit = ehl_serial_exit,
+ };
+ 
+ static const struct lpss8250_board qrk_board = {
 -- 
-js
-suse labs
+2.34.1
+
