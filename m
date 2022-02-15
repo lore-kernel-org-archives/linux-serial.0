@@ -2,97 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7ADC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 10:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B795C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 11:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236138AbiBOKlh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 05:41:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56786 "EHLO
+        id S229714AbiBOLIj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 06:08:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbiBOKlf (ORCPT
+        with ESMTP id S229507AbiBOLIj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 05:41:35 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830A6F01;
-        Tue, 15 Feb 2022 02:41:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644921684; x=1676457684;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bUFqVIa927kOx97MLVPfcfP+TipMCW3yTUUD0NGSecA=;
-  b=j0JT2hU+uhgTIxY+pT+TUp95mr0rXmLHOwvvYrHDXfve/fE68EyIpkDf
-   lXvTT5yv0nYP5iYzYVnXjYSPRgyRQ8doYZCU1tS1oh64fKJ5K9rvPf36V
-   4+2RmKr0bS8tLkkDNkJxfLKVQWhPXeXXK3gFQbrNqN4PE6Xc/TE93CEbJ
-   e17MqOy7iGqjBmLo++61SiVSl8M85XUthXSTSfq+0k2TfzaEVSm2aB+3J
-   3kxzn85+8LKb+rf9AEKJSa9qIt7E22HV8l4/eAZEqlQ7Nz9NQKtrOJO06
-   7R2UrqJSIrZjX6RFz6/HvmP7hTxZZ5Y3tx84b2YV3VbxQsT5GAiTx09nL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250268251"
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="250268251"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 02:41:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="502361940"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2022 02:41:12 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id D577F15B; Tue, 15 Feb 2022 12:41:27 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_mid: Get rid of custom MID_DEVICE() macro
-Date:   Tue, 15 Feb 2022 12:41:26 +0200
-Message-Id: <20220215104126.7220-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 15 Feb 2022 06:08:39 -0500
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AEE107D07;
+        Tue, 15 Feb 2022 03:08:29 -0800 (PST)
+Received: by mail-ej1-f50.google.com with SMTP id jg20so18482378ejc.3;
+        Tue, 15 Feb 2022 03:08:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9sbWkD2U+y8Lkxl8cJufoOZ+3ZJ3ycFIwhx8nuwGqqg=;
+        b=QJ/GtD4b945oNmNC2ECiJnFSTPVGKWj/0p5eIy2kYCzcO19hD7olWpywMoljcThpC2
+         o+br1nVAGfDHBmX1SoinPG2KuKZlaIOcgvJdPGp6ClyheNMVC4l1gkzHwWtkh1fRO6gQ
+         9McQ56fZsyDxl6PHAhFYyNsmdlLgUF7IdzHxfUq++aFqRd05r3A6CS6b+nixdM7Rj60v
+         jt0ZQP+GhHZM78pxEi/DmJ1rx+ojur1brzqnUP0V0EcNc0s8WDnWWpedpu4A1FMgXPKi
+         Wluqev63vkmVXnoWduVbPbVnArYX/ytlk+45Gr0xWSwTYtqTmsrUgFVuJTFlTLm5L9R2
+         CXpA==
+X-Gm-Message-State: AOAM5309brMPvOeNiRpNycmhuwrZf9TSvoFLLlSKwn8XelLSNMlvv7CX
+        53S+/fj/uq/5DKBCHqKckAbRWUczy8c=
+X-Google-Smtp-Source: ABdhPJxlka2khF6Q0W4fGy3UoXtwupRBZYZCs1Q88uAdbmhixt2LsF3jbpSxB6K4UJENSmSiiCiWSg==
+X-Received: by 2002:a17:906:99c2:: with SMTP id s2mr2481497ejn.317.1644923307918;
+        Tue, 15 Feb 2022 03:08:27 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id z5sm11521283eja.20.2022.02.15.03.08.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 03:08:27 -0800 (PST)
+Message-ID: <f8ffca37-6029-6103-e3cf-0c2c62d04485@kernel.org>
+Date:   Tue, 15 Feb 2022 12:08:26 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI
+ DMA device
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Qing Wang <wangqing@vivo.com>
+References: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
+ <db576c63-73e2-b5f8-bc8b-057bdab2264d@kernel.org>
+ <YguAncl92hV2vUkm@smile.fi.intel.com> <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since PCI core provides a generic PCI_DEVICE_DATA() macro,
-replace MID_DEVICE() with former one.
+On 15. 02. 22, 11:31, Andy Shevchenko wrote:
+> On Tue, Feb 15, 2022 at 12:29:49PM +0200, Andy Shevchenko wrote:
+>> On Tue, Feb 15, 2022 at 11:11:41AM +0100, Jiri Slaby wrote:
+>>> On 15. 02. 22, 11:09, Andy Shevchenko wrote:
+>>>> The pci_get_slot() increases its reference count, the caller
+>>>> must decrement the reference count by calling pci_dev_put().
+>>
+>>> And what about the -EINVAL case?
+>>
+>> What about it? The ->probe() calls ->exit() in its error path.
+>> Or did I miss something?
+> 
+> Or you mean that we call pci_dev_put() on NULL pointer?
+> This is completely valid case and handled in the callee.
 
-No functional change intended.
+No, I mixed up patches :P. This was meant as a comment to
+"serial: 8250_lpss: Balance reference count for PCI DMA device"
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_mid.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+byt_serial_exit() isn't called when byt_serial_setup() fails with EINVAL 
+if I'm looking correctly.
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index 5616fc0f7403..a2a03acb04ad 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -377,16 +377,14 @@ static const struct mid8250_board dnv_board = {
- 	.exit = dnv_exit,
- };
- 
--#define MID_DEVICE(id, board) { PCI_VDEVICE(INTEL, id), (kernel_ulong_t)&board }
--
- static const struct pci_device_id pci_ids[] = {
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_PNW_UART1, pnw_board),
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_PNW_UART2, pnw_board),
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_PNW_UART3, pnw_board),
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_TNG_UART, tng_board),
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_CDF_UART, dnv_board),
--	MID_DEVICE(PCI_DEVICE_ID_INTEL_DNV_UART, dnv_board),
--	{ },
-+	{ PCI_DEVICE_DATA(INTEL, PNW_UART1, &pnw_board) },
-+	{ PCI_DEVICE_DATA(INTEL, PNW_UART2, &pnw_board) },
-+	{ PCI_DEVICE_DATA(INTEL, PNW_UART3, &pnw_board) },
-+	{ PCI_DEVICE_DATA(INTEL, TNG_UART, &tng_board) },
-+	{ PCI_DEVICE_DATA(INTEL, CDF_UART, &dnv_board) },
-+	{ PCI_DEVICE_DATA(INTEL, DNV_UART, &dnv_board) },
-+	{ }
- };
- MODULE_DEVICE_TABLE(pci, pci_ids);
- 
+thanks,
 -- 
-2.34.1
-
+js
+suse labs
