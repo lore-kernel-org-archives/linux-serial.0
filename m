@@ -2,102 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DC1C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 16:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1898C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 17:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241205AbiBOQDB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 11:03:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59792 "EHLO
+        id S240761AbiBOR0y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 12:26:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241271AbiBOQDA (ORCPT
+        with ESMTP id S235706AbiBOR0x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 11:03:00 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0AB88
-        for <linux-serial@vger.kernel.org>; Tue, 15 Feb 2022 08:02:50 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nK0Hr-0005jV-C5; Tue, 15 Feb 2022 17:02:43 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nK0Hq-00GmSS-Cg; Tue, 15 Feb 2022 17:02:41 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nK0Ho-003Mnq-Og; Tue, 15 Feb 2022 17:02:40 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Cc:     Tomas Melin <tomas.melin@vaisala.com>,
-        linux-serial@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH] serial: 8250: Fix race condition in RTS-after-send handling
-Date:   Tue, 15 Feb 2022 17:02:36 +0100
-Message-Id: <20220215160236.344236-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.34.1
+        Tue, 15 Feb 2022 12:26:53 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD45193C8
+        for <linux-serial@vger.kernel.org>; Tue, 15 Feb 2022 09:26:43 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id u16so1963587pfg.12
+        for <linux-serial@vger.kernel.org>; Tue, 15 Feb 2022 09:26:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LivC78KXDmCeBXJxJsH/goPuWXuSn9BnrpWMwbtednQ=;
+        b=ZZ1NeVjRHkne81llSgnehU+Oly7EGCd8n2UfEjNW4RbULk/bt5g8voHGiQed0jj+mn
+         hEl82AhzVEcnTv40D4gjTiSeymrkFFLQBtQoEjw1hXGkmpcWNnEZPxc2ui49Oxdqxpyz
+         WBtDY4J3UVxZzANq6JUMWW+9PlbmpsAXHIh+vYn6sP9jQAXkrxs8PuPpOZSECtx4GcuV
+         2sXUMosIEAY9Y1f9Myt6udtgtXaFjoK8bgo1UNXlrvQ3SrYLXK9gQwxiL7SadEvKow4r
+         AN73bMDKbGXkiH4HsMI7hch/9XYB1gzlcioZSX3OsDXafQWSFZ1efVlr5drlXajird4W
+         4pbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LivC78KXDmCeBXJxJsH/goPuWXuSn9BnrpWMwbtednQ=;
+        b=GqSsDmZR9uBW3oigeKAXVwKOegtm1hRXU+RWUbyJizUU3ybp+p3djkFv38G1FIFpol
+         jxpTEPIi2scebwIxGyCHVmx5UYkH0FEHlO+UQluuFLjvGZgMoKVvz8DCwO8YWG/BBPbg
+         7SvRB3U5I0n1PoozPSR9wTbNO/OARll93Rd7UzQO2fKthkIKVWbX4irQZnL6a5+mdXJW
+         FmY6vfHYIAGizl0diCDs0a77SEbQxkhiRQ5AqaVgQ31DAPqY74lS+jPob8YsCOEetu6/
+         9WwaS6jkOuLPfig8+eyrhTvgONMYD9Tu9Rn1+ESrYYkVF5x9wsJQ5TZlwf0hXaNwPUjO
+         D1uA==
+X-Gm-Message-State: AOAM531E2sn4axf+tp64Hs11dMrMqZt1I63kaoxAEOvl5HsVkOj/J0+8
+        Ich1aOTJOOfGF5Uld7Jb5s7ye7Em70r527NkWHkZ7A==
+X-Google-Smtp-Source: ABdhPJzf97Fv+GmhmthjM7cQZ+yiNvj/uOi69amBBwTr/Gv6s6j9trUhmKnj0GqfEgE0yQ0sylShhp6pIXxc6ja8LLg=
+X-Received: by 2002:a63:5b62:: with SMTP id l34mr4397652pgm.440.1644946003281;
+ Tue, 15 Feb 2022 09:26:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2093; h=from:subject; bh=XNCV3u2ym5nwa1WquipipTXI1xoACPeaK8AoWg7jmdw=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiC86Y6oPeVmI3Z3cS2BMIuTkuzRP/WWwq7Vvm+eaO nwbmuHmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYgvOmAAKCRDB/BR4rcrsCU9FB/ sEJH8NqPLlFVEJ5oRS5zoXzlS34nihyAer5Q/ZGdmjuzzxnaQ0hN+JFO4epIE+suo09DH0jH70Jhn3 DANFGg5BjTy3IAGcUqsTDcLBwNfpszGEFYtBvJ3DpBpKofLkOwOd8KGs4T24c0+f7Hoh9RK3Tmj94v byRi0X3xVKz4OoaBTVEqoRrRnKtqHagVqB/4Ek6dQkyrN6Wn6ePjs6iFa+5fbb+Ut4vr6F7l/0beTC sq5vJ7JgCDID3mdMx/N208Gl72dwaa7SPtbj89QOrTnhysOCqU6TcsskyUWaywEZgQuXb24iadvDPJ GSYMVz3UvBN+SiEpfpMdOqiii7buru
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20220214213020.685-1-tharvey@gateworks.com> <9d5cff18-5493-f6dd-4bd6-9bafa2a503a7@camlingroup.com>
+In-Reply-To: <9d5cff18-5493-f6dd-4bd6-9bafa2a503a7@camlingroup.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Tue, 15 Feb 2022 09:26:32 -0800
+Message-ID: <CAJ+vNU0sWGsQa=YwLE9Ng34-DhJF=YR3oTV+q--KcgTMCjBa2w@mail.gmail.com>
+Subject: Re: [PATCH] serial: imx: leave IRTS disabled if using modem-control CTS
+To:     =?UTF-8?Q?Tomasz_Mo=C5=84?= <tomasz.mon@camlingroup.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sergey Organov <sorganov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Set em485->active_timer = NULL isn't always enough to take out the stop
-timer. While there is a check that it acts in the right state (i.e.
-waiting for RTS-after-send to pass after sending some chars) but the
-following might happen:
+On Mon, Feb 14, 2022 at 10:03 PM Tomasz Mo=C5=84 <tomasz.mon@camlingroup.co=
+m> wrote:
+>
+> On 14.02.2022 22:30, Tim Harvey wrote:
+> > If using modem-control gpios for CTS we must leave IRTS disabled
+> > as otherwise the hardware will only transmit based on the internal RTS
+> > pin routed to it.
+> >
+> > This allows hardware flow control to be used with cts-gpios.
+>
+> This hardware flow control sounds quite limited. Once CTS becomes
+> inactive, the transmitter will still output all characters from TxFIFO.
+> Transmitting whole TxFIFO already sounds quite bad, but that's the best
+> case scenario where gpio interrupt is handled right away without any
+> delay (so more than TxFIFO characters can actually be transmitted).
+>
+> Does the internal RTS default to inactive when it's not pinmuxed to the
+> actual pin? If so, then controlling UCR2_IRTS based on CTS gpio could
+> halt the transmission when the TxFIFO is not empty.
+>
 
- - CPU1: some chars send, shifter becomes empty, stop tx timer armed
- - CPU0: more chars send before RTS-after-send expired
- - CPU0: shifter empty irq, port lock taken
- - CPU1: tx timer triggers, waits for port lock
- - CPU0: em485->active_timer = &em485->stop_tx_timer, hrtimer_start(),
-   releases lock()
- - CPU1: get lock, see em485->active_timer == &em485->stop_tx_timer,
-   tear down RTS too early
+Tomasz,
 
-This fix bases on research done by Steffen Trumtrar.
+I agree that the increased latency makes using a GPIO for CTS
+(software controlled) not as good as one pinmuxed into the UART block
+directly (hardware controlled) but without this patch GPIO for CTS
+does not work at all because the internal RTS defaults to inactive
+when its not pinmuxed. For many applications the latency is not an
+issue.
 
-Fixes: b86f86e8e7c5 ("serial: 8250: fix potential deadlock in rs485-mode")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Best Regards,
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3b12bfc1ed67..e77620a17d5d 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1615,6 +1615,18 @@ static inline void start_tx_rs485(struct uart_port *port)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct uart_8250_em485 *em485 = up->em485;
- 
-+	/*
-+	 * While serial8250_em485_handle_stop_tx() is a noop if
-+	 * em485->active_timer != &em485->stop_tx_timer, it might happen that
-+	 * the timer is still armed and triggers only after the current bunch of
-+	 * chars is send and em485->active_timer == &em485->stop_tx_timer again.
-+	 * So cancel the timer. There is still a theoretical race condition if
-+	 * the timer is already running and only comes around to check for
-+	 * em485->active_timer when &em485->stop_tx_timer is armed again.
-+	 */
-+	if (em485->active_timer == &em485->stop_tx_timer)
-+		hrtimer_try_to_cancel(&em485->stop_tx_timer);
-+
- 	em485->active_timer = NULL;
- 
- 	if (em485->tx_stopped) {
-
-base-commit: e3c85076d7a6f986445b9008be7e7f83d1b0780a
--- 
-2.34.1
-
+Tim
