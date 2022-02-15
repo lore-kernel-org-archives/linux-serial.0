@@ -2,173 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92315C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 01:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDA5C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 02:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbiBOBkk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 20:40:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54332 "EHLO
+        id S233412AbiBOCDV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 21:03:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiBOBkk (ORCPT
+        with ESMTP id S233588AbiBOCC5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 20:40:40 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04F312D204;
-        Mon, 14 Feb 2022 17:40:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644889230; x=1676425230;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G3WniNW3qk38VLSGBcvoUT5eZOo/115lQFpvE9DOLoA=;
-  b=FosqmIwQjTbMgxrfJTM31Z5lweDV8LHZW/+dtqXIGmbdO1IwSM0ogSK5
-   +g17unJjg3ZbCRftR0zieD0dtcGaIMMGj8TGLVJldGD46Tmbc6RkEKeys
-   hXEBb2nHY0SbbFF7mqDAvhGuwkTqFrUXBWno0TrAGO7Vq+Pk+OVlzxJPK
-   CAOX+W41k59oAPU3FvWNsXvbVS6OP0AFa3g/ANqYeLQeSBHCPpx9zMWzi
-   SvKgBUXN2JBTKQQhDhQ53PZJO+81rJ+omZXpIRJP0jxXOUVHzE7CEoOQV
-   FPsI7VQ+F5AJ72F15kZxpCa93889yc49Z8GzcTWYp37Dqf+hU+0X4xSPu
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230862684"
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="230862684"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 17:40:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
-   d="scan'208";a="624534774"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 14 Feb 2022 17:40:28 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJmpP-00099B-Gd; Tue, 15 Feb 2022 01:40:27 +0000
-Date:   Tue, 15 Feb 2022 09:40:14 +0800
-From:   kernel test robot <lkp@intel.com>
+        Mon, 14 Feb 2022 21:02:57 -0500
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2098.outbound.protection.outlook.com [40.107.255.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE36B14563F;
+        Mon, 14 Feb 2022 18:01:08 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AYXAWDFd9+qNar7jypGiAA6hN4hcKNyPhavdCHjiBf2E7Ju9OnTGs2b2q6flH+70lK8BRTqdNuvH5FPGkj2QVLpz51T0NcH9J3diL/yRTIWIEW848TCw/wmAsfLukiLcQOQMpFlQEd3weHJTsRc28He5ONPe98/BuKd1+/hJxBcQvvEpvrBFc0JRG9ttzBdUUX3RCnJd4zWmjAXmGoGjbb69dp6GfqeIk8i46Y5E9m3Fid5HMmutDy4quV4Y+FKQZztkjoA0IP1f6qMBwx17KZxRobABxIV2VPkMjv2+ru52TS3e9tBNBECz3z1ct6J5ZsHdEk+7nWx3WfiA6ky44Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cqjypasDnGdghAjQel3uKWV9iUcMW8PBkaj7Eoi0txM=;
+ b=cctAvk9jY4fB9Wr2x0Qulm6gIwGvVvTLrkhm5ElDfKVnEISfENip8UfxA0LUiKCfzNU+6W526crqmxaRw69wagMUc9KS7AbWGnMcS582KpxH3TRgnGDvwY22Mj2lxHoX/yoDgUcsIQdYeWMc01NVQORWe43bRUp8N6B5bg3SAwmvhjWRq2EWVJM3o/wk5FHK2SOUFoMAy66zb6z7DQT1tu8AModAvHE2UaCNp1Kp56o1KC39XB1u5TMeF7TUFb55+r+nh2jzP8+l2nkkPecJO9Gu9M0H7H5GDrLJivnCVoyUT7ir1MSvF2+f3BD5ZoAo7QMnVw6V9AAVC0VGFKD1fQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cqjypasDnGdghAjQel3uKWV9iUcMW8PBkaj7Eoi0txM=;
+ b=i3ozbhXdKFIx5i4pnDj8u899/FCEEMajba/T+V8AUE2jpl9LgnDxlBDWCVYvO7i7OA9F4IN47OsO0+Wo0K0JBERrlRx9pQ/uhfPa/RF9CjaE4OjGqOGlbACoCPtdhbaxw3F8B2iAE8fL9q+2pEG5IPQjymq74zvSVhHDdi/52gM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
+ by TYZPR06MB4510.apcprd06.prod.outlook.com (2603:1096:400:65::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
+ 2022 02:01:06 +0000
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::80b4:e787:47a9:41bb]) by SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::80b4:e787:47a9:41bb%4]) with mapi id 15.20.4975.019; Tue, 15 Feb 2022
+ 02:01:06 +0000
+From:   Qing Wang <wangqing@vivo.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
-Message-ID: <202202150928.sqyjprfB-lkp@intel.com>
-References: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] tty: serial: 8250: add missing pci_dev_put() before return
+Date:   Mon, 14 Feb 2022 18:00:53 -0800
+Message-Id: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0063.apcprd02.prod.outlook.com
+ (2603:1096:4:54::27) To SL2PR06MB3082.apcprd06.prod.outlook.com
+ (2603:1096:100:37::17)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 876a1666-91c1-4b0d-b10f-08d9f02706df
+X-MS-TrafficTypeDiagnostic: TYZPR06MB4510:EE_
+X-Microsoft-Antispam-PRVS: <TYZPR06MB451025BC51A962DEFAE9ADA4BD349@TYZPR06MB4510.apcprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:862;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XmCsY/MSboLJBuNZBjnKG4uSl89MSfqIS79Fn1Gbp3LPjMmWvSDyYKs6Tf0j5EW7zGA2heJvePzNSHfmDeCAcd+SdEpaHc32Qft5yk8/mXOjc+8jEqcES2Bc5LNJSEbaob1PuIknATUr1FzjLQB4k5qF5lMCPu1v5ZriBUEsCj8ex1yNKkMAaQ84E/Q65nXmjkiXUMk8gWfnV+MkxMZpwwtysq31TDjyiDwOrD7GcGM0Z7jMdobqawNdm1Ye8uNOAR/O0DodMU1muwbh4yJm7DkQohkRvaS4JOEpbBJCoB3LMRCUMz+qjRgS+fs/c/SSJPCC4osmV7Prfl/NyluJAIpr4XyNiYQ+8+7F03bv9lmoEDAyPG4WCRAZuvqEYOxAdmgs1p+nvyRctAFhsni4FrYf0BC45x4RrAb1UN6+M1djgsU2Ar0H+nc21LrJaM28R3Dr8IJuyGVJBR4l1i/1c8CSrLuOzQcBSlZYJ7ZJXHDp+l25YeI6FzPF68cxk2bqaQrCS9CaYQFMFM/4RKUe+8BwyVPp8uCvbXDucXD2J9WD2Q2UTE2WuzJ3ihAJH178PFMVJ4pNn8FWoJ1zCvmR3aoGLgr5sB1HnuatV9X9b7BwiK7ONQcItJuODlDR1X5nly7VgzeAN+tAUDCg+EpC9QWqre+i7P21SXKSaaodyUWxRkK33VopZcK1ziBf0YezA1/lQIk54R9agkKK+D3h4A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(86362001)(107886003)(52116002)(186003)(26005)(6512007)(6486002)(2616005)(6666004)(110136005)(4744005)(508600001)(8936002)(66946007)(4326008)(66476007)(66556008)(5660300002)(2906002)(38100700002)(38350700002)(36756003)(316002)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QPLO2zzswIMMptk5porJv58Jh9HJy2pZU8Q0fm6//iLrX7NJfokE9nKvbF2r?=
+ =?us-ascii?Q?/VLBO0nJ3cEVW54AsKP43GUG0Sgsqp3FRfB4fY/p00c2f6kVxCfMwAVM591L?=
+ =?us-ascii?Q?l5mS7GMHvX2UCPsYFefLWpExdKuPXCsxmFh3ioRI//+Ds1FwuzH3CqQ/qlio?=
+ =?us-ascii?Q?Omaxs5wYQ5xWwbKib9yvwzKGuXTw1ts9BlNbEasIkVIsFKFZRAYaU4Ns9cZX?=
+ =?us-ascii?Q?iNKTlZCSHteaRLirI5CAZzS4rrvUkHqYyrBdoUoNez/GkMF/i6wI9B7nAKGF?=
+ =?us-ascii?Q?ob+rBOjbkr2Fd85RtH925gJNLV9mpWVFvZ0NdEiGBuGiW5xTRy+NAyJikmCu?=
+ =?us-ascii?Q?VV2QDTi5NF/OYzJl40YxTeEHvFV5W9MbBIK4+R8mibDzCpJXgXskqjl+E/jG?=
+ =?us-ascii?Q?xNEfd+eNnvCqBxFX9J6QwjqmSis8BJwcKSE7v0tgMNNKYdMgIxwloLmTCte0?=
+ =?us-ascii?Q?dcPPVtockOZAZ1WhNBQwh6LV5owPovt7CZdWu4YsVElf0YQHhplqgttWrAre?=
+ =?us-ascii?Q?4qbJo0whmuC+vQdqCgB6WIWCthCqOJEAhSP93MP0RDK+Es0F/3EeKVl98abT?=
+ =?us-ascii?Q?zSghOGgPn0RroGjuhHUBkK3Lc1M/VrL6oPqG617sNBp76xbFC7G2TOEnae9W?=
+ =?us-ascii?Q?4/QU8662+E0Qkj//+VwZAd5q6CL+lPENvxwNZ/htLjJzBCT95Z4wzX41lM1V?=
+ =?us-ascii?Q?jhLjzVpi0+api9stuu4LQwkYk48tFrppbpFBT8v5Uwy/pZaLHXK6cYEZldWW?=
+ =?us-ascii?Q?RjWCJbQB9pFu+8yDV10anffgNTIm/8dWfjnSQ1fl8Nz00F6oMpTLD9eR3Zao?=
+ =?us-ascii?Q?d/W0bq9hopYY3/pxmDvrUgelyG02lBkryudiovbw2eLL0gfIY4K51WFMQybF?=
+ =?us-ascii?Q?74U/Y/t1aKMYcmQMUacrE1YF3tieaFCvd0bNd6Iy1jS17376Sz/6zXnSEZgm?=
+ =?us-ascii?Q?s+IbdAyPbk4dVJxlkG/QkXaS1mFRBDJF/nRP89YnKic9maht1EE3GpZQBmWd?=
+ =?us-ascii?Q?jDohF8AE0j58T8Ufb86FL2THbMV7cQemsbc+RwVTzXvzpQaquFYzdCj4IOle?=
+ =?us-ascii?Q?sxgpC62lM1atsrt58s2UyX0ZbWHRazHled2CRyy5JZu+uxVxZHwv5kEYkcDm?=
+ =?us-ascii?Q?ZJDjtp6prX2t0uWkQQtjxfCGP5uxngQuE69V4/tL0skii1bgdO8sG7u3bHGE?=
+ =?us-ascii?Q?5GhnrSqvp2I9bys58e7wyFaFRQbHl2drvQIv6rdmuVeKA1nkslzs9D1MpBBP?=
+ =?us-ascii?Q?p6xLJa1M2lAh2lLSfatOPtgEKo2QUsQ98BBzvKn5Tide1eTyZJCHELKF745q?=
+ =?us-ascii?Q?6cXcRZKAkx5ZHapYn8UmW+28ek8NkgR0IP2N/h0boNIPHMy+5sC8NMGcleq6?=
+ =?us-ascii?Q?NLOj48vXy9OQVNwytaW5Apd0CSYUo4a1j/FWFqa6w/uMR4v93n9yQan/tCLt?=
+ =?us-ascii?Q?6gG2idYeW5CU3QmzRIpfOJXwqiv/AYJe+5aUWqSO5/lP9XJEfvujGnYc9TyW?=
+ =?us-ascii?Q?7I/uegxlqzYqdv0M9yyIVni7RsY/VTdnF7WZkTK9dJTepRhxLpxpPvJ5Wrw6?=
+ =?us-ascii?Q?bpZ2y83AcJT7wVbf3ht3zItjdGzPNM+dm+AM6kDhc7xbHtE8diymNa4m2cPe?=
+ =?us-ascii?Q?7UnrO5BQ+39RsG70QlL8Lwc=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 876a1666-91c1-4b0d-b10f-08d9f02706df
+X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 02:01:06.1224
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rC5VmoNXshwD6w+l9YGnwIF6o8YpGCRdz1D7IYfYviyRG73E8XVM9KC2K2n1rzXNm+kWPisZwRioCyboRJ5eOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB4510
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+From: Wang Qing <wangqing@vivo.com>
 
-I love your patch! Yet something to improve:
+pci_get_slot() increases its reference count, the caller must
+decrement the reference count by calling pci_dev_put()
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on usb/usb-testing linux/master linus/master v5.17-rc4 next-20220214]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220215/202202150928.sqyjprfB-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/810910d324cc80b092207d043651de696d293cbd
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
-        git checkout 810910d324cc80b092207d043651de696d293cbd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/tty/serial/sh-sci.c: In function 'sci_parse_dt':
->> drivers/tty/serial/sh-sci.c:3205:24: error: too few arguments to function 'dev_err_probe_ptr'
-    3205 |                 return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
-         |                        ^~~~~~~~~~~~~~~~~
-   In file included from include/linux/node.h:18,
-                    from include/linux/cpu.h:17,
-                    from include/linux/cpufreq.h:12,
-                    from drivers/tty/serial/sh-sci.c:23:
-   include/linux/device.h:988:7: note: declared here
-     988 | void *dev_err_probe_ptr(const struct device *dev, int err, const char *fmt, va_list args)
-         |       ^~~~~~~~~~~~~~~~~
-
-
-vim +/dev_err_probe_ptr +3205 drivers/tty/serial/sh-sci.c
-
-  3187	
-  3188	static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
-  3189						  unsigned int *dev_id)
-  3190	{
-  3191		struct device_node *np = pdev->dev.of_node;
-  3192		struct reset_control *rstc;
-  3193		struct plat_sci_port *p;
-  3194		struct sci_port *sp;
-  3195		const void *data;
-  3196		int id, ret;
-  3197	
-  3198		if (!IS_ENABLED(CONFIG_OF) || !np)
-  3199			return ERR_PTR(-EINVAL);
-  3200	
-  3201		data = of_device_get_match_data(&pdev->dev);
-  3202	
-  3203		rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
-  3204		if (IS_ERR(rstc))
-> 3205			return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
-  3206	
-  3207		ret = reset_control_deassert(rstc);
-  3208		if (ret) {
-  3209			dev_err(&pdev->dev, "failed to deassert reset %d\n", ret);
-  3210			return ERR_PTR(ret);
-  3211		}
-  3212	
-  3213		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
-  3214		if (ret) {
-  3215			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
-  3216				ret);
-  3217			return ERR_PTR(ret);
-  3218		}
-  3219	
-  3220		p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
-  3221		if (!p)
-  3222			return ERR_PTR(-ENOMEM);
-  3223	
-  3224		/* Get the line number from the aliases node. */
-  3225		id = of_alias_get_id(np, "serial");
-  3226		if (id < 0 && ~sci_ports_in_use)
-  3227			id = ffz(sci_ports_in_use);
-  3228		if (id < 0) {
-  3229			dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
-  3230			return ERR_PTR(-EINVAL);
-  3231		}
-  3232		if (id >= ARRAY_SIZE(sci_ports)) {
-  3233			dev_err(&pdev->dev, "serial%d out of range\n", id);
-  3234			return ERR_PTR(-EINVAL);
-  3235		}
-  3236	
-  3237		sp = &sci_ports[id];
-  3238		*dev_id = id;
-  3239	
-  3240		p->type = SCI_OF_TYPE(data);
-  3241		p->regtype = SCI_OF_REGTYPE(data);
-  3242	
-  3243		sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
-  3244	
-  3245		return p;
-  3246	}
-  3247	
-
+Signed-off-by: Wang Qing <wangqing@vivo.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/tty/serial/8250/8250_lpss.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index d3bafec..57e462f
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -149,6 +149,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	/* Disable TX counter interrupts */
+ 	writel(BYT_TX_OVF_INT_MASK, port->membase + BYT_TX_OVF_INT);
+ 
++	pci_dev_put(dma_dev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
+
