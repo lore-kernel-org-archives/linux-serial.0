@@ -2,89 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1005C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 12:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 720EBC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 13:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbiBOM2B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 07:28:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36358 "EHLO
+        id S237840AbiBONn7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 08:43:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233510AbiBOM2A (ORCPT
+        with ESMTP id S230355AbiBONn6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 07:28:00 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CE6107AAB;
-        Tue, 15 Feb 2022 04:27:51 -0800 (PST)
+        Tue, 15 Feb 2022 08:43:58 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2974D109F;
+        Tue, 15 Feb 2022 05:43:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644928071; x=1676464071;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RhsArYRmWUjv92mfHTpn/hhqqJT+C/mxoD6qW8AsTjY=;
-  b=NnmExAp85fcoz3nWkxxrax8gTGyeKjkWu44qgPliw9Jz7xiNDLT6te9o
-   TV4JdQeu98M7vgP8HhyZxuWSph2CmeZdUnSs4RrS560XWKdeEw2yvZveo
-   9mG94Byzlp5zlxyOa6NOhFcj8z3OxU9IhlI8OSYF5rgCjubsVBRHM2sIE
-   nZrGH/MRJMBshqrzBVrUb0r7NPI+wtVQUKfx/q6UaRpeY22J1km6Ol2v4
-   T1yP15S3r+ks63LynMp1RVXXlFbhSQ+Zuy3vARLDOtcWZuAyyuut6Jt5q
-   4z5RfK87ylxpkcmebE6IaJdEcr+JzGjkW3sw5PzYKXLL8sVzCHtrAoVes
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="311077686"
+  t=1644932628; x=1676468628;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8+Ef9YN8LSSPy+BvHaYR3DJrg5mpRPczEb96wm5Ge38=;
+  b=H/qfXOGtj4cOzckR5WHsm4NXgYxtqQkp94vUwG3m/qKxS4a64QN2qNzn
+   1TxIZuoZt4Ys6GbFcJRxaXWI5vBKHauYgenr1r4h6UPVUDnKY4baA/0zk
+   lQSdIT/1/+NC8FhnYADU3SYm/WSoikGdqKsNDb3S4i4Ej92xV6pYq6vY0
+   So7HZ936t7jyY4bYgIjfjMhaXQq43hvHL9EnrK7jHBvws8bNBZ+SeLkjJ
+   csnOQDqFXmSxgoHTpSCgBIdMe0UAvv4SX1/lIODQh8PkEkxtcZf0bZWi6
+   iF+0FNv0DNijBc+xGHAAIrCgPN/9d1oGn6DCWltulXH+PmBzNlgUuuSG+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="313626821"
 X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="311077686"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 04:27:50 -0800
+   d="scan'208";a="313626821"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 05:43:48 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,370,1635231600"; 
-   d="scan'208";a="773496380"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 04:27:49 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJwv0-004ur5-K3;
-        Tue, 15 Feb 2022 14:26:54 +0200
-Date:   Tue, 15 Feb 2022 14:26:54 +0200
+   d="scan'208";a="497136041"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 15 Feb 2022 05:43:46 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 5FDBE143; Tue, 15 Feb 2022 15:44:02 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Qing Wang <wangqing@vivo.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250_mid: Balance reference count for PCI
- DMA device
-Message-ID: <YgucDuOsCbogHRV9@smile.fi.intel.com>
-References: <20220215100920.41984-1-andriy.shevchenko@linux.intel.com>
- <db576c63-73e2-b5f8-bc8b-057bdab2264d@kernel.org>
- <YguAncl92hV2vUkm@smile.fi.intel.com>
- <YguBEJ1cc0TMQLuE@smile.fi.intel.com>
- <f8ffca37-6029-6103-e3cf-0c2c62d04485@kernel.org>
- <YgubxsqouAl1zXFK@smile.fi.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead of pci_ioremap_bar()
+Date:   Tue, 15 Feb 2022 15:43:59 +0200
+Message-Id: <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
+References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgubxsqouAl1zXFK@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 02:25:42PM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 15, 2022 at 12:08:26PM +0100, Jiri Slaby wrote:
-> > On 15. 02. 22, 11:31, Andy Shevchenko wrote:
+The pci_iounmap() doesn't cover all the cases where resource should
+be unmapped. Instead of spreading it more, replace the pci_ioremap_bar()
+with pcim_iomap() which uses managed resource approach.
 
-...
+Fixes: fecdef932b00 ("serial: 8250_lpss: enable DMA on Intel Quark UART")
+Depends-on: ea5ab2e422de ("8250_lpss: check null return when calling pci_ioremap_bar")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: new fix (by code inspection due to previous patch)
+ drivers/tty/serial/8250/8250_lpss.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> > No, I mixed up patches :P. This was meant as a comment to
-> > "serial: 8250_lpss: Balance reference count for PCI DMA device"
-> > 
-> > byt_serial_exit() isn't called when byt_serial_setup() fails with EINVAL if
-> > I'm looking correctly.
-> 
-> I see now, thanks for catching this!
-> I will send a v2 soon.
-
-What do you think about this patch? Can you give your tag if the code is
-looking good?
-
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 0f5af061e0b4..a9fc1d7d9c37 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -209,7 +209,7 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	chip->dev = &pdev->dev;
+ 	chip->id = pdev->devfn;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+-	chip->regs = pci_ioremap_bar(pdev, 1);
++	chip->regs = pcim_iomap(pdev, 1, 0);
+ 	if (!chip->regs)
+ 		return;
+ 
+@@ -241,8 +241,6 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ 		return;
+ 
+ 	dw_dma_remove(chip);
+-
+-	pci_iounmap(to_pci_dev(chip->dev), chip->regs);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
