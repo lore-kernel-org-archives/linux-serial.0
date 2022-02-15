@@ -2,92 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B810DC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 05:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD9FC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 06:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiBOFzu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 00:55:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55448 "EHLO
+        id S232512AbiBOGDK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 01:03:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiBOFzu (ORCPT
+        with ESMTP id S229924AbiBOGDJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 00:55:50 -0500
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC738F9BD;
-        Mon, 14 Feb 2022 21:55:41 -0800 (PST)
-Received: by mail-ej1-f41.google.com with SMTP id a8so41914453ejc.8;
-        Mon, 14 Feb 2022 21:55:41 -0800 (PST)
+        Tue, 15 Feb 2022 01:03:09 -0500
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F13B716A;
+        Mon, 14 Feb 2022 22:03:00 -0800 (PST)
+Received: by mail-ej1-f52.google.com with SMTP id qk11so21560314ejb.2;
+        Mon, 14 Feb 2022 22:03:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:from:to:references:in-reply-to
          :content-transfer-encoding;
-        bh=gp8ebT5rOJ2rAFinWwNQFlP6FSvniebTOjl8cmXAgEY=;
-        b=EsphDjdXfTtnyNS4Txc3RCr02CfJNaPcTwSMUFPtvY9J0nwJ7WXfLF+/hpFFMfYbfS
-         btGk/CJg5Zdl5eYyToNZFgjJEL5LjvLAQePsXxWxQj6nb7+q7YOcj8Cov9w4aI9i+95n
-         3tmuMm5SwffXKz1i05mUJnPzvDpqWicvhxwQxJu1LkdRDVE+Yy02ObHlBeRXKfDuwrfR
-         KKKS0oI+4MA8R19Aq1F6XQT+mU75Wb4pI1jpYU8kjsjwLOcifs7eaaG/r37S+NfjTd7W
-         D2E6jr/5jyogTaBc/v9LgIzcHqRn0om/nC6RpIdqVjHF09c1U4tMp9Zm53uXHy75Pf7+
-         Asbg==
-X-Gm-Message-State: AOAM533WOMUYj/1n6j/aq6wymuzox7layOQmOn94qgd39CZ2tgzfwMcH
-        Gnv49v3NYgtrayhwDsBtSoEwfedzRws=
-X-Google-Smtp-Source: ABdhPJyrPL/Y79/an13ElJxSImi+bGwiinWqWkElWMGy55bQXJVKYjwB12opX7WttphtP3ne6+pdXA==
-X-Received: by 2002:a17:907:16a8:: with SMTP id hc40mr1617582ejc.739.1644904539831;
-        Mon, 14 Feb 2022 21:55:39 -0800 (PST)
+        bh=m/+GWq7LGPjn6L3TlGLfnYbRWnVKngkEcYqskuqOhA4=;
+        b=4M5sgZS04S0gcHTSLfDQwi3pdk1yrLGYURwUoRcY8wdwoCHwrfW/H//ftgWv+o5j3N
+         R4c4a8UXP/BEKn17hsAqE1keTKg7KaWuI44eObDSKs65IOS9DM72KYwK9TuCQI+oFid+
+         nfcfNkfMJhUI2imDZchc5vakgrZaHIH8KuHn3x3zajSzzjidMG/Lr5OSXhHujS/PAVES
+         rr1bFOga/yAlldsYbOFolOl4llTd9GoWhty5UWMP/zMEpXdqzIoGcf0yMbWPhUH11hXT
+         wqPZ6TOnGxNCJqPeJ0E0iehjkgYaTYl0DR4cmg+kB82HCUO3KRp/kBh79jVKVq6ysB1k
+         Cu3g==
+X-Gm-Message-State: AOAM533lHcXNimA8jbVqJfVJXLZDBWoTEOsEa8t0TTwex0hvkcTSDtj2
+        F2VHwwSB754U9i6ix3mt4XA=
+X-Google-Smtp-Source: ABdhPJwbXMZT0RA9BZurHDr47BqekBgRBAtuwCP+LWOn/a1Eqe9/WxyjJQ/QPlk8dsnOlZPfOkwhqA==
+X-Received: by 2002:a17:906:9b93:: with SMTP id dd19mr1704122ejc.308.1644904979061;
+        Mon, 14 Feb 2022 22:02:59 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id p16sm6035084ejn.54.2022.02.14.21.55.38
+        by smtp.gmail.com with ESMTPSA id tc26sm1451637ejc.167.2022.02.14.22.02.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 21:55:39 -0800 (PST)
-Message-ID: <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
-Date:   Tue, 15 Feb 2022 06:55:38 +0100
+        Mon, 14 Feb 2022 22:02:58 -0800 (PST)
+Message-ID: <621e2079-567c-6954-9744-c51748dd48dd@kernel.org>
+Date:   Tue, 15 Feb 2022 07:02:57 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
 Subject: Re: [PATCH] tty: serial: 8250: add missing pci_dev_put() before
  return
 Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
 To:     Qing Wang <wangqing@vivo.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <1644890454-65258-1-git-send-email-wangqing@vivo.com>
+ <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
+In-Reply-To: <67ace5d3-02b3-034d-969f-9a05bbdd8e30@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 15. 02. 22, 3:00, Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
+On 15. 02. 22, 6:55, Jiri Slaby wrote:
+> On 15. 02. 22, 3:00, Qing Wang wrote:
+>> From: Wang Qing <wangqing@vivo.com>
+>>
+>> pci_get_slot() increases its reference count, the caller must
+>> decrement the reference count by calling pci_dev_put()
+>>
+>> Signed-off-by: Wang Qing <wangqing@vivo.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_lpss.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_lpss.c 
+>> b/drivers/tty/serial/8250/8250_lpss.c
+>> index d3bafec..57e462f
+>> --- a/drivers/tty/serial/8250/8250_lpss.c
+>> +++ b/drivers/tty/serial/8250/8250_lpss.c
+>> @@ -149,6 +149,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, 
+>> struct uart_port *port)
+>>       /* Disable TX counter interrupts */
+>>       writel(BYT_TX_OVF_INT_MASK, port->membase + BYT_TX_OVF_INT);
+>> +    pci_dev_put(dma_dev);
 > 
-> pci_get_slot() increases its reference count, the caller must
-> decrement the reference count by calling pci_dev_put()
 > 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
-> ---
->   drivers/tty/serial/8250/8250_lpss.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-> index d3bafec..57e462f
-> --- a/drivers/tty/serial/8250/8250_lpss.c
-> +++ b/drivers/tty/serial/8250/8250_lpss.c
-> @@ -149,6 +149,8 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
->   	/* Disable TX counter interrupts */
->   	writel(BYT_TX_OVF_INT_MASK, port->membase + BYT_TX_OVF_INT);
->   
-> +	pci_dev_put(dma_dev);
+> What about the "return -ENODEV" few lines above?
 
+On the top of that, the code stores the pointer to the dev:
+param->dma_dev = &dma_dev->dev;
 
-What about the "return -ENODEV" few lines above?
+So we should likely put the device in ->exit(), not ->setup().
 
->   	return 0;
->   }
->   
-
-
+thanks,
 -- 
 js
 suse labs
