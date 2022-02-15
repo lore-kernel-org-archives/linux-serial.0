@@ -2,89 +2,173 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883A9C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Feb 2022 22:07:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92315C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 01:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiBNWHj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:07:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54230 "EHLO
+        id S232569AbiBOBkk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Feb 2022 20:40:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiBNWHi (ORCPT
+        with ESMTP id S229944AbiBOBkk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:07:38 -0500
-X-Greylist: delayed 2213 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 14:07:30 PST
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393B013C391
-        for <linux-serial@vger.kernel.org>; Mon, 14 Feb 2022 14:07:29 -0800 (PST)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nJivO-00AkGx-Ej; Mon, 14 Feb 2022 21:30:22 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sergey Organov <sorganov@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH] serial: imx: leave IRTS disabled if using modem-control CTS
-Date:   Mon, 14 Feb 2022 13:30:20 -0800
-Message-Id: <20220214213020.685-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 14 Feb 2022 20:40:40 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04F312D204;
+        Mon, 14 Feb 2022 17:40:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644889230; x=1676425230;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=G3WniNW3qk38VLSGBcvoUT5eZOo/115lQFpvE9DOLoA=;
+  b=FosqmIwQjTbMgxrfJTM31Z5lweDV8LHZW/+dtqXIGmbdO1IwSM0ogSK5
+   +g17unJjg3ZbCRftR0zieD0dtcGaIMMGj8TGLVJldGD46Tmbc6RkEKeys
+   hXEBb2nHY0SbbFF7mqDAvhGuwkTqFrUXBWno0TrAGO7Vq+Pk+OVlzxJPK
+   CAOX+W41k59oAPU3FvWNsXvbVS6OP0AFa3g/ANqYeLQeSBHCPpx9zMWzi
+   SvKgBUXN2JBTKQQhDhQ53PZJO+81rJ+omZXpIRJP0jxXOUVHzE7CEoOQV
+   FPsI7VQ+F5AJ72F15kZxpCa93889yc49Z8GzcTWYp37Dqf+hU+0X4xSPu
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230862684"
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
+   d="scan'208";a="230862684"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 17:40:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; 
+   d="scan'208";a="624534774"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Feb 2022 17:40:28 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJmpP-00099B-Gd; Tue, 15 Feb 2022 01:40:27 +0000
+Date:   Tue, 15 Feb 2022 09:40:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
+Message-ID: <202202150928.sqyjprfB-lkp@intel.com>
+References: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-If using modem-control gpios for CTS we must leave IRTS disabled
-as otherwise the hardware will only transmit based on the internal RTS
-pin routed to it.
+Hi Andy,
 
-This allows hardware flow control to be used with cts-gpios.
+I love your patch! Yet something to improve:
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing linux/master linus/master v5.17-rc4 next-20220214]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220215/202202150928.sqyjprfB-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/810910d324cc80b092207d043651de696d293cbd
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+        git checkout 810910d324cc80b092207d043651de696d293cbd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/tty/serial/sh-sci.c: In function 'sci_parse_dt':
+>> drivers/tty/serial/sh-sci.c:3205:24: error: too few arguments to function 'dev_err_probe_ptr'
+    3205 |                 return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+         |                        ^~~~~~~~~~~~~~~~~
+   In file included from include/linux/node.h:18,
+                    from include/linux/cpu.h:17,
+                    from include/linux/cpufreq.h:12,
+                    from drivers/tty/serial/sh-sci.c:23:
+   include/linux/device.h:988:7: note: declared here
+     988 | void *dev_err_probe_ptr(const struct device *dev, int err, const char *fmt, va_list args)
+         |       ^~~~~~~~~~~~~~~~~
+
+
+vim +/dev_err_probe_ptr +3205 drivers/tty/serial/sh-sci.c
+
+  3187	
+  3188	static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+  3189						  unsigned int *dev_id)
+  3190	{
+  3191		struct device_node *np = pdev->dev.of_node;
+  3192		struct reset_control *rstc;
+  3193		struct plat_sci_port *p;
+  3194		struct sci_port *sp;
+  3195		const void *data;
+  3196		int id, ret;
+  3197	
+  3198		if (!IS_ENABLED(CONFIG_OF) || !np)
+  3199			return ERR_PTR(-EINVAL);
+  3200	
+  3201		data = of_device_get_match_data(&pdev->dev);
+  3202	
+  3203		rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+  3204		if (IS_ERR(rstc))
+> 3205			return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+  3206	
+  3207		ret = reset_control_deassert(rstc);
+  3208		if (ret) {
+  3209			dev_err(&pdev->dev, "failed to deassert reset %d\n", ret);
+  3210			return ERR_PTR(ret);
+  3211		}
+  3212	
+  3213		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
+  3214		if (ret) {
+  3215			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
+  3216				ret);
+  3217			return ERR_PTR(ret);
+  3218		}
+  3219	
+  3220		p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
+  3221		if (!p)
+  3222			return ERR_PTR(-ENOMEM);
+  3223	
+  3224		/* Get the line number from the aliases node. */
+  3225		id = of_alias_get_id(np, "serial");
+  3226		if (id < 0 && ~sci_ports_in_use)
+  3227			id = ffz(sci_ports_in_use);
+  3228		if (id < 0) {
+  3229			dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
+  3230			return ERR_PTR(-EINVAL);
+  3231		}
+  3232		if (id >= ARRAY_SIZE(sci_ports)) {
+  3233			dev_err(&pdev->dev, "serial%d out of range\n", id);
+  3234			return ERR_PTR(-EINVAL);
+  3235		}
+  3236	
+  3237		sp = &sci_ports[id];
+  3238		*dev_id = id;
+  3239	
+  3240		p->type = SCI_OF_TYPE(data);
+  3241		p->regtype = SCI_OF_REGTYPE(data);
+  3242	
+  3243		sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
+  3244	
+  3245		return p;
+  3246	}
+  3247	
+
 ---
- drivers/tty/serial/imx.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index df8a0c8b8b29..bf2bb987a51f 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -201,6 +201,7 @@ struct imx_port {
- 	unsigned int		old_status;
- 	unsigned int		have_rtscts:1;
- 	unsigned int		have_rtsgpio:1;
-+	unsigned int		have_ctsgpio:1;
- 	unsigned int		dte_mode:1;
- 	unsigned int		inverted_tx:1;
- 	unsigned int		inverted_rx:1;
-@@ -1674,8 +1675,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		if (ucr2 & UCR2_CTS)
- 			ucr2 |= UCR2_CTSC;
- 	}
--
--	if (termios->c_cflag & CRTSCTS)
-+	if (!sport->have_ctsgpio && termios->c_cflag & CRTSCTS)
- 		ucr2 &= ~UCR2_IRTS;
- 	if (termios->c_cflag & CSTOPB)
- 		ucr2 |= UCR2_STPB;
-@@ -2227,6 +2227,9 @@ static int imx_uart_probe(struct platform_device *pdev)
- 	if (of_get_property(np, "fsl,dte-mode", NULL))
- 		sport->dte_mode = 1;
- 
-+	if (of_get_property(np, "cts-gpios", NULL))
-+		sport->have_ctsgpio = 1;
-+
- 	if (of_get_property(np, "rts-gpios", NULL))
- 		sport->have_rtsgpio = 1;
- 
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
