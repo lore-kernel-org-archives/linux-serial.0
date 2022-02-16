@@ -2,91 +2,153 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBDEBC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Feb 2022 00:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B935C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Feb 2022 01:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245025AbiBPATe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 19:19:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58674 "EHLO
+        id S1343592AbiBPBvS (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 20:51:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244992AbiBPATU (ORCPT
+        with ESMTP id S1343586AbiBPBvR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 19:19:20 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EAB70332;
-        Tue, 15 Feb 2022 16:19:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644970727;
-        bh=7qzWDUNopK0bho5I5nYj0J78qRs15cAksVO/Q8GWxsw=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=eFU5XYTy+SpZQMBcsDZPHFLFN/heaRrGD12W2PBjm6CRz7xdnfZoP8qKfzPPfmuOc
-         3+6+eam14QnT0azUMnqf/WBAcu7kQiwsONOTFuW/SMqfsadjkX9ieNX/FDot6bU4kA
-         OfiAarqevJrMmzFMdzFEyCjsspbIhflL4hq93ViQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6KYl-1oMKQo09Jx-016e1C; Wed, 16
- Feb 2022 01:18:47 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 2 9/9] serial: atmel: remove redundant assignment in rs485_config
-Date:   Wed, 16 Feb 2022 01:18:03 +0100
-Message-Id: <20220216001803.637-10-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220216001803.637-1-LinoSanfilippo@gmx.de>
-References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
+        Tue, 15 Feb 2022 20:51:17 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF11FA235;
+        Tue, 15 Feb 2022 17:51:06 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id bt13so1637777ybb.2;
+        Tue, 15 Feb 2022 17:51:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zgZsN7oUvazPcA59OzEiJ3ZRYuzqTaOIlq6Gf9AbiHs=;
+        b=CerpXZ9trzLcnSio8lebrkpKr0iKgIeBUHWagYx6AmkV2p0fH2XUk90jJR1aJ7qenD
+         SLNi8VpVHHW8NTMu4LbSfL5BkQo+aeDwPEyagD5r0sazNmThl1XUm7amKO+e3wFkzjtR
+         Eq7djuNwjREq8C2TOf4Bcz1ACWH7dCJAoSLf5Tq9wJzpIozYhZdBw9kEZ7CnHernaWBl
+         gBWUsXJCL85OAkWBwSM5pl7q0VrXADeoHku13l9TFlwMxSNBPAQV3p27g3YNGbQItnXm
+         /vJSCsb3HbI7gIej6J9F6j1TTfktepD7i1sY6Zz5psSBD9wrbEa9FQ/TvK5TyVAukb0B
+         YWmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zgZsN7oUvazPcA59OzEiJ3ZRYuzqTaOIlq6Gf9AbiHs=;
+        b=3uw36DvFwejZQEEEnhk3VIwNvyuJA5+ehSs8EHfshU5UORHORTAbnv7vuRZJWUQCyQ
+         6hnEAJSjpjklNtuv7pES1W77UnmdV46Z77LC/s81R/4S6jXs4LhBXa656awZ0DZb7H27
+         T7Muja2+UKYqFkCdwZHgC/Stj9xBkiQ6q3k1pd3qO7kDuD5YKMmYdvWCI5MNaNJeJuJU
+         LN5CRXRW2ZgjD4llOf33QcMwSmNeLjn3ggy8BKJeitqK8nNbdbaEUvaW07a5Vw8wzYua
+         rMktJhVZ8othuZLZ9aydEZU3XK+MuIHpKxatuTPuHXzsrMWb9DFAY4cRk1lZlFlmNxqp
+         k2Vg==
+X-Gm-Message-State: AOAM532K2W1COvFnhT+Ff2gcEmoqmeqLsSH6PBF84AYk4zx41PlT6LPp
+        EUwo0MtEafkW7/BiGGxZs4MYB2BR+U+NW9gvRrLqTeJ2
+X-Google-Smtp-Source: ABdhPJzlFDa6naeVKOpgrMFYKIzN8aBeFhAICkRmdRT7vQxr/k+FFv+b7g3Ocm7b+8ED/BTEGcsf88ctDDcBVClw6yg=
+X-Received: by 2002:a25:6d87:0:b0:60f:fa38:fbd8 with SMTP id
+ i129-20020a256d87000000b0060ffa38fbd8mr363321ybc.560.1644976266023; Tue, 15
+ Feb 2022 17:51:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:zA2TdkclBElvUYZlMDu80hyoLmVC33BJetCeueVe0nw+noQF1V1
- L/Ab3lZ4xwopWgLe/eddWpj7m2jLKl0mONq2uA12enhs6iQJxOtpVQrJETJo4TM51LKZ6c0
- +Y+sXtpzeFP2FmWNq4E4DBv6OtQJnx4A4iFaBoQHkepgsEcvWh4VjPlJPmvVR2PxWjPRczs
- f23tAxie8X4MJm+pJhDow==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:XcvYYdJUjWo=:atOtBcfRRm4xT8HMi31JHV
- MbZ0MzpH38gakA0WlwxC9/E+/3FI3Z+FityUADReFMjaq3vTJ9I2e1YOyQ8BildGgsuXd2PyZ
- +AvQxESyYnhUifIsSHX2MWHyJvtWL4WEkDD/KDeyaEIZjcP+hEk778pUGf1Nkrh1RTmzKKw1B
- Lr37gftv5eooYIwdiR1RQ9yon/wx7d7yYbgFqUTCLp3YN4VhrYgfj6lqgy7pCvhiLHdY30aRm
- Hm0bkWxevHH2BvoFXGlZ4XdpixJxqB5aWhNMnZel39s5RTkP57rO6vk2c4odwvOPFBN1LH0yQ
- vlGZGCNK0n4ZqP8T9PzGxdxGkBMHlfeMo8DuDmXCg0x76823YlQzeJ7UYl6CaLDpku7RKEgua
- zcODuEHFEw3EGfhqnazMtsONy0qbQ1S4Qchw/vV94NRDGQFYTooq8dwzCDUADHUu2K3PQzHPi
- X3jBGID2ilgamDREi+CNmK/QNlf0iRCcRf4n9eUNCsfkAFBzKjg53h3Sscd+CiyhLS9ZJUPPm
- HLg1eVHcdvC8RRzSRmF8mQC45aNo//ROuotXzo8XzYM3ebtn3wJ/qb9oLg2ZnbGM0nn5lKAwM
- JDTXzZgHHmNh1wT6mk39LGoUh5Q+WR9Oo4CWjkMt6Uh8leEOeyPVGTW8onq01k81gTx4rX0b1
- /aSibjYS+4qMoptOh/CT/5h5zNmt33okgKLIkPJSWrD477+cU5X2JmvXj8vc9DDCVegtVTPG6
- bPvAF7yy+GhSCr0HR8Jft0y2qu3tACB/Mvj6dOPzVm0dkLmu9YZJuUGsBePTOK8O/zL+xXaLV
- 4nQpcbEPrPai/j7QLPrQ3/urza7oqfCO1WEJ+1l+4VODlSk0VjMkbq2YvpfwAMrzs6k2eOYxP
- m9VAhPFJQASLD9792OlrxmOuVcDt73IjYVlxlRffIck/0fKnJ5FiozF46os6DBMTDXVlDrnNi
- BpbCJugA5GMy1hUwNtAaW6axViMSoDL8/TzxtgqZvxLvif6yTKj0jhC2Q4jyTfrty/siL099k
- CjFptrr3RbHdWUyu1uOgXqDEabjS0WNKBHkjoqzVhI9EDsVw5kp9FKIVtUBhGcqSqIBStgeyg
- QCIQxHcXHriSmE=
+References: <1644917065-23168-1-git-send-email-hammerh0314@gmail.com>
+ <1644917065-23168-2-git-send-email-hammerh0314@gmail.com> <b50bf9ef-eb38-8e86-70f9-7a9a959be67b@canonical.com>
+In-Reply-To: <b50bf9ef-eb38-8e86-70f9-7a9a959be67b@canonical.com>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Wed, 16 Feb 2022 09:51:21 +0800
+Message-ID: <CAOX-t55+_AE9eKf3OwRb1pos7gZZBa1xVV7EXAEMDQ2mm5VS0Q@mail.gmail.com>
+Subject: Re: [PATCH v8 1/2] dt-bindings:serial:Add bindings doc for Sunplus
+ SoC UART Driver
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        p.zabel@pengutronix.de, wells.lu@sunplus.com,
+        "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgYXNzaWdu
-cyB0aGUgcGFzc2VkCnNlcmlhbF9yczQ4NSBzdHJ1Y3QgdG8gdGhlIHVhcnQgcG9ydC4KClNvIHJl
-bW92ZSB0aGUgYXNzaWdubWVudCBmcm9tIHRoZSBkcml2ZXJzIHJzNDg1X2NvbmZpZygpIGZ1bmN0
-aW9uIHRvIGF2b2lkCnJlZHVuZGFuY3kuCgpTaWduZWQtb2ZmLWJ5OiBMaW5vIFNhbmZpbGlwcG8g
-PExpbm9TYW5maWxpcHBvQGdteC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2Vy
-aWFsLmMgfCA0ICstLS0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMyBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgYi9k
-cml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKaW5kZXggMmQwOWE4OTk3NGEyLi4yYWI1
-ODlhM2Q4NmMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwor
-KysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKQEAgLTI5OSwxMSArMjk5LDkg
-QEAgc3RhdGljIGludCBhdG1lbF9jb25maWdfcnM0ODUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwK
-IAkvKiBSZXNldHRpbmcgc2VyaWFsIG1vZGUgdG8gUlMyMzIgKDB4MCkgKi8KIAltb2RlICY9IH5B
-VE1FTF9VU19VU01PREU7CiAKLQlwb3J0LT5yczQ4NSA9ICpyczQ4NWNvbmY7Ci0KIAlpZiAocnM0
-ODVjb25mLT5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7CiAJCWRldl9kYmcocG9ydC0+ZGV2
-LCAiU2V0dGluZyBVQVJUIHRvIFJTNDg1XG4iKTsKLQkJaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYg
-U0VSX1JTNDg1X1JYX0RVUklOR19UWCkKKwkJaWYgKHJzNDg1Y29uZi0+ZmxhZ3MgJiBTRVJfUlM0
-ODVfUlhfRFVSSU5HX1RYKQogCQkJYXRtZWxfcG9ydC0+dHhfZG9uZV9tYXNrID0gQVRNRUxfVVNf
-VFhSRFk7CiAJCWVsc2UKIAkJCWF0bWVsX3BvcnQtPnR4X2RvbmVfbWFzayA9IEFUTUVMX1VTX1RY
-RU1QVFk7Ci0tIAoyLjM0LjEKCg==
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=E5=
+=B9=B42=E6=9C=8815=E6=97=A5
+=E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=8810:53=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On 15/02/2022 10:24, Hammer Hsieh wrote:
+> > Add bindings doc for Sunplus SoC UART Driver
+> >
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
+> > ---
+> > Changes in v8:
+> >  - no change.
+> >
+> >  .../bindings/serial/sunplus,sp7021-uart.yaml       | 56 ++++++++++++++=
+++++++++
+> >  MAINTAINERS                                        |  5 ++
+> >  2 files changed, 61 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp=
+7021-uart.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/sunplus,sp7021-ua=
+rt.yaml b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+> > new file mode 100644
+> > index 0000000..894324c
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+> > @@ -0,0 +1,56 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +# Copyright (C) Sunplus Co., Ltd. 2021
+> > +%YAML 1.2
+> > +---
+> > +$id: "http://devicetree.org/schemas/serial/sunplus,sp7021-uart.yaml#"
+> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > +
+> > +title: Sunplus SoC SP7021 UART Controller Device Tree Bindings
+> > +
+> > +maintainers:
+> > +  - Hammer Hsieh <hammerh0314@gmail.com>
+> > +
+> > +allOf:
+> > +  - $ref: serial.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: sunplus,sp7021-uart
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    maxItems: 1
+> > +
+> > +  resets:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +  - resets
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    aliases {
+> > +            serial0 =3D &uart0;
+>
+> Incorrect indentation. With this fixed:
+>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>
+>
+> Best regards,
+> Krzysztof
+
+OK, will modify it. Thanks.
+
+Regards,
+Hammer
