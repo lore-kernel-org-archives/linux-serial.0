@@ -2,104 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1898C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Feb 2022 17:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A106C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Feb 2022 00:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240761AbiBOR0y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Feb 2022 12:26:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35102 "EHLO
+        id S244864AbiBPATR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 15 Feb 2022 19:19:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235706AbiBOR0x (ORCPT
+        with ESMTP id S242073AbiBPATR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Feb 2022 12:26:53 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD45193C8
-        for <linux-serial@vger.kernel.org>; Tue, 15 Feb 2022 09:26:43 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id u16so1963587pfg.12
-        for <linux-serial@vger.kernel.org>; Tue, 15 Feb 2022 09:26:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LivC78KXDmCeBXJxJsH/goPuWXuSn9BnrpWMwbtednQ=;
-        b=ZZ1NeVjRHkne81llSgnehU+Oly7EGCd8n2UfEjNW4RbULk/bt5g8voHGiQed0jj+mn
-         hEl82AhzVEcnTv40D4gjTiSeymrkFFLQBtQoEjw1hXGkmpcWNnEZPxc2ui49Oxdqxpyz
-         WBtDY4J3UVxZzANq6JUMWW+9PlbmpsAXHIh+vYn6sP9jQAXkrxs8PuPpOZSECtx4GcuV
-         2sXUMosIEAY9Y1f9Myt6udtgtXaFjoK8bgo1UNXlrvQ3SrYLXK9gQwxiL7SadEvKow4r
-         AN73bMDKbGXkiH4HsMI7hch/9XYB1gzlcioZSX3OsDXafQWSFZ1efVlr5drlXajird4W
-         4pbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LivC78KXDmCeBXJxJsH/goPuWXuSn9BnrpWMwbtednQ=;
-        b=GqSsDmZR9uBW3oigeKAXVwKOegtm1hRXU+RWUbyJizUU3ybp+p3djkFv38G1FIFpol
-         jxpTEPIi2scebwIxGyCHVmx5UYkH0FEHlO+UQluuFLjvGZgMoKVvz8DCwO8YWG/BBPbg
-         7SvRB3U5I0n1PoozPSR9wTbNO/OARll93Rd7UzQO2fKthkIKVWbX4irQZnL6a5+mdXJW
-         FmY6vfHYIAGizl0diCDs0a77SEbQxkhiRQ5AqaVgQ31DAPqY74lS+jPob8YsCOEetu6/
-         9WwaS6jkOuLPfig8+eyrhTvgONMYD9Tu9Rn1+ESrYYkVF5x9wsJQ5TZlwf0hXaNwPUjO
-         D1uA==
-X-Gm-Message-State: AOAM531E2sn4axf+tp64Hs11dMrMqZt1I63kaoxAEOvl5HsVkOj/J0+8
-        Ich1aOTJOOfGF5Uld7Jb5s7ye7Em70r527NkWHkZ7A==
-X-Google-Smtp-Source: ABdhPJzf97Fv+GmhmthjM7cQZ+yiNvj/uOi69amBBwTr/Gv6s6j9trUhmKnj0GqfEgE0yQ0sylShhp6pIXxc6ja8LLg=
-X-Received: by 2002:a63:5b62:: with SMTP id l34mr4397652pgm.440.1644946003281;
- Tue, 15 Feb 2022 09:26:43 -0800 (PST)
+        Tue, 15 Feb 2022 19:19:17 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E14D4C84;
+        Tue, 15 Feb 2022 16:19:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644970718;
+        bh=qCM/tv58byTKuTfcOO+5ZjAIYqyDsU/7yoiNZduPVbc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=WqvGICTlO3QdrUi5MQ+zmFBuFLCQuHxsrFFnXwQ83v7S9qtTnarhV/KZ5qbNirRzp
+         1Z4dsWzpe8DWJQMJOk5h/gpkQbom8kgZQVmdNZTkEwIRfukIMFnz82oQrbdYbGJJx4
+         m12Xpz1XOFaeVipiezQgVpOxxEKfyNloiPpvPfYc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MDQeK-1nSPlY1DnS-00AaBh; Wed, 16
+ Feb 2022 01:18:38 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        u.kleine-koenig@pengutronix.de
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
+Subject: Move RS485 implementation from drivers to serial core
+Date:   Wed, 16 Feb 2022 01:17:54 +0100
+Message-Id: <20220216001803.637-1-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220214213020.685-1-tharvey@gateworks.com> <9d5cff18-5493-f6dd-4bd6-9bafa2a503a7@camlingroup.com>
-In-Reply-To: <9d5cff18-5493-f6dd-4bd6-9bafa2a503a7@camlingroup.com>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Tue, 15 Feb 2022 09:26:32 -0800
-Message-ID: <CAJ+vNU0sWGsQa=YwLE9Ng34-DhJF=YR3oTV+q--KcgTMCjBa2w@mail.gmail.com>
-Subject: Re: [PATCH] serial: imx: leave IRTS disabled if using modem-control CTS
-To:     =?UTF-8?Q?Tomasz_Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Sergey Organov <sorganov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:WAOnSBoen9V/5Ruce80Stg/qtCneLtlKhs4Efq3WOPNDl9vx812
+ AjuNO6OVHB2qpJEhdKxARvGUBboW4QwT5JUbhIiKm870Of0oy1PrPKv11/BYFNHwFMcF1pK
+ oXTiRPgTtBfY4hf10zi3f0WB134p6/jo/q09Yw+j1Cn8cFBywvpbxiq0Hsm0RZKnU9u6nNU
+ 0wzqd8bqcWglo34rlg9xQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:WciePH+zpns=:gVp0/EQtHdBFUAPDyztL58
+ a+fRvQ8NtE/l5J+sdgdB/sIa8fYt2DvHdovXuAAL4L/Vka5J3GCXVWMmHYIcCBxP+PQ5cxAk7
+ AfqI3Uld9xebHbosEKWVLnhKdM97q35K66UWrZJedNbjhlFZH+Bv7o7X/aPNOj2Bfm+iu5gCo
+ /jFPMs7kLFh9CqQOZ3bN2IUOrk+0K0cx/Euv8MK1aG4742ifU7/8swp8AJW5gvrN+aKivDhgl
+ Ltyi4h0r6YivyUI3Myv2vaKkr0YuovO/2xrPa7kSGdBK2SRMrlqaFpJk7Lm1lf/G0SMy/gWYr
+ 8YElUP1eD0i7XtqpENaUy87S+6/sAzm2lJChs50/c/yR59u/yndmuk8RNX9zUukejWrLkFBUY
+ MKrSzm1DQy+w2aVOnKyHzbjhT7Y8ar9sRwMi7le1Lc9SPBFQYYKO0layj64o9YXq8eBsnc7on
+ ZWgfLPgwPhvXNbQDPQOquUbSLQxCOSzr9LeJfPfjfAo42MCgEhzkEu5I95MVmzSrCRUJkkPM0
+ ZkOAFFwHNK8N5jKAiQ7dDYJYSc+XiCexBsqQPXE3Ky/yF6NTkMK+Ejl6bqS4huMy+7w/y2BWn
+ twjsW3N35QTEqqcCiAlvdo9AKOFzU6FF6exZ/tqUrs2Oi4OO4iIPL1rsNdK4y3yNQiw5ZIcun
+ oiXwBCcCy4gzioGKFp+bC0rCBrNfY5YbaWuMB6toYlS/vDVtTvs052domh+pcnPbGedfpoo1Q
+ TR5+hFWdv7vd9vLlVN33yRYbzGQlruN5QR9jM5YExvOMlSkoM+qkiJ+Z+2jb56AflA48Q1rYw
+ PYyJ5mhkxuInLTA8z7YZ9Kv8SGGx6Q+yzahwXs9Ejg39eW1QaBZ/n1nb32XVIyxN8xUbkm/ys
+ CLvehf234fMZQ4CuMwOvtABaD6mAedR635B2+kkG/BTWH1UkmNrlWMlR3JoBxekUxa64d9vis
+ XwI0RYTGq7utHU4a6RCusjt+sS85XFnDVd4hTxt2QGCHpH9FfyBU2OSG297aKLixX6Jvlf05D
+ vlYP7epc7dQdpRWO7HUfOzSsoOxcxKiLf6pV2EQ0OLcpQxRMzrl22K6LRWSqXaGJXTcg5TzQH
+ uKuKr0ZKa/c984=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:03 PM Tomasz Mo=C5=84 <tomasz.mon@camlingroup.co=
-m> wrote:
->
-> On 14.02.2022 22:30, Tim Harvey wrote:
-> > If using modem-control gpios for CTS we must leave IRTS disabled
-> > as otherwise the hardware will only transmit based on the internal RTS
-> > pin routed to it.
-> >
-> > This allows hardware flow control to be used with cts-gpios.
->
-> This hardware flow control sounds quite limited. Once CTS becomes
-> inactive, the transmitter will still output all characters from TxFIFO.
-> Transmitting whole TxFIFO already sounds quite bad, but that's the best
-> case scenario where gpio interrupt is handled right away without any
-> delay (so more than TxFIFO characters can actually be transmitted).
->
-> Does the internal RTS default to inactive when it's not pinmuxed to the
-> actual pin? If so, then controlling UCR2_IRTS based on CTS gpio could
-> halt the transmission when the TxFIFO is not empty.
->
-
-Tomasz,
-
-I agree that the increased latency makes using a GPIO for CTS
-(software controlled) not as good as one pinmuxed into the UART block
-directly (hardware controlled) but without this patch GPIO for CTS
-does not work at all because the internal RTS defaults to inactive
-when its not pinmuxed. For many applications the latency is not an
-issue.
-
-Best Regards,
-
-Tim
+VGhpcyBwYXRjaCBzZXJpZXMgaXMgYW4gYXR0ZW1wdCB0byBzaW1wbGlmeSByczQ4NSBpbXBsZW1l
+bnRhdGlvbiBpbiBkcml2ZXJzCmJ5IG1vdmluZyB0aGUgZm9sbG93aW5nIHRhc2tzIG91dCBvZiB0
+aGUgZHJpdmVycyBpbnRvIHRoZSBzZXJpYWwgY29yZToKCi0gZW5zdXJlIHNhbmUgUlRTIHNldHRp
+bmdzOiBpbiBjYXNlIG9mIGFuIGludmFsaWQgY29uZmlndXJhdGlvbiAoYm90aCBSVFMKICBhZnRl
+ciBzZW5kIGFuZCBSVFMgb24gc2VuZCBzZXQgb3IgYm90aCB1bnNldCkgZW5hYmxlIFJUUyBvbiBz
+ZW5kIGFuZAogIGRpc2FibGUgUlRTIGFmdGVyIHNlbmQKCi0gbnVsbGlmeSB0aGUgcGFkZGluZyBm
+aWVsZCBvZiB0aGUgc2VyaWFsX3JzNDg1IHN0cnVjdCBiZWZvcmUgaXQgaXMKICByZXR1cm5lZCB0
+byB1c2Vyc3BhY2UKCi0gY29weSB0aGUgY29uZmlndXJhdGlvbiBzdG9yZWQgaW4gdGhlIHNlcmlh
+bF9yczQ4NSBzdHJ1Y3QgdG8gdGhlIHBvcnQKICBjb25maWd1cmF0aW9uIGlmIHNldHRpbmcgdGhl
+IGNvbmZpZ3VyYXRpb24gaW4gdGhlIGRyaXZlciB3YXMgc3VjY2Vzc2Z1bGwKCi0gbGltaXQgdGhl
+IFJUUyBkZWxheXMgdG8gMTAwbXMKCgpSZWR1bmRhbnQgY29kZSBoYXMgYmVlbiByZW1vdmVkIGZy
+b20gdGhlIGZvbGxvd2luZyBkcml2ZXJzIGZvciBub3c6CgotIGF0bWVsCi0gZnNsX2xwdWFydAot
+IGFtYmEKLSBpbXgKLSBtYXgzMTB4Ci0gb21hcC1zZXJpYWwKLSBzYzE2aXM3eHgKLSBzdG0zMi11
+c2FydAoKVGhlIGNvZGUgaGFzIGJlZW4gdGVzdGVkIHdpdGggdGhlIGFtYmEgcGwwMTEgZHJpdmVy
+LgoKQ2hhbmdlcyBpbiB2MjoKLSB1c2UgYSBtYWtybyBmb3IgbWF4IFJUUyBkZWxheXMgYW5kIGNv
+bW1lbnQgaXQgKGFzIHJlcXVlc3RlZCBieSBKaXJpKQotIGFkZCBhIGNvbW1lbnQgY29uY2Vybmlu
+ZyB0aGUgbWVtc2V0IG9mIGEgc3RydWN0dXJlcyBwYWRkaW5nIGZpZWxkCi0gY29ycmVjdCB0eXBv
+cyBpbiB0aGUgY29tbWl0IG1lc3NhZ2UgKGZvdW5kIGJ5IFV3ZSkgCi0gcmVwaHJhc2UgYWxsIGNv
+bW1pdCBtZXNzYWdlcyB0byBtYWtlIG1vcmUgY2xlYXIgdGhhdCBmdW5jdGlvbiAKICB1YXJ0X3Nl
+dF9yczQ4NV9jb25maWcoKSBoYXMgYmVlbiBleHRlbmRlZCBieSBjaGVja3MgYW5kIG90aGVyCiAg
+ZnVuY3Rpb25hbGl0aWVzIChhcyByZXF1ZXN0ZWQgYnkgVXdlKQoKCgo=
