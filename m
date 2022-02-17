@@ -2,99 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC64C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Feb 2022 17:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 915B1C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 08:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233989AbiBPRnz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Feb 2022 12:43:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46006 "EHLO
+        id S234937AbiBQIHS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Feb 2022 03:07:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237299AbiBPRnz (ORCPT
+        with ESMTP id S229933AbiBQIHP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Feb 2022 12:43:55 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1531E2B0B3B
-        for <linux-serial@vger.kernel.org>; Wed, 16 Feb 2022 09:43:42 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nKOKr-0002mV-1E; Wed, 16 Feb 2022 18:43:25 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nKOKn-00H0SM-3Z; Wed, 16 Feb 2022 18:43:20 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nKOKl-003bGa-LT; Wed, 16 Feb 2022 18:43:19 +0100
-Date:   Wed, 16 Feb 2022 18:43:19 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        alexandre.belloni@bootlin.com, mcoquelin.stm32@gmail.com,
-        richard.genoud@gmail.com, festevam@gmail.com,
-        s.hauer@pengutronix.de, linux@armlinux.org.uk,
-        nicolas.ferre@microchip.com, alexandre.torgue@foss.st.com,
-        ludovic.desroches@microchip.com, lukas@wunner.de,
-        linux-imx@nxp.com, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org, shawnguo@kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2 7/9] serial: imx: remove redundant assignment in
- rs485_config
-Message-ID: <20220216174319.rajioisll5b5pfpe@pengutronix.de>
-References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
- <20220216001803.637-8-LinoSanfilippo@gmx.de>
+        Thu, 17 Feb 2022 03:07:15 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 00:07:01 PST
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25A527DF38
+        for <linux-serial@vger.kernel.org>; Thu, 17 Feb 2022 00:07:01 -0800 (PST)
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202202170805575f1ce126788ec380f6
+        for <linux-serial@vger.kernel.org>;
+        Thu, 17 Feb 2022 09:05:57 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=F+BlRq60XbUp67HLkZ4sGGjzRXyVOCRM3ka7rW5wSAU=;
+ b=ZO10HjJooR03WNL9aiBSwYoD9qjYk2bhZXBogRMnsduAAJ3bW45nbx4rpxGL9Z3Fhb1YkG
+ 0OCelm4G77UzZYfWshGi9QEavc6NXelCutn0dErL70V+bM0SSyabCz2pW9JOJtyKHuZvHFEL
+ KP1mLqUAxYViyp1iA7+aiguF7L+ok=;
+From:   daniel.starke@siemens.com
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 1/1] tty: n_gsm: fix encoding of command/response bit
+Date:   Thu, 17 Feb 2022 00:05:50 -0800
+Message-Id: <20220217080555.5387-2-daniel.starke@siemens.com>
+In-Reply-To: <20220217080555.5387-1-daniel.starke@siemens.com>
+References: <20220217080555.5387-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="da2lbr7flv5tn5tr"
-Content-Disposition: inline
-In-Reply-To: <20220216001803.637-8-LinoSanfilippo@gmx.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-7517:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
+C/R (command/response) bit. Table 1 shows that the actual encoding of the
+C/R bit is inverted if the associated frame is sent by the responder.
 
---da2lbr7flv5tn5tr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The referenced commit fixed here further broke the internal meaning of this
+bit in the outgoing path by always setting the C/R bit regardless of the
+frame type.
 
-On Wed, Feb 16, 2022 at 01:18:01AM +0100, Lino Sanfilippo wrote:
-> In uart_set_rs485_config() the serial core already assigns the passed
-> serial_rs485 struct to the uart port.
->=20
-> So remove the assignment in the drivers rs485_config() function to avoid
-> reduncancy.
->=20
-> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+This patch fixes both by setting the C/R bit always consistently for
+command (1) and response (0) frames and inverting it later for the
+responder where necessary. The meaning of this bit in the debug output
+is being preserved and shows the bit as if it was encoded by the initiator.
+This reflects only the frame type rather than the encoded combination of
+communication side and frame type.
 
-Thanks
-Uwe
+Fixes: cc0f42122a7e ("tty: n_gsm: Modify CR,PF bit when config requester")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 0b1808e3a912..c012733e0402 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -448,7 +448,7 @@ static u8 gsm_encode_modem(const struct gsm_dlci *dlci)
+  *	gsm_print_packet	-	display a frame for debug
+  *	@hdr: header to print before decode
+  *	@addr: address EA from the frame
+- *	@cr: C/R bit from the frame
++ *	@cr: C/R bit seen as initiator
+  *	@control: control including PF bit
+  *	@data: following data bytes
+  *	@dlen: length of data
+@@ -548,7 +548,7 @@ static int gsm_stuff_frame(const u8 *input, u8 *output, int len)
+  *	gsm_send	-	send a control frame
+  *	@gsm: our GSM mux
+  *	@addr: address for control frame
+- *	@cr: command/response bit
++ *	@cr: command/response bit seen as initiator
+  *	@control:  control byte including PF bit
+  *
+  *	Format up and transmit a control frame. These do not go via the
+@@ -563,11 +563,15 @@ static void gsm_send(struct gsm_mux *gsm, int addr, int cr, int control)
+ 	int len;
+ 	u8 cbuf[10];
+ 	u8 ibuf[3];
++	int ocr;
++
++	/* toggle C/R coding if not initiator */
++	ocr = cr ^ (gsm->initiator ? 0 : 1);
+ 
+ 	switch (gsm->encoding) {
+ 	case 0:
+ 		cbuf[0] = GSM0_SOF;
+-		cbuf[1] = (addr << 2) | (cr << 1) | EA;
++		cbuf[1] = (addr << 2) | (ocr << 1) | EA;
+ 		cbuf[2] = control;
+ 		cbuf[3] = EA;	/* Length of data = 0 */
+ 		cbuf[4] = 0xFF - gsm_fcs_add_block(INIT_FCS, cbuf + 1, 3);
+@@ -577,7 +581,7 @@ static void gsm_send(struct gsm_mux *gsm, int addr, int cr, int control)
+ 	case 1:
+ 	case 2:
+ 		/* Control frame + packing (but not frame stuffing) in mode 1 */
+-		ibuf[0] = (addr << 2) | (cr << 1) | EA;
++		ibuf[0] = (addr << 2) | (ocr << 1) | EA;
+ 		ibuf[1] = control;
+ 		ibuf[2] = 0xFF - gsm_fcs_add_block(INIT_FCS, ibuf, 2);
+ 		/* Stuffing may double the size worst case */
+@@ -611,7 +615,7 @@ static void gsm_send(struct gsm_mux *gsm, int addr, int cr, int control)
+ 
+ static inline void gsm_response(struct gsm_mux *gsm, int addr, int control)
+ {
+-	gsm_send(gsm, addr, 1, control);
++	gsm_send(gsm, addr, 0, control);
+ }
+ 
+ /**
+@@ -1800,10 +1804,10 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 		goto invalid;
+ 
+ 	cr = gsm->address & 1;		/* C/R bit */
++	cr ^= gsm->initiator ? 0 : 1;	/* Flip so 1 always means command */
+ 
+ 	gsm_print_packet("<--", address, cr, gsm->control, gsm->buf, gsm->len);
+ 
+-	cr ^= 1 - gsm->initiator;	/* Flip so 1 always means command */
+ 	dlci = gsm->dlci[address];
+ 
+ 	switch (gsm->control) {
+-- 
+2.25.1
 
---da2lbr7flv5tn5tr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmINN7QACgkQwfwUeK3K
-7AlQGAf/ac6fGA3JlB+w+RAXYkZDqG//NDFsdlUzOp7B8hIJ80nDvlVkn9v/gp57
-rMUw1/NgNSpn7hyc+3oy9WKurjdN9U2jBd9aIjas2NT5aWJv+AOOmere37nv5N0O
-1PUkAm33WZ4vgu9ldLE3al/zvpxjJghaycEZx7+Udtgu7NjtnkMus8XqDQ1TEx6D
-RaucYDkywS0Um62zqye+r9kHxEA9wBvdrsHPRf0cw0SpjU01SQ002+zfgpw0BZNh
-R+Bmr8a/V6ays42x/njh9U5yNI/vJ4xWWMdZUfSz9u9UYTwArtJlh/hid7FQp6AK
-e0RXvaXZKEdVXnU6KKl4m8SoamPP5g==
-=S/7p
------END PGP SIGNATURE-----
-
---da2lbr7flv5tn5tr--
