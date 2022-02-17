@@ -2,32 +2,32 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C37C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 21:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3827C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 22:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234005AbiBQVgv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Feb 2022 16:36:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60092 "EHLO
+        id S230007AbiBQWLy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Feb 2022 17:11:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiBQVgu (ORCPT
+        with ESMTP id S238460AbiBQWLx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Feb 2022 16:36:50 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897666622F;
-        Thu, 17 Feb 2022 13:36:34 -0800 (PST)
+        Thu, 17 Feb 2022 17:11:53 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0253D43AF9;
+        Thu, 17 Feb 2022 14:11:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645133771;
-        bh=sh1DPaASGW9V2zkfziMd7+l7s/QlEn4SX5JpX6nJ3v0=;
+        s=badeba3b8450; t=1645135875;
+        bh=0KjJ3nEZ8kESxVKEPQdyOatinf7wfIYti/GBayHCGqs=;
         h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Sv9dWkeaeIzH6NL8B8qO33aTGzXF3HAl1zMMXwbQNLdhi71L+zlgBC6dtaKPZUpFx
-         xzOZwnQuqLJNu1Wdknq3ofxY0lqbUeC/Sz8teI9J5qNLX3AcU6AUrjTK/8DGdejZps
-         pMc152GcOaHIrSnBodvvbrxqxqmWpNBiK56mQ3KU=
+        b=GmFoXBFZtF7bBbOltR52vLe24JIWWh3AyXmZtMGhOhlX40FC5TkqT2ERjA78Sn3U/
+         gK6Z7FPAeGQy056X+i+asAfKhnHBEtREp0v5+KtPK5WFvexXl7wJvcaeS8HaqPQcQ6
+         TqxHpHErb89NpccJ86eaxXQd4EbERvhEunLNHIpo=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from [192.168.178.78] ([149.172.237.68]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M6UZv-1nNGDq1hlJ-006vSG; Thu, 17
- Feb 2022 22:36:11 +0100
-Subject: Re: [PATCH 2 1/9] serial: core: move RS485 configuration tasks from
- drivers into core
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MhlKs-1nyIc72WsC-00dnCU; Thu, 17
+ Feb 2022 23:11:15 +0100
+Subject: Re: [PATCH 2 4/9] serial: sc16is7xx: remove redundant check in
+ rs485_config
 To:     Lukas Wunner <lukas@wunner.de>
 Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         u.kleine-koenig@pengutronix.de, linux@armlinux.org.uk,
@@ -39,131 +39,72 @@ Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com
 References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
- <20220216001803.637-2-LinoSanfilippo@gmx.de>
- <20220217113354.GA7826@wunner.de>
+ <20220216001803.637-5-LinoSanfilippo@gmx.de>
+ <20220217114732.GB7826@wunner.de>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <03604709-fcc5-f528-c5cf-5b8c2d0abfd0@gmx.de>
-Date:   Thu, 17 Feb 2022 22:36:09 +0100
+Message-ID: <c10505d2-f8ee-0566-af28-45da59ecd99b@gmx.de>
+Date:   Thu, 17 Feb 2022 23:11:14 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20220217113354.GA7826@wunner.de>
+In-Reply-To: <20220217114732.GB7826@wunner.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:PcdHdcVTNQnY7ZlbLSzK1FYNltMg8wlri9F+ts0o/nBFWnhsy/c
- Hlc15FyNnhioUoOXzxbM8tXwQoeXFbMUBz1tsYOT4YJoUK0jxiliABFzWMk9sHnGe7vPSB1
- OyL/7wbDzgYfoW1TZ1NlBmTePPoZTBDHT1dpysRDSix2U1GGAnFYItw5L+7q9SUsjEuzSNS
- YPgzJx7tkshMeWH06iKaw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:xXdSJIbiOW0=:L/EqqrP/p+Od95kAdJz4ji
- PkLd8shzbwi6IeBHYYnj1MpaKOEH7qWPcUeLnr0TWq6flKTKD8XLn9GGoJIhRJrSNXXVSH95c
- 12s98dOcePln5dU0gyx9Q9xBDG8q4JWPEkz7DP2UgxIuuDQlaug4yvZZtDVctcvxznyRVS42n
- QsZPDSAtmdWHZURFupjPukhALS3V6wgpaKE80LMMFVrHQtqib6mgr3Jau5yC53RiHjxNfNY/w
- Pa5rYvJe9DJZJHo7kL5tWE6J7N9m7lCY/RKIqp6LooTJ2dLlY+sDA71Nm/tsqVoScG4XqY9VE
- E7TfCN/ySf7sySMWgYE7q0fRZ40V+F5u+LG69UCiYTrQQk5330n9WmE8u18qoyvkbNrTyr6DR
- KbIQBYYMeueM3iENiL93ITWMV3sQtCdnOXTxepFwLspvdfy2aTxKriuptJe4eEv9jwhJDMKwk
- l1IEW1UWsOAr6g3Z+mSGl7URXYU/lIenXz6/D0YsBRi3z04bkMYupb1h1XfaBMd8KZuMnLWsK
- Lloj6OGuzpsSlC4fMe/Eua2+aTDfVN1Nbre7ytJI66S6DeB8Fs4xYkMjX6cK2Vl42rb3ip5Jy
- yaV0m0g3CohOJqHAiHaj7Uo0/hlhDa3svNBrohCs3wi10iSzwF5ISuZKmkkIM8vegnqDpsOXD
- WMhpDWmJUHbhvxehZq3vVQsqG6/mIclu4ZkKCbeeuQ+NDgxp2iI7YGxBalUcwZPnpHnTAt2m7
- HlAFYgdKT/v37sQzewNVPb9JaByjNFW7n3/Dls4G/QKwzt8l4FBveKuFkmSuvaoYWQIyrLuIi
- giW9tw65el1SK9hvIHR5lC5178r1nZvxQuG/4MGiFdt+0PGCTvETeHJ29Ag/bQJIx88ZfzgpR
- mM2DkCdmhNOflrjfl7q9A2HnfLGbcR1Z5KLdv2YOojDJnk2/gzwDc/SS6kSmPQVCcK1J9utq9
- HfxbOdlA7FK4ffiIjW5/BdC+JOplPo7udayLSrdLc24EBoatBHeuFC2c4jtm4qXeHLR73yg7a
- 5oW4SXhSpUxDU5Xwv+nVeXxTequntWXJqZE+Htr5k5y2CYnOG3mzoUamUmcXp1+Cyga4die2g
- ZCASi7QtpGgsNU=
+X-Provags-ID: V03:K1:LDlBc3jcPBZ7hh4E3miuvkAn8yQxJNZHrOgWRkl4+bOdByau3rY
+ Xq28u5HUzXHh4aJCAZCXN+d7oF605/F76LP2lpGFZpcyQsejf/m57p88F91d9XXP1x/QtFz
+ 1WGpW8CArQel2FNazX6c2Klp2tf1UabxpPnQpfPR07Go5sfN457NFSRHux0qYbBT/zqLJut
+ 1+CQgj4eQSO38fJS2nrHQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZshnL656ssU=:k7WyTvNEtAyT+v2CPkGHo+
+ Y+jrlwuuTPjrZICC94MIaWOuRkmHK/bE9pZj3HotzSqTTPOIW00N2ph03i1vC95xLvEzvsXjy
+ m8D6h2c7/7usoldpHL0E7t4twQ005yho7Q4KaZzJG9t23vurgOIRpsvC+f8AdZdQkRSfMK6aF
+ RrelfYXvNbg8LujGu93pilNjtLuypY2pKeS3zBI/sG91Cj4HrO5wL7mX2mp1GQHqFzPNYrjZe
+ hQw3bv2sPUNFBMoTFPbXVN6nsTNwTDe1MUllUXO3v/c2ly3J5jbqRs1hMjNdXVcEvXgOvANIn
+ iSuFU7n7cklDqVB9XHRYmujCXQF1EgpVj3Zp+vAu1aMwQsNiv+PBhzc0wf3ou0kZW2zxvPnnQ
+ +ODjGmEa2xfu0k9E9w8wYL6BNl8indogvZIu0ihYYtfle+7S4RxNfQ/Paec0sTMPQZqd9wDv1
+ viZToYaq4SAGM15DjALr0nvPp/zF27qaoGUXlJA+dO/Wxu0+8qlpd8WayRsmTR0uws+m4aHAc
+ Y4UvZRgAQLPWB/MdIIGLLhufsbsaxudm4CtR/iZnW4GDFtZ69knjofpZXY8DgtpwTOPrPpmgi
+ me8lqnxFZKoaxElxvr0PGFT+9kGV/atUxSx4g5zBs5W8ZJh4saiJQ6MH1k/m9Twl1cwiwBuqZ
+ Kv0ebKHZffWd/YuzEOq4SDGANPCwP6xXPKhCqggaTX/m50BHGhXT1eUIFL8M1/MSB8+kQDZ3P
+ X1CVXeA8WLF/t/WmtYU1w5BggTH15yomcabKrlLk2bPMC4xWCn8VV4QB2BG7AjpYfIvPjQFxC
+ WcscmQv9yldtvjOTYfz1w2kHSoAeHkcLReDJEDIIYKmhBOSLAEqlwW6vNSYBmrnmBMCwWi28h
+ dhjk2CdmK3D82nO0AlnZgtraHGQKZoUdZbXlEgtc9kwwagPNAyCYYnudLgVJG8opyO0Al/gLv
+ lEB1JMUSpOEQ4UEJdQbZc78WqXmpe2iDSLqvzwgLtK6R+3LOD0fH3HahNSFmkMDr3nxUpJw2h
+ A5J5WrbCSrm2YjevI0WtdLoyGPLsaSEQhmUj11unv+uEuauZv/45jJ/jDetY31GF/2FJ1SXTe
+ kADmNWyVlFwq34=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
 Hi,
 
-On 17.02.22 at 12:33, Lukas Wunner wrote:
-> On Wed, Feb 16, 2022 at 01:17:55AM +0100, Lino Sanfilippo wrote:
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -1282,8 +1282,26 @@ static int uart_set_rs485_config(struct uart_por=
-t *port,
->>  	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
->>  		return -EFAULT;
+On 17.02.22 at 12:47, Lukas Wunner wrote:
+> On Wed, Feb 16, 2022 at 01:17:58AM +0100, Lino Sanfilippo wrote:
+>> --- a/drivers/tty/serial/sc16is7xx.c
+>> +++ b/drivers/tty/serial/sc16is7xx.c
+>> @@ -959,16 +959,6 @@ static int sc16is7xx_config_rs485(struct uart_port=
+ *port,
+>>  	struct sc16is7xx_one *one =3D to_sc16is7xx_one(port, port);
 >>
->> +	/* pick sane settings if the user hasn't */
->> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
->> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
->> +		rs485.flags |=3D SER_RS485_RTS_ON_SEND;
->> +		rs485.flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->> +	}
+>>  	if (rs485->flags & SER_RS485_ENABLED) {
+>> -		bool rts_during_rx, rts_during_tx;
+>> -
+>> -		rts_during_rx =3D rs485->flags & SER_RS485_RTS_AFTER_SEND;
+>> -		rts_during_tx =3D rs485->flags & SER_RS485_RTS_ON_SEND;
+>> -
+>> -		if (rts_during_rx =3D=3D rts_during_tx)
+>> -			dev_err(port->dev,
+>> -				"unsupported RTS signalling on_send:%d after_send:%d - exactly one=
+ of RS485 RTS flags should be set\n",
+>> -				rts_during_tx, rts_during_rx);
+>> -
 >
-> The policy you're enforcing here is:  If settings are nonsensical,
-> always default to active-high polarity.
->
-> However some drivers currently enforce a completely different policy:
-> E.g. with 8250_lpc18xx.c, if SER_RS485_RTS_ON_SEND is set, use active-hi=
-gh
-> (and fix up SER_RS485_RTS_AFTER_SEND), else use active-low polarity.
-> This yields a different result compared to your policy in case both bits
-> are cleared.
->> Similarly, sc16is7xx.c defaults to active-low if SER_RS485_RTS_AFTER_SE=
-ND
-> is set, else active-high polarity.  This yields a different result compa=
-red
-> to your policy in case both bits are set.
->
-> You risk breaking existing user space applications with this change
-> if those applications specify nonsensical polarity settings.
+> Hm, patch 1 in this series doesn't emit such a message, so unlike now,
+> users will no longer be warned that they passed in nonsensical settings.=
+..
 >
 
-Ok, but IMHO this is a very small risk. I cannot imagine that there
-are many (or any at all) userspace applications that do not
-specify any RTS setting and then rely on a driver specific fallback
-implementation. I would not like to remove the RTS check from
-uart_set_rs485_config() only because of that.
-
->
-> I happen to have created a similar commit to this one a month ago
-> and I came to the conclusion that all one can do is offer a library
-> function uart_sanitize_rs485_mode() which drivers may elect to call
-> if that helper's policy is identical to what they're doing now:
->
-> https://github.com/l1k/linux/commit/637984111e42
->>
->> +
->> +	rs485.delay_rts_before_send =3D min_t(unsigned int,
->> +					    rs485.delay_rts_before_send,
->> +					    SER_RS485_MAX_RTS_DELAY);
->> +	rs485.delay_rts_after_send =3D min_t(unsigned int,
->> +					   rs485.delay_rts_after_send,
->> +					   SER_RS485_MAX_RTS_DELAY);
->
-> Nonsensical delays may not only be passed in from user space via ioctl()=
-,
-> but through the device tree.  That's another reason to use a library
-> function:  It can be called both from the ioctl() as well as after (or i=
-n)
-> uart_get_rs485_mode().
->
-
-The idea of my patch set is actually to provide a common behavior for the
-RS485 configuration by userspace similar to what uart_get_rs485_mode()
-provides for the configuration by device tree.
-
-However with the solution you propose sanity checks for userspace
-configuration are still up to each single driver and thus can vary
-from driver to driver or not be implemented at all. I dont think that
-this is the better approach in the long term.
-
-
->
->> +	/* Return clean padding area to userspace */
->> +	memset(rs485.padding, 0, sizeof(rs485.padding));
->
-> Unlike the polarity and delay handling, this one makes sense.
->
-> Thanks,
->
-> Lukas
->
+what about logging a warning for both RTS polarity and delay correction?
 
 Regards,
 Lino
