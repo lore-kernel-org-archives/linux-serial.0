@@ -2,34 +2,39 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1DDC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 09:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E65C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 09:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238827AbiBQJqq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Feb 2022 04:46:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57276 "EHLO
+        id S230138AbiBQJsK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Feb 2022 04:48:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238824AbiBQJqp (ORCPT
+        with ESMTP id S229925AbiBQJsJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Feb 2022 04:46:45 -0500
+        Thu, 17 Feb 2022 04:48:09 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2261B62EF;
-        Thu, 17 Feb 2022 01:46:31 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2891705F;
+        Thu, 17 Feb 2022 01:47:56 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3513622205;
-        Thu, 17 Feb 2022 10:46:27 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5C32A22205;
+        Thu, 17 Feb 2022 10:47:52 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645091188;
+        t=1645091273;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=uMIY4q1dw2g0DupncXTpW6aZDCSYaQ0ItOC+2/6KcXc=;
-        b=bea5cxY1s+igLLttFbfWazshFuoO8SPXLgg3V6oVbn8Mazj+rV3b3D/bmuCxFiqYSkGzXD
-        +7AHgj2bvdEQh78V5Ge0Q5ltrCRXl8ongEHltbH9s7g7iYL++5SMO02GwYB5hvn372Mqu7
-        OaO0Y0uUHxIX4rUo6oPxxb3Lb/mUv5A=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=a/SeRqbApzV4y62bCi+32CxUX+3k7cvnup6tnvoYbOQ=;
+        b=pr0QPKH09MsrAjht5TSyVQG9NHU7g4h/7Fa2Jc284nKVCrC/IPZxbAg+qH481LdWy/1AsL
+        KYcbV6tYY4qHcgf6roT7pwdolyQtWahdHDqGXJIPwT22kx/+j5CAHant7RB+n6HDSOf7qc
+        wqMQJVv+Br8JTpBt+PszumWbpdV4mpM=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 17 Feb 2022 10:47:47 +0100
 From:   Michael Walle <michael@walle.cc>
 To:     Richard Genoud <richard.genoud@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,75 +43,30 @@ To:     Richard Genoud <richard.genoud@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
 Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2] tty: serial: atmel: add earlycon support
-Date:   Thu, 17 Feb 2022 10:46:20 +0100
-Message-Id: <20220217094620.1148571-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] tty: serial: atmel: add earlycon support
+In-Reply-To: <20220217094620.1148571-1-michael@walle.cc>
+References: <20220217094620.1148571-1-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <80af0c12cf04e01e50c71daacd38f89c@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add early console support which relies on the bootloader for the
-initialization of the UART.
-Please note, that the compatibles are taken from at91-usart MFD
-driver.
+Am 2022-02-17 10:46, schrieb Michael Walle:
+> Add early console support which relies on the bootloader for the
+> initialization of the UART.
+> Please note, that the compatibles are taken from at91-usart MFD
+> driver.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/tty/serial/Kconfig        |  1 +
- drivers/tty/serial/atmel_serial.c | 24 ++++++++++++++++++++++++
- 2 files changed, 25 insertions(+)
+Sorry forgot the changelog:
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 0e5ccb25bdb1..407a98ec0791 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -139,6 +139,7 @@ config SERIAL_ATMEL_CONSOLE
- 	bool "Support for console on AT91 serial port"
- 	depends on SERIAL_ATMEL=y
- 	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
- 	help
- 	  Say Y here if you wish to use an on-chip UART on a Atmel
- 	  AT91 processor as the system console (the system
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 2d09a89974a2..73d43919898d 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2673,6 +2673,30 @@ static struct console atmel_console = {
- 	.data		= &atmel_uart,
- };
- 
-+static void atmel_serial_early_write(struct console *con, const char *s,
-+				     unsigned int n)
-+{
-+	struct earlycon_device *dev = con->data;
-+
-+	uart_console_write(&dev->port, s, n, atmel_console_putchar);
-+}
-+
-+static int __init atmel_early_console_setup(struct earlycon_device *device,
-+					    const char *options)
-+{
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->con->write = atmel_serial_early_write;
-+
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(atmel_serial, "atmel,at91rm9200-usart",
-+		    atmel_early_console_setup);
-+OF_EARLYCON_DECLARE(atmel_serial, "atmel,at91sam9260-usart",
-+		    atmel_early_console_setup);
-+
- #define ATMEL_CONSOLE_DEVICE	(&atmel_console)
- 
- #else
--- 
-2.30.2
+changes since v1:
+  - add "select SERIAL_EARLYCON"
+  - rename atmelserial to atmel_serial
 
+-michael
