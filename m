@@ -2,69 +2,70 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8157C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 11:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92533C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 12:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239926AbiBQLrv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Feb 2022 06:47:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55592 "EHLO
+        id S232390AbiBQMGR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:06:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239930AbiBQLrs (ORCPT
+        with ESMTP id S240230AbiBQMGP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Feb 2022 06:47:48 -0500
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CE7282E56;
-        Thu, 17 Feb 2022 03:47:34 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 79C5F10045C15;
-        Thu, 17 Feb 2022 12:47:32 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 4D9AE2E9DD4; Thu, 17 Feb 2022 12:47:32 +0100 (CET)
-Date:   Thu, 17 Feb 2022 12:47:32 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux@armlinux.org.uk,
-        richard.genoud@gmail.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH 2 4/9] serial: sc16is7xx: remove redundant check in
- rs485_config
-Message-ID: <20220217114732.GB7826@wunner.de>
-References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
- <20220216001803.637-5-LinoSanfilippo@gmx.de>
+        Thu, 17 Feb 2022 07:06:15 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 166C92AD667;
+        Thu, 17 Feb 2022 04:06:00 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 2CB5692009D; Thu, 17 Feb 2022 13:05:58 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 2664092009C;
+        Thu, 17 Feb 2022 12:05:58 +0000 (GMT)
+Date:   Thu, 17 Feb 2022 12:05:58 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     kbuild@lists.01.org, Jiri Slaby <jirislaby@kernel.org>,
+        lkp@intel.com, kbuild-all@lists.01.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mike Skoog <mskoog@endruntechnologies.com>,
+        Mike Korreng <mkorreng@endruntechnologies.com>,
+        info@endruntechnologies.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] serial: 8250: Add proper clock handling for OxSemi
+ PCIe devices
+In-Reply-To: <202202130027.ZKBCgtm5-lkp@intel.com>
+Message-ID: <alpine.DEB.2.21.2202171009440.34636@angie.orcam.me.uk>
+References: <202202130027.ZKBCgtm5-lkp@intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216001803.637-5-LinoSanfilippo@gmx.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:17:58AM +0100, Lino Sanfilippo wrote:
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -959,16 +959,6 @@ static int sc16is7xx_config_rs485(struct uart_port *port,
->  	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
->  
->  	if (rs485->flags & SER_RS485_ENABLED) {
-> -		bool rts_during_rx, rts_during_tx;
-> -
-> -		rts_during_rx = rs485->flags & SER_RS485_RTS_AFTER_SEND;
-> -		rts_during_tx = rs485->flags & SER_RS485_RTS_ON_SEND;
-> -
-> -		if (rts_during_rx == rts_during_tx)
-> -			dev_err(port->dev,
-> -				"unsupported RTS signalling on_send:%d after_send:%d - exactly one of RS485 RTS flags should be set\n",
-> -				rts_during_tx, rts_during_rx);
-> -
+On Thu, 17 Feb 2022, Dan Carpenter wrote:
 
-Hm, patch 1 in this series doesn't emit such a message, so unlike now,
-users will no longer be warned that they passed in nonsensical settings...
+> url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/serial-8250-Fixes-for-Oxford-Semiconductor-950-UARTs/20220212-164255
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+> config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220213/202202130027.ZKBCgtm5-lkp@intel.com/config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> New smatch warnings:
+> drivers/tty/serial/8250/8250_pci.c:1171 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'tcr'.
+> drivers/tty/serial/8250/8250_pci.c:1172 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'quot'.
+> drivers/tty/serial/8250/8250_pci.c:1180 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'cpr'.
+
+ These variables do get assigned to in the first iteration of the loop, 
+because the deviation calculated (`srem') is normalised to the range of 
+[0,spre/2] and that divided by the original divisor (`spre') always works 
+out at within [0,0.5], so `squot' will be within [0,32768].  I guess the 
+static analyser is too dumb to figure it out, so I'll see how to paper it 
+over unless someone has a better proposal.
+
+ Greg: shall I send an update patch or a replacement v4 of the series?
+
+  Maciej
