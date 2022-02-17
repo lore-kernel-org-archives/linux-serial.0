@@ -2,70 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92533C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 12:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6054CC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 12:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232390AbiBQMGR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Feb 2022 07:06:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33014 "EHLO
+        id S240390AbiBQM2A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Feb 2022 07:28:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240230AbiBQMGP (ORCPT
+        with ESMTP id S240398AbiBQM16 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Feb 2022 07:06:15 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 166C92AD667;
-        Thu, 17 Feb 2022 04:06:00 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 2CB5692009D; Thu, 17 Feb 2022 13:05:58 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 2664092009C;
-        Thu, 17 Feb 2022 12:05:58 +0000 (GMT)
-Date:   Thu, 17 Feb 2022 12:05:58 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     kbuild@lists.01.org, Jiri Slaby <jirislaby@kernel.org>,
-        lkp@intel.com, kbuild-all@lists.01.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Mike Skoog <mskoog@endruntechnologies.com>,
-        Mike Korreng <mkorreng@endruntechnologies.com>,
-        info@endruntechnologies.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] serial: 8250: Add proper clock handling for OxSemi
- PCIe devices
-In-Reply-To: <202202130027.ZKBCgtm5-lkp@intel.com>
-Message-ID: <alpine.DEB.2.21.2202171009440.34636@angie.orcam.me.uk>
-References: <202202130027.ZKBCgtm5-lkp@intel.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 17 Feb 2022 07:27:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFF115D399;
+        Thu, 17 Feb 2022 04:27:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B744619A6;
+        Thu, 17 Feb 2022 12:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04467C340E8;
+        Thu, 17 Feb 2022 12:27:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645100863;
+        bh=2dU0Q4jhcnpTCl5wKjBVMqHcTJ3NgI/2klyS76pBROU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bpULGs3yXKTjnMXohAsDpL/ITHXauX2AeMA//7ZYrS1XDlloeieEjUZvJaBJ1aEfn
+         surFl138HiX4+o80sfj4paVXxRm0MVJWfWEOxsTOlc9GLp0mYmU1Lm1CzFZc9uOsJE
+         1HZV2rmWbEvDU8khQ61lTO2xcm8eYd0o5c2I5LpE=
+Date:   Thu, 17 Feb 2022 13:27:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Starke, Daniel" <daniel.starke@siemens.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] tty: n_gsm: fix encoding of control signal octet bit
+ DV
+Message-ID: <Yg4/PJxW9ZC+KHzV@kroah.com>
+References: <AM4PR1001MB1378023FB7411DD0E6A18CD3E0369@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM4PR1001MB1378023FB7411DD0E6A18CD3E0369@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 17 Feb 2022, Dan Carpenter wrote:
-
-> url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/serial-8250-Fixes-for-Oxford-Semiconductor-950-UARTs/20220212-164255
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-> config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220213/202202130027.ZKBCgtm5-lkp@intel.com/config)
-> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+On Thu, Feb 17, 2022 at 10:45:14AM +0000, Starke, Daniel wrote:
+> > All of these are patch 1/1, which is odd :(
+> > 
+> > Please renumber them properly and resend.
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> New smatch warnings:
-> drivers/tty/serial/8250/8250_pci.c:1171 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'tcr'.
-> drivers/tty/serial/8250/8250_pci.c:1172 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'quot'.
-> drivers/tty/serial/8250/8250_pci.c:1180 pci_oxsemi_tornado_get_divisor() error: uninitialized symbol 'cpr'.
+> All these patches are based on the current version of tty-next and are
+> completely independent from each other. The only common part is the file
+> they apply to. Therefore, this is not a patch series. Would you still
+> suggest to apply a different numbering?
 
- These variables do get assigned to in the first iteration of the loop, 
-because the deviation calculated (`srem') is normalised to the range of 
-[0,spre/2] and that divided by the original divisor (`spre') always works 
-out at within [0,0.5], so `squot' will be within [0,32768].  I guess the 
-static analyser is too dumb to figure it out, so I'll see how to paper it 
-over unless someone has a better proposal.
+Yes, please send them as a patch series, numbered correctly, as a whole
+series of patches, all listed as 1/1 does not do good things for our
+tools.
 
- Greg: shall I send an update patch or a replacement v4 of the series?
+thanks,
 
-  Maciej
+greg k-h
