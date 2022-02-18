@@ -2,109 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3827C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Feb 2022 22:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6D0C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Feb 2022 07:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230007AbiBQWLy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Feb 2022 17:11:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51290 "EHLO
+        id S231849AbiBRHct (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Feb 2022 02:32:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238460AbiBQWLx (ORCPT
+        with ESMTP id S230301AbiBRHcr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Feb 2022 17:11:53 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0253D43AF9;
-        Thu, 17 Feb 2022 14:11:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645135875;
-        bh=0KjJ3nEZ8kESxVKEPQdyOatinf7wfIYti/GBayHCGqs=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=GmFoXBFZtF7bBbOltR52vLe24JIWWh3AyXmZtMGhOhlX40FC5TkqT2ERjA78Sn3U/
-         gK6Z7FPAeGQy056X+i+asAfKhnHBEtREp0v5+KtPK5WFvexXl7wJvcaeS8HaqPQcQ6
-         TqxHpHErb89NpccJ86eaxXQd4EbERvhEunLNHIpo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.78] ([149.172.237.68]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MhlKs-1nyIc72WsC-00dnCU; Thu, 17
- Feb 2022 23:11:15 +0100
-Subject: Re: [PATCH 2 4/9] serial: sc16is7xx: remove redundant check in
- rs485_config
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de, linux@armlinux.org.uk,
-        richard.genoud@gmail.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
- <20220216001803.637-5-LinoSanfilippo@gmx.de>
- <20220217114732.GB7826@wunner.de>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <c10505d2-f8ee-0566-af28-45da59ecd99b@gmx.de>
-Date:   Thu, 17 Feb 2022 23:11:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Fri, 18 Feb 2022 02:32:47 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 23:32:29 PST
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7A2291F95
+        for <linux-serial@vger.kernel.org>; Thu, 17 Feb 2022 23:32:29 -0800 (PST)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202202180731248631b4ac83ea4375e6
+        for <linux-serial@vger.kernel.org>;
+        Fri, 18 Feb 2022 08:31:25 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=1PPSTDXqlzyXQhlxtHT8JuIds5BO+gt8oYzfP79dzIw=;
+ b=bZ1LeMGvLLSM/hVoEES8r4kSm0rDxTN0W/PmveyTFElnwXlfBl7Vl98OmgpdP1+tpcUn6i
+ XvMOdXhxVPg9+3VVPK8v9P0JfXHElTHjfN8ENssc4ScvuZQgjpJEC/2OdjdslBkmvz7ihWCk
+ yu/zSNYESP+S1iyE9nEY/BbhYmYmY=;
+From:   daniel.starke@siemens.com
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 1/7] tty: n_gsm: fix encoding of control signal octet bit DV
+Date:   Thu, 17 Feb 2022 23:31:17 -0800
+Message-Id: <20220218073123.2121-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <20220217114732.GB7826@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:LDlBc3jcPBZ7hh4E3miuvkAn8yQxJNZHrOgWRkl4+bOdByau3rY
- Xq28u5HUzXHh4aJCAZCXN+d7oF605/F76LP2lpGFZpcyQsejf/m57p88F91d9XXP1x/QtFz
- 1WGpW8CArQel2FNazX6c2Klp2tf1UabxpPnQpfPR07Go5sfN457NFSRHux0qYbBT/zqLJut
- 1+CQgj4eQSO38fJS2nrHQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ZshnL656ssU=:k7WyTvNEtAyT+v2CPkGHo+
- Y+jrlwuuTPjrZICC94MIaWOuRkmHK/bE9pZj3HotzSqTTPOIW00N2ph03i1vC95xLvEzvsXjy
- m8D6h2c7/7usoldpHL0E7t4twQ005yho7Q4KaZzJG9t23vurgOIRpsvC+f8AdZdQkRSfMK6aF
- RrelfYXvNbg8LujGu93pilNjtLuypY2pKeS3zBI/sG91Cj4HrO5wL7mX2mp1GQHqFzPNYrjZe
- hQw3bv2sPUNFBMoTFPbXVN6nsTNwTDe1MUllUXO3v/c2ly3J5jbqRs1hMjNdXVcEvXgOvANIn
- iSuFU7n7cklDqVB9XHRYmujCXQF1EgpVj3Zp+vAu1aMwQsNiv+PBhzc0wf3ou0kZW2zxvPnnQ
- +ODjGmEa2xfu0k9E9w8wYL6BNl8indogvZIu0ihYYtfle+7S4RxNfQ/Paec0sTMPQZqd9wDv1
- viZToYaq4SAGM15DjALr0nvPp/zF27qaoGUXlJA+dO/Wxu0+8qlpd8WayRsmTR0uws+m4aHAc
- Y4UvZRgAQLPWB/MdIIGLLhufsbsaxudm4CtR/iZnW4GDFtZ69knjofpZXY8DgtpwTOPrPpmgi
- me8lqnxFZKoaxElxvr0PGFT+9kGV/atUxSx4g5zBs5W8ZJh4saiJQ6MH1k/m9Twl1cwiwBuqZ
- Kv0ebKHZffWd/YuzEOq4SDGANPCwP6xXPKhCqggaTX/m50BHGhXT1eUIFL8M1/MSB8+kQDZ3P
- X1CVXeA8WLF/t/WmtYU1w5BggTH15yomcabKrlLk2bPMC4xWCn8VV4QB2BG7AjpYfIvPjQFxC
- WcscmQv9yldtvjOTYfz1w2kHSoAeHkcLReDJEDIIYKmhBOSLAEqlwW6vNSYBmrnmBMCwWi28h
- dhjk2CdmK3D82nO0AlnZgtraHGQKZoUdZbXlEgtc9kwwagPNAyCYYnudLgVJG8opyO0Al/gLv
- lEB1JMUSpOEQ4UEJdQbZc78WqXmpe2iDSLqvzwgLtK6R+3LOD0fH3HahNSFmkMDr3nxUpJw2h
- A5J5WrbCSrm2YjevI0WtdLoyGPLsaSEQhmUj11unv+uEuauZv/45jJ/jDetY31GF/2FJ1SXTe
- kADmNWyVlFwq34=
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-7517:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
+control signal octet used by the MSC (modem status command). The same
+encoding is also used in convergence layer type 2 as described in chapter
+5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
+outgoing control signal octets sent by the DTE (data terminal equipment),
+i.e. for the initiator side.
+Currently, the DV bit is only set if CD (carrier detect) is on, regardless
+of the side.
 
-On 17.02.22 at 12:47, Lukas Wunner wrote:
-> On Wed, Feb 16, 2022 at 01:17:58AM +0100, Lino Sanfilippo wrote:
->> --- a/drivers/tty/serial/sc16is7xx.c
->> +++ b/drivers/tty/serial/sc16is7xx.c
->> @@ -959,16 +959,6 @@ static int sc16is7xx_config_rs485(struct uart_port=
- *port,
->>  	struct sc16is7xx_one *one =3D to_sc16is7xx_one(port, port);
->>
->>  	if (rs485->flags & SER_RS485_ENABLED) {
->> -		bool rts_during_rx, rts_during_tx;
->> -
->> -		rts_during_rx =3D rs485->flags & SER_RS485_RTS_AFTER_SEND;
->> -		rts_during_tx =3D rs485->flags & SER_RS485_RTS_ON_SEND;
->> -
->> -		if (rts_during_rx =3D=3D rts_during_tx)
->> -			dev_err(port->dev,
->> -				"unsupported RTS signalling on_send:%d after_send:%d - exactly one=
- of RS485 RTS flags should be set\n",
->> -				rts_during_tx, rts_during_rx);
->> -
->
-> Hm, patch 1 in this series doesn't emit such a message, so unlike now,
-> users will no longer be warned that they passed in nonsensical settings.=
-..
->
+This patch fixes this behavior by setting the DV bit on the initiator side
+unconditionally.
 
-what about logging a warning for both RTS polarity and delay correction?
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Lino
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 0b1808e3a912..e199315a158e 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -439,7 +439,7 @@ static u8 gsm_encode_modem(const struct gsm_dlci *dlci)
+ 		modembits |= MDM_RTR;
+ 	if (dlci->modem_tx & TIOCM_RI)
+ 		modembits |= MDM_IC;
+-	if (dlci->modem_tx & TIOCM_CD)
++	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
+ 	return modembits;
+ }
+-- 
+2.25.1
+
