@@ -2,109 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D62C433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 19 Feb 2022 14:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2FBC433FE
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Feb 2022 15:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239018AbiBSOqQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 19 Feb 2022 09:46:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56370 "EHLO
+        id S242470AbiBSP0r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 19 Feb 2022 10:26:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiBSOqQ (ORCPT
+        with ESMTP id S233699AbiBSP0r (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 19 Feb 2022 09:46:16 -0500
-Received: from out28-169.mail.aliyun.com (out28-169.mail.aliyun.com [115.124.28.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D3B9AE68;
-        Sat, 19 Feb 2022 06:45:56 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.0903952|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0665288-8.09977e-05-0.93339;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047202;MF=icenowy@nucleisys.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.MsSaWGO_1645281943;
-Received: from ice-e5v2.lan(mailfrom:icenowy@nucleisys.com fp:SMTPD_---.MsSaWGO_1645281943)
-          by smtp.aliyun-inc.com(33.37.75.142);
-          Sat, 19 Feb 2022 22:45:52 +0800
-Message-ID: <6ff70d9fbbfcde860823aa24f0ce58a0a96a1c91.camel@nucleisys.com>
-Subject: Re: [PATCH 00/12] Initial support for Nuclei DemoSoC w/ UX600
-From:   Icenowy Zheng <icenowy@nucleisys.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Date:   Sat, 19 Feb 2022 22:45:43 +0800
-In-Reply-To: <20220127151647.2375449-1-icenowy@nucleisys.com>
-References: <20220127151647.2375449-1-icenowy@nucleisys.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 
+        Sat, 19 Feb 2022 10:26:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A209553739;
+        Sat, 19 Feb 2022 07:26:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40E31B80B0A;
+        Sat, 19 Feb 2022 15:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0396C004E1;
+        Sat, 19 Feb 2022 15:26:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645284384;
+        bh=6wMy5c40MoeMrkiAC6rmbWKQvU4M2MsxaJOM4WVGgnQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h7zxe6Y1JLH95rcf53kDPoMdpw63zTnIYT280c6n1kibcw4f9if2UA9HaAH59XpdR
+         LctZvLoBDQQtRvmkYMIV3j1Nzn1Tdtsj7WGwFV8NCNLLP+eP+9EorXTbuMN3K4s97+
+         toFAJ4OBGuqBlqFdHBjmaak2kUS+PxX1EcDlxf6Iknxn92bzxM8A7+iUSv/QaMW/Vr
+         o7E219fJW2AbeScZhpo8d0UFpPV107X4fN956XGjuRWcwSCPvmFfID+uzwKjPRC3u2
+         O27OgJTugIQqTpMSnqeScZQFmpzhcLhxooVUyd0oZUZRgV/u5iHQhuuTJYlkJGDuPj
+         m4VZCgyBTdKgg==
+Received: by pali.im (Postfix)
+        id 65F962B70; Sat, 19 Feb 2022 16:26:22 +0100 (CET)
+Date:   Sat, 19 Feb 2022 16:26:22 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 0/6] serial: mvebu-uart: Support for higher baudrates
+Message-ID: <20220219152622.mykr2zl5cl3rgsgx@pali>
+References: <20220211191238.2142-1-kabel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220211191238.2142-1-kabel@kernel.org>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-在 2022-01-27星期四的 23:16 +0800，Icenowy Zheng写道：
-> This patchset adds support for Nuclei DemoSoC (which is an evaluation
-> platform made with Nuclei CPU cores and mainly peripherals in
-> original
-> Hummingbird E203 project, running on FPGA) with UX600 CPU cores.
-> 
-> Most patches are for DT bindings, the remaining ones are adding a
-> Kconfig option and some DTS/DTSI files. The last one is a workaround
-> for
-> a severe bug in currently released versions of UX600, which is found
-> in 5.17 kernel, in which Sv48 support is added to Linux.
-> 
-> Two non-technical patches are in this patchset too, for MAINTAINERS
-> and .mailmap items.
+Hello Stephen!
 
-Ping, could any RISC-V maintainers review these patches, especially the
-SATP workaround one?
-
+On Friday 11 February 2022 20:12:32 Marek Behún wrote:
+> Hello Greg, Stephen, Gregory,
 > 
-> Icenowy Zheng (12):
->   dt-bindings: vendor-prefixes: add Nuclei
->   RISC-V: add Nuclei SoC Kconfig option
->   dt-bindings: riscv: add compatible strings for Nuclei UX600 series
->   dt-bindings: timer: add compatible for Nuclei UX600 CLINT-compat
-> timer
->   dt-bindings: interrupt-controller: add compatible string for UX600
->     PLIC
->   dt-bindings: serial: add compatible string for Nuclei DemoSoC UART
->   dt-bindings: spi: add compatible string for Nuclei DemoSoC SPI
->   dt-bindings: riscv: add binding for Nuclei platform boards
->   riscv: dts: add device tree for Nuclei DemoSoC w/ UX600 on DDR200T
->   RISC-V: workaround Nuclei UX600 cores with broken SATP CSR
->   MAINTAINERS: add myself as Nuclei SoCs/CPUs supporter
->   mailmap: add Icenowy Zheng's Nuclei mail addresses
+> at Pali's request I have reviewed, updated and tested his series adding
+> support for higher baudrates on Marvell Armada A37xx boards.
 > 
->  .mailmap                                      |  1 +
->  .../sifive,plic-1.0.0.yaml                    |  1 +
->  .../devicetree/bindings/riscv/cpus.yaml       |  7 ++
->  .../devicetree/bindings/riscv/nuclei.yaml     | 27 ++++++++
->  .../bindings/serial/sifive-serial.yaml        |  1 +
->  .../devicetree/bindings/spi/spi-sifive.yaml   |  1 +
->  .../bindings/timer/sifive,clint.yaml          |  1 +
->  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
->  MAINTAINERS                                   |  7 ++
->  arch/riscv/Kconfig.socs                       |  6 ++
->  arch/riscv/boot/dts/Makefile                  |  1 +
->  arch/riscv/boot/dts/nuclei/Makefile           |  2 +
->  .../dts/nuclei/nuclei-demosoc-ddr200t.dtsi    | 41 ++++++++++++
->  .../nuclei/nuclei-demosoc-ux600-ddr200t.dts   | 13 ++++
->  .../boot/dts/nuclei/nuclei-demosoc-ux600.dtsi | 49 ++++++++++++++
->  .../riscv/boot/dts/nuclei/nuclei-demosoc.dtsi | 67
-> +++++++++++++++++++
->  arch/riscv/include/asm/vendorid_list.h        |  1 +
->  arch/riscv/mm/init.c                          | 17 +++++
->  18 files changed, 245 insertions(+)
->  create mode 100644
-> Documentation/devicetree/bindings/riscv/nuclei.yaml
->  create mode 100644 arch/riscv/boot/dts/nuclei/Makefile
->  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
-> ddr200t.dtsi
->  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-ux600-
-> ddr200t.dts
->  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
-> ux600.dtsi
->  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc.dtsi
+> I have updated commit messages, some comments and indentation at some
+> places. As per Stephen Boyd's request, commit message of patch 3 now
+> contains more information about why we need to have UART
+> clock-controller binding defined in such a way (due to backwards
+> compatibility).
+
+Are updated commit messages better now?
+
+> Marek
 > 
-
-
+> Changes in v7:
+> * fixed lint errors in yaml binding file
+> * added Reviewed-by tags
+> * changed commit messages and comments a little
+> * fixed indentation at some places
+> * swapped patch 2 and 3 (dt-binding defining new binding should go
+>   before the driver adding usage of that new binding)
+> 
+> Changes in v6:
+> * fixed yaml binding file and dts files
+> 
+> Changes in v5:
+> * fixed yaml binding file
+> 
+> Changes in v4:
+> * converted armada3700-uart-clock documentation to YAML
+> * split documentation changes into two commits:
+>   - first which adds clock documentation
+>   - second which updates UART documentation
+> 
+> Changes in v3:
+> v3 is rebased on top of Linus master branch and all already applied patches
+> were dropped. There are no changes in patches itself since v2.
+> 
+> Pali Rohár (6):
+>   math64: New DIV_U64_ROUND_CLOSEST helper
+>   dt-bindings: mvebu-uart: document DT bindings for
+>     marvell,armada-3700-uart-clock
+>   serial: mvebu-uart: implement UART clock driver for configuring UART
+>     base clock
+>   dt-bindings: mvebu-uart: update information about UART clock
+>   arm64: dts: marvell: armada-37xx: add device node for UART clock and
+>     use it
+>   serial: mvebu-uart: implement support for baudrates higher than 230400
+>     Bd
+> 
+>  .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
+>  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
+>  drivers/tty/serial/Kconfig                    |   1 +
+>  drivers/tty/serial/mvebu-uart.c               | 596 +++++++++++++++++-
+>  include/linux/math64.h                        |  13 +
+>  6 files changed, 671 insertions(+), 21 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
+> 
+> -- 
+> 2.34.1
+> 
