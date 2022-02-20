@@ -2,105 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B24BC4332F
-	for <linux-serial@archiver.kernel.org>; Sat, 19 Feb 2022 15:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B844C433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 20 Feb 2022 22:24:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242532AbiBSP3L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 19 Feb 2022 10:29:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43940 "EHLO
+        id S239908AbiBTWZA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 20 Feb 2022 17:25:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242557AbiBSP3J (ORCPT
+        with ESMTP id S230124AbiBTWY7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 19 Feb 2022 10:29:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C594C5D647;
-        Sat, 19 Feb 2022 07:28:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60C4E60B20;
-        Sat, 19 Feb 2022 15:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A50C004E1;
-        Sat, 19 Feb 2022 15:28:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645284517;
-        bh=F6pcZPFpnI6hLMIYVmpuXloWiEvqSEfMam/xjyvdLDs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dMOKL2ugYw+WQBj3ZZQVOq9CBHushdo1zYvAtdjLBBulSXfJCxtB2RB70mxRdh3Uh
-         ZYRcyq4pgoZE0hi21EZUgZLGUBEdHYbpQ7+AqPMYjT8aeaE7RLgMOO/smC1jXlvwjm
-         Q/sdx9DDPtm5A9x8tDuFkGuh39ujbcS2YQQRGELvoICo8W3of08RrEAW+MtNrqSFD3
-         8GbHqHZbW4letP1dhAsqbX0W5Qffp8DgxfIFidm5jpNEosdiO2Gb4jjxV7PB1KCauD
-         9owowxo0EQU1Br+wL0r+wc1ipLOZrV/Wp9QP+XmQyyg5mhhEMyi5yteqShfU6+mVXA
-         +rJYplsFU8AQg==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Gregory Clement <gregory.clement@bootlin.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH v9 6/6] arm64: dts: marvell: armada-37xx: add device node for UART clock and use it
-Date:   Sat, 19 Feb 2022 16:28:18 +0100
-Message-Id: <20220219152818.4319-7-kabel@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220219152818.4319-1-kabel@kernel.org>
-References: <20220219152818.4319-1-kabel@kernel.org>
+        Sun, 20 Feb 2022 17:24:59 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A11E4B420;
+        Sun, 20 Feb 2022 14:24:37 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 11D3A1C0B77; Sun, 20 Feb 2022 23:24:35 +0100 (CET)
+Date:   Sun, 20 Feb 2022 23:24:34 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: =?iso-8859-1?Q?Ad?=
+ =?iso-8859-1?Q?d_Pali_Roh=E1r?= as mvebu-uart.c maintainer
+Message-ID: <20220220222434.GA18143@duo.ucw.cz>
+References: <20220214124808.31971-1-pali@kernel.org>
+ <YgpVaR421wQYx9mt@kroah.com>
+ <20220214140641.v2wlfr43lqgxvw7e@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
+Content-Disposition: inline
+In-Reply-To: <20220214140641.v2wlfr43lqgxvw7e@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
 
-Define DT node for UART clock "marvell,armada-3700-uart-clock" and use
-this UART clock as a base clock for all UART devices.
+--82I3+IH0IqGh5yIs
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+On Mon 2022-02-14 15:06:41, Pali Roh=E1r wrote:
+> On Monday 14 February 2022 14:13:13 Greg Kroah-Hartman wrote:
+> > On Mon, Feb 14, 2022 at 01:48:08PM +0100, Pali Roh=E1r wrote:
+> > > Signed-off-by: Pali Roh=E1r <pali@kernel.org>
+> >=20
+> > I can not take patches without any changelog text, sorry.
+>=20
+> Well, I'm the only one who has been working on this driver recently and
+> I have development boards with this UART HW.
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-index 673f4906eef9..da2f6b5c4b20 100644
---- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-+++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-@@ -132,10 +132,20 @@ avs: avs@11500 {
- 				reg = <0x11500 0x40>;
- 			};
- 
-+			uartclk: clock-controller@12010 {
-+				compatible = "marvell,armada-3700-uart-clock";
-+				reg = <0x12010 0x4>, <0x12210 0x4>;
-+				clocks = <&tbg 0>, <&tbg 1>, <&tbg 2>,
-+					 <&tbg 3>, <&xtalclk>;
-+				clock-names = "TBG-A-P", "TBG-B-P", "TBG-A-S",
-+					      "TBG-B-S", "xtal";
-+				#clock-cells = <1>;
-+			};
-+
- 			uart0: serial@12000 {
- 				compatible = "marvell,armada-3700-uart";
- 				reg = <0x12000 0x18>;
--				clocks = <&xtalclk>;
-+				clocks = <&uartclk 0>;
- 				interrupts =
- 				<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
- 				<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-@@ -147,7 +157,7 @@ uart0: serial@12000 {
- 			uart1: serial@12200 {
- 				compatible = "marvell,armada-3700-uart-ext";
- 				reg = <0x12200 0x30>;
--				clocks = <&xtalclk>;
-+				clocks = <&uartclk 1>;
- 				interrupts =
- 				<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
- 				<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
--- 
-2.34.1
+Greg wants to say that you need to copy subject into changelog body,
+so that it is non-empty.
 
+Best regards,
+								Pavel
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--82I3+IH0IqGh5yIs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhK/ogAKCRAw5/Bqldv6
+8lBpAKCaKh1tBvFkqgS8PFmECs4rIaOEqgCguGaq8H88u5b8qqWuD1q8FIamUgU=
+=KTOC
+-----END PGP SIGNATURE-----
+
+--82I3+IH0IqGh5yIs--
