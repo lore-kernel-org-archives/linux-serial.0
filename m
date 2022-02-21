@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B285DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 09:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FC9C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347954AbiBUJKN (ORCPT
+        id S1348653AbiBUJW7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:10:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36408 "EHLO
+        Mon, 21 Feb 2022 04:22:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347766AbiBUJJO (ORCPT
+        with ESMTP id S1348920AbiBUJUz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7912ACB;
-        Mon, 21 Feb 2022 01:01:37 -0800 (PST)
+        Mon, 21 Feb 2022 04:20:55 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E7334661;
+        Mon, 21 Feb 2022 01:07:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85C79B80EB5;
-        Mon, 21 Feb 2022 09:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F5BC340E9;
-        Mon, 21 Feb 2022 09:01:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DF88FCE0E88;
+        Mon, 21 Feb 2022 09:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D391CC340E9;
+        Mon, 21 Feb 2022 09:07:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434095;
+        s=korg; t=1645434460;
         bh=HKrIBi5m5CFXzZ+6/xBVUfB/8hJp8GunVilEDIKwwTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vX9efIz1vFJ7aHEm3c2eFptToGoYal1gHPx16+0MUOBBvRUBoR1M8TAbExjFRRazE
-         I+GaDfqVniaS4XfADI0QKnLLX70sv0EFGMhapDZuEeBHnLGON34tvSizq3mIxcyx1U
-         t7UcLKu6nzQtiC/5rhxhxXF2QgHC9ihY3wpeGVLE=
+        b=JEIebeZA7vLIgvYaZibUDWnjiNGWBmsC+l7xGj2YSYGPBWfuhjjID/0zTaoPSre0d
+         Fi8+LKMWWXMrTI4WF502K2u1SQnG+TKC8QdM72MbR/583abZywebsy/6MoQyolJFBG
+         xSRhSW3NR6xjNW8GAwJpoMZHOoO0OpfPXb34dbjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,12 +39,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
         linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.10 011/121] serial: parisc: GSC: fix build when IOSAPIC is not set
-Date:   Mon, 21 Feb 2022 09:48:23 +0100
-Message-Id: <20220221084921.527901686@linuxfoundation.org>
+Subject: [PATCH 5.15 008/196] serial: parisc: GSC: fix build when IOSAPIC is not set
+Date:   Mon, 21 Feb 2022 09:47:20 +0100
+Message-Id: <20220221084931.173905801@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
-References: <20220221084921.147454846@linuxfoundation.org>
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+References: <20220221084930.872957717@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
