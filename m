@@ -2,37 +2,35 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA4CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0CEC433FE
 	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 11:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355756AbiBULRP (ORCPT
+        id S1355764AbiBULRR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:17:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46556 "EHLO
+        Mon, 21 Feb 2022 06:17:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356320AbiBULQW (ORCPT
+        with ESMTP id S1356340AbiBULQ0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:16:22 -0500
-X-Greylist: delayed 66 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 02:57:59 PST
-Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93587DF52
-        for <linux-serial@vger.kernel.org>; Mon, 21 Feb 2022 02:57:58 -0800 (PST)
+        Mon, 21 Feb 2022 06:16:26 -0500
+Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.85.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1657E019
+        for <linux-serial@vger.kernel.org>; Mon, 21 Feb 2022 02:58:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-        s=mimecast20210310; t=1645441077;
+        s=mimecast20210310; t=1645441081;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lyk1Iv2AyEpdVklKZ/IDwiuJJEQ9EyrVIcrOte333Ag=;
-        b=PyGTaF7MvLH44pmxWWwXpN364NyqtlrgNNRk+8ujwre//pBSJhQGhbDO+tT3ocp6nN+hhk
-        Ok51Mx6RZmmfaUaZKqySNLVvnGL+Gd0dAeh2P6poPxj3YaGVuG++aPaf476pb1L705+67s
-        GRmtwRSBXmfjzvenRfOZ4OVcjJVgfYM=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=A59/DCztyWyzNgQ/wHkqQ5Zrjg2ROP9ly2YMhz8oVCk=;
+        b=ApJETYhgK0oXYNESqwv85NfYCNPrl34+o9SNOPHnzyat/V0kBQttom/zYfcoNlZy4DB0Lp
+        G/Y1N9rE4MEPpJhcGrqD5men2M2nmV1rb4XMixtQIEQktBuQ9+60ALDvzXt1153tpdWNyB
+        JuQE/av2gvRXnZy4Uvwc+derPTbqocQ=
 Received: from GBR01-LO2-obe.outbound.protection.outlook.com
  (mail-lo2gbr01lp2058.outbound.protection.outlook.com [104.47.21.58]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-27-0W8be5_rNGatXmzuGt-v3Q-2; Mon, 21 Feb 2022 10:56:50 +0000
-X-MC-Unique: 0W8be5_rNGatXmzuGt-v3Q-2
+ uk-mta-27-rEKKXXNwPH2_Xo-1FWvXpg-1; Mon, 21 Feb 2022 10:56:50 +0000
+X-MC-Unique: rEKKXXNwPH2_Xo-1FWvXpg-1
 Received: from CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:16b::6)
  by CWLP123MB6574.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:184::5) with
  Microsoft SMTP Server (version=TLS1_2,
@@ -52,65 +50,63 @@ CC:     Phil Elwell <phil@raspberrypi.com>,
         <k.drobinski@camlintechnologies.com>,
         Lech Perczak <l.perczak@camlintechnologies.com>,
         =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Subject: [PATCH 1/6] sc16is7xx: Preserve EFR bits on update
-Date:   Mon, 21 Feb 2022 11:56:13 +0100
-Message-ID: <20220221105618.3503470-2-tomasz.mon@camlingroup.com>
+Subject: [PATCH 0/6] sc16is7xx: Hardware flow control fixes
+Date:   Mon, 21 Feb 2022 11:56:12 +0100
+Message-ID: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
-References: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
 X-ClientProxiedBy: LO4P123CA0469.GBRP123.PROD.OUTLOOK.COM
  (2603:10a6:600:1a8::6) To CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
  (2603:10a6:400:16b::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 271ac456-7c74-480c-3e7b-08d9f528dc92
+X-MS-Office365-Filtering-Correlation-Id: ca0aa08a-f4c0-4d70-5eff-08d9f528dc0a
 X-MS-TrafficTypeDiagnostic: CWLP123MB6574:EE_
-X-Microsoft-Antispam-PRVS: <CWLP123MB657455024F694F8193655712923A9@CWLP123MB6574.GBRP123.PROD.OUTLOOK.COM>
+X-Microsoft-Antispam-PRVS: <CWLP123MB6574097DFE798D9BFBA063CE923A9@CWLP123MB6574.GBRP123.PROD.OUTLOOK.COM>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: 5HRViof0OKNF0L9wYMRjP+4OZjx1fw8gjWZxZC1a+Hblqi32cbY68XA2HJCd3IAt1w9BLWhLoOw9RrqqoUuPT+2wALtI8s2wMktOjuQGoZkvW8Si92GYOF0KlHje5adIns5krAuzsc+1RiRGxFRJPVwWOU5LEhetYEWIVeWuwFxg3QAfCaULnjAq/d+IzwrC4ey7C6IrQNeIT7QttAc1kdSmHjMRnVAIHN9Sl8ZP2ItJGwAJlhnVubZtM3bqAWO8LwQyeBY8Evg8Wvl1r9br81ghlB1K2ZcoRx0L/GoQZtgO2NPGzhz7U05x7HUqHGB/WxbWPcqLQ8VEI1KaenvEUWqST3sj5Yhoypx4HbPEx9RVOYxUwJ5trNRtneClkuH9/ngZHgul7F2tpul2uPQ8gpJIB6fmvFg6yW2zOkyYi7rRSUuNPcSNnuhsWFB6N6qdWJCh7CYE0+2a1L4QzEa0zWwkignd68VJexMy3VQ9N+fp3osp+555q8akT1sP8peSL5vgY1VZR4jMdlQjPBicQS+TXQwPjgys0b4vHPJ+uSLGA8yshuqJHsWX+FCyU7igTZ3exEgWDGPY4KIlBu0gR6y4IGFIm5SvKjfSDGcDFLHt8/xyx1n7rIbBqCwO6xnlI5UT+Iivj/Qmv5hRQKTOd4XIJM8/2aHIg9FXUovoeXANvzn3TgDvrapJd7EzgXxqKGdTcB7uJ3NSoLfh/15pYA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(107886003)(52116002)(6666004)(6512007)(6506007)(5660300002)(508600001)(8936002)(38350700002)(38100700002)(36756003)(15650500001)(2906002)(86362001)(4326008)(8676002)(6486002)(54906003)(2616005)(83380400001)(66946007)(66556008)(66476007)(6916009)(316002)(26005)(186003)(1076003);DIR:OUT;SFP:1101
+X-Microsoft-Antispam-Message-Info: tvKWhIzatnjB9O6TFGeeJhi/fajf4Jlewza+SQHu+gQIlZSliqvyiQ+MqHLg0SgPdWPQ3Fs/ui6+mi6MPLfSB+NwQCXqAu6hus4S9ha4/3huK5Om4Dh7uRsH7ixTrWK/zOxg7v/qy9UKzqVZxWQ4/lcDgcMenjwHb6nd2f8wSJpN1LbjNG1lpOpSZbEP95NAiK4EcDgpy2AimqT52MetUc17+jdoJwYmVqFrO51hB9MSK/tJr8rh/FWJ0mXMGKgHPdIfTo15cktP2Geg0HCGEUviOLjDU7UQvoKfdUyHev2KgbKnc4xApofDj8MPTujMBtFcukJGW1IzW3CX6UHozXE/8SIrs7oqXmJBtNg5/baXsWgZUhZuUMkGQzEzlEkSKLqLozEPXR4VyK+1KfOe+OlSVUk0NZb3p20O64bmcaInGmz3vjMyTpF6H00Vg1s8sLbKp7XVG08opNzezcgEYqFgqG1YwIwRzzjB52i/pwHMjkVGSsZt9i2BZeUQJBQg5ppYmOa5S44q8fKx+BV+1unFfaom1r7+yDVq+d7WRep1eGpMKSdyaI4jeIqK1ATYwdnRhCLob4ErmkKlCa7n9uAbAFsI0dpHWTPdYq2VO3B4Wmm+8VUy8tRxyCfLyD7O6shdmQCImb5AsIY5FP9SehAQkjgny6xRA9UtcLoSCuNandMq5NwaV3qhC+ta5QamgMK1JzZjoNtzmhffdkSUBcGKmCQuKAH/H7Ti0hJeJ0L9KlQxPy3/G9N5ZSagw1/xKNHazIukl4HJ3m+GQBJ/xmBeY1v/KiVgMtxYw/aLGPo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(107886003)(52116002)(6666004)(6512007)(6506007)(5660300002)(508600001)(8936002)(38350700002)(38100700002)(36756003)(2906002)(86362001)(4326008)(8676002)(6486002)(966005)(54906003)(2616005)(83380400001)(66946007)(66556008)(66476007)(6916009)(316002)(26005)(186003)(1076003);DIR:OUT;SFP:1101
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bC8G89OeoTGJ7C48fMMvFuS67Q6jKt5VDBmL4EdRr9Avydj2/nou+XBeOdpd?=
- =?us-ascii?Q?Ha5LmSabpdoXpHJr3MtUmtGve9uBm/7/YhlmPg+K5BV45TzD1iK+WGglVtSD?=
- =?us-ascii?Q?dIN8wvhoVcRDneduQ+cnv3+xHowMbx1uKV9cKQ2P3x3UXMusJ4A+RwPf9jJm?=
- =?us-ascii?Q?kaKk9ca3X5XzqYChpcKa/8Agwlf//SCsmp4nXX5h2rG40/VqRM7FfQ8I0/Ak?=
- =?us-ascii?Q?XUJs8QAc5UZ7uTufwy13QmEG3fBUK8dyq0wKaQa3nD/a4ZHJDTjkmG7XOimW?=
- =?us-ascii?Q?rc8k+3CISJNNvke40ZQWK7Ar4EPELXGzyobcuuhPxAY9ZqDljBNjnn3VJtt/?=
- =?us-ascii?Q?i6s0GQpzyVHF4jMjIK5D8mWN4uzPzhhWeI+umrkeIZwJKA9Hn/FFeBr6W3df?=
- =?us-ascii?Q?YpLL6nhfVHAk6dnrDRElQniSt93MHguR9PL92to3BdNEBGllmUerGYqWc9nF?=
- =?us-ascii?Q?0Jh2q2PBeudP4zmRoF2TZ9ssOFBaBbZIW3v0eeMdA/GAMEA6HbTfFBgZfwiB?=
- =?us-ascii?Q?Wrp2+jtec7fH/3/Zt/eFghGu6yvku8pea0LroJix3UTg4r/nC09ZzAIOGAbE?=
- =?us-ascii?Q?wJXxi/tYcmm1apQH6qcHJtmCBSrl+VeT8sNml9NW6kC2zVyS5UIufbMP76l/?=
- =?us-ascii?Q?MHJHnIYLMr6+3Tq5i7QKSKf58UiJrYG2WkMb6nlvxs700gG5Jh2lebzQRuzz?=
- =?us-ascii?Q?6YliYe4HFKit7O77VyBifUMsHDFmehcsuXWfkKDBXUL4iYP/x5NrbALP/yHL?=
- =?us-ascii?Q?RWmZqydY17rlUrx1+YiVpELieHI4BdGavFTnO7yhC94/7cdU9cyrhLTes819?=
- =?us-ascii?Q?ys22G7ilppm/p1nB20qJrce8t+COOv7TpYJAP/LWglQKfKjsn8XlxctYltRm?=
- =?us-ascii?Q?ELdn7V5ZbOKwYXpzv7/5biC96oasP7fiJYo0OJ+lOh61Y8xSeh7LyroYobfk?=
- =?us-ascii?Q?mOed4SHlo8j8/DZSTyfIPwvZM8e+Oi4ZiP9Je7QA4XnWsH/w9OaSHMrP78f+?=
- =?us-ascii?Q?krNWanWMj+LnUnSMGY4R04l1qR9TD95OmACi6sEmPUtDV2BnSBa4FBWgKc6p?=
- =?us-ascii?Q?vPon1lkuv2f6WgOx/WVrpkOu4gydkkxi9dYv5+2o0zPYstxkWGARcdPtDOUe?=
- =?us-ascii?Q?2fQE9344QmzP5I6EjgVvPUpKFYq73DyqYxl9x3G/OC3dvFsJbuI/p115uTAt?=
- =?us-ascii?Q?J/JMKffg2tEnNNu3v5E9gqQeahBjDeAEqoJwpcXORBa41hV1Tkuoyp0WZ9gH?=
- =?us-ascii?Q?uo6I/TxrSTzX4h8osvBRgCyRU8ShjMDz6F5tGXNpQeVul9q3j7QwLThkos+6?=
- =?us-ascii?Q?4pfhp8eT7pydDB409CsCyF6Pxx9P/mwidzMbu+XQW+mSrzLJlmI1rYKbHdyF?=
- =?us-ascii?Q?nFc0DF095j1kZ9RCGyxF7gQ9beRwF4OwpUSWEcpmULexhx9ADyA/b48qEEFB?=
- =?us-ascii?Q?Sb1H43nsVklWYrFjwr14Qw72u61tc2HZHXcvnP4DH6BnAQNGwCkSj3bxNKXP?=
- =?us-ascii?Q?cSaPjnmYPSW0E0QYAT2qEEgS8pXZyYqnBZkL/SJznK9MIOfBNVOAoUDpEtev?=
- =?us-ascii?Q?6PBafXI/bgj7yQM56WAQir4YyJJem7YFzk7aRmYh+RP670pXrDuGpbuOEAcV?=
- =?us-ascii?Q?bdgq/h+CAnyz+qN1VQANKtCMUyTOiczXrmTX7jponpIIiZvsIQHgNbX2KT2o?=
- =?us-ascii?Q?EaZxdeqMC0iFkpFVwf8CTviyvdU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RAnxKISVMa8RAKpucSscE8x4FA/b8rTOQw600rjP8XWZPpEfGV82mkDiFAi+?=
+ =?us-ascii?Q?Z06lWiTCtcPVplzN3a1L7pW3ZR6M+I4YxguOl3yQZ1n+9jLxjdMkCP6C670J?=
+ =?us-ascii?Q?Cp4OxnFQYBGujgM56HD3K8Ph47JsvF6a5ifNCOpOQxnOMb9eehCNzJkKXJ0/?=
+ =?us-ascii?Q?dHQQSYJbXQcEkz+GZU4b9Mbd9vqijo/3S9f86ddx4RdLiCsLu9p8TxF8koCv?=
+ =?us-ascii?Q?GrVGL85GAlF+ya3PKPPf/iwxT5/ok6Z1ns4OmMEiI5Ep5gPeoDFrrEV0mBqu?=
+ =?us-ascii?Q?+7ShqdzidRJ0lit5jyrKwpqs+juRSWTUDSCyPVUM87jZY9nl2q8pwYanIX/T?=
+ =?us-ascii?Q?A8utMnIhqNcSVzrnjDkhoA2LiFAswh90+94pb3t7O0x0gDpwpND+awNe12pf?=
+ =?us-ascii?Q?E+6bPU3XzOmhTtdo6lxWXOGLsYnGcv4GZP4ncMfufXU8AUfeIxIh/fZvVqNz?=
+ =?us-ascii?Q?RqWx+4vL5TDQzxbY83vUpG3txmp1/495660v/mnKURJ6rHQnJ20t8DXTdEMR?=
+ =?us-ascii?Q?8w46zKSlaDdeN1yyenKRUyPhDHLSn3fINUr8Bvfy3W7/KNcWCxp+YWzhBb1K?=
+ =?us-ascii?Q?aqpM0H4XPC3pHyxE/fCVwphehvEArHMpjo1/Rd5mSle+sM1xilgimfxAtq0E?=
+ =?us-ascii?Q?EvFqtbI5ppu6Haq7qSzRp8rAJTGPANEJV2n5DLygO7krA0ORKYkijTPbh5LG?=
+ =?us-ascii?Q?rQUdWzbLEjCSMC5L33cb4s+py0fvPuFiZ+YWQTYm/LfZqRAei/BtNs9h0uJZ?=
+ =?us-ascii?Q?V0hhqccZ1VT7K93sS1Di5q3HLWfKstJgSf5vWE5O6Uu3mc9v7gQ7lyT0GLJS?=
+ =?us-ascii?Q?UAXFtMrcpUpNfGpgpKh0JHXFeDwHb55mYdAnsYTGm1LV2gLJVJvdc9HkGIQH?=
+ =?us-ascii?Q?0wrlENKh/VsCk8iTWhJ/Zt5q4m/gLUAD7DxUAxJNSWuGPz0Qr1RfOuJOtplA?=
+ =?us-ascii?Q?CJs/wLMEqa896MoXI9UBytrJSfQ8P4KFPmYApByE1tQGNqd3NGZbIg7rm1db?=
+ =?us-ascii?Q?uGaipZn0sAD8KwzPxuwNwQxLhveQOQYSNnzABtS/ECyrIdn1myeONaaeB6Lj?=
+ =?us-ascii?Q?yJMfJ06YW9iA3A/DBVadfAZpdEU15oANG6OyDUeo14TDW8p4a+NPl8TMfpBo?=
+ =?us-ascii?Q?XzyS97cM0CvtF7s8VedB5dMVS6/8iomUXTr3lRJWChO33eTbWv8iXRa4smqX?=
+ =?us-ascii?Q?3dgWcnLWKYBI46V2o1DXy52deTxaBK9VwmIbUGcJV/wSBxG/MARaGCxFSqOg?=
+ =?us-ascii?Q?zZaPTU8WA4Ef446jqlJdd9joOD2HHOW1t0S7WTK4XGH7hrRkfYPNXt5poRD9?=
+ =?us-ascii?Q?ElHjjJcPpaqrGlKKROsiKDQ8EbM9j8v+jdEMHDTZ+INxqUcf/r10pHDVS+oK?=
+ =?us-ascii?Q?dcLhhykXy8zSfNgFbZdIrxnFFwA1XUdROaxkPmpoVeKnAM4c3ZmzQ9PR+ui1?=
+ =?us-ascii?Q?8CrAM2b77tkKWH3wLa/5ya4B6q2VgBakBszb4Ek054IF81yO8y8+8RX4yqKn?=
+ =?us-ascii?Q?EGwosM0yOFLNtfAMQg78ui1hc50dUWpo/fUu3mPxZTs3JVJOv/zuilC3HL3u?=
+ =?us-ascii?Q?KxELtyqX38NW9pS3LKX/GTvnvVPSivkAHjmMcMuwmMaEWuOgN5bsXw/15f2r?=
+ =?us-ascii?Q?shhLcmuadwQlrIL2RVpDV+At+1UT1rrQb/BA1NeAFSXPZjm/z6uWv0kWdFJB?=
+ =?us-ascii?Q?kyQb1sCIswJfHSm1NWTCkZv25eA=3D?=
 X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 271ac456-7c74-480c-3e7b-08d9f528dc92
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca0aa08a-f4c0-4d70-5eff-08d9f528dc0a
 X-MS-Exchange-CrossTenant-AuthSource: CWLP123MB5572.GBRP123.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 10:56:49.8641
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 10:56:49.0362
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z+rZ03km6qkU44kTRA6fIEhG49yYCGy1G04ab3ymGCCbM7kqdenCpHr+6qm1CADd59o5screprn9zw7QmcY5Z8ryNiit/e8FdxzGUeU3hng=
+X-MS-Exchange-CrossTenant-UserPrincipalName: hX/bWoQGurg6SRIr32Ilm7p41mVoDLtXZ25e03683Wg9AGoPCq1Z3wr8QOw/1H6GatBuJtpixmqQJONpEWktCza9PEYF+UBlMuF4kFM6T7Y=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP123MB6574
 Authentication-Results: relay.mimecast.com;
         auth=pass smtp.auth=CUK97A341 smtp.mailfrom=tomasz.mon@camlingroup.com
@@ -122,77 +118,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Lech Perczak <l.perczak@camlintechnologies.com>
+sc16is7xx driver assumes that the device handles hardware flow control
+automatically. This is not really true as the driver does inadvertently
+clear the bits that enable hardware flow control.
 
-Preserve unaffected bits state when accessing EFR register. This
-prevents hardware flow control bits from being cleared on enhanced
-functions access.
+This patch series solves multiple issues present in the driver. While
+the patches are fairly independent, there are some dependencies. The
+"sc16is7xx: Properly resume TX after stop" adds IER bit set function
+that is later used in "sc16is7xx: Set AUTOCTS and AUTORTS bits". Also
+the patches that control which interrupts are enabled are dependent on
+each other.
 
-Signed-off-by: Lech Perczak <l.perczak@camlintechnologies.com>
-Signed-off-by: Tomasz Mo=C5=84 <tomasz.mon@camlingroup.com>
----
- drivers/tty/serial/sc16is7xx.c | 24 +++++++++++++++++++-----
- 1 file changed, 19 insertions(+), 5 deletions(-)
+Patches should be applied respecting the order in the series. The whole
+series applies on top of "sc16is7xx: Fix for incorrect data being
+transmitted" [1].
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.=
-c
-index 38d1c0748533..3800733452fe 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -289,6 +289,14 @@
- =09=09=09=09=09=09  *       XON1, XON2, XOFF1 and
- =09=09=09=09=09=09  *       XOFF2
- =09=09=09=09=09=09  */
-+#define SC16IS7XX_EFR_FLOWCTRL_BITS=09(SC16IS7XX_EFR_AUTORTS_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_AUTOCTS_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_XOFF2_DETECT_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_SWFLOW3_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_SWFLOW2_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_SWFLOW1_BIT | \
-+=09=09=09=09=09SC16IS7XX_EFR_SWFLOW0_BIT)
-+
-=20
- /* Misc definitions */
- #define SC16IS7XX_FIFO_SIZE=09=09(64)
-@@ -523,8 +531,10 @@ static int sc16is7xx_set_baud(struct uart_port *port, =
-int baud)
-=20
- =09/* Enable enhanced features */
- =09regcache_cache_bypass(s->regmap, true);
--=09sc16is7xx_port_write(port, SC16IS7XX_EFR_REG,
--=09=09=09     SC16IS7XX_EFR_ENABLE_BIT);
-+=09sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-+=09=09=09      SC16IS7XX_EFR_ENABLE_BIT,
-+=09=09=09      SC16IS7XX_EFR_ENABLE_BIT);
-+
- =09regcache_cache_bypass(s->regmap, false);
-=20
- =09/* Put LCR back to the normal mode */
-@@ -935,7 +945,10 @@ static void sc16is7xx_set_termios(struct uart_port *po=
-rt,
- =09if (termios->c_iflag & IXOFF)
- =09=09flow |=3D SC16IS7XX_EFR_SWFLOW1_BIT;
-=20
--=09sc16is7xx_port_write(port, SC16IS7XX_EFR_REG, flow);
-+=09sc16is7xx_port_update(port,
-+=09=09=09      SC16IS7XX_EFR_REG,
-+=09=09=09      SC16IS7XX_EFR_FLOWCTRL_BITS,
-+=09=09=09      flow);
- =09regcache_cache_bypass(s->regmap, false);
-=20
- =09/* Update LCR register */
-@@ -1010,8 +1023,9 @@ static int sc16is7xx_startup(struct uart_port *port)
- =09regcache_cache_bypass(s->regmap, true);
-=20
- =09/* Enable write access to enhanced features and internal clock div */
--=09sc16is7xx_port_write(port, SC16IS7XX_EFR_REG,
--=09=09=09     SC16IS7XX_EFR_ENABLE_BIT);
-+=09sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-+=09=09=09      SC16IS7XX_EFR_ENABLE_BIT,
-+=09=09=09      SC16IS7XX_EFR_ENABLE_BIT);
-=20
- =09/* Enable TCR/TLR */
- =09sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
+Patch series has been developed and tested on a board with SC16IS760
+connected via SPI bus.
+
+[1] https://lore.kernel.org/linux-serial/20220216160802.1026013-1-phil@rasp=
+berrypi.com/
+
+Lech Perczak (3):
+  sc16is7xx: Preserve EFR bits on update
+  sc16is7xx: Update status lines in single call
+  sc16is7xx: Separate GPIOs from modem control lines
+
+Tomasz Mo=C5=84 (3):
+  sc16is7xx: Properly resume TX after stop
+  sc16is7xx: Handle modem status lines
+  sc16is7xx: Set AUTOCTS and AUTORTS bits
+
+ drivers/tty/serial/sc16is7xx.c | 257 +++++++++++++++++++++++++++++----
+ 1 file changed, 227 insertions(+), 30 deletions(-)
+
 --=20
 2.25.1
 
