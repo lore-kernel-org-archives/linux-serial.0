@@ -2,36 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4F8C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 18:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9FBC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 23:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232005AbiBUSkw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:40:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56860 "EHLO
+        id S236348AbiBUXVW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Feb 2022 18:21:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233254AbiBUSk0 (ORCPT
+        with ESMTP id S236828AbiBUXVG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:40:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14610195;
-        Mon, 21 Feb 2022 10:40:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2AFAB811F3;
-        Mon, 21 Feb 2022 18:40:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C894DC340E9;
-        Mon, 21 Feb 2022 18:39:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645468799;
-        bh=TIouyKTrY9MePsjLZLYLg6ZFF8gkEtGp45zObJ6uN5o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pYW+0/BuOS+GOb9Lnz6lRJxJbKBzTzErbZuoZTtdX60lLN5pXWz2LyTqoNiYFJbFi
-         prkXb8WGTQftUX43eBZGEvDvSXLrRWCOGZ/HWyQVhAoYAC9rM2T+D19S5UAUFeWVds
-         KgVRbxksEU8RkGyNbgxBbmK1COFq6zRa+WnmaKFQ=
-Date:   Mon, 21 Feb 2022 19:39:56 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+        Mon, 21 Feb 2022 18:21:06 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F2E275E1;
+        Mon, 21 Feb 2022 15:19:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645485568;
+        bh=0PDuuvV4gPmzvIMULIgaTzx2skF6pBwzkA8LWxeWBYs=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=KUCzMnpcOnAEw6LofcvHN2n6O9nA8SpfBb/+00WP5mmE1UE1TN9F8PIEtdM9HnrG4
+         Bl/+NuyZqF1vEcspfXWHwWAuCQQdoVGgqMuByjqmtnN+GZSfEBMBrmNno4pNxWvg2G
+         SeFATGhhV81438Uk+lFJ38otyPiyNw9/RkPGthWQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.47] ([149.172.237.68]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MzhnH-1o99Sj2zKL-00vfHH; Tue, 22
+ Feb 2022 00:19:28 +0100
+Subject: Re: [PATCH 2 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     jirislaby@kernel.org, u.kleine-koenig@pengutronix.de,
         linux@armlinux.org.uk, richard.genoud@gmail.com,
         nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
@@ -41,88 +38,75 @@ Cc:     jirislaby@kernel.org, u.kleine-koenig@pengutronix.de,
         alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
-Subject: Re: [PATCH 2 1/9] serial: core: move RS485 configuration tasks from
- drivers into core
-Message-ID: <YhPcfMtE7xhykgcI@kroah.com>
 References: <20220216001803.637-1-LinoSanfilippo@gmx.de>
- <20220216001803.637-2-LinoSanfilippo@gmx.de>
+ <20220216001803.637-2-LinoSanfilippo@gmx.de> <YhPcfMtE7xhykgcI@kroah.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <5982f410-9e67-f1b1-7cb5-28330fae306e@gmx.de>
+Date:   Tue, 22 Feb 2022 00:19:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216001803.637-2-LinoSanfilippo@gmx.de>
+In-Reply-To: <YhPcfMtE7xhykgcI@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:V7fg3jJoNiscRHi8TUXjkEDwmGMmW0a/kmQgEh78znc/ax6P1vb
+ i28qrvOMmhhK7zfnyTDsm28v5kH8fRfMfVac0KOiqSwkvOmc1pm81wVAO7cer9Yow7HG2Pz
+ NRcM3Haen6q9cT6psBZ1RsJNuVAnLKPm/Q2ki6RNpg2ECaUC5VroC1EdSFGKmRw5l2pFbZD
+ HYLIUdQt7X6TlWwQp9cLw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XE1lGwkfLPo=:th4sFlrzQZgUMFeO623FK9
+ HcZ2ef+g4gyj82rQbRNko5KKzi8KgnisfK46Xxqs6O/oOEcrZpjzwOn3D549TVo1wQX15H/fD
+ IRcssAvGuDQPymZeI05w4LdRBMlgHvDyJkNv53travF/82iMHy0UiD9ZckUgO8jL0Edw5vXMe
+ omGCcKWrtvVPkxIeGx7Nm1+t9ZJO7HtPpRgfKIiWJY6obkSxtH6afybmYFum4/wkPdgIWbZUo
+ QVP6rlPAt7p2kzQySMV4iOHqyCdc7dRi/SvT/1jegK7NPDCLFD5WGcEPRSIvKro2z5plb1Rjs
+ bhGmNnkGtCH7bmpiD/rWjtqijrMsRyLeXhiyu9xf6BAPbCv3j8x40SxoOiorvdNCvmQbnL/N4
+ DG1ZE4Loil5uJpVfqXBKv/9ALKp/QND5+eFo6X6A9hg1FKJ9ob+qqw1ySt6mMLs+wjMLUhKF8
+ PVjknepEfeui8QsBzEDpz2v3ZW/3KoYDCzi3OPOoqZaKK4bZjgccxpRM+YBScWWlOyl/7wQyt
+ WFVCvuzIYVusJ8GtdUwN0PqfvI3hoUAl+MUL4kN2+aSZk0h7hmT2qGs8F9aiFq8k5px0E9RYX
+ aCmQe8K4lSPZZE4s2LpLzLTzdSbqCo2UzBcB/YwAJGocDTJASQJAPUiMY07mxKt/lvqxBqpJH
+ Lz5vIV2VLzYfDDtAu0HpKVv2cgQNbn6rWqocRH5teJQOYnfNi89AX9tSlY/17Lh9umZnGeyy5
+ p0uANROfis4tSq9VwIo8t2FHoUGsOxqF9AIvviSMSNbEDVorsD/t0fIVxjqiBr8c9vrnU0Ou8
+ 7XXC0GlIyFadUt7EYUgM/Q2jQ7IAcpOQyJUEoMdvfMmZj/h32ukL/I2GFI4jFI+ivetlZ+vdW
+ SpM2fnbqoAbsvxOP4DnpKHuNxaz43ITVtyuflt0n8QtlxLJ0vHF1ANsfuxFIjOoKqYOJbPG1O
+ RGu43XaqZlHjJVyKWrm9sX970sBYBgdEiJXSUhJ16jy8wHpL8u5Bb7PVW3V1H8BDEqnhHTi5+
+ jFTiEPKbtPlPvgCYH8axBCTrdYoJ4iCPFybPQ0P39YN2hTZ4LnhsLCPW91YCCu9gIdV1cIgMo
+ xRygjpsitjzL2A=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:17:55AM +0100, Lino Sanfilippo wrote:
-> Several drivers that support setting the RS485 configuration via userspace
-> implement one or more of the following tasks:
-> 
-> - in case of an invalid RTS configuration (both RTS after send and RTS on
->   send set or both unset) fall back to enable RTS on send and disable RTS
->   after send
-> 
-> - nullify the padding field of the returned serial_rs485 struct
-> 
-> - copy the configuration into the uart port struct
-> 
-> - limit RTS delays to 100 ms
-> 
-> Move these tasks into the serial core to make them generic and to provide
-> a consistent behaviour among all drivers.
-> 
-> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-> ---
->  drivers/tty/serial/serial_core.c | 18 ++++++++++++++++++
->  include/uapi/linux/serial.h      |  3 +++
->  2 files changed, 21 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 846192a7b4bf..a4f7e847d414 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1282,8 +1282,26 @@ static int uart_set_rs485_config(struct uart_port *port,
->  	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
->  		return -EFAULT;
->  
-> +	/* pick sane settings if the user hasn't */
-> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
-> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
-> +		rs485.flags |= SER_RS485_RTS_ON_SEND;
-> +		rs485.flags &= ~SER_RS485_RTS_AFTER_SEND;
-> +	}
-> +
-> +	rs485.delay_rts_before_send = min_t(unsigned int,
-> +					    rs485.delay_rts_before_send,
-> +					    SER_RS485_MAX_RTS_DELAY);
-> +	rs485.delay_rts_after_send = min_t(unsigned int,
-> +					   rs485.delay_rts_after_send,
-> +					   SER_RS485_MAX_RTS_DELAY);
-> +	/* Return clean padding area to userspace */
-> +	memset(rs485.padding, 0, sizeof(rs485.padding));
-> +
->  	spin_lock_irqsave(&port->lock, flags);
->  	ret = port->rs485_config(port, &rs485);
-> +	if (!ret)
-> +		port->rs485 = rs485;
->  	spin_unlock_irqrestore(&port->lock, flags);
->  	if (ret)
->  		return ret;
-> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-> index fa6b16e5fdd8..859045a53231 100644
-> --- a/include/uapi/linux/serial.h
-> +++ b/include/uapi/linux/serial.h
-> @@ -128,6 +128,9 @@ struct serial_rs485 {
->  							   (if supported) */
->  	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
->  	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
-> +#define SER_RS485_MAX_RTS_DELAY		100		/* Max time with active
-> +							   RTS before/after
-> +							   data sent (msecs) */
 
-Why is this a userspace value now?  What can userspace do with this
-number?  Once we add this, it's fixed for forever.
+Hi,
 
-thanks,
+On 21.02.22 at 19:39, Greg KH wrote:
 
-greg k-h
+>> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+>> index fa6b16e5fdd8..859045a53231 100644
+>> --- a/include/uapi/linux/serial.h
+>> +++ b/include/uapi/linux/serial.h
+>> @@ -128,6 +128,9 @@ struct serial_rs485 {
+>>  							   (if supported) */
+>>  	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
+>>  	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
+>> +#define SER_RS485_MAX_RTS_DELAY		100		/* Max time with active
+>> +							   RTS before/after
+>> +							   data sent (msecs) */
+>
+> Why is this a userspace value now?  What can userspace do with this
+> number?  Once we add this, it's fixed for forever.
+>
+> thanks,
+>
+> greg k-h
+>
+
+
+Ok, I think we do not really need to expose it to userspace, since we
+clamp the delay anyway if it is too big. I will correct this in the next
+patch version.
+
+Regards,
+Lino
+
+
+
