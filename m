@@ -2,77 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B844C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 20 Feb 2022 22:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B47EC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Feb 2022 08:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239908AbiBTWZA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 20 Feb 2022 17:25:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44280 "EHLO
+        id S243464AbiBUIYe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:24:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiBTWY7 (ORCPT
+        with ESMTP id S230270AbiBUIYd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 20 Feb 2022 17:24:59 -0500
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A11E4B420;
-        Sun, 20 Feb 2022 14:24:37 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 11D3A1C0B77; Sun, 20 Feb 2022 23:24:35 +0100 (CET)
-Date:   Sun, 20 Feb 2022 23:24:34 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: =?iso-8859-1?Q?Ad?=
- =?iso-8859-1?Q?d_Pali_Roh=E1r?= as mvebu-uart.c maintainer
-Message-ID: <20220220222434.GA18143@duo.ucw.cz>
-References: <20220214124808.31971-1-pali@kernel.org>
- <YgpVaR421wQYx9mt@kroah.com>
- <20220214140641.v2wlfr43lqgxvw7e@pali>
+        Mon, 21 Feb 2022 03:24:33 -0500
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71D160F2;
+        Mon, 21 Feb 2022 00:24:10 -0800 (PST)
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 21 Feb
+ 2022 16:24:07 +0800
+Message-ID: <1cd6e368-e1ce-d587-fb5d-d8bd46dbeb99@amlogic.com>
+Date:   Mon, 21 Feb 2022 16:24:07 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
-Content-Disposition: inline
-In-Reply-To: <20220214140641.v2wlfr43lqgxvw7e@pali>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V6 4/5] tty: serial: meson: Make some bit of the REG5
+ register writable
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220118030911.12815-1-yu.tu@amlogic.com>
+ <20220118030911.12815-5-yu.tu@amlogic.com>
+ <1j7dau2hxi.fsf@starbuckisacylon.baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <1j7dau2hxi.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Jerome,
+	Thank you very much for your reply. At present, the problem of 
+switching uART baud rate stuck has been solved. I'm ready to send the 
+next edition.
 
---82I3+IH0IqGh5yIs
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon 2022-02-14 15:06:41, Pali Roh=E1r wrote:
-> On Monday 14 February 2022 14:13:13 Greg Kroah-Hartman wrote:
-> > On Mon, Feb 14, 2022 at 01:48:08PM +0100, Pali Roh=E1r wrote:
-> > > Signed-off-by: Pali Roh=E1r <pali@kernel.org>
-> >=20
-> > I can not take patches without any changelog text, sorry.
->=20
-> Well, I'm the only one who has been working on this driver recently and
-> I have development boards with this UART HW.
-
-Greg wants to say that you need to copy subject into changelog body,
-so that it is non-empty.
-
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
-
---82I3+IH0IqGh5yIs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhK/ogAKCRAw5/Bqldv6
-8lBpAKCaKh1tBvFkqgS8PFmECs4rIaOEqgCguGaq8H88u5b8qqWuD1q8FIamUgU=
-=KTOC
------END PGP SIGNATURE-----
-
---82I3+IH0IqGh5yIs--
+On 2022/1/21 5:49, Jerome Brunet wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> 
+> On Tue 18 Jan 2022 at 11:09, Yu Tu <yu.tu@amlogic.com> wrote:
+> 
+>> The UART_REG5 register defaults to 0. The console port is set in
+>> ROMCODE. But other UART ports default to 0, so make bit24 and
+>> bit[26,27] writable so that the UART can choose a more
+>> appropriate clock.
+> 
+> Suggestion: Instead of talking bits (which is a bit cryptic) tell us
+> what is actually does
+> 
+> Something like:
+>   Make the internal clock source mux and divider writeable, allowing the
+>   uart to deviate from the settings intially applied by the ROMCode and
+>   using the most appropriate clocks
+> 
+Your description is better, I will follow your suggestion in the next 
+edition.
+>>
+>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>> ---
+>>   drivers/tty/serial/meson_uart.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+>> index 92fa91c825e6..4e7b2b38ab0a 100644
+>> --- a/drivers/tty/serial/meson_uart.c
+>> +++ b/drivers/tty/serial/meson_uart.c
+>> @@ -678,7 +678,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
+>>   							CLK_SET_RATE_NO_REPARENT,
+>>   							port->membase + AML_UART_REG5,
+>>   							26, 2,
+>> -							CLK_DIVIDER_READ_ONLY,
+>> +							CLK_DIVIDER_ROUND_CLOSEST,
+>>   							xtal_div_table, NULL);
+>>   		if (IS_ERR(hw))
+>>   			return PTR_ERR(hw);
+>> @@ -708,7 +708,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
+>>   					CLK_SET_RATE_PARENT,
+>>   					port->membase + AML_UART_REG5,
+>>   					24, 0x1,
+>> -					CLK_MUX_READ_ONLY,
+>> +					CLK_MUX_ROUND_CLOSEST,
+>>   					NULL, NULL);
+>>   	if (IS_ERR(hw))
+>>   		return PTR_ERR(hw);
+> 
