@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82047C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 08:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A54DFC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 08:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbiBVIH4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:07:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S229379AbiBVIH6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBVIHz (ORCPT
+        with ESMTP id S229574AbiBVIH5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:07:55 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDF414A6D6
+        Tue, 22 Feb 2022 03:07:57 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E671614A6DD
         for <linux-serial@vger.kernel.org>; Tue, 22 Feb 2022 00:07:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645517250; x=1677053250;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=sRer3P9Fg/bZbuBwRr3FM9f9G9bbunVtHhTSLGt2xK4=;
-  b=glcKZj1mgBpBipgRWc+Ff+d/pImlAdXufe7vNXGh63jafqn6fPV6GVsv
-   0RgVj5oO/hYtpTrxSnNUrlziCMPp00WN+qzhoqCLO0ZgM1HpkZzXSPjf5
-   CPPkCtD5EXFh+JRBFj97YHEH6UYRdKrNZrXTEx4w+2OYkTlY4/FCEshzE
-   C3nFmYlDWSjjWQOS/j4BiUccJRCLdMC56cSswDmUqW1STOQYZC0XTIpmv
-   fOtVvKOOkYIUEt1p0gyqha/GvmFco1VaWuFiO+q2ZX4qQvfqW1PEGrmf7
-   j/y6nchPbQNhY/0qgW+X0xUeA6ufk/w3oi2JQa/dI7EqR7tWFpnDVTUcE
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="231603809"
+  bh=X07ybm92OQ5EvF9JWHI5vm15ns94Tp1lg3+SA5WOk8s=;
+  b=WJAVl1nKRb6uT/4uv8Kfaoyg3a9BHNltvzjx0eDsSLDpaunv/lmF9k3L
+   466Ca8mmfn7Xt8RbjQOmlT/EU3VJGl5VqtJ8EZyCF5R70n9sNPOVGmk+b
+   pMt4s/7z4ocC3CT1+7sHvltdRB9myZDnCJpVqdOFJCG7XsrOTn62R+DG1
+   wAOn0vEb+ZXY4Rs15fpybvWB3bLax9sB638Z/fqQZuYB0rHIjm2rsCL37
+   qgnrcCblcF4aEZINKS9h5AcjNEp6hUlWet7j42Hl39hR+owJGlL1GbAO7
+   nEFiADUgMTAeIUfbT6vV5L7DicaByPo4v4TqqM1x3YfzmBaCsmzg1I48A
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="314900018"
 X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="231603809"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 00:07:30 -0800
+   d="scan'208";a="314900018"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 00:07:30 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="505449715"
+   d="scan'208";a="490702781"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 22 Feb 2022 00:07:29 -0800
+  by orsmga003.jf.intel.com with ESMTP; 22 Feb 2022 00:07:29 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nMQCm-000013-Ip; Tue, 22 Feb 2022 08:07:28 +0000
-Date:   Tue, 22 Feb 2022 16:06:42 +0800
+        id 1nMQCm-000010-IG; Tue, 22 Feb 2022 08:07:28 +0000
+Date:   Tue, 22 Feb 2022 16:06:35 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- eebb0f4e894f1e9577a56b337693d1051dd6ebfd
-Message-ID: <62149992.OdOCZNT2wMp9wuyF%lkp@intel.com>
+Subject: [tty:tty-testing] BUILD SUCCESS
+ a603ca60cebff8589882427a67f870ed946b3fc8
+Message-ID: <6214998b.vXQ48YTO/DuVZyWq%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -56,12 +56,12 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: eebb0f4e894f1e9577a56b337693d1051dd6ebfd  sc16is7xx: Fix for incorrect data being transmitted
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: a603ca60cebff8589882427a67f870ed946b3fc8  serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
 
 elapsed time: 724m
 
-configs tested: 164
+configs tested: 162
 configs skipped: 3
 
 The following configs have been built successfully.
@@ -74,9 +74,6 @@ arm64                               defconfig
 arm                              allyesconfig
 arm                              allmodconfig
 i386                 randconfig-c001-20220221
-alpha                            allyesconfig
-arc                              allyesconfig
-nios2                            allyesconfig
 sh                 kfr2r09-romimage_defconfig
 arm                           corgi_defconfig
 ia64                             alldefconfig
@@ -145,10 +142,13 @@ ia64                             allyesconfig
 m68k                             allmodconfig
 m68k                                defconfig
 m68k                             allyesconfig
+arc                              allyesconfig
 nds32                             allnoconfig
-nds32                               defconfig
 csky                                defconfig
 alpha                               defconfig
+nds32                               defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
 xtensa                           allyesconfig
 h8300                            allyesconfig
 arc                                 defconfig
@@ -212,8 +212,6 @@ arm                          moxart_defconfig
 powerpc                 mpc8272_ads_defconfig
 arm                        vexpress_defconfig
 arm                          collie_defconfig
-powerpc                     kmeter1_defconfig
-arm                        spear3xx_defconfig
 arm                  colibri_pxa300_defconfig
 powerpc                      ppc44x_defconfig
 i386                          randconfig-a002
