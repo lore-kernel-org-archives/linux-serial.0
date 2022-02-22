@@ -2,33 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F0EC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 01:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 098C1C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 06:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238161AbiBVBQN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Feb 2022 20:16:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52274 "EHLO
+        id S230346AbiBVGwJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 01:52:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238091AbiBVBQE (ORCPT
+        with ESMTP id S229867AbiBVGwI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Feb 2022 20:16:04 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DF324F2A;
-        Mon, 21 Feb 2022 17:15:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645492512;
-        bh=b2y7rSofyMsAlLxNarbQCRJjCqiYzdU9dmvDBfCGMLU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=HHyhmPBXip9YYtenzshreMUrlHEgCwgJ6wWiL/edeehDc1L9FOIWnsma8Bu6uZZyD
-         WkEX/X87zgvOP77rTQKWAm3o7zDefUjJz8HnuJ/nD1rhqTix3XlYzHJDUMyJssIx/h
-         nshou38+ERYs0+EqfKUkYzd49GigfpK6SX/dsj9Y=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MysRk-1o9SNJ303m-00vtVm; Tue, 22
- Feb 2022 02:15:11 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
+        Tue, 22 Feb 2022 01:52:08 -0500
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C23827B10;
+        Mon, 21 Feb 2022 22:51:43 -0800 (PST)
+Received: by mail-ed1-f53.google.com with SMTP id z22so34480327edd.1;
+        Mon, 21 Feb 2022 22:51:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bR8Q0QY9SX7TEWCLjuX9Gl0qDTq1gqx2gu8NIUCvNZY=;
+        b=oqiGuTD3Dl1pZGMyO1xCU/U2c0AfNgqoHtki+0Fz2rXhoyIQddoecfd46DyhrVmXpM
+         qh7ixkWDUN5AR9JntSvDcvf8UGuHrvmuyP3KxLzJ0XEwID2FwIXYqe/glRi6i83+D5kO
+         i6466vUz6vZe6JSSS3v+PfghJiRA0JuXHUqWWGiYC6HEJfVA/s5fiLLX1PE5LThlcAPO
+         +DH5xnn0CGX7FrfTN/9erfg74WxmINNoeX85mqJapwfxj+VZa2xfmXvTY0Gt32qkpoXK
+         G0sTahFvs+dXlF5lnEOvvIzQyRHfm+YBg9HXE/NV06B2VAw8q7x+zgvfMpvb9kizjnNm
+         IQ/Q==
+X-Gm-Message-State: AOAM533FDThjVnEvALDP83vr2FPhEqJ3WN31G6ngxAA5XR9GqMbxq/3T
+        1UstFFa79342DwPqJPmY0+Y=
+X-Google-Smtp-Source: ABdhPJybXoH/4IC5sxgRdrpiS40oI8K5YpOtI4ArFM9KXKTCbppArM6MONHlNQCHPNBdKQfXpU+8Ng==
+X-Received: by 2002:a05:6402:1e8b:b0:3da:58e6:9a09 with SMTP id f11-20020a0564021e8b00b003da58e69a09mr25358130edf.155.1645512701870;
+        Mon, 21 Feb 2022 22:51:41 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id x6sm9348611edv.109.2022.02.21.22.51.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 22:51:41 -0800 (PST)
+Message-ID: <e883ccb5-68ea-f802-e4fd-864672d8ad7b@kernel.org>
+Date:   Tue, 22 Feb 2022 07:51:39 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v3 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+Content-Language: en-US
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
 Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
         nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
         ludovic.desroches@microchip.com, shawnguo@kernel.org,
@@ -37,82 +56,73 @@ Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
         alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v3 8/9] serial: fsl_lpuart: remove redundant code in rs485_config functions
-Date:   Tue, 22 Feb 2022 02:14:32 +0100
-Message-Id: <20220222011433.8761-9-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
+        p.rosenberger@kunbus.com
 References: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:R0QwZ7CNF/l/mRVr+oYBpn8dTdTWnAg8vgoTGVXQ9Mtiola7ML7
- Mkl6ZXbpw9nxjwQ/YrMsXG2eychqcNDicAHEe+IabnCRP/RAvPcJ62XIxtBfpGAF+em2sek
- kUgKEtTAosYJNi0QhCrHzl2C/mYfmrhCSBRcRGlzm2+8QTn3h+O5RxxmHLTEkVJPxtuFdYE
- E+2R4PaSc8DQHuCuSPcyw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DUG/ztOuIFI=:1BsmmNuF7gdS2hxGJQpIHJ
- 5hpDyATXMN3pr7gBPEGWyh3vAF/XwBTer6Ej5JP4t+K/4C4kurCUZKMuYxzMi1Xz5NoUoNX4q
- 9l21cWU4Pv7pui2RjU7YNu3FiQK4Jk4uZo3hVTqZpZYZ4mOt2G4IXi0xu8dtC7VzZqFtEThXo
- D29SNRRz0zJsS7fV1o7BzW4gUoreZ0i2W0PlFsaluRF8fRPmhmPoahynjwBo6z/S5xHadGD0f
- r9kO9UYv+aCI5meYUYrO37GTBHDxnrkHiDNCJStcWJ5WW3kDXH4DmXJlQsxljJpycdrL9hWqq
- 9aZHwS3iRjn6zat858JCplxguKC2gb60qRDyg/A584yjHq6TGTo7j+gTNGSHv3j6yUCwyoem1
- YAZKrCL7KAJ7AhFcKb31/kMRwmGjH+NO7VFblWN7BvaKs/39vrNonBtrNa4dXTg8juV4WMHAQ
- yGOY0jpyh9hnVvC5c8rTv1LMBjJSgUuv8YhgTqYu7U237Bdz7O1nyGFqAyY9KjWCuvDJr96Dr
- FtGSJ+hKgcDpNQw410ctyRHiyJnmsJmTkXF0+HzfhZ6w2ysj5nmgNiCk01FyNGCcAYp6CfD7H
- i6dreZ1DgIj1Ydt2a/pJYynR0SBMxakK4ArPSrPSDt9YJ3dyvYJrCQf7TzbOckGf8qT/u53WP
- /wf0mcE5PUjp4+r0IAvbwp2q4yga+zS9oLatt3p+JxdA90Rl2raox8xM7B6GgWoAXTF4/nrXu
- 7tAAHLRJtGjhmvwhvAdhCUh2HGey4qi4zfw70VImeH+FB9xXrh+R7jCRDeRiRYDPjWSQLF3xy
- TD+/+LDL/vZsi+SepeInxHaP1yzcsR8r7OlHicy7xO7mHclozUdbnkKmHgQDoc47l+0us0wB+
- UwkAf7bg+5d6r4RINRFrgbySE0XVnBq7lWHJyHpjAUuoKgLyCvAfmfpM1DvcYeQp9iiiL5UjW
- 4HXjKxQF84bIRqbZbg8XgLD1Dv1CHmH+LbIiDvYhdt1Urv1AUtUH0kyJHzCu1gUu3monwdCoj
- pyZqFbfcmYieAK4/7HVQFjGYri+JtV30JpBymfzWn98afpf1m3RtLuxJ22RQn6rRrGjmZ1B2Q
- st6kdOr4Wviz+I=
+ <20220222011433.8761-2-LinoSanfilippo@gmx.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220222011433.8761-2-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgZW5zdXJl
-cyB0aGF0IG9ubHkgb25lIG9mCmJvdGggb3B0aW9ucyBSVFMgb24gc2VuZCBvciBSVFMgYWZ0ZXIg
-c2VuZCBpcyBzZXQuIEl0IGFsc28gYXNzaWducyB0aGUKcGFzc2VkIHNlcmlhbF9yczQ4NSBzdHJ1
-Y3QgdG8gdGhlIHVhcnQgcG9ydC4KClNvIHJlbW92ZSB0aGUgY2hlY2sgYW5kIHRoZSBhc3NpZ25t
-ZW50IGZyb20gdGhlIGRyaXZlcnMgcnM0ODVfY29uZmlnKCkKZnVuY3Rpb24gdG8gYXZvaWQgcmVk
-dW5kYW5jeS4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBwbyA8TGlub1NhbmZpbGlwcG9A
-Z214LmRlPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgfCAzMiAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMyIGRlbGV0aW9ucygt
-KQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgYi9kcml2ZXJz
-L3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jCmluZGV4IDdkOTBjNWE1MzBlZS4uYTIwMWJlNDRkNjhh
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jCisrKyBiL2RyaXZl
-cnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMKQEAgLTEzNzcsMTkgKzEzNzcsNiBAQCBzdGF0aWMg
-aW50IGxwdWFydF9jb25maWdfcnM0ODUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwKIAkJLyogRW5h
-YmxlIGF1dG8gUlMtNDg1IFJUUyBtb2RlICovCiAJCW1vZGVtIHw9IFVBUlRNT0RFTV9UWFJUU0U7
-CiAKLQkJLyoKLQkJICogUlRTIG5lZWRzIHRvIGJlIGxvZ2ljIEhJR0ggZWl0aGVyIGR1cmluZyB0
-cmFuc2ZlciBfb3JfIGFmdGVyCi0JCSAqIHRyYW5zZmVyLCBvdGhlciB2YXJpYW50cyBhcmUgbm90
-IHN1cHBvcnRlZCBieSB0aGUgaGFyZHdhcmUuCi0JCSAqLwotCi0JCWlmICghKHJzNDg1LT5mbGFn
-cyAmIChTRVJfUlM0ODVfUlRTX09OX1NFTkQgfAotCQkJCVNFUl9SUzQ4NV9SVFNfQUZURVJfU0VO
-RCkpKQotCQkJcnM0ODUtPmZsYWdzIHw9IFNFUl9SUzQ4NV9SVFNfT05fU0VORDsKLQotCQlpZiAo
-cnM0ODUtPmZsYWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EICYmCi0JCQkJcnM0ODUtPmZsYWdz
-ICYgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EKQotCQkJcnM0ODUtPmZsYWdzICY9IH5TRVJfUlM0
-ODVfUlRTX0FGVEVSX1NFTkQ7Ci0KIAkJLyoKIAkJICogVGhlIGhhcmR3YXJlIGRlZmF1bHRzIHRv
-IFJUUyBsb2dpYyBISUdIIHdoaWxlIHRyYW5zZmVyLgogCQkgKiBTd2l0Y2ggcG9sYXJpdHkgaW4g
-Y2FzZSBSVFMgc2hhbGwgYmUgbG9naWMgSElHSApAQCAtMTQwMiw5ICsxMzg5LDYgQEAgc3RhdGlj
-IGludCBscHVhcnRfY29uZmlnX3JzNDg1KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsCiAJCQltb2Rl
-bSB8PSBVQVJUTU9ERU1fVFhSVFNQT0w7CiAJfQogCi0JLyogU3RvcmUgdGhlIG5ldyBjb25maWd1
-cmF0aW9uICovCi0Jc3BvcnQtPnBvcnQucnM0ODUgPSAqcnM0ODU7Ci0KIAl3cml0ZWIobW9kZW0s
-IHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQVJUTU9ERU0pOwogCXJldHVybiAwOwogfQpAQCAtMTQy
-OCwxOSArMTQxMiw2IEBAIHN0YXRpYyBpbnQgbHB1YXJ0MzJfY29uZmlnX3JzNDg1KHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQsCiAJCS8qIEVuYWJsZSBhdXRvIFJTLTQ4NSBSVFMgbW9kZSAqLwogCQlt
-b2RlbSB8PSBVQVJUTU9ERU1fVFhSVFNFOwogCi0JCS8qCi0JCSAqIFJUUyBuZWVkcyB0byBiZSBs
-b2dpYyBISUdIIGVpdGhlciBkdXJpbmcgdHJhbnNmZXIgX29yXyBhZnRlcgotCQkgKiB0cmFuc2Zl
-ciwgb3RoZXIgdmFyaWFudHMgYXJlIG5vdCBzdXBwb3J0ZWQgYnkgdGhlIGhhcmR3YXJlLgotCQkg
-Ki8KLQotCQlpZiAoIShyczQ4NS0+ZmxhZ3MgJiAoU0VSX1JTNDg1X1JUU19PTl9TRU5EIHwKLQkJ
-CQlTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQpKSkKLQkJCXJzNDg1LT5mbGFncyB8PSBTRVJfUlM0
-ODVfUlRTX09OX1NFTkQ7Ci0KLQkJaWYgKHJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfT05f
-U0VORCAmJgotCQkJCXJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORCkKLQkJ
-CXJzNDg1LT5mbGFncyAmPSB+U0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EOwotCiAJCS8qCiAJCSAq
-IFRoZSBoYXJkd2FyZSBkZWZhdWx0cyB0byBSVFMgbG9naWMgSElHSCB3aGlsZSB0cmFuc2Zlci4K
-IAkJICogU3dpdGNoIHBvbGFyaXR5IGluIGNhc2UgUlRTIHNoYWxsIGJlIGxvZ2ljIEhJR0gKQEAg
-LTE0NTMsOSArMTQyNCw2IEBAIHN0YXRpYyBpbnQgbHB1YXJ0MzJfY29uZmlnX3JzNDg1KHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQsCiAJCQltb2RlbSB8PSBVQVJUTU9ERU1fVFhSVFNQT0w7CiAJfQog
-Ci0JLyogU3RvcmUgdGhlIG5ldyBjb25maWd1cmF0aW9uICovCi0Jc3BvcnQtPnBvcnQucnM0ODUg
-PSAqcnM0ODU7Ci0KIAlscHVhcnQzMl93cml0ZSgmc3BvcnQtPnBvcnQsIG1vZGVtLCBVQVJUTU9E
-SVIpOwogCXJldHVybiAwOwogfQotLSAKMi4zNS4xCgo=
+On 22. 02. 22, 2:14, Lino Sanfilippo wrote:
+> Several drivers that support setting the RS485 configuration via userspace
+> implement one or more of the following tasks:
+> 
+> - in case of an invalid RTS configuration (both RTS after send and RTS on
+>    send set or both unset) fall back to enable RTS on send and disable RTS
+>    after send
+> 
+> - nullify the padding field of the returned serial_rs485 struct
+> 
+> - copy the configuration into the uart port struct
+> 
+> - limit RTS delays to 100 ms
+> 
+> Move these tasks into the serial core to make them generic and to provide
+> a consistent behaviour among all drivers.
+> 
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> ---
+>   drivers/tty/serial/serial_core.c | 29 +++++++++++++++++++++++++++++
+>   1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 846192a7b4bf..2b3afe038c1c 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -42,6 +42,11 @@ static struct lock_class_key port_lock_key;
+>   
+>   #define HIGH_BITS_OFFSET	((sizeof(long)-sizeof(int))*8)
+>   
+> +/*
+> + * Max time with active RTS before/after data is sent.
+> + */
+> +#define RS485_MAX_RTS_DELAY	100 /* msecs */
+> +
+>   static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
+>   					struct ktermios *old_termios);
+>   static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
+> @@ -1282,8 +1287,32 @@ static int uart_set_rs485_config(struct uart_port *port,
+>   	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
+>   		return -EFAULT;
+>   
+> +	/* pick sane settings if the user hasn't */
+> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
+> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
+> +		pr_warn("invalid RTS setting, using RTS_ON_SEND instead\n");
+
+Can't we have a device prefix here, so that everyone knows what device 
+is affected? Without that, it's not that useful. At least port->name & 
+port->line could be printed. The uart core uses dev_* prints, but prints 
+also line as uport->dev can be NULL sometimes.
+
+Hm, we could introduce uart_print family (to print something like what 
+is in uart_report_port).
+
+thanks,
+-- 
+js
+suse labs
