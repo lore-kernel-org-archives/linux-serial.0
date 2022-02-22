@@ -2,111 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF01AC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 08:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A44C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 09:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiBVIVF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:21:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
+        id S229799AbiBVJOo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiBVIVA (ORCPT
+        with ESMTP id S229613AbiBVJOn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:21:00 -0500
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC75155C35
-        for <linux-serial@vger.kernel.org>; Tue, 22 Feb 2022 00:20:35 -0800 (PST)
-Received: by mail-ed1-f45.google.com with SMTP id u18so35000716edt.6
-        for <linux-serial@vger.kernel.org>; Tue, 22 Feb 2022 00:20:35 -0800 (PST)
+        Tue, 22 Feb 2022 04:14:43 -0500
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE378C7FB;
+        Tue, 22 Feb 2022 01:14:19 -0800 (PST)
+Received: by mail-ej1-f47.google.com with SMTP id p14so40735648ejf.11;
+        Tue, 22 Feb 2022 01:14:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=PIDoa+uGqmUz7JmMbzipjKS1/2An6+SpzdmvnYjyhEA=;
-        b=yAUDBwwm9XWLwrGH0QzegAfUOocrhl5OOg185wEds3ENEwpdSLQ4SY06geCvX6yEKW
-         FHUrZr+pWoYnAfpl2bQBZ0zPaG/4wmb07VvnjNQtGBUrleLzgy9nmUbkUgXB20/X6+kY
-         r2hXKM8ij4IeXzyjrzDmbMhs2A9v0HXz8GhSN3Cx+omGTNFqt4Ts7RzzxyPtTNmNE1N3
-         jkBLaBOuO7Mk+36CYXO4z3AmG4yvDM4sszsnqgce8DIiRH1b/rNs/9X5sog88sJBLLjJ
-         ffW9U1eQK19fYAkdV2enGsN0DZo5ic8PCaifBGCafJShEeQlGBt60ZP/xZySm0B8qNZY
-         OO9Q==
-X-Gm-Message-State: AOAM530MVOWMhJ3D055jNkHu23FL2GqXPl4/oE/TlN8vjB2eZN+LgYHR
-        9CbPRIZPfAYf1frlHO3Nr+0=
-X-Google-Smtp-Source: ABdhPJz46PTPRf4vrXw7RjiLNI81qN7eOX8sDQV5dIHQtQt25OfRmGW/1oSDvnin2wBkanFDiHE4sA==
-X-Received: by 2002:a50:aad8:0:b0:404:c300:628c with SMTP id r24-20020a50aad8000000b00404c300628cmr25227768edc.175.1645518034184;
-        Tue, 22 Feb 2022 00:20:34 -0800 (PST)
+        bh=FPiFUHz8gL0RsYyZ6HOzzlInU1l+QGgn3EWierA/h04=;
+        b=gXcozFee1nVH7PzWChBXHd4yuyk2MpVK/zgcvXU1EixlnGlU1h8ZNZe1F55jkpAntW
+         E+MJFEd/k/mukeSmKxODr6w/V5bUyTvI5+1r4pgIs1V9qy5MV/RIjcl9D6F03t9/NV3+
+         j8shcv5VjBfQVH9iQsCmN55uSgaFxe9kaItdm0g1fYg4jMcgNFb5TDGvGC8w1fes6YxC
+         j841M+W2tCNHrvgupMZt7lAbrRyQqWK2Q0q5oNtGKRxEpkitVI10oaYoExhRi89PWeYj
+         qUeWf1Sx0kw9QbeQ3Bc7xgsMCSFQOMFfF42zkOUrZlFLid/QzjpmfYvCzeu/Npb2VQDW
+         3Qcg==
+X-Gm-Message-State: AOAM532VjxJqhJdKMxF4pFsY8+sSVm55asvHPkBD5c1TPOsG+hkgkW9C
+        4awXsmdTFlQDlqkbp2CPioz03KzKA6k=
+X-Google-Smtp-Source: ABdhPJzM1nPTLCViA0CLafXS4qeAXx1Pq8KlOXsF+XoQ12GLi26h0QIIyUa4btfMeNQ93r+m6RoPzQ==
+X-Received: by 2002:a17:906:3905:b0:6cf:7ef5:fee0 with SMTP id f5-20020a170906390500b006cf7ef5fee0mr18180817eje.307.1645521257554;
+        Tue, 22 Feb 2022 01:14:17 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id v12sm9822449edr.8.2022.02.22.00.20.33
+        by smtp.gmail.com with ESMTPSA id r3sm6123780ejd.129.2022.02.22.01.14.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 00:20:33 -0800 (PST)
-Message-ID: <8f3e1779-5581-fb40-aa64-34e700fb0e62@kernel.org>
-Date:   Tue, 22 Feb 2022 09:20:32 +0100
+        Tue, 22 Feb 2022 01:14:17 -0800 (PST)
+Message-ID: <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
+Date:   Tue, 22 Feb 2022 10:14:16 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.0
-Subject: Re: [PATCH] serial: 8250: Return early in .start_tx() if there are no
- chars to send
+Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
+ of pci_ioremap_bar()
 Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>
-Cc:     linux-serial@vger.kernel.org, kernel@pengutronix.de,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>
-References: <20220217211839.443039-1-u.kleine-koenig@pengutronix.de>
+To:     Christoph Hellwig <hch@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
+ <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
+ <Ygy7dNqFLZF9XYiH@infradead.org>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220217211839.443039-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <Ygy7dNqFLZF9XYiH@infradead.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17. 02. 22, 22:18, Uwe Kleine-König wrote:
-> From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+On 16. 02. 22, 9:53, Christoph Hellwig wrote:
+> On Tue, Feb 15, 2022 at 03:43:59PM +0200, Andy Shevchenko wrote:
+>> The pci_iounmap() doesn't cover all the cases where resource should
+>> be unmapped. Instead of spreading it more, replace the pci_ioremap_bar()
+>> with pcim_iomap() which uses managed resource approach.
 > 
-> Don't start the whole chain for TX if there is no data to send. This is
-> mostly relevant for rs485 mode as there might be rts-before-send and
-> rts-after-send delays involved.
-> 
-> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
-> 
-> a few other drivers have such an early exit already (imx, stm32-usart).
-> I wonder if it applies to all UART drivers that there is nothing to do
-> in .start_tx() if the circ buffer is empty and there is no x_char to
-> send. In this case it would be more sensible to ensure in serial_core
-> that .start_tx() is only ever called if there is something to do.
+> pcim_iomap requires the use of ioreadX/iowriteX and thus runtime
+> overhead.  So in doubt please add a pcim_ioremap_bar instead of forcing
+> the legacy iomap/ioread/iowrite API onto modern drivers tht can't
+> support legacy port I/O.
 
-Not sure if all, but most yes. I have a series to add a TX helper which 
-unifies those and removes all those cut&pasted code. It's not finished 
-yet. Look at the top of:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/log/?h=devel
-
-> Best regards
-> Uwe
-> 
->   drivers/tty/serial/8250/8250_port.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 3b12bfc1ed67..5d4668f12f71 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1657,6 +1657,9 @@ static void serial8250_start_tx(struct uart_port *port)
->   
->   	serial8250_rpm_get_tx(up);
->   
-> +	if (!port->x_char && uart_circ_empty(&port->state->xmit))
-> +		return;
-> +
->   	if (em485 &&
->   	    em485->active_timer == &em485->start_tx_timer)
->   		return;
-> 
-> base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
-
+Hmm, the driver combines pci_ioremap_bar with pci_iounmap. pci_iounmap 
+does the right thing after all, but is that correct? And this driver is 
+not alone, this shows more:
+git grep -E 'pci_iounmap|pci_ioremap_bar' `git grep -l pci_iounmap \`git 
+grep -l pci_ioremap_bar\``
 
 -- 
 js
