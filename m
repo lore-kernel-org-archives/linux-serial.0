@@ -2,75 +2,153 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09740C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 16:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DE6C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 16:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiBVQCj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:02:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
+        id S234414AbiBVQ5L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbiBVQCi (ORCPT
+        with ESMTP id S234410AbiBVQ5K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:02:38 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2FADD448;
-        Tue, 22 Feb 2022 08:02:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9m4cMreK6aPEf6IXzAjTwvFEykLgaWCLX4P1Mp4IYqk=; b=nKiwtEF3AXY1vka0hrIOLTFz5p
-        DvofSC2o424bOtldtoP/jTakbkBD+h2sKszDiPVn3J/hxoVrDaxwsipkYOtn+/xksyzA+aAvEj6YY
-        bBHkG+ekWSVg1MfyjKRqXM9MZJSbDGXDzpH53n7D4N8/zZe/Eg8BXYOcRSDqxXazUnhxMnFMJusO9
-        KBjNgX25794FwS9ajA0oMCCaM9Zry4iLbWwkseIXlBqP+dOiPyRnAREo+06I0FF6RQV0CkZSkgIl9
-        XyhndJ1+HNMMEyWHw/UcicGNfvJcma3sWZcu/5GYUtdeDUv5COExcZ8g/Z7F4xWOO6U/S1UEM7dMk
-        B1ds/luw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMXcA-00AV7O-6n; Tue, 22 Feb 2022 16:02:10 +0000
-Date:   Tue, 22 Feb 2022 08:02:10 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
- of pci_ioremap_bar()
-Message-ID: <YhUJAl5JpCoXik7X@infradead.org>
-References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
- <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
- <Ygy7dNqFLZF9XYiH@infradead.org>
- <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Tue, 22 Feb 2022 11:57:10 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38DD2DD5D
+        for <linux-serial@vger.kernel.org>; Tue, 22 Feb 2022 08:56:43 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id ck4-20020a17090afe0400b001bc64ee7d3cso12706pjb.4
+        for <linux-serial@vger.kernel.org>; Tue, 22 Feb 2022 08:56:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sXnwIqemEC4VmrxMuG0rukm8/Qgs5rtWRkI7dl2HHXQ=;
+        b=ZErSsy2XtmemzMgltOpndEBcbJNGpdqZBal2hI3LVU0c7zhqOh08YrKILnGpQln1Yi
+         mDewIy3LB3YfwcJmuhLGM5tuujgcjVA0rYKlAD5QxAlNCFz5Vvy6aIhspLvEhLQCH4S/
+         4FOgRCJzZjq5gu2cIcaP1T3CCgMb9VRFzsQ91koKkcjss3QC3zoGXfeVIuVVtNrT6j5T
+         qVzqv3//MpEGLtziUQ1XpfMuErG2bv/92c1CPiGN4f37+yelbOe/O9fDz+fDtErwInM3
+         V90ZqhXw8oZlfv+zDq5ZzaAt4zmVoc0Vh7hdN25ypjoCzttupB5Si95j+AW83P/Q5ruV
+         5raA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=sXnwIqemEC4VmrxMuG0rukm8/Qgs5rtWRkI7dl2HHXQ=;
+        b=ZRpTLIS39N9N2JVGrM673FFt7YG7nJfOs5fyHpi/UaKkwBTQaleOKqlMK6xQLmkyJr
+         lS3LNNCMCNnSTiPSEAEABvex2KS6iZ0SAjXuEELtUUkopeQiatVmhiDxdbcI5ASe9oS2
+         kGR2cc3ucENtsw86jCVz5ShpTaxnhOOdi5/7Aq0xyWJF/zzGSgso4NI+ZaPSue6QuYml
+         qckjVJEvgPJoQcI9hTXB2IdF9EB5+WhxYptJ/JXqZ5It91bdb3V9YI+mWzykP+ux3pCR
+         SoxSv6Jb+6QxegMIhX3a7g3HDI05CQmtGPfnHYR6aEr/nxlzPj2mK3j+lnkWGAgIbqri
+         6WOQ==
+X-Gm-Message-State: AOAM531PuTYQGkXHRj+mmt8N0hmRyi0fles/YrAI8AzKJjz7Uhp0eu0b
+        epvL9TSsD5ApZEtT2H9zWZ/tG7lk8JWQJQ==
+X-Google-Smtp-Source: ABdhPJyZQOpQ+rB+jjtMOmnLRlG8KDNzfoPLbi3mZ7nXtXFc4nnYVev3L2+NfU2W0IUbq3CGl6yXzQ==
+X-Received: by 2002:a17:903:31c8:b0:14e:db10:5b02 with SMTP id v8-20020a17090331c800b0014edb105b02mr23699396ple.81.1645549003167;
+        Tue, 22 Feb 2022 08:56:43 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id f3sm17912532pfe.137.2022.02.22.08.56.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 08:56:42 -0800 (PST)
+Date:   Tue, 22 Feb 2022 08:56:42 -0800 (PST)
+X-Google-Original-Date: Tue, 22 Feb 2022 08:55:55 PST (-0800)
+Subject:     Re: [PATCH 00/12] Initial support for Nuclei DemoSoC w/ UX600
+In-Reply-To: <6ff70d9fbbfcde860823aa24f0ce58a0a96a1c91.camel@nucleisys.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     icenowy@nucleisys.com, robh+dt@kernel.org
+Message-ID: <mhng-624abf1a-c1e9-40aa-97a5-07a5b9676942@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 10:14:16AM +0100, Jiri Slaby wrote:
-> On 16. 02. 22, 9:53, Christoph Hellwig wrote:
-> > On Tue, Feb 15, 2022 at 03:43:59PM +0200, Andy Shevchenko wrote:
-> > > The pci_iounmap() doesn't cover all the cases where resource should
-> > > be unmapped. Instead of spreading it more, replace the pci_ioremap_bar()
-> > > with pcim_iomap() which uses managed resource approach.
-> > 
-> > pcim_iomap requires the use of ioreadX/iowriteX and thus runtime
-> > overhead.  So in doubt please add a pcim_ioremap_bar instead of forcing
-> > the legacy iomap/ioread/iowrite API onto modern drivers tht can't
-> > support legacy port I/O.
-> 
-> Hmm, the driver combines pci_ioremap_bar with pci_iounmap. pci_iounmap does
-> the right thing after all, but is that correct? And this driver is not
-> alone, this shows more:
-> git grep -E 'pci_iounmap|pci_ioremap_bar' `git grep -l pci_iounmap \`git
-> grep -l pci_ioremap_bar\``
+On Sat, 19 Feb 2022 06:45:43 PST (-0800), icenowy@nucleisys.com wrote:
+> 在 2022-01-27星期四的 23:16 +0800，Icenowy Zheng写道：
+>> This patchset adds support for Nuclei DemoSoC (which is an evaluation
+>> platform made with Nuclei CPU cores and mainly peripherals in
+>> original
+>> Hummingbird E203 project, running on FPGA) with UX600 CPU cores.
+>>
+>> Most patches are for DT bindings, the remaining ones are adding a
+>> Kconfig option and some DTS/DTSI files. The last one is a workaround
+>> for
+>> a severe bug in currently released versions of UX600, which is found
+>> in 5.17 kernel, in which Sv48 support is added to Linux.
+>>
+>> Two non-technical patches are in this patchset too, for MAINTAINERS
+>> and .mailmap items.
+>
+> Ping, could any RISC-V maintainers review these patches, especially the
+> SATP workaround one?
 
-I think it is wrong.  It is not actively harmful unlike the the
-combination of pci_iomap and then later use of accessors from the
-ioremap family, but still not exactly a good idea.
+Sorry, I remember having written this but I guess it got lost.  IIRC my 
+main worry here was that, at least as far as I can tell, DemoSOC is an 
+FPGA development board.  If this is actually in production somewhere 
+then it's a different story, but IIUC the general rule is not to accept 
+code for development hardware that can be updated.
 
-In a perfect world we'd have some different annotation from __iomem
-for the whole iomap family of functions.
+Assuming DemoSOC can be updated, I'd also argue that we should have some 
+sort of version attached to it in DT entries.  Without some versioning 
+we'll end up lost when trying to later determine what we're actually 
+running on.
+
+As far as the errata goes: it looks fine to me, but I'd like to see some 
+sort of description of what the errata actually is (ie, some 
+documentation from the manufacturer).  I know that's not always 
+possible, but without some desciption of what the bug is it gets tricky 
+to mainain this sort of stuff.  For example: we've got sv57 patches 
+now, so how do I know what to do with them on this target?
+
+>
+>>
+>> Icenowy Zheng (12):
+>>   dt-bindings: vendor-prefixes: add Nuclei
+>>   RISC-V: add Nuclei SoC Kconfig option
+>>   dt-bindings: riscv: add compatible strings for Nuclei UX600 series
+>>   dt-bindings: timer: add compatible for Nuclei UX600 CLINT-compat
+>> timer
+>>   dt-bindings: interrupt-controller: add compatible string for UX600
+>>     PLIC
+>>   dt-bindings: serial: add compatible string for Nuclei DemoSoC UART
+>>   dt-bindings: spi: add compatible string for Nuclei DemoSoC SPI
+>>   dt-bindings: riscv: add binding for Nuclei platform boards
+>>   riscv: dts: add device tree for Nuclei DemoSoC w/ UX600 on DDR200T
+>>   RISC-V: workaround Nuclei UX600 cores with broken SATP CSR
+>>   MAINTAINERS: add myself as Nuclei SoCs/CPUs supporter
+>>   mailmap: add Icenowy Zheng's Nuclei mail addresses
+>>
+>>  .mailmap                                      |  1 +
+>>  .../sifive,plic-1.0.0.yaml                    |  1 +
+>>  .../devicetree/bindings/riscv/cpus.yaml       |  7 ++
+>>  .../devicetree/bindings/riscv/nuclei.yaml     | 27 ++++++++
+>>  .../bindings/serial/sifive-serial.yaml        |  1 +
+>>  .../devicetree/bindings/spi/spi-sifive.yaml   |  1 +
+>>  .../bindings/timer/sifive,clint.yaml          |  1 +
+>>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>>  MAINTAINERS                                   |  7 ++
+>>  arch/riscv/Kconfig.socs                       |  6 ++
+>>  arch/riscv/boot/dts/Makefile                  |  1 +
+>>  arch/riscv/boot/dts/nuclei/Makefile           |  2 +
+>>  .../dts/nuclei/nuclei-demosoc-ddr200t.dtsi    | 41 ++++++++++++
+>>  .../nuclei/nuclei-demosoc-ux600-ddr200t.dts   | 13 ++++
+>>  .../boot/dts/nuclei/nuclei-demosoc-ux600.dtsi | 49 ++++++++++++++
+>>  .../riscv/boot/dts/nuclei/nuclei-demosoc.dtsi | 67
+>> +++++++++++++++++++
+>>  arch/riscv/include/asm/vendorid_list.h        |  1 +
+>>  arch/riscv/mm/init.c                          | 17 +++++
+>>  18 files changed, 245 insertions(+)
+>>  create mode 100644
+>> Documentation/devicetree/bindings/riscv/nuclei.yaml
+>>  create mode 100644 arch/riscv/boot/dts/nuclei/Makefile
+>>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
+>> ddr200t.dtsi
+>>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-ux600-
+>> ddr200t.dts
+>>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
+>> ux600.dtsi
+>>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc.dtsi
+>>
