@@ -2,30 +2,30 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBB1C4332F
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 01:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C32C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 01:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238132AbiBVBQI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S238143AbiBVBQI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 21 Feb 2022 20:16:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52254 "EHLO
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238060AbiBVBQC (ORCPT
+        with ESMTP id S238059AbiBVBQC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 21 Feb 2022 20:16:02 -0500
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CADC25587;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E8C25586;
         Mon, 21 Feb 2022 17:15:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645492511;
-        bh=TjAcqoaAnmI0l2suIZ3fiCn2gdLnVgDyq5jYOOZmOWA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=LTz0z5Gv0OEbNfXEttjpUpY1StURQ43ghgXLj6NkVcjkFCinQ8M+jpRBMV9heU0iO
-         86BpIdarylbTDMgLwJSzsU2wB5jmx3o/qiHAQBlFmnbN49+XqE4Qzqb7FyMg5pDmkZ
-         TBmzZfptM7cp7slPKH/+TIdEdjMvk0MqhncaeFsM=
+        s=badeba3b8450; t=1645492505;
+        bh=LnNDspWH53byTON8/DT1vsFZkFZ06dal6CobvbPniSU=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=ByOUBjvZ5qQCgwW/ZyCEAd8zOtBSQ+R25pr77kXNo9duIknzJd6BY9GEML++kj5kW
+         FhH+TkSsPLSlenykp8j8AVcLkp42h9R/fgS4Uw/OoCXhm6a6QaasiNSWXJ2KvLgFko
+         SlbO99BbprztNnvK3L/Ur4DMDnui7VLpner+Hkfk=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MBlxW-1nWB8d0GvU-00CDtI; Tue, 22
- Feb 2022 02:15:11 +0100
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MA7GS-1nXpIZ1vHm-00Bff4; Tue, 22
+ Feb 2022 02:15:05 +0100
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
 To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         u.kleine-koenig@pengutronix.de
@@ -37,52 +37,60 @@ Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
         alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v3 7/9] serial: imx: remove redundant assignment in rs485_config
-Date:   Tue, 22 Feb 2022 02:14:31 +0100
-Message-Id: <20220222011433.8761-8-LinoSanfilippo@gmx.de>
+        p.rosenberger@kunbus.com
+Subject: Move RS485 implementation from drivers to serial core (v3)
+Date:   Tue, 22 Feb 2022 02:14:24 +0100
+Message-Id: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
-References: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:1YjX8AGdE1o4xjj2QyZrTsKWKlZdYsaumGzkTXDBGOIRX0WhWF1
- PY+KkvB9dRtw2LGnGpFJYSr/TYktTeU2sH+z8xpLb+7FlurVJ3LKy3H8hDAVHoSC5Pr2ogx
- P81UN/2jp9d+KYIGKwwcPh+LCJ6SYpR1L9kSN6NuowVZUvzc6momOrQ9Oew9LeOw6K+pejj
- 1Q9VfetxAdi6QQYh7XDoA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1wWUJEnpg5s=:ivv3awWHvYGuc2TZ3OchJg
- APy6vv4xNBuzxPiqGyz9JtocH9MYSK7i6TjVINtD9Qii2oIgN+4/LLe3ciyc58ctcNuS/7Qot
- a+LEvoIjPCY0nlu0hrJbZWp3JGTj3TBDAqJbBUXUG/ojOX6TN50h1hO/rhxyAjZ9nHBDXYYrm
- 3wlP490nhGFWGT03kNt+FRR4CTr6VPtlpUUZJDaLYWAztvKpv/ekgW+riAdmK/WT1OCTNShiN
- OH9Fp3C/3lhEySPXPgjW44bphhiOmdKn9F2yj8spKYmWyAJsQubozh1ZdcyGmtNFAtgf3ftub
- YrVAeVSwZsQc43f6y3B6dmt+weKGrXFZr0rmS5yAMWdTtCcqBaS9Hali2WRAlYNJu04IMVgKH
- QPNq2HYdi1+gJOqDVH1YkeJwr262zuK1iA7l1GLyat3YdpSBuaQGhd5fkO7jbXFefQFf3mZYt
- LlH4y4YR3R8dgqZVwztexm+0W4eiPoTARVUXvwRjy5ZQsDvMTG1Vl1qZK4BDSsXdnhN/ZzEk0
- GPbZbNKcxzaOO4za/u+Xx4yj00Nq01hlzURnfo1cmmSn0sfC2a30NdJ6R4i20ujOKikzyNPM+
- oE9xzxxv6vC0lVxmQlhued/Nz3m3a2gqYNe+N/OYUmK0l3jniX6jlUWu5SD+EXI/RgY1jl6H7
- Em6EkfsKO0FOy91jsmcJczFPcMG7+FItiRZ5ljvsm0vOamXo1KJW8DPETSNLzFDWOrvRMnWfN
- vJPOaULRb8sZby4AmAYmWX6SpxJ3l6L/NgB2neSwoLzMPACrA27oheCsn/nBvbNBFwiNN1ekm
- LyMNFAMykCwG4wKyq54YjvZEW89MB/b/q0t9ZeDzx91zrO99VhCthNPXwY2eS11WAgSZmLPlM
- k6SnS4Tb7UIEYUyZLljpQfk+Q19zZX1A/7c3hyCfJ7y7TexTLckRuSOHoy+MVwATE6tJQkFE5
- 5lysybyi2i/7nIOXu0hti1O0ocriMSPc79K58wv9xChIzwzhgkSBbNlcYkZ/wiwWDdwtZqJyQ
- 209fzvbtyHxIvgTPIPoNNjvDgp06UHSp7i1PCa+zaIKnKvHsPgS91V5Dh+T2ML437GiIq8YHI
- 0GnWJ42CXehcT8=
+X-Provags-ID: V03:K1:fwQhpe5itdtLuhIj4GdcRsArhXYdn4LSccPuJsacLIGEm/VTpGN
+ NKVjX2InXVHVGuJSNyb6ZkEZBq9lDRgp1Kp1mp9NpSnjzNDlLcIIp69nDefA1qBOMAyMusU
+ arpt1wDgkGzYZ633iMNBDfxEcLDv6h8ZaC8NvuTZAs32NfBg1gRudPEDTNgKNYcOgleJoQ4
+ 8rumNGGyPJzeeystnF87Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/J/4Umf8mTM=:2koxePhvpaurreLlmdVBi1
+ cotdEguPZ/oyA28bLj20RGsxMiG3NFn1fYxfLM0gQTLKyRYJb77VVLWvk4jg0SO080DlgpWIo
+ PNj8HC1Tu9AxEuC4l50vbxOIO0Aczka79ByThtk+9GVFTa7gVAJG/JIU9bvIkPbJitVcAFkMT
+ 3t+JsToy55pEixIr+IkeNApaVFyFS2cbl9jSJtQrESM+GceUqALZhoBZVSqM6cJHbZ9elDuQv
+ 35eeqHjZog1J0w0V7zNvRO2sb+IPNY9/1aDjvTuWJV4UK+jHR9EUkK7lYR7xLVdDdtF0vRCsE
+ LGgWOh3zP2+L91coUFQFoiSVnLV5f0VnNJM0OwpVC0/vurdkdv5t5xNJTdxvO7E4oof6rTbOC
+ WPmKv+0hdZsq3ofub/egPLND9PRFz7gb3RLE4Te7Tt70frNksGEQFeAExzLDyOiwpct1Eg1Ck
+ +wqK2/a5n8K1zzTU6c9rVud47CMbPpvAywJQlx29oaH61LFLF/QvXHnt07AU1unFToJA0YmUS
+ fwioZxEdrD7FPOzlKyufoP3t+J6jwawzdjmJ/wI9M1DAS2pUFWECCwt55hV/m5e9xFUAiKEsq
+ fX50tKYYuG2GsMREyvYWRzKkuxpZWRjoQtUim6zzBIkcp1V6Q3aZnwQIudQzEjWZsezOvxn5Z
+ mQ0kohW5l9xRa1x+CUUfdYj6ilVYw3ZbSe1Ya6yysWcN78a0banL6ALizXpIwh2btGssSk6yw
+ Mov/1XVjEoIyzg/ewKtSvYirygAxc9rnVscK0u5jAdEZn2hx0d9cM9NynNA4aa50ZpYlE3Ly9
+ PdNJEGdZBc05O8zP+ZGk+v4EPTR7BSblgLk/ngD4lE5X6wA1Vgfr7SSqUAKB1e0wiuH3RLNXp
+ q0T8pDIVquS7dcb59q6JO7tFFlCvdExeu6UhizIP9ULUEooKVLAyzwdrk5q3rCI2HdSCJPGcm
+ gfSL4sE8OSxX9AXsvb75/avee1MhZq3XF9jVPSdLHg7t77Twg4lINZj9/mQR85Hd4WpIEusLl
+ k0zhSFFDpFN8UKT3jjmtJDeUuCwOHUtr20FU8H8rrRbREggZXf8HKwEQ+D6Yvr2mCPsje7XoN
+ osSpPAhuR/+He4=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgYXNzaWdu
-cyB0aGUgcGFzc2VkCnNlcmlhbF9yczQ4NSBzdHJ1Y3QgdG8gdGhlIHVhcnQgcG9ydC4KClNvIHJl
-bW92ZSB0aGUgYXNzaWdubWVudCBpbiB0aGUgZHJpdmVycyByczQ4NV9jb25maWcoKSBmdW5jdGlv
-biB0byBhdm9pZApyZWR1bmNhbmN5LgoKQWNrZWQtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1Lmts
-ZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBw
-byA8TGlub1NhbmZpbGlwcG9AZ214LmRlPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8
-IDIgLS0KIDEgZmlsZSBjaGFuZ2VkLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwppbmRleCAwYjQ2
-N2NlOGQ3MzcuLmFiNTZmZjIzZThhOSAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lt
-eC5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwpAQCAtMTkzNyw4ICsxOTM3LDYgQEAg
-c3RhdGljIGludCBpbXhfdWFydF9yczQ4NV9jb25maWcoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwK
-IAkgICAgcnM0ODVjb25mLT5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpCiAJCWlteF91
-YXJ0X3N0YXJ0X3J4KHBvcnQpOwogCi0JcG9ydC0+cnM0ODUgPSAqcnM0ODVjb25mOwotCiAJcmV0
-dXJuIDA7CiB9CiAKLS0gCjIuMzUuMQoK
+VGhpcyBwYXRjaCBzZXJpZXMgaXMgYW4gYXR0ZW1wdCB0byBzaW1wbGlmeSByczQ4NSBpbXBsZW1l
+bnRhdGlvbiBpbiBkcml2ZXJzCmJ5IG1vdmluZyB0aGUgZm9sbG93aW5nIHRhc2tzIG91dCBvZiB0
+aGUgZHJpdmVycyBpbnRvIHRoZSBzZXJpYWwgY29yZToKCi0gZW5zdXJlIHNhbmUgUlRTIHNldHRp
+bmdzOiBpbiBjYXNlIG9mIGFuIGludmFsaWQgY29uZmlndXJhdGlvbiAoYm90aCBSVFMKICBhZnRl
+ciBzZW5kIGFuZCBSVFMgb24gc2VuZCBzZXQgb3IgYm90aCB1bnNldCkgZW5hYmxlIFJUUyBvbiBz
+ZW5kIGFuZAogIGRpc2FibGUgUlRTIGFmdGVyIHNlbmQKCi0gbnVsbGlmeSB0aGUgcGFkZGluZyBm
+aWVsZCBvZiB0aGUgc2VyaWFsX3JzNDg1IHN0cnVjdCBiZWZvcmUgaXQgaXMKICByZXR1cm5lZCB0
+byB1c2Vyc3BhY2UKCi0gY29weSB0aGUgY29uZmlndXJhdGlvbiBzdG9yZWQgaW4gdGhlIHNlcmlh
+bF9yczQ4NSBzdHJ1Y3QgdG8gdGhlIHBvcnQKICBjb25maWd1cmF0aW9uIGlmIHNldHRpbmcgdGhl
+IGNvbmZpZ3VyYXRpb24gaW4gdGhlIGRyaXZlciB3YXMgc3VjY2Vzc2Z1bGwKCi0gbGltaXQgdGhl
+IFJUUyBkZWxheSB0byAxMDBtcwoKClJlZHVuZGFudCBjb2RlIGhhcyBiZWVuIHJlbW92ZWQgZnJv
+bSB0aGUgZm9sbG93aW5nIGRyaXZlcnMgZm9yIG5vdzoKCi0gYXRtZWwKLSBmc2xfbHB1YXJ0Ci0g
+YW1iYQotIGlteAotIG1heDMxMHgKLSBvbWFwLXNlcmlhbAotIHNjMTZpczd4eAotIHN0bTMyLXVz
+YXJ0CgpUaGUgY29kZSBoYXMgYmVlbiB0ZXN0ZWQgd2l0aCB0aGUgYW1iYSBwbDAxMSBkcml2ZXIu
+IFRoaXMgc2VyaWVzIGFwcGxpZXMKYWdhaW5zdCBHcmVncyB0dHktdGVzdGluZyBicmFuY2guCgpD
+aGFuZ2VzIGluIHYyOgotIHVzZSBhIG1ha3JvIGZvciBtYXggUlRTIGRlbGF5cyBhbmQgY29tbWVu
+dCBpdCAoYXMgcmVxdWVzdGVkIGJ5IEppcmkpCi0gYWRkIGEgY29tbWVudCBjb25jZXJuaW5nIHRo
+ZSBtZW1zZXQgb2YgYSBzdHJ1Y3R1cmVzIHBhZGRpbmcgZmllbGQKLSBjb3JyZWN0IHR5cG9zIGlu
+IHRoZSBjb21taXQgbWVzc2FnZSAoZm91bmQgYnkgVXdlKSAKLSByZXBocmFzZSBhbGwgY29tbWl0
+IG1lc3NhZ2VzIHRvIG1ha2UgbW9yZSBjbGVhciB0aGF0IGZ1bmN0aW9uIAogIHVhcnRfc2V0X3Jz
+NDg1X2NvbmZpZygpIGhhcyBiZWVuIGV4dGVuZGVkIGJ5IGNoZWNrcyBhbmQgb3RoZXIKICBmdW5j
+dGlvbmFsaXRpZXMgKGFzIHJlcXVlc3RlZCBieSBVd2UpCgpDaGFuZ2VzIGluIHYzOgotIGFkZCB3
+YXJuaW5nIG1lc3NhZ2VzIGlmIHRoZSBzZXJpYWwgY29yZSBjb3JyZWN0cyBSUzQ4NSB2YWx1ZXMg
+KGFzIHJlcXVlc3RlZCBieSBMdWthcyBXdW5uZXIpCi0gZG9udCBleHBvc2UgdGhlIG1hY3JvIGZv
+ciBtYXggUlRTIGRlbGF5cyB0byB1c2Vyc3BhY2UgKGFzIHJlcXVlc3RlZCBieSBHcmVnKSAKCgo=
