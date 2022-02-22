@@ -2,116 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D98C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 12:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A588C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 13:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbiBVMuX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
+        id S229825AbiBVNn7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:43:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiBVMuX (ORCPT
+        with ESMTP id S232514AbiBVNn5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:50:23 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2508B128658;
-        Tue, 22 Feb 2022 04:49:58 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id a8so42686640ejc.8;
-        Tue, 22 Feb 2022 04:49:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WvLhkjzSqJb5E/EJA2yDxnOjRCC3ggMcv4OBH6XBB3s=;
-        b=krLU9JQvtbjmgr7T36yeBT7800xENccDS6OFzPD9iSCCtYa9F3jqs8Q9a9pyxjcOWn
-         rtmcY263cLJLpnuvF6LySNsv39OBLeoInkWB6ygmFMMn1nUn2olOkyQyDtf2ZmsbBW6q
-         hAD1foreF0/LjH+o6CZz4OU8qdNB+pcfvGtewVvJxVZ5isUFrCy4MXP/qDt76hzN25cZ
-         tZxrKkMV5TubXjFQr1MHNPyulpyCLkemOvbjtYx1CyKVvoisC+JcUzd3bZ4cW183Rr7z
-         RoUYnNF+87qXSi3aa2LzhbLjZcrRIpVng+okF+ezOe9vnHbTSGOpVu7WEEj2GP3iGjio
-         2k1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WvLhkjzSqJb5E/EJA2yDxnOjRCC3ggMcv4OBH6XBB3s=;
-        b=puG/rhy3JdrKVz9CQOC1Ng4pO/p6Dz4wc3+jtiMH+gKMX5cTS4bkbDw00OgGCcsBoo
-         O6zAqasazzuIR/go/SnBesgdwTmyq8QOlA2mDblwFv8SFf9sBJuBNN7wAEnsjZF7I1yf
-         6clTozf83WsbhQ1XXZp6cgsWwyZFMjhur+LtbAecUASjUwJzROeHhlGYI3rwoGXNsZ2r
-         sh/m7cLEtBvwUrFGRb4hWY6nLulDLD+t7BpAhM1+hXj7akWs/LZ/5pyOJ1xwnu5nX43U
-         kWUiTl3Iqkg+JALVi8v4epcIE4J6h87+wR4vWnX0rmozQGqM4XQugP9vxtUPh5n24WRt
-         wYqg==
-X-Gm-Message-State: AOAM530Pg3SJo/rIb/MzMr8UAjV0fBaN11E1iFUtUsFTXj3mP2hLVBiB
-        iysyWGFybSC+aw1kwSkhUOE1Jw7kYVBF5edCgN0=
-X-Google-Smtp-Source: ABdhPJxdHyUI1rUoXarUAEq39aC0w5AzvH1kx3kBVTs+1LLrh/i0ksHsY60Ni+0stPE653QOl6TKy7q53DBqhD3+pdU=
-X-Received: by 2002:a17:907:3c12:b0:6cf:37d0:a551 with SMTP id
- gh18-20020a1709073c1200b006cf37d0a551mr19506893ejc.38.1645534196596; Tue, 22
- Feb 2022 04:49:56 -0800 (PST)
+        Tue, 22 Feb 2022 08:43:57 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1898D11EF01;
+        Tue, 22 Feb 2022 05:43:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8AF2CCE13DF;
+        Tue, 22 Feb 2022 13:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F88C340F3;
+        Tue, 22 Feb 2022 13:43:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645537408;
+        bh=V/2qJf6ZSP+uTte+Ubn4pjXBAwZwpHS/NoeabPxxVms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aVH2J2O49f9Cjfw5rYL2uMu1kLLhVC462OLd1wMAWEldVw7hJYnxiYXmbDw+/PG3F
+         +S709lSu2U86PEtO46A/Y/0DqKmSRe3kInlB7KlziSZ8DBgi87ZUaC8OyUO5cDtKrX
+         Yd8vTikmfFpxW+ZYJUT89bdnFCUJsAdcVPMC4Fvg=
+Date:   Tue, 22 Feb 2022 14:43:25 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-ia64@vger.kernel.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH 0/2] termbits.h cleanup
+Message-ID: <YhTofdw8JhkKAt8c@kroah.com>
+References: <20220222115604.7351-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-References: <20220222115604.7351-1-ilpo.jarvinen@linux.intel.com> <20220222115604.7351-3-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220222115604.7351-3-ilpo.jarvinen@linux.intel.com>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Tue, 22 Feb 2022 04:49:44 -0800
-Message-ID: <CAMo8BfKHn4MAwP++EgvB1ZNB7=qwydi-FZB_hrcjamP4pj01xg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] xtensa: termbits.h is identical to asm-generic one
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>,
-        Chris Zankel <chris@zankel.net>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220222115604.7351-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 3:56 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> Remove arch specific termbits.h as there are only trivial space
-> differences between include/uapi/asm-generic/termbits.h and
-> arch/xtensa/include/uapi/asm/termbits.h.
->
-> $ diff -u0 -b -B include/uapi/asm-generic/termbits.h arch/xtensa/include/=
-uapi/asm/termbits.h
-> . --- include/uapi/asm-generic/termbits.h       2022-01-10 13:44:42.81410=
-7461 +0200
-> . +++ arch/xtensa/include/uapi/asm/termbits.h   2022-01-10 13:44:42.69010=
-6926 +0200
-> . @@ -2,2 +2,15 @@
-> . -#ifndef __ASM_GENERIC_TERMBITS_H
-> . -#define __ASM_GENERIC_TERMBITS_H
-> . +/*
-> . + * include/asm-xtensa/termbits.h
-> . + *
-> . + * Copied from SH.
-> . + *
-> . + * This file is subject to the terms and conditions of the GNU General=
- Public
-> . + * License.  See the file "COPYING" in the main directory of this arch=
-ive
-> . + * for more details.
-> . + *
-> . + * Copyright (C) 2001 - 2005 Tensilica Inc.
-> . + */
-> . +
-> . +#ifndef _XTENSA_TERMBITS_H
-> . +#define _XTENSA_TERMBITS_H
-> . +
-> . @@ -200 +221 @@
-> . -#endif /* __ASM_GENERIC_TERMBITS_H */
-> . +#endif /* _XTENSA_TERMBITS_H */
->
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
+On Tue, Feb 22, 2022 at 01:56:02PM +0200, Ilpo Järvinen wrote:
+> Two simple cleanup patches to termbits.h. I prefer these to go
+> in through tty-next as I've some other work based on them that
+> I'll submit later.
+> 
+> Ilpo Järvinen (2):
+>   ia64: termbits.h is identical to asm-generic one
+>   xtensa: termbits.h is identical to asm-generic one
+> 
+>  arch/ia64/include/uapi/asm/termbits.h   | 209 ----------------------
 >  arch/xtensa/include/uapi/asm/termbits.h | 221 ------------------------
->  1 file changed, 221 deletions(-)
+>  2 files changed, 430 deletions(-)
+>  delete mode 100644 arch/ia64/include/uapi/asm/termbits.h
 >  delete mode 100644 arch/xtensa/include/uapi/asm/termbits.h
+> 
+> -- 
+> 2.30.2
+> 
 
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Sure, I'll be glad to take them, thanks!
 
---=20
-Thanks.
--- Max
+greg k-h
