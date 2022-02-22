@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80B4C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 11:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCDEC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Feb 2022 11:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231787AbiBVL4m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Feb 2022 06:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
+        id S231790AbiBVL4q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Feb 2022 06:56:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiBVL4m (ORCPT
+        with ESMTP id S229517AbiBVL4p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Feb 2022 06:56:42 -0500
+        Tue, 22 Feb 2022 06:56:45 -0500
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66730149959;
-        Tue, 22 Feb 2022 03:56:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F11C149959;
+        Tue, 22 Feb 2022 03:56:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645530977; x=1677066977;
+  t=1645530980; x=1677066980;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=pWcf7d7RQDTO5vXHfht3+Dutck0wEbEQptnJG1VxSuk=;
-  b=SSJw9/s03ePEW8VzcKOQ1LvXXiY/3Q+YiHD+rTTdn1BCFJjppwwrufpr
-   GQjQI34Ouxh7Njz5zfplM+eeT5Q8kgivAdpBXh2n1z9nP4U7MEiyzWZz/
-   yhXb0Ca6LPa4VtjQiZ8Tzy3JirABKgrwwK88aB3+YFmIXCrzxEaNJWiSK
-   5v1SplrQU03WpbxAhs9hfrXt41i+9uG90hFkCWsOzfqCK8Vv9hqgIKXin
-   wsW9PtNOcEpQspzjAhOdfRq/7j8YMdilHqwoymrK0FCXSJWFjiStUuhJ0
-   gLL0zkDzKpcoNN/731O53iYZggUIids5YX+2eieCIu1nNRvuWr7IryKDd
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="276283525"
+  bh=HKg0afifHhlI0rK25sZuxWpM5Xm1QQOjq8fvP1ZyHbM=;
+  b=EJ6k3nKbhdfHz4twS3rSUlo7sG9yYhbFke7ZEgnnHihsrRaGc44hhfTz
+   7GZOEFEvBOQfD2EJ6zJPVOGg/UbP7D2PJOA5UsRzaqULSm9bv9MPCrp3U
+   ByL8C3U73zJ/CkrsBngq1QQ74a7umKp6f8wU9yMoQ1ubiQRVESMeCyC4T
+   UxSLEzXQcjJNxUbyL4FsLpKHxDhzGv6BA5AoWhwGG8O+TqohDTxeMQBwX
+   Ji1pRbEiuEbvxTD6zUN+KGnnH0jBRlMwXqI9Rj0bS9VqKmmN0t8DjlB2q
+   wBjR6HOj++cdbCoVfBe+WB246/G6wvC5zr5InFe5TWtG2eWxb2bQlXnSg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="276283543"
 X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="276283525"
+   d="scan'208";a="276283543"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 03:56:17 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 03:56:20 -0800
 X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="547713599"
+   d="scan'208";a="547713616"
 Received: from skatib-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.63.178])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 03:56:14 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 03:56:17 -0800
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -44,9 +44,9 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Chris Zankel <chris@zankel.net>,
         Max Filippov <jcmvbkbc@gmail.com>,
         linux-xtensa@linux-xtensa.org
-Subject: [PATCH 1/2] ia64: termbits.h is identical to asm-generic one
-Date:   Tue, 22 Feb 2022 13:56:03 +0200
-Message-Id: <20220222115604.7351-2-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 2/2] xtensa: termbits.h is identical to asm-generic one
+Date:   Tue, 22 Feb 2022 13:56:04 +0200
+Message-Id: <20220222115604.7351-3-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220222115604.7351-1-ilpo.jarvinen@linux.intel.com>
 References: <20220222115604.7351-1-ilpo.jarvinen@linux.intel.com>
@@ -59,54 +59,62 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Remove arch specific termbits.h as there are only trivial space
 differences between include/uapi/asm-generic/termbits.h and
-arch/ia64/include/uapi/asm/termbits.h:
+arch/xtensa/include/uapi/asm/termbits.h.
 
-$ diff -u0 -b -B include/uapi/asm-generic/termbits.h arch/ia64/include/uapi/asm/termbits.h
-. --- include/uapi/asm-generic/termbits.h         2022-01-10 13:44:42.814107461 +0200
-. +++ arch/ia64/include/uapi/asm/termbits.h       2022-01-10 13:44:42.678106874 +0200
-. @@ -2,2 +2,11 @@
+$ diff -u0 -b -B include/uapi/asm-generic/termbits.h arch/xtensa/include/uapi/asm/termbits.h
+. --- include/uapi/asm-generic/termbits.h       2022-01-10 13:44:42.814107461 +0200
+. +++ arch/xtensa/include/uapi/asm/termbits.h   2022-01-10 13:44:42.690106926 +0200
+. @@ -2,2 +2,15 @@
 . -#ifndef __ASM_GENERIC_TERMBITS_H
 . -#define __ASM_GENERIC_TERMBITS_H
-. +#ifndef _ASM_IA64_TERMBITS_H
-. +#define _ASM_IA64_TERMBITS_H
-. +
 . +/*
-. + * Based on <asm-i386/termbits.h>.
+. + * include/asm-xtensa/termbits.h
 . + *
-. + * Modified 1999
-. + *     David Mosberger-Tang <davidm@hpl.hp.com>, Hewlett-Packard Co
+. + * Copied from SH.
 . + *
-. + * 99/01/28    Added new baudrates
+. + * This file is subject to the terms and conditions of the GNU General Public
+. + * License.  See the file "COPYING" in the main directory of this archive
+. + * for more details.
+. + *
+. + * Copyright (C) 2001 - 2005 Tensilica Inc.
 . + */
-. @@ -200 +209 @@
+. +
+. +#ifndef _XTENSA_TERMBITS_H
+. +#define _XTENSA_TERMBITS_H
+. +
+. @@ -200 +221 @@
 . -#endif /* __ASM_GENERIC_TERMBITS_H */
-. +#endif /* _ASM_IA64_TERMBITS_H */
+. +#endif /* _XTENSA_TERMBITS_H */
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- arch/ia64/include/uapi/asm/termbits.h | 209 --------------------------
- 1 file changed, 209 deletions(-)
- delete mode 100644 arch/ia64/include/uapi/asm/termbits.h
+ arch/xtensa/include/uapi/asm/termbits.h | 221 ------------------------
+ 1 file changed, 221 deletions(-)
+ delete mode 100644 arch/xtensa/include/uapi/asm/termbits.h
 
-diff --git a/arch/ia64/include/uapi/asm/termbits.h b/arch/ia64/include/uapi/asm/termbits.h
+diff --git a/arch/xtensa/include/uapi/asm/termbits.h b/arch/xtensa/include/uapi/asm/termbits.h
 deleted file mode 100644
-index 000a1a297c75..000000000000
---- a/arch/ia64/include/uapi/asm/termbits.h
+index d4206a7c5138..000000000000
+--- a/arch/xtensa/include/uapi/asm/termbits.h
 +++ /dev/null
-@@ -1,209 +0,0 @@
+@@ -1,221 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
--#ifndef _ASM_IA64_TERMBITS_H
--#define _ASM_IA64_TERMBITS_H
--
 -/*
-- * Based on <asm-i386/termbits.h>.
+- * include/asm-xtensa/termbits.h
 - *
-- * Modified 1999
-- *	David Mosberger-Tang <davidm@hpl.hp.com>, Hewlett-Packard Co
+- * Copied from SH.
 - *
-- * 99/01/28	Added new baudrates
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
+- *
+- * Copyright (C) 2001 - 2005 Tensilica Inc.
 - */
+-
+-#ifndef _XTENSA_TERMBITS_H
+-#define _XTENSA_TERMBITS_H
+-
 -
 -#include <linux/posix_types.h>
 -
@@ -147,6 +155,7 @@ index 000a1a297c75..000000000000
 -};
 -
 -/* c_cc characters */
+-
 -#define VINTR 0
 -#define VQUIT 1
 -#define VERASE 2
@@ -166,6 +175,7 @@ index 000a1a297c75..000000000000
 -#define VEOL2 16
 -
 -/* c_iflag bits */
+-
 -#define IGNBRK	0000001
 -#define BRKINT	0000002
 -#define IGNPAR	0000004
@@ -183,6 +193,7 @@ index 000a1a297c75..000000000000
 -#define IUTF8	0040000
 -
 -/* c_oflag bits */
+-
 -#define OPOST	0000001
 -#define OLCUC	0000002
 -#define ONLCR	0000004
@@ -216,6 +227,7 @@ index 000a1a297c75..000000000000
 -#define   FF1	0100000
 -
 -/* c_cflag bit meaning */
+-
 -#define CBAUD	0010017
 -#define  B0	0000000		/* hang up */
 -#define  B50	0000001
@@ -247,7 +259,7 @@ index 000a1a297c75..000000000000
 -#define HUPCL	0002000
 -#define CLOCAL	0004000
 -#define CBAUDEX 0010000
--#define    BOTHER 0010000
+-#define	   BOTHER 0010000
 -#define    B57600 0010001
 -#define   B115200 0010002
 -#define   B230400 0010003
@@ -270,6 +282,7 @@ index 000a1a297c75..000000000000
 -#define IBSHIFT	16		/* Shift from CBAUD to CIBAUD */
 -
 -/* c_lflag bits */
+-
 -#define ISIG	0000001
 -#define ICANON	0000002
 -#define XCASE	0000004
@@ -288,22 +301,25 @@ index 000a1a297c75..000000000000
 -#define EXTPROC	0200000
 -
 -/* tcflow() and TCXONC use these */
+-
 -#define	TCOOFF		0
 -#define	TCOON		1
 -#define	TCIOFF		2
 -#define	TCION		3
 -
 -/* tcflush() and TCFLSH use these */
+-
 -#define	TCIFLUSH	0
 -#define	TCOFLUSH	1
 -#define	TCIOFLUSH	2
 -
 -/* tcsetattr uses these */
+-
 -#define	TCSANOW		0
 -#define	TCSADRAIN	1
 -#define	TCSAFLUSH	2
 -
--#endif /* _ASM_IA64_TERMBITS_H */
+-#endif	/* _XTENSA_TERMBITS_H */
 -- 
 2.30.2
 
