@@ -2,94 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BD7C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 14:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F80C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 15:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236164AbiBWOZC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Feb 2022 09:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
+        id S235080AbiBWPLl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:11:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiBWOZB (ORCPT
+        with ESMTP id S233411AbiBWPLl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Feb 2022 09:25:01 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1ABB1A98;
-        Wed, 23 Feb 2022 06:24:34 -0800 (PST)
+        Wed, 23 Feb 2022 10:11:41 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A584AB65E9;
+        Wed, 23 Feb 2022 07:11:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645626274; x=1677162274;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IV+wRjFZ0KIXQehwCsMDvsyLOE60ai+2jVh9pnpXlHw=;
-  b=hwGB37uAAbJMo7lqmR1cNDNigoiICmbnIubWQ/wBTB1D3oV9AqGoc0Vt
-   /MkQCHq8oT3FFm4jZE+hL6y98BzpAMshpedv2Kp/7wyd1vwuK5CEnkGEB
-   BO4dTcyrLLugu5cgVxloULR/cyOoSyoxYPbXqVvJBlIhb0a3V7WTHIj8U
-   gGPf0/ihmVOiT0oWI5asD0mce+uZ302BfAXbmQ8f+szDxrC5ZyzNs8g3Z
-   +LupkrpZlfnOF4QVi+tOy6R9YuH3gamNYjcYoZ/1CgIf5E/V4tXll2k7Y
-   6aidZxFW9D9kvgWMtzn+0FNLlvkVV3sYZk5aClVT03phTLFtYdottTH4Z
+  t=1645629073; x=1677165073;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AoSFRgrUFUDO1B0aof0XuA6F59treUMH8g8YYtllkbo=;
+  b=kCKmp6b8bfahkTOCBMwaxIy3dFNvs/2l/2fE2H0f7+kwyd7QuEZv3NNx
+   5lq66EwcIe/Yly1KoZQxH/CdVOvoB2+HrVUFRmlRe6t8RhbHAaOoM2Lhq
+   biK4jzvzHZLVebKmyYQEa4M3YP07HQJH0aZibs7jDPaDXMMxNWz9orqbI
+   aH5pD7IupVKaJ85HY1JWyiZrThgD8JZ8LO03g7B7DLwdEjJ8uLMrL33tv
+   oCF8fKSWWYoqzZ9I11SB0K0seAK24DEjQObA4z/WNnzj17UWS6NEYPVaN
+   PEwAR8I+M7BaVKTv99dg8e4sOibrUMHog+AExIR0F1kVCf/XTSwa77p9X
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="232594619"
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="239374967"
 X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="232594619"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:24:34 -0800
+   d="scan'208";a="239374967"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:11:13 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="508452930"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:24:32 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMsYP-007SIC-D9;
-        Wed, 23 Feb 2022 16:23:41 +0200
-Date:   Wed, 23 Feb 2022 16:23:40 +0200
+   d="scan'208";a="607080661"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Feb 2022 07:11:10 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8B31394; Wed, 23 Feb 2022 17:11:27 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
- of pci_ioremap_bar()
-Message-ID: <YhZDbNyJd0LjAbaB@smile.fi.intel.com>
-References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
- <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
- <Ygy7dNqFLZF9XYiH@infradead.org>
- <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
- <YhUJAl5JpCoXik7X@infradead.org>
- <YhYVl9YaoPDwAXO4@smile.fi.intel.com>
- <YhYWw/yEaYJFR1/y@kroah.com>
- <YhYcbrsDD2iagUL7@smile.fi.intel.com>
- <YhYmgEMRhGu1PsYg@infradead.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Qing Wang <wangqing@vivo.com>
+Subject: [PATCH v2 1/1] serial: 8250_mid: Balance reference count for PCI DMA device
+Date:   Wed, 23 Feb 2022 17:11:24 +0200
+Message-Id: <20220223151124.70026-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhYmgEMRhGu1PsYg@infradead.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 04:20:16AM -0800, Christoph Hellwig wrote:
-> On Wed, Feb 23, 2022 at 01:37:18PM +0200, Andy Shevchenko wrote:
-> > Okay, so if I read this thread correctly Christoph suggests to introduce
-> > pcim_ioremap_bar() and then use it. Am I right?
-> 
-> Yes.
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-Thanks for clarification!
+Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
+Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
+Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: rebased on top of the latest tty-linus
+ drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-> > Christoph, since we are on the topic about pcim_*() APIs, can you chime in
-> > the discussion [1] about IRQ vectors allocation?
-> > 
-> > [1]: https://lore.kernel.org/all/20210607153916.1021016-1-zhengdejin5@gmail.com/
-> 
-> Did you intend to link to a 8 month old series or is there something
-> else this should point to?
-
-Yes, because it seems stalled.
-
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index 83592b51a996..a2a03acb04ad 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void pnw_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int tng_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
+ 
++static void tng_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int dnv_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -328,9 +338,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pdev, mid);
+ 	return 0;
++
+ err:
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ 	return ret;
+ }
+ 
+@@ -340,8 +350,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(mid->line);
+ 
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+@@ -349,6 +358,7 @@ static const struct mid8250_board pnw_board = {
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
++	.exit = pnw_exit,
+ };
+ 
+ static const struct mid8250_board tng_board = {
+@@ -356,6 +366,7 @@ static const struct mid8250_board tng_board = {
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
++	.exit = tng_exit,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
