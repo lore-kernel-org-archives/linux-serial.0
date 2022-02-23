@@ -2,57 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87D4C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 08:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE27AC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 11:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239125AbiBWI7u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        id S236391AbiBWLJc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:09:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiBWI7u (ORCPT
+        with ESMTP id S231288AbiBWLJc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:59:50 -0500
-X-Greylist: delayed 882 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 00:59:23 PST
-Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EFF7CDCD
-        for <linux-serial@vger.kernel.org>; Wed, 23 Feb 2022 00:59:23 -0800 (PST)
-Received: by mail.olerise.pl (Postfix, from userid 1001)
-        id 8519C4441A; Wed, 23 Feb 2022 09:41:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
-        t=1645605776; bh=ZNYiuZLXlxCdAPtstEG/gwJieB5RBwA/cHj1SZ3Mpl0=;
-        h=Date:From:To:Subject:From;
-        b=3JHclWrWXGMIUAPt9EqDEeh+I3cZpRY/apCUXO9OJYVzbt5ZEdQ7EZyl1n27ig/KP
-         625rXHsMpF1QIfNg4ck7+uehT/zFfwmfvwvBxCTkuzPd2tfNAydqZ13CdBQ/bS2SJR
-         Sldip3+Wsqg2wVBciCiPGe9HRhMnwkBDydiudacjOQvx4vCkCJSTO3dxqNI0TeKnSv
-         qzA8GOsmStBRlJiUpZIPNYSzuHl43YCaaH1sXb5CHGuQlp84e3+uEIFuGymbSjoDph
-         zMxHrDWVX/I3f8HxZeiC4WbX8YSp1s0IN8e/h2Rp2tlHGr76i+GeauA4sBCOwQitpm
-         5aZYBjv7Kx7TA==
-Received: by mail.olerise.pl for <linux-serial@vger.kernel.org>; Wed, 23 Feb 2022 08:40:28 GMT
-Message-ID: <20220223084500-0.1.1x.fijp.0.aoy7rg200m@olerise.pl>
-Date:   Wed, 23 Feb 2022 08:40:28 GMT
-From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= <mikolaj.rudzik@olerise.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
-X-Mailer: mail.olerise.pl
+        Wed, 23 Feb 2022 06:09:32 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C47D51E67;
+        Wed, 23 Feb 2022 03:09:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645614545; x=1677150545;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bEi1L6SwVM/6CJVdlUOVjo6ZwWjlnoYanZAzOTomTqU=;
+  b=OR+FWQGY01xMPHwuWYMZ+/Gyq8NrmE2PSPIH4+StWiQXmpoYU6TJvdct
+   zeOkfKNmUVJAOI+v76L5M5wwDQDjwPQRjjYUuXQu8QhivLM4LMT//Jl15
+   ECaXKRi41vWwLbeRwfCdpP1o23kT3jA5zEYNe2kO5d/85UdDDdo4iU6QM
+   LK2dYu8AJQECuswVXCqxTGfYMrV1L9LBQ05aaS1KJvkbc6Ac7eRzNpSDC
+   mCW75KdrGQi4xHaDUlbFgN4StNd0vDZwOrmCIjHKYi+RzNwiOIqzAhTfY
+   GjTvE+Xqx63jSFvjICy8K9RAGwLh27QrtMIXy0a2DBWDKATj2fi7guF53
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="252131954"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="252131954"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:09:04 -0800
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="639268315"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:09:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMpVD-007O3U-JA;
+        Wed, 23 Feb 2022 13:08:11 +0200
+Date:   Wed, 23 Feb 2022 13:08:07 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
+ of pci_ioremap_bar()
+Message-ID: <YhYVl9YaoPDwAXO4@smile.fi.intel.com>
+References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
+ <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
+ <Ygy7dNqFLZF9XYiH@infradead.org>
+ <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
+ <YhUJAl5JpCoXik7X@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhUJAl5JpCoXik7X@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Tue, Feb 22, 2022 at 08:02:10AM -0800, Christoph Hellwig wrote:
+> On Tue, Feb 22, 2022 at 10:14:16AM +0100, Jiri Slaby wrote:
+> > On 16. 02. 22, 9:53, Christoph Hellwig wrote:
+> > > On Tue, Feb 15, 2022 at 03:43:59PM +0200, Andy Shevchenko wrote:
+> > > > The pci_iounmap() doesn't cover all the cases where resource should
+> > > > be unmapped. Instead of spreading it more, replace the pci_ioremap_bar()
+> > > > with pcim_iomap() which uses managed resource approach.
+> > > 
+> > > pcim_iomap requires the use of ioreadX/iowriteX and thus runtime
+> > > overhead.  So in doubt please add a pcim_ioremap_bar instead of forcing
+> > > the legacy iomap/ioread/iowrite API onto modern drivers tht can't
+> > > support legacy port I/O.
+> > 
+> > Hmm, the driver combines pci_ioremap_bar with pci_iounmap. pci_iounmap does
+> > the right thing after all, but is that correct? And this driver is not
+> > alone, this shows more:
+> > git grep -E 'pci_iounmap|pci_ioremap_bar' `git grep -l pci_iounmap \`git
+> > grep -l pci_ioremap_bar\``
+> 
+> I think it is wrong.  It is not actively harmful unlike the the
+> combination of pci_iomap and then later use of accessors from the
+> ioremap family, but still not exactly a good idea.
+> 
+> In a perfect world we'd have some different annotation from __iomem
+> for the whole iomap family of functions.
 
-chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
-skania nowych zlece=C5=84 ze strony www.
+So, what would be your suggestion for a) backportable change b) cleanup for
+the current and future drivers?
 
-Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
-, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
-=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
-jonowania strony w Google.
-
-Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Pozdrawiam
-Miko=C5=82aj Rudzik
