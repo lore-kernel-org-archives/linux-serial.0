@@ -2,42 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE381C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 12:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BD7C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Feb 2022 14:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240432AbiBWMUz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        id S236164AbiBWOZC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 23 Feb 2022 09:25:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240428AbiBWMUt (ORCPT
+        with ESMTP id S232221AbiBWOZB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:20:49 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D149A0BC5;
-        Wed, 23 Feb 2022 04:20:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fqgNmCJGAnLLR2T8oxuKTHMh8BihLhtu1dTlBCJGRFw=; b=kc3WON16yegUloGPpmxxpsbSQp
-        zanqdjyZv+ZDKVqvzid84Hje9cOIfI9o99pA8psPBVGsdYP3JHgJaul4E1yk0OG2VIHuMEOdCkYxm
-        THHr8w69Xs09udKBmL2h2GbxpOcm99H2wrSwrNNABg/RmRr0hlKG3p82ch6dhTFQE99US7xQf9fj0
-        ZfWAAQeOTW4DZSMVx3WDVC6Q0G/6BiM+hrc1F78qyJ78kWmvsyERsaI6rQZMAbnNJo2uATCvmPDOP
-        7fTuX7G+hc0J9OYEhM7KSgG1wxuZkTdf5uzswW3TyGp9iCMwrlOipGUc6ZdzVHo6Tydh4gsAR6A72
-        7RgVcPFA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMqcy-00E8CZ-7K; Wed, 23 Feb 2022 12:20:16 +0000
-Date:   Wed, 23 Feb 2022 04:20:16 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        Wed, 23 Feb 2022 09:25:01 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1ABB1A98;
+        Wed, 23 Feb 2022 06:24:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645626274; x=1677162274;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IV+wRjFZ0KIXQehwCsMDvsyLOE60ai+2jVh9pnpXlHw=;
+  b=hwGB37uAAbJMo7lqmR1cNDNigoiICmbnIubWQ/wBTB1D3oV9AqGoc0Vt
+   /MkQCHq8oT3FFm4jZE+hL6y98BzpAMshpedv2Kp/7wyd1vwuK5CEnkGEB
+   BO4dTcyrLLugu5cgVxloULR/cyOoSyoxYPbXqVvJBlIhb0a3V7WTHIj8U
+   gGPf0/ihmVOiT0oWI5asD0mce+uZ302BfAXbmQ8f+szDxrC5ZyzNs8g3Z
+   +LupkrpZlfnOF4QVi+tOy6R9YuH3gamNYjcYoZ/1CgIf5E/V4tXll2k7Y
+   6aidZxFW9D9kvgWMtzn+0FNLlvkVV3sYZk5aClVT03phTLFtYdottTH4Z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="232594619"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="232594619"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:24:34 -0800
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="508452930"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:24:32 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMsYP-007SIC-D9;
+        Wed, 23 Feb 2022 16:23:41 +0200
+Date:   Wed, 23 Feb 2022 16:23:40 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Christoph Hellwig <hch@infradead.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
-        Christoph Hellwig <hch@infradead.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
  of pci_ioremap_bar()
-Message-ID: <YhYmgEMRhGu1PsYg@infradead.org>
+Message-ID: <YhZDbNyJd0LjAbaB@smile.fi.intel.com>
 References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
  <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
  <Ygy7dNqFLZF9XYiH@infradead.org>
@@ -46,26 +59,37 @@ References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
  <YhYVl9YaoPDwAXO4@smile.fi.intel.com>
  <YhYWw/yEaYJFR1/y@kroah.com>
  <YhYcbrsDD2iagUL7@smile.fi.intel.com>
+ <YhYmgEMRhGu1PsYg@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YhYcbrsDD2iagUL7@smile.fi.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <YhYmgEMRhGu1PsYg@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 01:37:18PM +0200, Andy Shevchenko wrote:
-> Okay, so if I read this thread correctly Christoph suggests to introduce
-> pcim_ioremap_bar() and then use it. Am I right?
-
-Yes.
-
+On Wed, Feb 23, 2022 at 04:20:16AM -0800, Christoph Hellwig wrote:
+> On Wed, Feb 23, 2022 at 01:37:18PM +0200, Andy Shevchenko wrote:
+> > Okay, so if I read this thread correctly Christoph suggests to introduce
+> > pcim_ioremap_bar() and then use it. Am I right?
 > 
-> Christoph, since we are on the topic about pcim_*() APIs, can you chime in
-> the discussion [1] about IRQ vectors allocation?
-> 
-> [1]: https://lore.kernel.org/all/20210607153916.1021016-1-zhengdejin5@gmail.com/
+> Yes.
 
-Did you intend to link to a 8 month old series or is there something
-else this should point to?
+Thanks for clarification!
+
+> > Christoph, since we are on the topic about pcim_*() APIs, can you chime in
+> > the discussion [1] about IRQ vectors allocation?
+> > 
+> > [1]: https://lore.kernel.org/all/20210607153916.1021016-1-zhengdejin5@gmail.com/
+> 
+> Did you intend to link to a 8 month old series or is there something
+> else this should point to?
+
+Yes, because it seems stalled.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
