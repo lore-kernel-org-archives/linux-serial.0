@@ -2,71 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5BBC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Feb 2022 10:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CADF2C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Feb 2022 10:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbiBXKLC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:11:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47986 "EHLO
+        id S233564AbiBXKmw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:42:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231709AbiBXKLB (ORCPT
+        with ESMTP id S233562AbiBXKmw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:11:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C531F28ADAA;
-        Thu, 24 Feb 2022 02:10:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 24 Feb 2022 05:42:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0FE16A5AA;
+        Thu, 24 Feb 2022 02:42:22 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 29E4BCE1E45;
-        Thu, 24 Feb 2022 10:10:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D42F9C340E9;
-        Thu, 24 Feb 2022 10:10:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645697428;
-        bh=Rbl59oRX72XEvYwduAiG46oni5FfUh7CH/lIFzuSQmI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jRzeWfMj4/o4gepA6Rbve+jREISZVsplcM6NNL1j56HPyR/Je377tGbtpHYiCJzKn
-         MhgOuos+08MmdaipiV2aSLbFjxwnz49A2SEbz2ODZGY1XxnW6Dl34ACwTLBS0Funbq
-         n1/MVO0MlY1L7qshvBmVoUnyrOJ3wLNDlAiRVEiE=
-Date:   Thu, 24 Feb 2022 11:10:20 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] tty: serial: define UART_LCR_WLEN() macro
-Message-ID: <YhdZjDO2mBgjSLep@kroah.com>
-References: <20220224095517.30872-1-jslaby@suse.cz>
- <20220224095558.30929-1-jslaby@suse.cz>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D288E1F37F;
+        Thu, 24 Feb 2022 10:42:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645699340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=un0BuqJuVU1sQinMUaFtlLJAo+Lpb+W/ppoYZ+BlX8g=;
+        b=eUgnJqMNMhrsuPaaKDC61tdG0ULuVATBZqrbXZVSyS94IBluKCFDdWdpZj7qpihfVrbpvK
+        3QtT0lMV2PeOadwn4RbM6SVBH2FI4/OYKmYpl2Ad2B4jJdJXNQcz8GWXFnRBxoIPVb9Di/
+        69xH5Cc8FAE2KFKULBzA+bHCfp0KdHo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645699340;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=un0BuqJuVU1sQinMUaFtlLJAo+Lpb+W/ppoYZ+BlX8g=;
+        b=h0J/heLskiTMueR9Db4IvRC3vPtuEudjanAG3sfvRbDxd7P4sDhuhhjKhPSfAbsvcIXY25
+        PHdX08wy60TaT/AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AFBE3132C1;
+        Thu, 24 Feb 2022 10:42:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ypukKQxhF2LkQwAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Thu, 24 Feb 2022 10:42:20 +0000
+Message-ID: <b8e3d88c-2340-2247-2e1a-37c089d9065a@suse.cz>
+Date:   Thu, 24 Feb 2022 11:42:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224095558.30929-1-jslaby@suse.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 1/5] tty: serial: define UART_LCR_WLEN() macro
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220224095517.30872-1-jslaby@suse.cz>
+ <20220224095558.30929-1-jslaby@suse.cz> <YhdZjDO2mBgjSLep@kroah.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <YhdZjDO2mBgjSLep@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:55:54AM +0100, Jiri Slaby wrote:
-> Define a generic UART_LCR_WLEN() macro with a size argument. It can be
-> used to encode byte size into an LCR value. Therefore we can use it to
-> simplify the drivers using tty_get_char_size() in the next patches.
+On 24. 02. 22, 11:10, Greg KH wrote:
+> On Thu, Feb 24, 2022 at 10:55:54AM +0100, Jiri Slaby wrote:
+>> Define a generic UART_LCR_WLEN() macro with a size argument. It can be
+>> used to encode byte size into an LCR value. Therefore we can use it to
+>> simplify the drivers using tty_get_char_size() in the next patches.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   include/uapi/linux/serial_reg.h | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+>> index f51bc8f36813..c9d5ff6dd4c6 100644
+>> --- a/include/uapi/linux/serial_reg.h
+>> +++ b/include/uapi/linux/serial_reg.h
+>> @@ -111,6 +111,7 @@
+>>   #define UART_LCR_WLEN6		0x01 /* Wordlength: 6 bits */
+>>   #define UART_LCR_WLEN7		0x02 /* Wordlength: 7 bits */
+>>   #define UART_LCR_WLEN8		0x03 /* Wordlength: 8 bits */
+>> +#define UART_LCR_WLEN(x)	((x) - 5)
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  include/uapi/linux/serial_reg.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-> index f51bc8f36813..c9d5ff6dd4c6 100644
-> --- a/include/uapi/linux/serial_reg.h
-> +++ b/include/uapi/linux/serial_reg.h
-> @@ -111,6 +111,7 @@
->  #define UART_LCR_WLEN6		0x01 /* Wordlength: 6 bits */
->  #define UART_LCR_WLEN7		0x02 /* Wordlength: 7 bits */
->  #define UART_LCR_WLEN8		0x03 /* Wordlength: 8 bits */
-> +#define UART_LCR_WLEN(x)	((x) - 5)
+> I'm all for this, but why does it need to be in a uapi .h file?
 
-I'm all for this, but why does it need to be in a uapi .h file?
+I'd love to put it somewhere else. But I didn't find an appropriate 
+place. Should I put it simply to
+include/linux/serial_core.h
+or
+include/linux/serial.h
+? Or create a new:
+include/linux/serial_reg.h
+to contain only this def?
 
 thanks,
-
-greg k-h
+-- 
+js
+suse labs
