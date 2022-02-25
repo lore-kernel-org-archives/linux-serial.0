@@ -2,103 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD0FC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 08:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCB1C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 09:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiBYI3l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:29:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
+        id S239007AbiBYJXm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 04:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238494AbiBYI3k (ORCPT
+        with ESMTP id S239003AbiBYJXj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:29:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C392399C8;
-        Fri, 25 Feb 2022 00:29:09 -0800 (PST)
+        Fri, 25 Feb 2022 04:23:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C321A8C93
+        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 01:23:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF736B80B4F;
-        Fri, 25 Feb 2022 08:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B1CC340E7;
-        Fri, 25 Feb 2022 08:29:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A61B9CE23A2
+        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 09:23:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60335C340E7;
+        Fri, 25 Feb 2022 09:23:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645777746;
-        bh=ZmETsVuyByE5xkMtDoCMvW096Ji7aC0IryJumASrW/c=;
+        s=korg; t=1645780984;
+        bh=x1zusGPNLMiEduz9rlbYE8iYbAncmgn82wdncOIk7S0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mMSaaTUzuWeCim9pRGWIoXlxEzB23dI4ltoiW5E3ZyqIuWcg+BxHdynjDQzh148Bb
-         TdccEOltqBXf6WaxCIjZ2BxDwZW6lAzqfSTDP4JZBoOe8FYcDmycXUrUdtZcM1srAN
-         gDzhY1zpE6oJTVFipB8Vu6DM5l9ndploW2cQNv2o=
-Date:   Fri, 25 Feb 2022 09:29:03 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Daniel Starke <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC 1/1] tty: n_gsm: improve standard compliance and feature
- completeness
-Message-ID: <YhiTT2F5NJqFNrwM@kroah.com>
-References: <20220225080758.2869-1-daniel.starke@siemens.com>
- <20220225080758.2869-2-daniel.starke@siemens.com>
+        b=mQy2or4YAV24LP7CGNM4IrE5jfWTPQPmwk0Ymu2HfRQkkxAQGyMralRzfmbM3pyQG
+         W0NKty/7X5zKcOD20E4dStdfEPceKEk3OjBuG0mvCjO2vhqR1GE6rdc/ocdlbl9OmQ
+         L3xf2aeRAZWUCsL6X+yo458aKEuZuuktn0p7aUpo=
+Date:   Fri, 25 Feb 2022 10:23:02 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>
+Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Krzysztof =?utf-8?Q?Drobi=C5=84ski?= 
+        <k.drobinski@camlintechnologies.com>
+Subject: Re: [RFC PATCH] serial: core: fix tcdrain() with CTS enabled
+Message-ID: <Yhif9owSsOnbe526@kroah.com>
+References: <20220203142337.1993024-1-tomasz.mon@camlingroup.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220225080758.2869-2-daniel.starke@siemens.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220203142337.1993024-1-tomasz.mon@camlingroup.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 12:07:58AM -0800, Daniel Starke wrote:
-> The complete patch based on tty-next is included here for reference.
-> A proper series of patches will follow based on the comments to this RFC.
-> Please refer to the cover letter for more details.
+On Thu, Feb 03, 2022 at 03:23:37PM +0100, Tomasz Moń wrote:
+> Do not set timeout to twice the approximate amount of time to send the
+> entire FIFO if CTS is enabled. If the caller requested no timeout, e.g.
+> when userspace program called tcdrain(), then wait without any timeout.
 > 
-> Changes included:
-> - added: proper n_gsm Kernel module information fields and module version
-> - added: optional start-of-frame flag skipping in advanced option mode
-> - added: UI (unnumbered information) frame support
-> - added: PN (parameter negotiation) message handling and function support
-> - added: optional keep-alive control link supervision via Test messages
-> - added: proc fs files to provide meta data for the n_gsm instances
-> - added: various parameter gated kernel debug messages
-> - added: option for strict mode to reject non-standard compliant behavior
-> - added: TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
-> - added: TIOCMIWAIT support on virtual ttys
-> - added: additional ioctls and parameters to configure the new functions
-> - added: more function comments and aligned all to the coding guidelines
-> - changed: overall locking mechanism to avoid data race conditions
-> - changed: outgoing data flow to decouple physical from virtual tty
->   handling for better performance and to avoid dead-locks
-> - fixed: advanced option mode implementation
-> - fixed: convergence layer type 2 implementation
-> - fixed: handling of CLD (multiplexer close down) messages
-> - fixed: broken muxer close down procedure
+> Premature return from tcdrain() was observed on imx based system which
+> has 32 character long transmitter FIFO with hardware CTS handling.
 > 
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> Simple userspace application that reproduces problem has to:
+>   * Open tty device, enable hardware flow control (CRTSCTS)
+>   * Write data, e.g. 26 bytes
+>   * Call tcdrain() to wait for the transmitter
+>   * Close tty device
+> 
+> The other side of serial connection has to:
+>   * Receive some data, e.g. 10 bytes
+>   * Set RTS output (CTS input from sender perspective) inactive for
+>     at least twice the port timeout
+>   * Try to receive remaining data
+> 
+> Without this patch, userspace application will finish without any error
+> while the other side of connection will never receive remaining data.
+> 
+> Signed-off-by: Tomasz Moń <tomasz.mon@camlingroup.com>
 > ---
->  drivers/tty/n_gsm.c         | 4523 +++++++++++++++++++++++++----------
->  include/uapi/linux/gsmmux.h |   70 +-
->  2 files changed, 3364 insertions(+), 1229 deletions(-)
+>  drivers/tty/serial/serial_core.c | 26 ++++++++++++++------------
+>  1 file changed, 14 insertions(+), 12 deletions(-)
 
-I'm sorry, but there is nothing we can do with such a large patch here
-at all.
-
-Please break this up into "one logical change per patch" and we will be
-glad to review it.
-
-Put your "fixes" at the beginning of the patch series, so they can be
-properly backported to older kernels as needed.  Don't mix up new
-features with fixes as that means that the fixes can never be
-backported.
-
-One note, please drop the useless MODULE_VERSION() that never belongs in
-an in-kernel driver as it makes no sense (the version is the kernel
-version).  Same for the license "boiler-plate" text, that should not be
-added back, we removed it for a reason.
-
-Also, no module parameters should be added.  Especially pointless ones
-like debugging flags, use the built-in kernel debugging options that the
-whole rest of the kernel uses.  There is no need for a special case for
-just one tiny line discipline module :)
+Note, I do not apply "RFC" patches as obviously the submitter does not
+think they are good enough to be merged :)
 
 thanks,
 
