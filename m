@@ -2,72 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB30C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 09:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B641C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 09:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239059AbiBYJZw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 04:25:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        id S239129AbiBYJfh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 04:35:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236298AbiBYJZv (ORCPT
+        with ESMTP id S237389AbiBYJfg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 04:25:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A121A182D98
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 01:25:16 -0800 (PST)
+        Fri, 25 Feb 2022 04:35:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9BC1F767A;
+        Fri, 25 Feb 2022 01:35:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57291B82D01
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 09:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7046AC340E7;
-        Fri, 25 Feb 2022 09:25:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14FE660B1B;
+        Fri, 25 Feb 2022 09:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED5EC340E7;
+        Fri, 25 Feb 2022 09:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645781114;
-        bh=LhEaV986nKIul6SMp2+k3xvgLYzsk6k9mlP+oxfPyiI=;
+        s=korg; t=1645781704;
+        bh=abf0Kch29YhEwOBNj51lTk+PAfj/fNdrPzssmkFkqcQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g9abWTQZcSu8tqMtS0gqnDlZxG1IcHIk+LLJ2ZN0FZaGltLnIAz3+xk805OjujVy1
-         vDQQVSFWy1V6u6NP97kXtwwVG5L5lP4ZpGSQ31Nyo3zg1eacTwbI9LbicEThrU14BW
-         Y12yYCW1u8LynWgpV7N3eHE1/pssRZLr7sQMKeOQ=
-Date:   Fri, 25 Feb 2022 10:25:11 +0100
+        b=Cp6DBjCSjkdqWtr+kYaxgG+OSWSYZmiIzWtpNlRwDK6SwIRYroop7daFC6tvAgyUm
+         b9LXto5PtMZ9/p6wo967SOrCHF2bnIMIWA7AtJa67EGbf/etTe7JkYH/awSZOiA2/I
+         gedfxZfUTPpXVI//iIkPjW/a0fHVZl3QXb+JDQOc=
+Date:   Fri, 25 Feb 2022 10:35:02 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     linux-serial@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof =?utf-8?Q?Drobi=C5=84ski?= 
-        <k.drobinski@camlintechnologies.com>,
-        Lech Perczak <l.perczak@camlintechnologies.com>
-Subject: Re: [PATCH 0/6] sc16is7xx: Hardware flow control fixes
-Message-ID: <Yhigd0pu2hmSLirE@kroah.com>
-References: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] serial: 8250: Report which option to enable for
+ blacklisted PCI devices
+Message-ID: <Yhiixm/iRlnF18B7@kroah.com>
+References: <alpine.DEB.2.21.2202121646020.34636@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2202121706060.34636@angie.orcam.me.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
+In-Reply-To: <alpine.DEB.2.21.2202121706060.34636@angie.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 11:56:12AM +0100, Tomasz Moń wrote:
-> sc16is7xx driver assumes that the device handles hardware flow control
-> automatically. This is not really true as the driver does inadvertently
-> clear the bits that enable hardware flow control.
+On Sat, Feb 12, 2022 at 05:30:59PM +0000, Maciej W. Rozycki wrote:
+> Provide information in the kernel log as to what configuration option to 
+> enable for PCI UART devices that have been blacklisted in the generic 
+> PCI 8250 UART driver and which have a dedicated driver available to 
+> handle that has been disabled.  The rationale is there is no easy way 
+> for the user to map a specific PCI vendor:device pair to an individual 
+> dedicated driver while the generic driver has this information readily 
+> available and it will likely be confusing that the generic driver does 
+> not register such a port.
 > 
-> This patch series solves multiple issues present in the driver. While
-> the patches are fairly independent, there are some dependencies. The
-> "sc16is7xx: Properly resume TX after stop" adds IER bit set function
-> that is later used in "sc16is7xx: Set AUTOCTS and AUTORTS bits". Also
-> the patches that control which interrupts are enabled are dependent on
-> each other.
+> A message is then printed like:
 > 
-> Patches should be applied respecting the order in the series. The whole
-> series applies on top of "sc16is7xx: Fix for incorrect data being
-> transmitted" [1].
+> serial 0000:04:00.3: ignoring port, enable SERIAL_8250_PERICOM to handle
+> 
+> when an affected device is encountered and the generic driver rejects it.
+> 
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 
-The first 3 patches of this series applied.  Please rebase and resend
-the remaining.
+I've applied patch 1 of this series, but this is really an odd one.
+
+We don't do this for any other driver subsystem, so why is it really
+needed?  What is so special about this driver that distros can't
+just enable all of the drivers and all is good?  What is keeping those
+drivers fromb eing enabled?
 
 thanks,
 
