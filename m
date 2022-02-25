@@ -2,94 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5169C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 11:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78EEC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 13:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236889AbiBYL3o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 06:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
+        id S237486AbiBYNX1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:23:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240154AbiBYL1u (ORCPT
+        with ESMTP id S241191AbiBYNX0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 06:27:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C4B2E68E
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 03:26:40 -0800 (PST)
+        Fri, 25 Feb 2022 08:23:26 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB381FED9C;
+        Fri, 25 Feb 2022 05:22:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D933A618D3
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 11:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAAC4C340E7;
-        Fri, 25 Feb 2022 11:26:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 15739CE25DB;
+        Fri, 25 Feb 2022 13:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD95DC340F1;
+        Fri, 25 Feb 2022 13:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645788399;
-        bh=/EQC2+hurUghaTs9k02ju6DGcunTRsZBKpPefUfy+nA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mEjqOXYuVDzrlZp8/xVfCsZ+lrUoX3BKe4IEjBcXztRuSWQ3bLwXNiKZwISsk73Fl
-         YOiWTVKvrElr0muDlwPepzWB7byaWL4SPYE3vLJCSkuOqVPuAIMXLryGTie1BlQNW/
-         scTV/V4tVI1zwly2QMQXBRvpoW1aktXi2y03xpaY=
-Date:   Fri, 25 Feb 2022 12:26:36 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     linux-serial@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof =?utf-8?Q?Drobi=C5=84ski?= 
-        <k.drobinski@camlintechnologies.com>,
-        Lech Perczak <l.perczak@camlintechnologies.com>
-Subject: Re: [PATCH 0/6] sc16is7xx: Hardware flow control fixes
-Message-ID: <Yhi87AJy1RxIiFfO@kroah.com>
-References: <20220221105618.3503470-1-tomasz.mon@camlingroup.com>
- <Yhigd0pu2hmSLirE@kroah.com>
- <5c677799-411c-0c4f-fd99-15ac6dcb4844@camlingroup.com>
- <YhizqKXxxVJ6lZtP@kroah.com>
+        s=korg; t=1645795363;
+        bh=XWek/szSTOMujrZPglTnUkBs8rI+Y1qoaG30+Wpgr2U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KOTXUpyW2ujktgI9QsV9iYiqkR7CfXvbAwb9RNdVzXROgS7bY1ibLme06aODqbXYw
+         Ra+KNYUaSRlX/RQjgc58wyAAQSwEURtEm7tGtTjVo2g41cOx059YPI7SBtU9PCl16d
+         RdOyB1fkqanO7R+JZYerR9zPC3hM+4SUkSx4wCio=
+Date:   Fri, 25 Feb 2022 14:22:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.17-rc6
+Message-ID: <YhjYIOQDvhJBBsIt@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YhizqKXxxVJ6lZtP@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 11:47:04AM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Feb 25, 2022 at 10:37:01AM +0100, Tomasz Moń wrote:
-> > On 25.02.2022 10:25, Greg Kroah-Hartman wrote:
-> > > On Mon, Feb 21, 2022 at 11:56:12AM +0100, Tomasz Moń wrote:
-> > >> sc16is7xx driver assumes that the device handles hardware flow control
-> > >> automatically. This is not really true as the driver does inadvertently
-> > >> clear the bits that enable hardware flow control.
-> > >>
-> > >> This patch series solves multiple issues present in the driver. While
-> > >> the patches are fairly independent, there are some dependencies. The
-> > >> "sc16is7xx: Properly resume TX after stop" adds IER bit set function
-> > >> that is later used in "sc16is7xx: Set AUTOCTS and AUTORTS bits". Also
-> > >> the patches that control which interrupts are enabled are dependent on
-> > >> each other.
-> > >>
-> > >> Patches should be applied respecting the order in the series. The whole
-> > >> series applies on top of "sc16is7xx: Fix for incorrect data being
-> > >> transmitted" [1].
-> > > 
-> > > The first 3 patches of this series applied.  Please rebase and resend
-> > > the remaining.
-> > 
-> > The remaining patches did not apply because the "sc16is7xx: Fix for
-> > incorrect data being transmitted" by Phil Elwell was not applied.
-> > 
-> > The Phil Elwell patch was independently developed and made it to the
-> > list before I sent the patch series. For that reason I based the series
-> > on top of that patch and mentioned it in the cover letter.
-> 
-> If that patch was not applied, then just rebase your series on my branch
-> and resend it.
+The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
 
-Ah, Phil's patch is in a different branch, and will be sent to Linus
-later today, so you might just want to wait until Monday to resend your
-remaining patches and then they will apply as my tty-next branch will
-merge with that at that point in time.
+  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
 
-thanks,
+are available in the Git repository at:
 
-greg k-h
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc6
+
+for you to fetch changes up to eebb0f4e894f1e9577a56b337693d1051dd6ebfd:
+
+  sc16is7xx: Fix for incorrect data being transmitted (2022-02-21 19:51:39 +0100)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 5.17-rc6
+
+Here are some small n_gsm and sc16is7xx serial driver fixes for
+5.17-rc6.
+
+The n_gsm fixes are from Siemens as it seems they are using the line
+discipline and fixing up a number of issues they found in their testing.
+The sc16is7xx serial driver fix is for a reported problem with that
+chip.
+
+All of these have been in linux-next with no reported problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Phil Elwell (1):
+      sc16is7xx: Fix for incorrect data being transmitted
+
+daniel.starke@siemens.com (7):
+      tty: n_gsm: fix encoding of control signal octet bit DV
+      tty: n_gsm: fix encoding of command/response bit
+      tty: n_gsm: fix proper link termination after failed open
+      tty: n_gsm: fix NULL pointer access due to DLCI release
+      tty: n_gsm: fix wrong tty control line for flow control
+      tty: n_gsm: fix wrong modem processing in convergence layer type 2
+      tty: n_gsm: fix deadlock in gsmtty_open()
+
+ drivers/tty/n_gsm.c            | 61 +++++++++++++++++++++++++++---------------
+ drivers/tty/serial/sc16is7xx.c |  3 +++
+ 2 files changed, 42 insertions(+), 22 deletions(-)
