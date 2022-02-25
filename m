@@ -2,89 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78EEC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 13:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B1EC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 16:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237486AbiBYNX1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:23:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
+        id S241037AbiBYQDA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241191AbiBYNX0 (ORCPT
+        with ESMTP id S241291AbiBYQC7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:23:26 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB381FED9C;
-        Fri, 25 Feb 2022 05:22:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 15739CE25DB;
-        Fri, 25 Feb 2022 13:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD95DC340F1;
-        Fri, 25 Feb 2022 13:22:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645795363;
-        bh=XWek/szSTOMujrZPglTnUkBs8rI+Y1qoaG30+Wpgr2U=;
-        h=Date:From:To:Cc:Subject:From;
-        b=KOTXUpyW2ujktgI9QsV9iYiqkR7CfXvbAwb9RNdVzXROgS7bY1ibLme06aODqbXYw
-         Ra+KNYUaSRlX/RQjgc58wyAAQSwEURtEm7tGtTjVo2g41cOx059YPI7SBtU9PCl16d
-         RdOyB1fkqanO7R+JZYerR9zPC3hM+4SUkSx4wCio=
-Date:   Fri, 25 Feb 2022 14:22:40 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.17-rc6
-Message-ID: <YhjYIOQDvhJBBsIt@kroah.com>
+        Fri, 25 Feb 2022 11:02:59 -0500
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139F71BE93;
+        Fri, 25 Feb 2022 08:02:25 -0800 (PST)
+Received: by mail-oo1-f53.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so6751913oov.3;
+        Fri, 25 Feb 2022 08:02:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2ASEIJpWMgZzPUwKo/TaO7NWpJLb+t/kj417W/xfgP4=;
+        b=izH6/wf96NgYOVfXpIC99W3BRwnruiN6Sso4QbjGl6k463cTXNtqtx3lZpGWBs4lxN
+         +U39whiQ/PeEsnq/3e7K4Z5JTD324n2UN9vLibA7hQ/0PK+BLx3W/AoWuYMo6xI/C3LR
+         u7YgrvlBDC4EKMmkrlccPiFQqUpq35bv+3ypIdQPAEY9PEeBd7trwFYypnucH3nnF/CJ
+         QrnhafcYmsO6SPoGruOXXDkbdWgU3rOho9QZii36XRgsc1TxX0hXUMykMbU8TgbnplH8
+         1Ltnl4kKOYlOw9XsHr6d1AZzzWBv8sS7JGzo+HZ37Lb0w8jWWURO2yUHdFH3aGq0sHf2
+         HgFQ==
+X-Gm-Message-State: AOAM531XG7PqU3XRyEI1V8Au85+DfPMiJd7H97253AXtP2AQ8Fp+ml9+
+        Zpkp8G7edVxTV7o4g95qRD+qA72Xdg==
+X-Google-Smtp-Source: ABdhPJwrpMHe59yPa1HMSv7HBHlTdQmKUhoIL6/d6QbUOBN648IRIt8dvgXUIAMk48G0Uk7rK4dE5Q==
+X-Received: by 2002:a05:6870:f21f:b0:d4:9de:8ec7 with SMTP id t31-20020a056870f21f00b000d409de8ec7mr1492215oao.319.1645804944306;
+        Fri, 25 Feb 2022 08:02:24 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id p16-20020a05680811d000b002d72ec3a921sm1511812oiv.21.2022.02.25.08.02.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 08:02:23 -0800 (PST)
+Received: (nullmailer pid 1005305 invoked by uid 1000);
+        Fri, 25 Feb 2022 16:02:22 -0000
+Date:   Fri, 25 Feb 2022 10:02:22 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Add imx93 compatible
+ string
+Message-ID: <Yhj9joQkgTswMVcs@robh.at.kernel.org>
+References: <20220215081334.788419-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220215081334.788419-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+On Tue, Feb 15, 2022 at 04:13:34PM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> The lpuart on i.MX93 is derived from i.MX8ULP with some industrial
+> enhancements, it uses three compatible strings, so update the
 
-  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+Looks like it's 2 compatible strings...
 
-are available in the Git repository at:
+> compatible string for i.MX93. But for a few instants,
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.17-rc6
+s/instants/instances/
 
-for you to fetch changes up to eebb0f4e894f1e9577a56b337693d1051dd6ebfd:
+> DTR_B, DSR_B, DCD_B and RIN_B pins are supported, so use one compatible
+> string fsl,imx93-lpuart-v2
 
-  sc16is7xx: Fix for incorrect data being transmitted (2022-02-21 19:51:39 +0100)
+If the differences are just what gets pinned out, then I think the 
+differences should be handled with separate properties. We probably 
+already have some.
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 5.17-rc6
+Plus, while you may have all the above signals, a board design may still 
+only use a subset.
 
-Here are some small n_gsm and sc16is7xx serial driver fixes for
-5.17-rc6.
-
-The n_gsm fixes are from Siemens as it seems they are using the line
-discipline and fixing up a number of issues they found in their testing.
-The sc16is7xx serial driver fix is for a reported problem with that
-chip.
-
-All of these have been in linux-next with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Phil Elwell (1):
-      sc16is7xx: Fix for incorrect data being transmitted
-
-daniel.starke@siemens.com (7):
-      tty: n_gsm: fix encoding of control signal octet bit DV
-      tty: n_gsm: fix encoding of command/response bit
-      tty: n_gsm: fix proper link termination after failed open
-      tty: n_gsm: fix NULL pointer access due to DLCI release
-      tty: n_gsm: fix wrong tty control line for flow control
-      tty: n_gsm: fix wrong modem processing in convergence layer type 2
-      tty: n_gsm: fix deadlock in gsmtty_open()
-
- drivers/tty/n_gsm.c            | 61 +++++++++++++++++++++++++++---------------
- drivers/tty/serial/sc16is7xx.c |  3 +++
- 2 files changed, 42 insertions(+), 22 deletions(-)
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> index 6e04e3848261..d7805f31ccc2 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> @@ -24,6 +24,8 @@ properties:
+>            - fsl,imxrt1050-lpuart
+>        - items:
+>            - enum:
+> +              - fsl,imx93-lpuart
+> +              - fsl,imx93-lpuart-v2
+>                - fsl,imx8qxp-lpuart
+>                - fsl,imx8ulp-lpuart
+>            - const: fsl,imx7ulp-lpuart
+> -- 
+> 2.25.1
+> 
+> 
