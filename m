@@ -2,57 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FEBC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 07:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CED2C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 08:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238292AbiBYHy0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:54:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
+        id S229905AbiBYIJi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:09:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238296AbiBYHyZ (ORCPT
+        with ESMTP id S238367AbiBYIJh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:54:25 -0500
-X-Greylist: delayed 433 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 23:53:54 PST
-Received: from mail.powerangels.com.pl (mail.powerangels.com.pl [45.86.209.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1782C1B3A7B
-        for <linux-serial@vger.kernel.org>; Thu, 24 Feb 2022 23:53:53 -0800 (PST)
-Received: by mail.powerangels.com.pl (Postfix, from userid 1001)
-        id E9E5C8352C; Fri, 25 Feb 2022 02:45:32 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=powerangels.com.pl;
-        s=mail; t=1645775199;
-        bh=07NAgW1e0WiNB9zqagiM2BnwZfWBCpNa2E4+ccxBPgw=;
-        h=Date:From:To:Subject:From;
-        b=pymJbNTvJwih28LFlEG4B/cyPSNr2b1KkyS8xj3ANRd7OpqTYc6htmZ3qh+B42Thk
-         l/YwxiR0fNln/2uWoi6bZSiK+W5kL8ABNJridzfL45op5aSTUAiylUxZu0NH2xt/rh
-         t3gQKw1JSUvUM6QnEsGMW0puDdpujVwR7Sgu3Pqg2mkAyZyjn8Mcu+1to76RVQ3ayu
-         Mg+IfleAbVMqyTgHQpIR9hD+GtUKcT7M/zR96jn7tB5ctZA6FFjPHaSIUhxwAO56tC
-         1YagwUaz9jYDSPN5FRZPyHu/Tur9hkzwajrKUKzVIraeDIh75xhjKh5dPI1mpX8syw
-         UBQpS1rCcydkg==
-Received: by mail.powerangels.com.pl for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 07:45:30 GMT
-Message-ID: <20220225024500-0.1.j.20kd.0.kf4212tbaa@powerangels.com.pl>
-Date:   Fri, 25 Feb 2022 07:45:30 GMT
-From:   "Jakub Daroch" <jakub.daroch@powerangels.com.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Wycena paneli fotowoltaicznych
-X-Mailer: mail.powerangels.com.pl
+        Fri, 25 Feb 2022 03:09:37 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Feb 2022 00:09:03 PST
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB6982D1C
+        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 00:09:03 -0800 (PST)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220225080758de282e3261d8a0044a
+        for <linux-serial@vger.kernel.org>;
+        Fri, 25 Feb 2022 09:07:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=/4YsYMzxGvUqIQBjTEP/XQJ98gM/OKteuKxCDp9Dg40=;
+ b=RuPWmdOKnZmPnTz3nAA0N/4wXomoRHUZOFCuf9m7vWEE4ZSOWckAJuG7LNg9WQ4iqgfLW5
+ 9q1wjTrksQCeIBrtnD2tw9LAgWKqwKKww2z9/xubuwq+Q44awYiezZufmPK7w3hPG0eFGgGY
+ Br4i2uPT/P+Gaz5IFxpsJ8BrP2QKo=;
+From:   Daniel Starke <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [RFC 0/1] tty: n_gsm: improve standard compliance and feature completeness
+Date:   Fri, 25 Feb 2022 00:07:57 -0800
+Message-Id: <20220225080758.2869-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-118192:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+We as Siemens Mobility GmbH are using the n_gsm module as specified by
+3GPP 27.010 and required by UNISIG SUBSET-037 chapter 6 of the European
+train control system standard to establish multiple parallel connections to
+GSM-R radio mobiles as used in our communication system.
+This is needed to handle CS (circuit switched) and PS (packet switched)
+services and functions in parallel. It requires at least four multiplexed
+data link connections (DLCs), including the control channel. It also
+requires the use of convergence layer type 2 in advanced option mode.
 
-dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
-irm=C4=85.
+We have improved support for this use case and the overall stability of the
+driver to achieve this. The modified driver was extensively tested and is
+already included in our productive system. We have integrated it with
+mobiles from Funkwerk Systems GmbH and Triorail Bahnfunk GmbH.
+A rough summary of changes made can be found below. The patch presented
+here shall provide a first impression of the planned upcoming commits and
+allow others to test and comment on these at an early stage. We plan to
+separate these changes and commit smaller change sets of this. But this
+is still work in progress.
 
-=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
-ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej nawet o 90%.
+Our motivation of this commitment to the community lies in a smoother
+migration to upcoming kernel versions, a broader use for a better test
+coverage and an overall better quality of the driver. In a first step a set
+of bug fixes unrelated to the new functions has already been committed.
 
-Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
-ropozycji?
+[CR] Changes included:
+[1] added: proper n_gsm Kernel module information fields and module version
+[2] added: optional start-of-frame flag skipping in advanced option mode
+[3] added: UI (unnumbered information) frame support
+[4] added: PN (parameter negotiation) message handling and function support
+[5] added: optional keep-alive control link supervision via Test messages
+[6] added: proc fs files to provide meta data for the n_gsm instances
+[7] added: various parameter gated kernel debug messages
+[8] added: option for strict mode to reject non-standard compliant behavior
+[9] added: TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
+[10] added: TIOCMIWAIT support on virtual ttys
+[11] added: additional ioctls and parameters to configure the new functions
+[12] added: more function comments and aligned all to the coding guidelines
+[13] changed: overall locking mechanism to avoid data race conditions
+[14] changed: outgoing data flow to decouple physical from virtual tty
+     handling for better performance and to avoid dead-locks
+[15] fixed: advanced option mode implementation
+[16] fixed: convergence layer type 2 implementation
+[17] fixed: handling of CLD (multiplexer close down) messages
+[18] fixed: broken muxer close down procedure
 
+[NO] Points that remain open and are out of scope here:
+[1] DLCI priority handling according to the configured values. The priority
+    is currently only handled according to the DLCI number.
+[2] correct flow control handling (the standard is ambiguous, ch. 5.4.8.1)
+[3] combined opening and closing flag handling in basic option mode
+    (ch. 5.2.6.1; the data can be ambiguous)
+[4] power control services (ch. 5.1.5 and 5.4.7)
+[5] error recovery mode option (ch. 6)
+[6] convergence layer type 3 and 4 (ch. 5.5.3 and 5.5.4)
+[7] remote port negotiation (ch. 5.1.8.2.1 and 5.4.6.3.9)
+[8] service negotiation (ch. 5.1.8.1.2 and 5.4.6.3.11)
 
-Pozdrawiam,
-Jakub Daroch
+The referenced chapters can be found in 3GPP TS 27.010. See link below.
+
+[X] Furthermore, the following commits conflict with this implementation:
+[1] commit 509067bbd264 ("tty: n_gsm: Delete gsm_disconnect when config requester")
+[2] commit 5b87686e3203 ("tty: n_gsm: Modify gsmtty driver register method when config requester")
+[3] commit 0b91b5332368 ("tty: n_gsm: Save dlci address open status when config requester")
+[4] commit 46292622ad73 ("tty: n_gsm: clean up indenting in gsm_queue()")
+
+[X1] conflicts with the new implementation for parameter negotiation.
+[X2], [X3] and [X4] implement dynamic virtual tty registration to allow
+uevents on the responder side. However, on responder side an application
+may first want to configure the link before it is established. That is why
+the virtual ttys need to be available directly after the control channel
+establishment. The responder still gets informed about a line open by
+waiting for DTR (data terminal ready) to be set. Just like on a physical
+serial interface.
+
+Please provide comments and hints for the integration of these changes into
+the upcoming Linux kernel. Feel free to refer to specific points by the
+given identifier (e.g. CR11 for TIOCMIWAIT support).
+
+With best regards,
+Daniel Starke
+
+Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+Link: https://www.era.europa.eu/sites/default/files/filesystem/ertms/ccs_tsi_annex_a_-_mandatory_specifications/set_of_specifications_3_etcs_b3_r2_gsm-r_b1/index010_-_subset-037_v320.pdf
+
+Daniel Starke (1):
+  tty: n_gsm: improve standard compliance and feature completeness
+
+ drivers/tty/n_gsm.c         | 4523 +++++++++++++++++++++++++----------
+ include/uapi/linux/gsmmux.h |   70 +-
+ 2 files changed, 3364 insertions(+), 1229 deletions(-)
+
+-- 
+2.25.1
+
