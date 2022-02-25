@@ -2,137 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CED2C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 08:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD0FC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 08:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiBYIJi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
+        id S238020AbiBYI3l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238367AbiBYIJh (ORCPT
+        with ESMTP id S238494AbiBYI3k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:09:37 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Feb 2022 00:09:03 PST
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB6982D1C
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 00:09:03 -0800 (PST)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220225080758de282e3261d8a0044a
-        for <linux-serial@vger.kernel.org>;
-        Fri, 25 Feb 2022 09:07:59 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=/4YsYMzxGvUqIQBjTEP/XQJ98gM/OKteuKxCDp9Dg40=;
- b=RuPWmdOKnZmPnTz3nAA0N/4wXomoRHUZOFCuf9m7vWEE4ZSOWckAJuG7LNg9WQ4iqgfLW5
- 9q1wjTrksQCeIBrtnD2tw9LAgWKqwKKww2z9/xubuwq+Q44awYiezZufmPK7w3hPG0eFGgGY
- Br4i2uPT/P+Gaz5IFxpsJ8BrP2QKo=;
-From:   Daniel Starke <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [RFC 0/1] tty: n_gsm: improve standard compliance and feature completeness
-Date:   Fri, 25 Feb 2022 00:07:57 -0800
-Message-Id: <20220225080758.2869-1-daniel.starke@siemens.com>
+        Fri, 25 Feb 2022 03:29:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C392399C8;
+        Fri, 25 Feb 2022 00:29:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF736B80B4F;
+        Fri, 25 Feb 2022 08:29:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B1CC340E7;
+        Fri, 25 Feb 2022 08:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645777746;
+        bh=ZmETsVuyByE5xkMtDoCMvW096Ji7aC0IryJumASrW/c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mMSaaTUzuWeCim9pRGWIoXlxEzB23dI4ltoiW5E3ZyqIuWcg+BxHdynjDQzh148Bb
+         TdccEOltqBXf6WaxCIjZ2BxDwZW6lAzqfSTDP4JZBoOe8FYcDmycXUrUdtZcM1srAN
+         gDzhY1zpE6oJTVFipB8Vu6DM5l9ndploW2cQNv2o=
+Date:   Fri, 25 Feb 2022 09:29:03 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Daniel Starke <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 1/1] tty: n_gsm: improve standard compliance and feature
+ completeness
+Message-ID: <YhiTT2F5NJqFNrwM@kroah.com>
+References: <20220225080758.2869-1-daniel.starke@siemens.com>
+ <20220225080758.2869-2-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-118192:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225080758.2869-2-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We as Siemens Mobility GmbH are using the n_gsm module as specified by
-3GPP 27.010 and required by UNISIG SUBSET-037 chapter 6 of the European
-train control system standard to establish multiple parallel connections to
-GSM-R radio mobiles as used in our communication system.
-This is needed to handle CS (circuit switched) and PS (packet switched)
-services and functions in parallel. It requires at least four multiplexed
-data link connections (DLCs), including the control channel. It also
-requires the use of convergence layer type 2 in advanced option mode.
+On Fri, Feb 25, 2022 at 12:07:58AM -0800, Daniel Starke wrote:
+> The complete patch based on tty-next is included here for reference.
+> A proper series of patches will follow based on the comments to this RFC.
+> Please refer to the cover letter for more details.
+> 
+> Changes included:
+> - added: proper n_gsm Kernel module information fields and module version
+> - added: optional start-of-frame flag skipping in advanced option mode
+> - added: UI (unnumbered information) frame support
+> - added: PN (parameter negotiation) message handling and function support
+> - added: optional keep-alive control link supervision via Test messages
+> - added: proc fs files to provide meta data for the n_gsm instances
+> - added: various parameter gated kernel debug messages
+> - added: option for strict mode to reject non-standard compliant behavior
+> - added: TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
+> - added: TIOCMIWAIT support on virtual ttys
+> - added: additional ioctls and parameters to configure the new functions
+> - added: more function comments and aligned all to the coding guidelines
+> - changed: overall locking mechanism to avoid data race conditions
+> - changed: outgoing data flow to decouple physical from virtual tty
+>   handling for better performance and to avoid dead-locks
+> - fixed: advanced option mode implementation
+> - fixed: convergence layer type 2 implementation
+> - fixed: handling of CLD (multiplexer close down) messages
+> - fixed: broken muxer close down procedure
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c         | 4523 +++++++++++++++++++++++++----------
+>  include/uapi/linux/gsmmux.h |   70 +-
+>  2 files changed, 3364 insertions(+), 1229 deletions(-)
 
-We have improved support for this use case and the overall stability of the
-driver to achieve this. The modified driver was extensively tested and is
-already included in our productive system. We have integrated it with
-mobiles from Funkwerk Systems GmbH and Triorail Bahnfunk GmbH.
-A rough summary of changes made can be found below. The patch presented
-here shall provide a first impression of the planned upcoming commits and
-allow others to test and comment on these at an early stage. We plan to
-separate these changes and commit smaller change sets of this. But this
-is still work in progress.
+I'm sorry, but there is nothing we can do with such a large patch here
+at all.
 
-Our motivation of this commitment to the community lies in a smoother
-migration to upcoming kernel versions, a broader use for a better test
-coverage and an overall better quality of the driver. In a first step a set
-of bug fixes unrelated to the new functions has already been committed.
+Please break this up into "one logical change per patch" and we will be
+glad to review it.
 
-[CR] Changes included:
-[1] added: proper n_gsm Kernel module information fields and module version
-[2] added: optional start-of-frame flag skipping in advanced option mode
-[3] added: UI (unnumbered information) frame support
-[4] added: PN (parameter negotiation) message handling and function support
-[5] added: optional keep-alive control link supervision via Test messages
-[6] added: proc fs files to provide meta data for the n_gsm instances
-[7] added: various parameter gated kernel debug messages
-[8] added: option for strict mode to reject non-standard compliant behavior
-[9] added: TIOCM_OUT1 and TIOCM_OUT2 to allow responder to operate as modem
-[10] added: TIOCMIWAIT support on virtual ttys
-[11] added: additional ioctls and parameters to configure the new functions
-[12] added: more function comments and aligned all to the coding guidelines
-[13] changed: overall locking mechanism to avoid data race conditions
-[14] changed: outgoing data flow to decouple physical from virtual tty
-     handling for better performance and to avoid dead-locks
-[15] fixed: advanced option mode implementation
-[16] fixed: convergence layer type 2 implementation
-[17] fixed: handling of CLD (multiplexer close down) messages
-[18] fixed: broken muxer close down procedure
+Put your "fixes" at the beginning of the patch series, so they can be
+properly backported to older kernels as needed.  Don't mix up new
+features with fixes as that means that the fixes can never be
+backported.
 
-[NO] Points that remain open and are out of scope here:
-[1] DLCI priority handling according to the configured values. The priority
-    is currently only handled according to the DLCI number.
-[2] correct flow control handling (the standard is ambiguous, ch. 5.4.8.1)
-[3] combined opening and closing flag handling in basic option mode
-    (ch. 5.2.6.1; the data can be ambiguous)
-[4] power control services (ch. 5.1.5 and 5.4.7)
-[5] error recovery mode option (ch. 6)
-[6] convergence layer type 3 and 4 (ch. 5.5.3 and 5.5.4)
-[7] remote port negotiation (ch. 5.1.8.2.1 and 5.4.6.3.9)
-[8] service negotiation (ch. 5.1.8.1.2 and 5.4.6.3.11)
+One note, please drop the useless MODULE_VERSION() that never belongs in
+an in-kernel driver as it makes no sense (the version is the kernel
+version).  Same for the license "boiler-plate" text, that should not be
+added back, we removed it for a reason.
 
-The referenced chapters can be found in 3GPP TS 27.010. See link below.
+Also, no module parameters should be added.  Especially pointless ones
+like debugging flags, use the built-in kernel debugging options that the
+whole rest of the kernel uses.  There is no need for a special case for
+just one tiny line discipline module :)
 
-[X] Furthermore, the following commits conflict with this implementation:
-[1] commit 509067bbd264 ("tty: n_gsm: Delete gsm_disconnect when config requester")
-[2] commit 5b87686e3203 ("tty: n_gsm: Modify gsmtty driver register method when config requester")
-[3] commit 0b91b5332368 ("tty: n_gsm: Save dlci address open status when config requester")
-[4] commit 46292622ad73 ("tty: n_gsm: clean up indenting in gsm_queue()")
+thanks,
 
-[X1] conflicts with the new implementation for parameter negotiation.
-[X2], [X3] and [X4] implement dynamic virtual tty registration to allow
-uevents on the responder side. However, on responder side an application
-may first want to configure the link before it is established. That is why
-the virtual ttys need to be available directly after the control channel
-establishment. The responder still gets informed about a line open by
-waiting for DTR (data terminal ready) to be set. Just like on a physical
-serial interface.
-
-Please provide comments and hints for the integration of these changes into
-the upcoming Linux kernel. Feel free to refer to specific points by the
-given identifier (e.g. CR11 for TIOCMIWAIT support).
-
-With best regards,
-Daniel Starke
-
-Link: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-Link: https://www.era.europa.eu/sites/default/files/filesystem/ertms/ccs_tsi_annex_a_-_mandatory_specifications/set_of_specifications_3_etcs_b3_r2_gsm-r_b1/index010_-_subset-037_v320.pdf
-
-Daniel Starke (1):
-  tty: n_gsm: improve standard compliance and feature completeness
-
- drivers/tty/n_gsm.c         | 4523 +++++++++++++++++++++++++----------
- include/uapi/linux/gsmmux.h |   70 +-
- 2 files changed, 3364 insertions(+), 1229 deletions(-)
-
--- 
-2.25.1
-
+greg k-h
