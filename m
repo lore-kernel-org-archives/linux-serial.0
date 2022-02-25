@@ -2,87 +2,162 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBB6C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 09:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0C6C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Feb 2022 10:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiBYJkr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 04:40:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
+        id S239363AbiBYKRj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:17:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233715AbiBYJkr (ORCPT
+        with ESMTP id S233238AbiBYKRi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 04:40:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B8B2399C0;
-        Fri, 25 Feb 2022 01:40:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEBC60AD6;
-        Fri, 25 Feb 2022 09:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9851DC340E7;
-        Fri, 25 Feb 2022 09:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645782015;
-        bh=qvVwmFV3QX2LvXMd+kHdlm423gP9v7Lockw/NAnMUtc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N8jUeEQdlZ30sSyJSPggzWARNCQ7bmgutQHoH6qxkT8EQpLFbsDXGx7sSVFn7pWBR
-         4EljhD6pTZ1mcgsy+VCN/IZq+EffDMFmViSaPgUNfpCKaA0Pbh7M/Oi8Gmaz6Vq1yL
-         GpMr0L+lo1BkKb/o7XKCSTguD7iPNSHXI/zLGpG8=
-Date:   Fri, 25 Feb 2022 10:40:10 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] tty: serial: define UART_LCR_WLEN() macro
-Message-ID: <Yhij+lZyMGDjevOD@kroah.com>
-References: <20220224095517.30872-1-jslaby@suse.cz>
- <20220224095558.30929-1-jslaby@suse.cz>
- <YhdZjDO2mBgjSLep@kroah.com>
- <b8e3d88c-2340-2247-2e1a-37c089d9065a@suse.cz>
- <YhdqvS+LPYk7/4lL@kroah.com>
+        Fri, 25 Feb 2022 05:17:38 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261DDB0D3E;
+        Fri, 25 Feb 2022 02:17:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645784200;
+        bh=ZBa8/L8iW7ShngPtjDMHz5hutdlp2KMJfLYcYHlTSac=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=UjcV5q8jw4HJ1NnJHIbhv9jjKqi803bfJEJkddrABEHqPOz4g0EFxZIJrHAzPmjJN
+         UxH06gb96hwDsFANb6XM/Oi5Mf5S8wmiyoOtDOBH/HsnT1/4jstuZ5qc1EOACf+DHL
+         9PkfTNLmJixtRvO/oGC9d/zi2N4aRD+MwcbKY7Nk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [149.172.237.68] ([149.172.237.68]) by web-mail.gmx.net
+ (3c-app-gmx-bs22.server.lan [172.19.170.74]) (via HTTP); Fri, 25 Feb 2022
+ 11:16:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhdqvS+LPYk7/4lL@kroah.com>
+Message-ID: <trinity-24577b7c-5c5c-4fc6-a651-76ff5306989f-1645784200761@3c-app-gmx-bs22>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de,
+        linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
+        p.rosenberger@kunbus.com
+Subject: Aw: Re: [PATCH v3 1/9] serial: core: move RS485 configuration tasks
+ from drivers into core
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 25 Feb 2022 11:16:40 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <8c65bc42-438e-bf3e-fb76-2a4cbc7296c0@kernel.org>
+References: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
+ <20220222011433.8761-2-LinoSanfilippo@gmx.de>
+ <e883ccb5-68ea-f802-e4fd-864672d8ad7b@kernel.org>
+ <8c65bc42-438e-bf3e-fb76-2a4cbc7296c0@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:ibYL81/cTwwyjgrY6rom2mIBEWHvIVWZqMEWewOjnErTr05yoYf2pdsMCoBxlPwP8FVC+
+ 6O0fux1W2EXyDiV77vhEuhlsD/FIlQedJo77XHw3gim6Ai615yn57T2QpdtbOULuKtJBn+RJthAX
+ kes/rau+Wqar/h0FsnggtMlelJHLf9RKH1ZYsP2eXAcFOCHsT68GbxNN+BR+x/vgFmvZezc+mEY8
+ IEthQkDlucjv4bBNrDFCof3m0/ACsl6zh47nnu+yvVEpeUKdLdU3QST7QT12DAxrI3qQGWwRHZ15
+ b0=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:E9Z82zmc+mw=:pLPhOlVyfV3AzfuammmOhk
+ BUI3M06giNfHrsX9mFJDK5aSVIo88CrtOWiEsVXW4NssL51BCEMf1EyA+f8kKvo+kfZUR4pcc
+ wpybd3pyPMA/QvWat4LkIT4eSAHlSPQUCqAbXEyWIG0RXYPlOUIjeL1O3tPoaVZR1cUUudFti
+ YeAMWy7QzbX9avZ4Y9QgJJMLTzvyLY+kBDMC0qcjcXnEI+3DIn8vSxLFDRjIKCGXQkQZ9a+zj
+ 2Rvjrs/xrXLJrqrSLkYRq32aLZhWrXxhhVVPWJQmGixlIHJUktd+5RPXxkQZNhfYwJARfop6B
+ a2jNVOYWC66EH/uDBvVXUyrUVRFF3Pfh9x750huymEwXTX9rTbA5bJFaZoiraghQL2aphG2PB
+ 6UZEzgZ3ufDxKC3otERT03K0mN67CETOZdauXv96zeeBNArMUlnNuKki4Am+bAf3XsqWe+NLp
+ CliIMVwGYSuW829QUf1pui31Q/pEeGnX8KSzUQNEYuK4qwOFboURM/LisnGDEEbhISnLJ1X3+
+ 2vxjb6Cw6MFav0aifpatTEidFtxHqG+Ed1CAeaE9Gs6+fkcL11gld4lXYYqtd53ZYkFSb1aJ0
+ OknObjOgeAUYozHPsRLWHiATex/3ItRSTzBmUlzHx2RnLDR4wSBd5hhI/Wmn2KMzt30eP982I
+ 3m3hu1kiwoHjjx+SR2iDiqcbpxWszTexsKPhoKVOmzLwp3GLoM1qqFCkS31Py1VAtAWcMIIvu
+ f+zcgjtNJ1IH3cg8fpihwnW5W+NgXru7XsBA7SLojo9DdHOWkMcNcXJbEaeuZeBuxTZMD/JmG
+ kN19HXC
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:23:41PM +0100, Greg KH wrote:
-> On Thu, Feb 24, 2022 at 11:42:20AM +0100, Jiri Slaby wrote:
-> > On 24. 02. 22, 11:10, Greg KH wrote:
-> > > On Thu, Feb 24, 2022 at 10:55:54AM +0100, Jiri Slaby wrote:
-> > > > Define a generic UART_LCR_WLEN() macro with a size argument. It can be
-> > > > used to encode byte size into an LCR value. Therefore we can use it to
-> > > > simplify the drivers using tty_get_char_size() in the next patches.
-> > > > 
-> > > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> > > > ---
-> > > >   include/uapi/linux/serial_reg.h | 1 +
-> > > >   1 file changed, 1 insertion(+)
-> > > > 
-> > > > diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-> > > > index f51bc8f36813..c9d5ff6dd4c6 100644
-> > > > --- a/include/uapi/linux/serial_reg.h
-> > > > +++ b/include/uapi/linux/serial_reg.h
-> > > > @@ -111,6 +111,7 @@
-> > > >   #define UART_LCR_WLEN6		0x01 /* Wordlength: 6 bits */
-> > > >   #define UART_LCR_WLEN7		0x02 /* Wordlength: 7 bits */
-> > > >   #define UART_LCR_WLEN8		0x03 /* Wordlength: 8 bits */
-> > > > +#define UART_LCR_WLEN(x)	((x) - 5)
-> > > 
-> > > I'm all for this, but why does it need to be in a uapi .h file?
-> > 
-> > I'd love to put it somewhere else. But I didn't find an appropriate place.
-> > Should I put it simply to
-> > include/linux/serial_core.h
-> > or
-> > include/linux/serial.h
-> 
-> This one would make sense.
+Hi,
 
-I'll fix this up on my own, no need to resend this...
 
-thanks
+> On 22=2E 02=2E 22, 7:51, Jiri Slaby wrote:
+> > On 22=2E 02=2E 22, 2:14, Lino Sanfilippo wrote:
+> >> Several drivers that support setting the RS485 configuration via=20
+> >> userspace
+> >> implement one or more of the following tasks:
+> >>
+> >> - in case of an invalid RTS configuration (both RTS after send and RT=
+S on
+> >> =C2=A0=C2=A0 send set or both unset) fall back to enable RTS on send =
+and disable=20
+> >> RTS
+> >> =C2=A0=C2=A0 after send
+> >>
+> >> - nullify the padding field of the returned serial_rs485 struct
+> >>
+> >> - copy the configuration into the uart port struct
+> >>
+> >> - limit RTS delays to 100 ms
+> >>
+> >> Move these tasks into the serial core to make them generic and to pro=
+vide
+> >> a consistent behaviour among all drivers=2E
+> >>
+> >> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx=2Ede>
+> >> ---
+> >> =C2=A0 drivers/tty/serial/serial_core=2Ec | 29 ++++++++++++++++++++++=
++++++++
+> >> =C2=A0 1 file changed, 29 insertions(+)
+> >>
+> >> diff --git a/drivers/tty/serial/serial_core=2Ec=20
+> >> b/drivers/tty/serial/serial_core=2Ec
+> >> index 846192a7b4bf=2E=2E2b3afe038c1c 100644
+> >> --- a/drivers/tty/serial/serial_core=2Ec
+> >> +++ b/drivers/tty/serial/serial_core=2Ec
+> >> @@ -42,6 +42,11 @@ static struct lock_class_key port_lock_key;
+> >> =C2=A0 #define HIGH_BITS_OFFSET=C2=A0=C2=A0=C2=A0 ((sizeof(long)-size=
+of(int))*8)
+> >> +/*
+> >> + * Max time with active RTS before/after data is sent=2E
+> >> + */
+> >> +#define RS485_MAX_RTS_DELAY=C2=A0=C2=A0=C2=A0 100 /* msecs */
+> >> +
+> >> =C2=A0 static void uart_change_speed(struct tty_struct *tty, struct=
+=20
+> >> uart_state *state,
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ktermios *=
+old_termios);
+> >> =C2=A0 static void uart_wait_until_sent(struct tty_struct *tty, int t=
+imeout);
+> >> @@ -1282,8 +1287,32 @@ static int uart_set_rs485_config(struct=20
+> >> uart_port *port,
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (copy_from_user(&rs485, rs485_user,=
+ sizeof(*rs485_user)))
+> >> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT=
+;
+> >> +=C2=A0=C2=A0=C2=A0 /* pick sane settings if the user hasn't */
+> >> +=C2=A0=C2=A0=C2=A0 if (!(rs485=2Eflags & SER_RS485_RTS_ON_SEND) =3D=
+=3D
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !(rs485=2Eflags & SER_RS4=
+85_RTS_AFTER_SEND)) {
+> >> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_warn("invalid RTS sett=
+ing, using RTS_ON_SEND instead\n");
+> >=20
+> > Can't we have a device prefix here, so that everyone knows what device=
+=20
+> > is affected? Without that, it's not that useful=2E At least port->name=
+ &=20
+> > port->line could be printed=2E The uart core uses dev_* prints, but pr=
+ints=20
+> > also line as uport->dev can be NULL sometimes=2E
+>=20
+> And this comes from userspace, so should be ratelimited=2E
+>=20
 
-greg k-h
+Right, ratelimiting makes sense here=2E I will change it as suggested in t=
+he next patch version=2E
+Thanks a lot for the review=2E
+
+Regards,
+Lino
+
