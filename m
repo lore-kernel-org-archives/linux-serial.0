@@ -2,275 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 264ECC433F5
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Feb 2022 01:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917B5C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Feb 2022 10:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229594AbiBZB5t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Feb 2022 20:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
+        id S231140AbiBZKdK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 26 Feb 2022 05:33:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiBZB5s (ORCPT
+        with ESMTP id S231149AbiBZKdJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Feb 2022 20:57:48 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FF52E0E22
-        for <linux-serial@vger.kernel.org>; Fri, 25 Feb 2022 17:56:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645840602; x=1677376602;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7Qpgt1zwoYGq4CQPq8OGhigb7UcWc2tClPSBw6Zk36o=;
-  b=FT5V7qcLun7Db3znKl2YKRg1hIHDdUcEh/sJ8x+NwvFGLex6FKsOmgt5
-   fQji0wmk3faSoTb2PxY9Z8i3+VElr3ZZbnV29gz/J0G0qVvAoedyOHWZi
-   fk0J+op5BT06SJAE0yKF8zpi6cDxk1ElSPZAdH5cOirgUvAkirHcvuV45
-   JYtwiRdBDftq7bvOFK47Yw5GDsg0p81zrFdK5K4ZoNUoCXvoSE0rThEOz
-   yKO8qmeBEyKUxH/4oiX6lkCnGCzZCX81rM44joLApklrNqTioff7IXbDo
-   cRrd7LjiLDdcPkNocwAn2mStEKMjJwEyh4ereXY80GLbRdVAA0jVLd0Kf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10269"; a="236126086"
-X-IronPort-AV: E=Sophos;i="5.90,138,1643702400"; 
-   d="scan'208";a="236126086"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 17:56:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,138,1643702400"; 
-   d="scan'208";a="574783078"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 25 Feb 2022 17:56:32 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNmJz-0004vW-MD; Sat, 26 Feb 2022 01:56:31 +0000
-Date:   Sat, 26 Feb 2022 09:55:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD REGRESSION
- a6d8f09319fff9e6e7a91cadb19923b8cb2573e0
-Message-ID: <621988a5.qOQtYS5ysluTXji9%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sat, 26 Feb 2022 05:33:09 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C37B344E0;
+        Sat, 26 Feb 2022 02:32:34 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 7CF2292009D; Sat, 26 Feb 2022 11:32:31 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 77FE792009C;
+        Sat, 26 Feb 2022 10:32:31 +0000 (GMT)
+Date:   Sat, 26 Feb 2022 10:32:31 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] serial: 8250: Report which option to enable for
+ blacklisted PCI devices
+In-Reply-To: <Yhiixm/iRlnF18B7@kroah.com>
+Message-ID: <alpine.DEB.2.21.2202251753530.25061@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202121646020.34636@angie.orcam.me.uk> <alpine.DEB.2.21.2202121706060.34636@angie.orcam.me.uk> <Yhiixm/iRlnF18B7@kroah.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: a6d8f09319fff9e6e7a91cadb19923b8cb2573e0  tty: Reserve ldisc 29 for development purposes
+On Fri, 25 Feb 2022, Greg Kroah-Hartman wrote:
 
-Error/Warning reports:
+> On Sat, Feb 12, 2022 at 05:30:59PM +0000, Maciej W. Rozycki wrote:
+> > Provide information in the kernel log as to what configuration option to 
+> > enable for PCI UART devices that have been blacklisted in the generic 
+> > PCI 8250 UART driver and which have a dedicated driver available to 
+> > handle that has been disabled.  The rationale is there is no easy way 
+> > for the user to map a specific PCI vendor:device pair to an individual 
+> > dedicated driver while the generic driver has this information readily 
+> > available and it will likely be confusing that the generic driver does 
+> > not register such a port.
+> > 
+> > A message is then printed like:
+> > 
+> > serial 0000:04:00.3: ignoring port, enable SERIAL_8250_PERICOM to handle
+> > 
+> > when an affected device is encountered and the generic driver rejects it.
+> > 
+> > Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> 
+> I've applied patch 1 of this series, but this is really an odd one.
 
-https://lore.kernel.org/linux-serial/202202260105.p77piygB-lkp@intel.com
-https://lore.kernel.org/llvm/202202260016.JwqeCxcs-lkp@intel.com
+ Thank you.
 
-Error/Warning in current branch:
+> We don't do this for any other driver subsystem, so why is it really
+> needed?  What is so special about this driver that distros can't
+> just enable all of the drivers and all is good?  What is keeping those
+> drivers fromb eing enabled?
 
-drivers/mmc/core/sdio_uart.c:253:16: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN5'? [-Werror=implicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:16: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN6'? [-Werror=implicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:16: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN7'? [-Werror=implicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:9: error: implicit declaration of function 'UART_LCR_WLEN' [-Werror,-Wimplicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:9: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN5'? [-Werror=implicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:9: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN6'? [-Werror=implicit-function-declaration]
-drivers/mmc/core/sdio_uart.c:253:9: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN8'? [-Werror=implicit-function-declaration]
+ My justification is we have a supposedly generic PCI 8250 UART driver, 
+except it explicitly and silently refuses to handle a handful of devices 
+chosen by their PCI IDs based on that they may have extra features, even 
+though they are otherwise fully compatible with a generic 8250.
 
-Error/Warning ids grouped by kconfigs:
+ For distributions it probably does not matter as long as the packager 
+does not forget to enable an option, which itself might be a problem (I've 
+seen distributions missing drivers randomly).  A user who configures their 
+kernel on their own may simply not be aware that for one card enabling 
+SERIAL_8250_PCI will do while for another almost identical card they need 
+to use SERIAL_8250_foo instead even though it's just another PCI 8250 
+UART.
 
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- arc-randconfig-r043-20220225
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- csky-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- h8300-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- i386-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- i386-debian-10.3-kselftests
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- i386-randconfig-a012
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- i386-randconfig-a014
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- ia64-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- ia64-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- mips-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- mips-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- powerpc-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- powerpc-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- riscv-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- riscv-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- sh-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- sparc-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- sparc-randconfig-r016-20220225
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- sparc64-allmodconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-allyesconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-randconfig-a006
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-randconfig-a011
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-randconfig-c002
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-rhel-8.3
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-rhel-8.3-func
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-|-- x86_64-rhel-8.3-kselftests
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
-`-- xtensa-allyesconfig
-    `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN
+ Consequently someone may well waste a day trying to figure out why their 
+card does not work (is it faulty perhaps, is there a configuration error 
+with the hardware?).  Even if they actually realise it's a kernel config 
+issue, they may still have to go through a trial-and-error experience 
+trying to figure out which driver to enable.  While the generic driver 
+knows perfectly well.  Then why not make people's life easier and let them 
+know as well what is going on?
 
-clang_recent_errors
-|-- arm-randconfig-c002-20220225
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- arm-s3c2410_defconfig
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- arm64-randconfig-r011-20220225
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- i386-randconfig-a004
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- i386-randconfig-a006
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- i386-randconfig-a011
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- i386-randconfig-c001
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- mips-randconfig-c004-20220225
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- x86_64-randconfig-a003
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- x86_64-randconfig-a012
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-|-- x86_64-randconfig-a014
-|   `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
-`-- x86_64-randconfig-a016
-    `-- drivers-mmc-core-sdio_uart.c:error:implicit-declaration-of-function-UART_LCR_WLEN-Werror-Wimplicit-function-declaration
+ I don't think we have another case like this, do we?  Hence my proposal.
 
-elapsed time: 723m
+ Have I made myself clear now?  What are your actual arguments against my 
+reasoning?
 
-configs tested: 100
-configs skipped: 3
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-s390                          debug_defconfig
-arm                        shmobile_defconfig
-sh                         microdev_defconfig
-xtensa                           allyesconfig
-sh                          sdk7780_defconfig
-powerpc                     asp8347_defconfig
-arm                          exynos_defconfig
-m68k                       m5208evb_defconfig
-mips                     decstation_defconfig
-powerpc                     stx_gp3_defconfig
-m68k                       m5475evb_defconfig
-powerpc                     tqm8548_defconfig
-openrisc                         alldefconfig
-powerpc                     redwood_defconfig
-powerpc                        warp_defconfig
-arm                           sama5_defconfig
-sh                        sh7785lcr_defconfig
-arm                            zeus_defconfig
-arc                            hsdk_defconfig
-arm                        keystone_defconfig
-powerpc                     tqm8555_defconfig
-h8300                               defconfig
-arc                          axs103_defconfig
-arm                  randconfig-c002-20220225
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-powerpc              randconfig-c003-20220225
-x86_64                        randconfig-c007
-arm                  randconfig-c002-20220225
-mips                 randconfig-c004-20220225
-i386                          randconfig-c001
-riscv                randconfig-c006-20220225
-mips                          ath25_defconfig
-powerpc                     kilauea_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220225
-hexagon              randconfig-r041-20220225
-riscv                randconfig-r042-20220225
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+  Maciej
