@@ -2,93 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B83FC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 886A5C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiB1KzK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:55:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        id S233387AbiB1LAa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:00:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiB1Kyk (ORCPT
+        with ESMTP id S234916AbiB1LAY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:54:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84AC606C2
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 02:52:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 603D5B80FD3
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 10:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C09EEC340E7;
-        Mon, 28 Feb 2022 10:52:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646045536;
-        bh=4PdbstDba4Kc1TZw3Ean3SBstKdCmQrdwOTl6BXVc1o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YoXlvca33SaEsTzf2r5rC3El9OIyNUrPZt0mzU4mJD70BqtbBttd9muQSUbaX4dcM
-         mkzF+15VTABS5L0YlXub4ECXipWzx/R7WiWpu2sTPMDwj+SaOT9p1em8A421AL8B7S
-         k8mJWGGSgLRNEVNhzTSbRaRqP4DI88OhFtMfupIw=
-Date:   Mon, 28 Feb 2022 11:52:12 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [tty:tty-testing 31/42] drivers/mmc/core/sdio_uart.c:253:16:
- error: implicit declaration of function 'UART_LCR_WLEN'; did you mean
- 'UART_LCR_WLEN5'?
-Message-ID: <YhypXNglrugN7ZLa@kroah.com>
-References: <202202260105.p77piygB-lkp@intel.com>
- <f3c45778-851b-2a26-afe0-d109adb3667a@suse.cz>
+        Mon, 28 Feb 2022 06:00:24 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F7A205FB
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 02:59:34 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id s13so14779077wrb.6
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 02:59:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=uCN8f3Fyd5pokV8pP2TP0yZnM+iGBuaGKpYFHzcRb64=;
+        b=U1sd+1e2936jSttBnDkeF2aFADnnxGDPhbHqTgwESbce77Ji25yxyMYU/0U+KJCQYr
+         QNhUdyoHzRf/sIJdmiN2P2EsRqdmwXrROsYdqJDj7Ev+PjrP5vDgnkszfIRm9s1m0TM9
+         UNL6Zz7QOyjrX753nWNpgz43bZn3RzM/OSbX3Uj5yL8e14tJ0pGhw5Y2TZJUgviDUEfN
+         IdDAV5xdYItRWJzG5xp/zTx7cAWVcnyD6V9inmPFlHMyOCfRMWEuJ4t0MPzwXhMOPDT5
+         1ysQsfR28eLGRBg/DiEg1RMrwLxR5PpMAjlEbiiLcaw5hDKubqRlBhX73V0cFtstOyCO
+         sbEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=uCN8f3Fyd5pokV8pP2TP0yZnM+iGBuaGKpYFHzcRb64=;
+        b=Bv3BTbDNwbYTQd2TcPnjaAaDPoQqVwYcBVFPXwOI6vxZcwB9l+BZAQqFNy8wdsed4I
+         +EMZuIB0S7+B/ny7Vh/6SoquJlKfXPYbyDxgH3x9neWoCGu8pQaJTo6k4tS2uximkryO
+         PAa0fHsAuAknCsasiwy2/A5x6GQlYae1CgM5VPwSe4ukG5uxdLTMlJ829H09lHxEz5s6
+         4sAyFt9Wl+K4gBVxFrgjpA3rHz/xnNDzLonj6J7L5UQfvLY4BnXd6fXh/UGHF4Dd0QEZ
+         PcJKRxCMhwL3rAbJaht+Wxvamg0dfGIeETNNTj5oLwLXCEyg4mtHDmH2rhaWWbzoGI0B
+         DP1A==
+X-Gm-Message-State: AOAM533D5B7DAZ0lMXzfUUs1Xo426x1aaOfo/HboHC1fHafRij/zj1Nk
+        iM/KwlBPQ+PemVZhwHcqa0YCLQ==
+X-Google-Smtp-Source: ABdhPJwF2zUP4Y28CMI6eZMFjYIqjlKEfAPLDcFwRGYzr64h9oXzj49Vb3OIvWo3FlvGEewcFviqJQ==
+X-Received: by 2002:adf:d089:0:b0:1ed:9e86:2144 with SMTP id y9-20020adfd089000000b001ed9e862144mr14956887wrh.363.1646045973473;
+        Mon, 28 Feb 2022 02:59:33 -0800 (PST)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id f1-20020a5d4dc1000000b001eeadc98c0csm10001385wru.101.2022.02.28.02.59.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 02:59:33 -0800 (PST)
+References: <20220225073922.3947-1-yu.tu@amlogic.com>
+ <20220225073922.3947-6-yu.tu@amlogic.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V7 5/6] tty: serial: meson: The system stuck when you
+ run the stty command on the console to change the baud rate
+Date:   Mon, 28 Feb 2022 11:58:30 +0100
+In-reply-to: <20220225073922.3947-6-yu.tu@amlogic.com>
+Message-ID: <1jczj7xnn0.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f3c45778-851b-2a26-afe0-d109adb3667a@suse.cz>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 05:36:53AM +0100, Jiri Slaby wrote:
-> On 25. 02. 22, 19:34, kernel test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-> > head:   a6d8f09319fff9e6e7a91cadb19923b8cb2573e0
-> > commit: b6f8eaea0cf1afe2500f8af7b6cc805647fe4889 [31/42] sdio_uart: make use of UART_LCR_WLEN() + tty_get_char_size()
-> > config: arc-randconfig-r043-20220225 (https://download.01.org/0day-ci/archive/20220226/202202260105.p77piygB-lkp@intel.com/config)
-> > compiler: arceb-elf-gcc (GCC) 11.2.0
-> > reproduce (this is a W=1 build):
-> >          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >          chmod +x ~/bin/make.cross
-> >          # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=b6f8eaea0cf1afe2500f8af7b6cc805647fe4889
-> >          git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-> >          git fetch --no-tags tty tty-testing
-> >          git checkout b6f8eaea0cf1afe2500f8af7b6cc805647fe4889
-> >          # save the config file to linux build tree
-> >          mkdir build_dir
-> >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All errors (new ones prefixed by >>):
-> > 
-> >     drivers/mmc/core/sdio_uart.c: In function 'sdio_uart_change_speed':
-> > > > drivers/mmc/core/sdio_uart.c:253:16: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN5'? [-Werror=implicit-function-declaration]
-> >       253 |         cval = UART_LCR_WLEN(tty_get_char_size(termios->c_cflag));
-> >           |                ^~~~~~~~~~~~~
-> >           |                UART_LCR_WLEN5
-> >     cc1: some warnings being treated as errors
-> > 
-> > 
-> > vim +253 drivers/mmc/core/sdio_uart.c
-> 
-> This is caused by the move to serial.h. Apart from sdio_uart, these drivers
-> do not include serial.h directly (but apart from sdio_uart are able to
-> compile, i.e. include it via some chain):
-> drivers/tty/serial/8250/8250_omap.c
-> drivers/tty/serial/jsm/jsm_neo.c
-> drivers/tty/serial/omap-serial.c
-> drivers/tty/serial/pxa.c
 
-Yes, this is my fault, I'll fix this up later today, thanks.
+On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
 
-greg k-h
+> Start the console and run the following commands in turn:
+> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600. The
+> system will stuck.
+>
+> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+> ---
+>  drivers/tty/serial/meson_uart.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index ba8dc203b9cb..d19349ead738 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -365,8 +365,13 @@ static void meson_uart_set_termios(struct uart_port *port,
+>  	writel(val, port->membase + AML_UART_CONTROL);
+>  
+>  	baud = uart_get_baud_rate(port, termios, old, 50, 4000000);
+> +
+> +	spin_unlock_irqrestore(&port->lock, flags);
+> +
+>  	meson_uart_change_speed(port, baud);
+>  
+> +	spin_lock_irqsave(&port->lock, flags);
+
+Already told you before, you can make meson_change_speed()
+clk_set_rate() uses mutex and may sleep.
+
+> +
+>  	port->read_status_mask = AML_UART_TX_FIFO_WERR;
+>  	if (iflags & INPCK)
+>  		port->read_status_mask |= AML_UART_PARITY_ERR |
+
