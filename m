@@ -2,192 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDB6C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 09:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B83FC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234468AbiB1Jw7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 04:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
+        id S235229AbiB1KzK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234445AbiB1Jw6 (ORCPT
+        with ESMTP id S235232AbiB1Kyk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 04:52:58 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91F876A078
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 01:52:18 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id v21so14449079wrv.5
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 01:52:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=M/yV7fD7mHF7OTSsIIPYhLDMmhlfZbNKyzT+LzGJue4=;
-        b=ud8OGDY5wYIrh7CamNCmK3sqTXwVuvkwA07RAkFMKltyntGbzNnczWNjQDqEQIi3+s
-         HBq2he/ypRr6rZ72evx4KLin8zczZkQSfywuQoOxn83kfCiqQb9Gz1sVdG2HwMIocgC5
-         Uylj1VMPmoPgT0jdgyQfgcwIAGzigu4lX1LOdvj7/G2U/x3G9RY+Uae8ioRxUJvkVAWZ
-         OY+Ap63fcbkLectnvyZCPCJ5pUW72c1ufQkvJri9WF6pHM33q3iENhnU/a4qlmpECkXp
-         hi9bfekLkkDLA05kiK9cUhOD8SA/gv+YPQdIdLs6zwhUhfWnpTLIYY8nDU0MytrfnpLH
-         pRnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=M/yV7fD7mHF7OTSsIIPYhLDMmhlfZbNKyzT+LzGJue4=;
-        b=3uWNKLP9HJj8lAupKLhXPaCAETGYbVb8ketIt3V/UucJIfTjjyutLbxGGVQv+P2UVn
-         pvabeUBYoVOx9NG89kSsuA64Epg8BLbsdXa8QT4psGCQzj8hjMEypn252GydpT/20mVQ
-         x0x1MdBDHHensgOK8P0lvz4JlRxWjW+rW+Xxvk80fUAya4Rop4mlCZmcXrqfPonaGWZg
-         D0I+ktuvftRsqTW/UGwsHJzVmqpEp7pEgDKqiInNp2aovQM1l+sNmnHk9G4yv41oepGj
-         qES+MGCC4CEdpAilVxP7eJcYdmQk5NzaRqbSfciowrrRbcfcgjJECjRxgcdqe6Q0NanF
-         OcFg==
-X-Gm-Message-State: AOAM532OU3THZJEAVs5KoU0Ucs1HXCSEGny0Kj/UAVUVs9nr6yAb/4AE
-        1KCB+lrgkMV8tUk6bHRIx2KQsBoWGlohlGZy
-X-Google-Smtp-Source: ABdhPJzUoTEOIDAZiRlAiW0IfHjb3TQL6fWjRKAgUiavd0Y12ITtwkuQQZKjLJZLbow4eFp397CYBQ==
-X-Received: by 2002:adf:a486:0:b0:1ed:9cfe:179d with SMTP id g6-20020adfa486000000b001ed9cfe179dmr15847522wrb.113.1646041937017;
-        Mon, 28 Feb 2022 01:52:17 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:6431:1dc7:b58f:6282? ([2001:861:44c0:66c0:6431:1dc7:b58f:6282])
-        by smtp.gmail.com with ESMTPSA id p5-20020a05600c358500b0038167e239a2sm3232887wmq.19.2022.02.28.01.52.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 01:52:16 -0800 (PST)
-Message-ID: <790952bd-b066-0b41-545c-1f65cd4244af@baylibre.com>
-Date:   Mon, 28 Feb 2022 10:52:15 +0100
+        Mon, 28 Feb 2022 05:54:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84AC606C2
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 02:52:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 603D5B80FD3
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 10:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C09EEC340E7;
+        Mon, 28 Feb 2022 10:52:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646045536;
+        bh=4PdbstDba4Kc1TZw3Ean3SBstKdCmQrdwOTl6BXVc1o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YoXlvca33SaEsTzf2r5rC3El9OIyNUrPZt0mzU4mJD70BqtbBttd9muQSUbaX4dcM
+         mkzF+15VTABS5L0YlXub4ECXipWzx/R7WiWpu2sTPMDwj+SaOT9p1em8A421AL8B7S
+         k8mJWGGSgLRNEVNhzTSbRaRqP4DI88OhFtMfupIw=
+Date:   Mon, 28 Feb 2022 11:52:12 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [tty:tty-testing 31/42] drivers/mmc/core/sdio_uart.c:253:16:
+ error: implicit declaration of function 'UART_LCR_WLEN'; did you mean
+ 'UART_LCR_WLEN5'?
+Message-ID: <YhypXNglrugN7ZLa@kroah.com>
+References: <202202260105.p77piygB-lkp@intel.com>
+ <f3c45778-851b-2a26-afe0-d109adb3667a@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V2] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Content-Language: en-US
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220228090351.9976-1-yu.tu@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220228090351.9976-1-yu.tu@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3c45778-851b-2a26-afe0-d109adb3667a@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-i,
-
-On 28/02/2022 10:03, Yu Tu wrote:
-> Describes the calculation of the UART baud rate clock using a clock
-> frame. Forgot to add in Kconfig kernel test Robot compilation error
-> due to COMMON_CLK dependency.
+On Mon, Feb 28, 2022 at 05:36:53AM +0100, Jiri Slaby wrote:
+> On 25. 02. 22, 19:34, kernel test robot wrote:
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+> > head:   a6d8f09319fff9e6e7a91cadb19923b8cb2573e0
+> > commit: b6f8eaea0cf1afe2500f8af7b6cc805647fe4889 [31/42] sdio_uart: make use of UART_LCR_WLEN() + tty_get_char_size()
+> > config: arc-randconfig-r043-20220225 (https://download.01.org/0day-ci/archive/20220226/202202260105.p77piygB-lkp@intel.com/config)
+> > compiler: arceb-elf-gcc (GCC) 11.2.0
+> > reproduce (this is a W=1 build):
+> >          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> >          chmod +x ~/bin/make.cross
+> >          # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=b6f8eaea0cf1afe2500f8af7b6cc805647fe4889
+> >          git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> >          git fetch --no-tags tty tty-testing
+> >          git checkout b6f8eaea0cf1afe2500f8af7b6cc805647fe4889
+> >          # save the config file to linux build tree
+> >          mkdir build_dir
+> >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
+> > 
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > All errors (new ones prefixed by >>):
+> > 
+> >     drivers/mmc/core/sdio_uart.c: In function 'sdio_uart_change_speed':
+> > > > drivers/mmc/core/sdio_uart.c:253:16: error: implicit declaration of function 'UART_LCR_WLEN'; did you mean 'UART_LCR_WLEN5'? [-Werror=implicit-function-declaration]
+> >       253 |         cval = UART_LCR_WLEN(tty_get_char_size(termios->c_cflag));
+> >           |                ^~~~~~~~~~~~~
+> >           |                UART_LCR_WLEN5
+> >     cc1: some warnings being treated as errors
+> > 
+> > 
+> > vim +253 drivers/mmc/core/sdio_uart.c
 > 
-> Fixes: 44023b8e1f14 ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
+> This is caused by the move to serial.h. Apart from sdio_uart, these drivers
+> do not include serial.h directly (but apart from sdio_uart are able to
+> compile, i.e. include it via some chain):
+> drivers/tty/serial/8250/8250_omap.c
+> drivers/tty/serial/jsm/jsm_neo.c
+> drivers/tty/serial/omap-serial.c
+> drivers/tty/serial/pxa.c
 
-AFAIK this commit is not in an uptream/feature branch, so you should simply fix your `Use CCF to describe the UART baud rate clock` instead.
+Yes, this is my fault, I'll fix this up later today, thanks.
 
-Neil
-
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
-> ---
->   drivers/tty/serial/Kconfig      |  1 +
->   drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
->   2 files changed, 27 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index e952ec5c7a7c..a0f2b82fc18b 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
->   config SERIAL_MESON
->   	tristate "Meson serial port support"
->   	depends on ARCH_MESON || COMPILE_TEST
-> +	depends on COMMON_CLK
->   	select SERIAL_CORE
->   	help
->   	  This enables the driver for the on-chip UARTs of the Amlogic
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index bf6be5468aaf..972f210f3492 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -780,28 +780,37 @@ static int meson_uart_probe(struct platform_device *pdev)
->   		return ret;
->   
->   	irq = platform_get_irq(pdev, 0);
-> -	if (irq < 0)
-> -		return irq;
-> +	if (irq < 0) {
-> +		ret = irq;
-> +		goto err_out_clk_disable;
-> +	}
->   
->   	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
->   
->   	if (meson_ports[pdev->id]) {
->   		dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
-> -		return -EBUSY;
-> +		ret = -EBUSY;
-> +		goto err_out_clk_disable;
->   	}
->   
->   	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), GFP_KERNEL);
-> -	if (!port)
-> -		return -ENOMEM;
-> +	if (!port) {
-> +		ret = -ENOMEM;
-> +		goto err_out_clk_disable;
-> +	}
->   
->   	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
-> -	if (IS_ERR(port->membase))
-> -		return PTR_ERR(port->membase);
-> +	if (IS_ERR(port->membase)) {
-> +		ret = PTR_ERR(port->membase);
-> +		goto err_out_clk_disable;
-> +	}
->   
->   	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->   				    GFP_KERNEL);
-> -	if (!private_data)
-> -		return -ENOMEM;
-> +	if (!private_data) {
-> +		ret = -ENOMEM;
-> +		goto err_out_clk_disable;
-> +	}
->   
->   	if (device_get_match_data(&pdev->dev))
->   		private_data->use_xtal_clk = true;
-> @@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device *pdev)
->   
->   	ret = meson_uart_probe_clocks(port);
->   	if (ret)
-> -		return ret;
-> +		goto err_out_clk_disable;
->   
->   	meson_ports[pdev->id] = port;
->   	platform_set_drvdata(pdev, port);
-> @@ -831,9 +840,15 @@ static int meson_uart_probe(struct platform_device *pdev)
->   	meson_uart_reset(port);
->   
->   	ret = uart_add_one_port(&meson_uart_driver, port);
-> -	if (ret)
-> +	if (ret) {
->   		meson_ports[pdev->id] = NULL;
-> +		goto err_out_clk_disable;
-> +	}
-> +
-> +	return 0;
->   
-> +err_out_clk_disable:
-> +	clk_disable_unprepare(pclk);
->   	return ret;
->   }
->   
-> 
-> base-commit: c2faf737abfb10f88f2d2612d573e9edc3c42c37
-
+greg k-h
