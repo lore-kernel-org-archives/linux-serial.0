@@ -2,168 +2,265 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0691AC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 13:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F020C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 13:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiB1Ngj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:36:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
+        id S236233AbiB1NzA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:55:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiB1Ngi (ORCPT
+        with ESMTP id S236342AbiB1Ny6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:36:38 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9E675C0B;
-        Mon, 28 Feb 2022 05:35:58 -0800 (PST)
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 28 Feb
- 2022 21:35:56 +0800
-Message-ID: <837c988c-1347-8aa6-cffd-2130f8894cb0@amlogic.com>
-Date:   Mon, 28 Feb 2022 21:35:55 +0800
+        Mon, 28 Feb 2022 08:54:58 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C48C43498
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 05:54:19 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id u2so3213513ple.10
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 05:54:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WEy1zCQgDzZI0KWybQkh1tiSD7E5/9VujlwkP39Po4I=;
+        b=S7MP84cNFACuxNfvhM7fJy4miwUvj6rX8/O5d5P3Tguai+qxHva7T8Sa+44kR26m4K
+         rQg8xhy/dDkRLc8YoC0FocXWrtH+dOw2OKCYxNxZfQbib7HWrLHl+LCGckPX8KhY9RAL
+         dznVnRIp37gF/yAOvrR3d9p0ZYjYxxUwX5i+jknC6gS10myUOCeukvn5ihIYJ3d/vKP7
+         6zGy3YLCOuTUN6OEIHGLTSI6kTk6ceOn2JpoabZcQph2qZjVG4s4ef2a4KnG9tvyoNHp
+         4A901AASZCniir/7Zb9MBw2Rah0hn8CFMhmF9N1cP/wLbl+y66SiFqJLA+QN+PWEXKre
+         qQYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WEy1zCQgDzZI0KWybQkh1tiSD7E5/9VujlwkP39Po4I=;
+        b=1EF9XG0q4b0Ijh27pdvHGeS8GH5uh2nZfS6juj4ocwwCcRfPHAExFMRuciDnZiIf0O
+         //YDE6RMdS/fVfJofzSE4jz7qLIzw3smMNFsG4Var7TQxGlhHKzM6J1f88p/xOywO1F9
+         Bjj3b4dx99ZagQkGZFlF+QYi1lyIKIo/EBXjZ+DpJR4he8H8/Qz/174REDGb8+QzzUB2
+         f6obsB0rTLOZDL7xCGK+g434Xbaq6xdSa3hA+k1iMPsTZQaul/v0KziimkBqRrrajuPC
+         +0erjYbrG8/vBE+JrktsGX3mTo3atBmycF24Cg+CtJl/u57NwgmubK96ATY3BkeNP++D
+         KsEg==
+X-Gm-Message-State: AOAM530gw3acY5u5qw4cHtYy6Yt6inWlOIRgEcECs1uLN9QcdtuXZy2k
+        3Zv+Qqf2xyOoM0Y14WilPuWJbnv7IIfp7w==
+X-Google-Smtp-Source: ABdhPJxndjCL6DuOrGcZ40lddkjyZWeCgJNEwhO3fREhBQx7ptcnk3zS+oVQVdJ71WNlar0BPJv41A==
+X-Received: by 2002:a17:90a:fef:b0:1bc:1465:c4e9 with SMTP id 102-20020a17090a0fef00b001bc1465c4e9mr16919511pjz.119.1646056458698;
+        Mon, 28 Feb 2022 05:54:18 -0800 (PST)
+Received: from localhost.localdomain ([2401:4900:1c2a:216d:26eb:507e:a508:58b5])
+        by smtp.gmail.com with ESMTPSA id q9-20020a056a00088900b004e03b051040sm13894746pfj.112.2022.02.28.05.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:54:18 -0800 (PST)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, arnd@arndb.de,
+        peterz@infradead.org, Sumit Garg <sumit.garg@linaro.org>
+Subject: [RFT v3] tty/sysrq: Make sysrq handler NMI aware
+Date:   Mon, 28 Feb 2022 19:24:08 +0530
+Message-Id: <20220228135408.1452882-1-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V2] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220228090351.9976-1-yu.tu@amlogic.com>
- <790952bd-b066-0b41-545c-1f65cd4244af@baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <790952bd-b066-0b41-545c-1f65cd4244af@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Neil,
-	Thank you very much for your reply.
+Allow a magic sysrq to be triggered from an NMI context. This is done
+via marking some sysrq actions as NMI safe. Safe actions will be allowed
+to run from NMI context whilst that cannot run from an NMI will be queued
+as irq_work for later processing.
 
-On 2022/2/28 17:52, Neil Armstrong wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> i,
-> 
-> On 28/02/2022 10:03, Yu Tu wrote:
->> Describes the calculation of the UART baud rate clock using a clock
->> frame. Forgot to add in Kconfig kernel test Robot compilation error
->> due to COMMON_CLK dependency.
->>
->> Fixes: 44023b8e1f14 ("tty: serial:meson: Describes the calculation of 
->> the UART baud rate clock using a clock frame“)
-> 
-> AFAIK this commit is not in an uptream/feature branch, so you should 
-> simply fix your `Use CCF to describe the UART baud rate clock` instead.
-> 
-I'll correct it right away as you suggested.
+The major use-case is to add NMI debugging capabilities to the kernel
+in order to debug scenarios such as:
+- Primary CPU is stuck in deadlock with interrupts disabled and hence
+  doesn't honor serial device interrupt. So having magic sysrq triggered
+  as an NMI is helpful for debugging.
+- Always enabled NMI based magic sysrq irrespective of whether the serial
+  TTY port is active or not.
+- Apart from UART interrupts, it allows magic sysrq to be triggered from
+  a diagnostic NMI interrupt on systems such as A64FX.
 
-> Neil
-> 
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   drivers/tty/serial/Kconfig      |  1 +
->>   drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
->>   2 files changed, 27 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->> index e952ec5c7a7c..a0f2b82fc18b 100644
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
->>   config SERIAL_MESON
->>       tristate "Meson serial port support"
->>       depends on ARCH_MESON || COMPILE_TEST
->> +    depends on COMMON_CLK
->>       select SERIAL_CORE
->>       help
->>         This enables the driver for the on-chip UARTs of the Amlogic
->> diff --git a/drivers/tty/serial/meson_uart.c 
->> b/drivers/tty/serial/meson_uart.c
->> index bf6be5468aaf..972f210f3492 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -780,28 +780,37 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>           return ret;
->>       irq = platform_get_irq(pdev, 0);
->> -    if (irq < 0)
->> -        return irq;
->> +    if (irq < 0) {
->> +        ret = irq;
->> +        goto err_out_clk_disable;
->> +    }
->>       of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
->>       if (meson_ports[pdev->id]) {
->>           dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
->> -        return -EBUSY;
->> +        ret = -EBUSY;
->> +        goto err_out_clk_disable;
->>       }
->>       port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), 
->> GFP_KERNEL);
->> -    if (!port)
->> -        return -ENOMEM;
->> +    if (!port) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
->> -    if (IS_ERR(port->membase))
->> -        return PTR_ERR(port->membase);
->> +    if (IS_ERR(port->membase)) {
->> +        ret = PTR_ERR(port->membase);
->> +        goto err_out_clk_disable;
->> +    }
->>       private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->>                       GFP_KERNEL);
->> -    if (!private_data)
->> -        return -ENOMEM;
->> +    if (!private_data) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       if (device_get_match_data(&pdev->dev))
->>           private_data->use_xtal_clk = true;
->> @@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device 
->> *pdev)
->>       ret = meson_uart_probe_clocks(port);
->>       if (ret)
->> -        return ret;
->> +        goto err_out_clk_disable;
->>       meson_ports[pdev->id] = port;
->>       platform_set_drvdata(pdev, port);
->> @@ -831,9 +840,15 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>       meson_uart_reset(port);
->>       ret = uart_add_one_port(&meson_uart_driver, port);
->> -    if (ret)
->> +    if (ret) {
->>           meson_ports[pdev->id] = NULL;
->> +        goto err_out_clk_disable;
->> +    }
->> +
->> +    return 0;
->> +err_out_clk_disable:
->> +    clk_disable_unprepare(pclk);
->>       return ret;
->>   }
->>
->> base-commit: c2faf737abfb10f88f2d2612d573e9edc3c42c37
-> 
+A particular sysrq handler is only marked as NMI safe in case the handler
+isn't contending for any synchronization primitives as in NMI context
+they are expected to cause deadlocks. Note that the debug sysrq do not
+contend for any synchronization primitives. It does call kgdb_breakpoint()
+to provoke a trap but that trap handler should be NMI safe on
+architectures that implement an NMI.
+
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+---
+
+Hi Hitomi Hasegawa,
+
+Give this patch a try with diagnostic pseudo NMI interrupt on A64FX and
+let me know if it works for you. Also, feel free to include this patch
+along with your driver patch.
+
+-Sumit
+
+Changes in v3:
+- Extend commit message to include use-cases.
+- Get rid of redundant kfifo stuff.
+- Incorporate other misc. feedback from Peter Z.
+
+Changes in v2:
+- Rebased to 5.17-rc5.
+- Separate this patch from complete patch-set [1] as its relevant for
+  other diagnostic NMI interrupts [2] as well apart from uart NMI
+  interrupts.
+- Incorporated suggestions from Doug.
+
+[1] https://lore.kernel.org/linux-arm-kernel/CAFA6WYOWHgmYYt=KGXDh2hKiuy_rQbJfi279ev0+s-Qh7L21kA@mail.gmail.com/t/#m2b5006f08581448020eb24566927a104d0b95c44
+[2] https://lore.kernel.org/all/Yhi0rrkSR63ZhjX1@kroah.com/T/
+
+ drivers/tty/sysrq.c       | 45 ++++++++++++++++++++++++++++++++++++++-
+ include/linux/sysrq.h     |  1 +
+ kernel/debug/debug_core.c |  1 +
+ 3 files changed, 46 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index bbfd004449b5..40cd492fe6ec 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -51,6 +51,7 @@
+ #include <linux/syscalls.h>
+ #include <linux/of.h>
+ #include <linux/rcupdate.h>
++#include <linux/irq_work.h>
+ 
+ #include <asm/ptrace.h>
+ #include <asm/irq_regs.h>
+@@ -112,6 +113,7 @@ static const struct sysrq_key_op sysrq_loglevel_op = {
+ 	.help_msg	= "loglevel(0-9)",
+ 	.action_msg	= "Changing Loglevel",
+ 	.enable_mask	= SYSRQ_ENABLE_LOG,
++	.nmi_safe	= true,
+ };
+ 
+ #ifdef CONFIG_VT
+@@ -159,6 +161,7 @@ static const struct sysrq_key_op sysrq_crash_op = {
+ 	.help_msg	= "crash(c)",
+ 	.action_msg	= "Trigger a crash",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ 
+ static void sysrq_handle_reboot(int key)
+@@ -172,6 +175,7 @@ static const struct sysrq_key_op sysrq_reboot_op = {
+ 	.help_msg	= "reboot(b)",
+ 	.action_msg	= "Resetting",
+ 	.enable_mask	= SYSRQ_ENABLE_BOOT,
++	.nmi_safe	= true,
+ };
+ 
+ const struct sysrq_key_op *__sysrq_reboot_op = &sysrq_reboot_op;
+@@ -219,6 +223,7 @@ static const struct sysrq_key_op sysrq_showlocks_op = {
+ 	.handler	= sysrq_handle_showlocks,
+ 	.help_msg	= "show-all-locks(d)",
+ 	.action_msg	= "Show Locks Held",
++	.nmi_safe	= true,
+ };
+ #else
+ #define sysrq_showlocks_op (*(const struct sysrq_key_op *)NULL)
+@@ -291,6 +296,7 @@ static const struct sysrq_key_op sysrq_showregs_op = {
+ 	.help_msg	= "show-registers(p)",
+ 	.action_msg	= "Show Regs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ 
+ static void sysrq_handle_showstate(int key)
+@@ -328,6 +334,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
+ 	.help_msg	= "dump-ftrace-buffer(z)",
+ 	.action_msg	= "Dump ftrace buffer",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
++	.nmi_safe	= true,
+ };
+ #else
+ #define sysrq_ftrace_dump_op (*(const struct sysrq_key_op *)NULL)
+@@ -566,6 +573,32 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
+ 		sysrq_key_table[i] = op_p;
+ }
+ 
++static int sysrq_nmi_key = -1;
++
++static void sysrq_do_irq_work(struct irq_work *work)
++{
++	const struct sysrq_key_op *op_p;
++	int orig_suppress_printk;
++
++	orig_suppress_printk = suppress_printk;
++	suppress_printk = 0;
++
++	rcu_sysrq_start();
++	rcu_read_lock();
++
++	op_p = __sysrq_get_key_op(sysrq_nmi_key);
++	if (op_p)
++		op_p->handler(sysrq_nmi_key);
++
++	rcu_read_unlock();
++	rcu_sysrq_end();
++
++	suppress_printk = orig_suppress_printk;
++	sysrq_nmi_key = -1;
++}
++
++static DEFINE_IRQ_WORK(sysrq_irq_work, sysrq_do_irq_work);
++
+ void __handle_sysrq(int key, bool check_mask)
+ {
+ 	const struct sysrq_key_op *op_p;
+@@ -573,6 +606,10 @@ void __handle_sysrq(int key, bool check_mask)
+ 	int orig_suppress_printk;
+ 	int i;
+ 
++	/* Skip sysrq handling if one already in progress */
++	if (sysrq_nmi_key != -1)
++		return;
++
+ 	orig_suppress_printk = suppress_printk;
+ 	suppress_printk = 0;
+ 
+@@ -596,7 +633,13 @@ void __handle_sysrq(int key, bool check_mask)
+ 		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
+ 			pr_info("%s\n", op_p->action_msg);
+ 			console_loglevel = orig_log_level;
+-			op_p->handler(key);
++
++			if (in_nmi() && !op_p->nmi_safe) {
++				sysrq_nmi_key = key;
++				irq_work_queue(&sysrq_irq_work);
++			} else {
++				op_p->handler(key);
++			}
+ 		} else {
+ 			pr_info("This sysrq operation is disabled.\n");
+ 			console_loglevel = orig_log_level;
+diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
+index 3a582ec7a2f1..630b5b9dc225 100644
+--- a/include/linux/sysrq.h
++++ b/include/linux/sysrq.h
+@@ -34,6 +34,7 @@ struct sysrq_key_op {
+ 	const char * const help_msg;
+ 	const char * const action_msg;
+ 	const int enable_mask;
++	const bool nmi_safe;
+ };
+ 
+ #ifdef CONFIG_MAGIC_SYSRQ
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index da06a5553835..53b56114f59b 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -978,6 +978,7 @@ static const struct sysrq_key_op sysrq_dbg_op = {
+ 	.handler	= sysrq_handle_dbg,
+ 	.help_msg	= "debug(g)",
+ 	.action_msg	= "DEBUG",
++	.nmi_safe	= true,
+ };
+ #endif
+ 
+-- 
+2.25.1
+
