@@ -2,170 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD76C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 14:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89511C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 16:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237184AbiB1OhA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:37:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S237568AbiB1QRk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236988AbiB1Og6 (ORCPT
+        with ESMTP id S231499AbiB1QRi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:36:58 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD2C7ED97;
-        Mon, 28 Feb 2022 06:36:18 -0800 (PST)
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 28 Feb
- 2022 22:36:16 +0800
-Message-ID: <a5f19d36-f3b4-f78e-8cff-6062412426f0@amlogic.com>
-Date:   Mon, 28 Feb 2022 22:36:15 +0800
+        Mon, 28 Feb 2022 11:17:38 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BE847066
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 08:16:59 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id y24so22268725lfg.1
+        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 08:16:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IRc/v5RBhjywblCaCu+qbO7MMR+S4MDqe0h9NB7l5U4=;
+        b=qlvqPJLnwrw7v4sX5xzvIhieHQlASu2+KK8v/TE0ycWHA4g0hKZzF8AQIhmfPdWZ/X
+         Jzr3qYL9R8XGmXmWplbuJrwDXWVI39bTF4/Ce2BAMfG22MYlXnGFR/PrcgwIwPvcrN4k
+         nJ+HtLG6CeWccZEuOFd6WJ+ivGt0OKv4OUwjF2YB6CP2JpHE3nsVaJw9E01q3G39bD11
+         r3P0oixp2Bf7o+l6g7li6dfpheKa9NQMGZiiA3u1DC6S3V01K6hFVAgYO5YM7TXu8jnj
+         2Z/jwMgHEenqSLB5EzjYBm0EiVJrKCU4OgTSGnmmwqmPdNAOHT6Rk8ivhmSmkytAsIte
+         AsTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IRc/v5RBhjywblCaCu+qbO7MMR+S4MDqe0h9NB7l5U4=;
+        b=7SEqrBrdGC2ZGyelxE5Xxwju6b045IDA0ycDFZV8bytK5OIZkch08+8lL0WrwdfJsa
+         mOMcmNKmI+1vn8knc2HeIfv76Rq10HY28imkFHFkLDyvM+NSUBuMPAjyG9hf/8QlBvV1
+         z5URtnlNk4/8+w9c6hKobyBDup24DuqowCmKoIA2Dzl8eI1WoD8UGKRqgpR5XNX5dnFr
+         8M82/1mn01AAIKRLsqX3d15niRwJQS3JtZAzkaXEHsHucZg0FgtsZf/OWsmhoRjRkUI8
+         AOvhdkQfB4mhP6i5JNp46y7siQoNh+0PMrbJE0h7fMZU5xnrjEebdmsLaBcX0J2IqoDR
+         o7zg==
+X-Gm-Message-State: AOAM532c+WrI8J/int7EgwH5+Xw38zE49Wrc4hJopkMeIa00MvUQlM3r
+        Y1J4NU3sWC5B5xH5/dbX/6bSvhZXtPiAfZ3M//i7j1b3DBk=
+X-Google-Smtp-Source: ABdhPJxSQGBBJL92fuhW6DLKJM3Nt6JMGwDv/3OLpLHw0RkJjKg+R2Fli+O5NmMNwoO2Z7eoGqDHcs7xf0MY7TG70Vc=
+X-Received: by 2002:ac2:5de4:0:b0:443:5b80:d4c4 with SMTP id
+ z4-20020ac25de4000000b004435b80d4c4mr13014007lfq.373.1646065016130; Mon, 28
+ Feb 2022 08:16:56 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220228135530.6918-1-yu.tu@amlogic.com>
- <29b34655-f820-39c9-4363-878481cd3f63@baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <29b34655-f820-39c9-4363-878481cd3f63@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+References: <20220224095517.30872-1-jslaby@suse.cz> <20220224095558.30929-1-jslaby@suse.cz>
+ <20220224095558.30929-4-jslaby@suse.cz>
+In-Reply-To: <20220224095558.30929-4-jslaby@suse.cz>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 28 Feb 2022 17:16:20 +0100
+Message-ID: <CAPDyKFqHLQ8YTc3wzaFOdAA7Ay9RBEfdQC5uN574=oMavi6iCQ@mail.gmail.com>
+Subject: Re: [PATCH 4/5] sdio_uart: make use of UART_LCR_WLEN() + tty_get_char_size()
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Thu, 24 Feb 2022 at 10:56, Jiri Slaby <jslaby@suse.cz> wrote:
+>
+> Having a generic UART_LCR_WLEN() macro and the tty_get_char_size()
+> helper, we can remove all those repeated switch-cases in drivers.
+>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: linux-mmc@vger.kernel.org
 
-On 2022/2/28 22:13, Neil Armstrong wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> Hi,
-> 
-> On 28/02/2022 14:55, Yu Tu wrote:
->> Describes the calculation of the UART baud rate clock using a clock
->> frame. Forgot to add in Kconfig kernel test Robot compilation error
->> due to COMMON_CLK dependency.
->>
->> Fixes: ("tty: serial:meson: Describes the calculation of the UART baud 
->> rate clock using a clock frame“)
-> 
-> As I already replied on V2 of this patch, you're invited to apply these 
-> fixes directly
-> on the next version of your "Use CCF to describe the UART baud rate 
-> clock" patchset
-> and not as a separate patch.
-> 
-Sorry, I don't understand what you mean. Could you be more specific?
-> Thanks,
-> Neil
-> 
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   drivers/tty/serial/Kconfig      |  1 +
->>   drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
->>   2 files changed, 27 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->> index e952ec5c7a7c..a0f2b82fc18b 100644
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
->>   config SERIAL_MESON
->>       tristate "Meson serial port support"
->>       depends on ARCH_MESON || COMPILE_TEST
->> +    depends on COMMON_CLK
->>       select SERIAL_CORE
->>       help
->>         This enables the driver for the on-chip UARTs of the Amlogic
->> diff --git a/drivers/tty/serial/meson_uart.c 
->> b/drivers/tty/serial/meson_uart.c
->> index bf6be5468aaf..972f210f3492 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -780,28 +780,37 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>           return ret;
->>       irq = platform_get_irq(pdev, 0);
->> -    if (irq < 0)
->> -        return irq;
->> +    if (irq < 0) {
->> +        ret = irq;
->> +        goto err_out_clk_disable;
->> +    }
->>       of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
->>       if (meson_ports[pdev->id]) {
->>           dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
->> -        return -EBUSY;
->> +        ret = -EBUSY;
->> +        goto err_out_clk_disable;
->>       }
->>       port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), 
->> GFP_KERNEL);
->> -    if (!port)
->> -        return -ENOMEM;
->> +    if (!port) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
->> -    if (IS_ERR(port->membase))
->> -        return PTR_ERR(port->membase);
->> +    if (IS_ERR(port->membase)) {
->> +        ret = PTR_ERR(port->membase);
->> +        goto err_out_clk_disable;
->> +    }
->>       private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->>                       GFP_KERNEL);
->> -    if (!private_data)
->> -        return -ENOMEM;
->> +    if (!private_data) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       if (device_get_match_data(&pdev->dev))
->>           private_data->use_xtal_clk = true;
->> @@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device 
->> *pdev)
->>       ret = meson_uart_probe_clocks(port);
->>       if (ret)
->> -        return ret;
->> +        goto err_out_clk_disable;
->>       meson_ports[pdev->id] = port;
->>       platform_set_drvdata(pdev, port);
->> @@ -831,9 +840,15 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>       meson_uart_reset(port);
->>       ret = uart_add_one_port(&meson_uart_driver, port);
->> -    if (ret)
->> +    if (ret) {
->>           meson_ports[pdev->id] = NULL;
->> +        goto err_out_clk_disable;
->> +    }
->> +
->> +    return 0;
->> +err_out_clk_disable:
->> +    clk_disable_unprepare(pclk);
->>       return ret;
->>   }
->>
->> base-commit: c2faf737abfb10f88f2d2612d573e9edc3c42c37
-> 
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+
+Kind regards
+Uffe
+
+> ---
+>  drivers/mmc/core/sdio_uart.c | 16 +---------------
+>  1 file changed, 1 insertion(+), 15 deletions(-)
+>
+> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
+> index 04c0823e0359..e6eb5bd6e440 100644
+> --- a/drivers/mmc/core/sdio_uart.c
+> +++ b/drivers/mmc/core/sdio_uart.c
+> @@ -250,21 +250,7 @@ static void sdio_uart_change_speed(struct sdio_uart_port *port,
+>         unsigned char cval, fcr = 0;
+>         unsigned int baud, quot;
+>
+> -       switch (termios->c_cflag & CSIZE) {
+> -       case CS5:
+> -               cval = UART_LCR_WLEN5;
+> -               break;
+> -       case CS6:
+> -               cval = UART_LCR_WLEN6;
+> -               break;
+> -       case CS7:
+> -               cval = UART_LCR_WLEN7;
+> -               break;
+> -       default:
+> -       case CS8:
+> -               cval = UART_LCR_WLEN8;
+> -               break;
+> -       }
+> +       cval = UART_LCR_WLEN(tty_get_char_size(termios->c_cflag));
+>
+>         if (termios->c_cflag & CSTOPB)
+>                 cval |= UART_LCR_STOP;
+> --
+> 2.35.1
+>
