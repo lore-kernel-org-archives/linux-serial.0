@@ -2,94 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE96C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 02:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718D0C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 03:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232749AbiB1ClN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:41:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
+        id S232513AbiB1Dyr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 27 Feb 2022 22:54:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbiB1Ck6 (ORCPT
+        with ESMTP id S229671AbiB1Dyq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:40:58 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD3A6D84C;
-        Sun, 27 Feb 2022 18:40:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1646015993;
-        bh=TpdW3ujSzU0TXKj+hjSJqItA5IWaO0lajrfotqHvNTE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=SHDpFx/t87YD4N39Vn0qmonme2X2chHIAI7X3OefweS/IUkys5tCyBcHo7Td1Lv7v
-         8L+mKBznQMuaBoBuDtrf4Nuqxi5yDdtCt5jJgVYzMG9mWinpHOQbCBb/hEmb65u1xV
-         jZ6CS6XQaXj7nlhKdn94u+MPeC3k9hRRsihy9jBM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mg6Zq-1nqglD2Osw-00hbbS; Mon, 28
- Feb 2022 03:39:53 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v4 4/9] serial: sc16is7xx: remove redundant check in rs485_config
-Date:   Mon, 28 Feb 2022 03:39:23 +0100
-Message-Id: <20220228023928.1067-5-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228023928.1067-1-LinoSanfilippo@gmx.de>
-References: <20220228023928.1067-1-LinoSanfilippo@gmx.de>
+        Sun, 27 Feb 2022 22:54:46 -0500
+X-Greylist: delayed 282 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 19:54:07 PST
+Received: from a27-55.smtp-out.us-west-2.amazonses.com (a27-55.smtp-out.us-west-2.amazonses.com [54.240.27.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35531CB0F
+        for <linux-serial@vger.kernel.org>; Sun, 27 Feb 2022 19:54:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=wibyx6k4776gkgupnvcppjx4pnd5g6fd; d=marufukuro.com; t=1646020164;
+        h=To:Subject:Date:From:Reply-To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=79ILiVbeUZvBCB+e/hl2ZkEFnsSfwXo6dN4zAazQqwE=;
+        b=KY42aWFyMeoytT5UsUx/CF+SEAoXpL6iN6O0ifRA7jKDJpaYgKNAfrqjtlT8m/8d
+        BtPAvPBXKcaVRdPsL5V5Z41xUsHRLMiJOzsylbuyoNmX0vEpVn85vdY/C7j2yH9ViQc
+        P6XXECIdN4NTrtfgqc0RVtCaDX1q8gLkaD+L/07iai2g6YAgwwvHq6tzcQXMOi2i339
+        VOYgyruaKHkK03KOgZORwns/WQz+vFSeTJdJG8E08OdDqQ7ilmVJDV3IiQEAxRp9yt0
+        NcPWX6IdFO8fjwPKvm8DByf8XuKMDfw/F9GYhymXs2i/oq7a2ejXl0HxqNU/Euncn4k
+        O0oj5Og76A==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=7v7vs6w47njt4pimodk5mmttbegzsi6n; d=amazonses.com; t=1646020164;
+        h=To:Subject:Date:From:Reply-To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+        bh=79ILiVbeUZvBCB+e/hl2ZkEFnsSfwXo6dN4zAazQqwE=;
+        b=Jov8qeo8b4+GaH7tSRVxSFdr5JwM8kE9zq/AmuHGsKZhreYG0oDENpS+a4Y7vIKG
+        uHDc3xrRfzRUAvwUGNnVDI+O/K/rir+OIXmE2hTfREWWJj2ohUkrkN9Qr2uMy/12JHQ
+        8a0y9mi0GLU3s70YCD7Y1sMgqivYcuziNuwFSSWw=
+To:     linux-serial@vger.kernel.org
+Subject: =?UTF-8?Q?=E3=80=90Auto_Reply=E3=80=91Thank_you_for_contacti?=  =?UTF-8?Q?ng_MARUFUKURO?=
+X-PHP-Originating-Script: 1002:PHPMailer.php
+Date:   Mon, 28 Feb 2022 03:49:24 +0000
+From:   MARUFUKURO <info@marufukuro.com>
+Reply-To: info@marufukuro.com
+Message-ID: <0101017f3e727c0a-6e741b80-613a-4e45-9db7-08e54c091417-000000@us-west-2.amazonses.com>
+X-Mailer: PHPMailer 6.5.0 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:oSVWg5rBCqpWa6pMX1jUqajlxQKq82aAt/AFQNSu3Xr1YF5rLO9
- gIRovRZ9arcEguHqRVmFa3sxRXd6jVcPN07+t4pnm2iAQK+CpO+iRq9oIssAlL98vv+w0Pa
- x0WkPFDbMq2uF4t1IG+E98MuZpzZJYyVNe1FdI38bQMUme4ePfskpdr9xmdBh3Z/S3kxt/Y
- A4UthJuyuD4JeA4DkJvWw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:46l4yZiWaho=:rgAJEltv7CEBl925Gvl0Ze
- 1Fq0F86+Azyy+VB5eCzIfVhub8QX2MJqWr/D2X5AXXjZkiLpn4FV1fnsr0pAv+yDc91HPlL9Y
- nqZWCNMiNfyelGzNfyIqwc760ISN9pBZv0JLt77KXDYnP6dzwiGE0wfowNzkHcQapWKUbxwy8
- YUckouXi++aouCIoCRZCwZUp3HWmcQp8lNprg1ixTNCqbtBNAxfPa+ndFTHzaHScYZTrogD3X
- yQT4Yw/KHM8+2v8o0SjZ5FxLgP2b1FQkN/RXvz1jCKYEfB/YMFTVmsAaOsnQeIND0ce5vPoFE
- r9ND3ZgBMNAed3kDr53GDHvvMwJqHx8LOKlfggds7Inm08/vIrEa/vx8i/EzoygAXs7uUW0kF
- Wssz4AbeXclEQYj5ebrInEzC6UdZEqhilOatkUQPyvLgDTHxQ4fuzRpEMIHp4XNK6N/t174MH
- Cn93zISM7GPL5+lgcdO5hmr+L0rEtSMU6DgieP2no/XuXiAwDHmYXOZqKNNDpV0AMMBTjg/IK
- 6jYKzcXlGhsCLWkWbAHkvuu1mgYMKLjg/J5BLWZNt7QwWcaIphn6R5jZeTnYfCHK+ULZ1jhH8
- f4pmlH20WmnlD0jBrpzX15U4imbKzFAh+BhIeNpxAzy5A25APWDtFQNrEuYokC12cj1Au8J/3
- 6WHhJI81t6aNVLLWtvD5LOzubHNrvzOXo3rSxyiYTcLTvbPlMXjvdBAlfzIi5PZYsIA3J/0XU
- Zp/uE/Au+tMn8rnrQ6SEUIbdY3yckErUWQTPIm60ZxQpF3P8eGTgyngam4OtdaA9PN4njY+5O
- so5BT5310JJoe3R49rHyEXTepsUreB2uKm8sKkaU9o/7KpQkgLOBnCsTrXhPirHSmQtf+j3dv
- fIfD4Ye/9gGYqE0qOBjm3edIfRSi5yVevTNkFdvkqAyMip81Op8bcfwCXsy3X6j0FDHNGXs6+
- I7kjs+7gIReooFF0KZwm5xgYWYpq3aMe1XiwMDyGaNyJku4Vh3HJeQ3wryzSK7JZ8vRd11c94
- GwoqbsymVyx4KbVM1fyuywBSP2sBYkxznP0SvCT0MoNmctMlvnZ95TlsGhLyW2geBCOa1e3Gw
- +J2WXUMF8vHeyA=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Feedback-ID: 1.us-west-2.PWNbKGXueUPPPr3c18phg7oiEsXaLY8mDftr/7LJpig=:AmazonSES
+X-SES-Outgoing: 2022.02.28-54.240.27.55
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgZW5zdXJl
-cyB0aGF0IG9ubHkgb25lIG9mCmJvdGggb3B0aW9ucyBSVFMgb24gc2VuZCBvciBSVFMgYWZ0ZXIg
-c2VuZCBpcyBzZXQuCgpTbyByZW1vdmUgdGhpcyBjaGVjayBmcm9tIHRoZSBkcml2ZXJzIHJzNDg1
-X2NvbmZpZygpIGZ1bmN0aW9uIHRvIGF2b2lkCnJlZHVuZGFuY3kuCgpTaWduZWQtb2ZmLWJ5OiBM
-aW5vIFNhbmZpbGlwcG8gPExpbm9TYW5maWxpcHBvQGdteC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9z
-ZXJpYWwvc2MxNmlzN3h4LmMgfCAxMCAtLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTAgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCmluZGV4IGI3YTJkYjljMDNlMi4uYjRlNjZh
-MzIyYTU4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCkBAIC05ODMsMTYgKzk4Myw2IEBAIHN0YXRp
-YyBpbnQgc2MxNmlzN3h4X2NvbmZpZ19yczQ4NShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LAogCXN0
-cnVjdCBzYzE2aXM3eHhfb25lICpvbmUgPSB0b19zYzE2aXM3eHhfb25lKHBvcnQsIHBvcnQpOwog
-CiAJaWYgKHJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7Ci0JCWJvb2wgcnRzX2R1
-cmluZ19yeCwgcnRzX2R1cmluZ190eDsKLQotCQlydHNfZHVyaW5nX3J4ID0gcnM0ODUtPmZsYWdz
-ICYgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EOwotCQlydHNfZHVyaW5nX3R4ID0gcnM0ODUtPmZs
-YWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EOwotCi0JCWlmIChydHNfZHVyaW5nX3J4ID09IHJ0
-c19kdXJpbmdfdHgpCi0JCQlkZXZfZXJyKHBvcnQtPmRldiwKLQkJCQkidW5zdXBwb3J0ZWQgUlRT
-IHNpZ25hbGxpbmcgb25fc2VuZDolZCBhZnRlcl9zZW5kOiVkIC0gZXhhY3RseSBvbmUgb2YgUlM0
-ODUgUlRTIGZsYWdzIHNob3VsZCBiZSBzZXRcbiIsCi0JCQkJcnRzX2R1cmluZ190eCwgcnRzX2R1
-cmluZ19yeCk7Ci0KIAkJLyoKIAkJICogUlRTIHNpZ25hbCBpcyBoYW5kbGVkIGJ5IEhXLCBpdCdz
-IHRpbWluZyBjYW4ndCBiZSBpbmZsdWVuY2VkLgogCQkgKiBIb3dldmVyLCBpdCdzIHNvbWV0aW1l
-cyB1c2VmdWwgdG8gZGVsYXkgVFggZXZlbiB3aXRob3V0IFJUUwotLSAKMi4zNS4xCgo=
+Thank you for contacting MARUFUKURO. 
+We will reply to you within 3 business days. 
+ーーーーーーーーーーーーーーーーーーーーーーーーー
+Inquiry number: 43328
+Name: ❤️ You have unread messages from Megan (2)! Click Here: https://bit.ly/3hlho06?olm2 ❤️
+Email Address: linux-serial@vger.kernel.org
+Phone number: 183857715644
+Company: 86kmay
+Inquiries: 
+4xplqv
+ーーーーーーーーーーーーーーーーーーーーーーーーー
+▼Please delete this email if you do not recognize it. 
+▼MARUFUKURO Pre-opening Office 
+info@marufukuro.com
+050-1741-3880 (10:00~17:00)
+
