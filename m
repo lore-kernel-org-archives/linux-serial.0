@@ -2,113 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C8DC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 11:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875C9C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 12:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiB1L1N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:27:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        id S231761AbiB1MIl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:08:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiB1L1M (ORCPT
+        with ESMTP id S236263AbiB1MI3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:27:12 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5DA43ECF;
-        Mon, 28 Feb 2022 03:26:33 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id d17so14856118wrc.9;
-        Mon, 28 Feb 2022 03:26:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0nOl9Gu2cS+40aKnl77MAdTBzkl+e2ajXLPqa1328c4=;
-        b=RF4z69yluICtYu1fuLZaU5ixtaQDPyAtJIV6s7TbYCPDKfko8sreM/MwfRn1VCiVB0
-         TSDCP5j9Bnpu2IOzh061GbVz6HMuZpuN1R0Vg3dYvBkElL2SqQ+XsqzJS/AaEkhVxfw8
-         wjb/fCMdjSlcZ3gLtLUiAjcGxqyIgkLiSdPfg+MVpcYvPygMabCcQirectYD9SNiQcC7
-         fB60JFiWqd2xEG7hLjg/wCYtRsDbH6QLwiQ9J5RvnUl6+lgM0nvbbnxwSaHUGPVp7fQK
-         56bQlW4K55lgpwfxgKyCGG7EdXEhk/UsWnq8TC5BCaqrtBDDWNQ6IyZV0/E/JCHjALLN
-         Qhig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0nOl9Gu2cS+40aKnl77MAdTBzkl+e2ajXLPqa1328c4=;
-        b=OQ6nHNInaNeEhA1OeT+jT8rX6pJrkTWX1/yI/HOpUtZ6KnQYFHRTjDNzQo3OOmeV0A
-         GHIrA+8tNCfJgJoir/Aifoyag3BlIGnv0+5LOPItWbIljH5K2fMOAWaAA9JfZ89ZvWUR
-         SmjYaZ/5T3iunaO1ZIvCn5o0JKY0hBxtAB84X/YLo79EKzvU/pj9Ca33vprLUMsKFlEU
-         ovGsq1/xm4t9SIEv4AnhW0IQUhBxd1inGPaUmPRXfsJZOxXMfSK96iSpvchoS0Wu4oOh
-         oYf4duIMPMtfwLIOQ/pxRUDH7p89uNAg0y9fJcmlJflTbRbTqUm4NJfrWBaRA6q6H718
-         +EJg==
-X-Gm-Message-State: AOAM530QV0klwOa0eu3ahINz8/R7sMDJD2c6HJo4RyqQEkVsrBq320Sw
-        JwvUCeCQS4BdpInXYmHzLI8=
-X-Google-Smtp-Source: ABdhPJyEN3IVhZ9CqchTTNuRDYhwp5BAWHwjBXE4AYXcGoAFKxxj9OkPswk656aj1zqS3OkJFo7PcQ==
-X-Received: by 2002:a05:6000:1c0b:b0:1ef:f0cc:6e53 with SMTP id ba11-20020a0560001c0b00b001eff0cc6e53mr1225544wrb.715.1646047592597;
-        Mon, 28 Feb 2022 03:26:32 -0800 (PST)
-Received: from [192.168.0.14] (static-63-182-85-188.ipcom.comunitel.net. [188.85.182.63])
-        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm9847832wrw.49.2022.02.28.03.26.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 03:26:31 -0800 (PST)
-Message-ID: <530f6169-afdb-8242-f4b4-54a54a73948b@gmail.com>
-Date:   Mon, 28 Feb 2022 12:26:30 +0100
+        Mon, 28 Feb 2022 07:08:29 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC95FD3D;
+        Mon, 28 Feb 2022 04:07:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=F3eTU03pb76E1ORP3hb/KpZsjDGhzZCbE56yzxqP8q4=; b=JN3jrRBpX2T88x6YqGvSH9chlW
+        JQ1HApPsnmw/Z2eJORa/9yH42lJoXMCBTKkO0oL61dOUXdUBOx93wTr8bN9LBxACbVjHEvcVbD3De
+        /HQZyf6z7tUvM3j1BbTuYk1R9GNNE2WdsqvR76prGUV6PQdDjPbGhgeMQF2CMIAy3tTPqHKfZWm0L
+        PfKRF8M3qLXVsRB+4nqws9Lx4YavRanPh1K7pT64rPJ2zA9P80Ku6kcamz003Gd54ixZicmQ02a2P
+        BTRJSXx+t7Y14NljhBdlf8Ydu3jx0i8AQdMIkiJ573RlE4EsTIiEb1oU9G8/t5ROuP2Cokh9ejbTm
+        fh7HIm2g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOeoQ-008U6Q-1m; Mon, 28 Feb 2022 12:07:34 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6B716300390;
+        Mon, 28 Feb 2022 13:07:30 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 5575120244B2C; Mon, 28 Feb 2022 13:07:30 +0100 (CET)
+Date:   Mon, 28 Feb 2022 13:07:30 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, arnd@arndb.de
+Subject: Re: [RFT v2] tty/sysrq: Make sysrq handler NMI aware
+Message-ID: <Yhy7AnwEMqbcKsEg@hirez.programming.kicks-ass.net>
+References: <20220228075351.1412452-1-sumit.garg@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 1/7] dt-bindings: timer: Add compatible for Mediatek
- MT8186
-Content-Language: en-US
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     hsinyi@chromium.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <20220128062050.23978-1-allen-kh.cheng@mediatek.com>
- <20220128062050.23978-2-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220128062050.23978-2-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228075351.1412452-1-sumit.garg@linaro.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 01:23:51PM +0530, Sumit Garg wrote:
+> Allow a magic sysrq to be triggered from an NMI context. This is done
+
+*why* though?
 
 
-On 28/01/2022 07:20, allen-kh.cheng wrote:
-> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
-> 
-> This commit adds dt-binding documentation of timer for Mediatek MT8186 SoC
-> Platform.
-> 
-> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> +#define SYSRQ_NMI_FIFO_SIZE	2
+> +static DEFINE_KFIFO(sysrq_nmi_fifo, int, SYSRQ_NMI_FIFO_SIZE);
+> +
+> +static void sysrq_do_nmi_work(struct irq_work *work)
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+That naming don't make sense, it does the !NMI work, from IRQ context.
 
-> ---
->   Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> index e5c57d6e0186..e0d20d6adf81 100644
-> --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-> @@ -22,6 +22,7 @@ Required properties:
->   
->   	For those SoCs that use SYST
->   	* "mediatek,mt8183-timer" for MT8183 compatible timers (SYST)
-> +	* "mediatek,mt8186-timer" for MT8186 compatible timers (SYST)
->   	* "mediatek,mt8192-timer" for MT8192 compatible timers (SYST)
->   	* "mediatek,mt8195-timer" for MT8195 compatible timers (SYST)
->   	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
+> +{
+> +	const struct sysrq_key_op *op_p;
+> +	int orig_suppress_printk;
+> +	int key;
+> +
+> +	orig_suppress_printk = suppress_printk;
+> +	suppress_printk = 0;
+> +
+> +	rcu_sysrq_start();
+> +	rcu_read_lock();
+> +
+> +	if (kfifo_peek(&sysrq_nmi_fifo, &key)) {
+> +		op_p = __sysrq_get_key_op(key);
+> +		if (op_p)
+> +			op_p->handler(key);
+> +	}
+> +
+> +	rcu_read_unlock();
+> +	rcu_sysrq_end();
+> +
+> +	suppress_printk = orig_suppress_printk;
+> +
+> +	kfifo_reset_out(&sysrq_nmi_fifo);
+> +}
+> +
+> +static DEFINE_IRQ_WORK(sysrq_nmi_work, sysrq_do_nmi_work);
+> +
+>  void __handle_sysrq(int key, bool check_mask)
+>  {
+>  	const struct sysrq_key_op *op_p;
+> @@ -573,6 +612,10 @@ void __handle_sysrq(int key, bool check_mask)
+>  	int orig_suppress_printk;
+>  	int i;
+>  
+> +	/* Skip sysrq handling if one already in progress */
+> +	if (!kfifo_is_empty(&sysrq_nmi_fifo))
+> +		return;
+> +
+>  	orig_suppress_printk = suppress_printk;
+>  	suppress_printk = 0;
+>  
+> @@ -596,7 +639,13 @@ void __handle_sysrq(int key, bool check_mask)
+>  		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
+>  			pr_info("%s\n", op_p->action_msg);
+>  			console_loglevel = orig_log_level;
+> -			op_p->handler(key);
+> +
+> +			if (in_nmi() && !op_p->nmi_safe) {
+> +				kfifo_put(&sysrq_nmi_fifo, key);
+> +				irq_work_queue(&sysrq_nmi_work);
+> +			} else {
+> +				op_p->handler(key);
+> +			}
+>  		} else {
+>  			pr_info("This sysrq operation is disabled.\n");
+>  			console_loglevel = orig_log_level;
+
+I'm missing the point of that kfifo stuff; afaict it only ever buffers
+_1_ key, might as well use a simple variable, no?
