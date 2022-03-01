@@ -2,125 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC661C43217
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 07:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4109C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 07:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbiCAH00 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
+        id S233068AbiCAHms (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:42:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiCAH0Z (ORCPT
+        with ESMTP id S233069AbiCAHmr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:26:25 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BDE65839
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 23:25:44 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id y5so7001500wmi.0
-        for <linux-serial@vger.kernel.org>; Mon, 28 Feb 2022 23:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lgShEMbe7vRdrN6QBiEdN6/EREpU6sk6kDTuE/CbUr8=;
-        b=6tCeTF8VnbDBKafChKUsHY1xHg3YBEdEWOhdMctYjjI4TLxZnqROGWyTQbcOk+GTHS
-         05w/0hIuQfeh6ujJOyRC/82r/0+1CEi+/zjdijQCJIq13i/jHWzhcodRkdyKZiF1a8Kt
-         FIEQ5i70fzLupBu2lzyp9oOeM9v30LofaIq+M4TgGjjaj7jcIiBz/jZ4SsfbGgFQ9Ypk
-         9Y9VgLNWUOe30bOqyEyb71K3YREYy5i1KiCqYnbOrdSNaqMIU3GW7UjnDGWqdNa46R7i
-         PDMl0orncBt6FGGVGqX0Ma0lw1vo6U1Bhqm1vclKj3kgVf6Tvu6yKaT4aJ/dD+PDE/jR
-         p/Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lgShEMbe7vRdrN6QBiEdN6/EREpU6sk6kDTuE/CbUr8=;
-        b=QA7eIFA2kzIaxk/zKhLQYPTQPPGLo15YwgVi8/txxtLSL3QSO7AwlgGIKPDjv/rG03
-         DUPIZVADKERSZpTnP5neLDq20EHnAy4qbJgF98Nt0hMmG7QkesMpAgJ4exqgxe9uNXgP
-         fTnqjU5GUswdTJWbCjH8I7DE50k0cWmSL1V7XTmx5sZ24SQntzco59sNMHqjN9xco5da
-         W0DutNKCOnaqw2ooM86+1eoVkty1qi5jKtUdyLJE7LsgvWh1iv0uqQuZye/+swJazLhr
-         ljHdktji3LTIQqoPIbUTYXsAgDMINDwIKV2gXCgJ3upBjrNdGOBe4AJFrLD6it83+Oiq
-         praw==
-X-Gm-Message-State: AOAM5315BR1g6XUBO7cNvWzlOgf4/R2VUylYKA1oUlQUyxHgqR464R7y
-        goegWwL4giMci+b6WgI6vgTAHg==
-X-Google-Smtp-Source: ABdhPJyNbAr8Cf69lwIdgo4F56uDduS8cdEXP5PZvZfdLySabeTKIbqqWZ+VviQg2Dl9lc2TQrfkDA==
-X-Received: by 2002:a05:600c:a0a:b0:350:564b:d55e with SMTP id z10-20020a05600c0a0a00b00350564bd55emr15650054wmp.124.1646119543122;
-        Mon, 28 Feb 2022 23:25:43 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:f9e4:b6da:2b53:5858? ([2001:861:44c0:66c0:f9e4:b6da:2b53:5858])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05600c1c0700b0037c2c6d2a91sm1793781wms.2.2022.02.28.23.25.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 23:25:42 -0800 (PST)
-Message-ID: <849a95fd-ae81-9a3b-0c06-dd7826af9eb2@baylibre.com>
-Date:   Tue, 1 Mar 2022 08:25:41 +0100
+        Tue, 1 Mar 2022 02:42:47 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E417CDD5;
+        Mon, 28 Feb 2022 23:42:06 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K78Kq67k8zBrRV;
+        Tue,  1 Mar 2022 15:40:15 +0800 (CST)
+Received: from localhost.localdomain (10.175.102.38) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 15:42:03 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <weiyongjun1@huawei.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH -next] serial: mvebu-uart: fix return value check in mvebu_uart_clock_probe()
+Date:   Tue, 1 Mar 2022 07:58:06 +0000
+Message-ID: <20220301075806.3950108-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH V7 0/6] Use CCF to describe the UART baud rate clock
-Content-Language: fr
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220225073922.3947-1-yu.tu@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-In-Reply-To: <20220225073922.3947-1-yu.tu@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+In case of error, the function devm_ioremap() returns NULL pointer
+not ERR_PTR(). The IS_ERR() test in the return value check should
+be replaced with NULL test.
 
-Le 25/02/2022 à 08:39, Yu Tu a écrit :
-> Using the common Clock code to describe the UART baud rate
-> clock makes it easier for the UART driver to be compatible
-> with the baud rate requirements of the UART IP on different
-> meson chips. Add Meson S4 SoC compatible.
-> 
-> The test method:
-> Start the console and run the following commands in turn:
-> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600.
-> 
-> Since most SoCs are too old, I was able to find all the platforms myself
-> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with
-> G12A and S4.
-> 
-> Yu Tu (6):
->    tty: serial: meson: Move request the register region to probe
->    tty: serial: meson: Use devm_ioremap_resource to get register mapped
->      memory
->    tty: serial: meson: Describes the calculation of the UART baud rate
->      clock using a clock frame
->    tty: serial: meson: Make some bit of the REG5 register writable
->    tty: serial: meson: The system stuck when you run the stty command on
->      the console to change the baud rate
->    tty: serial: meson: Added S4 SOC compatibility
-> 
-> V6 -> V7: To solve the system stuck when you run the stty command on
-> the console to change the baud rate.
-> V5 -> V6: Change error format as discussed in the email.
-> V4 -> V5: Change error format.
-> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
-> in the email.
-> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
-> the DTS before it can be deleted
-> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
-> discussed in the email
-> 
-> Link:https://lore.kernel.org/linux-amlogic/20220118030911.12815-4-yu.tu@amlogic.com/
-> 
->   drivers/tty/serial/meson_uart.c | 221 ++++++++++++++++++++++----------
->   1 file changed, 154 insertions(+), 67 deletions(-)
-> 
-> 
-> base-commit: a603ca60cebff8589882427a67f870ed946b3fc8
+Fixes: b7e2b5360f9b ("serial: mvebu-uart: implement UART clock driver for configuring UART base clock")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/tty/serial/mvebu-uart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Could you send the emails To Kevin, Jerome, Martin & me, and put the various lists in CC instead ? otherwise we are not notified when the patch is accepted by the tty maintainer.
-
-Thanks,
-Neil
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 2e9263888ddc..45976e2140d4 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -1382,8 +1382,8 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
+ 	 */
+ 	uart_clock_base->reg1 = devm_ioremap(dev, res->start,
+ 					     resource_size(res));
+-	if (IS_ERR(uart_clock_base->reg1))
+-		return PTR_ERR(uart_clock_base->reg1);
++	if (!uart_clock_base->reg1)
++		return -ENOMEM;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 	if (!res) {
+@@ -1401,8 +1401,8 @@ static int mvebu_uart_clock_probe(struct platform_device *pdev)
+ 	 */
+ 	uart_clock_base->reg2 = devm_ioremap(dev, res->start,
+ 					     resource_size(res));
+-	if (IS_ERR(uart_clock_base->reg2))
+-		return PTR_ERR(uart_clock_base->reg2);
++	if (!uart_clock_base->reg2)
++		return -ENOMEM;
+ 
+ 	hw_clk_data = devm_kzalloc(dev,
+ 				   struct_size(hw_clk_data, hws,
 
