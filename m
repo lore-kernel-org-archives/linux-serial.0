@@ -2,88 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E96C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 14:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8230DC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 20:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232020AbiCAO5y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:57:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S237773AbiCAUxW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:53:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235548AbiCAO5x (ORCPT
+        with ESMTP id S238424AbiCAUxN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:57:53 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 06:57:11 PST
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5D0A252D
-        for <linux-serial@vger.kernel.org>; Tue,  1 Mar 2022 06:57:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=LwmHWS3KY+5jPXVxII4Z2Zx8C54Z
-        VmnqqoLSjb4+hfA=; b=0nYkWssaFALNdNb61Jnxp1X3kmk/HF9bilr1tSQTHx0G
-        ZpeLY8r0fiBewvTv2Vc32R0ikQb60/wAruSihkW9cfy0cTWfX3cGf6X5bR5Z+c2Q
-        UvK6Y32SIwMyUeUB3Y+tup6D1wb86Peg4ZKR1J2IrHNyuwrqBL0kbYrawJQWcPM=
-Received: (qmail 3899662 invoked from network); 1 Mar 2022 15:50:29 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 1 Mar 2022 15:50:29 +0100
-X-UD-Smtp-Session: l3s3148p1@AQU+SSnZ6NQgAQnoAGI9AP6D0HJXVmR3
-Date:   Tue, 1 Mar 2022 15:50:29 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] serial: sh-sci: Simplify multiplication/shift logic
-Message-ID: <Yh4ytfelBIbUyip7@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>, linux-serial@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <118d62e167f6cf5e98bdf9a738634b4590ea8d09.1645460901.git.geert+renesas@glider.be>
+        Tue, 1 Mar 2022 15:53:13 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B784559D;
+        Tue,  1 Mar 2022 12:52:26 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 7ADF592009C; Tue,  1 Mar 2022 21:52:25 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 7467492009B;
+        Tue,  1 Mar 2022 20:52:25 +0000 (GMT)
+Date:   Tue, 1 Mar 2022 20:52:25 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
+ 950 UARTs
+In-Reply-To: <alpine.DEB.2.21.2202100424280.34636@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2203011748460.11354@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202100424280.34636@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SF+PDfvhQIF5ffB/"
-Content-Disposition: inline
-In-Reply-To: <118d62e167f6cf5e98bdf9a738634b4590ea8d09.1645460901.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sat, 12 Feb 2022, Maciej W. Rozycki wrote:
 
---SF+PDfvhQIF5ffB/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.  
+> As the change for the default FIFO rx trigger level has been already 
+> merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels 
+> for OxSemi 950 devices") only one patch of the original series remains.  
 
-On Mon, Feb 21, 2022 at 05:29:25PM +0100, Geert Uytterhoeven wrote:
-> "a * (1 << b)" =3D=3D "a << b".
->=20
-> No change in generated code.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+ Ping for:
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2202100424280.34636@angie.orcam.me.uk/>
 
-
---SF+PDfvhQIF5ffB/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIeMrUACgkQFA3kzBSg
-KbZmSA/+OzlzsXds23t0Z82jdO0es7tz2/zXkdHwlyvFSC15bjfTWu52nGzTBBYL
-mkq90P18VfA0F+QmYnm/BX/f0fCjBzL1tsNu9+PjNn0UhE8Qj+6luu0MiBiDPq+h
-bEoATnRHbkUgvuGsgzXW4aQ06GepKWm1mdYQxwKVLLFjKFoxxiWGFeOSqyHSYRVV
-SSVHR7phQdIqIJXgNVPMDJ/8DBTS2xbvTUg0cg72a3c1BaiMUk6aMafvL0vUGifl
-XlQEXtRgMuyPbyPdZJIXY/JOvhsbIzhVk5UXF+9Q6Fal6sW3cunc43QeiHr3P7aw
-NUgQKrRSZOAKKG7WfAA851xCJhMfn3q+EJGd+Uofy7Y10Er26RLOF8Gg8nPsXWbO
-gXSB8UfDX/L7ePxKwXZmvUjkJNalLZRFQmB2HBTQMErlB3IJ12rDSAX1EOxKAbso
-fqi325w58mWarVFdrjrnWIQpiKYR/ri2MhKqTBkxqxKz6gHmPJSRp+48eHYmvKMN
-BUEpRpdHDBfRSFwJhk5QGMYEtrBDGbXIizmKtRN6HCArcvkaoPfh4CiZzJ8ZAeaW
-nwJH41S0rgH8CTbTAS0pECsKz+xUsrvZz99URHhXPry4h06JhuWHNXTDiKPZ8SBv
-0O8YjD5IHV9FECkwCcyi6cV4dnLGSDBhcJ8FU4FvZeFdNbYdQRw=
-=fZKF
------END PGP SIGNATURE-----
-
---SF+PDfvhQIF5ffB/--
+  Maciej
