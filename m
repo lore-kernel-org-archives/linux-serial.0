@@ -2,48 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67196C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 07:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9055EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 07:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiCAHsh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
+        id S232845AbiCAH6m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:58:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232471AbiCAHsg (ORCPT
+        with ESMTP id S232482AbiCAH6m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:48:36 -0500
+        Tue, 1 Mar 2022 02:58:42 -0500
 Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E415B10FF3;
-        Mon, 28 Feb 2022 23:47:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366A850B21;
+        Mon, 28 Feb 2022 23:58:01 -0800 (PST)
 Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 1 Mar
- 2022 15:47:53 +0800
-Message-ID: <96dc5932-7a4c-4f92-b33b-bfd7fc4477e8@amlogic.com>
-Date:   Tue, 1 Mar 2022 15:47:52 +0800
+ 2022 15:57:57 +0800
+Message-ID: <154c3e60-f111-6760-aa08-b9851d66b034@amlogic.com>
+Date:   Tue, 1 Mar 2022 15:57:56 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
+Subject: Re: [PATCH V7 0/6] Use CCF to describe the UART baud rate clock
 Content-Language: en-US
 To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <linux-serial@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220228135530.6918-1-yu.tu@amlogic.com>
- <29b34655-f820-39c9-4363-878481cd3f63@baylibre.com>
- <Yh087tJhakKHs88e@kroah.com>
- <8747c5c6-a129-3a26-8ebb-9e21a18236ec@baylibre.com>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220225073922.3947-1-yu.tu@amlogic.com>
+ <849a95fd-ae81-9a3b-0c06-dd7826af9eb2@baylibre.com>
 From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <8747c5c6-a129-3a26-8ebb-9e21a18236ec@baylibre.com>
+In-Reply-To: <849a95fd-ae81-9a3b-0c06-dd7826af9eb2@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.18.29.173]
@@ -55,48 +50,65 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Neil,
 
-On 2022/3/1 15:23, Neil Armstrong wrote:
+On 2022/3/1 15:25, Neil Armstrong wrote:
 > [ EXTERNAL EMAIL ]
 > 
-> Hi Greg,
+> Hi,
 > 
-> Le 28/02/2022 à 22:21, Greg Kroah-Hartman a écrit :
->> On Mon, Feb 28, 2022 at 03:13:48PM +0100, Neil Armstrong wrote:
->>> Hi,
->>>
->>> On 28/02/2022 14:55, Yu Tu wrote:
->>>> Describes the calculation of the UART baud rate clock using a clock
->>>> frame. Forgot to add in Kconfig kernel test Robot compilation error
->>>> due to COMMON_CLK dependency.
->>>>
->>>> Fixes: ("tty: serial:meson: Describes the calculation of the UART 
->>>> baud rate clock using a clock frame“)
->>>
->>> As I already replied on V2 of this patch, you're invited to apply 
->>> these fixes directly
->>> on the next version of your "Use CCF to describe the UART baud rate 
->>> clock" patchset
->>> and not as a separate patch.
+> Le 25/02/2022 à 08:39, Yu Tu a écrit :
+>> Using the common Clock code to describe the UART baud rate
+>> clock makes it easier for the UART driver to be compatible
+>> with the baud rate requirements of the UART IP on different
+>> meson chips. Add Meson S4 SoC compatible.
 >>
->> No, this is broken in linux-next now as the path listed here is in my
->> tree right now.
-> 
-> Oh, I wasn't aware you took this patchset.
-> 
+>> The test method:
+>> Start the console and run the following commands in turn:
+>> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600.
 >>
->> I need a fix for it, or I can revert the original.
+>> Since most SoCs are too old, I was able to find all the platforms myself
+>> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with
+>> G12A and S4.
+>>
+>> Yu Tu (6):
+>>    tty: serial: meson: Move request the register region to probe
+>>    tty: serial: meson: Use devm_ioremap_resource to get register mapped
+>>      memory
+>>    tty: serial: meson: Describes the calculation of the UART baud rate
+>>      clock using a clock frame
+>>    tty: serial: meson: Make some bit of the REG5 register writable
+>>    tty: serial: meson: The system stuck when you run the stty command on
+>>      the console to change the baud rate
+>>    tty: serial: meson: Added S4 SOC compatibility
+>>
+>> V6 -> V7: To solve the system stuck when you run the stty command on
+>> the console to change the baud rate.
+>> V5 -> V6: Change error format as discussed in the email.
+>> V4 -> V5: Change error format.
+>> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
+>> in the email.
+>> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must 
+>> change
+>> the DTS before it can be deleted
+>> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some 
+>> changes as
+>> discussed in the email
+>>
+>> Link:https://lore.kernel.org/linux-amlogic/20220118030911.12815-4-yu.tu@amlogic.com/ 
+>>
+>>
+>>   drivers/tty/serial/meson_uart.c | 221 ++++++++++++++++++++++----------
+>>   1 file changed, 154 insertions(+), 67 deletions(-)
+>>
+>>
+>> base-commit: a603ca60cebff8589882427a67f870ed946b3fc8
 > 
-> Please revert the whole patchset, it's not ready yet, neither fully 
-> reviewed ands buggy
-> on old SoCs.
-I have tested that there is no problem with G12A and S4 boards. Can I 
-merge them first and fix them later if there is any problem?
+> Could you send the emails To Kevin, Jerome, Martin & me, and put the 
+> various lists in CC instead ? otherwise we are not notified when the 
+> patch is accepted by the tty maintainer.
+The fact is that sending is adding you up, you see
+Link: 
+https://lore.kernel.org/linux-amlogic/20220225073922.3947-1-yu.tu@amlogic.com/
 > 
 > Thanks,
 > Neil
-> 
->>
->> thanks,
->>
->> greg k-h
 > 
