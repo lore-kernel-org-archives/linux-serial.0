@@ -2,392 +2,215 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 026C6C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 09:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4B1C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 09:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiCAJOI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:14:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        id S232384AbiCAJXu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:23:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiCAJOF (ORCPT
+        with ESMTP id S231341AbiCAJXt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:14:05 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2645B7CC;
-        Tue,  1 Mar 2022 01:13:24 -0800 (PST)
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 1 Mar
- 2022 17:13:22 +0800
-Message-ID: <a68f2847-e7e2-798e-07ac-dadbd4345da6@amlogic.com>
-Date:   Tue, 1 Mar 2022 17:13:21 +0800
+        Tue, 1 Mar 2022 04:23:49 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C7FE093
+        for <linux-serial@vger.kernel.org>; Tue,  1 Mar 2022 01:23:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646126589; x=1677662589;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JQU46pUoKuyZV6aqr+C0H64uxqETEJwZMMLBWcU2f9k=;
+  b=dOvMm1Rt1NBdBHmh8YGeYUYYU44KsCNms67ScjhHKAfv3nx7FBZU17Pr
+   JuxsNyVOpLUwqW1uIFzXEvi3srdAlLkHffaKU0xBSOo6CenfumzjkqcKf
+   Ts5I4R+08Gkur/G3Xx5oZJATmWZVfvYhwYwTS+Oxo3Msgg6RdBQKrwFoI
+   +dEeN94wYZzbveF4MUNO3qlqfpoae8avP/H+u2caHHeXAKFjIqXr6trgH
+   QlNlwdPoXHvfSIzmM4Cd5RpVI6TWDs/D0254ZnLQZNECFRxUcMs4WPsdA
+   l9LBlqGfJv40G7eo2sFKHMVeM7fOEV8CLDf7OGfM26ai32RQ7TnMcY7AJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252828958"
+X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
+   d="scan'208";a="252828958"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 01:23:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
+   d="scan'208";a="778387768"
+Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Mar 2022 01:23:07 -0800
+Received: from kbuild by 2146afe809fb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOyio-0000E0-T3; Tue, 01 Mar 2022 09:23:06 +0000
+Date:   Tue, 01 Mar 2022 17:22:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD REGRESSION
+ d4ab5487cc77a4053dc9070c5761ad94bf397825
+Message-ID: <621de5dd.jutTih0Uk3mLyqXL%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V7 3/6] tty: serial: meson: Describes the calculation of
- the UART baud rate clock using a clock frame
-Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220225073922.3947-1-yu.tu@amlogic.com>
- <20220225073922.3947-4-yu.tu@amlogic.com>
- <1j4k4jxmji.fsf@starbuckisacylon.baylibre.com>
- <ec3a884e-618c-63ff-056f-b660848276f6@amlogic.com>
- <1jr17mvzse.fsf@starbuckisacylon.baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <1jr17mvzse.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jerome,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+branch HEAD: d4ab5487cc77a4053dc9070c5761ad94bf397825  Merge 5.17-rc6 into tty-next
 
-On 2022/3/1 16:26, Jerome Brunet wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> 
-> On Tue 01 Mar 2022 at 14:49, Yu Tu <yu.tu@amlogic.com> wrote:
-> 
->> Hi Jerome,
->>
->> On 2022/2/28 19:10, Jerome Brunet wrote:
->>> [ EXTERNAL EMAIL ]
->>>
->>> On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
->>>
->>>> Using the common Clock code to describe the UART baud rate clock
->>>> makes it easier for the UART driver to be compatible with the
->>>> baud rate requirements of the UART IP on different meson chips.
->>>>
->>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->>>> ---
->>>>    drivers/tty/serial/meson_uart.c | 194 +++++++++++++++++++++++---------
->>>>    1 file changed, 142 insertions(+), 52 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
->>>> index 7570958d010c..4768d51fac70 100644
->>>> --- a/drivers/tty/serial/meson_uart.c
->>>> +++ b/drivers/tty/serial/meson_uart.c
->>>> @@ -6,6 +6,7 @@
->>>>     */
->>>>      #include <linux/clk.h>
->>>> +#include <linux/clk-provider.h>
->>>>    #include <linux/console.h>
->>>>    #include <linux/delay.h>
->>>>    #include <linux/init.h>
->>>> @@ -65,9 +66,7 @@
->>>>    #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
->>>>      /* AML_UART_REG5 bits */
->>>> -#define AML_UART_BAUD_MASK		0x7fffff
->>>>    #define AML_UART_BAUD_USE		BIT(23)
->>>> -#define AML_UART_BAUD_XTAL		BIT(24)
->>>>      #define AML_UART_PORT_NUM		12
->>>>    #define AML_UART_PORT_OFFSET		6
->>>> @@ -76,6 +75,11 @@
->>>>    #define AML_UART_POLL_USEC		5
->>>>    #define AML_UART_TIMEOUT_USEC		10000
->>>>    +struct meson_uart_data {
->>>> +	struct clk	*baud_clk;
->>>> +	bool		use_xtal_clk;
->>>> +};
->>>> +
->>>>    static struct uart_driver meson_uart_driver;
->>>>      static struct uart_port *meson_ports[AML_UART_PORT_NUM];
->>>> @@ -293,19 +297,17 @@ static int meson_uart_startup(struct uart_port *port)
->>>>      static void meson_uart_change_speed(struct uart_port *port, unsigned
->>>> long baud)
->>>>    {
->>>> +	struct meson_uart_data *private_data = port->private_data;
->>>>    	u32 val;
->>>>      	while (!meson_uart_tx_empty(port))
->>>>    		cpu_relax();
->>>>    -	if (port->uartclk == 24000000) {
->>>> -		val = ((port->uartclk / 3) / baud) - 1;
->>>> -		val |= AML_UART_BAUD_XTAL;
->>>> -	} else {
->>>> -		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
->>>> -	}
->>>> +	val = readl(port->membase + AML_UART_REG5);
->>>>    	val |= AML_UART_BAUD_USE;
->>>>    	writel(val, port->membase + AML_UART_REG5);
->>>> +
->>>> +	clk_set_rate(private_data->baud_clk, baud);
->>>>    }
->>>>      static void meson_uart_set_termios(struct uart_port *port,
->>>> @@ -395,11 +397,20 @@ static int meson_uart_verify_port(struct uart_port *port,
->>>>      static void meson_uart_release_port(struct uart_port *port)
->>>>    {
->>>> -	/* nothing to do */
->>>> +	struct meson_uart_data *private_data = port->private_data;
->>>> +
->>>> +	clk_disable_unprepare(private_data->baud_clk);
->>>>    }
->>>>      static int meson_uart_request_port(struct uart_port *port)
->>>>    {
->>>> +	struct meson_uart_data *private_data = port->private_data;
->>>> +	int ret;
->>>> +
->>>> +	ret = clk_prepare_enable(private_data->baud_clk);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>> I think we already discussed that. This is yet another behavior change
->>> Previously, enabling the clock was done at probe time.
->>> It's fine to change it, if there is a justification, but not in the same
->>> change as the rework of the divider
->>>
->>>>    	return 0;
->>>>    }
->>>>    @@ -629,57 +640,106 @@ static struct uart_driver meson_uart_driver = {
->>>>    	.cons		= MESON_SERIAL_CONSOLE,
->>>>    };
->>>>    -static inline struct clk *meson_uart_probe_clock(struct device *dev,
->>>> -						 const char *id)
->>>> -{
->>>> -	struct clk *clk = NULL;
->>>> -	int ret;
->>>> -
->>>> -	clk = devm_clk_get(dev, id);
->>>> -	if (IS_ERR(clk))
->>>> -		return clk;
->>>> -
->>>> -	ret = clk_prepare_enable(clk);
->>>> -	if (ret) {
->>>> -		dev_err(dev, "couldn't enable clk\n");
->>>> -		return ERR_PTR(ret);
->>>> -	}
->>>> +static const struct clk_div_table xtal_div_table[] = {
->>>> +	{ 0, 3 },
->>>> +	{ 1, 1 },
->>>> +	{ 2, 2 },
->>>> +	{ 3, 2 },
->>>> +};
->>>>    -	devm_add_action_or_reset(dev,
->>>> -			(void(*)(void *))clk_disable_unprepare,
->>>> -			clk);
->>>> +static u32 use_xtal_mux_table;
->>>>    -	return clk;
->>>> -}
->>>> -
->>>> -static int meson_uart_probe_clocks(struct platform_device *pdev,
->>>> -				   struct uart_port *port)
->>>> +static int meson_uart_probe_clocks(struct uart_port *port)
->>>>    {
->>>> -	struct clk *clk_xtal = NULL;
->>>> -	struct clk *clk_pclk = NULL;
->>>> -	struct clk *clk_baud = NULL;
->>>> +	struct meson_uart_data *private_data = port->private_data;
->>>> +	struct clk *clk_baud, *clk_xtal;
->>>> +	struct clk_hw *hw, *clk81_div4_hw;
->>>> +	char clk_name[32];
->>>> +	struct clk_parent_data use_xtal_mux_parents;
->>>>    -	clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
->>>> -	if (IS_ERR(clk_pclk))
->>>> -		return PTR_ERR(clk_pclk);
->>>> +	clk_baud = devm_clk_get(port->dev, "baud");
->>>> +	if (IS_ERR(clk_baud)) {
->>>> +		dev_err(port->dev, "Failed to get the 'baud' clock\n");
->>>> +		return PTR_ERR(clk_baud);
->>>> +	}
->>> Calling devm_clk_get() would not be necessary if you used "fw_name" in
->>> the parent table. Same bellow
->> Personally, I think it is good that you can understand your meaning, but as
->> you are an expert in CCF, it is nice to write code in that way, but for
->> people who are not unfamiliar with CCF, they may only care about the use of
->> CCF.It's not pretty to use but it's easy to understand.
-> 
-> There is no magic in CCF. Stephen and the other contributor took time to
-> add the fw_name mechanism espcially for this. I'm suggesting and you are
-> expected to actually look at the code and considerer it. Lack of
-> "expertize" is not a valid argument.
-I agree you have a point, but isn't simplicity and ease of understanding 
-the key to code design?
-> 
->>>
->>>>    -	clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
->>>> +	clk_xtal = devm_clk_get(port->dev, "xtal");
->>>>    	if (IS_ERR(clk_xtal))
->>>> -		return PTR_ERR(clk_xtal);
->>>> -
->>>> -	clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
->>>> -	if (IS_ERR(clk_baud))
->>>> -		return PTR_ERR(clk_baud);
->>>> +		return dev_err_probe(port->dev, PTR_ERR(clk_xtal),
->>>> +				     "Failed to get the 'xtal' clock\n");
->>>> +
->>>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>>> +		 "clk81_div4");
->>>> +	clk81_div4_hw = devm_clk_hw_register_fixed_factor(port->dev,
->>>> +							  clk_name,
->>>> +							  __clk_get_name(clk_baud),
->>>> +							  CLK_SET_RATE_NO_REPARENT,
->>>> +							  1, 4);
->>>> +	if (IS_ERR(clk81_div4_hw))
->>>> +		return PTR_ERR(clk81_div4_hw);
->>> So, whatever the chip type - you register a fixed 4 divider ....
->> As you suggested last time, this CLK has been stored, but some chips are
->> not used. If you have better suggestions, please let me know and I can
->> make corrections later.
-> 
-> No, never suggested that. I suspected that 4 divider design was the same
-> on all SoC version. You reported it was not, So I don't get this
-> 
->>>
->>>> +
->>>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>>> +		 "xtal_div");
->>>> +	hw = devm_clk_hw_register_divider_table(port->dev,
->>>> +						clk_name,
->>>> +						__clk_get_name(clk_baud),
->>>> +						CLK_SET_RATE_NO_REPARENT,
->>>> +						port->membase + AML_UART_REG5,
->>>> +						26, 2,
->>>> +						CLK_DIVIDER_READ_ONLY,
->>>> +						xtal_div_table, NULL);
->>>> +	if (IS_ERR(hw))
->>>> +		return PTR_ERR(hw);
->>>> +
->>>> +	if (private_data->use_xtal_clk) {
->>>> +		use_xtal_mux_table = 1;
->>>> +		use_xtal_mux_parents.hw = hw;
->>>> +	} else {
->>>> +		use_xtal_mux_parents.hw = clk81_div4_hw;
->>> ... which you may end up not using in the end
->>> This is bad.
->> If you have better suggestions, please let me know and I can make
->> corrections later.
->>>
->>>> +	}
->>>>    -	port->uartclk = clk_get_rate(clk_baud);
->>>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>>> +		 "use_xtal");
->>>> +	hw = __devm_clk_hw_register_mux(port->dev, NULL,
->>>> +					clk_name,
->>>> +					1,
->>>> +					NULL, NULL,
->>>> +					&use_xtal_mux_parents,
->>>> +					CLK_SET_RATE_PARENT,
->>>> +					port->membase + AML_UART_REG5,
->>>> +					24, 0x1,
->>>> +					CLK_MUX_READ_ONLY,
->>>> +					&use_xtal_mux_table, NULL);
->>>> +
->>>> +	if (IS_ERR(hw))
->>>> +		return PTR_ERR(hw);
->>>> +
->>>> +	port->uartclk = clk_hw_get_rate(hw);
->>>> +
->>>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>>> +		 "baud_div");
->>>> +	hw = devm_clk_hw_register_divider(port->dev,
->>>> +					  clk_name,
->>>> +					  clk_hw_get_name(hw),
->>>> +					  CLK_SET_RATE_PARENT,
->>>> +					  port->membase + AML_UART_REG5,
->>>> +					  0, 23,
->>>> +					  CLK_DIVIDER_ROUND_CLOSEST,
->>>> +					  NULL);
->>>> +	if (IS_ERR(hw))
->>>> +		return PTR_ERR(hw);
->>>> +
->>>> +	private_data->baud_clk = hw->clk;
->>>>      	return 0;
->>>>    }
->>>>      static int meson_uart_probe(struct platform_device *pdev)
->>>>    {
->>>> +	struct meson_uart_data *private_data;
->>>>    	struct resource *res_mem;
->>>>    	struct uart_port *port;
->>>> +	struct clk *pclk;
->>>>    	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->>>>    	int ret = 0;
->>>>    	int irq;
->>>> @@ -705,6 +765,15 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>>    	if (!res_mem)
->>>>    		return -ENODEV;
->>>>    +	pclk = devm_clk_get(&pdev->dev, "pclk");
->>>> +	if (IS_ERR(pclk))
->>>> +		return dev_err_probe(&pdev->dev, PTR_ERR(pclk),
->>>> +				     "Failed to get the 'pclk' clock\n");
->>>> +
->>>> +	ret = clk_prepare_enable(pclk);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>>>    	irq = platform_get_irq(pdev, 0);
->>>>    	if (irq < 0)
->>>>    		return irq;
->>>> @@ -724,9 +793,13 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>>    	if (IS_ERR(port->membase))
->>>>    		return PTR_ERR(port->membase);
->>>>    -	ret = meson_uart_probe_clocks(pdev, port);
->>>> -	if (ret)
->>>> -		return ret;
->>>> +	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->>>> +				    GFP_KERNEL);
->>>> +	if (!private_data)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	if (device_get_match_data(&pdev->dev))
->>>> +		private_data->use_xtal_clk = true;
->>> As long as the device matches a compatible below, the flag will end up
->>> 'true', regardless of values in the the dt_match table.
->>> I don't think this is the intended behavior.
->>> It highlights that proper testing of this series is important.
->>> Being at Amlogic, I'm sure you can test on more than just g12a and s4
->>>
->> I believe with your experience this may be a real problem. I heard that
->> your company has our boards. If so, can you help verify it?
->>>>      	port->iotype = UPIO_MEM;
->>>>    	port->mapbase = res_mem->start;
->>>> @@ -740,6 +813,11 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>>    	port->x_char = 0;
->>>>    	port->ops = &meson_uart_ops;
->>>>    	port->fifosize = fifosize;
->>>> +	port->private_data = private_data;
->>>> +
->>>> +	ret = meson_uart_probe_clocks(port);
->>>> +	if (ret)
->>>> +		return ret;
->>>>      	meson_ports[pdev->id] = port;
->>>>    	platform_set_drvdata(pdev, port);
->>>> @@ -766,10 +844,22 @@ static int meson_uart_remove(struct platform_device *pdev)
->>>>    }
->>>>      static const struct of_device_id meson_uart_dt_match[] = {
->>>> -	{ .compatible = "amlogic,meson6-uart" },
->>>> -	{ .compatible = "amlogic,meson8-uart" },
->>>> -	{ .compatible = "amlogic,meson8b-uart" },
->>>> -	{ .compatible = "amlogic,meson-gx-uart" },
->>>> +	{
->>>> +		.compatible = "amlogic,meson6-uart",
->>>> +		.data = (void *)false,
->>>> +	},
->>>> +	{
->>>> +		.compatible = "amlogic,meson8-uart",
->>>> +		.data = (void *)false,
->>>> +	},
->>>> +	{
->>>> +		.compatible = "amlogic,meson8b-uart",
->>>> +		.data = (void *)false,
->>>> +	},
->>>> +	{
->>>> +		.compatible = "amlogic,meson-gx-uart",
->>>> +		.data = (void *)true,
->>>> +	},
->>>>    	{ /* sentinel */ },
->>>>    };
->>>>    MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
->>>
-> 
+Error/Warning:
+
+drivers/tty/serial/sunplus-uart.c:574:28: error: 'sunplus_uart_console' undeclared here (not in a function); did you mean 'sunplus_uart_ops'?
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+`-- mips-randconfig-c023-20220227
+    `-- drivers-tty-serial-sunplus-uart.c:error:sunplus_uart_console-undeclared-here-(not-in-a-function)
+
+elapsed time: 720m
+
+configs tested: 130
+configs skipped: 3
+
+gcc tested configs:
+arm                                 defconfig
+arm                              allmodconfig
+arm                              allyesconfig
+arm64                               defconfig
+arm64                            allyesconfig
+i386                          randconfig-c001
+arc                        vdk_hs38_defconfig
+powerpc                      pasemi_defconfig
+m68k                       m5249evb_defconfig
+parisc                              defconfig
+arc                 nsimosci_hs_smp_defconfig
+mips                             allyesconfig
+h8300                       h8s-sim_defconfig
+nios2                         10m50_defconfig
+mips                           jazz_defconfig
+parisc                generic-32bit_defconfig
+powerpc                      bamboo_defconfig
+sh                          landisk_defconfig
+sh                          r7785rp_defconfig
+arc                            hsdk_defconfig
+sh                          sdk7780_defconfig
+microblaze                      mmu_defconfig
+sh                           se7724_defconfig
+arm                            pleb_defconfig
+sh                          r7780mp_defconfig
+arm                          pxa3xx_defconfig
+m68k                        m5307c3_defconfig
+m68k                          multi_defconfig
+sh                               alldefconfig
+powerpc                   motionpro_defconfig
+powerpc                      ppc6xx_defconfig
+arc                          axs103_defconfig
+arm                  randconfig-c002-20220228
+arm                  randconfig-c002-20220227
+arm                  randconfig-c002-20220301
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+x86_64               randconfig-a011-20220228
+x86_64               randconfig-a015-20220228
+x86_64               randconfig-a014-20220228
+x86_64               randconfig-a013-20220228
+x86_64               randconfig-a016-20220228
+x86_64               randconfig-a012-20220228
+i386                 randconfig-a016-20220228
+i386                 randconfig-a012-20220228
+i386                 randconfig-a015-20220228
+i386                 randconfig-a011-20220228
+i386                 randconfig-a013-20220228
+i386                 randconfig-a014-20220228
+arc                  randconfig-r043-20220227
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                            allyesconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                         rhel-8.3-kunit
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+
+clang tested configs:
+powerpc                          allyesconfig
+riscv                    nommu_virt_defconfig
+powerpc                     powernv_defconfig
+mips                           rs90_defconfig
+mips                           mtx1_defconfig
+powerpc                     pseries_defconfig
+powerpc                     tqm8560_defconfig
+riscv                          rv32_defconfig
+arm                        mvebu_v5_defconfig
+mips                           ip28_defconfig
+arm                          imote2_defconfig
+arm                       versatile_defconfig
+powerpc                   lite5200b_defconfig
+mips                           ip22_defconfig
+x86_64               randconfig-a003-20220228
+x86_64               randconfig-a005-20220228
+x86_64               randconfig-a002-20220228
+x86_64               randconfig-a006-20220228
+x86_64               randconfig-a001-20220228
+x86_64               randconfig-a004-20220228
+i386                 randconfig-a002-20220228
+i386                 randconfig-a001-20220228
+i386                 randconfig-a005-20220228
+i386                 randconfig-a003-20220228
+i386                 randconfig-a006-20220228
+i386                 randconfig-a004-20220228
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220301
+hexagon              randconfig-r041-20220301
+riscv                randconfig-r042-20220301
+hexagon              randconfig-r045-20220227
+hexagon              randconfig-r041-20220227
+s390                 randconfig-r044-20220227
+riscv                randconfig-r042-20220227
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
