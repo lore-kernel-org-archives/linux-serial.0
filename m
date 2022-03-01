@@ -2,94 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A1DC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Feb 2022 21:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6F2C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 00:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbiB1VYi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 16:24:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
+        id S230040AbiCAArH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 19:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiB1VYh (ORCPT
+        with ESMTP id S231651AbiCAArH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 16:24:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517F8111091;
-        Mon, 28 Feb 2022 13:23:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E03196115A;
-        Mon, 28 Feb 2022 21:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71692C340F1;
-        Mon, 28 Feb 2022 21:23:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646083437;
-        bh=7QaD+tXLqarmJbeGijWj9hiygCezLVN/S/8WqSTJVNE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MFXPE/4x6iPsq+Tvg1FOZcG9d1EMvmtMIgbMv5HsD83YrDCus6HxIwFZ7eVnTr7j6
-         pulm9WhwkT4qv2WFDdDRqtK2QH20HQOsAjyp2eUqP81AqXbeWq6atp6h+sz//gVpDG
-         4Pm1fo1MmxF/AQH2ViiXrn94NuiEt2iTtFV5IpYI=
-Date:   Mon, 28 Feb 2022 22:23:53 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Message-ID: <Yh09abhySKsjart4@kroah.com>
-References: <20220228135530.6918-1-yu.tu@amlogic.com>
- <20220228142751.GF2812@kadam>
+        Mon, 28 Feb 2022 19:47:07 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329601CFDA;
+        Mon, 28 Feb 2022 16:46:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=6kLooZJqwGGXeVVaSJP06IJVzbhf/g8lxAgwKUZTKkQ=; b=OibTSq6yzv7ONGW8VvnYgQrrEv
+        5KZXpoYlNennpum1jNu3fUeCUaZ2uwA/+/EN6S3kvydscWR3ai3JyrE0HPVnxvL+eGn7YwpvXsSnK
+        1kuvYe+9VOZ95TkqbuzuYkt6yAW62u4M5e6g+B1J3Vki69gIekQVJEsSQbVcMYDdubwggu2gty4pj
+        igK7cLFtxs4QDUrIoboG6GrFtKtvd4YR9y1x9B9/W06Cj2QDNrfWMAHbrID3RrI97sRxyL2x44AMJ
+        of9dpt7+ltreM13WOu7kWxDDmRsi/vufxKYAtItg5XvSCk+eJCXgNiNa2aG6+1UgFUHjsxn1M3B/h
+        X0sVMgHw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOqeh-0094bj-Vo; Tue, 01 Mar 2022 00:46:20 +0000
+Message-ID: <1e91ecfb-0432-8c0c-e537-49954313abff@infradead.org>
+Date:   Mon, 28 Feb 2022 16:46:13 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: mmotm 2022-02-28-14-45 uploaded
+ (drivers/tty/serial/sunplus-uart.c:)
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>
+References: <20220228224600.44415C340EE@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220228224600.44415C340EE@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220228142751.GF2812@kadam>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 05:27:52PM +0300, Dan Carpenter wrote:
-> On Mon, Feb 28, 2022 at 09:55:30PM +0800, Yu Tu wrote:
-> > Describes the calculation of the UART baud rate clock using a clock
-> > frame. Forgot to add in Kconfig kernel test Robot compilation error
-> > due to COMMON_CLK dependency.
-> > 
-> > Fixes: ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > Signed-off-by: Yu Tu <yu.tu@amlogic.com>
-> > ---
-> >  drivers/tty/serial/Kconfig      |  1 +
-> >  drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
-> >  2 files changed, 27 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> > index e952ec5c7a7c..a0f2b82fc18b 100644
-> > --- a/drivers/tty/serial/Kconfig
-> > +++ b/drivers/tty/serial/Kconfig
-> > @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
-> >  config SERIAL_MESON
-> >  	tristate "Meson serial port support"
-> >  	depends on ARCH_MESON || COMPILE_TEST
-> > +	depends on COMMON_CLK
-> >  	select SERIAL_CORE
-> >  	help
-> >  	  This enables the driver for the on-chip UARTs of the Amlogic
+
+
+On 2/28/22 14:45, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-02-28-14-45 has been uploaded to
 > 
+>    https://www.ozlabs.org/~akpm/mmotm/
 > 
-> This is a link issue.  The rest is an unrelated error handling fix.
-> It should really be sent as two patches.
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
 
-I'll take the first version of this patch, which just did this portion,
-and the rest can be an independant change.
+on x86_64 or i386:
 
-thanks,
+when CONFIG_SERIAL_SUNPLUS_CONSOLE is not set:
 
-greg k-h
+../drivers/tty/serial/sunplus-uart.c:574:12: error: ‘sunplus_uart_console’ undeclared here (not in a function); did you mean ‘sunplus_uart_ops’?
+  .cons  = &sunplus_uart_console,
+            ^~~~~~~~~~~~~~~~~~~~
+
+
+
+-- 
+~Randy
