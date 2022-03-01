@@ -2,137 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D5BC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 05:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD50C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 05:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbiCAFjW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 00:39:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        id S232483AbiCAFpR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 00:45:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232515AbiCAFjV (ORCPT
+        with ESMTP id S232521AbiCAFpQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 00:39:21 -0500
+        Tue, 1 Mar 2022 00:45:16 -0500
 Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA614B1D9;
-        Mon, 28 Feb 2022 21:38:37 -0800 (PST)
-Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Tue, 1 Mar 2022
- 13:38:35 +0800
-From:   Yu Tu <yu.tu@amlogic.com>
-To:     <linux-serial@vger.kernel.org>,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E822593BB;
+        Mon, 28 Feb 2022 21:44:30 -0800 (PST)
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 1 Mar
+ 2022 13:44:28 +0800
+Message-ID: <34a1fd07-cb83-25b9-a208-490ea01ed891@amlogic.com>
+Date:   Tue, 1 Mar 2022 13:44:28 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V7 5/6] tty: serial: meson: The system stuck when you run
+ the stty command on the console to change the baud rate
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
 CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Yu Tu <yu.tu@amlogic.com>, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH] tty: serial: meson: Fixed an issue where pclk was turned on on probe but should be turned off on subsequent errors.
-Date:   Tue, 1 Mar 2022 13:37:38 +0800
-Message-ID: <20220301053738.21163-1-yu.tu@amlogic.com>
-X-Mailer: git-send-email 2.33.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.11.248]
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220225073922.3947-1-yu.tu@amlogic.com>
+ <20220225073922.3947-6-yu.tu@amlogic.com>
+ <1jczj7xnn0.fsf@starbuckisacylon.baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <1jczj7xnn0.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Call clk_prepare_enable in the probe function to enable pclk. If you
-exit the probe function later in an error, call clk_disable_unprepare
-to disable pclk.
+Hi Jerome,
+	Thank you for your reply.
 
-Fixes: 44023b8e1f14 ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Yu Tu <yu.tu@amlogic.com>
----
- drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index bf6be5468aaf..972f210f3492 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -780,28 +780,37 @@ static int meson_uart_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto err_out_clk_disable;
-+	}
- 
- 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
- 
- 	if (meson_ports[pdev->id]) {
- 		dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
--		return -EBUSY;
-+		ret = -EBUSY;
-+		goto err_out_clk_disable;
- 	}
- 
- 	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), GFP_KERNEL);
--	if (!port)
--		return -ENOMEM;
-+	if (!port) {
-+		ret = -ENOMEM;
-+		goto err_out_clk_disable;
-+	}
- 
- 	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
--	if (IS_ERR(port->membase))
--		return PTR_ERR(port->membase);
-+	if (IS_ERR(port->membase)) {
-+		ret = PTR_ERR(port->membase);
-+		goto err_out_clk_disable;
-+	}
- 
- 	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
- 				    GFP_KERNEL);
--	if (!private_data)
--		return -ENOMEM;
-+	if (!private_data) {
-+		ret = -ENOMEM;
-+		goto err_out_clk_disable;
-+	}
- 
- 	if (device_get_match_data(&pdev->dev))
- 		private_data->use_xtal_clk = true;
-@@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device *pdev)
- 
- 	ret = meson_uart_probe_clocks(port);
- 	if (ret)
--		return ret;
-+		goto err_out_clk_disable;
- 
- 	meson_ports[pdev->id] = port;
- 	platform_set_drvdata(pdev, port);
-@@ -831,9 +840,15 @@ static int meson_uart_probe(struct platform_device *pdev)
- 	meson_uart_reset(port);
- 
- 	ret = uart_add_one_port(&meson_uart_driver, port);
--	if (ret)
-+	if (ret) {
- 		meson_ports[pdev->id] = NULL;
-+		goto err_out_clk_disable;
-+	}
-+
-+	return 0;
- 
-+err_out_clk_disable:
-+	clk_disable_unprepare(pclk);
- 	return ret;
- }
- 
-
-base-commit: d4ab5487cc77a4053dc9070c5761ad94bf397825
--- 
-2.33.1
-
+On 2022/2/28 18:58, Jerome Brunet wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> 
+> On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
+> 
+>> Start the console and run the following commands in turn:
+>> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600. The
+>> system will stuck.
+>>
+>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>> ---
+>>   drivers/tty/serial/meson_uart.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+>> index ba8dc203b9cb..d19349ead738 100644
+>> --- a/drivers/tty/serial/meson_uart.c
+>> +++ b/drivers/tty/serial/meson_uart.c
+>> @@ -365,8 +365,13 @@ static void meson_uart_set_termios(struct uart_port *port,
+>>   	writel(val, port->membase + AML_UART_CONTROL);
+>>   
+>>   	baud = uart_get_baud_rate(port, termios, old, 50, 4000000);
+>> +
+>> +	spin_unlock_irqrestore(&port->lock, flags);
+>> +
+>>   	meson_uart_change_speed(port, baud);
+>>   
+>> +	spin_lock_irqsave(&port->lock, flags);
+> 
+> Already told you before, you can make meson_change_speed()
+> clk_set_rate() uses mutex and may sleep.
+Sorry, I may have only paid attention to how you asked me to change to 
+using the clock before, instead of paying attention to this suggestion.
+> 
+>> +
+>>   	port->read_status_mask = AML_UART_TX_FIFO_WERR;
+>>   	if (iflags & INPCK)
+>>   		port->read_status_mask |= AML_UART_PARITY_ERR |
+> 
