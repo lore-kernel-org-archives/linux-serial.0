@@ -2,96 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B766C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 00:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A235C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 02:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231397AbiCAAyg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Feb 2022 19:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        id S231132AbiCACob (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Feb 2022 21:44:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiCAAyg (ORCPT
+        with ESMTP id S230498AbiCACob (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Feb 2022 19:54:36 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703E3F70;
-        Mon, 28 Feb 2022 16:53:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:References:To:From:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=NZ91IYeIblNdDBut8MLpWdnA9o4cCrnTYppf7PU1ers=; b=H7pOJZasUim98q+EC7q64TPboV
-        6lvIwmzxOyQqh4fWhPFUSlFXc1wm7Wc+PsoRyU27Z5LbRF0TZzx6a/wfh2GmXLDz1si+K+yS5H5Uf
-        cMRbY7DeT4cV8Du4l/9uBzfPIRGskTowCD+EtZWNUpurwoB8vkxQ5lwgySfz7+nHjJvbdnqv8exnn
-        XwDACrsks/9xXHLoNqEg5asUjT5RvoHp58sK9sbEyoCQqFi4kANgwWa4vcYLYEyg1IeEvHQ3mZxfV
-        oTzl6ANrfzWCnxVF8bvjC8gODSyj38Dsk5vD58SCARnhJ2jQiL5kCxsEMQA8O8pxXrXf/yNmIEErE
-        nKibrs0g==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOqlx-0095DT-UI; Tue, 01 Mar 2022 00:53:50 +0000
-Message-ID: <c35bb2e5-0538-1247-a5a4-7eb34836947a@infradead.org>
-Date:   Mon, 28 Feb 2022 16:53:44 -0800
+        Mon, 28 Feb 2022 21:44:31 -0500
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5CD369E6;
+        Mon, 28 Feb 2022 18:43:50 -0800 (PST)
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 1 Mar
+ 2022 10:43:48 +0800
+Message-ID: <aa9c6622-4d3c-5bb8-ba25-d25b8b73a038@amlogic.com>
+Date:   Tue, 1 Mar 2022 10:43:47 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: mmotm 2022-02-28-14-45 uploaded
- (drivers/tty/serial/sunplus-uart.c:)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
+ reported by kernel test robot
 Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hammer Hsieh <hammerh0314@gmail.com>
-References: <20220228224600.44415C340EE@smtp.kernel.org>
- <1e91ecfb-0432-8c0c-e537-49954313abff@infradead.org>
-In-Reply-To: <1e91ecfb-0432-8c0c-e537-49954313abff@infradead.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220228135530.6918-1-yu.tu@amlogic.com>
+ <20220228142751.GF2812@kadam> <Yh09abhySKsjart4@kroah.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <Yh09abhySKsjart4@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi greg and dan,
+	Thank you very much for your reply. I will make a separate submission 
+as you suggested to fix Dan's suggestion.
 
-
-On 2/28/22 16:46, Randy Dunlap wrote:
+On 2022/3/1 5:23, Greg Kroah-Hartman wrote:
+> [ EXTERNAL EMAIL ]
 > 
+> On Mon, Feb 28, 2022 at 05:27:52PM +0300, Dan Carpenter wrote:
+>> On Mon, Feb 28, 2022 at 09:55:30PM +0800, Yu Tu wrote:
+>>> Describes the calculation of the UART baud rate clock using a clock
+>>> frame. Forgot to add in Kconfig kernel test Robot compilation error
+>>> due to COMMON_CLK dependency.
+>>>
+>>> Fixes: ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>>> ---
+>>>   drivers/tty/serial/Kconfig      |  1 +
+>>>   drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
+>>>   2 files changed, 27 insertions(+), 11 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>>> index e952ec5c7a7c..a0f2b82fc18b 100644
+>>> --- a/drivers/tty/serial/Kconfig
+>>> +++ b/drivers/tty/serial/Kconfig
+>>> @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
+>>>   config SERIAL_MESON
+>>>   	tristate "Meson serial port support"
+>>>   	depends on ARCH_MESON || COMPILE_TEST
+>>> +	depends on COMMON_CLK
+>>>   	select SERIAL_CORE
+>>>   	help
+>>>   	  This enables the driver for the on-chip UARTs of the Amlogic
+>>
+>>
+>> This is a link issue.  The rest is an unrelated error handling fix.
+>> It should really be sent as two patches.
 > 
-> On 2/28/22 14:45, Andrew Morton wrote:
->> The mm-of-the-moment snapshot 2022-02-28-14-45 has been uploaded to
->>
->>    https://www.ozlabs.org/~akpm/mmotm/
->>
->> mmotm-readme.txt says
->>
->> README for mm-of-the-moment:
->>
->> https://www.ozlabs.org/~akpm/mmotm/
->>
->> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
->> more than once a week.
->>
->> You will need quilt to apply these patches to the latest Linus release (5.x
->> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
->> https://ozlabs.org/~akpm/mmotm/series
+> I'll take the first version of this patch, which just did this portion,
+> and the rest can be an independant change.
 > 
-> on x86_64 or i386:
+> thanks,
 > 
-> when CONFIG_SERIAL_SUNPLUS_CONSOLE is not set:
+> greg k-h
 > 
-> ../drivers/tty/serial/sunplus-uart.c:574:12: error: ‘sunplus_uart_console’ undeclared here (not in a function); did you mean ‘sunplus_uart_ops’?
->   .cons  = &sunplus_uart_console,
->             ^~~~~~~~~~~~~~~~~~~~
-
-Huh. On a different build, another build error was found,
-also with CONFIG_SERIAL_SUNPLUS_CONSOLE not set:
-
-../drivers/tty/serial/sunplus-uart.c: In function ‘sunplus_poll_put_char’:
-../drivers/tty/serial/sunplus-uart.c:464:2: error: implicit declaration of function ‘wait_for_xmitr’; did you mean ‘wait_on_bit’? [-Werror=implicit-function-declaration]
-  wait_for_xmitr(port);
-  ^~~~~~~~~~~~~~
-
-
--- 
-~Randy
