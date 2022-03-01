@@ -2,406 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B32C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 08:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB37DC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 08:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbiCAIdJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:33:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
+        id S233169AbiCAIft (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:35:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232365AbiCAIdI (ORCPT
+        with ESMTP id S232313AbiCAIfq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:33:08 -0500
+        Tue, 1 Mar 2022 03:35:46 -0500
 Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE99B02
-        for <linux-serial@vger.kernel.org>; Tue,  1 Mar 2022 00:32:25 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id x5so20930622edd.11
-        for <linux-serial@vger.kernel.org>; Tue, 01 Mar 2022 00:32:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE6363BE7
+        for <linux-serial@vger.kernel.org>; Tue,  1 Mar 2022 00:35:05 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id s1so20935064edd.13
+        for <linux-serial@vger.kernel.org>; Tue, 01 Mar 2022 00:35:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=nsUATk/2y14ChiOIn5CE+LTlgsRPR3DrNuBrS7JUbrQ=;
-        b=bYnSfzfZPfCOIKN8Krthey4XMcGw2QKgC/LcWSj5nf7IJYtupnKl4dFnvn/oZJ0DJB
-         pXJYJHK79APoUJTtn6e9ypwUH8KZQ1uBSg4I6Qp6maILe6xIPOnv1hxpWR7LfXYmV8JS
-         LlSv/aFSvjleKM9FcPa7oojCWgSDjptlEsyPmwOlavHAOFVzg5zhqAk/O3ggkYOrMVVj
-         awTMEOSlRt3NSZgshmKVQDjt2n45GY8H7cbf9BQFufFWl4TqVsFVMKJLRoGJQ2zVi9IN
-         uA6UjX0tbaNAELz45jUapuk5dekpctdos/KxrIGfHjBh9ol1/vlqbQ2sDMKwsUoLV95t
-         CUnA==
+         :message-id:mime-version:content-transfer-encoding;
+        bh=581d5D6KA6uGeEFhWJuvM1NIBuXYywCqvyH8LTd14IA=;
+        b=btbiwNi69t//ZAp+SKv0Q4ykiUFt5Vcee8OG/aZUV/3/mEL6qCooFVbyDvhieBabec
+         CkXz6UGXrke98ZVvQ72UuAMxZwsIfwh+3g3tK2X0k1zbFdUDs/+/OK1fCTFFQOT7UHWN
+         z0SGermy1OptrYhdNwG2SjAF8Iy2D/bC8aVmKXNdBID/wURfxVbVE+QyMV5xd5+hVU2P
+         7UAkphywTA2sXS8jB/ps9Kcir4h64rEe4PhvIq8Fufb+E0teJ0kR087Xzr14Qd4KJ0DF
+         Qzm9enrRJsGu4gGmyGHjbsCTvR55t8XjpjYC+HsSfTFdAdWWiDXozOXw2e3X48KoaVr6
+         04YQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=nsUATk/2y14ChiOIn5CE+LTlgsRPR3DrNuBrS7JUbrQ=;
-        b=rMpdUXF1XcX0EafZ5PWKLlCSiNOswrw2c9aOvcGrAlJijyXV2isxuraU4qankFtxIg
-         DxhsN7nIHuM9v/TQIWe/f7SQAo3HlkwV/Ol5iN/6r1YpBtmY7rpXPV1F6A9iO3dZS7jI
-         7rK05alEllll3ZXM6/2hq9fBj1GLi8LZ+w5CEHSe8GeQl+6zzrudDW/Kz3Yh4oZE06bB
-         V/malRjR3U9prZHaug0RevAWAtQUlv61bKU2FZl11gJBZ9vV5TOT6Db+hIoBwNkSWG9U
-         JUFL9ZEetvj43E3yuXqhT/UuEFFmzzQ+NKcP9KhVxPg2iWM36rSa/JqyhDt+LeYsvPrJ
-         NhTQ==
-X-Gm-Message-State: AOAM532WS2gw99h4na/coVKZr1z0t2CboqhuvOo88L5OL9csHnJQpRE/
-        MavWSv+AmH/hdLgw1cct+bN0fw==
-X-Google-Smtp-Source: ABdhPJzrUHBJAZzS80YmptY0nPErjjPOM4jEHxZBwzUH8W3hc3yhJhzX4ceWFL2nT3TUbkIPc2/GWA==
-X-Received: by 2002:a50:aa8c:0:b0:410:801c:4e2f with SMTP id q12-20020a50aa8c000000b00410801c4e2fmr22932513edc.179.1646123543706;
-        Tue, 01 Mar 2022 00:32:23 -0800 (PST)
+         :in-reply-to:message-id:mime-version:content-transfer-encoding;
+        bh=581d5D6KA6uGeEFhWJuvM1NIBuXYywCqvyH8LTd14IA=;
+        b=3JYpAZLx0tfoBk2B3gRikmYmp2Bsn9/08O1Hqupj2EuIK/b4JbKVg2HMqOyY6e4b2g
+         WFKNIaouD7g2IL1fUrMaWNkYJ2L8Q/f3wivjk4B6KeGiGojtH3V3eTUrAPZk8ahz2E6T
+         M3U89J7koTHH+e+rlIO/QzX4QrkD0lpkhUn7pstsxxgP0YTb4BvUIB1z6EgCYP3PC4VU
+         UM4mPTVpmqPu9bkFIv7X1++Rb/KhAa7zPK2uY5Xd3esdk4+lqcQhwp3+uexfzXnnrnK5
+         ZwLJMcYEhbohjU+usfoB3Rh4LVwYYDvAFo0/UJXO9hqgyicUnQj0Bz0oE4/poJqGBdAv
+         lbpA==
+X-Gm-Message-State: AOAM533LT/KKzF6z7CnHEr65bYGf6I6B+i66BO8T9COx2EXlcXdpNnTu
+        9phw4BFwP1sIgBKsCY2eBn+yRA==
+X-Google-Smtp-Source: ABdhPJwubftsKZHHyeS1ZbNkCnU+nk1j6sKjNZ5wyeunS3woMMkfozT4OFVs7GF4Plw+VBgaQ0e1+g==
+X-Received: by 2002:aa7:cb96:0:b0:413:8d05:ebc with SMTP id r22-20020aa7cb96000000b004138d050ebcmr14581306edt.81.1646123704506;
+        Tue, 01 Mar 2022 00:35:04 -0800 (PST)
 Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id q9-20020a17090609a900b006cd30a3c4f0sm5167184eje.147.2022.03.01.00.32.23
+        by smtp.gmail.com with ESMTPSA id h20-20020a1709060f5400b006d6d54b9203sm1065010ejj.38.2022.03.01.00.35.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 00:32:23 -0800 (PST)
-References: <20220225073922.3947-1-yu.tu@amlogic.com>
- <20220225073922.3947-4-yu.tu@amlogic.com>
- <1j4k4jxmji.fsf@starbuckisacylon.baylibre.com>
- <ec3a884e-618c-63ff-056f-b660848276f6@amlogic.com>
+        Tue, 01 Mar 2022 00:35:04 -0800 (PST)
+References: <20220228135530.6918-1-yu.tu@amlogic.com>
+ <29b34655-f820-39c9-4363-878481cd3f63@baylibre.com>
+ <Yh087tJhakKHs88e@kroah.com>
+ <8747c5c6-a129-3a26-8ebb-9e21a18236ec@baylibre.com>
+ <96dc5932-7a4c-4f92-b33b-bfd7fc4477e8@amlogic.com>
 User-agent: mu4e 1.6.10; emacs 27.1
 From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+To:     Yu Tu <yu.tu@amlogic.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V7 3/6] tty: serial: meson: Describes the calculation of
- the UART baud rate clock using a clock frame
-Date:   Tue, 01 Mar 2022 09:26:38 +0100
-In-reply-to: <ec3a884e-618c-63ff-056f-b660848276f6@amlogic.com>
-Message-ID: <1jr17mvzse.fsf@starbuckisacylon.baylibre.com>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
+ reported by kernel test robot
+Date:   Tue, 01 Mar 2022 09:33:15 +0100
+In-reply-to: <96dc5932-7a4c-4f92-b33b-bfd7fc4477e8@amlogic.com>
+Message-ID: <1jmtiavznx.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On Tue 01 Mar 2022 at 14:49, Yu Tu <yu.tu@amlogic.com> wrote:
+On Tue 01 Mar 2022 at 15:47, Yu Tu <yu.tu@amlogic.com> wrote:
 
-> Hi Jerome,
+> Hi Neil,
 >
-> On 2022/2/28 19:10, Jerome Brunet wrote:
+> On 2022/3/1 15:23, Neil Armstrong wrote:
 >> [ EXTERNAL EMAIL ]
->> 
->> On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
->> 
->>> Using the common Clock code to describe the UART baud rate clock
->>> makes it easier for the UART driver to be compatible with the
->>> baud rate requirements of the UART IP on different meson chips.
+>> Hi Greg,
+>> Le 28/02/2022 =C3=A0 22:21, Greg Kroah-Hartman a =C3=A9crit=C2=A0:
+>>> On Mon, Feb 28, 2022 at 03:13:48PM +0100, Neil Armstrong wrote:
+>>>> Hi,
+>>>>
+>>>> On 28/02/2022 14:55, Yu Tu wrote:
+>>>>> Describes the calculation of the UART baud rate clock using a clock
+>>>>> frame. Forgot to add in Kconfig kernel test Robot compilation error
+>>>>> due to COMMON_CLK dependency.
+>>>>>
+>>>>> Fixes: ("tty: serial:meson: Describes the calculation of the UART baud
+>>>>> rate clock using a clock frame=E2=80=9C)
+>>>>
+>>>> As I already replied on V2 of this patch, you're invited to apply these
+>>>> fixes directly
+>>>> on the next version of your "Use CCF to describe the UART baud rate
+>>>> clock" patchset
+>>>> and not as a separate patch.
 >>>
->>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->>> ---
->>>   drivers/tty/serial/meson_uart.c | 194 +++++++++++++++++++++++---------
->>>   1 file changed, 142 insertions(+), 52 deletions(-)
+>>> No, this is broken in linux-next now as the path listed here is in my
+>>> tree right now.
+>> Oh, I wasn't aware you took this patchset.
+>>=20
 >>>
->>> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
->>> index 7570958d010c..4768d51fac70 100644
->>> --- a/drivers/tty/serial/meson_uart.c
->>> +++ b/drivers/tty/serial/meson_uart.c
->>> @@ -6,6 +6,7 @@
->>>    */
->>>     #include <linux/clk.h>
->>> +#include <linux/clk-provider.h>
->>>   #include <linux/console.h>
->>>   #include <linux/delay.h>
->>>   #include <linux/init.h>
->>> @@ -65,9 +66,7 @@
->>>   #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
->>>     /* AML_UART_REG5 bits */
->>> -#define AML_UART_BAUD_MASK		0x7fffff
->>>   #define AML_UART_BAUD_USE		BIT(23)
->>> -#define AML_UART_BAUD_XTAL		BIT(24)
->>>     #define AML_UART_PORT_NUM		12
->>>   #define AML_UART_PORT_OFFSET		6
->>> @@ -76,6 +75,11 @@
->>>   #define AML_UART_POLL_USEC		5
->>>   #define AML_UART_TIMEOUT_USEC		10000
->>>   +struct meson_uart_data {
->>> +	struct clk	*baud_clk;
->>> +	bool		use_xtal_clk;
->>> +};
->>> +
->>>   static struct uart_driver meson_uart_driver;
->>>     static struct uart_port *meson_ports[AML_UART_PORT_NUM];
->>> @@ -293,19 +297,17 @@ static int meson_uart_startup(struct uart_port *port)
->>>     static void meson_uart_change_speed(struct uart_port *port, unsigned
->>> long baud)
->>>   {
->>> +	struct meson_uart_data *private_data = port->private_data;
->>>   	u32 val;
->>>     	while (!meson_uart_tx_empty(port))
->>>   		cpu_relax();
->>>   -	if (port->uartclk == 24000000) {
->>> -		val = ((port->uartclk / 3) / baud) - 1;
->>> -		val |= AML_UART_BAUD_XTAL;
->>> -	} else {
->>> -		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
->>> -	}
->>> +	val = readl(port->membase + AML_UART_REG5);
->>>   	val |= AML_UART_BAUD_USE;
->>>   	writel(val, port->membase + AML_UART_REG5);
->>> +
->>> +	clk_set_rate(private_data->baud_clk, baud);
->>>   }
->>>     static void meson_uart_set_termios(struct uart_port *port,
->>> @@ -395,11 +397,20 @@ static int meson_uart_verify_port(struct uart_port *port,
->>>     static void meson_uart_release_port(struct uart_port *port)
->>>   {
->>> -	/* nothing to do */
->>> +	struct meson_uart_data *private_data = port->private_data;
->>> +
->>> +	clk_disable_unprepare(private_data->baud_clk);
->>>   }
->>>     static int meson_uart_request_port(struct uart_port *port)
->>>   {
->>> +	struct meson_uart_data *private_data = port->private_data;
->>> +	int ret;
->>> +
->>> +	ret = clk_prepare_enable(private_data->baud_clk);
->>> +	if (ret)
->>> +		return ret;
->>> +
->> I think we already discussed that. This is yet another behavior change
->> Previously, enabling the clock was done at probe time.
->> It's fine to change it, if there is a justification, but not in the same
->> change as the rework of the divider
->> 
->>>   	return 0;
->>>   }
->>>   @@ -629,57 +640,106 @@ static struct uart_driver meson_uart_driver = {
->>>   	.cons		= MESON_SERIAL_CONSOLE,
->>>   };
->>>   -static inline struct clk *meson_uart_probe_clock(struct device *dev,
->>> -						 const char *id)
->>> -{
->>> -	struct clk *clk = NULL;
->>> -	int ret;
->>> -
->>> -	clk = devm_clk_get(dev, id);
->>> -	if (IS_ERR(clk))
->>> -		return clk;
->>> -
->>> -	ret = clk_prepare_enable(clk);
->>> -	if (ret) {
->>> -		dev_err(dev, "couldn't enable clk\n");
->>> -		return ERR_PTR(ret);
->>> -	}
->>> +static const struct clk_div_table xtal_div_table[] = {
->>> +	{ 0, 3 },
->>> +	{ 1, 1 },
->>> +	{ 2, 2 },
->>> +	{ 3, 2 },
->>> +};
->>>   -	devm_add_action_or_reset(dev,
->>> -			(void(*)(void *))clk_disable_unprepare,
->>> -			clk);
->>> +static u32 use_xtal_mux_table;
->>>   -	return clk;
->>> -}
->>> -
->>> -static int meson_uart_probe_clocks(struct platform_device *pdev,
->>> -				   struct uart_port *port)
->>> +static int meson_uart_probe_clocks(struct uart_port *port)
->>>   {
->>> -	struct clk *clk_xtal = NULL;
->>> -	struct clk *clk_pclk = NULL;
->>> -	struct clk *clk_baud = NULL;
->>> +	struct meson_uart_data *private_data = port->private_data;
->>> +	struct clk *clk_baud, *clk_xtal;
->>> +	struct clk_hw *hw, *clk81_div4_hw;
->>> +	char clk_name[32];
->>> +	struct clk_parent_data use_xtal_mux_parents;
->>>   -	clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
->>> -	if (IS_ERR(clk_pclk))
->>> -		return PTR_ERR(clk_pclk);
->>> +	clk_baud = devm_clk_get(port->dev, "baud");
->>> +	if (IS_ERR(clk_baud)) {
->>> +		dev_err(port->dev, "Failed to get the 'baud' clock\n");
->>> +		return PTR_ERR(clk_baud);
->>> +	}
->> Calling devm_clk_get() would not be necessary if you used "fw_name" in
->> the parent table. Same bellow
-> Personally, I think it is good that you can understand your meaning, but as
-> you are an expert in CCF, it is nice to write code in that way, but for
-> people who are not unfamiliar with CCF, they may only care about the use of
-> CCF.It's not pretty to use but it's easy to understand.
+>>> I need a fix for it, or I can revert the original.
+>> Please revert the whole patchset, it's not ready yet, neither fully=20
+>> reviewed ands buggy
+>> on old SoCs.
+> I have tested that there is no problem with G12A and S4 boards. Can I mer=
+ge
+> them first and fix them later if there is any problem?
 
-There is no magic in CCF. Stephen and the other contributor took time to
-add the fw_name mechanism espcially for this. I'm suggesting and you are
-expected to actually look at the code and considerer it. Lack of
-"expertize" is not a valid argument.
+That's called a regression. That is not how we do things in mainline
+There is still a lot of people using GXL boards. Those are still sold even.
 
->> 
->>>   -	clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
->>> +	clk_xtal = devm_clk_get(port->dev, "xtal");
->>>   	if (IS_ERR(clk_xtal))
->>> -		return PTR_ERR(clk_xtal);
->>> -
->>> -	clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
->>> -	if (IS_ERR(clk_baud))
->>> -		return PTR_ERR(clk_baud);
->>> +		return dev_err_probe(port->dev, PTR_ERR(clk_xtal),
->>> +				     "Failed to get the 'xtal' clock\n");
->>> +
->>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>> +		 "clk81_div4");
->>> +	clk81_div4_hw = devm_clk_hw_register_fixed_factor(port->dev,
->>> +							  clk_name,
->>> +							  __clk_get_name(clk_baud),
->>> +							  CLK_SET_RATE_NO_REPARENT,
->>> +							  1, 4);
->>> +	if (IS_ERR(clk81_div4_hw))
->>> +		return PTR_ERR(clk81_div4_hw);
->> So, whatever the chip type - you register a fixed 4 divider ....
-> As you suggested last time, this CLK has been stored, but some chips are
-> not used. If you have better suggestions, please let me know and I can 
-> make corrections later.
-
-No, never suggested that. I suspected that 4 divider design was the same
-on all SoC version. You reported it was not, So I don't get this
-
->> 
->>> +
->>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>> +		 "xtal_div");
->>> +	hw = devm_clk_hw_register_divider_table(port->dev,
->>> +						clk_name,
->>> +						__clk_get_name(clk_baud),
->>> +						CLK_SET_RATE_NO_REPARENT,
->>> +						port->membase + AML_UART_REG5,
->>> +						26, 2,
->>> +						CLK_DIVIDER_READ_ONLY,
->>> +						xtal_div_table, NULL);
->>> +	if (IS_ERR(hw))
->>> +		return PTR_ERR(hw);
->>> +
->>> +	if (private_data->use_xtal_clk) {
->>> +		use_xtal_mux_table = 1;
->>> +		use_xtal_mux_parents.hw = hw;
->>> +	} else {
->>> +		use_xtal_mux_parents.hw = clk81_div4_hw;
->> ... which you may end up not using in the end
->> This is bad.
-> If you have better suggestions, please let me know and I can make
-> corrections later.
->> 
->>> +	}
->>>   -	port->uartclk = clk_get_rate(clk_baud);
->>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>> +		 "use_xtal");
->>> +	hw = __devm_clk_hw_register_mux(port->dev, NULL,
->>> +					clk_name,
->>> +					1,
->>> +					NULL, NULL,
->>> +					&use_xtal_mux_parents,
->>> +					CLK_SET_RATE_PARENT,
->>> +					port->membase + AML_UART_REG5,
->>> +					24, 0x1,
->>> +					CLK_MUX_READ_ONLY,
->>> +					&use_xtal_mux_table, NULL);
->>> +
->>> +	if (IS_ERR(hw))
->>> +		return PTR_ERR(hw);
->>> +
->>> +	port->uartclk = clk_hw_get_rate(hw);
->>> +
->>> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->>> +		 "baud_div");
->>> +	hw = devm_clk_hw_register_divider(port->dev,
->>> +					  clk_name,
->>> +					  clk_hw_get_name(hw),
->>> +					  CLK_SET_RATE_PARENT,
->>> +					  port->membase + AML_UART_REG5,
->>> +					  0, 23,
->>> +					  CLK_DIVIDER_ROUND_CLOSEST,
->>> +					  NULL);
->>> +	if (IS_ERR(hw))
->>> +		return PTR_ERR(hw);
->>> +
->>> +	private_data->baud_clk = hw->clk;
->>>     	return 0;
->>>   }
->>>     static int meson_uart_probe(struct platform_device *pdev)
->>>   {
->>> +	struct meson_uart_data *private_data;
->>>   	struct resource *res_mem;
->>>   	struct uart_port *port;
->>> +	struct clk *pclk;
->>>   	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->>>   	int ret = 0;
->>>   	int irq;
->>> @@ -705,6 +765,15 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>   	if (!res_mem)
->>>   		return -ENODEV;
->>>   +	pclk = devm_clk_get(&pdev->dev, "pclk");
->>> +	if (IS_ERR(pclk))
->>> +		return dev_err_probe(&pdev->dev, PTR_ERR(pclk),
->>> +				     "Failed to get the 'pclk' clock\n");
->>> +
->>> +	ret = clk_prepare_enable(pclk);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>>   	irq = platform_get_irq(pdev, 0);
->>>   	if (irq < 0)
->>>   		return irq;
->>> @@ -724,9 +793,13 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>   	if (IS_ERR(port->membase))
->>>   		return PTR_ERR(port->membase);
->>>   -	ret = meson_uart_probe_clocks(pdev, port);
->>> -	if (ret)
->>> -		return ret;
->>> +	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->>> +				    GFP_KERNEL);
->>> +	if (!private_data)
->>> +		return -ENOMEM;
->>> +
->>> +	if (device_get_match_data(&pdev->dev))
->>> +		private_data->use_xtal_clk = true;
->> As long as the device matches a compatible below, the flag will end up
->> 'true', regardless of values in the the dt_match table.
->> I don't think this is the intended behavior.
->> It highlights that proper testing of this series is important.
->> Being at Amlogic, I'm sure you can test on more than just g12a and s4
->> 
-> I believe with your experience this may be a real problem. I heard that
-> your company has our boards. If so, can you help verify it?
->>>     	port->iotype = UPIO_MEM;
->>>   	port->mapbase = res_mem->start;
->>> @@ -740,6 +813,11 @@ static int meson_uart_probe(struct platform_device *pdev)
->>>   	port->x_char = 0;
->>>   	port->ops = &meson_uart_ops;
->>>   	port->fifosize = fifosize;
->>> +	port->private_data = private_data;
->>> +
->>> +	ret = meson_uart_probe_clocks(port);
->>> +	if (ret)
->>> +		return ret;
->>>     	meson_ports[pdev->id] = port;
->>>   	platform_set_drvdata(pdev, port);
->>> @@ -766,10 +844,22 @@ static int meson_uart_remove(struct platform_device *pdev)
->>>   }
->>>     static const struct of_device_id meson_uart_dt_match[] = {
->>> -	{ .compatible = "amlogic,meson6-uart" },
->>> -	{ .compatible = "amlogic,meson8-uart" },
->>> -	{ .compatible = "amlogic,meson8b-uart" },
->>> -	{ .compatible = "amlogic,meson-gx-uart" },
->>> +	{
->>> +		.compatible = "amlogic,meson6-uart",
->>> +		.data = (void *)false,
->>> +	},
->>> +	{
->>> +		.compatible = "amlogic,meson8-uart",
->>> +		.data = (void *)false,
->>> +	},
->>> +	{
->>> +		.compatible = "amlogic,meson8b-uart",
->>> +		.data = (void *)false,
->>> +	},
->>> +	{
->>> +		.compatible = "amlogic,meson-gx-uart",
->>> +		.data = (void *)true,
->>> +	},
->>>   	{ /* sentinel */ },
->>>   };
->>>   MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
->> 
+>> Thanks,
+>> Neil
+>>=20
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>>=20
 
