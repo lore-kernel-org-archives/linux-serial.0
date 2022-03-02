@@ -2,110 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13622C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Mar 2022 17:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DD6C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Mar 2022 17:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244234AbiCBRsC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Mar 2022 12:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
+        id S244274AbiCBRyN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Mar 2022 12:54:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244229AbiCBRr7 (ORCPT
+        with ESMTP id S244288AbiCBRyM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Mar 2022 12:47:59 -0500
-Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C86D4C8D;
-        Wed,  2 Mar 2022 09:47:16 -0800 (PST)
-Received: by mail-oo1-f52.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so2791141ooi.0;
-        Wed, 02 Mar 2022 09:47:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=e4Ynsr1KRV81mh/v7NFfZK09/uSAr9hKDyQJT4xohZg=;
-        b=F9JgVhJBvYb49StGk//PtPYAEJK5jf2Ohl62xcKR4nsyszVnXRL4AgYAlo45815HMd
-         jZdaUJAsR66IhBcVioSTvVAvAxVY4XTAYOURPCXBDULkQmkZhNbz17dXWMpXXDv37T2O
-         bopM88yJ64BCMxGrWzDveeV4LIEmm1JsfcbO556zWdvPDUjyKrq2hopQ7tfSLJQ3lTwz
-         /vQlH59B1724/Sip3Dwzidb98fvkS6exsLG+EBzCmNVXY3CfFoywhU5aIsBkOnCwRQzO
-         ECltmghxaNv5bH0bPzi5h4lTfDbOf7PT4+wYbkWgKynULJuWaqJsCyCHMriT+KMAOhjU
-         0Cqg==
-X-Gm-Message-State: AOAM530aOFHjeudPWokfPbNP2vkcWtguDFZcWVF4hqEi1DJW/82hxx3Y
-        S1RQWMHuqLEJUNT1ZavFrw==
-X-Google-Smtp-Source: ABdhPJzg5JoFk1NbMDL+DRO0m47cfdlGNhs1NOFAqhUNaPHs7ws2+aCvpQ+SNBK/slfH92ZxDB2vzQ==
-X-Received: by 2002:a4a:e216:0:b0:320:5471:3284 with SMTP id b22-20020a4ae216000000b0032054713284mr2599557oot.70.1646243235602;
-        Wed, 02 Mar 2022 09:47:15 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bd14-20020a056808220e00b002d53f900b9csm10199789oib.30.2022.03.02.09.47.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 09:47:14 -0800 (PST)
-Received: (nullmailer pid 3948765 invoked by uid 1000);
-        Wed, 02 Mar 2022 17:47:13 -0000
-Date:   Wed, 2 Mar 2022 11:47:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Johan Hovold <johan@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/7] dt_bindings: snps-dw-apb-uart: Add RS485
-Message-ID: <Yh+tofzEMXSWr60c@robh.at.kernel.org>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-5-ilpo.jarvinen@linux.intel.com>
+        Wed, 2 Mar 2022 12:54:12 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740E350E11
+        for <linux-serial@vger.kernel.org>; Wed,  2 Mar 2022 09:53:28 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nPT9l-0004SU-CE; Wed, 02 Mar 2022 18:52:57 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nPT9Y-002Fw7-7a; Wed, 02 Mar 2022 18:52:43 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nPT9W-006XrV-PN; Wed, 02 Mar 2022 18:52:42 +0100
+Date:   Wed, 2 Mar 2022 18:52:42 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Andy Gross <agross@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Takao Orito <orito.takao@socionext.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s
+ character an unsigned char
+Message-ID: <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
+References: <20220302072732.1916-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hskdw542yop5hfv5"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220302095606.14818-5-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220302072732.1916-1-jslaby@suse.cz>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 11:56:03AM +0200, Ilpo Järvinen wrote:
-> Add RS485 enable & line polarity properties.
-> 
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  .../bindings/serial/snps-dw-apb-uart.yaml       | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 12137fe80acf..8d440afabb1f 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -103,6 +103,23 @@ properties:
->        register. Define this if your serial port does not use this pin.
->      type: boolean
->  
-> +  snps,rs485-interface-en:
-> +    description: Use true RS-485 DE and RE signals (in contrast to RS-485
-> +      emulation using RTS). Requires IP version 4 or above.
-> +    type: boolean
-> +
 
-> +  snps,de-active-high:
-> +    description: Defines the polarity of driver enable (DE_EN) signal.
-> +      Meaningful only with snps,rs485-interface-en. True indicates active
-> +      high.
-> +    type: boolean
-> +
-> +  snps,re-active-high:
-> +    description: Defines the polarity of receiver enable (RE_EN) signal.
-> +      Meaningful only with snps,rs485-interface-en. True indicates active
-> +      high.
-> +    type: boolean
+--hskdw542yop5hfv5
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Seems plausible that other rs485 implementations could have varying 
-polarities too. IOW, should be common properties.
+On Wed, Mar 02, 2022 at 08:27:32AM +0100, Jiri Slaby wrote:
+> Currently, uart_console_write->putchar's second parameter (the
+> character) is of type int. It makes little sense, provided uart_console_w=
+rite()
+> accepts the input string as "const char *s" and passes its content -- the
+> characters -- to putchar(). So switch the character's type to unsigned
+> char.
+>=20
+> We don't use char as that is signed on some platforms. That would cause
+> troubles for drivers which (implicitly) cast the char to u16 when
+> writing to the device. Sign extension would happen in that case and the
+> value written would be completely different to the provided char. DZ is
+> an example of such a driver -- on MIPS, it uses u16 for dz_out in
+> dz_console_putchar().
 
-> +
->  required:
->    - compatible
->    - reg
-> -- 
-> 2.30.2
-> 
+I always thought this was bigger than 8bit for hardware that supports
+wider characters. But if that's the case that's completely unsupported,
+there isn't even CS9.
+
+So
+
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--hskdw542yop5hfv5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIfrucACgkQwfwUeK3K
+7AmopggAnOhPU9WpzjgGeCrJ82M89QE1zHwxLHny10qpp8CNWjSIBp6GIrgxrTA1
+HotBRcS0/boZO+3hvLzTwpU3rQ9Pedgt6hUKfsl5ckcqVrlg0Yp5WZ6+cZEa0NcE
+Y+gkX3jAowpBb3cdrkxyF8REPsUn57S+/tb8H4x7aroUey13AYKjxjEGZMlaWpms
+pNyr/cXJpZhJIp4XvFc7lTydslM8QwH/Y0emW7gR7DLFBUw02MNnw7slIKTHgpjl
+T49NU/ufUTp8FVadiQ8gwzABZLDPgE0+TDxnHEXGqxQtzsN6b76mqNYYOhXtWGM6
+hVjAWQ1lu6zv4vddIa4UgbrfSLWPxQ==
+=MAV/
+-----END PGP SIGNATURE-----
+
+--hskdw542yop5hfv5--
