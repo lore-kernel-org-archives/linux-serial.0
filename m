@@ -2,213 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E28FC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Mar 2022 18:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D88C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Mar 2022 18:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244719AbiCBSsF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Mar 2022 13:48:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S244726AbiCBSsW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 2 Mar 2022 13:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244726AbiCBSsE (ORCPT
+        with ESMTP id S244733AbiCBSsT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Mar 2022 13:48:04 -0500
-X-Greylist: delayed 899 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 10:47:20 PST
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565ADD5571;
-        Wed,  2 Mar 2022 10:47:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1646245282; bh=r/KWBCXbgbUsx0MROHM9/eZLCf5PfDdjQ920as27D3k=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=D2nwKwiYcjfQ8oI3lQewTctuUi8U4oh8bNo2fgLFtdJlnEEKPqbSl/4HCVSEanMn4
-         3RTuUSTz/1dEi3fgmH0m2GCM16EQNrmAUzX6Vla+Dpc0F7l792PeVNRR/UvsyTUsso
-         fojz0nHmJamBDGby1t7rqGhtVFt8K4DBvXpB8oJKcBu2PlmqUMFBoXUApvB4dNrzaR
-         Y5v4yFqHW07zhDlJnzE1XFZX0IElyreDBbxTF6tncpceXn6DUlqp+Bp5e8TuBukRkS
-         OMABrntTimVnol9CcvJIurAztzqKq5d6vXpigNoE7OfhCX0stZ2hPYVlzZwTKivbp3
-         AWQCNqKfDfS+g==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 293C039B89A;
-        Wed,  2 Mar 2022 18:21:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1646245282; bh=r/KWBCXbgbUsx0MROHM9/eZLCf5PfDdjQ920as27D3k=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=D2nwKwiYcjfQ8oI3lQewTctuUi8U4oh8bNo2fgLFtdJlnEEKPqbSl/4HCVSEanMn4
-         3RTuUSTz/1dEi3fgmH0m2GCM16EQNrmAUzX6Vla+Dpc0F7l792PeVNRR/UvsyTUsso
-         fojz0nHmJamBDGby1t7rqGhtVFt8K4DBvXpB8oJKcBu2PlmqUMFBoXUApvB4dNrzaR
-         Y5v4yFqHW07zhDlJnzE1XFZX0IElyreDBbxTF6tncpceXn6DUlqp+Bp5e8TuBukRkS
-         OMABrntTimVnol9CcvJIurAztzqKq5d6vXpigNoE7OfhCX0stZ2hPYVlzZwTKivbp3
-         AWQCNqKfDfS+g==
-Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id 16A0B39B811;
-        Wed,  2 Mar 2022 18:21:19 +0000 (UTC)
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-To:     Jiri Slaby <jslaby@suse.cz>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Michal Simek <michal.simek@xilinx.com>
-References: <20220302072732.1916-1-jslaby@suse.cz>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <9f1f4434-56cb-e8e7-b947-6630752a74c3@mleia.com>
-Date:   Wed, 2 Mar 2022 20:21:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Wed, 2 Mar 2022 13:48:19 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66A21FCE7
+        for <linux-serial@vger.kernel.org>; Wed,  2 Mar 2022 10:47:30 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id a5-20020a05600c224500b003832be89f25so1859054wmm.2
+        for <linux-serial@vger.kernel.org>; Wed, 02 Mar 2022 10:47:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=MpvCyxznyLabHDrCm6rxmu/VcYL7AfSNQy5WoDg3Fdk=;
+        b=ayveQov114rzdlOFH4/hjKrRzVe1xWuYzjAycj5mqqFmad/+jLmn8y7Hm27dj5+bmx
+         mngdcgnWBq9/ixt1F9pWhhsJ6V4O13Cc8nY5l4Pr6fdpd1NDtgqSYyNOE7Ob1HQoIEHp
+         HuDdCoxkgOOzZBoO/nV8uCgUKGyzndhKvOrNt3iapEndCmv40LEJ2+A5ujVOUIDUqeos
+         QOO+y9ZnZkFCAvTXGC9EP3Aa8rZFzjc3cRa4dj716mFq9Ov0BkpJQsF7whbLzJP2Yen0
+         6jv89ovTeF/503euJDjpIdsxn7G1khf7WDTeJNHdRlL0wjxZ6PGWO2RO2E71mkWnGrt0
+         4Ebw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=MpvCyxznyLabHDrCm6rxmu/VcYL7AfSNQy5WoDg3Fdk=;
+        b=X7C2/njCDVJsDg1bJltfXAxMTBcdFoATHbX0X7eiW7Z1Cdlse/2QU676FouHUd4zM2
+         HJWKhFuiYuUQOXqCNC/QmO4Y6tasQtHSJU5JFNOGkqgOknoKUDjrV/Q0diRqqQfjqD/R
+         z3wL2lv9YRiaMKKFalBG0HvT17IU02clSvemP7VTJnX2cqKeJjzgQYQmvaf3oOSgSuQQ
+         AGva9iZs1GkTbVsRoRh6eemygPD/1ZO/B5jqxdtJ+dLfryzrBTayb3cz8XOGwnI3Fj0p
+         hwRwgzOOsmQGZUoryJEx78nP5RqWlbZ1O44iHQETV3CTInl8x6xBMQdie1111Tg+OaZL
+         uNyA==
+X-Gm-Message-State: AOAM532+DoF9+q5w9q3iR+CWaAQBG4sbqrY/n+lj+yYcIjCM4QxiN3nQ
+        Tc6mKmpf0JGpQQsAfg7qXwv0Y+/hXZ+vu7zXZoFWnuGj0UM=
+X-Google-Smtp-Source: ABdhPJx4VlG1uLw1X5Man8cUwPPgKNcGQCipMiyzRhUmmZmAGg1kwq3n154Io85dgiVJFX0rFT0PS9EC9zejVXlq1dE=
+X-Received: by 2002:a05:600c:4f11:b0:381:84d3:c9b5 with SMTP id
+ l17-20020a05600c4f1100b0038184d3c9b5mr967793wmq.34.1646246848798; Wed, 02 Mar
+ 2022 10:47:28 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220302072732.1916-1-jslaby@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220302_182122_201121_FC62FFD6 
-X-CRM114-Status: GOOD (  26.46  )
+From:   Dawid Buchwald <buchwald.dawid@gmail.com>
+Date:   Wed, 2 Mar 2022 19:47:17 +0100
+Message-ID: <CAHxGD_vXqJS-6W6AS2hc7H-2ht8Ofy16faSpgaqoDArk3CY0Qw@mail.gmail.com>
+Subject: [PATCH] Support for new variant of PL2303GS adapter
+To:     linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 3/2/22 9:27 AM, Jiri Slaby wrote:
-> Currently, uart_console_write->putchar's second parameter (the
-> character) is of type int. It makes little sense, provided uart_console_write()
-> accepts the input string as "const char *s" and passes its content -- the
-> characters -- to putchar(). So switch the character's type to unsigned
-> char.
-> 
-> We don't use char as that is signed on some platforms. That would cause
-> troubles for drivers which (implicitly) cast the char to u16 when
-> writing to the device. Sign extension would happen in that case and the
-> value written would be completely different to the provided char. DZ is
-> an example of such a driver -- on MIPS, it uses u16 for dz_out in
-> dz_console_putchar().
-> 
-> Note we do the char -> uchar conversion implicitly in
-> uart_console_write(). Provided we do not change size of the data type,
-> sign extension does not happen there, so the problem is void.
-> 
-> This makes the types consistent and unified with the rest of the uart
-> layer, which uses unsigned char in most places already. One exception is
-> xmit_buf, but that is going to be converted later.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Acked-by: Richard Genoud <richard.genoud@gmail.com> [atmel_serial]
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com> [bcm63xx_uart]
-> Acked-by: Tobias Klauser <tklauser@distanz.ch> [altera_*]
-> Cc: Paul Cercueil <paul@crapouillou.net>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Vineet Gupta <vgupta@kernel.org>
-> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: Alexander Shiyan <shc_work@mail.ru>
-> Cc: Baruch Siach <baruch@tkos.co.il>
-> Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Albert Ou <aou@eecs.berkeley.edu>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Karol Gugala <kgugala@antmicro.com>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Jerome Brunet <jbrunet@baylibre.com>
-> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Cc: Taichi Sugaya <sugaya.taichi@socionext.com>
-> Cc: Takao Orito <orito.takao@socionext.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: "Andreas Färber" <afaerber@suse.de>
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Peter Korsgaard <peter@korsgaard.com>
-> Cc: Michal Simek <michal.simek@xilinx.com>
-> ---
+This is the issue I have with recently acquired PL2303 adapter:
 
-[snip]
+[   70.502848] usb 1-2: new full-speed USB device number 5 using xhci_hcd
+[   70.652523] usb 1-2: New USB device found, idVendor=067b,
+idProduct=23f3, bcdDevice= 6.05
+[   70.652533] usb 1-2: New USB device strings: Mfr=1, Product=2,
+SerialNumber=3
+[   70.652538] usb 1-2: Product: USB-Serial Controller
+[   70.652540] usb 1-2: Manufacturer: Prolific Technology Inc.
+[   70.652543] usb 1-2: SerialNumber: CJAKj19B616
+[   70.674558] usbcore: registered new interface driver usbserial_generic
+[   70.674578] usbserial: USB Serial support registered for generic
+[   70.677490] usbcore: registered new interface driver pl2303
+[   70.677498] usbserial: USB Serial support registered for pl2303
+[   70.677510] pl2303 1-2:1.0: pl2303 converter detected
+[   70.677513] pl2303 1-2:1.0: unknown device type, please report to
+linux-usb@vger.kernel.org
 
-> diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-> index 54437a087aa0..93140cac1ca1 100644
-> --- a/drivers/tty/serial/lpc32xx_hs.c
-> +++ b/drivers/tty/serial/lpc32xx_hs.c
-> @@ -122,7 +122,7 @@ static void wait_for_xmit_ready(struct uart_port *port)
->   	}
->   }
->   
-> -static void lpc32xx_hsuart_console_putchar(struct uart_port *port, int ch)
-> +static void lpc32xx_hsuart_console_putchar(struct uart_port *port, unsigned char ch)
->   {
->   	wait_for_xmit_ready(port);
->   	writel((u32)ch, LPC32XX_HSUART_FIFO(port->membase));
-
-for NXP LPC32xx HS UART:
-
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
-
---
-Best wishes,
-Vladimir
+Signed-off-by: Dawid Buchwald <buchwald.dawid@gmail.com>
+---
+diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
+index a70fd86f735c..1072f8eb6ab9 100644
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -435,6 +435,7 @@ static int pl2303_detect_type(struct usb_serial *serial)
+                case 0x105:
+                case 0x305:
+                case 0x405:
++               case 0x605:
+                        /*
+                         * Assume it's an HXN-type if the device doesn't
+                         * support the old read request value.
