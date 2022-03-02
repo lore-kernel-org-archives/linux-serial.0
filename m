@@ -2,91 +2,301 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4788C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Mar 2022 21:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564E4C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Mar 2022 02:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235398AbiCAVHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39830 "EHLO
+        id S239065AbiCBCQA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 1 Mar 2022 21:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236791AbiCAVHF (ORCPT
+        with ESMTP id S233943AbiCBCQA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:07:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2CF85965;
-        Tue,  1 Mar 2022 13:06:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7689360FA8;
-        Tue,  1 Mar 2022 21:06:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6658BC340EF;
-        Tue,  1 Mar 2022 21:06:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646168782;
-        bh=LUH6Agnh4EUwm1WPKWlvIKHHlNsF7Xd6XjQCsPhHrhc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ebjrozWnpXJYbhUq6pS5tgtAdOyzvGpvvtFgBn11LUQER2RwtyZGmPGWEcrgFxo91
-         BUhjMNUPJVa4r04dAzAXFcqC7ybum5Qj8XuXzOBIRUXeQmy2KmdIpxJ/VQzZbf1qJM
-         AHugB0VuyM8LIcyZkK0Q7Vkzkfro/uSCUn0VGGSE=
-Date:   Tue, 1 Mar 2022 22:06:20 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Tue, 1 Mar 2022 21:16:00 -0500
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCC4A6538;
+        Tue,  1 Mar 2022 18:15:17 -0800 (PST)
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 2 Mar
+ 2022 10:15:14 +0800
+Message-ID: <6f120165-b6ec-ab71-ee42-e3246726f4f1@amlogic.com>
+Date:   Wed, 2 Mar 2022 10:15:13 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V7 0/6] Use CCF to describe the UART baud rate clock
+Content-Language: en-US
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH V3] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Message-ID: <Yh6KzOU4xsSB0lRf@kroah.com>
-References: <20220228135530.6918-1-yu.tu@amlogic.com>
- <29b34655-f820-39c9-4363-878481cd3f63@baylibre.com>
- <Yh087tJhakKHs88e@kroah.com>
- <8747c5c6-a129-3a26-8ebb-9e21a18236ec@baylibre.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220225073922.3947-1-yu.tu@amlogic.com>
+ <1j8rtvxnkv.fsf@starbuckisacylon.baylibre.com>
+ <d0da38f1-72c1-d111-2d0d-2bfa2faf1a1d@amlogic.com>
+ <1jilsyvyz9.fsf@starbuckisacylon.baylibre.com>
+ <0054cf2f-f09d-5b01-d6ca-0dc877a757c3@amlogic.com>
+ <c23fe6e7-879a-fab6-71ba-fcebdaf7ae37@baylibre.com>
+ <4712c41c-fc9f-e8d1-c233-a6c2de0c23dd@amlogic.com>
+In-Reply-To: <4712c41c-fc9f-e8d1-c233-a6c2de0c23dd@amlogic.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8747c5c6-a129-3a26-8ebb-9e21a18236ec@baylibre.com>
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 08:23:26AM +0100, Neil Armstrong wrote:
-> Hi Greg,
-> 
-> Le 28/02/2022 à 22:21, Greg Kroah-Hartman a écrit :
-> > On Mon, Feb 28, 2022 at 03:13:48PM +0100, Neil Armstrong wrote:
-> > > Hi,
-> > > 
-> > > On 28/02/2022 14:55, Yu Tu wrote:
-> > > > Describes the calculation of the UART baud rate clock using a clock
-> > > > frame. Forgot to add in Kconfig kernel test Robot compilation error
-> > > > due to COMMON_CLK dependency.
-> > > > 
-> > > > Fixes: ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
-> > > 
-> > > As I already replied on V2 of this patch, you're invited to apply these fixes directly
-> > > on the next version of your "Use CCF to describe the UART baud rate clock" patchset
-> > > and not as a separate patch.
-> > 
-> > No, this is broken in linux-next now as the path listed here is in my
-> > tree right now.
-> 
-> Oh, I wasn't aware you took this patchset.
-> 
-> > 
-> > I need a fix for it, or I can revert the original.
-> 
-> Please revert the whole patchset, it's not ready yet, neither fully reviewed ands buggy
-> on old SoCs.
+Hi Greg,
+	I have no problem with trying to revert this list of submissions. I'm 
+sorry about that.
 
-Yes, will go do so now, thanks for letting me know and sorry about all
-of this.
-
-greg k-h
+On 2022/3/1 18:12, Yu Tu wrote:
+> Hi Neil,
+>      Thank you very much for your advice.
+> 
+> On 2022/3/1 17:27, Neil Armstrong wrote:
+>> [ EXTERNAL EMAIL ]
+>>
+>> Hi,
+>>
+>> On 01/03/2022 10:01, Yu Tu wrote:
+>>> Hi Jerome,
+>>>
+>>> On 2022/3/1 16:36, Jerome Brunet wrote:
+>>>> [ EXTERNAL EMAIL ]
+>>>>
+>>>>
+>>>> On Tue 01 Mar 2022 at 13:54, Yu Tu <yu.tu@amlogic.com> wrote:
+>>>>
+>>>>> Hi Jerome,
+>>>>>
+>>>>> On 2022/2/28 18:59, Jerome Brunet wrote:
+>>>>>> [ EXTERNAL EMAIL ]
+>>>>>>
+>>>>>> On Fri 25 Feb 2022 at 15:39, Yu Tu <yu.tu@amlogic.com> wrote:
+>>>>>>
+>>>>>>> Using the common Clock code to describe the UART baud rate
+>>>>>>> clock makes it easier for the UART driver to be compatible
+>>>>>>> with the baud rate requirements of the UART IP on different
+>>>>>>> meson chips. Add Meson S4 SoC compatible.
+>>>>>>>
+>>>>>>> The test method:
+>>>>>>> Start the console and run the following commands in turn:
+>>>>>>> stty -F /dev/ttyAML0 115200 and stty -F /dev/ttyAML0 921600.
+>>>>>>>
+>>>>>>> Since most SoCs are too old, I was able to find all the platforms 
+>>>>>>> myself
+>>>>>>> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it 
+>>>>>>> with
+>>>>>>> G12A and S4.
+>>>>>> GXL based board are still very common an easy to come by.
+>>>>>> I'm quite surprised that you are unable to test on this SoC family
+>>>>> The fact of the matter is that the S4 is our end-2020 chip, the 
+>>>>> G12A is
+>>>>> five years old, and the GXL is seven years old. If you must ask for a
+>>>>> test, I will report this problem to the leadership to coordinate 
+>>>>> resources.
+>>>>
+>>>> The age of the SoC is irrelevant. SoCs don't get deprecated based on 
+>>>> age
+>>>> in mainline. It is not just GXL, same goes for meson8.
+>>>>
+>>>> These SoCs are actively used. Boards with these SoCs are still sold and
+>>>> easily available. See the VIM1 or the Libretech boards.
+>>>>
+>>>> Breaking things for the the users of these SoCs is not acceptable.
+>>>> So yes, looking at your series, I strongly recommend you do more tests.
+>>>>
+>>> You have a point there. Let's go back to the root of the problem. I 
+>>> aim to increase S4. The S4 uses 12MHZ to calculate baud. That's all.
+>>> Change it to CCF as you suggested. The changes are so large that you 
+>>> ask to test all the chips.
+>>> I also mentioned last time that using CCF would lead to a longer 
+>>> drive probe time and affect the board startup time. If this problem 
+>>> is not solved, can we reject the way you suggest using CCF?
+>>
+>> I have a much simpler proposal (non-tested):
+>>
+> I can test it for you. But if you need to add S4 chips. Again, we need 
+> to add a judgment. Is that acceptable to you?
+> 
+> What we've been talking about for a long time is how to make the least 
+> changes and the least impact for the S4.
+> 
+> The fact is that Amlogic has recommended 12MHz for baud rates for all 
+> chips starting with the G12A. I really doubt whether the G12A/B and SM1 
+> were tested before. So if we want to upload subsequent Amlogic chips, 
+> not only the S4 needs to solve the 12MHz problem, but other chips can't 
+> get around this area.
+>> ============><===================================================
+>> diff --git a/drivers/tty/serial/meson_uart.c 
+>> b/drivers/tty/serial/meson_uart.c
+>> index 45e00d928253..eda3fdad60d1 100644
+>> --- a/drivers/tty/serial/meson_uart.c
+>> +++ b/drivers/tty/serial/meson_uart.c
+>> @@ -76,6 +76,12 @@
+>>   #define AML_UART_POLL_USEC        5
+>>   #define AML_UART_TIMEOUT_USEC        10000
+>>
+>> +struct meson_uart_data {
+>> +    struct clk    *clk_pclk;
+>> +    struct clk    *clk_xtal;
+>> +    struct clk    *clk_baud;
+>> +};
+>> +
+>>   static struct uart_driver meson_uart_driver;
+>>
+>>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>> @@ -293,16 +299,17 @@ static int meson_uart_startup(struct uart_port 
+>> *port)
+>>
+>>   static void meson_uart_change_speed(struct uart_port *port, unsigned 
+>> long baud)
+>>   {
+>> +    struct meson_uart_data *private_data = port->private_data;
+>>       u32 val;
+>>
+>>       while (!meson_uart_tx_empty(port))
+>>           cpu_relax();
+>>
+>> -    if (port->uartclk == 24000000) {
+>> -        val = ((port->uartclk / 3) / baud) - 1;
+>> +    if (clk_is_match(private_data->clk_baud, private_data->clk_xtal)) {
+>> +        val = ((clk_get_rate(private_data->clk_baud) / 3) / baud) - 1;
+>>           val |= AML_UART_BAUD_XTAL;
+>>       } else {
+>> -        val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
+>> +        val = ((clk_get_rate(private_data->clk_baud) * 10 / (baud * 
+>> 4) + 5) / 10) - 1;
+>>       }
+>>       val |= AML_UART_BAUD_USE;
+>>       writel(val, port->membase + AML_UART_REG5);
+>> @@ -666,31 +673,26 @@ static inline struct clk 
+>> *meson_uart_probe_clock(struct device *dev,
+>>   }
+>>
+>>   static int meson_uart_probe_clocks(struct platform_device *pdev,
+>> -                   struct uart_port *port)
+>> +                   struct meson_uart_data *private_data)
+>>   {
+>> -    struct clk *clk_xtal = NULL;
+>> -    struct clk *clk_pclk = NULL;
+>> -    struct clk *clk_baud = NULL;
+>> -
+>> -    clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+>> -    if (IS_ERR(clk_pclk))
+>> -        return PTR_ERR(clk_pclk);
+>> +    private_data->clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+>> +    if (IS_ERR(private_data->clk_pclk))
+>> +        return PTR_ERR(private_data->clk_pclk);
+>>
+>> -    clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+>> -    if (IS_ERR(clk_xtal))
+>> -        return PTR_ERR(clk_xtal);
+>> +    private_data->clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+>> +    if (IS_ERR(private_data->clk_xtal))
+>> +        return PTR_ERR(private_data->clk_xtal);
+>>
+>> -    clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+>> -    if (IS_ERR(clk_baud))
+>> -        return PTR_ERR(clk_baud);
+>> -
+>> -    port->uartclk = clk_get_rate(clk_baud);
+>> +    private_data->clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+>> +    if (IS_ERR(private_data->clk_baud))
+>> +        return PTR_ERR(private_data->clk_baud);
+>>
+>>       return 0;
+>>   }
+>>
+>>   static int meson_uart_probe(struct platform_device *pdev)
+>>   {
+>> +    struct meson_uart_data *private_data;
+>>       struct resource *res_mem;
+>>       struct uart_port *port;
+>>       u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>> @@ -714,6 +716,11 @@ static int meson_uart_probe(struct 
+>> platform_device *pdev)
+>>       if (pdev->id < 0 || pdev->id >= AML_UART_PORT_NUM)
+>>           return -EINVAL;
+>>
+>> +    private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
+>> +                    GFP_KERNEL);
+>> +    if (!private_data)
+>> +        return -ENOMEM;
+>> +
+>>       res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>       if (!res_mem)
+>>           return -ENODEV;
+>> @@ -733,7 +740,7 @@ static int meson_uart_probe(struct platform_device 
+>> *pdev)
+>>       if (!port)
+>>           return -ENOMEM;
+>>
+>> -    ret = meson_uart_probe_clocks(pdev, port);
+>> +    ret = meson_uart_probe_clocks(pdev, private_data);
+>>       if (ret)
+>>           return ret;
+>>
+>> @@ -749,6 +756,7 @@ static int meson_uart_probe(struct platform_device 
+>> *pdev)
+>>       port->x_char = 0;
+>>       port->ops = &meson_uart_ops;
+>>       port->fifosize = fifosize;
+>> +    port->private_data = private_data;
+>>
+>>       meson_ports[pdev->id] = port;
+>>       platform_set_drvdata(pdev, port);
+>> ============><===================================================
+>>
+>> Neil
+>>
+>>>>>>
+>>>>>>>
+>>>>>>> Yu Tu (6):
+>>>>>>>     tty: serial: meson: Move request the register region to probe
+>>>>>>>     tty: serial: meson: Use devm_ioremap_resource to get register 
+>>>>>>> mapped
+>>>>>>>       memory
+>>>>>>>     tty: serial: meson: Describes the calculation of the UART 
+>>>>>>> baud rate
+>>>>>>>       clock using a clock frame
+>>>>>>>     tty: serial: meson: Make some bit of the REG5 register writable
+>>>>>>>     tty: serial: meson: The system stuck when you run the stty 
+>>>>>>> command on
+>>>>>>>       the console to change the baud rate
+>>>>>>>     tty: serial: meson: Added S4 SOC compatibility
+>>>>>>>
+>>>>>>> V6 -> V7: To solve the system stuck when you run the stty command on
+>>>>>>> the console to change the baud rate.
+>>>>>>> V5 -> V6: Change error format as discussed in the email.
+>>>>>>> V4 -> V5: Change error format.
+>>>>>>> V3 -> V4: Change CCF to describe the UART baud rate clock as 
+>>>>>>> discussed
+>>>>>>> in the email.
+>>>>>>> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it 
+>>>>>>> must change
+>>>>>>> the DTS before it can be deleted
+>>>>>>> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some 
+>>>>>>> changes as
+>>>>>>> discussed in the email
+>>>>>>>
+>>>>>>> Link:https://lore.kernel.org/linux-amlogic/20220118030911.12815-4-yu.tu@amlogic.com/ 
+>>>>>>>
+>>>>>>>
+>>>>>>>    drivers/tty/serial/meson_uart.c | 221 
+>>>>>>> ++++++++++++++++++++++----------
+>>>>>>>    1 file changed, 154 insertions(+), 67 deletions(-)
+>>>>>>>
+>>>>>>>
+>>>>>>> base-commit: a603ca60cebff8589882427a67f870ed946b3fc8
+>>>>>>
+>>>>
+>>
