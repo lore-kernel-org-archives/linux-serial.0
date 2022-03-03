@@ -2,30 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8C0C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 11:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DDEC433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 11:36:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiCCLcK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:32:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
+        id S232573AbiCCLhE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:37:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiCCLbo (ORCPT
+        with ESMTP id S233147AbiCCLg6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:31:44 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9F2717DBAF;
-        Thu,  3 Mar 2022 03:30:47 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 2904692009C; Thu,  3 Mar 2022 12:30:46 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 224A792009B;
-        Thu,  3 Mar 2022 11:30:46 +0000 (GMT)
-Date:   Thu, 3 Mar 2022 11:30:46 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Paul Cercueil <paul@crapouillou.net>
-cc:     Jiri Slaby <jslaby@suse.cz>,
-        David Laight <David.Laight@ACULAB.COM>,
-        =?UTF-8?Q?'Uwe_Kleine-K=C3=B6nig'?= 
+        Thu, 3 Mar 2022 06:36:58 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B8B4B840;
+        Thu,  3 Mar 2022 03:36:01 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6434D218E6;
+        Thu,  3 Mar 2022 11:36:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646307360; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IDiQKJrDpIO7+2X0qZBOWb0f8AHNA+AoPBY4gI4/LKk=;
+        b=cTmRBz8F83E1yHKbJThlcDmx0Lhn1CoJRik6ZO46mItJ1F5211m4z4XagQoi77clhsZ/2s
+        19gDh0lYUziEm1ws5oWGZtcDbixOaAYNtzHlpJZ7pofO44JLPEev1jkNPVmJ3JxCc6dVxf
+        wSlPR9WgwPVswQXZS5n/Pogpec3NxRQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646307360;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IDiQKJrDpIO7+2X0qZBOWb0f8AHNA+AoPBY4gI4/LKk=;
+        b=AkhkNvd5C2h4CZs/sf+t+jQr9jypWdfbeSbPkPQLh7oD4tOmAFR1GgkQk4UPjn/mjVm0I7
+        7uF6GmQZdb3BmKCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4566813AB4;
+        Thu,  3 Mar 2022 11:35:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id NFGoDx+oIGLmJAAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Thu, 03 Mar 2022 11:35:59 +0000
+Message-ID: <67a0df7a-aa19-e323-3af5-00fda7e7dd62@suse.cz>
+Date:   Thu, 3 Mar 2022 12:35:58 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+Content-Language: en-US
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Paul Cercueil <paul@crapouillou.net>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        =?UTF-8?Q?=27Uwe_Kleine-K=c3=b6nig=27?= 
         <u.kleine-koenig@pengutronix.de>, gregkh@linuxfoundation.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Mateusz Holenko <mholenko@antmicro.com>,
@@ -74,63 +109,32 @@ cc:     Jiri Slaby <jslaby@suse.cz>,
         Kevin Hilman <khilman@baylibre.com>,
         Baolin Wang <baolin.wang7@gmail.com>,
         Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-In-Reply-To: <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
-Message-ID: <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
-References: <20220302072732.1916-1-jslaby@suse.cz> <20220302175242.ejiaf36vszr4xvou@pengutronix.de> <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com> <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz> <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+References: <20220302072732.1916-1-jslaby@suse.cz>
+ <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
+ <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com>
+ <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz>
+ <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
  <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 3 Mar 2022, Paul Cercueil wrote:
+On 03. 03. 22, 12:30, Maciej W. Rozycki wrote:
+>   It does, but, oh dear, it's a "solution" to a problem we have created in
+> the first place.  Why do we ever want to have signed characters in the TTY
+> layer,
 
-> >  We do have an issue, because we still have this:
-> > 
-> > void uart_console_write(struct uart_port *port, const char *s,
-> > 			unsigned int count,
-> > 			void (*putchar)(struct uart_port *, int))
-> > 
-> > and then:
-> > 
-> > 		putchar(port, *s);
-> > 
-> > there.  Consequently on targets where plain `char' type is signed the
-> > value retrieved from `*s' has to be truncated in the call to `putchar'.
-> > And indeed it happens with the MIPS target:
-> > 
-> > 803ae47c:	82050000 	lb	a1,0(s0)
-> > 803ae480:	26100001 	addiu	s0,s0,1
-> > 803ae484:	02402025 	move	a0,s2
-> > 803ae488:	0220f809 	jalr	s1
-> > 803ae48c:	30a500ff 	andi	a1,a1,0xff
-> > 
-> > vs current code:
-> > 
-> > 803ae47c:	82050000 	lb	a1,0(s0)
-> > 803ae480:	26100001 	addiu	s0,s0,1
-> > 803ae484:	0220f809 	jalr	s1
-> > 803ae488:	02402025 	move	a0,s2
-> 
-> And how is that at all a problem?
+We don't. We use char, which is signed or unsigned, depending on arch. 
+After all, this is text coming from printk layer, i.e. char * by 
+convention coming from the standard.
 
- It wastes an instruction.  An instruction wasted here, an instruction 
-wasted there, and suddenly we have grown bloatware. :(
-
-> >  So I'd recommend changing `s' here to `const unsigned char *' or, as I
-> > previously suggested, maybe to `const u8 *' even.
-> 
-> Just cast the string to "const u8 *" within the function, while keeping a
-> "const char *s" argument. The compiler will then most likely generate LBUs.
-
- It does, but, oh dear, it's a "solution" to a problem we have created in 
-the first place.  Why do we ever want to have signed characters in the TTY 
-layer, and then to vary between platforms?  It's asking for portability 
-issues.
-
-  Maciej
+thanks,
+-- 
+js
+suse labs
