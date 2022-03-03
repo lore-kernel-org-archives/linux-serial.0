@@ -2,115 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4DAC4321E
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 10:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CE4C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 10:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232317AbiCCK0N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Mar 2022 05:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
+        id S231573AbiCCKbk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Mar 2022 05:31:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbiCCK0M (ORCPT
+        with ESMTP id S231488AbiCCKbk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Mar 2022 05:26:12 -0500
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130E8179A11;
-        Thu,  3 Mar 2022 02:25:28 -0800 (PST)
-Received: by mail-vs1-f46.google.com with SMTP id i16so4951330vsb.10;
-        Thu, 03 Mar 2022 02:25:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q+5ZeZUWLd3GM/keM7my5lGc+n2WZ148lAyhrGASB0I=;
-        b=FKTjoiElSx8HRC599wfx1aY1ttPHpjRl1GIBNoDzOuoh0nfgm2e568GFR4QXbSlsaT
-         8aqtc+uyWwNXcdRmxuyUnvn74OOV3z/15893V7ErjOhyufPYR8TOiF6/hmHQw+J7uDJM
-         45H6QqXLYTAyke0cBLvwYlnihc5Lj5DSBJ8XgiE/nK/y0CorukfuxkAX0VjelRvSuItI
-         8Rw7qGI+QUfmssBJ9QXsZ8bOVbKo/s+S/I+phXD6D054WBacO3GNu5R+YseAw5UCEJyA
-         51mSZQxFPRc+TQ2llFnpEfty4OKIuCDg4Zs5w7iAA5NkMG2YethCoxh5i+fIpBb1fOQA
-         XUgw==
-X-Gm-Message-State: AOAM5339cGTYN2xn+dswOFD4AkmaHXXqUxbiIkOn/deatv7kfc4K8dhE
-        0PgL8HL+o13JjAI/luCXdcqxXcS2JWFtWQ==
-X-Google-Smtp-Source: ABdhPJxgaV8cMTpphP/ydBJt9LZy5E31t7ZE2vu1tGxlLjrTHEC+UEQx3JQqKDB5REkZ/Y+QKpLGuA==
-X-Received: by 2002:a05:6102:351:b0:31c:3444:aaf6 with SMTP id e17-20020a056102035100b0031c3444aaf6mr8912256vsa.72.1646303127095;
-        Thu, 03 Mar 2022 02:25:27 -0800 (PST)
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
-        by smtp.gmail.com with ESMTPSA id h79-20020a1f2152000000b0033176aaacb1sm257668vkh.35.2022.03.03.02.25.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 02:25:26 -0800 (PST)
-Received: by mail-vk1-f177.google.com with SMTP id f12so2388273vkl.2;
-        Thu, 03 Mar 2022 02:25:26 -0800 (PST)
-X-Received: by 2002:a05:6122:8ca:b0:332:64b4:8109 with SMTP id
- 10-20020a05612208ca00b0033264b48109mr14855968vkg.7.1646303126625; Thu, 03 Mar
- 2022 02:25:26 -0800 (PST)
+        Thu, 3 Mar 2022 05:31:40 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC0A179A25
+        for <linux-serial@vger.kernel.org>; Thu,  3 Mar 2022 02:30:55 -0800 (PST)
+Date:   Thu, 03 Mar 2022 10:22:59 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        David Laight <David.Laight@ACULAB.COM>,
+        'Uwe =?iso-8859-1?q?Kleine-K=F6nig=27?= 
+        <u.kleine-koenig@pengutronix.de>, gregkh@linuxfoundation.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Andy Gross <agross@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Takao Orito <orito.takao@socionext.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Andreas =?iso-8859-1?q?F=E4rber?= <afaerber@suse.de>
+Message-Id: <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
+In-Reply-To: <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
+References: <20220302072732.1916-1-jslaby@suse.cz>
+        <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
+        <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com>
+        <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz>
+        <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
 MIME-Version: 1.0
-References: <20220303085934.29792-1-biju.das.jz@bp.renesas.com>
- <CAMuHMdWSgjipMd_39+J=egH+yh=G-cb4jpD43FU7O77CZzDhNg@mail.gmail.com> <OS0PR01MB59226DC72B72B75EBBC4E07A86049@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB59226DC72B72B75EBBC4E07A86049@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 3 Mar 2022 11:25:15 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVS6+KjQ5Tp6C+-dw7gVM6CwLrFX25SoaX5fU5VN5C+tA@mail.gmail.com>
-Message-ID: <CAMuHMdVS6+KjQ5Tp6C+-dw7gVM6CwLrFX25SoaX5fU5VN5C+tA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: renesas,scif: Update compatible
- string for RZ/G2UL SoC
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Biju,
+Hi Maciej,
 
-On Thu, Mar 3, 2022 at 10:55 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > Subject: Re: [PATCH 1/2] dt-bindings: serial: renesas,scif: Update
-> > compatible string for RZ/G2UL SoC
-> > On Thu, Mar 3, 2022 at 9:59 AM Biju Das <biju.das.jz@bp.renesas.com>
-> > wrote:
-> > > Both RZ/G2UL and RZ/Five SoC's have SoC ID starting with R9A07G043.
-> > > To distinguish between them update the compatible string to
-> > > "renesas,scif-r9a07g043u" for RZ/G2UL SoC.
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > Thanks for your patch!
-> >
-> > > --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> > > +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> > > @@ -76,7 +76,7 @@ properties:
-> > >
-> > >        - items:
-> > >            - enum:
-> > > -              - renesas,scif-r9a07g043      # RZ/G2UL
-> > > +              - renesas,scif-r9a07g043u     # RZ/G2UL
-> >
-> > Is this really needed? As far as we know, RZ/Five and RZ/G2UL do use the
-> > same I/O blocks?
->
-> OK, Just thought their DEVID is different and they use RISC-V instead of ARM64.
-> I agree it uses identical IP blocks.
->
-> May be I can drop this patch, if it is not really needed. Please let me know.
+Le jeu., mars 3 2022 at 09:55:17 +0000, Maciej W. Rozycki 
+<macro@orcam.me.uk> a écrit :
+> On Thu, 3 Mar 2022, Jiri Slaby wrote:
+> 
+>>  > The real problem is that using char (or short) for a function 
+>> parameter
+>>  > or result is very likely to require the compile add code to mask
+>>  > the value to 8 (or 16) bits.
+>>  >
+>>  > Remember that almost every time you do anything with a signed or 
+>> unsigned
+>>  > char/short variable the compiler has to use the integer promotion 
+>> rules
+>>  > to convert the value to int.
+>>  >
+>>  > You'll almost certainly get better code if the value is left in an
+>>  > int (or unsigned int) variable until the low 8 bits get written to
+>>  > a buffer (or hardware register).
+>> 
+>>  So should we use int/uint instead of more appropriate shorter types 
+>> everywhere
+>>  now? The answer is: definitely not. The assembly on x86 looks good 
+>> (it uses
+>>  movz, no ands), RISC architectures have to do what they chose to.
+> 
+>  We do have an issue, because we still have this:
+> 
+> void uart_console_write(struct uart_port *port, const char *s,
+> 			unsigned int count,
+> 			void (*putchar)(struct uart_port *, int))
+> 
+> and then:
+> 
+> 		putchar(port, *s);
+> 
+> there.  Consequently on targets where plain `char' type is signed the
+> value retrieved from `*s' has to be truncated in the call to 
+> `putchar'.
+> And indeed it happens with the MIPS target:
+> 
+> 803ae47c:	82050000 	lb	a1,0(s0)
+> 803ae480:	26100001 	addiu	s0,s0,1
+> 803ae484:	02402025 	move	a0,s2
+> 803ae488:	0220f809 	jalr	s1
+> 803ae48c:	30a500ff 	andi	a1,a1,0xff
+> 
+> vs current code:
+> 
+> 803ae47c:	82050000 	lb	a1,0(s0)
+> 803ae480:	26100001 	addiu	s0,s0,1
+> 803ae484:	0220f809 	jalr	s1
+> 803ae488:	02402025 	move	a0,s2
 
-Please see my response in
-https://lore.kernel.org/r/CAMuHMdUZw5bxUgEif=pT-2Gm1ha-Z01r+AJ6ieC62SwkfMYD5Q@mail.gmail.com/
-Let's continue the discussion there...
+And how is that at all a problem?
 
-Gr{oetje,eeting}s,
+> (NB the last instruction shown after the call instruction, JALR, is 
+> in the
+> delay slot that is executed before the PC gets updated).  Now 
+> arguably the
+> compiler might notice that and use an unsigned LBU load instruction 
+> rather
+> than the signed LB load instruction, which would make the ANDI 
+> instruction
+> redundant, but still I think we ought to avoid gratuitous type 
+> signedness
+> changes.
+> 
+>  So I'd recommend changing `s' here to `const unsigned char *' or, as 
+> I
+> previously suggested, maybe to `const u8 *' even.
 
-                        Geert
+Just cast the string to "const u8 *" within the function, while keeping 
+a "const char *s" argument. The compiler will then most likely generate 
+LBUs.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Cheers,
+-Paul
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
