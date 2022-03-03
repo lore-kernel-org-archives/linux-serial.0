@@ -2,166 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACBCC4332F
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 09:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B70C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 09:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbiCCJzv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Mar 2022 04:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48410 "EHLO
+        id S230435AbiCCJ4O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Mar 2022 04:56:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiCCJzq (ORCPT
+        with ESMTP id S231791AbiCCJ4K (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Mar 2022 04:55:46 -0500
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2094.outbound.protection.outlook.com [40.107.113.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468CD15DB1C;
-        Thu,  3 Mar 2022 01:55:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=krUd7SX5bdsetuVE/2YYYx/7drjP+IWRncGV9eaCOG+hwwSGkmHqpgojxdEHr4Uz7IGfM1wuzID+joG8mFX5+7nk/bFtvrknzVOues/xW9LwrmEbfWwIgRg+BNXVsrhhhuLz8JqxaMVyqfy8CZ0Sy66YdlxLOVcz8vGagMpszZbxHXfmldMGAFdqUHJhSYUvDIpa+0I5c+eJ09U2/5mctoLFJbwLoJjzYqkltIcvYc1qK13eD6HQRQ7YCnarxy3dfPtEiV5eD+/H3AAtiT0jGIqCyXHFyQj/+bNha1/8/MAw4z8UJwgquCB6RNR5G8Xw/nfH+sRQERFAPIlqJ/5gJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lU7BBvavE2Bk1pQ/WCd8ahzUx7pBP4Yl5jKMFK2nj58=;
- b=EJPFi6ZuKIOdq8i4/nJYtIj1FOo7djWY9luPWLDYvBYdGxYwm2/dn6TSjM/3fXEVnYKQk2wLREhhCOvyJgdFR4zyYa0GMWQZyExFKaCFF0VuHNFFbOqeBnpsI52hsDv43yNVfmFcFlNG0saNINzZgjTvYLfxw7sW2m93bu4w8yVrppitapLy986K3hfYy+10FLg8h6UQesdtxld0O4iTMN7Ce9VR3ycF0nRfP+zws1UqRUGXc8cI/CuxA77uTFmuD7qVPT0C0DBqiv2kb7SpQ/TtVC96RoaDURFT5SU89PpAq635bd+auv9kGYROZ7migTdoYWgB4BZRNU/FPIhrtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lU7BBvavE2Bk1pQ/WCd8ahzUx7pBP4Yl5jKMFK2nj58=;
- b=kbhObonKI8PA7D9KGzn1zlPADHCGr/BFq3Sx51D/yZI6eC/tammqg7Rs16a8DYr73aVo2d/QLrlrvlEMffwTLknC249bcR7JG54Cm4fThvBQIRLorUgPaYKgkSeTkVE7yxXYvx6brNt/yRj0pOaNIvjcASHYw7wXeVrRn2UqI0U=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYCPR01MB5805.jpnprd01.prod.outlook.com (2603:1096:400:44::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Thu, 3 Mar
- 2022 09:54:59 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::58d9:6a15:cebd:5500]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::58d9:6a15:cebd:5500%4]) with mapi id 15.20.5038.014; Thu, 3 Mar 2022
- 09:54:59 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH 1/2] dt-bindings: serial: renesas,scif: Update compatible
- string for RZ/G2UL SoC
-Thread-Topic: [PATCH 1/2] dt-bindings: serial: renesas,scif: Update compatible
- string for RZ/G2UL SoC
-Thread-Index: AQHYLt0EzuCwu6tP2Um67Dd/qDVDOKytXkGAgAANORA=
-Date:   Thu, 3 Mar 2022 09:54:59 +0000
-Message-ID: <OS0PR01MB59226DC72B72B75EBBC4E07A86049@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20220303085934.29792-1-biju.das.jz@bp.renesas.com>
- <CAMuHMdWSgjipMd_39+J=egH+yh=G-cb4jpD43FU7O77CZzDhNg@mail.gmail.com>
-In-Reply-To: <CAMuHMdWSgjipMd_39+J=egH+yh=G-cb4jpD43FU7O77CZzDhNg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b66d8b0c-97ff-4931-287e-08d9fcfbe109
-x-ms-traffictypediagnostic: TYCPR01MB5805:EE_
-x-microsoft-antispam-prvs: <TYCPR01MB5805614F719E3F85F8E169D586049@TYCPR01MB5805.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jbqVWk+rn2vVtAvgVr4Gro9+5tp9MEJx1NtiHR3KPYG9qAFVb+gEjhIuSkh5qYOdKwcYCYcWoqQJrmgzDpd1wcE2PFHlGXFcHpLNYy8CE1yhu2fNDf+m2hCNjIqHx4Efm2lTfGHIAro0SDPKt8qYFY0pgE6ajyto2W0Uwgxv3VTCHLBQUe4Hpv3MePjfFsXYpk0M6k0cgUo/ZppsUts1BO4APL1gKE41t5c+N7PJF75qqy06KEwvioqBdNAd6j8+hP8OwT10/Cz321XUGDf+CS5UVrxZ4zA7nIvR61AHkTEgtfgIdew3gycJzjjahFPdVyvckfb1F3pllsalCbrVEXqJtId3a5Wa6hMNprQyQ+r4FLE3FjDkm3veac+BxzveolGxY0CBAoKdO+SNayqd6vtw+gQ3TixmS+9fC5r3JalKD2vXcoPaz4/hmYa0ANeq9sFqy014BMmvtZKcER/Mrfzo7+iWpVfcLuneGdTwtr01sAflv+31Cuxgy/dj5t/BSKYXbNZuKzGRtxCz4L38DDFX7/lL3aFdTSQG8fujJe5gVM+4GNQsWPAI0Ny3FAQUUpzO66oHS7zksU1vNiZP/iRDZDkwnedbSmdv8cdMvw7hYk0hGG4A5hrX08r+lktP54GSupu9JUgDc2xlXz6nmfOlzZfVpKP81wxbSVku5yFuV9n+X4KTBr6NhMv3pZKPXK8hUXDgEknIyo9Vv0nraA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(316002)(76116006)(8936002)(66476007)(66446008)(66556008)(66946007)(52536014)(71200400001)(33656002)(55016003)(9686003)(508600001)(64756008)(8676002)(5660300002)(2906002)(15650500001)(38070700005)(86362001)(4326008)(122000001)(26005)(186003)(54906003)(6916009)(6506007)(7696005)(83380400001)(53546011);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dDdDS2tlL0lQWDJCYnd4cVA4ZWZUOFYxd2ZLU1dTOXJVMWVUNGFEenRSbXpi?=
- =?utf-8?B?akduWWEvOUF6dW82Y1VoOSt4eUZFaHYxOGJldFlqSnZSYjZnb1lKdDJsSThp?=
- =?utf-8?B?KzFGVm0zZUdhcytZbU9KRUZxc0xEUXBvdkt2L3IrMSt5VThlc0Z6Y3lZbWd5?=
- =?utf-8?B?R3VHVXJrNis2V2ZvWVJHNUh0cXdSdmJnY3V6eXBJRWxwY2ZscUd6MjFOR0R1?=
- =?utf-8?B?MFlPWXUvY3ZXSkZYQ1NTRkY0Y2Qwb0FWWjFQcVNEc0Z4cEJuNUxPaXZoaGlk?=
- =?utf-8?B?bVJZeUZOVzM1VjVubXZVUUtZRXNOZjY0QXVOTU5ON1RVcm5YaC84RjBZenU2?=
- =?utf-8?B?QnNYZWxWdFhvT0thZFA1TUJkRDhuL1hBcU5DbER6cUREMnh6L2ZjNTMyaERD?=
- =?utf-8?B?OC9OZTdJQ1NTellNUEtjNFd2VTFHak16ekVyaWRKTkNNSXJSK0pleGFNQWlL?=
- =?utf-8?B?bTVRTTlKU1hSMm53bWZHdldLNldQODVtdUpOdmdJSGs0ZWZkb1pTT2FwWDNB?=
- =?utf-8?B?WjBnQ3piQlVCL1QvVXdRTGtPbFd5amlVTjJnTWwzQkx5YlRHcElhemxTRFgv?=
- =?utf-8?B?MjByWW8rbDZZbklHbFV3MERJcVN1Vys0L0F0cmF1eXpUWDkraWloOXBLZkNJ?=
- =?utf-8?B?dDY0S1VLbm8wa0dlcE13YSt5ZHdkYjVFMDBXd3FxazQ0RHcvTTN1U0VHSi8x?=
- =?utf-8?B?SzdzY1hCeDZGL1RzcVArZTJVV3RSUG1zQXV4VkM1YmJydVluZWFwSzVMYWV2?=
- =?utf-8?B?aUMvSDNWc1dUbWxpbGhRSXd6aER2R0tNbGlsQW1BYlliOXRxMW1KTFpIQlU3?=
- =?utf-8?B?cTVMcld5QUZEZy9lR2IyKzhqZ2h4YXRYenc5ZmVPdDZnQnFyQ1I0TDI4elRR?=
- =?utf-8?B?SmlmSG5TSjhaVHBlMGI0L3pEZXBucFJqQ0p4amZIdi9xbWhHNzJFZHZzcjVS?=
- =?utf-8?B?OERqZE9odVZPMlRWWG9IaUpvaldOVnMyMlZZREcyNlNNMGw2azNGUlFiNXNG?=
- =?utf-8?B?SS9hQUtEVFFVcHFGdkswM2cwTW9GeFExb1ZGakgxOUNVL1NQUWd1VmMzMnNW?=
- =?utf-8?B?eHp6YitnVGZmS0FzMy91Q0lSTXY2dW1zRjVqSzc3bWxqQ09ocWRLNEJ1dkRl?=
- =?utf-8?B?ZllQc3k2L2FyOWJJcm1KeGw2SHduVW9UeW9LYytCa05VQU1GT2JOR1g5b2pC?=
- =?utf-8?B?SnU3UWhrdXJWSG4weDArUE9iWWsyQWtTTS9sUkFPWHFvaTNlemp0M2dpZjND?=
- =?utf-8?B?VGtFSGRIcVlHdHRpSzFweFFRcFc0QUN0REVRWWEwMzdoQXUrKy9scWpzL0Jp?=
- =?utf-8?B?Q3lDejNBOEZnNC9HN1pUYVhEcURTTlZPbDB0UGRPeGZ6ejg4blZoY0IzSkdS?=
- =?utf-8?B?VjJaVXBvVDgrNk00U2pzZ2VWQmVwV3p1T0ZMRkJBa1A3MTYrSVBZMmJ4V0J5?=
- =?utf-8?B?NmNQU2dkanpKU1lHMVlJWU9EKzlQR2FNUGJpL2o5cVpmdkJPeW8wZmhaSG5z?=
- =?utf-8?B?QTRENHRta292OXhQVkM3SmdkNFF1K2d6SkVVYzc3MlRaVDQzUUtIMlRRdy93?=
- =?utf-8?B?SFQ4Y1p6UmtKUytrdDFnd1BIWUw2Rnl5dFg0bXZaV2k4ZXYrc3JlcGhqUnFR?=
- =?utf-8?B?bTlZQlU3bHZNdjZzUGpzVUNhZDQvaVJWUkRRMjZsRlRnYnRlNUhNWFpqQ2o3?=
- =?utf-8?B?TmRjVjNhdVJlSnU4aGJrazUrMjhqYXR1V2QwRytNRFlOYnEvdFFDTGhqVXBo?=
- =?utf-8?B?MThmL09DUW12TDBIcXM0cVJXcVNWYUt1cnVPQVptckgwNjUrYWZPdzkrT3VR?=
- =?utf-8?B?a0p1SGZ2Y0tiakVLVUtzMzU4aTdIa3VibGRqcmJibmNXTUI3dVFuVmJUeGt4?=
- =?utf-8?B?Z2tkMmtHeTNBQVY1T0cyNldncE94M1J4TVFSTys0N2FyYWhoRUFRdDMvWnEx?=
- =?utf-8?B?YUI1emZsNElsbm0rc1ZsTlRQUFNDTjZIUlBURFAyUk1MaWh2WVl0OExjUkhv?=
- =?utf-8?B?dHVhSDdobVpOWGFSby9VcWVWMlhpT1lkSWcrMmhQVGJOK3RQL1JuekpsMlBr?=
- =?utf-8?B?WGYxUFZHODhhS25uM1F6Z2tVOVB6dnQxNE1lYkNhMXlhOUdDRHRHZ0E3cU1Q?=
- =?utf-8?B?dHJsM3FQQkJ4c2pIMTBqUDZIa0ViTmQvYm4vWkJYS0oyZjFHSW4xb0s5RGVt?=
- =?utf-8?B?aHFlTDczdXg2REU1SnZsNzFFWmNkbERqMWdYT1hXUytvWS9sRUd3YU1NQ3Zu?=
- =?utf-8?B?aXhWZTAxekJBckpaYTdHNnZpNnFnPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 3 Mar 2022 04:56:10 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A300615DB2E;
+        Thu,  3 Mar 2022 01:55:19 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 6680E92009C; Thu,  3 Mar 2022 10:55:17 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 62A4E92009B;
+        Thu,  3 Mar 2022 09:55:17 +0000 (GMT)
+Date:   Thu, 3 Mar 2022 09:55:17 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     David Laight <David.Laight@ACULAB.COM>,
+        =?UTF-8?Q?'Uwe_Kleine-K=C3=B6nig'?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Baruch Siach <baruch@tkos.co.il>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Andy Gross <agross@kernel.org>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Takao Orito <orito.takao@socionext.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+In-Reply-To: <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz>
+Message-ID: <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
+References: <20220302072732.1916-1-jslaby@suse.cz> <20220302175242.ejiaf36vszr4xvou@pengutronix.de> <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com> <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b66d8b0c-97ff-4931-287e-08d9fcfbe109
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2022 09:54:59.1319
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FpKnX54DsOBBh8YOJFAFqNZfxKpU5Ypu04ikdy2mf2R0W2hMUUxYemfuXHa39SrKY7X6DTntyHs7bonFQp6BGA9aQUhM05dwMMzGtc2/dRQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB5805
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgR2VlcnQsDQoNClRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrDQoNCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCAxLzJdIGR0LWJpbmRpbmdzOiBzZXJpYWw6IHJlbmVzYXMsc2NpZjogVXBkYXRlDQo+IGNv
-bXBhdGlibGUgc3RyaW5nIGZvciBSWi9HMlVMIFNvQw0KPiANCj4gSGkgQmlqdSwNCj4gDQo+IE9u
-IFRodSwgTWFyIDMsIDIwMjIgYXQgOTo1OSBBTSBCaWp1IERhcyA8YmlqdS5kYXMuanpAYnAucmVu
-ZXNhcy5jb20+DQo+IHdyb3RlOg0KPiA+IEJvdGggUlovRzJVTCBhbmQgUlovRml2ZSBTb0MncyBo
-YXZlIFNvQyBJRCBzdGFydGluZyB3aXRoIFI5QTA3RzA0My4NCj4gPiBUbyBkaXN0aW5ndWlzaCBi
-ZXR3ZWVuIHRoZW0gdXBkYXRlIHRoZSBjb21wYXRpYmxlIHN0cmluZyB0bw0KPiA+ICJyZW5lc2Fz
-LHNjaWYtcjlhMDdnMDQzdSIgZm9yIFJaL0cyVUwgU29DLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1i
-eTogQmlqdSBEYXMgPGJpanUuZGFzLmp6QGJwLnJlbmVzYXMuY29tPg0KPiA+IFJldmlld2VkLWJ5
-OiBMYWQgUHJhYmhha2FyIDxwcmFiaGFrYXIubWFoYWRldi1sYWQucmpAYnAucmVuZXNhcy5jb20+
-DQo+IA0KPiBUaGFua3MgZm9yIHlvdXIgcGF0Y2ghDQo+IA0KPiA+IC0tLSBhL0RvY3VtZW50YXRp
-b24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvcmVuZXNhcyxzY2lmLnlhbWwNCj4gPiArKysg
-Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3JlbmVzYXMsc2NpZi55
-YW1sDQo+ID4gQEAgLTc2LDcgKzc2LDcgQEAgcHJvcGVydGllczoNCj4gPg0KPiA+ICAgICAgICAt
-IGl0ZW1zOg0KPiA+ICAgICAgICAgICAgLSBlbnVtOg0KPiA+IC0gICAgICAgICAgICAgIC0gcmVu
-ZXNhcyxzY2lmLXI5YTA3ZzA0MyAgICAgICMgUlovRzJVTA0KPiA+ICsgICAgICAgICAgICAgIC0g
-cmVuZXNhcyxzY2lmLXI5YTA3ZzA0M3UgICAgICMgUlovRzJVTA0KPiANCj4gSXMgdGhpcyByZWFs
-bHkgbmVlZGVkPyBBcyBmYXIgYXMgd2Uga25vdywgUlovRml2ZSBhbmQgUlovRzJVTCBkbyB1c2Ug
-dGhlDQo+IHNhbWUgSS9PIGJsb2Nrcz8NCg0KT0ssIEp1c3QgdGhvdWdodCB0aGVpciBERVZJRCBp
-cyBkaWZmZXJlbnQgYW5kIHRoZXkgdXNlIFJJU0MtViBpbnN0ZWFkIG9mIEFSTTY0Lg0KSSBhZ3Jl
-ZSBpdCB1c2VzIGlkZW50aWNhbCBJUCBibG9ja3MuDQoNCk1heSBiZSBJIGNhbiBkcm9wIHRoaXMg
-cGF0Y2gsIGlmIGl0IGlzIG5vdCByZWFsbHkgbmVlZGVkLiBQbGVhc2UgbGV0IG1lIGtub3cuDQoN
-CkNoZWVycywNCkJpanUNCg0KPiANCj4gPiAgICAgICAgICAgICAgICAtIHJlbmVzYXMsc2NpZi1y
-OWEwN2cwNTQgICAgICAjIFJaL1YyTA0KPiA+ICAgICAgICAgICAgLSBjb25zdDogcmVuZXNhcyxz
-Y2lmLXI5YTA3ZzA0NCAgICMgUlovRzJ7TCxMQ30gZmFsbGJhY2sNCj4gDQo+IEdye29ldGplLGVl
-dGluZ31zLA0KPiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4gDQo+IC0tDQo+
-IEdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIg
-LS0gZ2VlcnRAbGludXgtDQo+IG02OGsub3JnDQo+IA0KPiBJbiBwZXJzb25hbCBjb252ZXJzYXRp
-b25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4NCj4gQnV0
-IHdoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIg
-b3Igc29tZXRoaW5nDQo+IGxpa2UgdGhhdC4NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAtLSBMaW51cyBUb3J2YWxkcw0K
+On Thu, 3 Mar 2022, Jiri Slaby wrote:
+
+> > The real problem is that using char (or short) for a function parameter
+> > or result is very likely to require the compile add code to mask
+> > the value to 8 (or 16) bits.
+> > 
+> > Remember that almost every time you do anything with a signed or unsigned
+> > char/short variable the compiler has to use the integer promotion rules
+> > to convert the value to int.
+> > 
+> > You'll almost certainly get better code if the value is left in an
+> > int (or unsigned int) variable until the low 8 bits get written to
+> > a buffer (or hardware register).
+> 
+> So should we use int/uint instead of more appropriate shorter types everywhere
+> now? The answer is: definitely not. The assembly on x86 looks good (it uses
+> movz, no ands), RISC architectures have to do what they chose to.
+
+ We do have an issue, because we still have this:
+
+void uart_console_write(struct uart_port *port, const char *s,
+			unsigned int count,
+			void (*putchar)(struct uart_port *, int))
+
+and then:
+
+		putchar(port, *s);
+
+there.  Consequently on targets where plain `char' type is signed the 
+value retrieved from `*s' has to be truncated in the call to `putchar'.  
+And indeed it happens with the MIPS target:
+
+803ae47c:	82050000 	lb	a1,0(s0)
+803ae480:	26100001 	addiu	s0,s0,1
+803ae484:	02402025 	move	a0,s2
+803ae488:	0220f809 	jalr	s1
+803ae48c:	30a500ff 	andi	a1,a1,0xff
+
+vs current code:
+
+803ae47c:	82050000 	lb	a1,0(s0)
+803ae480:	26100001 	addiu	s0,s0,1
+803ae484:	0220f809 	jalr	s1
+803ae488:	02402025 	move	a0,s2
+
+(NB the last instruction shown after the call instruction, JALR, is in the 
+delay slot that is executed before the PC gets updated).  Now arguably the 
+compiler might notice that and use an unsigned LBU load instruction rather 
+than the signed LB load instruction, which would make the ANDI instruction 
+redundant, but still I think we ought to avoid gratuitous type signedness 
+changes.
+
+ So I'd recommend changing `s' here to `const unsigned char *' or, as I 
+previously suggested, maybe to `const u8 *' even.
+
+  Maciej
