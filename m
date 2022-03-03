@@ -2,93 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DDEC433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 11:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50EE7C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 11:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232573AbiCCLhE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Mar 2022 06:37:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
+        id S232696AbiCCLpe convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Mar 2022 06:45:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233147AbiCCLg6 (ORCPT
+        with ESMTP id S229665AbiCCLpd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Mar 2022 06:36:58 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B8B4B840;
-        Thu,  3 Mar 2022 03:36:01 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6434D218E6;
-        Thu,  3 Mar 2022 11:36:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646307360; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IDiQKJrDpIO7+2X0qZBOWb0f8AHNA+AoPBY4gI4/LKk=;
-        b=cTmRBz8F83E1yHKbJThlcDmx0Lhn1CoJRik6ZO46mItJ1F5211m4z4XagQoi77clhsZ/2s
-        19gDh0lYUziEm1ws5oWGZtcDbixOaAYNtzHlpJZ7pofO44JLPEev1jkNPVmJ3JxCc6dVxf
-        wSlPR9WgwPVswQXZS5n/Pogpec3NxRQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646307360;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IDiQKJrDpIO7+2X0qZBOWb0f8AHNA+AoPBY4gI4/LKk=;
-        b=AkhkNvd5C2h4CZs/sf+t+jQr9jypWdfbeSbPkPQLh7oD4tOmAFR1GgkQk4UPjn/mjVm0I7
-        7uF6GmQZdb3BmKCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4566813AB4;
-        Thu,  3 Mar 2022 11:35:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id NFGoDx+oIGLmJAAAMHmgww
-        (envelope-from <jslaby@suse.cz>); Thu, 03 Mar 2022 11:35:59 +0000
-Message-ID: <67a0df7a-aa19-e323-3af5-00fda7e7dd62@suse.cz>
-Date:   Thu, 3 Mar 2022 12:35:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-Content-Language: en-US
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thu, 3 Mar 2022 06:45:33 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73E1FBF7C
+        for <linux-serial@vger.kernel.org>; Thu,  3 Mar 2022 03:44:47 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-4-XQRo4zE6MZqO9sHS00ouew-1; Thu, 03 Mar 2022 11:44:44 +0000
+X-MC-Unique: XQRo4zE6MZqO9sHS00ouew-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 3 Mar 2022 11:44:42 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 3 Mar 2022 11:44:42 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Maciej W. Rozycki'" <macro@orcam.me.uk>,
         Paul Cercueil <paul@crapouillou.net>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        =?UTF-8?Q?=27Uwe_Kleine-K=c3=b6nig=27?= 
-        <u.kleine-koenig@pengutronix.de>, gregkh@linuxfoundation.org,
+CC:     Jiri Slaby <jslaby@suse.cz>,
+        =?iso-8859-1?Q?=27Uwe_Kleine-K=F6nig=27?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Mateusz Holenko <mholenko@antmicro.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Liviu Dudau <liviu.dudau@arm.com>,
-        Baruch Siach <baruch@tkos.co.il>, linux-kernel@vger.kernel.org,
+        Baruch Siach <baruch@tkos.co.il>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
         Michal Simek <michal.simek@xilinx.com>,
-        Karol Gugala <kgugala@antmicro.com>,
+        "Karol Gugala" <kgugala@antmicro.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
+        "Peter Korsgaard" <peter@korsgaard.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Alexander Shiyan <shc_work@mail.ru>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Fabio Estevam <festevam@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        "Russell King" <linux@armlinux.org.uk>,
         Ludovic Desroches <ludovic.desroches@microchip.com>,
         Andy Gross <agross@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Vineet Gupta <vgupta@kernel.org>,
         Orson Zhai <orsonzhai@gmail.com>,
         Tobias Klauser <tklauser@distanz.ch>,
         Patrice Chotard <patrice.chotard@foss.st.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        "Albert Ou" <aou@eecs.berkeley.edu>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Manivannan Sadhasivam <mani@kernel.org>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -101,15 +76,22 @@ Cc:     David Laight <David.Laight@ACULAB.COM>,
         Sudeep Holla <sudeep.holla@arm.com>,
         Richard Genoud <richard.genoud@gmail.com>,
         Chunyan Zhang <zhang.lyra@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Taichi Sugaya <sugaya.taichi@socionext.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kevin Hilman <khilman@baylibre.com>,
+        "Kevin Hilman" <khilman@baylibre.com>,
         Baolin Wang <baolin.wang7@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+        "Shawn Guo" <shawnguo@kernel.org>,
+        =?iso-8859-1?Q?Andreas_F=E4rber?= <afaerber@suse.de>
+Subject: RE: [PATCH v3] serial: make uart_console_write->putchar()'s character
+ an unsigned char
+Thread-Topic: [PATCH v3] serial: make uart_console_write->putchar()'s
+ character an unsigned char
+Thread-Index: AQHYLl5tVpWrjMz0S0GPyaCV/1nc9aysw9yAgADDqR+AAACPoA==
+Date:   Thu, 3 Mar 2022 11:44:42 +0000
+Message-ID: <9fa84690ed244eba89f1efe4e6670f80@AcuMS.aculab.com>
 References: <20220302072732.1916-1-jslaby@suse.cz>
  <20220302175242.ejiaf36vszr4xvou@pengutronix.de>
  <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com>
@@ -117,24 +99,55 @@ References: <20220302072732.1916-1-jslaby@suse.cz>
  <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
  <BIZ58R.9EXA9J3HVHS13@crapouillou.net>
  <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
-From:   Jiri Slaby <jslaby@suse.cz>
 In-Reply-To: <alpine.DEB.2.21.2203031102570.50870@angie.orcam.me.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03. 03. 22, 12:30, Maciej W. Rozycki wrote:
->   It does, but, oh dear, it's a "solution" to a problem we have created in
+From: Maciej W. Rozycki
+> Sent: 03 March 2022 11:31
+..
+>  It does, but, oh dear, it's a "solution" to a problem we have created in
 > the first place.  Why do we ever want to have signed characters in the TTY
-> layer,
+> layer, and then to vary between platforms?  It's asking for portability
+> issues.
 
-We don't. We use char, which is signed or unsigned, depending on arch. 
-After all, this is text coming from printk layer, i.e. char * by 
-convention coming from the standard.
+C 'char' is signed because the pdp/11 byte load sign extended.
 
-thanks,
--- 
-js
-suse labs
+I guess some ABI use unsigned char to avoid issues with all
+the functions that take/return an int parameter that is
+either a 'char' cast to 'unsigned char' or EOF.
+
+EOF is usually (-1) - but doesn't have to be.
+But it needs to be different from any value obtained
+by casting a 'char' to 'unsigned char'.
+(But that may only need to be all characters, not all values of 'char'.)
+
+Then you get the requirement that:
+	sizeof (int) >= sizeof (short) >= sizeof (char)
+which means that it is perfectly valid for all 3 to be the same size [1].
+In that case 'unsigned char' promotes to 'unsigned int'
+which probably breaks some code.
+It also makes defining EOF troublesome!
+
+[1] The C compiler for a DSP had this 'feature'.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
