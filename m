@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB982C433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Mar 2022 15:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 232FEC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Mar 2022 15:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236841AbiCDPVd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
+        id S238996AbiCDPdU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 4 Mar 2022 10:33:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiCDPVc (ORCPT
+        with ESMTP id S235948AbiCDPdT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Mar 2022 10:21:32 -0500
+        Fri, 4 Mar 2022 10:33:19 -0500
 Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D091C2DAF;
-        Fri,  4 Mar 2022 07:20:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3296762E0;
+        Fri,  4 Mar 2022 07:32:31 -0800 (PST)
 Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 50AA05C00E4;
-        Fri,  4 Mar 2022 10:20:44 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 04 Mar 2022 10:20:44 -0500
+        by mailout.nyi.internal (Postfix) with ESMTP id 9817D5C0116;
+        Fri,  4 Mar 2022 10:32:30 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 04 Mar 2022 10:32:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=vIOBFqmGHHo0UGS3jXq3FKUx9xG43+y7JD+VWa
-        wm0Dw=; b=OigW6W3YpZj1YaMTKg4Hvrl/ywVsbzbfzJrLHNiPzWCCgwzM99Ha4a
-        5PwNCRCXTwAsEzCYyKFIBX6C7qD0tJI8BbssdC5XuKR+ElPbONF3ch3Z4C2GZuTR
-        Fgl3G0dZEGg0zwu2v6B+On/PQC54LlggPLb8fx10gCKk0OuRuYHAFI5E3fTC6w4B
-        NGKwYplXlGDIJgo3PFMcw8UQJpvs1qnqphz+pouAdts9dQq+ErJOmcX+R+k3yFzK
-        3gEJUD1sbco4aecnoADPClYU1c1d1wX9Lz4hiCGX5cyBnvu7pOJcr/I/Nxk0sOmr
-        1HGPlqAFaaETz4eXNMmpS0rBy37PPC7g==
+        :subject:to:to; s=fm2; bh=Eh43yP8X0SEO8EEHGYTW4XKIT2ubpI7Pl3LWD5
+        Ok6JQ=; b=v3yojEpX3o1nfNT55oCmXb25fDLij3fFSj5pkVk/1SRjy6UZ5b9W3V
+        OSN/C5DlPBqEdp4FofebQoKJ2apjjdVUbjiRSt+/7msaILpuU1Cy3pyLKLBcei7V
+        ZJLlgA6g7AoMNSZuPgBmK134DKPHqvCO0gihUXRN6ykSBdyw8E2KsCcsWeB9O1CH
+        aYYkDPH3F+jFQy6yVya9OztDFE8eXHFFvkLzYkd8nWMjhG0AnBCwfBS4R2yfxQTr
+        qdqYBfhCZIqdIYeF0cSLUVX8JXGiaejQ0GfE3/jazWDG6Hut8/Fwda1RYPpM++k4
+        2GfbA2jNTg+mGxmvktxI/0HHN78qlFSg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=vIOBFqmGHHo0UGS3j
-        Xq3FKUx9xG43+y7JD+VWawm0Dw=; b=Y0ApQ+DjHyLPMXff6myZ0QSzB/QqtniwH
-        RM5pgdDzgWXwIlJScj6rdju71iHLroPQLMJ8riWuEZ5EHFKR84kGrIae8JOHmCgE
-        44DsrjyVq83I+zEBFJrNmKQshGVfoX0b0vr3UqheYO5KYfKnjZVo43CjZTes7ROw
-        lcUBvUM1X4zgFR1TeYE9Q6ghgb+/YDi0s86OVz4ZlqdTogv9hbCc7EMc6EpN0ia/
-        ltLkiXeCk0zOaLeX2/jWWjLRXHRlC+OISRVmHC7HD5I9F8DgVpGLPAvKCu1+njlX
-        ycFvn7V8PhkPrI/ozLUVExApsngwpV+CuF1SWAzkqT9f4Unu0nBTw==
-X-ME-Sender: <xms:TC4iYtE0MkYvafikIlPgIQoNhBWR16DngjbSkcG2n0eJ_aj4RaqibA>
-    <xme:TC4iYiVfdjVRTmY9N5zVHC07e1ymvPO3xJoRhh6V7wEQsRAF7A-ZA9AhlqrmsguKZ
-    xC_hPblj_B4rZHzwA4>
-X-ME-Received: <xmr:TC4iYvIYXuB-gXul1KczT0HC4Y85KPWxGjGvK73VGFtA9ZryXG0DD6PpqdWnGcICIkl0HoiCri7U7h0WUzuypKuYS5qHk79dohmjoDY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgjeehucetufdoteggodetrfdotf
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Eh43yP8X0SEO8EEHG
+        YTW4XKIT2ubpI7Pl3LWD5Ok6JQ=; b=lp1wdcgyU3U3Pne+TbBlxM7CfETG2hO1F
+        5XWIu5JIc2V4tdsFxsHltqJpNu9MUxmpW1BJY/ox7M8SF7qP5OZZIIK75M65E7Fq
+        Gpx0OhytHFB6+tmvT/MargRC5xbqMfMoayN6wFleHOPZLMl3KQ029GS9TNxQKXjo
+        R4UVYrbwNmrG272A8ZdN2FPl/sHxxiO+gm/lS81xqvTlujWvnk+ASoj1b+kxaJM5
+        8zqZC//ASoI/MrbA+0ZEsSIk3Oc+igl+6zenrqaWSUWSvbxgcRPNgYB7ikp1C9ff
+        fcObnrPZzcH4gLpfO/6XNFH9uX+cVuwIF6b0KEL+GHJqCoe2mncyA==
+X-ME-Sender: <xms:DjEiYuMU1t8so9F5N6SsZCTsjzUm83iyBFsW23KP5PqXyLTrhaOElA>
+    <xme:DjEiYs_yJAhyvdrvwdR9hxIWBkph-Fl28O6-6jj_TztsOsYeM1BUz-B6ViljOwQMd
+    nNi4UiXiMwYLaw8aEQ>
+X-ME-Received: <xmr:DjEiYlS0FfpaFCNKKX2sGxkkXVDgXlex3-wLREaNkirYYXLPvwlJ3Tf91-2T-zajAsW86pbit6GefuLZ6mel3niH5n56-p--lT4IMWQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgjeejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
@@ -53,79 +53,85 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgjeehucetufdoteggod
     htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
     gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
     grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:TC4iYjF3dTK0tOEXDYEgVBGtKroH-dwYvEPz7DqpJASZ4XjeVut-nw>
-    <xmx:TC4iYjWKiaAVfTiHgUfCQJl-XpvOpCpmQByzGNa7amnl2LcF-GrVtw>
-    <xmx:TC4iYuMSfsyvGCU--hs06m7ZwG-kyJqmysiafhH8B0vFuPOxggElYA>
-    <xmx:TC4iYgjJBcDHMuvc25JYlX5Uvvdu53XZLG2qmP-F5LABxsoSpYnM_g>
+X-ME-Proxy: <xmx:DjEiYuurlFX2ehQMXdW6Zv_1bwc_Z1lLv9Ae3BUeDwtPLPN3Pgsw9w>
+    <xmx:DjEiYmcZqoX6uUY4sz3D8PZszUaAQDN9GUC2fQyLGhui_T6fyjnpsA>
+    <xmx:DjEiYi33GfoYEUIyLKzxMorOCsS98mFfjQPO777QPFYuwBYdcIADYQ>
+    <xmx:DjEiYnpMYkLeJxbXyNCzZu8U98o6sxT0re_WjlyzpLV1y1R19Uvzlw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 4 Mar 2022 10:20:43 -0500 (EST)
-Date:   Fri, 4 Mar 2022 16:20:42 +0100
+ 4 Mar 2022 10:32:29 -0500 (EST)
+Date:   Fri, 4 Mar 2022 16:32:28 +0100
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: Deadlock at reboot?
-Message-ID: <20220304152042.xvyxxen6yyxgx4bh@houat>
+Message-ID: <20220304153228.eqclo7sezczzs2t4@houat>
 References: <20220304104942.lypg3wvlgk2ywi2t@houat>
  <YiIfCDjOIBoM+KlB@kroah.com>
+ <20220304152042.xvyxxen6yyxgx4bh@houat>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="juluxzd2zb6qbxib"
+        protocol="application/pgp-signature"; boundary="2327xvni644guxtj"
 Content-Disposition: inline
-In-Reply-To: <YiIfCDjOIBoM+KlB@kroah.com>
+In-Reply-To: <20220304152042.xvyxxen6yyxgx4bh@houat>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---juluxzd2zb6qbxib
+--2327xvni644guxtj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
-
-On Fri, Mar 04, 2022 at 03:15:36PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Mar 04, 2022 at 11:49:42AM +0100, Maxime Ripard wrote:
-> > Hi,
-> >=20
-> > I'm not entirely sure who I'm supposed to send this to, so apologies if
-> > I forgot somebody.
-> >=20
-> > I've had an issue when rebooting on and off for a couple of monthes, but
-> > I got a stacktrace from lockdep today:
-> >=20
-> > [71721.872904] reboot: Restarting system
-> > [71721.876743] ------------[ cut here ]------------
-> > [71721.877081]
-> > [71721.877084] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+On Fri, Mar 04, 2022 at 04:20:42PM +0100, Maxime Ripard wrote:
+> Hi Greg,
+>=20
+> On Fri, Mar 04, 2022 at 03:15:36PM +0100, Greg Kroah-Hartman wrote:
+> > On Fri, Mar 04, 2022 at 11:49:42AM +0100, Maxime Ripard wrote:
+> > > Hi,
+> > >=20
+> > > I'm not entirely sure who I'm supposed to send this to, so apologies =
+if
+> > > I forgot somebody.
+> > >=20
+> > > I've had an issue when rebooting on and off for a couple of monthes, =
+but
+> > > I got a stacktrace from lockdep today:
+> > >=20
+> > > [71721.872904] reboot: Restarting system
+> > > [71721.876743] ------------[ cut here ]------------
+> > > [71721.877081]
+> > > [71721.877084] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > [71721.877086] WARNING: possible circular locking dependency detected
-> > [71721.877088] 5.17.0-rc6-next-20220303-v8+ #10 Not tainted
+> > > [71721.877086] WARNING: possible circular locking dependency detected
+> > > [71721.877088] 5.17.0-rc6-next-20220303-v8+ #10 Not tainted
+> >=20
+> > This is linux-next, does this also happen on Linus's tree?
+> >=20
+> > If not, can you bisect to find the offending commit?
 >=20
-> This is linux-next, does this also happen on Linus's tree?
+> Like I said, it appeared with multiple versions across the past few
+> monthes (I only ever got the trace with that next-version though) so I'm
+> not sure the issue has been introduced recently.
 >=20
-> If not, can you bisect to find the offending commit?
+> I'll try a couple of recent Linus' tags, and bisect if I can find
+> something of interest.
 
-Like I said, it appeared with multiple versions across the past few
-monthes (I only ever got the trace with that next-version though) so I'm
-not sure the issue has been introduced recently.
-
-I'll try a couple of recent Linus' tags, and bisect if I can find
-something of interest.
+It happens with 5.17-rc6, I'll try with older releases
 
 Maxime
 
---juluxzd2zb6qbxib
+--2327xvni644guxtj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYiIuSgAKCRDj7w1vZxhR
-xc/UAQC3WpHrYG7Eraonkvops0X+FDslLhHBUExENK4OLSq6kQD+NCD6Ho2qkD6T
-k8zpK2/sUk2zCkUnHRry4j95sB64wQc=
-=d/DZ
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYiIxDAAKCRDj7w1vZxhR
+xYuQAQDspn9drpaNfeifQrWRO46biOfyDMm7nxzD+UpykOtIMgD8Cvvs8U6WKZTH
+TVY22Xwe7LAd9UarJ3aFUfwP5Z0fuw4=
+=ZLz1
 -----END PGP SIGNATURE-----
 
---juluxzd2zb6qbxib--
+--2327xvni644guxtj--
