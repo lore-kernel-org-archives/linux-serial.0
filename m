@@ -2,104 +2,185 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B740C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Mar 2022 19:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC525C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Mar 2022 02:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiCCTH3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Mar 2022 14:07:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        id S235925AbiCDCV0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 3 Mar 2022 21:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiCCTH2 (ORCPT
+        with ESMTP id S232925AbiCDCVZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Mar 2022 14:07:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5C419D751;
-        Thu,  3 Mar 2022 11:06:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D097F61A8A;
-        Thu,  3 Mar 2022 19:06:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F4FC340F3;
-        Thu,  3 Mar 2022 19:06:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646334401;
-        bh=2BtpIBsXVCJxVQ/oh3K2FgXEMXiekUDLQX9xD2gdbLM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=o2c+ye5BqYrayS6wcIkhykEd9oMUM08fnMBunZ6ubqX+UPCADV0E3K1UilobnxEPQ
-         sjmgxT04DSYUChMdCZVaAVyy6CXFMzPmUDVfXCOHmMz1U7anuFgSLwFqFWWlO6vpm/
-         Ibuza1+FbskVwliS18eABoFLCDlTEAmnkV7CiQX7bG0YpjPE8COYneNTvKag0LoL5G
-         c4OqdEIfpQaaAiypnu9/cZpft0YHLK88txfnlhsoopUuEcX1UIDkDqZgGS03IL5Mn1
-         zqj05azs8MVzTuDztpZrpkyYk5qi0sb4Td1zcAw+k3CjFcSFYw7+6ijKAIPw82Etxz
-         DW+fCwyHjboxg==
-Received: by mail-ed1-f43.google.com with SMTP id q17so7878712edd.4;
-        Thu, 03 Mar 2022 11:06:41 -0800 (PST)
-X-Gm-Message-State: AOAM533+fFcS5jz4NiB3e3Sv6PMbcD1sMv/j2t9RTsYMeiOcyVRjKUSS
-        ukmku3Z0jTr2+zzBJZAWmeQc/vwG3WH+gRVCdQ==
-X-Google-Smtp-Source: ABdhPJwEoJqO4GxeRtl4C7IV0N8/KXSt+tovp2KwzQmA0QQzU7BNoyVpkRvxSAPAd3L4v7UJIYii2bTAUw20bGdm/cM=
-X-Received: by 2002:a05:6402:4384:b0:413:9e36:b56f with SMTP id
- o4-20020a056402438400b004139e36b56fmr25115772edc.280.1646334399480; Thu, 03
- Mar 2022 11:06:39 -0800 (PST)
+        Thu, 3 Mar 2022 21:21:25 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D017CC61
+        for <linux-serial@vger.kernel.org>; Thu,  3 Mar 2022 18:20:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646360439; x=1677896439;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=znn5aCz57RibmqUhVbWjVLWqoB296JsibHcME4WJDoA=;
+  b=TtQ1Mxq3+m5itQngql31DRFl/0Pr/YqUxotlqMJBVeFiRi/1RMkKztM+
+   4ek3MYIyXIwfTkwRdOM/+vESkEaWbXBvRleOhylTkhznLyrqnJ6u/jg8e
+   PTnZZdsX6by/td8uyqTnjSUiTh6hcKLhW8516JeJKdIyOxSfPhNMyXG1g
+   QjJZqgWWp0RVamUi0cuctr1xqp5nH/gEPwsi59YqFDyBpuJ4Gn6Zd0e+u
+   dnqNIGMV/aKVB+7doiiENsv/IY/TMp7w5VXNVgAQpWnXJMwhexr/3Gv/j
+   mSEKtkL+/UBdnloFxz7UG9yliE8yhtwh1I6VMnRqTN38bTuhtXWK6Cf20
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10275"; a="317098337"
+X-IronPort-AV: E=Sophos;i="5.90,153,1643702400"; 
+   d="scan'208";a="317098337"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2022 18:20:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,153,1643702400"; 
+   d="scan'208";a="642352200"
+Received: from lkp-server01.sh.intel.com (HELO ccb16ba0ecc3) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 03 Mar 2022 18:20:37 -0800
+Received: from kbuild by ccb16ba0ecc3 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nPxYb-0001A2-0y; Fri, 04 Mar 2022 02:20:37 +0000
+Date:   Fri, 04 Mar 2022 10:19:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 3631e48df0dbfcce3b08f0ccafcaa587657379cd
+Message-ID: <62217748.aM1Jby602fFe8Psu%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20220215081334.788419-1-peng.fan@oss.nxp.com> <Yhj9joQkgTswMVcs@robh.at.kernel.org>
- <DU0PR04MB94172264E2DCE759EE3B9A3688019@DU0PR04MB9417.eurprd04.prod.outlook.com>
-In-Reply-To: <DU0PR04MB94172264E2DCE759EE3B9A3688019@DU0PR04MB9417.eurprd04.prod.outlook.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 3 Mar 2022 13:06:27 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL_02Gw6hw59NdH_rCDmwy5f+OrCsifmuNkxo2OgTYnYg@mail.gmail.com>
-Message-ID: <CAL_JsqL_02Gw6hw59NdH_rCDmwy5f+OrCsifmuNkxo2OgTYnYg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Add imx93 compatible string
-To:     Peng Fan <peng.fan@nxp.com>
-Cc:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 6:44 PM Peng Fan <peng.fan@nxp.com> wrote:
->
-> Hi Rob,
->
-> > Subject: Re: [PATCH] dt-bindings: serial: fsl-lpuart: Add imx93 compatible
-> > string
-> >
-> > On Tue, Feb 15, 2022 at 04:13:34PM +0800, Peng Fan (OSS) wrote:
-> > > From: Peng Fan <peng.fan@nxp.com>
-> > >
-> > > The lpuart on i.MX93 is derived from i.MX8ULP with some industrial
-> > > enhancements, it uses three compatible strings, so update the
-> >
-> > Looks like it's 2 compatible strings...
->
-> Oh, yes. i.MX8ULP/7ULP is same uart IP.
->
-> >
-> > > compatible string for i.MX93. But for a few instants,
-> >
-> > s/instants/instances/
-> >
-> > > DTR_B, DSR_B, DCD_B and RIN_B pins are supported, so use one
-> > > compatible string fsl,imx93-lpuart-v2
-> >
-> > If the differences are just what gets pinned out, then I think the differences
-> > should be handled with separate properties. We probably already have some.
-> >
-> > Plus, while you may have all the above signals, a board design may still only
-> > use a subset.
->
-> It is SoC integration level with above features not support in some instances,
-> so no such signals connected to SoC pin.
->
-> Saying LPUART IP itself support DTR/DSR/DCD/RIN, but instance A has the
-> feature disabled when doing SoC integration, instance B has the feature enabled
-> when doing SoC integration. What's your suggestion with such case?
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 3631e48df0dbfcce3b08f0ccafcaa587657379cd  serial: samsung: Add samsung_early_read to support early kgdboc
 
-Unless it changes the register interface in a non-compatible way that
-the driver needs to know about, I would not do a different compatible.
-For example, register offsets change.
+elapsed time: 722m
 
-Rob
+configs tested: 109
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+sh                            migor_defconfig
+arm                           sunxi_defconfig
+sh                             sh03_defconfig
+m68k                       m5275evb_defconfig
+sh                          kfr2r09_defconfig
+sh                          r7780mp_defconfig
+arm                           sama5_defconfig
+arm                         lubbock_defconfig
+sparc                       sparc64_defconfig
+riscv             nommu_k210_sdcard_defconfig
+sh                   sh7724_generic_defconfig
+sparc                            allyesconfig
+powerpc                     taishan_defconfig
+microblaze                          defconfig
+m68k                        stmark2_defconfig
+arm                         axm55xx_defconfig
+xtensa                generic_kc705_defconfig
+sh                          urquell_defconfig
+powerpc                     ep8248e_defconfig
+arm                         vf610m4_defconfig
+m68k                          multi_defconfig
+sh                           se7722_defconfig
+sparc64                          alldefconfig
+arm                          badge4_defconfig
+um                           x86_64_defconfig
+h8300                     edosk2674_defconfig
+arc                        vdk_hs38_defconfig
+arm                            hisi_defconfig
+arm                            mps2_defconfig
+arm                  randconfig-c002-20220302
+arm                  randconfig-c002-20220303
+arm                  randconfig-c002-20220304
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
+
+clang tested configs:
+mips                      maltaaprp_defconfig
+i386                             allyesconfig
+powerpc                      ppc64e_defconfig
+mips                        workpad_defconfig
+mips                           mtx1_defconfig
+arm                        vexpress_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220304
+hexagon              randconfig-r041-20220304
+hexagon              randconfig-r045-20220303
+riscv                randconfig-r042-20220303
+hexagon              randconfig-r041-20220303
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
