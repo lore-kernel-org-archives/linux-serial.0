@@ -2,28 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA44BC433F5
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Mar 2022 18:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01016C433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Mar 2022 19:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233105AbiCFS6Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 6 Mar 2022 13:58:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        id S233855AbiCFTW3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 6 Mar 2022 14:22:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiCFS6Z (ORCPT
+        with ESMTP id S229760AbiCFTW3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 6 Mar 2022 13:58:25 -0500
-X-Greylist: delayed 341 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 06 Mar 2022 10:57:33 PST
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1C6B58
-        for <linux-serial@vger.kernel.org>; Sun,  6 Mar 2022 10:57:32 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        Sun, 6 Mar 2022 14:22:29 -0500
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D3D58E77;
+        Sun,  6 Mar 2022 11:21:36 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 9FFE22801BBFA;
-        Sun,  6 Mar 2022 19:51:49 +0100 (CET)
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 8DFB93000FD66;
+        Sun,  6 Mar 2022 20:21:35 +0100 (CET)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 4D67943B1B0; Sun,  6 Mar 2022 19:51:49 +0100 (CET)
-Date:   Sun, 6 Mar 2022 19:51:49 +0100
+        id 553A155BE5; Sun,  6 Mar 2022 20:21:35 +0100 (CET)
+Date:   Sun, 6 Mar 2022 20:21:35 +0100
 From:   Lukas Wunner <lukas@wunner.de>
 To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
@@ -31,41 +30,71 @@ Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
         linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>
-Subject: Re: [PATCH 2/7] serial: 8250_dwlib: RS485 HW full duplex support
-Message-ID: <20220306185149.GB19394@wunner.de>
+        Eric Tremblay <etremblay@distech-controls.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, heiko@sntech.de,
+        giulio.benetti@micronovasrl.com
+Subject: Re: [RFC PATCH 3/7] serial: 8250_dwlib: Implement SW half duplex
+ support
+Message-ID: <20220306192135.GC19394@wunner.de>
 References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-3-ilpo.jarvinen@linux.intel.com>
+ <20220302095606.14818-4-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220302095606.14818-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220302095606.14818-4-ilpo.jarvinen@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 11:56:01AM +0200, Ilpo Järvinen wrote:
-> @@ -110,9 +110,14 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
->  
->  	if (rs485->flags & SER_RS485_ENABLED) {
->  		/* Clearing unsupported flags. */
-> -		rs485->flags &= SER_RS485_ENABLED;
-> -
-> -		tcr |= DW_UART_TCR_RS485_EN | DW_UART_TCR_XFER_MODE_DE_OR_RE;
-> +		rs485->flags &= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX;
-> +		tcr |= DW_UART_TCR_RS485_EN;
-> +
-> +		if (rs485->flags & SER_RS485_RX_DURING_TX) {
-> +			tcr |= DW_UART_TCR_XFER_MODE_DE_DURING_RE;
-> +		} else {
-> +			tcr |= DW_UART_TCR_XFER_MODE_DE_OR_RE;
-> +		}
+On Wed, Mar 02, 2022 at 11:56:02AM +0200, Ilpo Järvinen wrote:
+> This patch enables support for SW half-duplex mode. Synopsys
+> DesignWare UART has a build-in support for the RS485 protocol
+> from IP version 4.0 onward with dedicated RE/DE_EN registers.
+> This patch enables RS485 either using dedicated registers or
+> em485 as fallback.
+> 
+> In order to select preference for SW half-duplex mode (em485 +
+> RE/DE_EN) over HW managed one, as both are supported under
+> some configurations, SER_RS485_SW_RX_OR_TX flag is added to
+> serial_rs485.
+> 
+> This patch depends on UART_CAP_NOTEMT which is not provided
+> by this series but another one:
+>   https://lore.kernel.org/all/20210204161158.643-1-etremblay@distech-controls.com/
 
-This patch deletes lines introduced by the preceding patch.
-I'd just squash the two together, I don't see much value in
-introducing full duplex support in a separate patch.
+I don't see any benefit in using software emulated RTS assertion
+if hardware support is present.  It just consumes more CPU time
+and is slower to deassert RTS, thereby increasing bus turn-around time.
+
+So if hardware support is present, I think you always want to
+use that and you need to fallback to software emulation only
+if hardware support is missing (i.e. on IP versions < 4).
+
+The registers you're using here, DW_UART_RE_EN and DW_UART_DE_EN
+don't seem to be present on older IP versions.  I'm looking at
+the databook for version 3.04a and those registers aren't mentioned:
+
+https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf
+
+So the software emulation you've implemented here won't help with
+older IP and the newer IP doesn't need it because it supports
+RTS assertion in hardware.  Is that correct?  If so, I'd suggest
+not supporting DW_UART_TCR_XFER_MODE_SW_DE_OR_RE at all.
+
+A number of people have attempted to add rs485 software emulation
+to 8250_dw.c but noone ever pursued it into mainline.  The last
+attempt was by Heiko Stübner, who used patches by Giulio Benetti (+cc):
+
+https://lore.kernel.org/linux-serial/20200517215610.2131618-1-heiko@sntech.de/
+
+FWIW, newer TI Sitara SoCs have also added hardware support for
+rs485 and in this (not yet upstreamed) patch, I likewise chose
+to use software emulation only if hardware support is not available:
+
+https://github.com/l1k/linux/commit/82c989617a05
 
 Thanks,
 
