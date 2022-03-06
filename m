@@ -2,93 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98031C43219
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Mar 2022 19:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3795C433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Mar 2022 22:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbiCFTk7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 6 Mar 2022 14:40:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        id S232177AbiCFWJP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 6 Mar 2022 17:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiCFTk5 (ORCPT
+        with ESMTP id S229643AbiCFWJP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 6 Mar 2022 14:40:57 -0500
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB2921E38;
-        Sun,  6 Mar 2022 11:40:04 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id B3C27100D9417;
-        Sun,  6 Mar 2022 20:40:02 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id F33A644C28B; Sun,  6 Mar 2022 20:40:01 +0100 (CET)
-Date:   Sun, 6 Mar 2022 20:40:01 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Sun, 6 Mar 2022 17:09:15 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9831822B0E;
+        Sun,  6 Mar 2022 14:08:22 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id kt27so28266849ejb.0;
+        Sun, 06 Mar 2022 14:08:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=B+OdQEqw3gVimMqDvTK4mctUlemCPrMedCr5iIpp+zM=;
+        b=Qu6f92sIsjPSPety4vCcVtCiuPb634KVCRKpGyaQY8869tDnAjA6x1Gv5st7j1xZHh
+         lT6QhOZr7BnCay8Rzh2OkruAFEWMhgtJGNl/aQt2SCZV28gk9OGhAAN5mCcEYZoQjUNj
+         w+1Z7KyrOTbBvXrrzCcFOhOIbuRE4hOI0LBmY/C2+sv6Wo5KOXPtRMlRDWkUcZk1+U8m
+         jhnOGCxAsDRwvQMhqPczsq+hnTlhjVLbYGSX35JXPCJFVHiaTBaMq1vbSYdZmLZw7cdH
+         9x/79BDlPAydtMRqvJ1qYORTYmbPX5bMHDQ/CeenyylujzvWyhRnT7BKyq6LVHJFqOB1
+         F3Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=B+OdQEqw3gVimMqDvTK4mctUlemCPrMedCr5iIpp+zM=;
+        b=P/ycxzVogmVZMLVBbO4mwM4VNxQlGM76+9VSWNMuucSh4poRk72lcNT95lh+HQWv+x
+         SSLizoQeLpSkqTlSgsE/fX7PZIKsG16wbTo/TBFw/pJ6sF+GeqqfNtqEAXbSOw0WmG3S
+         Ph+xRS5vACGfvqctnRU2CvMdAHtfvGdyHpHJlC65KmEdSb/NNWSSSqjL6lBms2Aip5uV
+         SQFqr7zs9ffet+54JH18tTyYFSAkCBpblMjinQV5qlrjnnBCtYfHjH+wepFOpbKBwD4L
+         6/pVMV5ywOLtRM+zV3a4UWneg5TCZwjtFcNTItoKbvegVD3cPMWlByCguDWKijDpn0Cr
+         lgCw==
+X-Gm-Message-State: AOAM531n32c4mG6vIbLk2zNFLhbXALzvxnCpW/WrF79Pj4fQgKtX8DMs
+        NabD+cRiAfRJibPsgkMrYMXR9DdqULh1KfJG2rnC0514LEA=
+X-Google-Smtp-Source: ABdhPJxtJPeQPYTwcWknxaOsrytx6gzAfSrsO8vnTvrMWRTFPtLU10WxSJ3igPjaAPfMi3Fv9tDnRcnGtHQF/bM4X4U=
+X-Received: by 2002:a17:907:6e01:b0:6d0:562c:e389 with SMTP id
+ sd1-20020a1709076e0100b006d0562ce389mr7073620ejc.497.1646604501024; Sun, 06
+ Mar 2022 14:08:21 -0800 (PST)
+MIME-Version: 1.0
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
+ <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de>
+In-Reply-To: <20220306184857.GA19394@wunner.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 7 Mar 2022 00:07:44 +0200
+Message-ID: <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-api@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH 6/7] serial: General support for multipoint addresses
-Message-ID: <20220306194001.GD19394@wunner.de>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 11:56:05AM +0200, Ilpo Järvinen wrote:
-> This patch adds generic support for serial multipoint
-> addressing. Two new ioctls are added. TIOCSADDR is used to
+On Mon, Mar 7, 2022 at 12:00 AM Lukas Wunner <lukas@wunner.de> wrote:
+> On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo J=C3=A4rvinen wrote:
 
-Nit:  "This patch adds..." is superfluous.  Just write "Add ..."
-in imperative mood.
+...
 
+> Does the DesignWare UART use dedicated DE and RE pins instead of
+> the RTS pin?  That would be quite unusual.
 
-> This change is necessary for supporting devices with RS485
-> multipoint addressing [*].
+They are muxed with other UART pins on SoC level, but I don't remember
+by heart which ones. According to the Synopsys datasheet they are
+separate signals. It might be that I'm missing something, since the
+last time I looked was last year.
 
-If this is only used with RS485, why can't we just store the
-addresses in struct serial_rs485 and use the existing TIOCSRS485
-and TIOCGRS485 ioctls?  There's 20 bytes of padding left in
-struct serial_rs485 which you could use.  No need to add more
-user-space ABI.
+...
 
+> > +     d->hw_rs485_support =3D device_property_read_bool(p->dev, "snps,r=
+s485-interface-en");
+> > +     if (d->hw_rs485_support)
+> > +             p->rs485_config =3D dw8250_rs485_config;
+> > +
+>
+> You wrote in the commit message that rs485 support is present from
+> version 4.0 onward.  Can't we just check the IP version and enable
+> rs485 support for >=3D 4.0?  That would seem more appropriate instead
+> of introducing yet another new property.
 
-> [*] Technically, RS485 is just an electronic spec and does not
-> itself specify the 9th bit addressing mode but 9th bit seems
-> at least "semi-standard" way to do addressing with RS485.
+AFAIU this is dependent on the IP syntheses. I.o.w. version 4.0+ is a
+prerequisite, but doesn't automatically mean that there is a support.
+Unfortunately there is no way to tell this clearly in the IP
+configuration register.
 
-Is 9th bit addressing actually used by an Intel customer or was
-it implemented just for feature completeness?  I think this mode
-isn't used often (I've never seen a use case myself), primarily
-because it requires disabling parity.
-
-Thanks,
-
-Lukas
+--=20
+With Best Regards,
+Andy Shevchenko
