@@ -2,276 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2300C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 11:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BB8C433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 11:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234078AbiCGL1Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 06:27:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
+        id S242016AbiCGLeG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236284AbiCGL1Q (ORCPT
+        with ESMTP id S241996AbiCGLd4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 06:27:16 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2370F4AE0C
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 03:03:42 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id cx5so13092551pjb.1
-        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 03:03:42 -0800 (PST)
+        Mon, 7 Mar 2022 06:33:56 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF66D38A0
+        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 03:32:15 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id bt26so5864758lfb.3
+        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 03:32:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JFEOo1tcEco00+Nvk7m320IFPXwMdnmT4rBSqgHwb9U=;
-        b=qtjDbzotyaVzeWfh9ZP2lKirFOAUTh9U/lRfK/AmyUHC81BOUQqRWV8uYCpRv45zF/
-         JfuELtkYJkfkeBsnkNyb8dSw5o0huILMLDVO1CneisVMVdzYZp/KPIHiPffB7jNk2y7g
-         7qyMbiP+ZcgwqY03j2iV6pztEiry52W4y6m3vGeh+ccjyh55cthC36FA9t/+YbMF5ueK
-         A2JLckHy3vDz9ECpC+g5tiA3F/I6nZlnFG5BHEUusdCqvxPTit5boDlsMSM0/QLfegx9
-         g92RR3KXXqWVJ/Twx7BOxF8eaSreXTIq8xxN1/uSlLTZHQdvtbmc+BKtR2ukBE4PkzPm
-         22Sw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PfDSGTII8OEq1qMEWbwlEjjVe6Gd0qQ3i7mpLlNovXo=;
+        b=s6fHa1lvEZ+3Bh1MehfEE0HK2VfASVuaxT8SUp12QuE277aF8K2ybSSCjlQLOh6dJi
+         6zpjHIwqMHH72jSXgtSQe2JtnejXCOauODmvOckPKVdOlqqp/Vq/CrgMeT5SJw6kS6BK
+         ZsPglIRC5dj0Yt88BFUbW4EjjleYt8+jh83REiycP2I5e2xY/+ZmyvS75mTCoQQE5uYQ
+         CArbxumWu4wcAdWMeCHljWrnasDzzlg8KtdX/1wPmtgkubTys0XMuhk8eIkc2S20PRVT
+         sMIq8M2tKLu1pwsBS6LquT12mIPGWldhjYkSa6AmYa3Z6uB/hkjIgZ9yUH25RUYEoCcB
+         Bk7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JFEOo1tcEco00+Nvk7m320IFPXwMdnmT4rBSqgHwb9U=;
-        b=0xj2w2AT0NFTA6xcYEgZ/sa7jYjBMQdttvdlGmQEkQlZRS5iwNV14l3ve4VORS8hXt
-         0/j3bxCdy6K805Zlof7gzR9cdSiEcEQUKCs2vZ2vdHc889aapzj5yx53lXqY8vdaFNvS
-         olo+NiJ/e7okNfAT0a3xMAyD6NyELaWLwsK7R5d+R/atO30JNaQRrjbM3CrzOt1xBjGl
-         WutEXunuiEC+t+iTpszU0dZp4qWR1Kh32QSPZjaYbQK1SRRWpBFQfqxIStVGJfsjZdvh
-         mhI/CcNC0xnbr9cBJdtvvCts2lFLhMJKzcD2d/r6Ra0ZAhPte41Ow1i6f6uwOHiNf0Ny
-         ZxOQ==
-X-Gm-Message-State: AOAM530jtzQrb6fcW1MaFWWEdVNbxwsaJufJR3MqJJsyISMXHheH87TT
-        vssTfwmfeLpmZFMDdjwiTJBgQfzyZ3A70Q==
-X-Google-Smtp-Source: ABdhPJzQWuDyPVOZV8+vb7zFRV1bqqY/2Jkp1Y9YhwzRyLVg+CvO8Hap3qvd2yxJOHBDSbBx85jL6Q==
-X-Received: by 2002:a17:90b:216:b0:1bc:5d68:e7aa with SMTP id fy22-20020a17090b021600b001bc5d68e7aamr12283884pjb.57.1646651020984;
-        Mon, 07 Mar 2022 03:03:40 -0800 (PST)
-Received: from localhost.localdomain ([2401:4900:1c2a:216d:d967:c5a7:5da:6441])
-        by smtp.gmail.com with ESMTPSA id mw7-20020a17090b4d0700b001b8baf6b6f5sm12390121pjb.50.2022.03.07.03.03.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 03:03:40 -0800 (PST)
-From:   Sumit Garg <sumit.garg@linaro.org>
-To:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com,
-        dianders@chromium.org
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        linux-kernel@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        arnd@arndb.de, peterz@infradead.org,
-        Sumit Garg <sumit.garg@linaro.org>
-Subject: [RFT v4] tty/sysrq: Make sysrq handler NMI aware
-Date:   Mon,  7 Mar 2022 16:33:28 +0530
-Message-Id: <20220307110328.2557655-1-sumit.garg@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PfDSGTII8OEq1qMEWbwlEjjVe6Gd0qQ3i7mpLlNovXo=;
+        b=w3SvoK8rVCsxc84I7BTD5AS84jnvDZWdcKnCaIEfoI/b3KJmVUzG8j8cJOeC/7nEaD
+         lgni365d2mkvFORPRoTfqL4+afXlhB9Y2EpFPsD8CJKkgHmIK4q+aDgXrAo+UaFk1jYr
+         7ifcGV3+5KELuWYuB5XlR2Ttcc1c5FqFU240wHIhpMqiZL3iJB7aKlrVz68fQG6NG6Br
+         rp0SR0PEr+dqjCfYNIkGLvnGu/aq3KGsHPitxvP3vzpNx0Asi+o4QB2JXpV06SL04qjt
+         GglbNoniDsArEZMoqwSaZ5cVh8gEE60FBTnQQoB4KiwIOsZW0IuSOi747W03MGsyXlSV
+         d/kQ==
+X-Gm-Message-State: AOAM530FhWnX9ekwqZBsen5zWEoDV2vyxiUEY+7R24neN2VFCYEaYfnD
+        bbTrr3bReaH8Qr82IjGiTHZIEhpinNucHRWnTWm8hg==
+X-Google-Smtp-Source: ABdhPJwrz3os6eByp/EdpREzHyJ/tokDYc1QXytMUsDeDk0Qqfiy5D7kAKidVGdZ+pKK2v++O45kzV7d0Lmw+p4uxYg=
+X-Received: by 2002:a05:6512:220c:b0:447:413d:f9a2 with SMTP id
+ h12-20020a056512220c00b00447413df9a2mr7324231lfu.22.1646652734247; Mon, 07
+ Mar 2022 03:32:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220304064324.331217-1-hasegawa-hitomi@fujitsu.com>
+ <20220304064324.331217-2-hasegawa-hitomi@fujitsu.com> <CAD=FV=Udf=MzyPa_o=vz=nc7ZVXBuuVNqw-VOSfrShuv0hN64Q@mail.gmail.com>
+In-Reply-To: <CAD=FV=Udf=MzyPa_o=vz=nc7ZVXBuuVNqw-VOSfrShuv0hN64Q@mail.gmail.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Mon, 7 Mar 2022 17:02:02 +0530
+Message-ID: <CAFA6WYM77XTttu4H35PL7tkZxtBA8XaX23QW1UTBcESBE4V0fw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] tty/sysrq: Make sysrq handler NMI aware
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        SoC Team <soc@kernel.org>, linux-serial@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Allow a magic sysrq to be triggered from an NMI context. This is done
-via marking some sysrq actions as NMI safe. Safe actions will be allowed
-to run from NMI context whilst that cannot run from an NMI will be queued
-as irq_work for later processing.
+Hi Doug,
 
-The major use-case is to add NMI debugging capabilities to the kernel
-in order to debug scenarios such as:
-- Primary CPU is stuck in deadlock with interrupts disabled and hence
-  doesn't honor serial device interrupt. So having magic sysrq triggered
-  as an NMI is helpful for debugging.
-- Always enabled NMI based magic sysrq irrespective of whether the serial
-  TTY port is active or not.
-- Apart from UART interrupts, it allows magic sysrq to be triggered from
-  a diagnostic NMI interrupt on systems such as A64FX.
+On Fri, 4 Mar 2022 at 23:36, Doug Anderson <dianders@chromium.org> wrote:
+>
+> Hi,
+>
+> On Thu, Mar 3, 2022 at 10:45 PM Hitomi Hasegawa
+> <hasegawa-hitomi@fujitsu.com> wrote:
+> >
+> >  void __handle_sysrq(int key, bool check_mask)
+> >  {
+> >         const struct sysrq_key_op *op_p;
+> > @@ -573,6 +606,10 @@ void __handle_sysrq(int key, bool check_mask)
+> >         int orig_suppress_printk;
+> >         int i;
+> >
+> > +       /* Skip sysrq handling if one already in progress */
+> > +       if (sysrq_nmi_key != -1)
+> > +               return;
+>
+> Should this give a warning?
+>
+> Also, can you remind me why this is safe if two CPUs both call
+> handle_sysrq() at the same time? Can't both of them make it past this?
+> That doesn't seem so great.
+>
+>
+> > @@ -596,7 +633,13 @@ void __handle_sysrq(int key, bool check_mask)
+> >                 if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
+> >                         pr_info("%s\n", op_p->action_msg);
+> >                         console_loglevel = orig_log_level;
+> > -                       op_p->handler(key);
+> > +
+> > +                       if (in_nmi() && !op_p->nmi_safe) {
+> > +                               sysrq_nmi_key = key;
+> > +                               irq_work_queue(&sysrq_irq_work);
+>
+> It looks like irq_work_queue() returns false if it fails to queue.
+> Maybe it's worth checking and setting "sysrq_nmi_key" back to -1 if it
+> fails?
 
-A particular sysrq handler is only marked as NMI safe in case the handler
-isn't contending for any synchronization primitives as in NMI context
-they are expected to cause deadlocks. Note that the debug sysrq do not
-contend for any synchronization primitives. It does call kgdb_breakpoint()
-to provoke a trap but that trap handler should be NMI safe on
-architectures that implement an NMI.
+Thanks for your comments. I hope v4 here [1] addresses all of them.
+Please have a look again.
 
-Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
----
+[1] https://lkml.org/lkml/2022/3/7/1059
 
-Changes in v4:
-- Use atomic operations for sysrq key variable to gracefully handle
-  concurrent sysrq entry on multiple CPUs.
-- Rename sysrq_nmi_key to sysrq_key as it isn't anymore specific to NMI
-  context.
-- Addressed other misc. comments from Doug.
-
-Changes in v3:
-- Extend commit message to include use-cases.
-- Get rid of redundant kfifo stuff.
-- Incorporate other misc. feedback from Peter Z.
-
-Changes in v2:
-- Rebased to 5.17-rc5.
-- Separate this patch from complete patch-set [1] as its relevant for
-  other diagnostic NMI interrupts [2] as well apart from uart NMI
-  interrupts.
-- Incorporated suggestions from Doug.
-
-[1] https://lore.kernel.org/linux-arm-kernel/CAFA6WYOWHgmYYt=KGXDh2hKiuy_rQbJfi279ev0+s-Qh7L21kA@mail.gmail.com/t/#m2b5006f08581448020eb24566927a104d0b95c44
-[2] https://lore.kernel.org/all/Yhi0rrkSR63ZhjX1@kroah.com/T/
-
- drivers/tty/sysrq.c       | 50 ++++++++++++++++++++++++++++++++++++++-
- include/linux/sysrq.h     |  1 +
- kernel/debug/debug_core.c |  1 +
- 3 files changed, 51 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index bbfd004449b5..005c9f9e0004 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -51,6 +51,7 @@
- #include <linux/syscalls.h>
- #include <linux/of.h>
- #include <linux/rcupdate.h>
-+#include <linux/irq_work.h>
- 
- #include <asm/ptrace.h>
- #include <asm/irq_regs.h>
-@@ -112,6 +113,7 @@ static const struct sysrq_key_op sysrq_loglevel_op = {
- 	.help_msg	= "loglevel(0-9)",
- 	.action_msg	= "Changing Loglevel",
- 	.enable_mask	= SYSRQ_ENABLE_LOG,
-+	.nmi_safe	= true,
- };
- 
- #ifdef CONFIG_VT
-@@ -159,6 +161,7 @@ static const struct sysrq_key_op sysrq_crash_op = {
- 	.help_msg	= "crash(c)",
- 	.action_msg	= "Trigger a crash",
- 	.enable_mask	= SYSRQ_ENABLE_DUMP,
-+	.nmi_safe	= true,
- };
- 
- static void sysrq_handle_reboot(int key)
-@@ -172,6 +175,7 @@ static const struct sysrq_key_op sysrq_reboot_op = {
- 	.help_msg	= "reboot(b)",
- 	.action_msg	= "Resetting",
- 	.enable_mask	= SYSRQ_ENABLE_BOOT,
-+	.nmi_safe	= true,
- };
- 
- const struct sysrq_key_op *__sysrq_reboot_op = &sysrq_reboot_op;
-@@ -219,6 +223,7 @@ static const struct sysrq_key_op sysrq_showlocks_op = {
- 	.handler	= sysrq_handle_showlocks,
- 	.help_msg	= "show-all-locks(d)",
- 	.action_msg	= "Show Locks Held",
-+	.nmi_safe	= true,
- };
- #else
- #define sysrq_showlocks_op (*(const struct sysrq_key_op *)NULL)
-@@ -291,6 +296,7 @@ static const struct sysrq_key_op sysrq_showregs_op = {
- 	.help_msg	= "show-registers(p)",
- 	.action_msg	= "Show Regs",
- 	.enable_mask	= SYSRQ_ENABLE_DUMP,
-+	.nmi_safe	= true,
- };
- 
- static void sysrq_handle_showstate(int key)
-@@ -328,6 +334,7 @@ static const struct sysrq_key_op sysrq_ftrace_dump_op = {
- 	.help_msg	= "dump-ftrace-buffer(z)",
- 	.action_msg	= "Dump ftrace buffer",
- 	.enable_mask	= SYSRQ_ENABLE_DUMP,
-+	.nmi_safe	= true,
- };
- #else
- #define sysrq_ftrace_dump_op (*(const struct sysrq_key_op *)NULL)
-@@ -566,12 +573,46 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
- 		sysrq_key_table[i] = op_p;
- }
- 
-+static atomic_t sysrq_key = ATOMIC_INIT(-1);
-+
-+static void sysrq_do_irq_work(struct irq_work *work)
-+{
-+	const struct sysrq_key_op *op_p;
-+	int orig_suppress_printk;
-+	int key = atomic_read(&sysrq_key);
-+
-+	orig_suppress_printk = suppress_printk;
-+	suppress_printk = 0;
-+
-+	rcu_sysrq_start();
-+	rcu_read_lock();
-+
-+	op_p = __sysrq_get_key_op(key);
-+	if (op_p)
-+		op_p->handler(key);
-+
-+	rcu_read_unlock();
-+	rcu_sysrq_end();
-+
-+	suppress_printk = orig_suppress_printk;
-+	atomic_set(&sysrq_key, -1);
-+}
-+
-+static DEFINE_IRQ_WORK(sysrq_irq_work, sysrq_do_irq_work);
-+
- void __handle_sysrq(int key, bool check_mask)
- {
- 	const struct sysrq_key_op *op_p;
- 	int orig_log_level;
- 	int orig_suppress_printk;
- 	int i;
-+	bool irq_work = false;
-+
-+	/* Skip sysrq handling if one already in progress */
-+	if (atomic_cmpxchg(&sysrq_key, -1, key) != -1) {
-+		pr_warn("Skip sysrq key: %i as one already in progress\n", key);
-+		return;
-+	}
- 
- 	orig_suppress_printk = suppress_printk;
- 	suppress_printk = 0;
-@@ -596,7 +637,11 @@ void __handle_sysrq(int key, bool check_mask)
- 		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
- 			pr_info("%s\n", op_p->action_msg);
- 			console_loglevel = orig_log_level;
--			op_p->handler(key);
-+
-+			if (in_nmi() && !op_p->nmi_safe)
-+				irq_work = irq_work_queue(&sysrq_irq_work);
-+			else
-+				op_p->handler(key);
- 		} else {
- 			pr_info("This sysrq operation is disabled.\n");
- 			console_loglevel = orig_log_level;
-@@ -623,6 +668,9 @@ void __handle_sysrq(int key, bool check_mask)
- 	rcu_sysrq_end();
- 
- 	suppress_printk = orig_suppress_printk;
-+
-+	if (!irq_work)
-+		atomic_set(&sysrq_key, -1);
- }
- 
- void handle_sysrq(int key)
-diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
-index 3a582ec7a2f1..630b5b9dc225 100644
---- a/include/linux/sysrq.h
-+++ b/include/linux/sysrq.h
-@@ -34,6 +34,7 @@ struct sysrq_key_op {
- 	const char * const help_msg;
- 	const char * const action_msg;
- 	const int enable_mask;
-+	const bool nmi_safe;
- };
- 
- #ifdef CONFIG_MAGIC_SYSRQ
-diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
-index da06a5553835..53b56114f59b 100644
---- a/kernel/debug/debug_core.c
-+++ b/kernel/debug/debug_core.c
-@@ -978,6 +978,7 @@ static const struct sysrq_key_op sysrq_dbg_op = {
- 	.handler	= sysrq_handle_dbg,
- 	.help_msg	= "debug(g)",
- 	.action_msg	= "DEBUG",
-+	.nmi_safe	= true,
- };
- #endif
- 
--- 
-2.25.1
-
+-Sumit
