@@ -2,121 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D5EC352A1
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 10:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91056C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 11:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239593AbiCGKDb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 05:03:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
+        id S242006AbiCGLYi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 06:24:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240442AbiCGKBC (ORCPT
+        with ESMTP id S239392AbiCGLYd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 05:01:02 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58372205FE;
-        Mon,  7 Mar 2022 01:48:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646646492; x=1678182492;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=zC3EygN9B67AQNPvzALqT8NwONoTEFy8bHC2L1G4njc=;
-  b=JstJxVGBbUqE7vEW33wQJkXrLylT4VHJHp2qZByUKOt5Ea7DtujQMZh8
-   eD4/p7aAvS7znQV2M4cLJCV3289l50yZljmgVJegACGGpfsnYkNK4iwEv
-   6Rq23GvPRKd9xdGv+/0yFzkXAu32KlTEIdIVlLnEKFwtmE1a8PlsK9Gv9
-   S5Vy0eNpJ1dwLCb9fVBk5sTsC5VDt96c4+53HwmmVr/stwhCVPE8BChgM
-   H0zS0ozy1z+ffacOSmiAbdAftg5+tnLSBZJ6qerHsv/n+0tvGrKgJ70Fr
-   gtaq25O0hr0Fd+5X5xvgw3//4ynct9C8buIMAbJVhuf23vJHpzDFbVSuv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="340782145"
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="340782145"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:48:11 -0800
-X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
-   d="scan'208";a="553088602"
-Received: from rabl-mobl2.ger.corp.intel.com ([10.252.54.114])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:48:03 -0800
-Date:   Mon, 7 Mar 2022 11:48:01 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lukas Wunner <lukas@wunner.de>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Mon, 7 Mar 2022 06:24:33 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30641C921;
+        Mon,  7 Mar 2022 02:51:46 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id b8so13018300pjb.4;
+        Mon, 07 Mar 2022 02:51:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=j8mgW2tireVLaFShl52ji4HfOgeZjBRmsgnOuKcFd2U=;
+        b=iZkGKeV7nAWcmc5MQ6oH1nL1eOx2fyL3qHrKtLlW2TiU8yYpwHdJSluLmnDFPHA5P3
+         YEmTWTDKLDkQP+aJPfDPuUqq24X/b2CS6+bDSP+PXDUoNv37AGwjBRsX5+mL2EX386az
+         WF6okfVboABcIyulNol9DXK6ybW90GHTmGdKMAMX9aQIuXOdInXMxY6iOGoZDxFbTu9k
+         PThuffnNj+E3o6Ha/xUh24D4SxBnPAlTd1nTDRqZ7zfNrG9CeWgXZADTYqyveDAroxCE
+         gUWpRyPuSgJnPqs1yvBnziqm8u5FIQWUfU23ct2sN7/rI6ebHHWTEXL22pu6eiolmBk3
+         2HQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=j8mgW2tireVLaFShl52ji4HfOgeZjBRmsgnOuKcFd2U=;
+        b=ZUyY2MgM18F/EYF/sXsyoxigXZJw7OphC1v9kM2680dDe+h1r5gCmPfGs7j91QLuGu
+         GvTQGvadAS7jGcmU0pXEh0xaVSLn5qZMPcNDgFg+ZSAy8Kk+NyT+L66xP/G1cJn6lugG
+         VJWrOI1+JUWrTjXzRjmcFMJ/rG7CXx8ix8KyQIjjMo/wV/HrVnPU2YZXtUJTpAJol6oP
+         Sliy2tsZQSGKvrQqkE/FVESaRTZvAHGUBFoUAXkyO9kPqB3IG4rBCLb2KcCSeq8DuwPw
+         ADeyp5ExgdOX0ZJL+fc0xB5wU/GRtuW9/8hAVtFQadpdXxlEKtf/dj9kcrZMsY6vt/w2
+         sEag==
+X-Gm-Message-State: AOAM531HEk12GFx3Pm9lW/x0/XB52ujCLmUrojNo/f8Ll5rsD2/BJ/WH
+        GqIehKnZS9RTi8hA86cRtD8=
+X-Google-Smtp-Source: ABdhPJxlWUg0FoiPrnYPoA2ku5qK/koaaqDT8mnDf0zPlnYQ36GpgzCPkzrnnv3qsGnGe6xThjT7yA==
+X-Received: by 2002:a17:902:6f0f:b0:151:3f2d:8b21 with SMTP id w15-20020a1709026f0f00b001513f2d8b21mr11613033plk.123.1646650306160;
+        Mon, 07 Mar 2022 02:51:46 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id y39-20020a056a00182700b004e19980d6cbsm15619619pfa.210.2022.03.07.02.51.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 02:51:45 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-api@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH 6/7] serial: General support for multipoint
- addresses
-In-Reply-To: <20220306194001.GD19394@wunner.de>
-Message-ID: <ab43569c-6488-12a6-823-3ef09f2849d@linux.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com> <20220306194001.GD19394@wunner.de>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-971395012-1646646016=:1677"
-Content-ID: <cbee2ae-83f0-872e-34dd-cb9866dd3f6e@linux.intel.com>
+        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Amit Singh Tomar <amittomer25@gmail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] tty: serial: owl: Fix missing clk_disable_unprepare() in owl_uart_probe
+Date:   Mon,  7 Mar 2022 10:51:35 +0000
+Message-Id: <20220307105135.11698-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Fix the missing clk_disable_unprepare() before return
+from owl_uart_probe() in the error handling case.
 
---8323329-971395012-1646646016=:1677
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <07d5f9f-7fe3-3c54-6566-1873a5191970@linux.intel.com>
+Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/tty/serial/owl-uart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Sun, 6 Mar 2022, Lukas Wunner wrote:
-
-> On Wed, Mar 02, 2022 at 11:56:05AM +0200, Ilpo Järvinen wrote:
-> 
-> > This change is necessary for supporting devices with RS485
-> > multipoint addressing [*].
-> 
-> If this is only used with RS485, why can't we just store the
-> addresses in struct serial_rs485 and use the existing TIOCSRS485
-> and TIOCGRS485 ioctls?  There's 20 bytes of padding left in
-> struct serial_rs485 which you could use.  No need to add more
-> user-space ABI.
-
-It could if it is agreed that serial multipoint addressing is just
-a thing in RS-485 and nowhere else? In that case, there is no point
-in adding more generic support for it.
-
-> > [*] Technically, RS485 is just an electronic spec and does not
-> > itself specify the 9th bit addressing mode but 9th bit seems
-> > at least "semi-standard" way to do addressing with RS485.
-> 
-> Is 9th bit addressing actually used by an Intel customer or was
-> it implemented just for feature completeness? I think this mode
-> isn't used often (I've never seen a use case myself), primarily
-> because it requires disabling parity.
-
-On what basis? ...The datasheet I'm looking at has a timing diagram 
-with both D8 (9th bit) and parity so I think your information must be
-incorrect. I don't have direct contacts with customers but I'm told
-it's important for other org's customers.
-
-
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index 91f1eb0058d7..9a6611cfc18e 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -731,6 +731,7 @@ static int owl_uart_probe(struct platform_device *pdev)
+ 	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
+ 	if (owl_port->port.uartclk == 0) {
+ 		dev_err(&pdev->dev, "clock rate is zero\n");
++		clk_disable_unprepare(owl_port->clk);
+ 		return -EINVAL;
+ 	}
+ 	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
 -- 
- i.
---8323329-971395012-1646646016=:1677--
+2.17.1
+
