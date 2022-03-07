@@ -2,135 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF51C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 14:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B805C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 15:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243143AbiCGOY5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 09:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        id S242276AbiCGPbp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 10:31:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243140AbiCGOY4 (ORCPT
+        with ESMTP id S232666AbiCGPbo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 09:24:56 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D0C6E8F0
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 06:24:00 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id q14so8004830wrc.4
-        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 06:24:00 -0800 (PST)
+        Mon, 7 Mar 2022 10:31:44 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123075749E;
+        Mon,  7 Mar 2022 07:30:50 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id e24so10921233wrc.10;
+        Mon, 07 Mar 2022 07:30:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mIIVvuK2N/32KeIEXgX7T/cu6Rp6fCq2WJv1t+elJk0=;
-        b=F2EkS1OkeFcBz8FzJ1PYrn6nmbbnh/LcjsYdslyLyKZouoZOngfzPhavOHdNWb7ntF
-         lMAgQWVFgb49+9jjYedUUgGDvRPwtCEPF3NcY6CddSac5a65ceBDeKdeRDx6SbE2t+BC
-         gHnLBtUa4KBEJzs26sxJjjlCII0LOpkjS2+HXgBAsIvNNBZ/RvzRs2LyEfle51GLFuEQ
-         +QIzEPukRNOi04Ew6pYfB6zcXlT4hEx0ppXmoFcwMVBY69ad7YNJxhFEuu72csDcx1eH
-         xY6WwAFodItq4zPMUqlzV8XDP17LIDgSqj9umFJOElv28rbY7NuoxbVuvoU8Q/yICaoX
-         ndSg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VEUtjRWw8hcXPx8ISHtvMs+ktqj0awQxQ1FmrJuTsp0=;
+        b=MNpHF7Pxg9BKJiM7fXtwr+H0qiQHTO5YaiWRpoj8JeGPvWbNy27/PM68jvK4QSBRoS
+         eJV84YLL7LY0Kx+2dttq4o8BSGVJnTkTkSVrSQ6jqym1hnTU/KN1tiaQ4HT3YxHnGaep
+         l/BgDYpY9h1dRuCJcH3/sPXiySIO+U6vefOR+F4+6/wYeky7WPYEoZhJjDMIx0OvJUnr
+         rJpIGYuHLOeHT93rWf+ikiIQTOzZMcEJeJjTV+qPGfz/r4iAqH5VCVB98b/FMsXQJZQT
+         bPAklAmCoO81z7iPKi3IVku0QUFChskh487B2KlaehvDU0EI0uy5Gq33vkGC5FnOYU2C
+         YW9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mIIVvuK2N/32KeIEXgX7T/cu6Rp6fCq2WJv1t+elJk0=;
-        b=yR1vS/9fzo0zjktDyLfR7/KCPfxrxmCb0ClyuV01YgiVuwD8eJ3Np7KqqBBCetN67R
-         60aXDQxy1DIDYe9TFzznYAzd+6qxt9U3spCU1GWxgMpWaUDnykVIPT4oNFuyTTAoihHk
-         5xYfTCnzd1bcYYreYnAP7j9KZU0hgYV5ArYRXsL/QKkC3ZK5+ovjlz1E0FqP9Z6Z24Oy
-         CVqNvZ4TaywqFn0YQKaiEX/lMHWkTzREzoSBkMmHZCV5loNgOwA4yIQ5/6SFb687IOX3
-         PwH4KXrZ727rmcd4IsDGMaMn1ND81/X3Uv1kkFc37qia7NQcQDAXOo3DbnHv+qrNBR7y
-         Jliw==
-X-Gm-Message-State: AOAM533xfNYeEf/WfJ+e3ZGynv8llE9rvADAIvQWIhHVC7QRqhIBktnm
-        ekUNio3axQB84uG0rMcHkrAizi97k4gL+Jp/
-X-Google-Smtp-Source: ABdhPJzQI4QjqhdFPG0fJBteqt1+29zzxkApr9e/9w3GgGEmpxrbvRqsxvfQsyX3DLpyuuTW1sis/A==
-X-Received: by 2002:adf:ea0f:0:b0:1f0:61f6:c3df with SMTP id q15-20020adfea0f000000b001f061f6c3dfmr8407228wrm.543.1646663038946;
-        Mon, 07 Mar 2022 06:23:58 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id p3-20020a05600c358300b003897e440047sm10853608wmq.28.2022.03.07.06.23.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VEUtjRWw8hcXPx8ISHtvMs+ktqj0awQxQ1FmrJuTsp0=;
+        b=6gCUcgdLxzXXsPIx7rX6oQXVwrtHf7Hlt32yokXmdktU9yWzLXYX2eZh5F6xTfmdV1
+         LttieduH0Yo7DZB7Fc1jFUvQQLcxETn1Sy0N695ei9ijYFXGbAavTkaK1raBtJie65eu
+         ox8MDb1FSWYDbJCKny5vL7Gvd6r9dxxtl/gC2bugoDSDb0bccTY+XPNtRs6Ge9LoZ7At
+         mVJEzOiRw/6YoZEIbA2FM8pBW+ia0n2bL0rCtXrGXfCzjqBnvTjLa1J/2QmlX47wfkXr
+         vXBOAcpL7zcd4Sqf5lGi1wF/V7YnRoSQu8tt8SFTOZetr7aYtS9Cyqdqbn0+KHz9g97Q
+         hkBQ==
+X-Gm-Message-State: AOAM532CuK1t3+xGdeBRu5I7Sm/3tqzsZ61CPbl3u34VURz7OFURYs1W
+        lyaEBRETQ6Ps/yeLAqpDtAM=
+X-Google-Smtp-Source: ABdhPJybfHSo0eCkjaEOHXAgaY8b9TUr8U9Fg4tG5GiMhl+kF2PHHrRNJApWZg0ccl+N6LMTkzuvSA==
+X-Received: by 2002:a5d:64ac:0:b0:1e7:1415:2548 with SMTP id m12-20020a5d64ac000000b001e714152548mr8834834wrp.267.1646667048657;
+        Mon, 07 Mar 2022 07:30:48 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id m13-20020a05600c4f4d00b00386744cb31bsm15673525wmq.35.2022.03.07.07.30.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 06:23:58 -0800 (PST)
-Date:   Mon, 7 Mar 2022 14:23:56 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com,
-        dianders@chromium.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, jason.wessel@windriver.com,
-        linux-kernel@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        arnd@arndb.de, peterz@infradead.org
-Subject: Re: [RFT v4] tty/sysrq: Make sysrq handler NMI aware
-Message-ID: <20220307142356.ksx7k5xalqlsxnqk@maple.lan>
-References: <20220307110328.2557655-1-sumit.garg@linaro.org>
+        Mon, 07 Mar 2022 07:30:48 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] tty: serial: jsm: remove redundant assignments to variable linestatus
+Date:   Mon,  7 Mar 2022 15:30:47 +0000
+Message-Id: <20220307153047.139639-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307110328.2557655-1-sumit.garg@linaro.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 04:33:28PM +0530, Sumit Garg wrote:
-> Allow a magic sysrq to be triggered from an NMI context. This is done
-> via marking some sysrq actions as NMI safe. Safe actions will be allowed
-> to run from NMI context whilst that cannot run from an NMI will be queued
-> as irq_work for later processing.
->
-> <snip>
->
-> @@ -566,12 +573,46 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
->  		sysrq_key_table[i] = op_p;
->  }
->  
-> +static atomic_t sysrq_key = ATOMIC_INIT(-1);
-> +
-> +static void sysrq_do_irq_work(struct irq_work *work)
-> +{
-> +	const struct sysrq_key_op *op_p;
-> +	int orig_suppress_printk;
-> +	int key = atomic_read(&sysrq_key);
-> +
-> +	orig_suppress_printk = suppress_printk;
-> +	suppress_printk = 0;
-> +
-> +	rcu_sysrq_start();
-> +	rcu_read_lock();
-> +
-> +	op_p = __sysrq_get_key_op(key);
-> +	if (op_p)
-> +		op_p->handler(key);
-> +
-> +	rcu_read_unlock();
-> +	rcu_sysrq_end();
-> +
-> +	suppress_printk = orig_suppress_printk;
-> +	atomic_set(&sysrq_key, -1);
-> +}
-> +
-> +static DEFINE_IRQ_WORK(sysrq_irq_work, sysrq_do_irq_work);
-> +
->  void __handle_sysrq(int key, bool check_mask)
->  {
->  	const struct sysrq_key_op *op_p;
->  	int orig_log_level;
->  	int orig_suppress_printk;
->  	int i;
-> +	bool irq_work = false;
-> +
-> +	/* Skip sysrq handling if one already in progress */
-> +	if (atomic_cmpxchg(&sysrq_key, -1, key) != -1) {
-> +		pr_warn("Skip sysrq key: %i as one already in progress\n", key);
-> +		return;
-> +	}
+Variable linestatus is being assigned values that are never read, the
+assignments are redundant and can be removed.
 
-Doesn't this logic needlessly jam sysrq handling if the irq_work cannot
-be undertaken?
+Cleans up clang scan warnings:
+drivers/tty/serial/jsm/jsm_cls.c:369:2: warning: Value stored to
+'linestatus' is never read [deadcode.DeadStores]
+drivers/tty/serial/jsm/jsm_cls.c:400:4: warning: Value stored to
+'linestatus' is never read [deadcode.DeadStores]
 
-A console user could unwittingly attempt an !nmi_safe SysRq action on
-a damaged system that cannot service interrupts. Logic that prevents
-things like backtrace, ftrace dump, kgdb or reboot is actively harmful
-to that user's capability to figure out why their original sysrq doesn't
-work.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/tty/serial/jsm/jsm_cls.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-I think the logic to prohibht multiple deferred sysrqs should only
-be present on code paths where we are actually going to defer the sysrq.
+diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
+index b280da50290c..444f233ebd1f 100644
+--- a/drivers/tty/serial/jsm/jsm_cls.c
++++ b/drivers/tty/serial/jsm/jsm_cls.c
+@@ -350,7 +350,7 @@ static void cls_assert_modem_signals(struct jsm_channel *ch)
+ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
+ {
+ 	int qleft = 0;
+-	u8 linestatus = 0;
++	u8 linestatus;
+ 	u8 error_mask = 0;
+ 	u16 head;
+ 	u16 tail;
+@@ -365,8 +365,6 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
+ 	head = ch->ch_r_head & RQUEUEMASK;
+ 	tail = ch->ch_r_tail & RQUEUEMASK;
+ 
+-	/* Get our cached LSR */
+-	linestatus = ch->ch_cached_lsr;
+ 	ch->ch_cached_lsr = 0;
+ 
+ 	/* Store how much space we have left in the queue */
+-- 
+2.35.1
 
-
-Daniel.
