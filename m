@@ -2,126 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B60C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 09:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3461DC4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 09:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbiCGJFe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 04:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
+        id S236619AbiCGJWD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 04:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbiCGJFc (ORCPT
+        with ESMTP id S236562AbiCGJVk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 04:05:32 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7ECD443FB
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 01:04:38 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 576D83F223
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 09:04:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646643877;
-        bh=bCGKnBRm9v2sKeJoewgF99EVSOj1eSTH2ia4hbNzqfc=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=I0h56zhE/VsyJCNOvhSi4Yq4KsPB3ExPWkf91UojSiA5sn4VaiuxS7gFipiu5BPp2
-         GNK8DaYnfFoIMicVZTy+8+nZV95DWbogA0KcL1BYr8+8J3kNgENE7GRCwWCJ+uyNlI
-         JXCkCYcvXVFM+9UQ5y1OSHXNZHjuyTGrBMmgZY//JPjq4wqcW70b4JXSvepghlLtKS
-         E8XIhoL5djU4gpnrYqrK2mfQR7i42kITOUB/p34Q81zNUzlHpc8M42VDEzdQFwPM+W
-         t+I+L1iYC9NOuAU8pCRwss9ydcJMXFbBx+WEYs/o4fTWi85BxZPI8QwijMWADyHHjG
-         nTrHfFqycsl3w==
-Received: by mail-ed1-f72.google.com with SMTP id cm27-20020a0564020c9b00b004137effc24bso8260173edb.10
-        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 01:04:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bCGKnBRm9v2sKeJoewgF99EVSOj1eSTH2ia4hbNzqfc=;
-        b=ZgGs5mI+lXpUCMTWxo7vVMBd4PjVWibkmhoRojNQZg7y7DXv3NIUZrF4Rd2i/hR27G
-         KQy1L325VJku7WbwvOo4oAXHqkyaXDNEKydX5lb1hLspXZ7mJlH4RU0LSbxp1//j8xBX
-         nQczfpa6k4vZCBQO0fg5yuJrHKHP+9+GkJBpAc6awSCKE0WO0fWZPOAFwZVTpi0ephUe
-         IW1KJhbwNTZU5i1BX9akzcPs7N1AfxSchf5ZdUVN3JEm5QmdkikQzrb7SIVHP5SC7Bhd
-         IJ5KFNLddJVTkn88d7yIWmRC5jg90hUuimNa4NT8gFlChfaARQL9R/iVOCdkqbk+8/vZ
-         hBHg==
-X-Gm-Message-State: AOAM530q7bgCbtZvgZ8kT/wq7aQxdkR89Yq+Iih2KJwOV1ZaJL2eI9Xr
-        8LNSR3N5+hDTU2PZORjonpBvEYmR7h0Z7FXT6Q7zYgrXQmfoeZmVPg95lwao8h0NoZb6HcIUbKQ
-        bc24yyrjrSL/3EsnOrOSqs5gIl3C1eVWR9dcw9syedw==
-X-Received: by 2002:a17:906:3803:b0:6cf:56b9:60a9 with SMTP id v3-20020a170906380300b006cf56b960a9mr7974961ejc.716.1646643877050;
-        Mon, 07 Mar 2022 01:04:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJznp/n2u6f3ACuFsi3tn3Y52SEoSIz1Qz9ikaklDE2Cdic0VgHikeNWUnubx67cDnGPPuwgvQ==
-X-Received: by 2002:a17:906:3803:b0:6cf:56b9:60a9 with SMTP id v3-20020a170906380300b006cf56b960a9mr7974939ejc.716.1646643876806;
-        Mon, 07 Mar 2022 01:04:36 -0800 (PST)
-Received: from [192.168.0.141] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id et3-20020a170907294300b006d6534ef273sm4435569ejc.156.2022.03.07.01.04.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 01:04:36 -0800 (PST)
-Message-ID: <30db9e75-5176-e8e2-6a2c-1ef4022ba9f7@canonical.com>
-Date:   Mon, 7 Mar 2022 10:04:35 +0100
+        Mon, 7 Mar 2022 04:21:40 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4992E541AA;
+        Mon,  7 Mar 2022 01:20:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646644808; x=1678180808;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wGeDKaASQDCyWy0awRd7jeAVQdDX7gR/VgWstKH88gA=;
+  b=bRdsM6TncrMoQcN60/Ak8xegmd7mcKX+Pqa8Kyc82ckHH9l7VZxyrdXi
+   Qy+zUsRJuFFR+cK9tox0P3uCJsH7FSOyacQUOynSSMYX8jASZqHYYEgCZ
+   9PhlRRdkCXmJ8VTHsPYhUnaDmdcaTDEwgx0BAaXraBCGOnDcrhcSpvt9c
+   8FzO/VaNY6odrH64Hv4W0Z+BJXFD381Aa044QfYUSVRYkivDfYpyLTDv6
+   vMK3OYXohgaLAONqF7burNZKksnfgphTb4PUVb/m7BONykTYRvRzDI5l4
+   GOGN528riicFYlgTCZezfw1SQu07sr2hTZcp1Qn/lza2jNgBSw3yfsYE/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10278"; a="254536717"
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="254536717"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:07 -0800
+X-IronPort-AV: E=Sophos;i="5.90,161,1643702400"; 
+   d="scan'208";a="537042104"
+Received: from rabl-mobl2.ger.corp.intel.com ([10.252.54.114])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 01:20:04 -0800
+Date:   Mon, 7 Mar 2022 11:19:59 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     Lukas Wunner <lukas@wunner.de>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+In-Reply-To: <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+Message-ID: <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de> <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/2] tty: serial: samsung: Add ARTPEC-8 support
-Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     kernel@axis.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
-        alim.akhtar@samsung.com
-References: <20220307085053.1636475-1-vincent.whitchurch@axis.com>
- <20220307085053.1636475-3-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220307085053.1636475-3-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323329-1881166460-1646644807=:1677"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07/03/2022 09:50, Vincent Whitchurch wrote:
-> Add support for the UART on the ARTPEC-8 SoC.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1881166460-1646644807=:1677
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Mon, 7 Mar 2022, Andy Shevchenko wrote:
+
+> On Mon, Mar 7, 2022 at 12:00 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo Järvinen wrote:
 > 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
->  drivers/tty/serial/Kconfig       |  2 +-
->  drivers/tty/serial/samsung_tty.c | 38 ++++++++++++++++++++++++++++++++
->  2 files changed, 39 insertions(+), 1 deletion(-)
+> ...
 > 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index e952ec5c7a7c..ae120d3d933a 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -237,7 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
->  
->  config SERIAL_SAMSUNG
->  	tristate "Samsung SoC serial support"
-> -	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || COMPILE_TEST
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || ARCH_ARTPEC || COMPILE_TEST
->  	select SERIAL_CORE
->  	help
->  	  Support for the on-chip UARTs on the Samsung
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index d002a4e48ed9..4f9e74c6bcef 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2837,6 +2837,36 @@ static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
->  #define S5L_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
->  #endif
->  
-> +#if defined(CONFIG_ARCH_ARTPEC)
-> +static struct s3c24xx_serial_drv_data artpec8_serial_drv_data = {
+> > Does the DesignWare UART use dedicated DE and RE pins instead of
+> > the RTS pin?  That would be quite unusual.
+> 
+> They are muxed with other UART pins on SoC level, but I don't remember
+> by heart which ones. According to the Synopsys datasheet they are
+> separate signals. It might be that I'm missing something, since the
+> last time I looked was last year.
 
-This will conflict with my constifying patches:
-https://lore.kernel.org/all/20220307080810.53847-1-krzysztof.kozlowski@canonical.com/T/#t
+Unusual or not, there is a pin for both DE and RE. DE is muxed with RTS.
 
-The code itself looks good.
+> > > +     d->hw_rs485_support = device_property_read_bool(p->dev, "snps,rs485-interface-en");
+> > > +     if (d->hw_rs485_support)
+> > > +             p->rs485_config = dw8250_rs485_config;
+> > > +
+> >
+> > You wrote in the commit message that rs485 support is present from
+> > version 4.0 onward.  Can't we just check the IP version and enable
+> > rs485 support for >= 4.0?  That would seem more appropriate instead
+> > of introducing yet another new property.
+> 
+> AFAIU this is dependent on the IP syntheses. I.o.w. version 4.0+ is a
+> prerequisite, but doesn't automatically mean that there is a support.
+> Unfortunately there is no way to tell this clearly in the IP
+> configuration register.
+
+And the IP synthesis only part of the picture, in general case, it'd
+also matter that there's something connected to that RE (i.e.,
+an RS485 transceiver).
+
+On the board I'm testing with, I can also turn RS485 on/off from BIOS
+which makes the pins (mainly RE) behave differently.
+
+I initially had additional version check here while developing this
+patch series but it seemed to not provide any added value due those
+other factors that need to be considered.
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+-- 
+ i.
 
-Best regards,
-Krzysztof
+--8323329-1881166460-1646644807=:1677--
