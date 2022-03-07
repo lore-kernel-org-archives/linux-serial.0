@@ -2,104 +2,175 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B805C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 15:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2339C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 18:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242276AbiCGPbp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 10:31:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
+        id S232126AbiCGSRX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 13:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232666AbiCGPbo (ORCPT
+        with ESMTP id S241260AbiCGSRT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 10:31:44 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123075749E;
-        Mon,  7 Mar 2022 07:30:50 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id e24so10921233wrc.10;
-        Mon, 07 Mar 2022 07:30:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VEUtjRWw8hcXPx8ISHtvMs+ktqj0awQxQ1FmrJuTsp0=;
-        b=MNpHF7Pxg9BKJiM7fXtwr+H0qiQHTO5YaiWRpoj8JeGPvWbNy27/PM68jvK4QSBRoS
-         eJV84YLL7LY0Kx+2dttq4o8BSGVJnTkTkSVrSQ6jqym1hnTU/KN1tiaQ4HT3YxHnGaep
-         l/BgDYpY9h1dRuCJcH3/sPXiySIO+U6vefOR+F4+6/wYeky7WPYEoZhJjDMIx0OvJUnr
-         rJpIGYuHLOeHT93rWf+ikiIQTOzZMcEJeJjTV+qPGfz/r4iAqH5VCVB98b/FMsXQJZQT
-         bPAklAmCoO81z7iPKi3IVku0QUFChskh487B2KlaehvDU0EI0uy5Gq33vkGC5FnOYU2C
-         YW9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VEUtjRWw8hcXPx8ISHtvMs+ktqj0awQxQ1FmrJuTsp0=;
-        b=6gCUcgdLxzXXsPIx7rX6oQXVwrtHf7Hlt32yokXmdktU9yWzLXYX2eZh5F6xTfmdV1
-         LttieduH0Yo7DZB7Fc1jFUvQQLcxETn1Sy0N695ei9ijYFXGbAavTkaK1raBtJie65eu
-         ox8MDb1FSWYDbJCKny5vL7Gvd6r9dxxtl/gC2bugoDSDb0bccTY+XPNtRs6Ge9LoZ7At
-         mVJEzOiRw/6YoZEIbA2FM8pBW+ia0n2bL0rCtXrGXfCzjqBnvTjLa1J/2QmlX47wfkXr
-         vXBOAcpL7zcd4Sqf5lGi1wF/V7YnRoSQu8tt8SFTOZetr7aYtS9Cyqdqbn0+KHz9g97Q
-         hkBQ==
-X-Gm-Message-State: AOAM532CuK1t3+xGdeBRu5I7Sm/3tqzsZ61CPbl3u34VURz7OFURYs1W
-        lyaEBRETQ6Ps/yeLAqpDtAM=
-X-Google-Smtp-Source: ABdhPJybfHSo0eCkjaEOHXAgaY8b9TUr8U9Fg4tG5GiMhl+kF2PHHrRNJApWZg0ccl+N6LMTkzuvSA==
-X-Received: by 2002:a5d:64ac:0:b0:1e7:1415:2548 with SMTP id m12-20020a5d64ac000000b001e714152548mr8834834wrp.267.1646667048657;
-        Mon, 07 Mar 2022 07:30:48 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m13-20020a05600c4f4d00b00386744cb31bsm15673525wmq.35.2022.03.07.07.30.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 07:30:48 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] tty: serial: jsm: remove redundant assignments to variable linestatus
-Date:   Mon,  7 Mar 2022 15:30:47 +0000
-Message-Id: <20220307153047.139639-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 7 Mar 2022 13:17:19 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A27463BF4
+        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 10:16:22 -0800 (PST)
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220307181616epoutp01f1dacb4c8738d983a85e8224acd38082~aK-xQifLv0766507665epoutp01F
+        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 18:16:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220307181616epoutp01f1dacb4c8738d983a85e8224acd38082~aK-xQifLv0766507665epoutp01F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1646676976;
+        bh=+DoYqIP57CK30qeEszS0FSuPgQHsdE9AmjYT9fqaiY8=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=VUtydj3bNltVpXLs+6lpqVbi1uFYaA6EYA//vyrvac2hVd2m+9ni801l2KipbLcU+
+         hDz0jLG9WALzMtaYG1/6/cdMmxDXoHGQ2AsSq/ZkS87t6YCUb5lPyaVIEx/Ap7gjAP
+         8sZLX1lNDjzSPnvYw+MmxqueIgNJSXu4BFxTdqEs=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220307181615epcas5p342477b57f086c1d54502b559c5b55440~aK-wr4shN0547805478epcas5p36;
+        Mon,  7 Mar 2022 18:16:15 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.176]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4KC68p3h7kz4x9Pq; Mon,  7 Mar
+        2022 18:16:10 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E5.BC.46822.93946226; Tue,  8 Mar 2022 03:04:41 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220307181609epcas5p1dee884f7f426b64ee5915f507c1fb696~aK-qjlWmv0140301403epcas5p1b;
+        Mon,  7 Mar 2022 18:16:09 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220307181609epsmtrp2c90c3afdfefa8eedbdb3c0d001bd3d0e~aK-qix9hX3020530205epsmtrp2z;
+        Mon,  7 Mar 2022 18:16:09 +0000 (GMT)
+X-AuditID: b6c32a4a-de5ff7000000b6e6-fa-6226493981c0
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        9F.C1.29871.9EB46226; Tue,  8 Mar 2022 03:16:09 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220307181607epsmtip150e77f72df12ff26f43123b50e3d891b~aK-pYRZNs2332523325epsmtip19;
+        Mon,  7 Mar 2022 18:16:07 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
+        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
+        "'Jiri Slaby'" <jirislaby@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
+Subject: RE: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match
+ data
+Date:   Mon, 7 Mar 2022 23:46:06 +0530
+Message-ID: <000001d8324f$6b2c9a40$4185cec0$@samsung.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQGoAYk8Q04rU2h+MYSS22x/2RnCswLpcBE3AkLWjums6zlaEA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJJsWRmVeSWpSXmKPExsWy7bCmhq6lp1qSQX87t0Xz4vVsFu/mylhs
+        fPuDyWLT42usFpd3zWGzmHF+H5PFmcW97A7sHrMaetk8Nq3qZPPYP3cNu8fmJfUenzfJBbBG
+        ZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAB2hpFCW
+        mFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwKdArTswtLs1L18tLLbEyNDAwMgUqTMjO
+        WP98MUvBLb6K6av/sDUwPuHpYuTkkBAwkTi4cR1LFyMXh5DAbkaJi8t3MEE4nxglFq18zQjh
+        fGOU2HrgORNMy/Pj69ghEnsZJS5s/QLlvGSUaJn2hg2kik1AV2LH4jY2kISIwAYmiUv3poK1
+        cwq4SzS0bmAEsYUFgiR2Nj9jAbFZBFQkvu08xg5i8wpYSry8cJcFwhaUODnzCZjNLCAvsf3t
+        HGaIMxQkfj5dxgpiiwg4Sdz8eZEZokZc4uXRI2AXSQi0ckhcX/iXFaLBReJc+y6oH4QlXh3f
+        wg5hS0l8frcX6FIOIDtbomeXMUS4RmLpvGMsELa9xIErc1hASpgFNCXW79KHWMUn0fv7CRNE
+        J69ER5sQRLWqRPO7q1Cd0hITu7tZIUo8JH7c0YME1XVGie6Ln5knMCrMQvLkLCRPzkLyzCyE
+        xQsYWVYxSqYWFOempxabFhjlpZbDIzw5P3cTIziNanntYHz44IPeIUYmDsZDjBIczEoivPfP
+        qyQJ8aYkVlalFuXHF5XmpBYfYjQFhvxEZinR5HxgIs8riTc0sTQwMTMzM7E0NjNUEuc9nb4h
+        UUggPbEkNTs1tSC1CKaPiYNTqoFJddPuxMVnpT43KyzN6Di1t8XPsiJNeX26sKFUifhSjUuX
+        pv4Kel0mJvFyt91nrZ9Lz7PdPbX2vKHitbf13mK2E2MEp316fTtRMikuw2nGPYWNDP+r6hae
+        WFkpcej5CdUL3D+Psyt9Ee7TEVyScOZHeEyeyiXOGZvyj729w6Tz2EVQwy8jZv2uqesPCr9g
+        4k5t2e4easW/aa7JznKm1smm/oaqf58t/PQ+/e8tHo/E+QHtLcpTpS75NnlURP4pslP18uY9
+        9v5/wY+uaUdjnz3T9Nm5qpq/zfnv9QvbnarSl8bznjH1+rVgv+i0RrE0Waenz1RPczYviLBw
+        uX2fyV5E4e6fTxG13wTO1z5eqP9XiaU4I9FQi7moOBEA+elMTywEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrCLMWRmVeSWpSXmKPExsWy7bCSnO5Lb7UkgzmbWS2aF69ns3g3V8Zi
+        49sfTBabHl9jtbi8aw6bxYzz+5gszizuZXdg95jV0MvmsWlVJ5vH/rlr2D02L6n3+LxJLoA1
+        issmJTUnsyy1SN8ugStj/fPFLAW3+Cqmr/7D1sD4hKeLkZNDQsBE4vnxdexdjFwcQgK7GSX6
+        nixghEhIS1zfOIEdwhaWWPnvOVTRc0aJ1ytegCXYBHQldixuYwOxRQS2MEks+hYHUXSZUWJd
+        wysWkASngLtEQ+sGsKnCAgESs86sA2tmEVCR+LbzGJjNK2Ap8fLCXRYIW1Di5MwnQDYHB7OA
+        nkTbRrBWZgF5ie1v5zBDHKQg8fPpMlaIvU4SN39eZIaoEZd4efQI+wRGoVlIJs1CmDQLyaRZ
+        SDoWMLKsYpRMLSjOTc8tNiwwzEst1ytOzC0uzUvXS87P3cQIjhgtzR2M21d90DvEyMTBeIhR
+        goNZSYT3/nmVJCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeWpGanphakFsFkmTg4
+        pRqYqlncAvdu7Q6Yxyt7qF7CiaHYz+d+0qZHLzNFE2qKjrI+rt2z/2+eS/HGrZW1u2vV1ZfP
+        2XXZb9u9eqe4XW7ddS57W0X5pqcefLrMI3Cqfan9X7m0pYqRd9UOZPAvuq9w7/d6p2t+/7pO
+        LPqXyDLriUZQi0hIDfvHm2tmlfzddPtZ00dGvS8J85Tcdy3bu6appvi7XIHuMzOG3Fep079b
+        57585ihV2nxr6Y/XkWtfXbO58vi7dI/2Dv+8WSrSL8r0WOa0v1si77mpuedOm2ZUxyLVg979
+        XT8f2lu8X/74mePCPR8/CNQtlDfxk1/OeDv3ntF2XznRNxv5jI6tOLjIvXYbm/N66ytvLjKI
+        3jlmrcRSnJFoqMVcVJwIAEZVzAcHAwAA
+X-CMS-MailID: 20220307181609epcas5p1dee884f7f426b64ee5915f507c1fb696
+X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220307080948epcas5p2cfb6ad93e628461366b03203a884e0e6
+References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
+        <CGME20220307080948epcas5p2cfb6ad93e628461366b03203a884e0e6@epcas5p2.samsung.com>
+        <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Variable linestatus is being assigned values that are never read, the
-assignments are redundant and can be removed.
 
-Cleans up clang scan warnings:
-drivers/tty/serial/jsm/jsm_cls.c:369:2: warning: Value stored to
-'linestatus' is never read [deadcode.DeadStores]
-drivers/tty/serial/jsm/jsm_cls.c:400:4: warning: Value stored to
-'linestatus' is never read [deadcode.DeadStores]
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/tty/serial/jsm/jsm_cls.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+>-----Original Message-----
+>From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
+>Sent: Monday, March 7, 2022 1:39 PM
+>To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>; Alim Akhtar
+><alim.akhtar@samsung.com>; Greg Kroah-Hartman
+><gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
+>kernel@lists.infradead.org; linux-samsung-soc@vger.kernel.org; linux-
+>serial@vger.kernel.org; linux-kernel@vger.kernel.org
+>Subject: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match
+data
+>
+>Simplify the code with of_device_get_match_data().
+>
+>Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>---
 
-diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
-index b280da50290c..444f233ebd1f 100644
---- a/drivers/tty/serial/jsm/jsm_cls.c
-+++ b/drivers/tty/serial/jsm/jsm_cls.c
-@@ -350,7 +350,7 @@ static void cls_assert_modem_signals(struct jsm_channel *ch)
- static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
- {
- 	int qleft = 0;
--	u8 linestatus = 0;
-+	u8 linestatus;
- 	u8 error_mask = 0;
- 	u16 head;
- 	u16 tail;
-@@ -365,8 +365,6 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
- 	head = ch->ch_r_head & RQUEUEMASK;
- 	tail = ch->ch_r_tail & RQUEUEMASK;
- 
--	/* Get our cached LSR */
--	linestatus = ch->ch_cached_lsr;
- 	ch->ch_cached_lsr = 0;
- 
- 	/* Store how much space we have left in the queue */
--- 
-2.35.1
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+
+
+> drivers/tty/serial/samsung_tty.c | 13 +++----------
+> 1 file changed, 3 insertions(+), 10 deletions(-)
+>
+>diff --git a/drivers/tty/serial/samsung_tty.c
+>b/drivers/tty/serial/samsung_tty.c
+>index 3ffae912217c..61c530bb377f 100644
+>--- a/drivers/tty/serial/samsung_tty.c
+>+++ b/drivers/tty/serial/samsung_tty.c
+>@@ -2150,23 +2150,16 @@ static int s3c24xx_serial_init_port(struct
+>s3c24xx_uart_port *ourport,
+>
+> /* Device driver serial port probe */
+>
+>-#ifdef CONFIG_OF
+>-static const struct of_device_id s3c24xx_uart_dt_match[]; -#endif
+>-
+> static int probe_index;
+>
+> static inline const struct s3c24xx_serial_drv_data *
+>s3c24xx_get_driver_data(struct platform_device *pdev)  {  #ifdef CONFIG_OF
+>-	if (pdev->dev.of_node) {
+>-		const struct of_device_id *match;
+>-
+>-		match = of_match_node(s3c24xx_uart_dt_match, pdev-
+>>dev.of_node);
+>-		return (struct s3c24xx_serial_drv_data *)match->data;
+>-	}
+>+	if (pdev->dev.of_node)
+>+		return of_device_get_match_data(&pdev->dev);
+> #endif
+>+
+> 	return (struct s3c24xx_serial_drv_data *)
+> 			platform_get_device_id(pdev)->driver_data;
+> }
+>--
+>2.32.0
+
 
