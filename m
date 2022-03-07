@@ -2,100 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8081C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 19:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D6DC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 20:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236822AbiCGTlS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 14:41:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        id S239693AbiCGU0e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 15:26:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiCGTlR (ORCPT
+        with ESMTP id S232324AbiCGU0c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 14:41:17 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B53A13DE2;
-        Mon,  7 Mar 2022 11:40:22 -0800 (PST)
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254217114"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="254217114"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 11:40:22 -0800
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="711233447"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 11:40:19 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nRJCg-00CxVa-V8;
-        Mon, 07 Mar 2022 21:39:34 +0200
-Date:   Mon, 7 Mar 2022 21:39:34 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
-Message-ID: <YiZfdlw0A75cojCx@smile.fi.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com>
- <20220306184857.GA19394@wunner.de>
- <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
- <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
- <20220307191854.GA27748@wunner.de>
+        Mon, 7 Mar 2022 15:26:32 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812B474DDE;
+        Mon,  7 Mar 2022 12:25:37 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id qx21so34518871ejb.13;
+        Mon, 07 Mar 2022 12:25:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IjS5wu4o1WHiEQruyx1LGz56N/4vOLCWv30WPAE8q6Q=;
+        b=DsmUyVP4Wn1NwO0wfWEB0BBjKiGNX8spoxCT4yCCsRwW7owVLQDEoG6TPfS5VGz49m
+         ymiYDKhUQYxwHuZ/Hgljkt3iycJvIQ50/43Av6kwN7kLKwvnbS6Jyj7dFgbFqZBMNpjp
+         FBNu8otLiMUQNiTFLoQtnHkHJt1FOJ9JEvgmN5OOubvX59IVYFdJOyMMXvArdVpG+Q9A
+         J3jelBTwYJMk6qCYAloER1oYKZrPVBngzc9pnVeOUaSvnbrK+K0dhzwGFFFBQqz+fyca
+         L1Rm6juJADrYQmWRZKR7zhJ+rLiUOxvgnhjwQGMcUeTo0RDCJZo94BvDMVGmAbU50LJz
+         Pvjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IjS5wu4o1WHiEQruyx1LGz56N/4vOLCWv30WPAE8q6Q=;
+        b=1g5hKDxECvz/fMFlZP449TECQno+AcK6tJZXNBT4dI1OhgqZwvq/ViRcDJPeQzGti2
+         nm6s6WebnvYtrrQc/ZXNWblMrDR3sH+05I/2XkrlLf5T1AKa9hyysCFkFRYhZNykuNVw
+         k3tcGDX7tr2DuGPMTjBdpSDP8IDBNSJYOxvVFBu3UveXMbt3kvkM6QqaFRODJVnRJs9z
+         cRBTcPXXDsPk00ja1b7P8fcubru3eQt2ISiWIXU1euFAKDfrL7hpC/070+M4n/SZMO13
+         3si67PCcXvh6t2K77PWYuzStTkRaeUaDg9MERBXwRycF30PJQUS8avK3w4ypy01g9l73
+         iaZg==
+X-Gm-Message-State: AOAM5324TqckAYTvnTJ72sIzoU4GLHJpgg3cLI+6iuvospohStDu3B9Y
+        S9syyUm3xjdNnrWan9t0x8ZqaUblBiuA1UzpWpo=
+X-Google-Smtp-Source: ABdhPJyJElS7UBre+fq6DJ/l5/8SwGOj+xfz86v1y2Ql0mk0t5luB3Rft0HLui6lvCy4O+5Rx8vLUam/JDFCYj33fLs=
+X-Received: by 2002:a17:906:cc12:b0:6b5:ec8f:fdf2 with SMTP id
+ ml18-20020a170906cc1200b006b5ec8ffdf2mr10153043ejb.579.1646684735868; Mon, 07
+ Mar 2022 12:25:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220307191854.GA27748@wunner.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com> <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 7 Mar 2022 22:24:16 +0200
+Message-ID: <CAHp75VdN3MDDEjEoLAudtRW5pgHvfgP7Zt9Hv8OOhfZbHN9hpA@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match data
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 08:18:54PM +0100, Lukas Wunner wrote:
-> On Mon, Mar 07, 2022 at 11:19:59AM +0200, Ilpo Järvinen wrote:
-> > On Mon, 7 Mar 2022, Andy Shevchenko wrote:
+On Mon, Mar 7, 2022 at 11:20 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> Simplify the code with of_device_get_match_data().
+
+You may get rid of ugly ifdeffery as well.
 
 ...
 
-> That's for DT platforms, but I suppose you've got ACPI.  Not sure
-> how it's handled there, the ACPI 6.4 spec contains a "UART Serial Bus
-> Connection Resource Descriptor" but nothing on RS-485, so I guess
-> the only option is to use regular DT properties in a _DSD object?
+>  static inline const struct s3c24xx_serial_drv_data *
+>  s3c24xx_get_driver_data(struct platform_device *pdev)
+>  {
+>  #ifdef CONFIG_OF
+> -       if (pdev->dev.of_node) {
+> -               const struct of_device_id *match;
+> -
+> -               match = of_match_node(s3c24xx_uart_dt_match, pdev->dev.of_node);
+> -               return (struct s3c24xx_serial_drv_data *)match->data;
+> -       }
 
-Which make me think that this series needs an additional patch to
-describe RS485 enumeration for ACPI case (somewhere in
-Documentation/firmware-guide/acpi/enumeration.rst IIRC the filename).
+> +       if (pdev->dev.of_node)
 
-...
+I believe it's never true when CONFIG_OF=n,
 
-> > I initially had additional version check here while developing this
-> > patch series but it seemed to not provide any added value due those
-> > other factors that need to be considered.
-> 
-> Here's another idea:
-> 
-> Read TCR register on ->probe.  It's POR value is 0x6 if RS-485 is
-> supported by the chip, else 0x0.  (Page 220 of the 4.01a spec says
-> UCV register does not exist if additional features are not implemented
-> and reading from this register address returns 0, I suppose the same
-> applies to TCR if RS-485 is not implemented.)
-> 
-> Since the driver may change the polarity in the TCR register, be sure
-> to write 0x6 to it on ->remove so that you can still correctly detect
-> presence of the RS-485 feature after unbind/rebind of the driver.
-
-What to do in the case when DE pin is muxed to RTS and locked in pin control
-IP by firmware (no possibility to change the muxing in the OS)?
+> +               return of_device_get_match_data(&pdev->dev);
+>  #endif
+> +
+>         return (struct s3c24xx_serial_drv_data *)
+>                         platform_get_device_id(pdev)->driver_data;
+>  }
 
 -- 
 With Best Regards,
 Andy Shevchenko
-
-
