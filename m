@@ -2,162 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66875C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 18:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BE1C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Mar 2022 19:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244754AbiCGSWj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 13:22:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        id S241383AbiCGTT4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 7 Mar 2022 14:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244745AbiCGSWe (ORCPT
+        with ESMTP id S237059AbiCGTTz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 13:22:34 -0500
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439C082D06
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 10:21:39 -0800 (PST)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220307182137epoutp039c12bc8f95b2ec8a14c3e627b9a79dfa~aLEcOVBtP2516025160epoutp03S
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 18:21:37 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220307182137epoutp039c12bc8f95b2ec8a14c3e627b9a79dfa~aLEcOVBtP2516025160epoutp03S
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646677297;
-        bh=/J+z6G42rWkxE8lu/uL7Rm+nMfgqe+5jZvMCgeeEWfY=;
-        h=From:To:In-Reply-To:Subject:Date:References:From;
-        b=R8F+5QO8jTyoTNeT95BT0wOlZxmePeLkqV3CbnpKVMrZ94fbx1QH20xIxLTnZbCvp
-         EJf+nMxtwk/CNIIFa9UwonoDp6PW/9Xdhwvakmu2OAq7kgR5QPepY8XGgXTwva48d5
-         6SK02zmVTx2IxHQkgKMIrhec0VGiRRmAr+qndsdk=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220307182136epcas5p4337edae5bcac87f910a0b77ed170ea3d~aLEa_kO-s3151331513epcas5p4J;
-        Mon,  7 Mar 2022 18:21:36 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.180]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4KC6Gz3Dccz4x9Pr; Mon,  7 Mar
-        2022 18:21:31 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B7.1D.46822.97A46226; Tue,  8 Mar 2022 03:10:01 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220307182131epcas5p266101e33fa3d9e181ace27e833047be4~aLEWX_u5I0752707527epcas5p2M;
-        Mon,  7 Mar 2022 18:21:31 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220307182131epsmtrp2f67a7a71de449a2e899da573da6036d7~aLEWXPQ1Y0032100321epsmtrp2m;
-        Mon,  7 Mar 2022 18:21:31 +0000 (GMT)
-X-AuditID: b6c32a4a-dfbff7000000b6e6-7b-62264a79d757
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A8.E1.29871.B2D46226; Tue,  8 Mar 2022 03:21:31 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220307182130epsmtip2691ead9ace9d1e46069f48ea33f55583~aLEVUAL4I1136311363epsmtip23;
-        Mon,  7 Mar 2022 18:21:29 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
-        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
-        "'Jiri Slaby'" <jirislaby@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-In-Reply-To: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
-Subject: RE: [PATCH v2 0/7] tty: serial: samsung: minor fixes/cleanups
-Date:   Mon, 7 Mar 2022 23:51:28 +0530
-Message-ID: <000201d83250$2b1fb3a0$815f1ae0$@samsung.com>
+        Mon, 7 Mar 2022 14:19:55 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DAA193EB;
+        Mon,  7 Mar 2022 11:18:58 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id A9FD9101C0527;
+        Mon,  7 Mar 2022 20:18:54 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 87D06449B49; Mon,  7 Mar 2022 20:18:54 +0100 (CET)
+Date:   Mon, 7 Mar 2022 20:18:54 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+Message-ID: <20220307191854.GA27748@wunner.de>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
+ <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com>
+ <20220306184857.GA19394@wunner.de>
+ <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+ <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQIJNNL4wI7r1IeeqxSWm7dk8MPZOAGoAYk8rET1w7A=
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmpm6ll1qSwYSjVhbNi9ezWbybK2Ox
-        8e0PJotNj6+xWlzeNYfNYsb5fUwWZxb3sjuwe8xq6GXz2LSqk81j/9w17B6bl9R7fN4kF8Aa
-        lW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ibaqvk4hOg65aZA3SEkkJZ
-        Yk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafApECvODG3uDQvXS8vtcTK0MDAyBSoMCE7
-        4+bPuWwFb3kqvtz7x9LA+IGri5GTQ0LARKLz6hymLkYuDiGB3YwS59paWSCcT4wSp7/0M0I4
-        3xgl9uxfzwTTcrS5hRkisZdRYuOC1WwQzktGiW8TlzCDVLEJ6ErsWNwGlhAR2MAkceneVLB2
-        TgF3ia7Jz8BsYQE3ic6j11m7GDk4WARUJA4szgAJ8wpYSlzf28sKYQtKnJz5hAXEZhaQl9j+
-        dg4zxBUKEj+fLgOrERGwkrhz4DcTRI24xMujR9ghano5JCZ/5QQZLyHgIjHlQjxEWFji1fEt
-        UCVSEp/f7WWDKMmW6NllDBGukVg67xgLhG0vceDKHBaQEmYBTYn1u/QhFvFJ9P5+wgTRySvR
-        0SYEUa0q0fzuKlSntMTE7m5WiBIPiflnNSHhNItR4mfzbMYJjAqzkLw4C8mLs5C8Mgth8QJG
-        llWMkqkFxbnpqcWmBUZ5qeXw2E7Oz93ECE6gWl47GB8++KB3iJGJg/EQowQHs5II7/3zKklC
-        vCmJlVWpRfnxRaU5qcWHGE2BwT6RWUo0OR+YwvNK4g1NLA1MzMzMTCyNzQyVxHlPp29IFBJI
-        TyxJzU5NLUgtgulj4uCUamBycHxwblJNnWvb3MTso6ouR5p/98T9qS+e4lBwnT8zMkqje5Jk
-        1Y2CpPv6kr5H/MJWeVX9MhbfKSJ8/XTJE59raUd/mGQ7bc521O15/fGqmI/dz+iX2z26U3+0
-        9x03DzL0twjnYg4RE5vq17bITv+gzn3diQarFslziWg9epSvVC/CNWna/ITcGe3t/fv3Z6qv
-        l8oriFo7Wzu/z7g8cFblYZOQiIO3jHx1I360fXhWc/vbTrXfjZLvpe8mGFyKE1y0e62R9lED
-        r8ON/L842AXvlLnccLgSutviwJ/CeXYXAiff+fjc0Onx+YpUvvbAOJeISe9VlrUty/i9Vt3d
-        yWK2r8rVBQqKfw63Gcw+p8RSnJFoqMVcVJwIAHpITVYpBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWy7bCSvK62r1qSwY/zbBbNi9ezWbybK2Ox
-        8e0PJotNj6+xWlzeNYfNYsb5fUwWZxb3sjuwe8xq6GXz2LSqk81j/9w17B6bl9R7fN4kF8Aa
-        xWWTkpqTWZZapG+XwJVx8+dctoK3PBVf7v1jaWD8wNXFyMkhIWAicbS5hbmLkYtDSGA3o8S/
-        3m2sEAlpiesbJ7BD2MISK/89B7OFBJ4zSuxamQNiswnoSuxY3MYGYosIbGGSWPQtDmLQDEaJ
-        SVt+M4IkOAXcJbomP2MCsYUF3CQ6j14HWsDBwSKgInFgcQZImFfAUuL63l5WCFtQ4uTMJywg
-        JcwCehJtG8GmMAvIS2x/O4cZ4hwFiZ9Pl7FCrLWSuHPgNxNEjbjEy6NH2CcwCs1CMmkWwqRZ
-        SCbNQtKxgJFlFaNkakFxbnpusWGBYV5quV5xYm5xaV66XnJ+7iZGcLRoae5g3L7qg94hRiYO
-        xkOMEhzMSiK898+rJAnxpiRWVqUW5ccXleakFh9ilOZgURLnvdB1Ml5IID2xJDU7NbUgtQgm
-        y8TBKdXAdFg4qXapx4M50jv+WBtL/vU0bmf44Ro0V6r4sk24xpmslw5P5NgVzmudOFC/9o8H
-        5wLj8+ozIhh3ypQnyhvNzG/jONB86ALziUM8/Y++/34y52GjSd+2h0pvuNcuYV8cv8TpwhKB
-        a6kVib6akwXsnv9xm6S/aseilzMnRR/Mmr4wY6r9r/BXver/1sxlDP93/WV7v9uBTr2isCu3
-        ZWZoRp3ZFXh07afC6O1rT0m8XPQraOqn14Lmre/Ck5/olDjrf6/MN9oW/sg1+dc5ibladxav
-        0JoquOlQ9kyFA/55r2ecvtlXUOUXc6ar4Mr/aufPpicmuL/l+OMp2hoS7as9e9Ez22OBL6b+
-        41XIX3xkWbwSS3FGoqEWc1FxIgCyfnN5BQMAAA==
-X-CMS-MailID: 20220307182131epcas5p266101e33fa3d9e181ace27e833047be4
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220307080826epcas5p13d71054f6b461cff91edbbb2cf42491a
-References: <CGME20220307080826epcas5p13d71054f6b461cff91edbbb2cf42491a@epcas5p1.samsung.com>
-        <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof
+On Mon, Mar 07, 2022 at 11:19:59AM +0200, Ilpo Järvinen wrote:
+> On Mon, 7 Mar 2022, Andy Shevchenko wrote:
+> > On Mon, Mar 7, 2022 at 12:00 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > > On Wed, Mar 02, 2022 at 11:56:00AM +0200, Ilpo Järvinen wrote:
+> > > > +     d->hw_rs485_support = device_property_read_bool(p->dev, "snps,rs485-interface-en");
+> > > > +     if (d->hw_rs485_support)
+> > > > +             p->rs485_config = dw8250_rs485_config;
+> > > > +
+> > >
+> > > You wrote in the commit message that rs485 support is present from
+> > > version 4.0 onward.  Can't we just check the IP version and enable
+> > > rs485 support for >= 4.0?  That would seem more appropriate instead
+> > > of introducing yet another new property.
+> > 
+> > AFAIU this is dependent on the IP syntheses. I.o.w. version 4.0+ is a
+> > prerequisite, but doesn't automatically mean that there is a support.
+> > Unfortunately there is no way to tell this clearly in the IP
+> > configuration register.
+> 
+> And the IP synthesis only part of the picture, in general case, it'd
+> also matter that there's something connected to that RE (i.e.,
+> an RS485 transceiver).
 
->-----Original Message-----
->From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
->Sent: Monday, March 7, 2022 1:38 PM
->To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>; Alim Akhtar
-><alim.akhtar@samsung.com>; Greg Kroah-Hartman
-><gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
->kernel@lists.infradead.org; linux-samsung-soc@vger.kernel.org; linux-
->serial@vger.kernel.org; linux-kernel@vger.kernel.org
->Subject: [PATCH v2 0/7] tty: serial: samsung: minor fixes/cleanups
->
->Hi,
->
->Changes since v1:
->1. Patch 3: remove unneeded parenthesis and module alias change (Jiri).
->2. Patch 3: move unrelated "constify" bits to patch 6.
->3. Patch 5: fix typo.
->4. Add review tags.
->
->Best regards,
->Krzysztof
->
->Krzysztof Kozlowski (7):
->  tty: serial: samsung: embed s3c24xx_uart_info in parent structure
->  tty: serial: samsung: embed s3c2410_uartcfg in parent structure
->  tty: serial: samsung: constify s3c24xx_serial_drv_data
->  tty: serial: samsung: constify UART name
->  tty: serial: samsung: constify s3c24xx_serial_drv_data members
->  tty: serial: samsung: constify variables and pointers
->  tty: serial: samsung: simplify getting OF match data
->
-> drivers/tty/serial/samsung_tty.c | 225 +++++++++++++++----------------
-> 1 file changed, 109 insertions(+), 116 deletions(-)
->
+If an RS-485 transceiver is *soldered* to the UART, the devicetree
+is supposed to contain the property "linux,rs485-enabled-at-boot-time"
+under the UART's of_node.  In that case the UART driver can (and should)
+enable rs485 mode already on ->probe.
 
-For this series feel free to add
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Of course there's also the possibility to enable RS-485 after ->open
+with the TIOCSRS485 ioctl.  That can be used if the transceiver is
+attached at runtime (which is likely a rare use case) or as a legacy
+enablement method if the driver lacks linux,rs485-enabled-at-boot-time
+support.
 
-Sanity tested on Exynos7 Espresso board, boot log and other console prints
-after boot looks fine, so
-
-Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
-
->--
->2.32.0
+That's for DT platforms, but I suppose you've got ACPI.  Not sure
+how it's handled there, the ACPI 6.4 spec contains a "UART Serial Bus
+Connection Resource Descriptor" but nothing on RS-485, so I guess
+the only option is to use regular DT properties in a _DSD object?
 
 
+> I initially had additional version check here while developing this
+> patch series but it seemed to not provide any added value due those
+> other factors that need to be considered.
+
+Here's another idea:
+
+Read TCR register on ->probe.  It's POR value is 0x6 if RS-485 is
+supported by the chip, else 0x0.  (Page 220 of the 4.01a spec says
+UCV register does not exist if additional features are not implemented
+and reading from this register address returns 0, I suppose the same
+applies to TCR if RS-485 is not implemented.)
+
+Since the driver may change the polarity in the TCR register, be sure
+to write 0x6 to it on ->remove so that you can still correctly detect
+presence of the RS-485 feature after unbind/rebind of the driver.
+
+Thanks,
+
+Lukas
