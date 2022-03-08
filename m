@@ -2,89 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FC9C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 14:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4C2C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 15:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344500AbiCHO4M (ORCPT
+        id S1347915AbiCHPnA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 09:56:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
+        Tue, 8 Mar 2022 10:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347669AbiCHO4L (ORCPT
+        with ESMTP id S1347914AbiCHPm4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 09:56:11 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064284D614;
-        Tue,  8 Mar 2022 06:55:15 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id x5so24781095edd.11;
-        Tue, 08 Mar 2022 06:55:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W3N2onZNeXEWUzsjOhw5lgCOnooSllP3AJaBPnKLKa4=;
-        b=cF3pFpGgsqh/x0O0WYaF1G/ds8gl5IPznUxWzBDUnwryuQjj2erEikKXEmJmDAEwac
-         SqSiXNIJNgNK6/P7a6OmTsRygL8siE+jjxWC2jCvXYLAnO3Q8PLBXQbIUgW5Ch4jO4Sb
-         eJ2baKwVhvQcJwoXaB3A5MynHxfdPwmqxNzUV7w1tFE2iA1UTg29aRMs8h9WxuUaAPj3
-         X1k/wm97jt6+aw5/6STGgqcA9xXm/hbxjZnmUr0JbEiyh4S7cOKlICT0gz0w8+jT5YSP
-         vLhua+dZM/YObcOBwqkloUXb2JivS7+92w6lO5j3Q82O9qWuJd/g5CF2bPA7RJFzb+Mm
-         6MGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W3N2onZNeXEWUzsjOhw5lgCOnooSllP3AJaBPnKLKa4=;
-        b=COrst7vNMuA3ev0QUJOVG8lC/0qR/ew9cpxbk9UsUDgBxZvwKjU00QaUA4eCpLGCWj
-         d/MLxbpwCpKCplVaXvWredIQCq31ljFM17rEG6upX1RTFkJz7mXCQo4eNR4h6d/5FX5P
-         nwfNBW6SF7MRh9l9EC1qznMpvAOTUzZ1VuaPyzG//PhLhl33+JoT4G9EDAH94vXjiqXw
-         P+u67LbfvEcRk1AjzpgtI1y1BaxYNnuOTX2ujPNEr7BAOptZ4UF834F8AsdMxRr37t5K
-         nMIfQSJbuzvYZgE2+LPyWXcfbxdbF8y4PNuyzfIjLD7vN3JBcispjTeDKhFWQkrkkohm
-         jeig==
-X-Gm-Message-State: AOAM5300aMrBRrsk+lBjg40F7K6FiR6Jyawf+aVJ583bb6LHQN2oFIIN
-        qVOq4KiXihNIVQj+T/o+pCrUjSz15kEyO1lMxZE=
-X-Google-Smtp-Source: ABdhPJy186BBAJ+8888FuwNYh2a/36jnGkxB9fjC/QjwyNVZWRM5U2djbwUwdYrGc3tqLepqzxoLsixLK774/uzEZ68=
-X-Received: by 2002:a05:6402:3589:b0:416:7de7:cdde with SMTP id
- y9-20020a056402358900b004167de7cddemr348358edc.218.1646751313432; Tue, 08 Mar
- 2022 06:55:13 -0800 (PST)
+        Tue, 8 Mar 2022 10:42:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECBA4ECE6;
+        Tue,  8 Mar 2022 07:41:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71B7761634;
+        Tue,  8 Mar 2022 15:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7874C36AE5;
+        Tue,  8 Mar 2022 15:41:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646754118;
+        bh=IJYNSkeZzZvARIFNzClc6iv4vyFy9TuVd96STVQrAc4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bm+x/GjOx85LIu2RsmI8eD6BacmUmy2IeZ/v4U7lkimNfFW1DflOi89b9c6z5Av15
+         frYoVE5CG2O1LwtOafmjpk4gOdDYLA80+xHGf+DGksMbUeUk2ykcQD6DwlnPXAY9Iq
+         a73Zquer2mg6mXIMKFAmmAikKLBkkIWoQEfF57gJGVPr6UV4iekgWxaouKHoeyqgWu
+         NvBegG6ioNb9UfX3kTvW+e1LP47YFmwSJJ7Ri5BGwVQR04pTp3SzjRWzsWNhI64M4l
+         Pp5+UnKCgx51wN2geLqPePnrgs24Iy6FVtdPfmZqX27ehtWCwdi2ga/4pB3zoNzjt5
+         KCc/wIPuGVOqQ==
+Received: by mail-ej1-f45.google.com with SMTP id d10so40100018eje.10;
+        Tue, 08 Mar 2022 07:41:58 -0800 (PST)
+X-Gm-Message-State: AOAM533hWbhkqgppb/PgflHvYOfckBKJcZoY4ZG2D0q0Bl5bdX1FTgAF
+        omjBUxz42+uC6Kh3jQ16fILmSLxbHmRRm6CsfQ==
+X-Google-Smtp-Source: ABdhPJxIb3+WG03kGop4Io4gfFAc4/Ov9H50ShSKZhOdDQ2GQ1CJZOL38O1ivv3AfFwgX8OYYXMPlSWSqiGkJm8v1OI=
+X-Received: by 2002:a17:907:298f:b0:6da:b3da:19e with SMTP id
+ eu15-20020a170907298f00b006dab3da019emr13793817ejc.423.1646754117106; Tue, 08
+ Mar 2022 07:41:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com> <20220306184857.GA19394@wunner.de>
- <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
- <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com> <20220307191854.GA27748@wunner.de>
- <YiZfdlw0A75cojCx@smile.fi.intel.com> <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com>
- <20220308122220.GA24694@wunner.de> <d9aabfe-1179-67c2-98d1-f36e7e698f33@linux.intel.com>
- <20220308145042.GA20520@wunner.de>
-In-Reply-To: <20220308145042.GA20520@wunner.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 8 Mar 2022 16:53:56 +0200
-Message-ID: <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
-Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+References: <20220307085053.1636475-1-vincent.whitchurch@axis.com> <20220307085053.1636475-2-vincent.whitchurch@axis.com>
+In-Reply-To: <20220307085053.1636475-2-vincent.whitchurch@axis.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 8 Mar 2022 09:41:45 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKBDOu+63YrDCX51-zoTPu1utiPxXYmihL9kMvrpD3ctA@mail.gmail.com>
+Message-ID: <CAL_JsqKBDOu+63YrDCX51-zoTPu1utiPxXYmihL9kMvrpD3ctA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        kernel <kernel@axis.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 4:50 PM Lukas Wunner <lukas@wunner.de> wrote:
-> On Tue, Mar 08, 2022 at 02:59:59PM +0200, Ilpo J=C3=A4rvinen wrote:
+On Mon, Mar 7, 2022 at 2:51 AM Vincent Whitchurch
+<vincent.whitchurch@axis.com> wrote:
+>
+> Add a compatible for the UART on the ARTPEC-8 SoC.
 
-...
+Yes, the diff says that already. Perhaps some explanation why you are
+adding another vendor SoC to Samsung UART and how the h/w is
+different. I can only guess based on having just gone thru this with
+Apple.
 
-> Of course, if hardware-assisted DE assertion requires a particular pinmux
-> state, we could double-check whether that pinmux state is set.
-
-I'm wondering how to achieve this.
-
---=20
-With Best Regards,
-Andy Shevchenko
+>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+>  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> index 6aceba4a5f79..6f11f2c92f64 100644
+> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> @@ -20,6 +20,7 @@ properties:
+>      items:
+>        - enum:
+>            - apple,s5l-uart
+> +          - axis,artpec8-uart
+>            - samsung,s3c2410-uart
+>            - samsung,s3c2412-uart
+>            - samsung,s3c2440-uart
+> --
+> 2.34.1
+>
