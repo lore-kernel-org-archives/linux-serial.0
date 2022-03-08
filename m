@@ -2,86 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C52BC433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 20:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C21BC433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 21:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350239AbiCHUbQ (ORCPT
+        id S1350397AbiCHVUz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 15:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
+        Tue, 8 Mar 2022 16:20:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242939AbiCHUbP (ORCPT
+        with ESMTP id S1350357AbiCHVUy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 15:31:15 -0500
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C09B50E1D;
-        Tue,  8 Mar 2022 12:30:17 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id CA940100D9423;
-        Tue,  8 Mar 2022 21:30:14 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id AA23147A006; Tue,  8 Mar 2022 21:30:14 +0100 (CET)
-Date:   Tue, 8 Mar 2022 21:30:14 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
-Message-ID: <20220308203014.GA11096@wunner.de>
-References: <20220306184857.GA19394@wunner.de>
- <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
- <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
- <20220307191854.GA27748@wunner.de>
- <YiZfdlw0A75cojCx@smile.fi.intel.com>
- <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com>
- <20220308122220.GA24694@wunner.de>
- <d9aabfe-1179-67c2-98d1-f36e7e698f33@linux.intel.com>
- <20220308145042.GA20520@wunner.de>
- <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
+        Tue, 8 Mar 2022 16:20:54 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028B64AE01;
+        Tue,  8 Mar 2022 13:19:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=j5ZN+IAAztFuJh5l3U8Vq4bOu5JLU5wwE3OHp1I+9yI=; b=HwyoKhKApYaXBedHXnuWl0gtXV
+        eKn/R+yVkngBQ2GQPnCK/wuZdfEfRp2ViEuojc2qjuYB+9CGS2pd14fXjEq6UotWssFPLjMO/w+xp
+        DILk4bcdfsIg2zPevmsQXAqfW7scXXPS0zklQG9SykPjdPLeD+y6xZEGxmqeQMXCLah07iQrq+C76
+        y2LN1lB/dGn1AutHT0oj/F3k1M/ybqYO/sHC9gB8RXZ0J0/YmyLgcEk0KRT7PMUCCj/TP8sFsfdsI
+        P9327bWYcE3i3cg5h54TsD/NMnjiy/0kYwJ+qv7zeomvgqxRhPeBw//zKS2dTxEmd0E+giXlDcyYn
+        Naj0D4sg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nRhFB-00GXvJ-IX; Tue, 08 Mar 2022 21:19:46 +0000
+Message-ID: <2c693cb8-f4b8-a723-c804-9492d9cc4881@infradead.org>
+Date:   Tue, 8 Mar 2022 13:19:41 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] kgdboc: fix return value of __setup handler
+Content-Language: en-US
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Laura Abbott <labbott@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        linux-serial@vger.kernel.org
+References: <20220308033241.22099-1-rdunlap@infradead.org>
+ <CAD=FV=W90Hd-baPzurraEaDUGNOCxb8FLUysHKOQg2frMuZRAQ@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAD=FV=W90Hd-baPzurraEaDUGNOCxb8FLUysHKOQg2frMuZRAQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 04:53:56PM +0200, Andy Shevchenko wrote:
-> On Tue, Mar 8, 2022 at 4:50 PM Lukas Wunner <lukas@wunner.de> wrote:
-> > Of course, if hardware-assisted DE assertion requires a particular pinmux
-> > state, we could double-check whether that pinmux state is set.
+Hi Doug,
+
+On 3/8/22 08:04, Doug Anderson wrote:
+> Hi,
 > 
-> I'm wondering how to achieve this.
+> On Mon, Mar 7, 2022 at 7:32 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>
+>> __setup() handlers should return 1 to indicate that the boot option
+>> has been handled. A return of 0 causes the boot option/value to be
+>> listed as an Unknown kernel parameter and added to init's (limited)
+>> environment strings. So return 1 from kgdboc_option_setup().
+> 
+> This took me about 20 minutes to trace through the code to confirm,
+> but it appears you're correct. It's pretty twisted that early_param()
+> and __setup(), both of which add things to the same list, work exactly
+> opposite here. :( Any chance I could convince you to:
+> 
+> 1. Add a comment before the definition of __setup_param() explaining
+> that 0 means error and 1 means no error. There's a comment next to
+> early_param() that _implies_ that setup is the opposite(), but it'd be
+> nice to see documentation of __setup(). I know __setup() is supposed
+> to be "only for core code", but still seems like we could document it.
 
-On DT platforms, the devicetree specifies the pin controller settings
-which need to be configured for a device to be usable, e.g.:
+I have already done this. The patch is in Andrew's mmotm tree (patch queue).
 
-  pinctrl-names = "default";
-  pinctrl-0 = <...>;
+> 2. Add something to your commit message helping someone find the place
+> where the return value is checked. Basically just mention
+> obsolete_checksetup() to give people a hint.
+> 
 
-Before a driver is bound to the device, really_probe() in drivers/base/dd.c
-calls pinctrl_bind_pins() which configures the pin controller accordingly.
-In other words, the OS is fully in charge of configuring the pinmux.
+Sure, no problem. Good idea.
 
-I'm not sure how this is done on ACPI platforms.  If the pinmux is
-exclusively under the control of the platform firmware and the OS has
-no way of getting or setting the pinmux configuration, then that would
-be a competitive disadvantage vis-à-vis DT platforms which should really
-be addressed.  However I notice there are various drivers for Intel
-chipsets in drivers/pinctrl/intel/, so surely there's a way to let the
-OS handle pinmux settings?
+> 
+>> Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+>>   kgdboc=kbd kgdbts=", will be passed to user space.
+>>
+>>  Run /sbin/init as init process
+>>    with arguments:
+>>      /sbin/init
+>>    with environment:
+>>      HOME=/
+>>      TERM=linux
+>>      BOOT_IMAGE=/boot/bzImage-517rc7
+>>      kgdboc=kbd
+>>      kgdbts=
+>>
+>> Fixes: 1cd25cbb2fed ("kgdboc: Fix warning with module build")
+> 
+> Are you certain about this "Fixes" line? That commit was just code
+> motion to move the code inside the #ifdef. It sure looks like it was
+> broken even before this.
+> 
 
-Thanks,
+Yes, but I am not enough of a git user to be able to backtrack
+to see where this code was added. :(
+(help?)
 
-Lukas
+> 
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+>> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+>> Cc: Laura Abbott <labbott@redhat.com>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Jiri Slaby <jirislaby@kernel.org>
+>> Cc: kgdb-bugreport@lists.sourceforge.net
+>> Cc: Jason Wessel <jason.wessel@windriver.com>
+>> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+>> Cc: Douglas Anderson <dianders@chromium.org>
+>> Cc: linux-serial@vger.kernel.org
+>> ---
+>>  drivers/tty/serial/kgdboc.c |    6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> --- lnx-517-rc7.orig/drivers/tty/serial/kgdboc.c
+>> +++ lnx-517-rc7/drivers/tty/serial/kgdboc.c
+>> @@ -403,16 +403,16 @@ static int kgdboc_option_setup(char *opt
+>>  {
+>>         if (!opt) {
+>>                 pr_err("config string not provided\n");
+>> -               return -EINVAL;
+>> +               return 1;
+> 
+> Shouldn't it return 0 in the error cases? If __setup() functions are
+> supposed to return "1" no matter what then what was the purpose of
+> having a return value in the first place?
+
+It should return 0 if the string(s) should be added to init's arg or env
+strings, which is probably very rare. I don't know why it has a return
+value in the first place. Someone else has already suggested that __setup()
+functions should be void. Maybe they should one day, but that's a much
+larger patch.
+
+I'll send a v2.
+
+thanks.
+-- 
+~Randy
