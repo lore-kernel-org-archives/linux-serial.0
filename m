@@ -2,103 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CF2C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 07:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA36C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbiCHHnG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 02:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
+        id S1344695AbiCHIIK (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 03:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344722AbiCHHnB (ORCPT
+        with ESMTP id S1344792AbiCHIHz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 02:43:01 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B7C39838
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 23:42:05 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        Tue, 8 Mar 2022 03:07:55 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6743EB80
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:06:59 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 763C53F7FB
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 07:42:03 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 1E3113F1AF
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:06:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646725323;
-        bh=Un+PBm7TVpil6wZFl7iMD+ssa0pQW3YglAFfrUmMR/0=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=RiWmPGZf5LU/YP4wUN2kuEJHeIwOkaALEnpMfDDKoQnerY/Mu6WcrgqTO/T9dHTch
-         86P1MG4bO4XhgFRkwn9piJ7kF+Tqzo+SY2JQbUknjAPXH1chndM7aoIDT36kIbnHL0
-         O+aPMRWluszZiWPkUovv7RugGOzCExC0GVcE81wsdr9exRxoKWFlWk8YZITFfVGqaH
-         CNpI78poLuPwM/Dh80eqSi/Q29AGOEkqW7wlpygWybNpWcdDY95G6tbcz6fPGRonXF
-         rnKxPfNP/EpWwFLMLxcoUMooy8JQHkPJLuO/RvMkkNoYTIIz4TPkmYZcWqg++jzvwy
-         0vgK3dlL6OfUg==
-Received: by mail-ej1-f72.google.com with SMTP id l24-20020a170906a41800b006da873d66b6so6925665ejz.3
-        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 23:42:03 -0800 (PST)
+        s=20210705; t=1646726818;
+        bh=J/J3P1Rwx3zVYwDz0ov2BEZ66L38jQkTdS1TVg1pvPk=;
+        h=Message-ID:Date:MIME-Version:Subject:From:To:References:
+         In-Reply-To:Content-Type;
+        b=Zbw6e3ZSkd1Tya/8U6oQkawzHENhy2JijLLz/8wWG8XpdoCWvf4rOQmgZqJwUfGnc
+         oak77kJMbcF+jybfUcw3GIJqOL7GvPrWGkDdPFKv9rFUxcGk1HFDdQQ/ivcgQE9KTG
+         n+Z1kYnmKtwQO2kTSFLA+9VgzqvcQI0u4KpwDPpfWAsvIxK21f3DxbKjjgIHO+uSoo
+         cTGxvT8TFisX2ZACPGLfYM0lVW5Rb87Ux94s9AdSbK+3SjTb/vui/6jyAtNmCDLECM
+         a9Hx9k8fyDy9GewZXcPCjbDCOuf+o9e3Wo/Pq8662vZmIE/pqsOBCfPnZUfLvON8H5
+         hWMCEzISU+udA==
+Received: by mail-ej1-f70.google.com with SMTP id m4-20020a170906160400b006be3f85906eso8263252ejd.23
+        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:06:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:references:in-reply-to
          :content-transfer-encoding;
-        bh=Un+PBm7TVpil6wZFl7iMD+ssa0pQW3YglAFfrUmMR/0=;
-        b=pTt4yDKmABHduoFE+dZjwIik36fgU5CoHukkkxuVwEDDKLBqK8lWE6Jbxdmaho5kDF
-         yp2rUP7TtyRW0xa1LNYE+9TsFEPILXM+GDbO9D2fdLQOI4fTJxiAzn/w8rp4QAocGDlh
-         1LkDR3IFlfkGT2u8dIhPFKozWh0kobI0tW2ni3C2nJ5CNmCih5RqYKtqf5iPkCILoqW1
-         oG61lhm2ZA1n1FShoOZh9Eidwl0zv1RGhOtPQhclFxTrn/y3Ca16RfIM0E6dXiBP1PuP
-         L6ISApi/Y3PJo1cnuwcY12GxdV0ixWhcqmNr33WySqogemj/86olN010sXtWEHvkzmRq
-         D27w==
-X-Gm-Message-State: AOAM530nBfZTQpzhxp0znSbugJvkeTfFL8OoFYUZxOmK8nkCW5Y1mQVr
-        K/K+iN1RzLnJXGJnsp+Rw/Tg1gWWjd1d5nuGvWyRKQQiRqiQWrr/o4+lt5oRSG5vn1aD+KO1gTa
-        CLhuwJ+0fuNTtLvis9/0MzIf1YNE5L6bK5gQrbKr0kQ==
-X-Received: by 2002:a50:d498:0:b0:416:2b00:532 with SMTP id s24-20020a50d498000000b004162b000532mr13081365edi.396.1646725320735;
-        Mon, 07 Mar 2022 23:42:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjhCqo9HH0cK+RI8/E89ekTwyLjLyg0tpT17qz7uVBuNxty/NMegrabspJHC1kBpHoMxQrTQ==
-X-Received: by 2002:a50:d498:0:b0:416:2b00:532 with SMTP id s24-20020a50d498000000b004162b000532mr13081352edi.396.1646725320534;
-        Mon, 07 Mar 2022 23:42:00 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id d4-20020a1709067a0400b006d6e3ca9f71sm5565533ejo.198.2022.03.07.23.41.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 23:41:59 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: 8250_tegra: mark acpi_device_id as unused with !ACPI
-Date:   Tue,  8 Mar 2022 08:41:57 +0100
-Message-Id: <20220308074157.113568-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        bh=J/J3P1Rwx3zVYwDz0ov2BEZ66L38jQkTdS1TVg1pvPk=;
+        b=FWFemSQkGyTUCGGdQMaan6jFGS3UjUfgAZSD215DLDt9oNOwnxFwNpg332cvn0uBt2
+         X8PX5tfMiDpiar9xEncudHYZtoHFYua3JcPtfrA0kIlWkl8KTUOqdm3+3hD98G1iVDHr
+         thy9KEUhVr02wyygpz1yOLBJfx8Xf0lmmFmT9DHe5+vn0GubCYMIarkIYSH2mrU5x6sS
+         Cib0LQ2IPMfzeCTd6ZcWC4yPaf8PAkue36YSTDr/++lPu5kFanDChZY9bfN0RRiLNQ3m
+         99cxHJS93jH0AQ6KCAvxPjgNwMMlZMY4r/qgmB/gj1pxxUGB4HJUHUDw0c5FMN2Oh9qv
+         8kLQ==
+X-Gm-Message-State: AOAM531N+Uj8mAUDKnjJr9nD1ZUG4EsHzdVmoghbw82GhjcE7YjsUHpO
+        4a1rv1miCoJdo/oFeLsrT6zF351GKGVui1b9hxROWMgiETXScWisQ3CcVp4Bpm5FTkjq4x0Ea9u
+        UCbZm0R1q9GyxGzPimJzyL/b4iZC6FvOC7Ngd4P5Q5A==
+X-Received: by 2002:a17:907:1611:b0:6da:81d0:89d3 with SMTP id hb17-20020a170907161100b006da81d089d3mr12231599ejc.306.1646726817561;
+        Tue, 08 Mar 2022 00:06:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyJVJ4uGvVXNIf5NiHNb7QI8hmdvsItXsGAUU9dQZV9iYIVWIdyluw+ECgstG2XC7Tc1HjDNQ==
+X-Received: by 2002:a17:907:1611:b0:6da:81d0:89d3 with SMTP id hb17-20020a170907161100b006da81d089d3mr12231586ejc.306.1646726817311;
+        Tue, 08 Mar 2022 00:06:57 -0800 (PST)
+Received: from [192.168.0.143] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170906644500b006ce6b73ffd2sm5559069ejn.84.2022.03.08.00.06.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 00:06:56 -0800 (PST)
+Message-ID: <25caed0d-ec42-54f5-5b62-8159979dadb9@canonical.com>
+Date:   Tue, 8 Mar 2022 09:06:55 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 3/7] tty: serial: samsung: constify
+ s3c24xx_serial_drv_data
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
+ <20220307080925.54131-2-krzysztof.kozlowski@canonical.com>
+ <3eecfcea-8eeb-3ea2-566b-704c314af718@kernel.org>
+ <cf34d431-22ba-ccaa-3622-a098b09a8bfe@canonical.com>
+In-Reply-To: <cf34d431-22ba-ccaa-3622-a098b09a8bfe@canonical.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver's acpi_device_id table is referenced via ACPI_PTR() so it
-will be unused for !CONFIG_ACPI builds:
+On 07/03/2022 09:40, Krzysztof Kozlowski wrote:
+> On 07/03/2022 09:33, Jiri Slaby wrote:
+>> On 07. 03. 22, 9:09, Krzysztof Kozlowski wrote:
+>>> The driver data (struct s3c24xx_serial_drv_data) is only used to
+>>> initialize the driver properly and is not modified.  Make it const.
+>> ...
+>>> @@ -2755,9 +2755,9 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+>>>   	},
+>>>   	.fifosize = { 256, 64, 16, 16 },
+>>>   };
+>>> -#define S5PV210_SERIAL_DRV_DATA ((kernel_ulong_t)&s5pv210_serial_drv_data)
+>>> +#define S5PV210_SERIAL_DRV_DATA (&s5pv210_serial_drv_data)
+>>>   #else
+>>> -#define S5PV210_SERIAL_DRV_DATA	(kernel_ulong_t)NULL
+>>> +#define S5PV210_SERIAL_DRV_DATA	NULL
+>>
+>> Yet, I still don't see why the switch from ulong->ptr happens in this 
+>> "constify it" patch?
+> 
+> All these defines S5PV210_SERIAL_DRV_DATA and so on are now const and
+> are assigned to of_device_id.data (s3c24xx_uart_dt_match). Before, these
+> were assigned with a cast:
+> 
+> static const struct of_device_id s3c24xx_uart_dt_match[] = {
+> 	{ .compatible = "samsung,s5pv210-uart",
+> 
+> 	.data = (void *)S5PV210_SERIAL_DRV_DATA }
+> 
+> but since the actual data structure is const, I want to drop the cast.
+> Casting const via (void *) might hide some possible issues, e.g. if
+> of_device_id.data becomes actually non-const. There is no particular
+> issue here, because of_device_id.data and S5PV210_SERIAL_DRV_DATA are
+> const. But also because they are both const now, I want to drop the cast
+> via void *.
+> 
+> When (void *) is dropped, the S5PV210_SERIAL_DRV_DATA cannot be
+> kernel_ulong_t:
+> 
+> ../drivers/tty/serial/samsung_tty.c:2753:33: warning: initialization of
+> ‘const void *’ from ‘long unsigned int’ makes pointer from integer
+> without a cast [-Wint-conversion]
+> 
+>  2753 | #define S5PV210_SERIAL_DRV_DATA (kernel_ulong_t)NULL
+> 
 
-  drivers/tty/serial/8250/8250_tegra.c:178:36:
-    warning: ‘tegra_uart_acpi_match’ defined but not used [-Wunused-const-variable=]
+I will split the casts removal to separate patch. I hope this clarifies
+a bit.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/tty/serial/8250/8250_tegra.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
-index e13ae18b0713..e7cddeec9d8e 100644
---- a/drivers/tty/serial/8250/8250_tegra.c
-+++ b/drivers/tty/serial/8250/8250_tegra.c
-@@ -175,7 +175,7 @@ static const struct of_device_id tegra_uart_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, tegra_uart_of_match);
- 
--static const struct acpi_device_id tegra_uart_acpi_match[] = {
-+static const struct acpi_device_id tegra_uart_acpi_match[] __maybe_unused = {
- 	{ "NVDA0100", 0 },
- 	{ },
- };
--- 
-2.32.0
-
+Best regards,
+Krzysztof
