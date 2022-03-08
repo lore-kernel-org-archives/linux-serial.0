@@ -2,62 +2,61 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFAFC433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D71B8C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344808AbiCHIKa (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:10:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
+        id S242517AbiCHIKb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 03:10:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344796AbiCHIKZ (ORCPT
+        with ESMTP id S1344792AbiCHIK0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:10:25 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F35D3E5D4
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:29 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        Tue, 8 Mar 2022 03:10:26 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26C03EAA8
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:30 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 64D723F621
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:28 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 666273F7E1
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646726968;
-        bh=tfYTw7M8SGNblLSK+OTR7ft1x+niAVfIowhtu3q65AY=;
+        s=20210705; t=1646726969;
+        bh=29Pf3ZsU5JJVOHBIO1WRfRouMVWJymQOmYuJyfmZYy4=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=HXjJB6B9B6ejGdITG09qJCNIaaq/CcWIRiUKd5IwqDV5xmOgX6TbUBTKCt5PtWdUP
-         /RoLR2JTax1E7McLkeWzlUzm5trNDQnZr79E7iCwXN9MDL+3aW+S0j9CyUjuEFVo7E
-         Y+06/0+dEHC/IOaCftyrIdocS1jCmpSCxiiUM1zolPQyVGnKSD/z4sNya0mJCosypN
-         8fmlRzlUNcnB1EIc22zkB9TOgWuYNl21C//HKYkDEbbzSpmy9S66TGzubrRt4Zgrsc
-         h+yuDNS7bk1bFv6o0NjwwJu9wbetchyRboMJW68xtW0e2RFngzUnzsi7NeeD98m9OW
-         DeNZYSW92pwOQ==
-Received: by mail-ej1-f69.google.com with SMTP id hr26-20020a1709073f9a00b006d6d1ee8cf8so8176182ejc.19
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:28 -0800 (PST)
+        b=LkfbNmA9Vjt18uCAYkD/pVLrecoVDZlQhW5ah475s/GQnogj6tnEjYQ6nHpDib1X3
+         R3473N8FT7FF25HiCF7EMiaMW6GYb2rCOMD99DeNX7sxtMEEGck8lzy7sT5Q3vpxBI
+         XpwVT0ILex4z0miDeiAXMaognDhTvvCh6Za3ur3q8nAHkbimbx6oDPLOrHBm/uPr/A
+         FAlsUBQA2n30Pq5et4NQzOgBQh3/2PWjbNK7MkxTLiLz3HpdqfNd4kkvD7NbRB7dl9
+         IbuMAczN6X4DYZi8g9FL42hBwyVVENMDDSSZby3uCMcI2qOufJ7M7nnCTPFuV9pVTh
+         irARfJ5mM/3+Q==
+Received: by mail-ej1-f72.google.com with SMTP id ey18-20020a1709070b9200b006da9614af58so6220039ejc.10
+        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tfYTw7M8SGNblLSK+OTR7ft1x+niAVfIowhtu3q65AY=;
-        b=nKRHOXJvNAeGoMyu7dn3Hq3Hbl9C5spagHWyXWphoD3i3P6801iLhpFAEyKQUXM8sB
-         VvxoMs5P3uVSNo48ErTxrK1HYj6K9s5otRZVYUVcjip1VgAgS0yEiccp++FUSFTLHBx2
-         2Uf3LoA76QDC1hdRvaEd7pLJTVhWhhiAeknGqLrZ6N4zAi33H7gHD2pKOL0/IX7h4Zy8
-         fz0WIi1P+0537GUNbZMzXqMceKOFjQGfmcSGeNazwqNwo5cG6EaHbd/wp7bfQONfjJGV
-         lo7AVVYL9I9sGZhah75OtrXLY2H1VJhlnmf8HNn72uHiDMkxVqUiCqVoQE45lLUoFRC4
-         CPHA==
-X-Gm-Message-State: AOAM530VOCkYWFpYo1i1dBFt9VOquleMXyZ5gUD8sRDBjp2kUnYcMs0y
-        /9n62QyIqCEvDlAIHasF4U5QJ305/LRG1ogRn+rD7fVrmVvwvnEpB5NFXfa+M6jdGQ/+EsXnZ36
-        FSloEQAa60Hg3fi4fvKfXeCCmhgw0mNCRIm2+46HJDw==
-X-Received: by 2002:a17:907:1b09:b0:6d8:faa8:4a06 with SMTP id mp9-20020a1709071b0900b006d8faa84a06mr12097004ejc.701.1646726967876;
-        Tue, 08 Mar 2022 00:09:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy4S5b8cDkgWsMD2VwX44UQxX1h1DDN2AljrAE6McGdTq0MBRrLMyFtooQYg29GydbisVK9qQ==
-X-Received: by 2002:a17:907:1b09:b0:6d8:faa8:4a06 with SMTP id mp9-20020a1709071b0900b006d8faa84a06mr12096985ejc.701.1646726967665;
-        Tue, 08 Mar 2022 00:09:27 -0800 (PST)
+        bh=29Pf3ZsU5JJVOHBIO1WRfRouMVWJymQOmYuJyfmZYy4=;
+        b=7zGdWkGFXJMyVDJwljl/K1ziz3GK76MC9DoQLrkn9sh89eyZEVqOgKCdaAmOB7SHWg
+         yqwQuYcTgkBBZ80szT0pEPv0hRCc5Dr9BAzMYUchf1Wl8J9NbjmjUgP4MnVXr8ger34o
+         imrecBvq/Olc9do+YQsV5ZoYmcZQJzO39InKZCN2k+LyEtSExgplCT/cdr6mBBhg2fak
+         1jUj6eo3GTaPkdD3hLlC9eaDHYEWRN7HXj6RxJ+e00yIe1CIzJ+AJlxzIvQgsnYJe98+
+         JhpaC4P1bwPKErykl5AqPBLrLji84BqscbODe7kmdxQ9cyUKj1cU6CEiLhJUNzcYoUD2
+         dKhQ==
+X-Gm-Message-State: AOAM533VhxqO6bzRuPh0APMjylT6meu0TVkE54NkF8cmx2uQWxlYNq5k
+        H0TQKkRHVpTkzaFEYcSkYUpT070n3ks98h/IU5Sar6o/Zw3tEydJQM9u1ypG1+RRLKWopEjxz4P
+        77Bkzl3X2jmlKGLWjLu+1cMF355EYgxy3Psd46ImQNg==
+X-Received: by 2002:a17:906:9bd7:b0:6d6:e920:8d04 with SMTP id de23-20020a1709069bd700b006d6e9208d04mr12389911ejc.547.1646726969063;
+        Tue, 08 Mar 2022 00:09:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzCDpyzVeafJO+tBKmLNUmXCUwu/pvO8ES0IOzwYdYS55Y3KidkwCIqb81SC/LBMvb5FhouCg==
+X-Received: by 2002:a17:906:9bd7:b0:6d6:e920:8d04 with SMTP id de23-20020a1709069bd700b006d6e9208d04mr12389895ejc.547.1646726968858;
+        Tue, 08 Mar 2022 00:09:28 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.26
+        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 00:09:26 -0800 (PST)
+        Tue, 08 Mar 2022 00:09:28 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
@@ -67,9 +66,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v3 4/8] tty: serial: samsung: constify s3c24xx_serial_drv_data
-Date:   Tue,  8 Mar 2022 09:09:15 +0100
-Message-Id: <20220308080919.152715-5-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v3 5/8] tty: serial: samsung: constify UART name
+Date:   Tue,  8 Mar 2022 09:09:16 +0100
+Message-Id: <20220308080919.152715-6-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
 References: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
@@ -79,258 +78,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver data (struct s3c24xx_serial_drv_data) is only used to
-initialize the driver properly and is not modified.  Make it const.
+The UART name from driver data holds only string literals.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
 ---
- drivers/tty/serial/samsung_tty.c | 58 ++++++++++++++++----------------
- 1 file changed, 29 insertions(+), 29 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 66434eb58db8..c4b13f2d6e26 100644
+index c4b13f2d6e26..7025306f76b7 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -136,14 +136,14 @@ struct s3c24xx_uart_port {
- 	unsigned int			tx_mode;
- 	unsigned int			rx_mode;
- 
--	struct s3c24xx_uart_info	*info;
-+	const struct s3c24xx_uart_info	*info;
- 	struct clk			*clk;
- 	struct clk			*baudclk;
- 	struct uart_port		port;
--	struct s3c24xx_serial_drv_data	*drv_data;
-+	const struct s3c24xx_serial_drv_data	*drv_data;
- 
- 	/* reference to platform data */
--	struct s3c2410_uartcfg		*cfg;
-+	const struct s3c2410_uartcfg	*cfg;
- 
- 	struct s3c24xx_uart_dma		*dma;
- 
-@@ -221,7 +221,7 @@ static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
- 	local_irq_restore(flags);
- }
- 
--static inline struct s3c24xx_uart_port *to_ourport(struct uart_port *port)
-+static inline struct s3c24xx_uart_port *to_ourport(const struct uart_port *port)
- {
- 	return container_of(port, struct s3c24xx_uart_port, port);
- }
-@@ -573,13 +573,13 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
- 	}
- }
- 
--static inline struct s3c24xx_uart_info
-+static inline const struct s3c24xx_uart_info
- 	*s3c24xx_port_to_info(struct uart_port *port)
- {
- 	return to_ourport(port)->info;
- }
- 
--static inline struct s3c2410_uartcfg
-+static inline const struct s3c2410_uartcfg
- 	*s3c24xx_port_to_cfg(struct uart_port *port)
- {
- 	struct s3c24xx_uart_port *ourport;
-@@ -594,7 +594,7 @@ static inline struct s3c2410_uartcfg
- static int s3c24xx_serial_rx_fifocnt(struct s3c24xx_uart_port *ourport,
- 				     unsigned long ufstat)
- {
--	struct s3c24xx_uart_info *info = ourport->info;
-+	const struct s3c24xx_uart_info *info = ourport->info;
- 
- 	if (ufstat & info->rx_fifofull)
- 		return ourport->port.fifosize;
-@@ -986,7 +986,7 @@ static irqreturn_t apple_serial_handle_irq(int irq, void *id)
- 
- static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 	unsigned long ufstat = rd_regl(port, S3C2410_UFSTAT);
- 	unsigned long ufcon = rd_regl(port, S3C2410_UFCON);
- 
-@@ -1405,7 +1405,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
- 
- static inline int s3c24xx_serial_getsource(struct uart_port *port)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 	unsigned int ucon;
- 
- 	if (info->num_clks == 1)
-@@ -1419,7 +1419,7 @@ static inline int s3c24xx_serial_getsource(struct uart_port *port)
- static void s3c24xx_serial_setsource(struct uart_port *port,
- 			unsigned int clk_sel)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 	unsigned int ucon;
- 
- 	if (info->num_clks == 1)
-@@ -1438,7 +1438,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
- 			unsigned int req_baud, struct clk **best_clk,
- 			unsigned int *clk_num)
- {
--	struct s3c24xx_uart_info *info = ourport->info;
-+	const struct s3c24xx_uart_info *info = ourport->info;
- 	struct clk *clk;
- 	unsigned long rate;
- 	unsigned int cnt, baud, quot, best_quot = 0;
-@@ -1522,7 +1522,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 				       struct ktermios *termios,
- 				       struct ktermios *old)
- {
--	struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
-+	const struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 	struct clk *clk = ERR_PTR(-EINVAL);
- 	unsigned long flags;
-@@ -1691,7 +1691,7 @@ static const char *s3c24xx_serial_type(struct uart_port *port)
- 
- static void s3c24xx_serial_config_port(struct uart_port *port, int flags)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 
- 	if (flags & UART_CONFIG_TYPE)
- 		port->type = info->port_type;
-@@ -1703,7 +1703,7 @@ static void s3c24xx_serial_config_port(struct uart_port *port, int flags)
- static int
- s3c24xx_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 
- 	if (ser->type != PORT_UNKNOWN && ser->type != info->port_type)
- 		return -EINVAL;
-@@ -1873,9 +1873,9 @@ s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS] = {
-  */
- 
- static void s3c24xx_serial_resetport(struct uart_port *port,
--				   struct s3c2410_uartcfg *cfg)
-+				     const struct s3c2410_uartcfg *cfg)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 	unsigned long ucon = rd_regl(port, S3C2410_UCON);
- 
- 	ucon &= (info->clksel_mask | info->ucon_mask);
-@@ -1979,7 +1979,7 @@ s3c24xx_serial_cpufreq_deregister(struct s3c24xx_uart_port *port)
- static int s3c24xx_serial_enable_baudclk(struct s3c24xx_uart_port *ourport)
- {
- 	struct device *dev = ourport->port.dev;
--	struct s3c24xx_uart_info *info = ourport->info;
-+	const struct s3c24xx_uart_info *info = ourport->info;
- 	char clk_name[MAX_CLK_NAME_LENGTH];
- 	unsigned int clk_sel;
- 	struct clk *clk;
-@@ -2021,7 +2021,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 				    struct platform_device *platdev)
- {
- 	struct uart_port *port = &ourport->port;
--	struct s3c2410_uartcfg *cfg = ourport->cfg;
-+	const struct s3c2410_uartcfg *cfg = ourport->cfg;
- 	struct resource *res;
- 	int ret;
- 
-@@ -2156,7 +2156,7 @@ static const struct of_device_id s3c24xx_uart_dt_match[];
- 
- static int probe_index;
- 
--static inline struct s3c24xx_serial_drv_data *
-+static inline const struct s3c24xx_serial_drv_data *
- s3c24xx_get_driver_data(struct platform_device *pdev)
- {
- #ifdef CONFIG_OF
-@@ -2419,7 +2419,7 @@ static struct uart_port *cons_uart;
- static int
- s3c24xx_serial_console_txrdy(struct uart_port *port, unsigned int ufcon)
- {
--	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-+	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
- 	unsigned long ufstat, utrstat;
- 
- 	if (ufcon & S3C2410_UFCON_FIFOMODE) {
-@@ -2615,7 +2615,7 @@ static struct console s3c24xx_serial_console = {
- #endif /* CONFIG_SERIAL_SAMSUNG_CONSOLE */
- 
- #ifdef CONFIG_CPU_S3C2410
--static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
- 	.info = {
- 		.name		= "Samsung S3C2410 UART",
- 		.type		= TYPE_S3C24XX,
-@@ -2643,7 +2643,7 @@ static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
- #endif
- 
- #ifdef CONFIG_CPU_S3C2412
--static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
- 	.info = {
- 		.name		= "Samsung S3C2412 UART",
- 		.type		= TYPE_S3C24XX,
-@@ -2673,7 +2673,7 @@ static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
- 
- #if defined(CONFIG_CPU_S3C2440) || defined(CONFIG_CPU_S3C2416) || \
- 	defined(CONFIG_CPU_S3C2443) || defined(CONFIG_CPU_S3C2442)
--static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
- 	.info = {
- 		.name		= "Samsung S3C2440 UART",
- 		.type		= TYPE_S3C24XX,
-@@ -2703,7 +2703,7 @@ static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
- #endif
- 
- #if defined(CONFIG_CPU_S3C6400) || defined(CONFIG_CPU_S3C6410)
--static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
- 	.info = {
- 		.name		= "Samsung S3C6400 UART",
- 		.type		= TYPE_S3C6400,
-@@ -2732,7 +2732,7 @@ static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
- #endif
- 
- #ifdef CONFIG_CPU_S5PV210
--static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 	.info = {
- 		.name		= "Samsung S5PV210 UART",
- 		.type		= TYPE_S3C6400,
-@@ -2784,17 +2784,17 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.has_fracval	= 1,				\
- 	}							\
- 
--static struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data exynos4210_serial_drv_data = {
- 	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 256, 64, 16, 16 },
+@@ -63,7 +63,7 @@ enum s3c24xx_port_type {
  };
  
--static struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data exynos5433_serial_drv_data = {
- 	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 64, 256, 16, 256 },
- };
- 
--static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
- 	EXYNOS_COMMON_SERIAL_DRV_DATA(),
- 	.fifosize = { 256, 64, 64, 64 },
- };
-@@ -2810,7 +2810,7 @@ static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
- #endif
- 
- #ifdef CONFIG_ARCH_APPLE
--static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
-+static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
- 	.info = {
- 		.name		= "Apple S5L UART",
- 		.type		= TYPE_APPLE_S5L,
+ struct s3c24xx_uart_info {
+-	char			*name;
++	const char		*name;
+ 	enum s3c24xx_port_type	type;
+ 	unsigned int		port_type;
+ 	unsigned int		fifosize;
 -- 
 2.32.0
 
