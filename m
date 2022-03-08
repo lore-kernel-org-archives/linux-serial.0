@@ -2,107 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52710C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 03:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648FCC433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 06:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233825AbiCHDdm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Mar 2022 22:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
+        id S236559AbiCHGcd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 01:32:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237662AbiCHDdk (ORCPT
+        with ESMTP id S244999AbiCHGc3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Mar 2022 22:33:40 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1EA9FC0;
-        Mon,  7 Mar 2022 19:32:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=HUmMz6qGSkRqQTVdTZn2JyPBpZ46vr+DcB9VLWAk23Q=; b=hKwOUlA4WO+Ijep6kudjei8/eA
-        6sPJyFp1FR/1ks4BHuJYWkEzL673JQyW6/APY4ddrynynis7mRWZrml/1yrJp+l2WsZFVN4qfR3i1
-        C+ctp5PzkMaZmoTwZp+1LQPWHwxHZ1iMC4fkzQ/CkzLL67xNd6bjou8Odgq0llLavXdhRrKYBkQLU
-        OvZU8L9/fpHMEO6ZrUz7asxxK0zi12lqniPTfanOk7QUSzb2Ns3fhsef9b2THH745neSqU0LSxR8o
-        5XKQnwUaKCA2/Vt1tJRIUh5ei5dXmf9P6UCmun3s5E0PxlbAps+qwJO1lZpPfztbVPRt+db5KgghV
-        C1GFVA+w==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nRQaY-002Xrl-JL; Tue, 08 Mar 2022 03:32:42 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Laura Abbott <labbott@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] kgdboc: fix return value of __setup handler
-Date:   Mon,  7 Mar 2022 19:32:41 -0800
-Message-Id: <20220308033241.22099-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 8 Mar 2022 01:32:29 -0500
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBE13D483;
+        Mon,  7 Mar 2022 22:31:31 -0800 (PST)
+Received: by mail-ed1-f51.google.com with SMTP id w4so20534548edc.7;
+        Mon, 07 Mar 2022 22:31:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ExA2winC/bnMZ2JkgE+r6xBTL0yncJAqBVQpnJpaDj8=;
+        b=lE3oc88hOOIIRS8ohC43jQkwJDBEiBIi1HrZfgXpJvIHM7SLmlPVOWD3xYss0Cz7jn
+         v3bixF0W04C5mdWixeGrLOJZiauHNOaNR4apHRlA5dEm2EJoxg9WaDKCvu6/VWjbbLjI
+         XnBf+jRdFGgNWYHN0C/FyGOEv9txVU2BCQh3r5k4txzC4h5+c+RkYsSGnPeOPRhvokmw
+         T67PR+U7pkXlykmDoOoZQkT98TZEKcTuKcH3DasprdPkGCHzmmWeb/qQUmoW4lJL3lTC
+         3gVluY5NU72a+2Kk+uSIy+T1BaFIWR/nHrRyI4sy1/gthQ9YX4e7MnHOsO00bEAE65eD
+         rIBw==
+X-Gm-Message-State: AOAM5306iQy+DaFb4YjvCpkEIAGJr4SdcRERpxUngloM4SB7gI337DxP
+        XY6XEBR3ZolVKM6bsa5Cmjg=
+X-Google-Smtp-Source: ABdhPJzNzVQZgW80pNg0y9KL0gbSYgXIJIIH824sOsoUVfDF1ii/M9Z4dMNbQ3K8tQNuqIg8h+IvWA==
+X-Received: by 2002:a50:d711:0:b0:410:a51a:77c5 with SMTP id t17-20020a50d711000000b00410a51a77c5mr14667857edi.154.1646721089642;
+        Mon, 07 Mar 2022 22:31:29 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id y41-20020a50bb2c000000b0041622779c50sm4374661ede.37.2022.03.07.22.31.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 22:31:29 -0800 (PST)
+Message-ID: <0eff632e-4a9d-f593-72de-243ff4c7733f@kernel.org>
+Date:   Tue, 8 Mar 2022 07:31:27 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] serial: 8250_mtk: make two read-only arrays static const
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220307230055.168241-1-colin.i.king@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220307230055.168241-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled. A return of 0 causes the boot option/value to be
-listed as an Unknown kernel parameter and added to init's (limited)
-environment strings. So return 1 from kgdboc_option_setup().
+On 08. 03. 22, 0:00, Colin Ian King wrote:
+> Don't populate the read-only arrays fraction_L_mapping and
+> fraction_M_mapping on the stack but instead make them static
+> const. Also makes the object code a little smaller.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>   drivers/tty/serial/8250/8250_mtk.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index fb65dc601b23..f4a0caa56f84 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -289,10 +289,10 @@ static void
+>   mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
+>   			struct ktermios *old)
+>   {
+> -	unsigned short fraction_L_mapping[] = {
+> +	static const unsigned short fraction_L_mapping[] = {
+>   		0, 1, 0x5, 0x15, 0x55, 0x57, 0x57, 0x77, 0x7F, 0xFF, 0xFF
+>   	};
+> -	unsigned short fraction_M_mapping[] = {
+> +	static const unsigned short fraction_M_mapping[] = {
+>   		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3
+>   	};
 
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
+And perhaps make them both unsigned char?
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
-
-Fixes: 1cd25cbb2fed ("kgdboc: Fix warning with module build")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Laura Abbott <labbott@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/kgdboc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- lnx-517-rc7.orig/drivers/tty/serial/kgdboc.c
-+++ lnx-517-rc7/drivers/tty/serial/kgdboc.c
-@@ -403,16 +403,16 @@ static int kgdboc_option_setup(char *opt
- {
- 	if (!opt) {
- 		pr_err("config string not provided\n");
--		return -EINVAL;
-+		return 1;
- 	}
- 
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		pr_err("config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
- 
--	return 0;
-+	return 1;
- }
- 
- __setup("kgdboc=", kgdboc_option_setup);
+thanks,
+-- 
+js
+suse labs
