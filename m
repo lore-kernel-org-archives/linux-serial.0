@@ -2,123 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7C2C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A3BC433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344867AbiCHILG (ORCPT
+        id S1345128AbiCHIty (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:11:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        Tue, 8 Mar 2022 03:49:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344800AbiCHIKh (ORCPT
+        with ESMTP id S1345127AbiCHItx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:10:37 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36A73E5F6
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:34 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AEAAE3F7DE
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646726973;
-        bh=HBWgDosMAxuyNUJy93OLxsRzmckdD8hfFxFfwNDa3dk=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=gTeTFmNS5aebL7Hy7XLUm1mOhREgd7O3FVcgt1QYGhKZYxSTk0tWAjT/Uu5uryPoA
-         WfdfSRFLipFl72xbXy1CV/QECMhWfStoQmy7CNGuIwk+yQOErXny4Imvz3QGPnBHbx
-         HyTpYRFchYhuptwz8ri0GRWC9tGz0wRtIjclmAX0IzcLfNcgEYuhzwfbcxIosOOdv4
-         1p8odZsdwLxL7rJ1VoVq7ebhArOygBHhCtyh0p1wsLYviFJA5doITv0KvV9In/G0G3
-         btbNnnZXOYSoB9ikn2gfUfEC6xamK8/kZhGqJTcsTGfcS/bb3GpbzhIeqWjqcWaPKY
-         lRR3IRG8dbuBQ==
-Received: by mail-ej1-f69.google.com with SMTP id l24-20020a170906a41800b006da873d66b6so6964068ejz.3
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HBWgDosMAxuyNUJy93OLxsRzmckdD8hfFxFfwNDa3dk=;
-        b=GPLDVY5dcd8bt6XqgXhQ9FMr6dqHkzxrUCiG3v6Byp1PkdlilDl2LWIdcQdeEdlaGD
-         Ic6tyUXBx7ygJnlN4a1HUS14IjRLhRRSBbX5FJEEVp/O2SJngDuUmPuZq3tBTj7UAXPf
-         oSFrBxjrEvtfSkIKDr5TkWcZYyngqtm68vzEM3+U8xjACU2deHmvDLRtG+YVgEABWNCy
-         LpvpQGDXGVDtMaYtkcuh0YsnmaI/KaikgkqZ9PtMR4+rHb10wcvUQf3T/vmyJRugm3sj
-         8aiLSJh1Ik9G4gSJPmYCbOtpeQGd3BUODU52/MzByIVGAOf0HIgBo+7RQJgVIh9b5zGl
-         2mUQ==
-X-Gm-Message-State: AOAM530Jz5mlzk1T49jXO2LmaSZtrHiUVwwz/LVCDs6Y9dd9eMsORS3D
-        i0wzr0wEP95Nj6tlXVZHHUFGvhGxzqxqaDQvFtL2oCAexyC5JU7pM8sBUBSrXGd4O+Ew4IQfDOk
-        ouCClvbkr4Jmv1SknMQD/n0RlEVVqGLEogPPRpifnWQ==
-X-Received: by 2002:a05:6402:3582:b0:416:6d78:c693 with SMTP id y2-20020a056402358200b004166d78c693mr1885064edc.24.1646726973213;
-        Tue, 08 Mar 2022 00:09:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwX4vanJVIXL0r2uldoJOauafSu6vD8LH4bQI9ff/g3MAlWaGOGZ5yN4YqE3lb73p272nAkog==
-X-Received: by 2002:a05:6402:3582:b0:416:6d78:c693 with SMTP id y2-20020a056402358200b004166d78c693mr1885050edc.24.1646726973053;
-        Tue, 08 Mar 2022 00:09:33 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 00:09:32 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v3 8/8] tty: serial: samsung: simplify getting OF match data
-Date:   Tue,  8 Mar 2022 09:09:19 +0100
-Message-Id: <20220308080919.152715-9-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
-References: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
+        Tue, 8 Mar 2022 03:49:53 -0500
+Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475E37A34
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:48:56 -0800 (PST)
+Received: by mail.olerise.pl (Postfix, from userid 1001)
+        id 51E1D44432; Tue,  8 Mar 2022 09:46:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
+        t=1646729227; bh=ZNYiuZLXlxCdAPtstEG/gwJieB5RBwA/cHj1SZ3Mpl0=;
+        h=Date:From:To:Subject:From;
+        b=QErAmHprvm66SN5T4nynUoRCNI+NZsP2qA4fSaPo7lfjNOwGzbpJyukjHG9WWejzl
+         AX+qbA5sp5GddqUbohkQnAFShK8I6wqEQ6dLKlIMRxkzcAbkr/7lH+RWc8YKGxECZt
+         4/uBEFCezF6T4qMZS4vrk6afFnatzGdpsgRCg+lW2g87itYufm8uPMpwTEA0Es+VP2
+         n2sboTmJjvlHTywKlcft79JdvyOa9DclWrr3uQlOl/7p/WwHjBuQ0aCGXwMw/8lWew
+         daOodaUssmkB7pCV5hThMbuWpK8BY7q2OSOxSwxUZQB6MILP51vjv6nZfNmn4K83Y5
+         riI0YwKd755Jg==
+Received: by mail.olerise.pl for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:45:41 GMT
+Message-ID: <20220308084500-0.1.26.mshp.0.3ief5bwf9c@olerise.pl>
+Date:   Tue,  8 Mar 2022 08:45:41 GMT
+From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= <mikolaj.rudzik@olerise.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
+X-Mailer: mail.olerise.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Simplify the code with of_device_get_match_data() and use dev_of_node()
-to remove ifdef-erry.
+Dzie=C5=84 dobry,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
----
- drivers/tty/serial/samsung_tty.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
+skania nowych zlece=C5=84 ze strony www.
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 3ffae912217c..74d466cc4152 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2150,23 +2150,14 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 
- /* Device driver serial port probe */
- 
--#ifdef CONFIG_OF
--static const struct of_device_id s3c24xx_uart_dt_match[];
--#endif
--
- static int probe_index;
- 
- static inline const struct s3c24xx_serial_drv_data *
- s3c24xx_get_driver_data(struct platform_device *pdev)
- {
--#ifdef CONFIG_OF
--	if (pdev->dev.of_node) {
--		const struct of_device_id *match;
-+	if (dev_of_node(&pdev->dev))
-+		return of_device_get_match_data(&pdev->dev);
- 
--		match = of_match_node(s3c24xx_uart_dt_match, pdev->dev.of_node);
--		return (struct s3c24xx_serial_drv_data *)match->data;
--	}
--#endif
- 	return (struct s3c24xx_serial_drv_data *)
- 			platform_get_device_id(pdev)->driver_data;
- }
--- 
-2.32.0
+Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
+, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
+=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
+jonowania strony w Google.
 
+Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+
+
+Pozdrawiam
+Miko=C5=82aj Rudzik
