@@ -2,62 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE48C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B62C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344787AbiCHIKZ (ORCPT
+        id S1344788AbiCHIK0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
+        Tue, 8 Mar 2022 03:10:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344788AbiCHIKX (ORCPT
+        with ESMTP id S1344793AbiCHIKY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:10:23 -0500
+        Tue, 8 Mar 2022 03:10:24 -0500
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B1D3EB85
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:26 -0800 (PST)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C583E5CB
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:28 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C03E83F628
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:25 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8DA263F618
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646726965;
-        bh=RaO5N5+xpc6qv0C5C+2+SP0aJMALLkB4br4l3fJLsRI=;
+        s=20210705; t=1646726967;
+        bh=JiKqSLqC9cz+DomuU4Hx2hld8wGUXAiXEgnja8m8/QA=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=BdgUOyLggHdP9lzIgR65TSCLNFsbrhCJxfwBq9I+iSu1TljH75CFwmoH4zwRfHknE
-         91DaYOqkWzQca3UfMc0wgNFDbmUtNptGs9E1oy2Mo4XKcJCYrj+1whz7DoYnY/nybz
-         XcUxP5cf9mwfKEGumdk9wbyV3/zCaFOCrjXGjWClNVgLMkvQXT4Is5W2bnYIEuWLmc
-         jxCjPFnNElUfo/TH6fM8QltQ3UpXsdovC5Y7iIZvlB4Fx2LpmjQoKHNxq2aO7Nh2Jf
-         r59g/PifU2Sy0KMemr7Docc8q2tTKfjvmecG79Npr14oZi4F+PeOHYwCzQQA4ENVzt
-         7zJFKdQVCQuUA==
-Received: by mail-ej1-f71.google.com with SMTP id qf24-20020a1709077f1800b006ce8c140d3dso8265303ejc.18
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:25 -0800 (PST)
+        b=qzy/0jMcFKkiyIMBaRsMnDlK80QqGFhkG5okvxsHwVU7zS+ry8KP5SVoW279J8+eI
+         TlwUhhYq7rCEvWLnV11AmIWulN7GatZz8+NV7atHS64bF17f40y++mdLPKj2es875y
+         PGJwNw/3060PHr3xnaT/+ek/j+ImdkKT9FmDqc0jx43ehXzVulvJXalBtJwYS7rOuh
+         E5ZG2l803VglgfLNPsxzfOL1x+l3t99M7g0iJQc6egsfSKiSV5R4Lv8Dx/J0gDZ9PK
+         bYXAfS78kwtOCC611FJGPYUT0fGEBgrpe4ksXfiAgik9D6B7mMdlWNuLq+BTs3xBDN
+         kEiUMzR5ubemQ==
+Received: by mail-ej1-f70.google.com with SMTP id i14-20020a17090639ce00b006dabe6a112fso4498115eje.13
+        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RaO5N5+xpc6qv0C5C+2+SP0aJMALLkB4br4l3fJLsRI=;
-        b=3XhqKkW5oheEInHAK+1XgDaGwM334FWR+ODzDUivxdGDnjSYrnnrgZ53IYwR/dXiHe
-         KTt017trL1ZIUx+3O02malVnGnJ14OJobnzsBY3HDmc/vT8arMDBJ+xGuI6X+PkzEE0C
-         HSQ9EdkJ/TX0uSubhaWT/Ayd2Dz8CZ6m8ho8IXssYKXYTvpaqGk6IinOGRwZFRN9LePS
-         PttpvjJhOPB1uQGfyDeU7Tiqn0+d1BnBXgN5U5lpbEtgu5kxFrEZ3VNLIfc3jl0bDvAi
-         +kgelNQjYgcTiQAzR7ap4bQZ2cV2aZPjL2PeinNVGAHhDI4E3CeMiNz5TsyskSF+Qw1o
-         NF6w==
-X-Gm-Message-State: AOAM5334XrBxf5o2AueoEsLe7xyDT9L5KbHTKNMtazoXgB5+eCQpdW2g
-        38QHdlzJIcN8AzGqWijgt872h69tnN/jFo1bd5MguP9Lb/tsHsmryxj9uWW5rTEDxb5DusMFWd+
-        fq1EyOOHXqzeTtveyAoGH0xlBUN7Zm7IWKQGozAsg3Q==
-X-Received: by 2002:a17:906:7d83:b0:6ce:fee:9256 with SMTP id v3-20020a1709067d8300b006ce0fee9256mr12751419ejo.647.1646726964792;
-        Tue, 08 Mar 2022 00:09:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw6SJAGGC/ezAoZpSp4TpDtyzbSfuJ1xdN0lOAmzmlE3wQWBFRDDMvLFPw6x2SrFrtTdkAZ4g==
-X-Received: by 2002:a17:906:7d83:b0:6ce:fee:9256 with SMTP id v3-20020a1709067d8300b006ce0fee9256mr12751408ejo.647.1646726964615;
-        Tue, 08 Mar 2022 00:09:24 -0800 (PST)
+        bh=JiKqSLqC9cz+DomuU4Hx2hld8wGUXAiXEgnja8m8/QA=;
+        b=wChyhDxhuM6zdk4mBl+WdVzSEVNT35HxeiIyAF6CJTdFeGTwGJcH1CtSAAB+NJ1C9j
+         IUZrcz+HIxVQz6J5i6/z3g15N9lz9yS48kzlEmWsmRZvb5QdzD3Yhf5T0KVhBbEVv/ls
+         48cWLerAByxmPI+TrmJ0plcCyBUhJ86GSF8/+3JXPJDV66dFVuQZ6rU50JYMvyEAwfMo
+         kjPYD1qt2VIjwMR+2lpngXTb62IpAMVD0z/gTKsyA4VFvDWD9E20oBByB5bLUpFRY4+t
+         Kh+j0mpVs0oIdf9k7MILLXf0obp+DUmv6Kpt+eSg9M14DJ5MVTaNnW2a4Cla05Fp0SEs
+         ul/A==
+X-Gm-Message-State: AOAM532OomxWwMJjS//yNUjfWKm5F/phkLpE0Ix1mNHApzU7H/xcxc6Y
+        4MHB8mDaSNCKxSE5yBW8AX0HB5yUpdmvD8tCevdSU7DiM+E8zI80va5/sJ4ug5A6xRiLTrvk/Lj
+        /iBmhy8aQR35+B8gjw9vG/yAfdFR2zP+dc40NX3LLNg==
+X-Received: by 2002:a17:907:9691:b0:6d1:711d:9050 with SMTP id hd17-20020a170907969100b006d1711d9050mr12786612ejc.755.1646726966661;
+        Tue, 08 Mar 2022 00:09:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyP0hp7rDrHBkxpGSi42kG38akSsQnOk/uybyIcsE8rFLwZ5IzvABPItTpU0pBtDEzT1lGCMw==
+X-Received: by 2002:a17:907:9691:b0:6d1:711d:9050 with SMTP id hd17-20020a170907969100b006d1711d9050mr12786598ejc.755.1646726966458;
+        Tue, 08 Mar 2022 00:09:26 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.23
+        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 00:09:23 -0800 (PST)
+        Tue, 08 Mar 2022 00:09:26 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
@@ -67,9 +67,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v3 2/8] tty: serial: samsung: embed s3c2410_uartcfg in parent structure
-Date:   Tue,  8 Mar 2022 09:09:13 +0100
-Message-Id: <20220308080919.152715-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v3 3/8] tty: serial: samsung: reduce number of casts
+Date:   Tue,  8 Mar 2022 09:09:14 +0100
+Message-Id: <20220308080919.152715-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
 References: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
@@ -79,104 +79,188 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Embed "struct s3c2410_uartcfg" directly as a member of "struct
-s3c24xx_serial_drv_data" instead of keeping it as a pointer.  This makes
-the code clearer (obvious ownership of "s3c2410_uartcfg
-s3c24xx_serial_drv_data") and saves one pointer.
+The pointers to instances of "struct s3c24xx_serial_drv_data" are first
+cast to kernel_ulong_t and then either used directly
+(in "platform_device_id.driver_data") or cast again to void * (in
+"of_device_id.data").
+
+One cast can be dropped, so at least for "of_device_id.data" case there
+will be no casts at all.  This makes the code a bit simpler.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
 ---
- drivers/tty/serial/samsung_tty.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 72 ++++++++++++++++----------------
+ 1 file changed, 36 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index aa5678d03704..a9a75b5b9705 100644
+index a9a75b5b9705..66434eb58db8 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -86,7 +86,7 @@ struct s3c24xx_uart_info {
+@@ -2637,9 +2637,9 @@ static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
+ 		.ufcon		= S3C2410_UFCON_DEFAULT,
+ 	},
+ };
+-#define S3C2410_SERIAL_DRV_DATA ((kernel_ulong_t)&s3c2410_serial_drv_data)
++#define S3C2410_SERIAL_DRV_DATA (&s3c2410_serial_drv_data)
+ #else
+-#define S3C2410_SERIAL_DRV_DATA (kernel_ulong_t)NULL
++#define S3C2410_SERIAL_DRV_DATA NULL
+ #endif
  
- struct s3c24xx_serial_drv_data {
- 	struct s3c24xx_uart_info	info;
--	struct s3c2410_uartcfg		*def_cfg;
-+	struct s3c2410_uartcfg		def_cfg;
- 	unsigned int			fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
+ #ifdef CONFIG_CPU_S3C2412
+@@ -2666,9 +2666,9 @@ static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
+ 		.ufcon		= S3C2410_UFCON_DEFAULT,
+ 	},
+ };
+-#define S3C2412_SERIAL_DRV_DATA ((kernel_ulong_t)&s3c2412_serial_drv_data)
++#define S3C2412_SERIAL_DRV_DATA (&s3c2412_serial_drv_data)
+ #else
+-#define S3C2412_SERIAL_DRV_DATA (kernel_ulong_t)NULL
++#define S3C2412_SERIAL_DRV_DATA NULL
+ #endif
+ 
+ #if defined(CONFIG_CPU_S3C2440) || defined(CONFIG_CPU_S3C2416) || \
+@@ -2697,9 +2697,9 @@ static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
+ 		.ufcon		= S3C2410_UFCON_DEFAULT,
+ 	},
+ };
+-#define S3C2440_SERIAL_DRV_DATA ((kernel_ulong_t)&s3c2440_serial_drv_data)
++#define S3C2440_SERIAL_DRV_DATA (&s3c2440_serial_drv_data)
+ #else
+-#define S3C2440_SERIAL_DRV_DATA (kernel_ulong_t)NULL
++#define S3C2440_SERIAL_DRV_DATA NULL
+ #endif
+ 
+ #if defined(CONFIG_CPU_S3C6400) || defined(CONFIG_CPU_S3C6410)
+@@ -2726,9 +2726,9 @@ static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
+ 		.ufcon		= S3C2410_UFCON_DEFAULT,
+ 	},
+ };
+-#define S3C6400_SERIAL_DRV_DATA ((kernel_ulong_t)&s3c6400_serial_drv_data)
++#define S3C6400_SERIAL_DRV_DATA (&s3c6400_serial_drv_data)
+ #else
+-#define S3C6400_SERIAL_DRV_DATA (kernel_ulong_t)NULL
++#define S3C6400_SERIAL_DRV_DATA NULL
+ #endif
+ 
+ #ifdef CONFIG_CPU_S5PV210
+@@ -2755,9 +2755,9 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
+ 	},
+ 	.fifosize = { 256, 64, 16, 16 },
+ };
+-#define S5PV210_SERIAL_DRV_DATA ((kernel_ulong_t)&s5pv210_serial_drv_data)
++#define S5PV210_SERIAL_DRV_DATA (&s5pv210_serial_drv_data)
+ #else
+-#define S5PV210_SERIAL_DRV_DATA	(kernel_ulong_t)NULL
++#define S5PV210_SERIAL_DRV_DATA	NULL
+ #endif
+ 
+ #if defined(CONFIG_ARCH_EXYNOS)
+@@ -2799,14 +2799,14 @@ static struct s3c24xx_serial_drv_data exynos850_serial_drv_data = {
+ 	.fifosize = { 256, 64, 64, 64 },
  };
  
-@@ -2200,7 +2200,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	ourport->info = &ourport->drv_data->info;
- 	ourport->cfg = (dev_get_platdata(&pdev->dev)) ?
- 			dev_get_platdata(&pdev->dev) :
--			ourport->drv_data->def_cfg;
-+			&ourport->drv_data->def_cfg;
+-#define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos4210_serial_drv_data)
+-#define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos5433_serial_drv_data)
+-#define EXYNOS850_SERIAL_DRV_DATA ((kernel_ulong_t)&exynos850_serial_drv_data)
++#define EXYNOS4210_SERIAL_DRV_DATA (&exynos4210_serial_drv_data)
++#define EXYNOS5433_SERIAL_DRV_DATA (&exynos5433_serial_drv_data)
++#define EXYNOS850_SERIAL_DRV_DATA (&exynos850_serial_drv_data)
  
- 	switch (ourport->info->type) {
- 	case TYPE_S3C24XX:
-@@ -2632,7 +2632,7 @@ static struct s3c24xx_serial_drv_data s3c2410_serial_drv_data = {
- 		.clksel_mask	= S3C2410_UCON_CLKMASK,
- 		.clksel_shift	= S3C2410_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
+ #else
+-#define EXYNOS4210_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
+-#define EXYNOS5433_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
+-#define EXYNOS850_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
++#define EXYNOS4210_SERIAL_DRV_DATA NULL
++#define EXYNOS5433_SERIAL_DRV_DATA NULL
++#define EXYNOS850_SERIAL_DRV_DATA NULL
+ #endif
+ 
+ #ifdef CONFIG_ARCH_APPLE
+@@ -2832,39 +2832,39 @@ static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
  		.ufcon		= S3C2410_UFCON_DEFAULT,
  	},
-@@ -2661,7 +2661,7 @@ static struct s3c24xx_serial_drv_data s3c2412_serial_drv_data = {
- 		.clksel_mask	= S3C2412_UCON_CLKMASK,
- 		.clksel_shift	= S3C2412_UCON_CLKSHIFT,
+ };
+-#define S5L_SERIAL_DRV_DATA ((kernel_ulong_t)&s5l_serial_drv_data)
++#define S5L_SERIAL_DRV_DATA (&s5l_serial_drv_data)
+ #else
+-#define S5L_SERIAL_DRV_DATA ((kernel_ulong_t)NULL)
++#define S5L_SERIAL_DRV_DATA NULL
+ #endif
+ 
+ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
+ 	{
+ 		.name		= "s3c2410-uart",
+-		.driver_data	= S3C2410_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S3C2410_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "s3c2412-uart",
+-		.driver_data	= S3C2412_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S3C2412_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "s3c2440-uart",
+-		.driver_data	= S3C2440_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S3C2440_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "s3c6400-uart",
+-		.driver_data	= S3C6400_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S3C6400_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "s5pv210-uart",
+-		.driver_data	= S5PV210_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S5PV210_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "exynos4210-uart",
+-		.driver_data	= EXYNOS4210_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)EXYNOS4210_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "exynos5433-uart",
+-		.driver_data	= EXYNOS5433_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)EXYNOS5433_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "s5l-uart",
+-		.driver_data	= S5L_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)S5L_SERIAL_DRV_DATA,
+ 	}, {
+ 		.name		= "exynos850-uart",
+-		.driver_data	= EXYNOS850_SERIAL_DRV_DATA,
++		.driver_data	= (kernel_ulong_t)EXYNOS850_SERIAL_DRV_DATA,
  	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2692,7 +2692,7 @@ static struct s3c24xx_serial_drv_data s3c2440_serial_drv_data = {
- 		.clksel_shift	= S3C2412_UCON_CLKSHIFT,
- 		.ucon_mask	= S3C2440_UCON0_DIVMASK,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2721,7 +2721,7 @@ static struct s3c24xx_serial_drv_data s3c6400_serial_drv_data = {
- 		.clksel_mask	= S3C6400_UCON_CLKMASK,
- 		.clksel_shift	= S3C6400_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S3C2410_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
-@@ -2749,7 +2749,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.clksel_mask	= S5PV210_UCON_CLKMASK,
- 		.clksel_shift	= S5PV210_UCON_CLKSHIFT,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= S5PV210_UCON_DEFAULT,
- 		.ufcon		= S5PV210_UFCON_DEFAULT,
- 	},
-@@ -2778,7 +2778,7 @@ static struct s3c24xx_serial_drv_data s5pv210_serial_drv_data = {
- 		.clksel_mask	= 0,				\
- 		.clksel_shift	= 0,				\
- 	},							\
--	.def_cfg = &(struct s3c2410_uartcfg) {			\
-+	.def_cfg = {						\
- 		.ucon		= S5PV210_UCON_DEFAULT,		\
- 		.ufcon		= S5PV210_UFCON_DEFAULT,	\
- 		.has_fracval	= 1,				\
-@@ -2827,7 +2827,7 @@ static struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
- 		.clksel_mask	= 0,
- 		.clksel_shift	= 0,
- 	},
--	.def_cfg = &(struct s3c2410_uartcfg) {
-+	.def_cfg = {
- 		.ucon		= APPLE_S5L_UCON_DEFAULT,
- 		.ufcon		= S3C2410_UFCON_DEFAULT,
- 	},
+ 	{ },
+ };
+@@ -2873,23 +2873,23 @@ MODULE_DEVICE_TABLE(platform, s3c24xx_serial_driver_ids);
+ #ifdef CONFIG_OF
+ static const struct of_device_id s3c24xx_uart_dt_match[] = {
+ 	{ .compatible = "samsung,s3c2410-uart",
+-		.data = (void *)S3C2410_SERIAL_DRV_DATA },
++		.data = S3C2410_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,s3c2412-uart",
+-		.data = (void *)S3C2412_SERIAL_DRV_DATA },
++		.data = S3C2412_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,s3c2440-uart",
+-		.data = (void *)S3C2440_SERIAL_DRV_DATA },
++		.data = S3C2440_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,s3c6400-uart",
+-		.data = (void *)S3C6400_SERIAL_DRV_DATA },
++		.data = S3C6400_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,s5pv210-uart",
+-		.data = (void *)S5PV210_SERIAL_DRV_DATA },
++		.data = S5PV210_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos4210-uart",
+-		.data = (void *)EXYNOS4210_SERIAL_DRV_DATA },
++		.data = EXYNOS4210_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos5433-uart",
+-		.data = (void *)EXYNOS5433_SERIAL_DRV_DATA },
++		.data = EXYNOS5433_SERIAL_DRV_DATA },
+ 	{ .compatible = "apple,s5l-uart",
+-		.data = (void *)S5L_SERIAL_DRV_DATA },
++		.data = S5L_SERIAL_DRV_DATA },
+ 	{ .compatible = "samsung,exynos850-uart",
+-		.data = (void *)EXYNOS850_SERIAL_DRV_DATA },
++		.data = EXYNOS850_SERIAL_DRV_DATA },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
 -- 
 2.32.0
 
