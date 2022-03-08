@@ -2,117 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A26C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 07:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CF2C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 07:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344552AbiCHHUW (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 02:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
+        id S237222AbiCHHnG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 02:43:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344545AbiCHHUU (ORCPT
+        with ESMTP id S1344722AbiCHHnB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 02:20:20 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649F43388C
-        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 23:19:25 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        Tue, 8 Mar 2022 02:43:01 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B7C39838
+        for <linux-serial@vger.kernel.org>; Mon,  7 Mar 2022 23:42:05 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id B5D7C3F7FB
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 07:19:21 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 763C53F7FB
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 07:42:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646723961;
-        bh=g+9Wm5oRRjGP5tzhaSlJoZtPqoXXX/87ipaM5ZiCUrk=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=oOJNBWHqB7z7ggO/jfAuxAfnhpEK9H0QNndfqe365WQOkaBIiaqR4DfUFs/uD4Feb
-         SGa+sm75CeADDeR0QjaSWARulbeVzCn5rQ0nGUVXE6kWMHX3bez6qvoLzHANwgI0tY
-         3RL/Baho6p0+7xSjj3uPg+ije6lgeMJJ354S1axhHrSPrfbf+wjvVVn3YeVoFQIuP2
-         XEiGh8YvlRGG8dyTfY/1PtRMZTHtgpeswLgYmUy0rWLiQXPWnOV/s+Iriy8iPh6MGh
-         /2O79XvOqQuprTw17SxSQksY7MnP8xL6kfN2kAnNf+zcjm9DTSVbnPElAfBTseDCJV
-         2Zt0jWcfNMp2w==
-Received: by mail-ed1-f69.google.com with SMTP id bd4-20020a056402206400b004162b6d8618so4285147edb.19
-        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 23:19:21 -0800 (PST)
+        s=20210705; t=1646725323;
+        bh=Un+PBm7TVpil6wZFl7iMD+ssa0pQW3YglAFfrUmMR/0=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=RiWmPGZf5LU/YP4wUN2kuEJHeIwOkaALEnpMfDDKoQnerY/Mu6WcrgqTO/T9dHTch
+         86P1MG4bO4XhgFRkwn9piJ7kF+Tqzo+SY2JQbUknjAPXH1chndM7aoIDT36kIbnHL0
+         O+aPMRWluszZiWPkUovv7RugGOzCExC0GVcE81wsdr9exRxoKWFlWk8YZITFfVGqaH
+         CNpI78poLuPwM/Dh80eqSi/Q29AGOEkqW7wlpygWybNpWcdDY95G6tbcz6fPGRonXF
+         rnKxPfNP/EpWwFLMLxcoUMooy8JQHkPJLuO/RvMkkNoYTIIz4TPkmYZcWqg++jzvwy
+         0vgK3dlL6OfUg==
+Received: by mail-ej1-f72.google.com with SMTP id l24-20020a170906a41800b006da873d66b6so6925665ejz.3
+        for <linux-serial@vger.kernel.org>; Mon, 07 Mar 2022 23:42:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=g+9Wm5oRRjGP5tzhaSlJoZtPqoXXX/87ipaM5ZiCUrk=;
-        b=mdca72FQjyB5iu/mRVWl6itlv55HxC0x3N0xHjs8zeFK3lIz1W2WDC1fkDuZFipe9L
-         RMLimJA1OMKhhRECZFbEYW0TtzeQz4UJn0zUp1H91QKz1QMdbFRkJKGMRM06XQCjgFij
-         fjRWOUYeddhbP7OPX8mijeMPQfLZ6LVJLePxReIEJ82y6ilJHKUftUBTjhl/xuNbytFf
-         q4mwUUFDPz6IprK8Uj4QblBy3bF2tKdA1nBVf0QYGMGQH7gORnZZI+RBlTlctTgA/3kh
-         7DVaGzG4tZsvS9uWK+OX8hB7mXgG4Tio0ndN2E7Xy41VqcbfFFNXhszYmRmtjd8Z8DYs
-         Yc9Q==
-X-Gm-Message-State: AOAM5336nKIB2DcvjlJQGInD6sbFIdp3cc6eRdAddGnrO80svbh0XelM
-        IlLCP9ruKj0uMZX59uBXDZJ9r4L4UFqTA6sr8rJ1bocyJtOOuhm9uqpx3DUOi54vAnSjJSS2wMu
-        TneKVtxCW6p1W6k5vheQmFN2DX8g+2YnBCzG9fx4ijw==
-X-Received: by 2002:a05:6402:239b:b0:415:a36e:99c0 with SMTP id j27-20020a056402239b00b00415a36e99c0mr14642792eda.283.1646723961434;
-        Mon, 07 Mar 2022 23:19:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzUv5CjFK4sT0ujXvgJ9JrYlSDvoMpSLD55xAvEXQ28a3knkx1LSXXTnQXCyQkWQPQ2iGtZ/w==
-X-Received: by 2002:a05:6402:239b:b0:415:a36e:99c0 with SMTP id j27-20020a056402239b00b00415a36e99c0mr14642777eda.283.1646723961273;
-        Mon, 07 Mar 2022 23:19:21 -0800 (PST)
-Received: from [192.168.0.143] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id v5-20020a50c405000000b004161123bf7asm5244507edf.67.2022.03.07.23.19.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 23:19:20 -0800 (PST)
-Message-ID: <58418443-af3a-c799-624d-76fa1decc4a5@canonical.com>
-Date:   Tue, 8 Mar 2022 08:19:19 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 7/7] tty: serial: samsung: simplify getting OF match
- data
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220307080810.53847-1-krzysztof.kozlowski@canonical.com>
- <20220307080925.54131-6-krzysztof.kozlowski@canonical.com>
- <CAHp75VdN3MDDEjEoLAudtRW5pgHvfgP7Zt9Hv8OOhfZbHN9hpA@mail.gmail.com>
+        bh=Un+PBm7TVpil6wZFl7iMD+ssa0pQW3YglAFfrUmMR/0=;
+        b=pTt4yDKmABHduoFE+dZjwIik36fgU5CoHukkkxuVwEDDKLBqK8lWE6Jbxdmaho5kDF
+         yp2rUP7TtyRW0xa1LNYE+9TsFEPILXM+GDbO9D2fdLQOI4fTJxiAzn/w8rp4QAocGDlh
+         1LkDR3IFlfkGT2u8dIhPFKozWh0kobI0tW2ni3C2nJ5CNmCih5RqYKtqf5iPkCILoqW1
+         oG61lhm2ZA1n1FShoOZh9Eidwl0zv1RGhOtPQhclFxTrn/y3Ca16RfIM0E6dXiBP1PuP
+         L6ISApi/Y3PJo1cnuwcY12GxdV0ixWhcqmNr33WySqogemj/86olN010sXtWEHvkzmRq
+         D27w==
+X-Gm-Message-State: AOAM530nBfZTQpzhxp0znSbugJvkeTfFL8OoFYUZxOmK8nkCW5Y1mQVr
+        K/K+iN1RzLnJXGJnsp+Rw/Tg1gWWjd1d5nuGvWyRKQQiRqiQWrr/o4+lt5oRSG5vn1aD+KO1gTa
+        CLhuwJ+0fuNTtLvis9/0MzIf1YNE5L6bK5gQrbKr0kQ==
+X-Received: by 2002:a50:d498:0:b0:416:2b00:532 with SMTP id s24-20020a50d498000000b004162b000532mr13081365edi.396.1646725320735;
+        Mon, 07 Mar 2022 23:42:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzjhCqo9HH0cK+RI8/E89ekTwyLjLyg0tpT17qz7uVBuNxty/NMegrabspJHC1kBpHoMxQrTQ==
+X-Received: by 2002:a50:d498:0:b0:416:2b00:532 with SMTP id s24-20020a50d498000000b004162b000532mr13081352edi.396.1646725320534;
+        Mon, 07 Mar 2022 23:42:00 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id d4-20020a1709067a0400b006d6e3ca9f71sm5565533ejo.198.2022.03.07.23.41.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 23:41:59 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <CAHp75VdN3MDDEjEoLAudtRW5pgHvfgP7Zt9Hv8OOhfZbHN9hpA@mail.gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_tegra: mark acpi_device_id as unused with !ACPI
+Date:   Tue,  8 Mar 2022 08:41:57 +0100
+Message-Id: <20220308074157.113568-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07/03/2022 21:24, Andy Shevchenko wrote:
-> On Mon, Mar 7, 2022 at 11:20 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
->>
->> Simplify the code with of_device_get_match_data().
-> 
-> You may get rid of ugly ifdeffery as well.
-> 
-> ...
-> 
->>  static inline const struct s3c24xx_serial_drv_data *
->>  s3c24xx_get_driver_data(struct platform_device *pdev)
->>  {
->>  #ifdef CONFIG_OF
->> -       if (pdev->dev.of_node) {
->> -               const struct of_device_id *match;
->> -
->> -               match = of_match_node(s3c24xx_uart_dt_match, pdev->dev.of_node);
->> -               return (struct s3c24xx_serial_drv_data *)match->data;
->> -       }
-> 
->> +       if (pdev->dev.of_node)
-> 
-> I believe it's never true when CONFIG_OF=n,
+The driver's acpi_device_id table is referenced via ACPI_PTR() so it
+will be unused for !CONFIG_ACPI builds:
 
-Right, I can use dev_of_node() helper for that purpose as well. Thanks!
+  drivers/tty/serial/8250/8250_tegra.c:178:36:
+    warning: ‘tegra_uart_acpi_match’ defined but not used [-Wunused-const-variable=]
 
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/tty/serial/8250/8250_tegra.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+index e13ae18b0713..e7cddeec9d8e 100644
+--- a/drivers/tty/serial/8250/8250_tegra.c
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -175,7 +175,7 @@ static const struct of_device_id tegra_uart_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, tegra_uart_of_match);
+ 
+-static const struct acpi_device_id tegra_uart_acpi_match[] = {
++static const struct acpi_device_id tegra_uart_acpi_match[] __maybe_unused = {
+ 	{ "NVDA0100", 0 },
+ 	{ },
+ };
+-- 
+2.32.0
+
