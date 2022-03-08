@@ -2,62 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4086DC433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557C1C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344833AbiCHIKr (ORCPT
+        id S1344847AbiCHILE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        Tue, 8 Mar 2022 03:11:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344806AbiCHIK3 (ORCPT
+        with ESMTP id S1344821AbiCHIKh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:10:29 -0500
+        Tue, 8 Mar 2022 03:10:37 -0500
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1771A3EB95
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:32 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FCF3EBA8
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:09:33 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EFB1A3F61B
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:30 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4F7923F61D
+        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:09:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646726970;
-        bh=Dr4tgo26oKDD7/cFmU+MgZtFQEJoCk73ZvgNX0zaNnk=;
+        s=20210705; t=1646726972;
+        bh=YZ43hLE0duJi88wrK3ybDZb8cX9SjP237BkyHbKYO34=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=d0BvjM+h5s2IiTMR9GHZh9HQp7ZL+DxL0OEbCJZOQ2dH5k4Kt3uIwSIseMS+mkjui
-         ZFKLsQ8Gc77r0Wz9fnFVsAZuqxjs2U/vwVVgkhEWvY3BfU0/CYE5ukWf2djwu06Lhl
-         BV2GVwYRuH+aLSsVY4VIkFD0NlOv2Tq08OVvdJUtykdEZ+Bf3xEMPRyzgF7FY08TzV
-         /5MPrPrXoe25X80xaVDgUprL1mpWfE8j7YqKld3yPKcSfdtUedRF/JdbORy8HpBE/n
-         QLnpfMPg0eA9WvwK/SPuNXHpIML52HIY1xh5voZTXSRC/sObGOdy3EeoIyFQuLjRfV
-         8skUYkeuMNarQ==
-Received: by mail-ed1-f69.google.com with SMTP id r8-20020aa7d588000000b00416438ed9a2so3676543edq.11
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:30 -0800 (PST)
+        b=pDDkeXEo8kI2Eol4WTMcXtArxqTPkn90ZVA6sSq3Lhstfvmok0q7b8QaMqob6ippI
+         GeWhc7q43OUEFC0buXfFBUWq833OfQKDJwtifZV1OBi5WClwqUoGIh8q/dvob2joTC
+         PF/g1y/wVXa/a2xrDHuO1WmejP0t7K1Uvys0FLooAOwapbQp5bjB70vmkR+ZTQ70i8
+         xDs5l6mwT26ue1g/svXeZLgKooi0mXNOf8Ohsv7vI9wUFd7cKxvDfWaZXetM7Z38U6
+         StPeJFn2u3QQrdMTXeDVTbWsQiZD7DOZma7MZBSNCDBVcIZB1LX9i0q0TLVsUyUD/p
+         +C/9ObqWceQ8Q==
+Received: by mail-ed1-f70.google.com with SMTP id b9-20020aa7d489000000b0041669cd2cbfso968262edr.16
+        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 00:09:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Dr4tgo26oKDD7/cFmU+MgZtFQEJoCk73ZvgNX0zaNnk=;
-        b=sT9cRZ64lihzuySjto/TLg6lBpKsJzNb/QQkl++rVNnjzGSwSIeqR/e/+Dty8PqXzJ
-         72skwWNMahKAkm7MtHZyZdM8Eh8CdxieIXd/rOXnr9XZDmVYR5/j5fQkGJiYkbm/JDnF
-         tI+ZWAZifpcE4M5JVX7ayyeKa+hbSh8+9asF/tzt2WfyqdgjIxgamUiPlOhEcjdyJWrf
-         ZP09moCKMTnCB553XUUAPX98CajrviCOps5MjICgGvWZnloaBeP0vpdVfd9MtBWXcY3Z
-         uY54m4UiQzzeLBDIl+SRs2h903erqTT3oDcz9Sme/j9IXBHrOhGj5FGVrVg6ef2FHZJC
-         Be7A==
-X-Gm-Message-State: AOAM531WVq/kZMcSnwJSE4xBzpmWli2d2AKhTHQ9mwMG2pVsGluMt92D
-        zydpyXRUtH0GRv5j5Bs4q4OJboux81USXA0JxQIJaGnE4JPNAWs4XClOe6o5MZwjbbWDM5UHpn2
-        4Kz3OkqG/9g5TpxEh6WBUPVHJ94aRS7xBTnK5izQlCg==
-X-Received: by 2002:a17:906:3e90:b0:6b6:829b:577c with SMTP id a16-20020a1709063e9000b006b6829b577cmr12689311ejj.711.1646726970627;
-        Tue, 08 Mar 2022 00:09:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyvyuR3mb0kzIzmDG7xL2Oq1O5GTZ5RmEqTaJMl1TSRoKLAqTby19CSrJRxPUdjCfrfwqyzaw==
-X-Received: by 2002:a17:906:3e90:b0:6b6:829b:577c with SMTP id a16-20020a1709063e9000b006b6829b577cmr12689291ejj.711.1646726970318;
-        Tue, 08 Mar 2022 00:09:30 -0800 (PST)
+        bh=YZ43hLE0duJi88wrK3ybDZb8cX9SjP237BkyHbKYO34=;
+        b=LvQVoz8nr3Xr073MCusYKBUAunpphhuVYzXbsB7YRfC1e4ewCD7PNogCnv67L+hVh4
+         6DTxOIiwu1Gox9JUOODwKQxGVIef/1l1iUFpOVUhwpcTBvilDqggl+KMQOqGx4P/wL9w
+         GR1x+4Uv8rYNimAyPLkh8eo96slmAv30boBGgIBmjFo67Vn3R5HnuohBrQurHMWSkqGh
+         uIg8KoLX7kON9nqc8rZzYcR4KV7QttAsW/J2dq42yqKzM13qEFWWlwe+HuPVb9CVp1Au
+         W4o4sux/7ttqT66GxBxvJDz6yZ7CAvvS+bdsG/jeqQRBlfYdGLaEVGEfDCxUw5ggO5FE
+         cYAw==
+X-Gm-Message-State: AOAM533k9YdtVnAxUNiWAuqpyBnDiTFfQsKsnRAIOjw1KnS53eWuZwWA
+        UENAcT2G+Wmt5z78QdrscG1gsYXIVDv43RszJneZb0LKZRrNtjzCkABw3finuI+N9JXli53YK9n
+        ZrUwcqD3oS978qhUWAQm0uGxGHaRCFFGCXP8RQcsNGw==
+X-Received: by 2002:a17:906:e08c:b0:6bb:6f89:7d59 with SMTP id gh12-20020a170906e08c00b006bb6f897d59mr12109647ejb.85.1646726971877;
+        Tue, 08 Mar 2022 00:09:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyxGJcW6u1S98RfCw05htwWFvnVS+wlZNMJiHq0b+kovRBJRvSyL9xFWYDEk4pestC9EEEWVA==
+X-Received: by 2002:a17:906:e08c:b0:6bb:6f89:7d59 with SMTP id gh12-20020a170906e08c00b006bb6f897d59mr12109636ejb.85.1646726971666;
+        Tue, 08 Mar 2022 00:09:31 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.29
+        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7385697edd.57.2022.03.08.00.09.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 00:09:29 -0800 (PST)
+        Tue, 08 Mar 2022 00:09:31 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
@@ -67,9 +67,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v3 6/8] tty: serial: samsung: constify s3c24xx_serial_drv_data members
-Date:   Tue,  8 Mar 2022 09:09:17 +0100
-Message-Id: <20220308080919.152715-7-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v3 7/8] tty: serial: samsung: constify variables and pointers
+Date:   Tue,  8 Mar 2022 09:09:18 +0100
+Message-Id: <20220308080919.152715-8-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
 References: <20220308080919.152715-1-krzysztof.kozlowski@canonical.com>
@@ -79,35 +79,196 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver data (struct s3c24xx_serial_drv_data) is never modified, so
-also its members can be made const.  Except code style this has no
-impact because the structure itself is always a const.
+Constify variables, data pointed by several pointers and
+"udivslot_table" static array.  This makes code a bit safer.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 Tested-by: Alim Akhtar <alim.akhtar@samsung.com>
 ---
- drivers/tty/serial/samsung_tty.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 46 ++++++++++++++++----------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 7025306f76b7..b9783d8fb440 100644
+index b9783d8fb440..3ffae912217c 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -85,9 +85,9 @@ struct s3c24xx_uart_info {
+@@ -164,7 +164,7 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport);
+ #define portaddrl(port, reg) \
+ 	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+ 
+-static u32 rd_reg(struct uart_port *port, u32 reg)
++static u32 rd_reg(const struct uart_port *port, u32 reg)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -179,7 +179,7 @@ static u32 rd_reg(struct uart_port *port, u32 reg)
+ 
+ #define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+ 
+-static void wr_reg(struct uart_port *port, u32 reg, u32 val)
++static void wr_reg(const struct uart_port *port, u32 reg, u32 val)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -195,7 +195,7 @@ static void wr_reg(struct uart_port *port, u32 reg, u32 val)
+ 
+ /* Byte-order aware bit setting/clearing functions. */
+ 
+-static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
++static inline void s3c24xx_set_bit(const struct uart_port *port, int idx,
+ 				   unsigned int reg)
+ {
+ 	unsigned long flags;
+@@ -208,7 +208,7 @@ static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
+ 	local_irq_restore(flags);
+ }
+ 
+-static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
++static inline void s3c24xx_clear_bit(const struct uart_port *port, int idx,
+ 				     unsigned int reg)
+ {
+ 	unsigned long flags;
+@@ -221,19 +221,19 @@ static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
+ 	local_irq_restore(flags);
+ }
+ 
+-static inline struct s3c24xx_uart_port *to_ourport(const struct uart_port *port)
++static inline struct s3c24xx_uart_port *to_ourport(struct uart_port *port)
+ {
+ 	return container_of(port, struct s3c24xx_uart_port, port);
+ }
+ 
+ /* translate a port to the device name */
+ 
+-static inline const char *s3c24xx_serial_portname(struct uart_port *port)
++static inline const char *s3c24xx_serial_portname(const struct uart_port *port)
+ {
+ 	return to_platform_device(port->dev)->name;
+ }
+ 
+-static int s3c24xx_serial_txempty_nofifo(struct uart_port *port)
++static int s3c24xx_serial_txempty_nofifo(const struct uart_port *port)
+ {
+ 	return rd_regl(port, S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXE;
+ }
+@@ -358,7 +358,7 @@ static void s3c24xx_serial_tx_dma_complete(void *args)
+ 
+ static void enable_tx_dma(struct s3c24xx_uart_port *ourport)
+ {
+-	struct uart_port *port = &ourport->port;
++	const struct uart_port *port = &ourport->port;
+ 	u32 ucon;
+ 
+ 	/* Mask Tx interrupt */
+@@ -387,7 +387,7 @@ static void enable_tx_dma(struct s3c24xx_uart_port *ourport)
+ 
+ static void enable_tx_pio(struct s3c24xx_uart_port *ourport)
+ {
+-	struct uart_port *port = &ourport->port;
++	const struct uart_port *port = &ourport->port;
+ 	u32 ucon, ufcon;
+ 
+ 	/* Set ufcon txtrig */
+@@ -580,9 +580,9 @@ static inline const struct s3c24xx_uart_info
+ }
+ 
+ static inline const struct s3c2410_uartcfg
+-	*s3c24xx_port_to_cfg(struct uart_port *port)
++	*s3c24xx_port_to_cfg(const struct uart_port *port)
+ {
+-	struct s3c24xx_uart_port *ourport;
++	const struct s3c24xx_uart_port *ourport;
+ 
+ 	if (port->dev == NULL)
+ 		return NULL;
+@@ -591,7 +591,7 @@ static inline const struct s3c2410_uartcfg
+ 	return ourport->cfg;
+ }
+ 
+-static int s3c24xx_serial_rx_fifocnt(struct s3c24xx_uart_port *ourport,
++static int s3c24xx_serial_rx_fifocnt(const struct s3c24xx_uart_port *ourport,
+ 				     unsigned long ufstat)
+ {
+ 	const struct s3c24xx_uart_info *info = ourport->info;
+@@ -947,8 +947,8 @@ static irqreturn_t s3c24xx_serial_tx_irq(int irq, void *id)
+ /* interrupt handler for s3c64xx and later SoC's.*/
+ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ {
+-	struct s3c24xx_uart_port *ourport = id;
+-	struct uart_port *port = &ourport->port;
++	const struct s3c24xx_uart_port *ourport = id;
++	const struct uart_port *port = &ourport->port;
+ 	unsigned int pend = rd_regl(port, S3C64XX_UINTP);
+ 	irqreturn_t ret = IRQ_HANDLED;
+ 
+@@ -966,8 +966,8 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
+ /* interrupt handler for Apple SoC's.*/
+ static irqreturn_t apple_serial_handle_irq(int irq, void *id)
+ {
+-	struct s3c24xx_uart_port *ourport = id;
+-	struct uart_port *port = &ourport->port;
++	const struct s3c24xx_uart_port *ourport = id;
++	const struct uart_port *port = &ourport->port;
+ 	unsigned int pend = rd_regl(port, S3C2410_UTRSTAT);
+ 	irqreturn_t ret = IRQ_NONE;
+ 
+@@ -1499,7 +1499,7 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+  * This table takes the fractional value of the baud divisor and gives
+  * the recommended setting for the UDIVSLOT register.
+  */
+-static u16 udivslot_table[16] = {
++static const u16 udivslot_table[16] = {
+ 	[0] = 0x0000,
+ 	[1] = 0x0080,
+ 	[2] = 0x0808,
+@@ -1675,7 +1675,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 
+ static const char *s3c24xx_serial_type(struct uart_port *port)
+ {
+-	struct s3c24xx_uart_port *ourport = to_ourport(port);
++	const struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 
+ 	switch (ourport->info->type) {
+ 	case TYPE_S3C24XX:
+@@ -2450,7 +2450,7 @@ s3c24xx_port_configured(unsigned int ucon)
+ 
+ static int s3c24xx_serial_get_poll_char(struct uart_port *port)
+ {
+-	struct s3c24xx_uart_port *ourport = to_ourport(port);
++	const struct s3c24xx_uart_port *ourport = to_ourport(port);
+ 	unsigned int ufstat;
+ 
+ 	ufstat = rd_regl(port, S3C2410_UFSTAT);
+@@ -2935,7 +2935,7 @@ module_exit(samsung_serial_exit);
+  * Early console.
+  */
+ 
+-static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
++static void wr_reg_barrier(const struct uart_port *port, u32 reg, u32 val)
+ {
+ 	switch (port->iotype) {
+ 	case UPIO_MEM:
+@@ -2951,15 +2951,15 @@ struct samsung_early_console_data {
+ 	u32 txfull_mask;
  };
  
- struct s3c24xx_serial_drv_data {
--	struct s3c24xx_uart_info	info;
--	struct s3c2410_uartcfg		def_cfg;
--	unsigned int			fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
-+	const struct s3c24xx_uart_info	info;
-+	const struct s3c2410_uartcfg	def_cfg;
-+	const unsigned int		fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
- };
+-static void samsung_early_busyuart(struct uart_port *port)
++static void samsung_early_busyuart(const struct uart_port *port)
+ {
+ 	while (!(readl(port->membase + S3C2410_UTRSTAT) & S3C2410_UTRSTAT_TXFE))
+ 		;
+ }
  
- struct s3c24xx_uart_dma {
+-static void samsung_early_busyuart_fifo(struct uart_port *port)
++static void samsung_early_busyuart_fifo(const struct uart_port *port)
+ {
+-	struct samsung_early_console_data *data = port->private_data;
++	const struct samsung_early_console_data *data = port->private_data;
+ 
+ 	while (readl(port->membase + S3C2410_UFSTAT) & data->txfull_mask)
+ 		;
 -- 
 2.32.0
 
