@@ -2,147 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3316C433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 16:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9256C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 16:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245571AbiCHQFj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:05:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
+        id S244556AbiCHQZR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 11:25:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244483AbiCHQFh (ORCPT
+        with ESMTP id S1348337AbiCHQZR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:05:37 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C60473BF
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:04:40 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id g20so25137082edw.6
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 08:04:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wPdkQphM15Eo5SdM94J/CTEkuLTXrgrE/iujWZfOFDM=;
-        b=aEkBiyYVtzRXNJrAwcqq5Cwk5JilhiTWgJi0SCpBkYO4Fiat+SModSUH3HKB3MwIVt
-         M4do+kkcYvc+Hi/On7MZ173vl9tapETKN5+r8i8Q1TTXLM8AxNSBVbDLs1z4eeGhOmfB
-         wWL4ES7pxhENQhDd4uNDCD8b/YcftTftn6DYs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wPdkQphM15Eo5SdM94J/CTEkuLTXrgrE/iujWZfOFDM=;
-        b=AP4rsrRIry2te12XW2Zvvb4b7LOUsw4VYQ8K+YLibiAx6fgV77lo+28BYBZDdhVhRq
-         xfSwQFeceK8E+L4CDM36tSWwzDUFrYbhtxd0cvgJHtAf7akmBfy/6bWsQwfxeaK8kBFc
-         XpDLZjfDMsNWlthZ3YpFtVi/ENLkg8Yw+NYm7wivK0aaKejTlGWrUhyf100pPSsg1wr9
-         SX6Q7+vGfpCsPVLWDv1nIc5sHqv3/7ul37QI/tOGOcCAgFRI0KYtdK87UsDfkvww/929
-         f/9Sb4+DitDeMbTD9jlYtLoupZqwbh19Mz4wIA00D5JE1aGW7fhph0MJmZks2i+Mo9r0
-         oESQ==
-X-Gm-Message-State: AOAM532NLUReALpkMEdNJqGnV1V62WREBA2HC6feqtYo2ifBvMki2NNl
-        fkbGeq1MnJJjU1J/vbomstNrUktSr1abx3bk
-X-Google-Smtp-Source: ABdhPJyXyn3L09W60lh/IJIWydxpgiCT38PTj6RUhGFzRFiZW+l2sQ9ZNSKlPAJaQUDD1l9f3wfntA==
-X-Received: by 2002:a50:fd8e:0:b0:415:fe34:f03 with SMTP id o14-20020a50fd8e000000b00415fe340f03mr16775935edt.310.1646755478219;
-        Tue, 08 Mar 2022 08:04:38 -0800 (PST)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id o7-20020a17090608c700b006cef23cf158sm6047747eje.175.2022.03.08.08.04.36
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 08:04:36 -0800 (PST)
-Received: by mail-wr1-f41.google.com with SMTP id k24so19841572wrd.7
-        for <linux-serial@vger.kernel.org>; Tue, 08 Mar 2022 08:04:36 -0800 (PST)
-X-Received: by 2002:a5d:490f:0:b0:1f0:6791:a215 with SMTP id
- x15-20020a5d490f000000b001f06791a215mr13078257wrq.422.1646755475774; Tue, 08
- Mar 2022 08:04:35 -0800 (PST)
+        Tue, 8 Mar 2022 11:25:17 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7F44F9E6;
+        Tue,  8 Mar 2022 08:24:19 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2E0065C0131;
+        Tue,  8 Mar 2022 11:24:19 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 08 Mar 2022 11:24:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=QiZzwEJwAsqLkGpP4XLt1jLF2k2PI6EZcrR+RR
+        Jgmiw=; b=M4CAjyA4pm6JW0W/znqqC+gWsxAnPWz/iYfK1clA/ajl837M4BLw76
+        Z3lyuVUVAueOzrrG/oVx4Rj7ypu24JeH7uWmnFGGkE7xFsf8JLhsN8Ib0vapTjDv
+        5/mPq6PWqzV8p2CUcwiT6vf20Rnu3djGo8M89DqLVJZoTt0pjgG/DpXbzx6Jr1AX
+        GHS2B1y9Yn6Se0+3BG1QveqQ2sTIifMPL5VQ90vTgYdawTyDIMUSp3TD0ITS63gp
+        fYVmq7cLHPPe3XjXYN2X7paq92FkOPopi917qkLab9/4G+47hehX7mkiQqwyrZ6j
+        bi6DIII1klI+BxqYwAg2sg7fWtbXz+4g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=QiZzwEJwAsqLkGpP4
+        XLt1jLF2k2PI6EZcrR+RRJgmiw=; b=e7OtT2/4WpcMSH5Bm0MwUyrcIm6EzSOSz
+        lVlSdOY+9egEcGT/xMbHvMQERP/3/wAWTU1j1298SNhhfS8mNOzZnunx9EJ+XUPd
+        tQISGKIWySDX4rXYux1jOw+s/Xi9ZGgb1gZbJ+isHEqZ4ohrL6m8DGznAX0zJ4Fa
+        Q1wB9GmtfF6+jcuArerDiefWIdz4vnoNKoOyynmrHD0Dzc5oYuFDzY5dbxncmFUu
+        FVOHBuTewl+Gx3C38P3QQDj7N+Zb5GpE2EdetTL+Aul2u0jAoFUI5lBXgUMzG0BE
+        syuREor9Up+XzAEidLo7M58P8F1cAW/Prouanx6p+leSqNjXxkgog==
+X-ME-Sender: <xms:MoMnYjbqBQQ2exdi4X2-uGRhfZJEw1MLiGpdU1qRIHXoQ-C1pnMjDg>
+    <xme:MoMnYiZZrwyRFQraVicdj0MCQtgemkcllu_MqU_pKRqPhDlKQT5dYQhUjFKAbk_ev
+    PhkwkWuNemmrslYmWU>
+X-ME-Received: <xmr:MoMnYl9xKQtD1Z6UreYSS3_a74rggNjjeWAPt0lfcleb8BOgRZ3-MV2Fhj3Gx47ANTEdusFnYZbpA_tDeZ7SbBtHLUIXCupGPgLfKF0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudduiedgkeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:MoMnYpoL-CYL5Lt70meY0YsoUeH5s7I9KFBm-ktzqthGGPf3iuec1w>
+    <xmx:MoMnYuoQRexcfAlYC1YzqFzuoE-1Kw25PITCYneaLuXdrZ1hD4qMeg>
+    <xmx:MoMnYvQLOat0fZLE6vh5kStxHyD1yZ6rc0y-NMzlngG2pXZxlbhG5Q>
+    <xmx:M4MnYl2RBd8DG0o5RLDp4SwvJeb5RPeykirmE6wEh1B6Uc9Yh0mtcA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 8 Mar 2022 11:24:18 -0500 (EST)
+Date:   Tue, 8 Mar 2022 17:24:16 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Deadlock at reboot?
+Message-ID: <20220308162416.xnrlys6utylzb3uz@houat>
+References: <20220304104942.lypg3wvlgk2ywi2t@houat>
+ <YiIfCDjOIBoM+KlB@kroah.com>
 MIME-Version: 1.0
-References: <20220308033241.22099-1-rdunlap@infradead.org>
-In-Reply-To: <20220308033241.22099-1-rdunlap@infradead.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 8 Mar 2022 08:04:23 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=W90Hd-baPzurraEaDUGNOCxb8FLUysHKOQg2frMuZRAQ@mail.gmail.com>
-Message-ID: <CAD=FV=W90Hd-baPzurraEaDUGNOCxb8FLUysHKOQg2frMuZRAQ@mail.gmail.com>
-Subject: Re: [PATCH] kgdboc: fix return value of __setup handler
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Laura Abbott <labbott@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7ofuk2vyimjb5u44"
+Content-Disposition: inline
+In-Reply-To: <YiIfCDjOIBoM+KlB@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+
+--7ofuk2vyimjb5u44
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
 Hi,
 
-On Mon, Mar 7, 2022 at 7:32 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> __setup() handlers should return 1 to indicate that the boot option
-> has been handled. A return of 0 causes the boot option/value to be
-> listed as an Unknown kernel parameter and added to init's (limited)
-> environment strings. So return 1 from kgdboc_option_setup().
+On Fri, Mar 04, 2022 at 03:15:36PM +0100, Greg Kroah-Hartman wrote:
+> On Fri, Mar 04, 2022 at 11:49:42AM +0100, Maxime Ripard wrote:
+> > Hi,
+> >=20
+> > I'm not entirely sure who I'm supposed to send this to, so apologies if
+> > I forgot somebody.
+> >=20
+> > I've had an issue when rebooting on and off for a couple of monthes, but
+> > I got a stacktrace from lockdep today:
+> >=20
+> > [71721.872904] reboot: Restarting system
+> > [71721.876743] ------------[ cut here ]------------
+> > [71721.877081]
+> > [71721.877084] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > [71721.877086] WARNING: possible circular locking dependency detected
+> > [71721.877088] 5.17.0-rc6-next-20220303-v8+ #10 Not tainted
+>=20
+> This is linux-next, does this also happen on Linus's tree?
+>=20
+> If not, can you bisect to find the offending commit?
 
-This took me about 20 minutes to trace through the code to confirm,
-but it appears you're correct. It's pretty twisted that early_param()
-and __setup(), both of which add things to the same list, work exactly
-opposite here. :( Any chance I could convince you to:
+So it turns out the reboot stuck issue was a bootloader issue that
+wouldn't detect the ethernet phy after a patch was introduced in 5.16.
 
-1. Add a comment before the definition of __setup_param() explaining
-that 0 means error and 1 means no error. There's a comment next to
-early_param() that _implies_ that setup is the opposite(), but it'd be
-nice to see documentation of __setup(). I know __setup() is supposed
-to be "only for core code", but still seems like we could document it.
+So nothing to do with the lockdep stacktrace, really. If there's indeed
+a locking issue, it doesn't seem to affect my system.
 
-2. Add something to your commit message helping someone find the place
-where the return value is checked. Basically just mention
-obsolete_checksetup() to give people a hint.
+Maxime
 
+--7ofuk2vyimjb5u44
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
->   kgdboc=kbd kgdbts=", will be passed to user space.
->
->  Run /sbin/init as init process
->    with arguments:
->      /sbin/init
->    with environment:
->      HOME=/
->      TERM=linux
->      BOOT_IMAGE=/boot/bzImage-517rc7
->      kgdboc=kbd
->      kgdbts=
->
-> Fixes: 1cd25cbb2fed ("kgdboc: Fix warning with module build")
+-----BEGIN PGP SIGNATURE-----
 
-Are you certain about this "Fixes" line? That commit was just code
-motion to move the code inside the #ifdef. It sure looks like it was
-broken even before this.
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYieDMAAKCRDj7w1vZxhR
+xVjfAQC5pD7MyFRlK/jhH1bEioWD6ziYy5KSW+Zj/OG2mDN2sgEA3Ed+trkaED06
+H7lSOp1zQo9aFaSBq6eSyNhep2RV/AE=
+=u/9r
+-----END PGP SIGNATURE-----
 
-
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-> Cc: Laura Abbott <labbott@redhat.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: kgdb-bugreport@lists.sourceforge.net
-> Cc: Jason Wessel <jason.wessel@windriver.com>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: linux-serial@vger.kernel.org
-> ---
->  drivers/tty/serial/kgdboc.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> --- lnx-517-rc7.orig/drivers/tty/serial/kgdboc.c
-> +++ lnx-517-rc7/drivers/tty/serial/kgdboc.c
-> @@ -403,16 +403,16 @@ static int kgdboc_option_setup(char *opt
->  {
->         if (!opt) {
->                 pr_err("config string not provided\n");
-> -               return -EINVAL;
-> +               return 1;
-
-Shouldn't it return 0 in the error cases? If __setup() functions are
-supposed to return "1" no matter what then what was the purpose of
-having a return value in the first place?
+--7ofuk2vyimjb5u44--
