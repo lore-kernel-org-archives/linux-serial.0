@@ -2,57 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A3BC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 08:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41766C4332F
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 11:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345128AbiCHIty (ORCPT
+        id S1346301AbiCHLLN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 03:49:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        Tue, 8 Mar 2022 06:11:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345127AbiCHItx (ORCPT
+        with ESMTP id S1346300AbiCHLLG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 03:49:53 -0500
-Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475E37A34
-        for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 00:48:56 -0800 (PST)
-Received: by mail.olerise.pl (Postfix, from userid 1001)
-        id 51E1D44432; Tue,  8 Mar 2022 09:46:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
-        t=1646729227; bh=ZNYiuZLXlxCdAPtstEG/gwJieB5RBwA/cHj1SZ3Mpl0=;
-        h=Date:From:To:Subject:From;
-        b=QErAmHprvm66SN5T4nynUoRCNI+NZsP2qA4fSaPo7lfjNOwGzbpJyukjHG9WWejzl
-         AX+qbA5sp5GddqUbohkQnAFShK8I6wqEQ6dLKlIMRxkzcAbkr/7lH+RWc8YKGxECZt
-         4/uBEFCezF6T4qMZS4vrk6afFnatzGdpsgRCg+lW2g87itYufm8uPMpwTEA0Es+VP2
-         n2sboTmJjvlHTywKlcft79JdvyOa9DclWrr3uQlOl/7p/WwHjBuQ0aCGXwMw/8lWew
-         daOodaUssmkB7pCV5hThMbuWpK8BY7q2OSOxSwxUZQB6MILP51vjv6nZfNmn4K83Y5
-         riI0YwKd755Jg==
-Received: by mail.olerise.pl for <linux-serial@vger.kernel.org>; Tue,  8 Mar 2022 08:45:41 GMT
-Message-ID: <20220308084500-0.1.26.mshp.0.3ief5bwf9c@olerise.pl>
-Date:   Tue,  8 Mar 2022 08:45:41 GMT
-From:   =?UTF-8?Q? "Miko=C5=82aj_Rudzik" ?= <mikolaj.rudzik@olerise.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
-X-Mailer: mail.olerise.pl
+        Tue, 8 Mar 2022 06:11:06 -0500
+X-Greylist: delayed 550 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 03:10:03 PST
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E3F457B4;
+        Tue,  8 Mar 2022 03:10:03 -0800 (PST)
+Received: from localhost.localdomain (unknown [10.101.195.16])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C59A93F650;
+        Tue,  8 Mar 2022 11:00:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646737252;
+        bh=GaYM2Dx1zt1949KCl9Cue2trqHMpQ7C/c/kIfuWSIfk=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=AvBjFgdO+OxZL5Hub4sP30zlQCBtQweyeNNT4fYQjpoWtXdc0C0pl+FtDXuhaNiog
+         h3dJXxci9LhTWcxBZfh3Ts1HjXITCFQWIzaJXOWkEUZv3bCL1IIBfe0JEM05wp0bqo
+         3GIRtsPI2QoCHZmukThrxDeCyIM+oO08cGQxMnR9H0G1LwdIW0P7w7x6HLpNzlNd01
+         G9CiRr/yahOuaiRGaqhlcNPZoR3QiSCyQPcZp/aFHmqjB1Q7CG5IEOoZ3WSKI35+4o
+         IpJOYCRSGHHI95kvRq8p29AGfAKlGHPmvN3fh5VfNN/MscBwiERLLDhGa6YVq8R/HI
+         DaBU2gbq5zR/Q==
+From:   Hui Wang <hui.wang@canonical.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     stable@vger.kernel.org, jringle@gridpoint.com,
+        u.kleine-koenig@pengutronix.de, hui.wang@canonical.com
+Subject: [PATCH] serial: sc16is7xx: Clear RS485 bits in the shutdown
+Date:   Tue,  8 Mar 2022 19:00:42 +0800
+Message-Id: <20220308110042.108451-1-hui.wang@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+We tested RS485 function on an EVB which has SC16IS752, after
+finishing the test, we started the RS232 function test, but found the
+RTS is still working in the RS485 mode.
 
-chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
-skania nowych zlece=C5=84 ze strony www.
+That is because both startup and shutdown call port_update() to set
+the EFCR_REG, this will not clear the RS485 bits once the bits are set
+in the reconf_rs485(). To fix it, clear the RS485 bits in shutdown.
 
-Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
-, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
-=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
-jonowania strony w Google.
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 3a6c68e19c80..6adc51d9ecf3 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1055,10 +1055,12 @@ static void sc16is7xx_shutdown(struct uart_port *port)
+ 
+ 	/* Disable all interrupts */
+ 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, 0);
+-	/* Disable TX/RX */
++	/* Disable TX/RX, clear auto RS485 and RTS invert */
+ 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
+ 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
+-			      SC16IS7XX_EFCR_TXDISABLE_BIT,
++			      SC16IS7XX_EFCR_TXDISABLE_BIT |
++			      SC16IS7XX_EFCR_AUTO_RS485_BIT |
++			      SC16IS7XX_EFCR_RTS_INVERT_BIT,
+ 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
+ 			      SC16IS7XX_EFCR_TXDISABLE_BIT);
+ 
+-- 
+2.25.1
 
-
-Pozdrawiam
-Miko=C5=82aj Rudzik
