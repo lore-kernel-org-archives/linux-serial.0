@@ -2,129 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9256C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 16:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C52BC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 20:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244556AbiCHQZR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 11:25:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
+        id S1350239AbiCHUbQ (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 8 Mar 2022 15:31:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348337AbiCHQZR (ORCPT
+        with ESMTP id S242939AbiCHUbP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 11:25:17 -0500
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7F44F9E6;
-        Tue,  8 Mar 2022 08:24:19 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2E0065C0131;
-        Tue,  8 Mar 2022 11:24:19 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 08 Mar 2022 11:24:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=QiZzwEJwAsqLkGpP4XLt1jLF2k2PI6EZcrR+RR
-        Jgmiw=; b=M4CAjyA4pm6JW0W/znqqC+gWsxAnPWz/iYfK1clA/ajl837M4BLw76
-        Z3lyuVUVAueOzrrG/oVx4Rj7ypu24JeH7uWmnFGGkE7xFsf8JLhsN8Ib0vapTjDv
-        5/mPq6PWqzV8p2CUcwiT6vf20Rnu3djGo8M89DqLVJZoTt0pjgG/DpXbzx6Jr1AX
-        GHS2B1y9Yn6Se0+3BG1QveqQ2sTIifMPL5VQ90vTgYdawTyDIMUSp3TD0ITS63gp
-        fYVmq7cLHPPe3XjXYN2X7paq92FkOPopi917qkLab9/4G+47hehX7mkiQqwyrZ6j
-        bi6DIII1klI+BxqYwAg2sg7fWtbXz+4g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=QiZzwEJwAsqLkGpP4
-        XLt1jLF2k2PI6EZcrR+RRJgmiw=; b=e7OtT2/4WpcMSH5Bm0MwUyrcIm6EzSOSz
-        lVlSdOY+9egEcGT/xMbHvMQERP/3/wAWTU1j1298SNhhfS8mNOzZnunx9EJ+XUPd
-        tQISGKIWySDX4rXYux1jOw+s/Xi9ZGgb1gZbJ+isHEqZ4ohrL6m8DGznAX0zJ4Fa
-        Q1wB9GmtfF6+jcuArerDiefWIdz4vnoNKoOyynmrHD0Dzc5oYuFDzY5dbxncmFUu
-        FVOHBuTewl+Gx3C38P3QQDj7N+Zb5GpE2EdetTL+Aul2u0jAoFUI5lBXgUMzG0BE
-        syuREor9Up+XzAEidLo7M58P8F1cAW/Prouanx6p+leSqNjXxkgog==
-X-ME-Sender: <xms:MoMnYjbqBQQ2exdi4X2-uGRhfZJEw1MLiGpdU1qRIHXoQ-C1pnMjDg>
-    <xme:MoMnYiZZrwyRFQraVicdj0MCQtgemkcllu_MqU_pKRqPhDlKQT5dYQhUjFKAbk_ev
-    PhkwkWuNemmrslYmWU>
-X-ME-Received: <xmr:MoMnYl9xKQtD1Z6UreYSS3_a74rggNjjeWAPt0lfcleb8BOgRZ3-MV2Fhj3Gx47ANTEdusFnYZbpA_tDeZ7SbBtHLUIXCupGPgLfKF0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudduiedgkeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:MoMnYpoL-CYL5Lt70meY0YsoUeH5s7I9KFBm-ktzqthGGPf3iuec1w>
-    <xmx:MoMnYuoQRexcfAlYC1YzqFzuoE-1Kw25PITCYneaLuXdrZ1hD4qMeg>
-    <xmx:MoMnYvQLOat0fZLE6vh5kStxHyD1yZ6rc0y-NMzlngG2pXZxlbhG5Q>
-    <xmx:M4MnYl2RBd8DG0o5RLDp4SwvJeb5RPeykirmE6wEh1B6Uc9Yh0mtcA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 8 Mar 2022 11:24:18 -0500 (EST)
-Date:   Tue, 8 Mar 2022 17:24:16 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Deadlock at reboot?
-Message-ID: <20220308162416.xnrlys6utylzb3uz@houat>
-References: <20220304104942.lypg3wvlgk2ywi2t@houat>
- <YiIfCDjOIBoM+KlB@kroah.com>
+        Tue, 8 Mar 2022 15:31:15 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C09B50E1D;
+        Tue,  8 Mar 2022 12:30:17 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id CA940100D9423;
+        Tue,  8 Mar 2022 21:30:14 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id AA23147A006; Tue,  8 Mar 2022 21:30:14 +0100 (CET)
+Date:   Tue, 8 Mar 2022 21:30:14 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+Message-ID: <20220308203014.GA11096@wunner.de>
+References: <20220306184857.GA19394@wunner.de>
+ <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com>
+ <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com>
+ <20220307191854.GA27748@wunner.de>
+ <YiZfdlw0A75cojCx@smile.fi.intel.com>
+ <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com>
+ <20220308122220.GA24694@wunner.de>
+ <d9aabfe-1179-67c2-98d1-f36e7e698f33@linux.intel.com>
+ <20220308145042.GA20520@wunner.de>
+ <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7ofuk2vyimjb5u44"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YiIfCDjOIBoM+KlB@kroah.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, Mar 08, 2022 at 04:53:56PM +0200, Andy Shevchenko wrote:
+> On Tue, Mar 8, 2022 at 4:50 PM Lukas Wunner <lukas@wunner.de> wrote:
+> > Of course, if hardware-assisted DE assertion requires a particular pinmux
+> > state, we could double-check whether that pinmux state is set.
+> 
+> I'm wondering how to achieve this.
 
---7ofuk2vyimjb5u44
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On DT platforms, the devicetree specifies the pin controller settings
+which need to be configured for a device to be usable, e.g.:
 
-Hi,
+  pinctrl-names = "default";
+  pinctrl-0 = <...>;
 
-On Fri, Mar 04, 2022 at 03:15:36PM +0100, Greg Kroah-Hartman wrote:
-> On Fri, Mar 04, 2022 at 11:49:42AM +0100, Maxime Ripard wrote:
-> > Hi,
-> >=20
-> > I'm not entirely sure who I'm supposed to send this to, so apologies if
-> > I forgot somebody.
-> >=20
-> > I've had an issue when rebooting on and off for a couple of monthes, but
-> > I got a stacktrace from lockdep today:
-> >=20
-> > [71721.872904] reboot: Restarting system
-> > [71721.876743] ------------[ cut here ]------------
-> > [71721.877081]
-> > [71721.877084] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > [71721.877086] WARNING: possible circular locking dependency detected
-> > [71721.877088] 5.17.0-rc6-next-20220303-v8+ #10 Not tainted
->=20
-> This is linux-next, does this also happen on Linus's tree?
->=20
-> If not, can you bisect to find the offending commit?
+Before a driver is bound to the device, really_probe() in drivers/base/dd.c
+calls pinctrl_bind_pins() which configures the pin controller accordingly.
+In other words, the OS is fully in charge of configuring the pinmux.
 
-So it turns out the reboot stuck issue was a bootloader issue that
-wouldn't detect the ethernet phy after a patch was introduced in 5.16.
+I'm not sure how this is done on ACPI platforms.  If the pinmux is
+exclusively under the control of the platform firmware and the OS has
+no way of getting or setting the pinmux configuration, then that would
+be a competitive disadvantage vis-à-vis DT platforms which should really
+be addressed.  However I notice there are various drivers for Intel
+chipsets in drivers/pinctrl/intel/, so surely there's a way to let the
+OS handle pinmux settings?
 
-So nothing to do with the lockdep stacktrace, really. If there's indeed
-a locking issue, it doesn't seem to affect my system.
+Thanks,
 
-Maxime
-
---7ofuk2vyimjb5u44
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYieDMAAKCRDj7w1vZxhR
-xVjfAQC5pD7MyFRlK/jhH1bEioWD6ziYy5KSW+Zj/OG2mDN2sgEA3Ed+trkaED06
-H7lSOp1zQo9aFaSBq6eSyNhep2RV/AE=
-=u/9r
------END PGP SIGNATURE-----
-
---7ofuk2vyimjb5u44--
+Lukas
