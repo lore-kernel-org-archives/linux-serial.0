@@ -2,84 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41766C4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 11:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B211DC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Mar 2022 11:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346301AbiCHLLN (ORCPT
+        id S1346518AbiCHLw6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Mar 2022 06:11:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        Tue, 8 Mar 2022 06:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346300AbiCHLLG (ORCPT
+        with ESMTP id S1346649AbiCHLww (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Mar 2022 06:11:06 -0500
-X-Greylist: delayed 550 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 03:10:03 PST
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E3F457B4;
-        Tue,  8 Mar 2022 03:10:03 -0800 (PST)
-Received: from localhost.localdomain (unknown [10.101.195.16])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 8 Mar 2022 06:52:52 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13CF2E0BD;
+        Tue,  8 Mar 2022 03:51:55 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A466E210E6;
+        Tue,  8 Mar 2022 11:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646740314; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=69P3WCvNQdmaauvrWwLLWv+JvvLFhAucBSS7dtHIT54=;
+        b=ggdVg7np2tGJKqgZ5jFpCPc1kTDHGsCkDyZVJzRDSLbmTdTmNmi9zqDO0RlvPK3GK66o4Z
+        cZq2tuAaHpnnrF5/K/6HAi9eJB05LleVIdeB5WTrkGCy7W6MQnu/qy/ni1O3Rl/C7wnMpw
+        8KGZ/2STi7r0gp2nN8lu6pwpetQzNcw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646740314;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=69P3WCvNQdmaauvrWwLLWv+JvvLFhAucBSS7dtHIT54=;
+        b=rPfaPKU76W/EgMh3Q7YoRzz8uPGhVrJ5RoATNjdMiNvN+6aphcqxzb3KefnxFLK8wGwwcJ
+        hdEcOTN3ZLS7/7Bg==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C59A93F650;
-        Tue,  8 Mar 2022 11:00:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646737252;
-        bh=GaYM2Dx1zt1949KCl9Cue2trqHMpQ7C/c/kIfuWSIfk=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=AvBjFgdO+OxZL5Hub4sP30zlQCBtQweyeNNT4fYQjpoWtXdc0C0pl+FtDXuhaNiog
-         h3dJXxci9LhTWcxBZfh3Ts1HjXITCFQWIzaJXOWkEUZv3bCL1IIBfe0JEM05wp0bqo
-         3GIRtsPI2QoCHZmukThrxDeCyIM+oO08cGQxMnR9H0G1LwdIW0P7w7x6HLpNzlNd01
-         G9CiRr/yahOuaiRGaqhlcNPZoR3QiSCyQPcZp/aFHmqjB1Q7CG5IEOoZ3WSKI35+4o
-         IpJOYCRSGHHI95kvRq8p29AGfAKlGHPmvN3fh5VfNN/MscBwiERLLDhGa6YVq8R/HI
-         DaBU2gbq5zR/Q==
-From:   Hui Wang <hui.wang@canonical.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     stable@vger.kernel.org, jringle@gridpoint.com,
-        u.kleine-koenig@pengutronix.de, hui.wang@canonical.com
-Subject: [PATCH] serial: sc16is7xx: Clear RS485 bits in the shutdown
-Date:   Tue,  8 Mar 2022 19:00:42 +0800
-Message-Id: <20220308110042.108451-1-hui.wang@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        by relay2.suse.de (Postfix) with ESMTPS id 23D43A3B81;
+        Tue,  8 Mar 2022 11:51:54 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Thomas Abraham <thomas.abraham@linaro.org>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Hyeonkook Kim <hk619.kim@samsung.com>
+Subject: [PATCH] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
+Date:   Tue,  8 Mar 2022 12:51:53 +0100
+Message-Id: <20220308115153.4225-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We tested RS485 function on an EVB which has SC16IS752, after
-finishing the test, we started the RS232 function test, but found the
-RTS is still working in the RS485 mode.
+The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
+during uart write) added an unlock of port->lock before
+uart_write_wakeup() and a lock after it. It was always problematic to
+write data from tty_ldisc_ops::write_wakeup and it was even documented
+that way. We fixed the line disciplines to conform to this recently.
+So if there is still a missed one, we should fix them instead of this
+workaround.
 
-That is because both startup and shutdown call port_update() to set
-the EFCR_REG, this will not clear the RS485 bits once the bits are set
-in the reconf_rs485(). To fix it, clear the RS485 bits in shutdown.
+On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
+still holds the port->lock while calling uart_write_wakeup().
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
+So revert the wrap added by the commit above.
+
+Cc: Thomas Abraham <thomas.abraham@linaro.org>
+Cc: Kyungmin Park <kyungmin.park@samsung.com>
+Cc: Hyeonkook Kim <hk619.kim@samsung.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/sc16is7xx.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 3a6c68e19c80..6adc51d9ecf3 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1055,10 +1055,12 @@ static void sc16is7xx_shutdown(struct uart_port *port)
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 95018a847023..ab26520c9c21 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -921,11 +921,8 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
+ 		return;
+ 	}
  
- 	/* Disable all interrupts */
- 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, 0);
--	/* Disable TX/RX */
-+	/* Disable TX/RX, clear auto RS485 and RTS invert */
- 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
- 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
--			      SC16IS7XX_EFCR_TXDISABLE_BIT,
-+			      SC16IS7XX_EFCR_TXDISABLE_BIT |
-+			      SC16IS7XX_EFCR_AUTO_RS485_BIT |
-+			      SC16IS7XX_EFCR_RTS_INVERT_BIT,
- 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
- 			      SC16IS7XX_EFCR_TXDISABLE_BIT);
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
+-		spin_unlock(&port->lock);
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+-		spin_lock(&port->lock);
+-	}
  
+ 	if (uart_circ_empty(xmit))
+ 		s3c24xx_serial_stop_tx(port);
 -- 
-2.25.1
+2.35.1
 
