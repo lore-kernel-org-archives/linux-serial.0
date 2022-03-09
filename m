@@ -2,75 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F59C433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Mar 2022 08:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A89C6C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Mar 2022 09:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiCII7B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Mar 2022 03:59:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S232277AbiCIJwO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Mar 2022 04:52:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiCII7A (ORCPT
+        with ESMTP id S232255AbiCIJwN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Mar 2022 03:59:00 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1DB3BBDF;
-        Wed,  9 Mar 2022 00:57:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646816281;
-  x=1678352281;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aS8+yoDb2DbWhQsnTch4ovl6vT322ncAewYFCGHb4qs=;
-  b=aQTgtdZzNZen1nVSuL/3mA2bvsC2o7n1hB3BwrwuoMJ7eJroYiQJkfCr
-   LyagumiVK5nTlLIxRyOaUnXpmWzhsrFjr3UAtR546dF04SOQeh+SKZG98
-   CRkPJ6rvrKMJB8YOCj7+No6ph+OvOMiWswPHCoyj/3qzCxA/27O63Q5wA
-   M+ef149fCFhijyd1zLqgzYb4+I8zwuZ07+SJy+i/qhlboY0TWJ8lSVyTM
-   FNbBqVn9mdRJBTHSFFKHzY90znSFzmlra3VP9ZJtdDzBkZteG0xnSADfw
-   QcQWpSUR42jcwqKpFK0KZEFcvp/Dvs08AuMxMsEozB1wkfDt4vjUEZFng
+        Wed, 9 Mar 2022 04:52:13 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E116EA9E;
+        Wed,  9 Mar 2022 01:51:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646819475; x=1678355475;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Zych22kl5xpT4JSarhqPONWWkJ6kwcSGyYiRLML481U=;
+  b=F2rh5V5SF9gF+BZ4vT5+aLefi0e3jJE6QSn7JO2/UeTvkEEhi4xVMAZK
+   MT4TsgcJ5HJZ/VIoo5vO/wcwwT4DxD5Y+iMJHO5JQ+dtTfJiebeU/x/6l
+   RlMbBSc9lHtFvByLPvKk/pU0+DoPdco1posVDGrK+N1YP8/R1gD7SAXHw
+   GZQmHlfeZn2LBDLG2Zf4NcJcM9T5sZwYBQWDr5x4KA8VHSBsDbW6KPGxo
+   qYbysFR67cakEWYTbpRjbpTk82uN4liwD9tfHFbMD0HARmkvY44S33x0T
+   CbYyyhhRBiQ7ENSeCsJp/1hKl+Yo465eAxt4kz8OUCFzQQvZgelCVWKsa
    g==;
-Date:   Wed, 9 Mar 2022 09:57:56 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Rob Herring <robh+dt@kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        kernel <kernel@axis.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="254876017"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="254876017"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 01:51:14 -0800
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="537943718"
+Received: from vladi-laptop.ger.corp.intel.com ([10.252.32.21])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 01:51:09 -0800
+Date:   Wed, 9 Mar 2022 11:51:07 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
-Message-ID: <20220309085756.GA18220@axis.com>
-References: <20220307085053.1636475-1-vincent.whitchurch@axis.com>
- <20220307085053.1636475-2-vincent.whitchurch@axis.com>
- <CAL_JsqKBDOu+63YrDCX51-zoTPu1utiPxXYmihL9kMvrpD3ctA@mail.gmail.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+In-Reply-To: <20220308203014.GA11096@wunner.de>
+Message-ID: <db7b4efb-c4b-4ee5-72fd-d324173977@linux.intel.com>
+References: <20220306184857.GA19394@wunner.de> <CAHp75Vdxa_p866t5B7zJ8nHS-v+tu3vLiW0=vaBznnyCGyve_g@mail.gmail.com> <ab82f6a-8d1b-8e89-4ea-77d1a55667d2@linux.intel.com> <20220307191854.GA27748@wunner.de> <YiZfdlw0A75cojCx@smile.fi.intel.com>
+ <6931d6ad-7520-b585-a8ba-35349e730bb@linux.intel.com> <20220308122220.GA24694@wunner.de> <d9aabfe-1179-67c2-98d1-f36e7e698f33@linux.intel.com> <20220308145042.GA20520@wunner.de> <CAHp75Vfd-bi3s=JnNTyov4C7prNhwuWHWsUC6n9pM_E+d4picg@mail.gmail.com>
+ <20220308203014.GA11096@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqKBDOu+63YrDCX51-zoTPu1utiPxXYmihL9kMvrpD3ctA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/mixed; boundary="8323329-1890276712-1646819472=:1769"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 04:41:45PM +0100, Rob Herring wrote:
-> On Mon, Mar 7, 2022 at 2:51 AM Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> >
-> > Add a compatible for the UART on the ARTPEC-8 SoC.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1890276712-1646819472=:1769
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+
+On Tue, 8 Mar 2022, Lukas Wunner wrote:
+
+> On Tue, Mar 08, 2022 at 04:53:56PM +0200, Andy Shevchenko wrote:
+> > On Tue, Mar 8, 2022 at 4:50 PM Lukas Wunner <lukas@wunner.de> wrote:
+> > > Of course, if hardware-assisted DE assertion requires a particular pinmux
+> > > state, we could double-check whether that pinmux state is set.
+> > 
+> > I'm wondering how to achieve this.
 > 
-> Yes, the diff says that already. Perhaps some explanation why you are
-> adding another vendor SoC to Samsung UART and how the h/w is
-> different. I can only guess based on having just gone thru this with
-> Apple.
+> On DT platforms, the devicetree specifies the pin controller settings
+> which need to be configured for a device to be usable, e.g.:
+> 
+>   pinctrl-names = "default";
+>   pinctrl-0 = <...>;
+> 
+> Before a driver is bound to the device, really_probe() in drivers/base/dd.c
+> calls pinctrl_bind_pins() which configures the pin controller accordingly.
+> In other words, the OS is fully in charge of configuring the pinmux.
+> 
+> I'm not sure how this is done on ACPI platforms.  If the pinmux is
+> exclusively under the control of the platform firmware and the OS has
+> no way of getting or setting the pinmux configuration, then that would
+> be a competitive disadvantage vis-à-vis DT platforms which should really
+> be addressed.  However I notice there are various drivers for Intel
+> chipsets in drivers/pinctrl/intel/, so surely there's a way to let the
+> OS handle pinmux settings?
 
-The IP has been customized for the ARTPEC-8 SoC but is closely related
-to the variants used on the Exynos chips.  I can add this information to
-the commit message.
+The problem here is that the driver ("we could double-check" in your 
+initial suggestion above) doesn't know which pins it should check the 
+states for. I don't think any general mapping exists between drivers and 
+pins.
 
-The choice of the vendor prefix is similar to the solution chosen in
-this patch:
+Based on what I read, the mapping is a feature not wanted into pinmuxing.
+Assuming I understood them correctly, they don't want to do such thing
+on kernel side (based on experience with earlier approaches with 
+mapping. It probably got too messy/unmaintainable in the end :-)).
+So at best, one can only read and control pin mux states but that's about 
+as far as pinmuxing in kernel goes (and control could be locked by FW).
 
- https://lore.kernel.org/lkml/20220125031604.76009-2-alim.akhtar@samsung.com/
+Anyway, I've implemented the detection now based on RE_EN non-zero write + 
+read + check based on your suggestion (despite still thinking myself it 
+has these obvious problems with pinmux & other hw config unrelated dw uart 
+itself).
+
+
+-- 
+ i.
+
+--8323329-1890276712-1646819472=:1769--
