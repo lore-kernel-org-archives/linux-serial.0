@@ -2,235 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE75FC433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Mar 2022 08:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9574C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Mar 2022 08:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbiCIIU3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Mar 2022 03:20:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        id S231437AbiCIIxj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 9 Mar 2022 03:53:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiCIIU3 (ORCPT
+        with ESMTP id S231533AbiCIIxi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Mar 2022 03:20:29 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812F440E50
-        for <linux-serial@vger.kernel.org>; Wed,  9 Mar 2022 00:19:30 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id w4so1287443ply.13
-        for <linux-serial@vger.kernel.org>; Wed, 09 Mar 2022 00:19:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TCM0UJU71vFmyCpvtGIqyRExM308THX8NeEE98HuLyw=;
-        b=gwfkCt1GAlSaodP0da2aU5ijkHHXhqGoGlbjYk663NKD1SrXZapaIevPk4V/BUsure
-         XiII23Bedvc2rrKNeyYHYgjzXv3KsoB/+4Ds30KpSr3Hr7y6/5lPopHFM4TlRI6kWXre
-         Gw6nP8e1NrtRAvosc5MyiQqEphN740qAPvBYzGespEErPvbb8F4EihlrxY7PhQYVE09t
-         WaoUfdZaOOMahJ4Qo03Y9jny8wu9pCQgUcmYnHbi5Zw/GeYRaMhj7D/cpJWfQf8j7eHj
-         0sgV14InB6YZRPViUaBp6GXwi8BQZFWV84uGIwCxj5o9JwyIxCgGdEeVcECDAUVLL4eB
-         imbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TCM0UJU71vFmyCpvtGIqyRExM308THX8NeEE98HuLyw=;
-        b=L0VyM1ACi7OwzwPUQFsAEhTQW/FCUQmykuTAAe9HUOF88aNc5Gc7aZSiTPPSWdNw+P
-         7LyKPGiK2CS1POAD6QJ8VH7X9SG2uVKdGAbcu6t4tlombrFVmOZSkEHFitoFl/0cV+ft
-         4GsLnSr0le5KdtNoqBLLmWZwt3xHmFhqAOfvRT3ZGvyhlggARPhRRDIhsISCf5E9HfCS
-         qXujMxERJn92+KQK1n06BeJ4qRc5qFWtv9RBbxxPiIbmHs/Chdfwiv2UW8Yos/Nxri5t
-         rDPDE35a30YYR62reSdROQUE3DiGXIb2vWSbjbuz6NveywEMEFgJfv8XEgclevp+ClZY
-         wt+w==
-X-Gm-Message-State: AOAM530PvMlmFfskGqiPMyhH7d7DC4A+NttAravCP2vi+CAs3L82rIss
-        u80WznqxBS70WCKP3PzITyuo+cW0sZsOC9O4KQHFTA==
-X-Google-Smtp-Source: ABdhPJz045akFz//p5zwqF9zhV51bLG2qLT/+7QeGLl2UBCq6zdhnpxyjgYFb71IUkYVcraRmuyxI8DKbl+UEJaKq6w=
-X-Received: by 2002:a17:90b:1c03:b0:1bf:5720:f8a1 with SMTP id
- oc3-20020a17090b1c0300b001bf5720f8a1mr9120979pjb.100.1646813969912; Wed, 09
- Mar 2022 00:19:29 -0800 (PST)
+        Wed, 9 Mar 2022 03:53:38 -0500
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDC913D1B;
+        Wed,  9 Mar 2022 00:52:38 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 7100A100DECB3;
+        Wed,  9 Mar 2022 09:52:36 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 4F75824ADCC; Wed,  9 Mar 2022 09:52:36 +0100 (CET)
+Date:   Wed, 9 Mar 2022 09:52:36 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/7] serial: 8250_dwlib: RS485 HW half duplex support
+Message-ID: <20220309085236.GA8259@wunner.de>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
+ <20220302095606.14818-2-ilpo.jarvinen@linux.intel.com>
+ <20220306184857.GA19394@wunner.de>
+ <c2607267-798b-d7a0-86f6-4a729c22911f@linux.intel.com>
 MIME-Version: 1.0
-References: <20220307110328.2557655-1-sumit.garg@linaro.org>
- <20220307142356.ksx7k5xalqlsxnqk@maple.lan> <CAFA6WYNdc5fTk61GB2siLj-EkTtRE0u6fq-MtqF3Zt1uwJqJCw@mail.gmail.com>
- <20220308154601.2f2v4aqsny3ta52a@maple.lan>
-In-Reply-To: <20220308154601.2f2v4aqsny3ta52a@maple.lan>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Wed, 9 Mar 2022 13:49:18 +0530
-Message-ID: <CAFA6WYO7j7U89GgCH3ffZgFzGLES_ZqOO8Q6B_dbewZ0dCF+_w@mail.gmail.com>
-Subject: Re: [RFT v4] tty/sysrq: Make sysrq handler NMI aware
-To:     Daniel Thompson <daniel.thompson@linaro.org>,
-        gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, hasegawa-hitomi@fujitsu.com,
-        dianders@chromium.org, jirislaby@kernel.org,
-        jason.wessel@windriver.com, linux-kernel@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, arnd@arndb.de,
-        peterz@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c2607267-798b-d7a0-86f6-4a729c22911f@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 8 Mar 2022 at 21:16, Daniel Thompson <daniel.thompson@linaro.org> wrote:
->
-> On Tue, Mar 08, 2022 at 08:13:43PM +0530, Sumit Garg wrote:
-> > Hi Daniel,
-> >
-> > On Mon, 7 Mar 2022 at 19:53, Daniel Thompson <daniel.thompson@linaro.org> wrote:
-> > >
-> > > On Mon, Mar 07, 2022 at 04:33:28PM +0530, Sumit Garg wrote:
-> > > > Allow a magic sysrq to be triggered from an NMI context. This is done
-> > > > via marking some sysrq actions as NMI safe. Safe actions will be allowed
-> > > > to run from NMI context whilst that cannot run from an NMI will be queued
-> > > > as irq_work for later processing.
-> > > >
-> > > > <snip>
-> > > >
-> > > > @@ -566,12 +573,46 @@ static void __sysrq_put_key_op(int key, const struct sysrq_key_op *op_p)
-> > > >               sysrq_key_table[i] = op_p;
-> > > >  }
-> > > >
-> > > > +static atomic_t sysrq_key = ATOMIC_INIT(-1);
-> > > > +
-> > > > +static void sysrq_do_irq_work(struct irq_work *work)
-> > > > +{
-> > > > +     const struct sysrq_key_op *op_p;
-> > > > +     int orig_suppress_printk;
-> > > > +     int key = atomic_read(&sysrq_key);
-> > > > +
-> > > > +     orig_suppress_printk = suppress_printk;
-> > > > +     suppress_printk = 0;
-> > > > +
-> > > > +     rcu_sysrq_start();
-> > > > +     rcu_read_lock();
-> > > > +
-> > > > +     op_p = __sysrq_get_key_op(key);
-> > > > +     if (op_p)
-> > > > +             op_p->handler(key);
-> > > > +
-> > > > +     rcu_read_unlock();
-> > > > +     rcu_sysrq_end();
-> > > > +
-> > > > +     suppress_printk = orig_suppress_printk;
-> > > > +     atomic_set(&sysrq_key, -1);
-> > > > +}
-> > > > +
-> > > > +static DEFINE_IRQ_WORK(sysrq_irq_work, sysrq_do_irq_work);
-> > > > +
-> > > >  void __handle_sysrq(int key, bool check_mask)
-> > > >  {
-> > > >       const struct sysrq_key_op *op_p;
-> > > >       int orig_log_level;
-> > > >       int orig_suppress_printk;
-> > > >       int i;
-> > > > +     bool irq_work = false;
-> > > > +
-> > > > +     /* Skip sysrq handling if one already in progress */
-> > > > +     if (atomic_cmpxchg(&sysrq_key, -1, key) != -1) {
-> > > > +             pr_warn("Skip sysrq key: %i as one already in progress\n", key);
-> > > > +             return;
-> > > > +     }
-> > >
-> > > Doesn't this logic needlessly jam sysrq handling if the irq_work cannot
-> > > be undertaken?
-> > >
-> >
-> > Here this is done purposefully to ensure synchronisation of three
-> > contexts while handling sysrq:
-> > 1. Thread context
-> > 2. IRQ context
-> > 3. NMI context
->
-> Why is it necessary to provide such synchronization?
->
-> Also, if there really is an existing bug in the way thread and irq
-> contexts interact (e.g. something we can tickle without NMI being
-> involved) then that should probably be tackled in a separate patch
-> and with an explanation of the synchronization problem.
->
->
-> > > A console user could unwittingly attempt an !nmi_safe SysRq action on
-> > > a damaged system that cannot service interrupts. Logic that prevents
-> > > things like backtrace, ftrace dump, kgdb or reboot is actively harmful
-> > > to that user's capability to figure out why their original sysrq doesn't
-> > > work.
-> >
-> > I see your point.
-> >
-> > >
-> > > I think the logic to prohibht multiple deferred sysrqs should only
-> > > be present on code paths where we are actually going to defer the sysrq.
-> > >
-> >
-> > It's not only there to prohibit multiple deferred sysrq (as that alone
-> > could be handled by irq_work_queue()) but rather to avoid parallelism
-> > scenarios that Doug mentioned on prior versions.
->
-> I'm afraid I'm still a little lost here. I've only done a quick review
-> but sysrq's entry/exit protocols look like they are intended to handle
-> stacked contexts. This shouldn't be all that suprising since, even
-> without your changes, a sysrq triggered by an irq will interrupt
-> a sysrq triggered using /proc/sysrq-trigger .
->
+On Mon, Mar 07, 2022 at 12:54:19PM +0200, Ilpo Järvinen wrote:
+> I don't have strong opinion on the actual names myself (every RS-485 
+> transceivers I've come across name their pins to DE and RE).
 
-Yeah you are right. I see problems with how globals like
-"suppress_printk" and "console_loglevel" are modified and restored
-within __handle_sysrq(). A concurrent sysrq may easily lead to
-incorrect value restoration as an example below:
+It's true that transceiver datasheets usually call these pins DE and RE,
+but on the UART side, by convention the RTS pin is used to drive DE.
 
-Thread 1
-                      Thread 2
-orig_suppress_printk = suppress_printk; # here value is 1
-suppress_printk = 0;
+And RTS is then either asserted/deasserted in software (by the kernel
+driver), or by the UART hardware if it's capable of it.
 
-                            orig_suppress_printk = suppress_printk; #
-here value is 0
-suppress_printk = orig_suppress_printk; # here value is 1
+Hence the properties in Documentation/devicetree/bindings/serial/rs485.yaml
+and the members in struct serial_rs485 refer to "rts".  It's synonymous
+to DE.  I suppose Synopsys wanted to afford the integrator of the IP core
+as much freedom as possible and therefore offers separate RTS+DE pins
+as well as an RE pin.  But that degree of freedom also leads to confusion,
+particularly if firmware might mux the pins in an unexpected way
+behind the OS's back.
 
-                            suppress_printk = 0;
+The RE pin of transceivers is usually either pulled-up (i.e. always
+asserted, full-duplex) or connected to negated RTS (half-duplex).
+A lot of transceivers have a !RE pin so RTS can be wired directly
+to DE and !RE.
 
-                            suppress_printk = orig_suppress_printk;
-#incorrect value restored as 0
+Full-duplex is primarily for RS-422.  If full-duplex is enabled with
+RS-485, you'll receive your own echo, which is often (but not always)
+undesirable (depends on the application).
 
-Greg,
+For simplicity and consistency, it is best if the existing properties
+defined in rs485.yaml are used, instead of defining new ones which
+have the same meaning.  For this reason I'd recommend using
+rs485-rts-active-low for the polarity of the DE pin.
 
-Do let me know if I am missing something otherwise I will create a
-separate patch for this issue.
 
--Sumit
+> What I think is more important though, is that RE would be by default
+> active low which matches to about every RS485 transceiver expectations.
+> Given what device_property_read_bool does when the property is missing,
+> it would make sense to have the property named as -active-high but I
+> don't know if that breaks some dt naming rule to have them opposites
+> of each other like that?
 
->
-> > How about the following add-on change to allow passthrough for broken
-> > irq_work systems?
->
-> My question ultimately boils down to whether the existing logic
-> is necessary, not whether we can make it even more complex!
->
-> So before thinking too much about this change I think it would be
-> useful to have a clear example of the circumstances that you think
-> it will not be safe to run an NMI-safe sysrq from an NMI.
->
->
-> Daniel.
->
->
-> > diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> > index 005c9f9e0004..0a91d3ccf862 100644
-> > --- a/drivers/tty/sysrq.c
-> > +++ b/drivers/tty/sysrq.c
-> > @@ -608,6 +608,15 @@ void __handle_sysrq(int key, bool check_mask)
-> >         int i;
-> >         bool irq_work = false;
-> >
-> > +       /*
-> > +        * Handle a case if irq_work cannot be undertaken on a damaged
-> > +        * system stuck in hard lockup and cannot service interrupts.
-> > +        * In such cases we shouldn't atleast block NMI safe handlers
-> > +        * that doesn't depend on irq_work.
-> > +        */
-> > +       if (irq_work_is_pending(&sysrq_irq_work))
-> > +               atomic_set(&sysrq_key, -1);
-> > +
-> >         /* Skip sysrq handling if one already in progress */
-> >         if (atomic_cmpxchg(&sysrq_key, -1, key) != -1) {
-> >                 pr_warn("Skip sysrq key: %i as one already in progress\n", key);
-> >
-> > -Sumit
-> >
-> > >
-> > > Daniel.
+That's a good point, I agree.  I don't think that would violate any
+DT naming rule.
+
+Thanks,
+
+Lukas
