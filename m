@@ -2,48 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 609ABC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 18:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9640CC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 19:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237711AbiCJS2E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 13:28:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S241617AbiCJTCO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 14:02:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238705AbiCJS2D (ORCPT
+        with ESMTP id S232383AbiCJTCO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 13:28:03 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD210158D96;
-        Thu, 10 Mar 2022 10:27:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646936820; x=1678472820;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XAlKDXqiQfOaTdOU/lfgyFC9vnJAIdUuMofC2PNYdto=;
-  b=nxA9JkHe73ESMmtFJJ83iXy8qii36V6K+hn+l7YazOS0QQnMRJ3wreI0
-   PGKnapBsBo3sVRImtTwHS3Vk32UUCCmKntFgJJRCeWIsnRsDitLnydSDF
-   ENiVv95j7vWD7j9nZZ9P5evB9ZdTI6Tb2HROJq9Kz28AVQnFPsAukjpM8
-   YwRwDTEAbrtJcwr6lNeolWyFPYb88yS9pfokZ2p5c6itUskIZockxQKPE
-   aCS9egnCUaxYgIg/uHlKjciCfZT6QU0SSUfLSxGrYMTegOLjABwHmVLec
-   rkamAUAHun6huPtcXVts+wGewTXzAwdMUP3ZLx2zev/ImznT8M4W6URWz
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="235935896"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="235935896"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 10:26:40 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="511007377"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 10:26:36 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nSNU1-00Es0O-DU;
-        Thu, 10 Mar 2022 20:25:53 +0200
-Date:   Thu, 10 Mar 2022 20:25:52 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
+        Thu, 10 Mar 2022 14:02:14 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC04BCEA05
+        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 11:01:12 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 02742100003;
+        Thu, 10 Mar 2022 19:01:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646938866;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ONlybgDBnhJ3zqRDbczF5Bw/mRATqhD5AsOrxYRctYY=;
+        b=cAUV+dTEj4CtwewJmwj744v6LYk0rcuKjXWGxOXNp5NZ5KQK7Faa0i4nNakqjRFsvM9qR/
+        /FDhMXIEL74zr3pj66InYiy1LkmwXab2Y3YETkDR6F95EekvBVPfG+w9bnb9GVlBxPswN0
+        +Hah2QwWkw5n3IxOYlmD8b2e/f+Ciiezz/KmanDCrD+PcOA/6aM7n//73jLWaYfmJsKHCt
+        uw2lavv57ZlnvvTsElDMR4Jixb3u4BmOPG8xmOW6QDdpi8K+x8QU1aLcfDo1wEnXxsXFRQ
+        /yL1khisgYAUwlEtVSE+LJnKzyo/NbGWl4FrAqfMvk03QTeVUFebC6tOz402Tg==
+Date:   Thu, 10 Mar 2022 20:01:01 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-renesas-soc@vger.kernel.org,
         Magnus Damm <magnus.damm@gmail.com>,
         Gareth Williams <gareth.williams.jx@renesas.com>,
@@ -58,173 +47,51 @@ Cc:     linux-renesas-soc@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>
-Subject: Re: [PATCH 6/7] serial: 8250_dw: Add support for RZ/N1 DMA
-Message-ID: <YipCsO+UMcGOqLaG@smile.fi.intel.com>
+Subject: Re: [PATCH 3/7] serial: 8250_dw: Use a fallback CPR value if not
+ synthesized
+Message-ID: <20220310200101.13233016@xps13>
+In-Reply-To: <Yio9QcFqqhjiAcMT@smile.fi.intel.com>
 References: <20220310161650.289387-1-miquel.raynal@bootlin.com>
- <20220310161650.289387-7-miquel.raynal@bootlin.com>
+ <20220310161650.289387-4-miquel.raynal@bootlin.com>
+ <Yio9QcFqqhjiAcMT@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310161650.289387-7-miquel.raynal@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 05:16:49PM +0100, Miquel Raynal wrote:
-> From: Phil Edworthy <phil.edworthy@renesas.com>
-> 
-> The Renesas RZ/N1 devices have a modified Synopsys DW UART. The
-> modifications are mostly related to the DMA handlnig, and so this patch
-> adds support for DMA.
+Hi Andy,
 
-> The RZ/N1 UART must be used with the peripheral as the flow
-> controller.
+andriy.shevchenko@linux.intel.com wrote on Thu, 10 Mar 2022 20:02:41
++0200:
 
-(1)
+> On Thu, Mar 10, 2022 at 05:16:46PM +0100, Miquel Raynal wrote:
+> > From: Phil Edworthy <phil.edworthy@renesas.com>
+> >=20
+> > This UART controller can be synthesized without the CPR register.
+> > In that case, let's use the platform information to provide a CPR value=
+. =20
+>=20
+> ...
+>=20
+> > +#include <linux/of_device.h> =20
+>=20
+> > +	const struct dw8250_platform_data *plat =3D of_device_get_match_data(=
+up->port.dev); =20
+>=20
+> No. Please use device property APIs.
 
-> This means the DMA length should also be programmed into
-> UART registers.
+Are you suggesting the use of CPR DT property? If yes, what is the
+point if there is one CPR per SoC? I would argue that DT description is
+already quite complex and supporting one or another register is up to
+the OS as long as we can map CPR registers to SoCs?
 
-(2)
+TBH Phil initially introduced a DT property which I turned into a pdata
+entry because when I can avoid playing with the bindings, I generally
+do so.
 
-Hmm... DMA controller vs. Peripheral flow control is about signalling on the HW
-level on who starts the transaction. This is programmed in the DMA controller
-device driver. Is it what you do in DesignWare DMA patch series?
-
-Ah, I see now, you set fc here.
-
-But still it's not clear how (2) and (1) are related.
-
-> Aside from this, there are some points to note about DMA burst sizes.
-> First, DMA must not remove all of the data from the rx FIFO. Otherwise,
-> we do not get a 'character timeout' interrupt, and so do not know that
-> we should push data up the serial stack. Therefore, we have the rx
-> threshold for generating an interrupt set to half the FIFO depth (this
-> is the default for 16550A), and set the DMA burst size when reading the
-> FIFO to a quarter of the FIFO depth.
-> 
-> Second, when transmitting data using DMA, the burst size must be limited
-> to 1 byte to handle then case when transmitting just 1 byte. Otherwise
-> the DMA doesn't complete the burst, and nothing happens.
-
-...
-
-> +/* Offsets for the Renesas RZ/N1 DesignWare specific registers */
-> +/* DMA Software Ack */
-> +#define RZN1_UART_DMASA			0xa8
-
-Is it specific to Renesas? IIRC it's Synopsys DesignWare register, makes
-sense to use appropriate prefix or no prefix.
-
-...
-
-> +#define RZN1_UART_xDMACR_1_WORD_BURST	0
-> +#define RZN1_UART_xDMACR_4_WORD_BURST	BIT(1)
-> +#define RZN1_UART_xDMACR_8_WORD_BURST	(BIT(1) | BIT(2))
-
-This looks like incorrect use of BIT() macro.
-Please, use plain decimal integers. Something like
-
-	1	(0 << 1)
-	4	(1 << 1)
-	8	(3 << 1)
-
-If I'm mistaken, describe the meaning of each bit there.
-
-...
-
-> +static void rzn1_8250_handle_irq(struct uart_port *port, unsigned int iir)
-> +{
-> +	struct uart_8250_port *up = up_to_u8250p(port);
-> +	struct uart_8250_dma *dma = up->dma;
-> +	unsigned char status;
-
-> +	if (up->dma && dma->rx_running) {
-
-With
-
-	if (!)up->dma && dma->rx_running))
-		return;
-
-maybe easier to read the rest.
-
-> +		status = port->serial_in(port, UART_LSR);
-> +		if (status & (UART_LSR_DR | UART_LSR_BI)) {
-> +			/* Stop the DMA transfer */
-> +			writel(0, port->membase + RZN1_UART_RDMACR);
-> +			writel(1, port->membase + RZN1_UART_DMASA);
-> +		}
-> +	}
-> +}
-
-...
-
-> +	if (d->is_rzn1 && ((iir & 0x3f) == UART_IIR_RX_TIMEOUT))
-> +		rzn1_8250_handle_irq(p, iir);
-
-A few years ago it was a discussion about broken timeout on some platforms
-with Synopsys DesignWare UART + DMA. Can it be that this is actually required
-for all of them that uses same combination of IPs?
-
-...
-
-> +static u32 rzn1_get_dmacr_burst(int max_burst)
-> +{
-
-> +	u32 val = 0;
-
-Redundant assignment and variable itself. Use return statements directly.
-
-> +	if (max_burst >= 8)
-> +		val = RZN1_UART_xDMACR_8_WORD_BURST;
-> +	else if (max_burst >= 4)
-> +		val = RZN1_UART_xDMACR_4_WORD_BURST;
-> +	else
-> +		val = RZN1_UART_xDMACR_1_WORD_BURST;
-> +
-> +	return val;
-> +}
-
-...
-
-> +static int rzn1_dw8250_tx_dma(struct uart_8250_port *p)
-> +{
-> +	struct uart_port		*up = &p->port;
-> +	struct uart_8250_dma		*dma = p->dma;
-> +	struct circ_buf			*xmit = &p->port.state->xmit;
-> +	int tx_size;
-> +	u32 val;
-> +
-> +	if (uart_tx_stopped(&p->port) || dma->tx_running ||
-> +	    uart_circ_empty(xmit))
-> +		return 0;
-> +
-> +	tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-
-> +	writel(0, up->membase + RZN1_UART_TDMACR);
-> +	val = rzn1_get_dmacr_burst(dma->txconf.dst_maxburst);
-> +	val |= tx_size << RZN1_UART_xDMACR_BLK_SZ_OFFSET;
-> +	val |= RZN1_UART_xDMACR_DMA_EN;
-> +	writel(val, up->membase + RZN1_UART_TDMACR);
-
-Can this be added as a callback to the serial8250_tx_dma()?
-Ditto for Rx counterpart.
-
-> +	return serial8250_tx_dma(p);
-> +}
-
-...
-
-> +	data->is_rzn1 = of_device_is_compatible(dev->of_node, "renesas,rzn1-uart");
-
-Device property API.
-
->  	/* Always ask for fixed clock rate from a property. */
->  	device_property_read_u32(dev, "clock-frequency", &p->uartclk);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Miqu=C3=A8l
