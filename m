@@ -2,114 +2,128 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89173C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1678C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 12:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbiCJIeL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:34:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S242009AbiCJMaf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 07:30:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240361AbiCJIeL (ORCPT
+        with ESMTP id S233734AbiCJMae (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:34:11 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DCC5C864;
-        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id s25so6675227lji.5;
-        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
-        b=UrjYq2/KyC3hvwORoAq2rAi9RMIsuR0umGHAz3DXdsGHU46VPLPpRZ7oxHgbMoZzfP
-         TpJPe7CbBMnfx/r97HrJIw8EChbICBje8UAdC9Xur7ScmBVscc+jU56Vbgzb0NFuyZ3L
-         Yr3DRddja/lhGnlemyu7O8ubgNs5p3fxjkfcF9hpjCvEkIDhWBW7Hb4SHkDbe9ZR3sKe
-         JSLTPqNPtGssgo/N6E/lV8jQE4RiK2pu5k5MCrEjkdKQGSt6kEugPFgkbIDoRlYVB0sl
-         u+5CMCvl2xxZtIiEx+I8NV02zzxhBW9yTYM3QTD8161ihrXzLxtgEfWnTWwBF8jH6EzQ
-         PARw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
-        b=5Sh4abJehEyo0VSM39lvJygbENY3Nnhzu7pS7NqESB+Y0beRufDihnkM32zLB8ja2g
-         73a4PDMGbWsa4yrnizk34viClI8fdhjSngsK8+7q5yQnD7yaG7oMw94Am/ElGOpnVTfM
-         KOvV3EbnzhPDVC+dgqlz+urpLNB1yQiQN59HVAdETBLTrRo0yM+6DKVFBb9gqRUEMtmv
-         9JwDrdExcwBZ+O2BcGBmf5YpZ9P3TrAtBGqttSFZ020V54crHQsexaBh6e+GBbvZlhpA
-         cUYKE0fdcppNja9lY8EXYdfCB1SAg6nafGTV0YveLIIiQpU8g8newNS9KTy8gT+v3AmY
-         2JMw==
-X-Gm-Message-State: AOAM531E6ZhOwLRiE3ZyxIAjUBDxoE/DKD+Ofncibdhm8nI69ypf5j2G
-        o09l+pEoLyp6K0TaaslMsqA=
-X-Google-Smtp-Source: ABdhPJxzhyaNeFJBtRmOqugCqJRepynC1ipQE7qbVJiJc/tZWrPO6G4gzHfE6PWCrhciUe6CBTBY2w==
-X-Received: by 2002:a2e:54b:0:b0:248:744:b859 with SMTP id 72-20020a2e054b000000b002480744b859mr2331586ljf.37.1646901187276;
-        Thu, 10 Mar 2022 00:33:07 -0800 (PST)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id j7-20020a2e3c07000000b00247fd2f7f46sm926039lja.47.2022.03.10.00.33.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 00:33:06 -0800 (PST)
-Message-ID: <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com>
-Date:   Thu, 10 Mar 2022 09:33:06 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 10 Mar 2022 07:30:34 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7266A818A5;
+        Thu, 10 Mar 2022 04:29:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646915373; x=1678451373;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=KpU7qHsFQttScVYV4Sy+C7cKf/dHAGOyV91juLQL6gk=;
+  b=NgFY8eRdD81ohSejE1d5DO20LjYbv3RY7ET76nPkYeMlSHg+aTstckek
+   S8/ctGS3G1ijTVnjn2V2MsmQBDECfd/WZvpxEVm2IgscOkJs+vKOoW2R1
+   Tg5/RbkIrbMIVpdK/CSoAwz4XaaVqm/BSVs7q72b21hpCQNN2lU//vuSh
+   KrvPemzpbYV7jvLCigfVO/dNhbya2kQUeWEN3/Dclbug8ZNYwZd4FyuZW
+   fQTUUJSUa5eBvBFgNovM0f5gwecjeXRZKDkfFUsU6KY5xe+PUvF7W7awO
+   v+fMUYdLsZ5fp5+4hzDD/MyQsKaGsAhe6tFIDP6zC3mCuyqEtSCIUS5B/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="318459313"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="318459313"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 04:29:31 -0800
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="554624288"
+Received: from mborg-mobl.ger.corp.intel.com ([10.252.33.144])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 04:29:23 -0800
+Date:   Thu, 10 Mar 2022 14:29:21 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20220310072239.4489-1-zajec5@gmail.com>
- <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-api@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        sparclinux@vger.kernel.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [RFC PATCH 6/7] serial: General support for multipoint
+ addresses
+In-Reply-To: <20220309190521.GA9832@wunner.de>
+Message-ID: <6feb796a-ea58-9a6-f2f9-a11ca72acfd@linux.intel.com>
+References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com> <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com> <20220306194001.GD19394@wunner.de> <ab43569c-6488-12a6-823-3ef09f2849d@linux.intel.com> <20220309190521.GA9832@wunner.de>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-24784813-1646915371=:1973"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10.03.2022 09:19, Geert Uytterhoeven wrote:
-> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
->> From: Rafał Miłecki <rafal@milecki.pl>
->>
->> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
->> documentation change regarding "depends" usage. Adjust Kconfig entry to
->> match current guidelines. Make this symbol available for relevant
->> architectures only.
->>
->> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
->> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
->> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
->> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> 
-> Thanks for your patch!
-> 
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
->>   config SERIAL_BCM63XX
->>          tristate "Broadcom BCM63xx/BCM33xx UART support"
->>          select SERIAL_CORE
->> -       depends on COMMON_CLK
->> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
->> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
-> 
-> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
-> cover MIPS.  Is there some symbol covering ARM so we can change the
-> depends to
-> 
->      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-> 
-> ?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Florian, Kevin: do you know what other platforms need that driver?
+--8323329-24784813-1646915371=:1973
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
-Ref: c0ec3fd123e9 ("tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other platforms")
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0ec3fd123e9e64e095fb221ace841e00c04e40b
+On Wed, 9 Mar 2022, Lukas Wunner wrote:
+
+> On Mon, Mar 07, 2022 at 11:48:01AM +0200, Ilpo J�rvinen wrote:
+> > On Sun, 6 Mar 2022, Lukas Wunner wrote:
+> > > On Wed, Mar 02, 2022 at 11:56:05AM +0200, Ilpo J�rvinen wrote:
+> > > > This change is necessary for supporting devices with RS485
+> > > > multipoint addressing [*].
+> > > 
+> > > If this is only used with RS485, why can't we just store the
+> > > addresses in struct serial_rs485 and use the existing TIOCSRS485
+> > > and TIOCGRS485 ioctls?  There's 20 bytes of padding left in
+> > > struct serial_rs485 which you could use.  No need to add more
+> > > user-space ABI.
+> > 
+> > It could if it is agreed that serial multipoint addressing is just
+> > a thing in RS-485 and nowhere else? In that case, there is no point
+> > in adding more generic support for it.
+> 
+> It's just that the above-quoted sentence in the commit message
+> specifically mentions RS485.
+
+That sentence is just to justify why addressing mode is needed,
+not to take a stance on whether it is only used with RS485 or not.
+
+> If you intend to use it with RS232
+> as well, that should be made explicit, otherwise one wonders why
+> it wasn't integrated into struct serial_rs485.
+> 
+> I have no idea how common 9th bit addressing mode is with RS232.
+> Goggle turns up links saying it's mainly used with RS485, "but also
+> RS232".  Since RS232 isn't a bus but a point-to-point link,
+> 9th bit addressing doesn't seem to make as much sense.
+
+While I don't know any better, I can image though that with an 
+RS232-to-RS485 converter, it could make some sense.
+
+If I put them back to serial_rs485 / rs485 config, it's basically just 
+where I initially started from with this patchset (offlist).
+
+
+-- 
+ i.
+
+--8323329-24784813-1646915371=:1973--
