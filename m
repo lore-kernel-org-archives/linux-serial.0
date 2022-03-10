@@ -2,123 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB9FC43217
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 14:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09907C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 16:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242882AbiCJOLy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:11:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        id S243113AbiCJQXT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:23:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242756AbiCJOLZ (ORCPT
+        with ESMTP id S244221AbiCJQW4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 09:11:25 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730F2137012;
-        Thu, 10 Mar 2022 06:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646921423; x=1678457423;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Vi9TQW28iAGVT+9VTJCeUAtR3L2XgA27dHLozP1I8zM=;
-  b=G27wyBmWvNEAVSPYPdfrwrw+qFtSOgN9J0kMPS6K/D+VmhuYIzqR1hbC
-   p9bJdKmSO6uC8JCtOBta+bjGdVF+yIluIHkAi1VYR23x6XUKsLfIbWQUx
-   8vbvo20B+2ak6a7Uav7VcfPjbUHU7Jc+Bb66v0a6QDuuCXDHyGikMH9UW
-   Fczl5/I3uDFul2r3tp176PE3A3q63e/J7OzLrDmd6TuLLSycxbCud80oQ
-   9I2bOGvifIglHMBsvwzyESSnITNeg8Uar+8S8KZUbKv6h/BKsix/9ianu
-   0lA3j+sZ1VoUOkGAmoQ/FC3BmimF5cRcludSbtHSMJ0k3JwbGK35jpcQH
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="279993773"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="279993773"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:23 -0800
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="642568750"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:10:15 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nSJTv-00EjUS-6x;
-        Thu, 10 Mar 2022 16:09:31 +0200
-Date:   Thu, 10 Mar 2022 16:09:30 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-api@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH 6/7] serial: General support for multipoint addresses
-Message-ID: <YioGmu+KC9WT0KoG@smile.fi.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com>
- <20220306194001.GD19394@wunner.de>
- <ab43569c-6488-12a6-823-3ef09f2849d@linux.intel.com>
- <20220309190521.GA9832@wunner.de>
+        Thu, 10 Mar 2022 11:22:56 -0500
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FDD19ABE0
+        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 08:20:43 -0800 (PST)
+Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 0A46CCF158
+        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 16:17:08 +0000 (UTC)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D726AC000A;
+        Thu, 10 Mar 2022 16:16:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646929018;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TNEWGrWM8MEFCyuhFvcwN9AqeFVgL6hJKTp6D8Wa6aw=;
+        b=LzKToIzjJfKeaST+C0vREtqd+dePn1INiJJoqRM/wvRSCcCXvzTXzVMKOu8ddU4h59jXGb
+        AaO32n3ds703Fr8aJv2dQWC/CBHac0IIhsL4itjJdHu5ozNmJwRLHbq0lP9qeZdiKhNmu1
+        enjuJPl7aUtomGJtUGujUQ4CoxBwOTZyC+0mMMuWahxDiLc6XlNwn7of98Nb3CI4+P1E/q
+        Q0fbrHwxcplLsuLsOYjkde7J/uaxg5W6xBNvk5gx/SZqTRBMWq96GG6SNqnmO4OOX7JRjo
+        XEyRUKWqKp2rFvYtvkOfbYmQ5KOBiqTSltKbqRzRD2xBdywVNdn/jFIP5LqWMA==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     linux-renesas-soc@vger.kernel.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 2/7] serial: 8250_dw: Move the per-device structure
+Date:   Thu, 10 Mar 2022 17:16:45 +0100
+Message-Id: <20220310161650.289387-3-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220310161650.289387-1-miquel.raynal@bootlin.com>
+References: <20220310161650.289387-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220309190521.GA9832@wunner.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 08:05:21PM +0100, Lukas Wunner wrote:
-> On Mon, Mar 07, 2022 at 11:48:01AM +0200, Ilpo Järvinen wrote:
-> > On Sun, 6 Mar 2022, Lukas Wunner wrote:
-> > > On Wed, Mar 02, 2022 at 11:56:05AM +0200, Ilpo Järvinen wrote:
-> > > > This change is necessary for supporting devices with RS485
-> > > > multipoint addressing [*].
-> > > 
-> > > If this is only used with RS485, why can't we just store the
-> > > addresses in struct serial_rs485 and use the existing TIOCSRS485
-> > > and TIOCGRS485 ioctls?  There's 20 bytes of padding left in
-> > > struct serial_rs485 which you could use.  No need to add more
-> > > user-space ABI.
-> > 
-> > It could if it is agreed that serial multipoint addressing is just
-> > a thing in RS-485 and nowhere else? In that case, there is no point
-> > in adding more generic support for it.
-> 
-> It's just that the above-quoted sentence in the commit message
-> specifically mentions RS485.  If you intend to use it with RS232
-> as well, that should be made explicit, otherwise one wonders why
-> it wasn't integrated into struct serial_rs485.
-> 
-> I have no idea how common 9th bit addressing mode is with RS232.
-> Goggle turns up links saying it's mainly used with RS485, "but also
-> RS232".  Since RS232 isn't a bus but a point-to-point link,
-> 9th bit addressing doesn't seem to make as much sense.
+From: Phil Edworthy <phil.edworthy@renesas.com>
 
-In my student years I have an exercise to use 9-bit addressing mode on RS232.
-Obviously I forgot all of the details, but I remember that that has a practical
-application.
+This structure needs to be reused from dwlib, so let's move it into a
+shared header. There is no functional change.
 
+Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+[miquel.raynal@bootlin.com: Extracted from a bigger change]
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/tty/serial/8250/8250_dw.c    | 16 ----------------
+ drivers/tty/serial/8250/8250_dwlib.h | 16 ++++++++++++++++
+ 2 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 1769808031c5..ee7562a9ec76 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -37,22 +37,6 @@
+ /* DesignWare specific register fields */
+ #define DW_UART_MCR_SIRE		BIT(6)
+ 
+-struct dw8250_data {
+-	struct dw8250_port_data	data;
+-
+-	u8			usr_reg;
+-	int			msr_mask_on;
+-	int			msr_mask_off;
+-	struct clk		*clk;
+-	struct clk		*pclk;
+-	struct notifier_block	clk_notifier;
+-	struct work_struct	clk_work;
+-	struct reset_control	*rst;
+-
+-	unsigned int		skip_autocfg:1;
+-	unsigned int		uart_16550_compatible:1;
+-};
+-
+ static inline struct dw8250_data *to_dw8250_data(struct dw8250_port_data *data)
+ {
+ 	return container_of(data, struct dw8250_data, data);
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 83d528e5cc21..ef63eaf7e598 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -16,5 +16,21 @@ struct dw8250_port_data {
+ 	u8			dlf_size;
+ };
+ 
++struct dw8250_data {
++	struct dw8250_port_data	data;
++
++	u8			usr_reg;
++	int			msr_mask_on;
++	int			msr_mask_off;
++	struct clk		*clk;
++	struct clk		*pclk;
++	struct notifier_block	clk_notifier;
++	struct work_struct	clk_work;
++	struct reset_control	*rst;
++
++	unsigned int		skip_autocfg:1;
++	unsigned int		uart_16550_compatible:1;
++};
++
+ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct ktermios *old);
+ void dw8250_setup_port(struct uart_port *p);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.27.0
 
