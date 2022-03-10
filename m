@@ -2,256 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACCBBC433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 19:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8887C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 21:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243503AbiCJT2v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 14:28:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
+        id S241375AbiCJVuw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 16:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239797AbiCJT2u (ORCPT
+        with ESMTP id S232848AbiCJVuv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 14:28:50 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F82012A91;
-        Thu, 10 Mar 2022 11:27:48 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C25D8100007;
-        Thu, 10 Mar 2022 19:27:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646940466;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yz+e4AzgHZWP8a7a3bFwgwlhz7dj0OY6LR+zqVJ1aGI=;
-        b=Mfbyee2DeD5+Wb5tpA8TSuwywzx+PIZzXkY1DiYKWC9PEaco9Du3YG0UMqG48PCfpdU57k
-        Cybd5xBykBvpWdRhEMswiKc7B2e3VvKQy38VLNQ94TX6FtCrpzhVxd4g05uzZunonoxxCg
-        69gSyFw4P+7vVcAYfNAcj0omGeqmgNa9ACIRA2hPuMjcsw5qqd7XmfoX9YDjW1MbAgaPMH
-        yyhOb81iDf2hv2zpR+3TI64Eui3lDteF5m65Hx8aL++spAvbxKpXH43YG00sRBAZsSrKVq
-        7MOGfiD5/6N0Z+yvt1QH3k+BGWygguEaNTwFBUd5AudkLr/cNxAEdDlWAC4k1w==
-Date:   Thu, 10 Mar 2022 20:27:43 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
+        Thu, 10 Mar 2022 16:50:51 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477C01045B1;
+        Thu, 10 Mar 2022 13:49:50 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id n18so3381950plg.5;
+        Thu, 10 Mar 2022 13:49:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QKOxkvxNzD7rxqxwBmHmJb7NgshPzc0L9/lBDGQCjyU=;
+        b=O5d5uCrqYq7WukFMaJ8slLI7O6P4WY+YopJ/77d9opSsWI7j5XeBsvJIVqgYAZ00s9
+         W7N/rFOKRuM4rQRMn4+qZfBm6DiZFjAWHMj3cKVZw5pDMdZYqmBz3qj3aJTriEQu3vYu
+         GnTyV98e6yHCpx/iVDqrwKWMre1w5IJ7j0gfeONqqrerif+P8Wgr/SdqkWYHvpfN8JgU
+         yfa2GFFdpUFIJmG8SO2qr/BWSSVQ0bP1bxai9q/NM5ngw0Lhgkx9k0zpRk611RVLurKO
+         jPoYTk0/pcfEJwRp7pSncRO+t2AdaiiWQrQF6a/JJm+R5DdtNb7Q3qN5zcmypWF8E/Hr
+         HOSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QKOxkvxNzD7rxqxwBmHmJb7NgshPzc0L9/lBDGQCjyU=;
+        b=QXlA/qjyTQyOJD2YXHmFOjOx184q5zJJJv90FlTMRp8hKNyvLizkg2xSZrny3lWEG3
+         C7Jn3LCMGOziX3yOLSlfzhT2EXurPhtpzGCp7WfFXsNpfh3FO1asW1XEQawUJdMK9N8P
+         hW/VbeYS6sbwwQ3vxjW3Q0PCKqRYCoKQ6gFmp0/EeEMbRpa2GaU9R/ZWG+e4U2qysab8
+         WXVyS0gdo5qG1uVPB6HR0SFK5Nzn9c043VvESg38Sr75dmkFxXaTEwW7+npQt9SBsNhf
+         B1I2kc1G/h8CGD+37IGZds7n0LwQyPR/k28spe25BEbbhv5p/WppoT3eKI80IV+k3hIM
+         IPPg==
+X-Gm-Message-State: AOAM533UkAAybw4tgKZetvLypjlM52vM+A5Bn7FgWX/xWotw5pQS76X4
+        2oAdxlsc86WlsgtncXrAvRg=
+X-Google-Smtp-Source: ABdhPJzboM3rEgvQCQKv/g+HA0Z2B1g0bc1GanHYDtklV31AgS45ZvWFHZZWx/u+AYWntUOOxKSRQA==
+X-Received: by 2002:a17:90a:c504:b0:1bf:6d9f:65a6 with SMTP id k4-20020a17090ac50400b001bf6d9f65a6mr7470086pjt.204.1646948989657;
+        Thu, 10 Mar 2022 13:49:49 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id p186-20020a62d0c3000000b004f6fa49c4b9sm7483756pfg.218.2022.03.10.13.49.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 13:49:49 -0800 (PST)
+Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kevin Cernekee <cernekee@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>
-Subject: Re: [PATCH 6/7] serial: 8250_dw: Add support for RZ/N1 DMA
-Message-ID: <20220310202743.1a2bf51d@xps13>
-In-Reply-To: <YipCsO+UMcGOqLaG@smile.fi.intel.com>
-References: <20220310161650.289387-1-miquel.raynal@bootlin.com>
-        <20220310161650.289387-7-miquel.raynal@bootlin.com>
-        <YipCsO+UMcGOqLaG@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20220310072239.4489-1-zajec5@gmail.com>
+ <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+ <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7d7ed784-f01f-44a0-4387-cd7a76a8abe4@gmail.com>
+Date:   Thu, 10 Mar 2022 13:49:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+On 3/10/22 12:33 AM, Rafał Miłecki wrote:
+> On 10.03.2022 09:19, Geert Uytterhoeven wrote:
+>> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+>>> From: Rafał Miłecki <rafal@milecki.pl>
+>>>
+>>> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+>>> documentation change regarding "depends" usage. Adjust Kconfig entry to
+>>> match current guidelines. Make this symbol available for relevant
+>>> architectures only.
+>>>
+>>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>>> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+>>> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform
+>>> dependency practises")
+>>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Thanks for your patch!
+>>
+>>> --- a/drivers/tty/serial/Kconfig
+>>> +++ b/drivers/tty/serial/Kconfig
+>>> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
+>>>   config SERIAL_BCM63XX
+>>>          tristate "Broadcom BCM63xx/BCM33xx UART support"
+>>>          select SERIAL_CORE
+>>> -       depends on COMMON_CLK
+>>> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
+>>> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
+>>
+>> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
+>> cover MIPS.  Is there some symbol covering ARM so we can change the
+>> depends to
+>>
+>>      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC ||
+>> COMPILE_TEST
+>>
+>> ?
+> 
+> Florian, Kevin: do you know what other platforms need that driver?
 
-andriy.shevchenko@linux.intel.com wrote on Thu, 10 Mar 2022 20:25:52
-+0200:
-
-> On Thu, Mar 10, 2022 at 05:16:49PM +0100, Miquel Raynal wrote:
-> > From: Phil Edworthy <phil.edworthy@renesas.com>
-> >=20
-> > The Renesas RZ/N1 devices have a modified Synopsys DW UART. The
-> > modifications are mostly related to the DMA handlnig, and so this patch
-> > adds support for DMA. =20
->=20
-> > The RZ/N1 UART must be used with the peripheral as the flow
-> > controller. =20
->=20
-> (1)
->=20
-> > This means the DMA length should also be programmed into
-> > UART registers. =20
->=20
-> (2)
->=20
-> Hmm... DMA controller vs. Peripheral flow control is about signalling on =
-the HW
-> level on who starts the transaction. This is programmed in the DMA contro=
-ller
-> device driver. Is it what you do in DesignWare DMA patch series?
->=20
-> Ah, I see now, you set fc here.
->=20
-> But still it's not clear how (2) and (1) are related.
-
-Both come from the system manual:
-(1) table 11.45 "Flow Control Combinations" states that using UART with
-DMA requires setting the DMA in the peripheral flow controller mode
-regardless of the direction.
-(2) chapter 11.6.1.3 "Basic Interface Definitions" explains that the
-burst size in the above case must be configured in the peripheral's
-register DEST/SRC_BURST_SIZE.
-
-> > Aside from this, there are some points to note about DMA burst sizes.
-> > First, DMA must not remove all of the data from the rx FIFO. Otherwise,
-> > we do not get a 'character timeout' interrupt, and so do not know that
-> > we should push data up the serial stack. Therefore, we have the rx
-> > threshold for generating an interrupt set to half the FIFO depth (this
-> > is the default for 16550A), and set the DMA burst size when reading the
-> > FIFO to a quarter of the FIFO depth.
-> >=20
-> > Second, when transmitting data using DMA, the burst size must be limited
-> > to 1 byte to handle then case when transmitting just 1 byte. Otherwise
-> > the DMA doesn't complete the burst, and nothing happens. =20
->=20
-> ...
->=20
-> > +/* Offsets for the Renesas RZ/N1 DesignWare specific registers */
-> > +/* DMA Software Ack */
-> > +#define RZN1_UART_DMASA			0xa8 =20
->=20
-> Is it specific to Renesas? IIRC it's Synopsys DesignWare register, makes
-> sense to use appropriate prefix or no prefix.
-
-I have no idea, I can use a more common prefix.
-
->=20
-> ...
->=20
-> > +#define RZN1_UART_xDMACR_1_WORD_BURST	0
-> > +#define RZN1_UART_xDMACR_4_WORD_BURST	BIT(1)
-> > +#define RZN1_UART_xDMACR_8_WORD_BURST	(BIT(1) | BIT(2)) =20
->=20
-> This looks like incorrect use of BIT() macro.
-> Please, use plain decimal integers. Something like
->=20
-> 	1	(0 << 1)
-> 	4	(1 << 1)
-> 	8	(3 << 1)
->=20
-> If I'm mistaken, describe the meaning of each bit there.
-
-Matter of taste, I believe, whatever.
-
->=20
-> ...
->=20
-> > +static void rzn1_8250_handle_irq(struct uart_port *port, unsigned int =
-iir)
-> > +{
-> > +	struct uart_8250_port *up =3D up_to_u8250p(port);
-> > +	struct uart_8250_dma *dma =3D up->dma;
-> > +	unsigned char status; =20
->=20
-> > +	if (up->dma && dma->rx_running) { =20
->=20
-> With
->=20
-> 	if (!)up->dma && dma->rx_running))
-> 		return;
->=20
-> maybe easier to read the rest.
->=20
-> > +		status =3D port->serial_in(port, UART_LSR);
-> > +		if (status & (UART_LSR_DR | UART_LSR_BI)) {
-> > +			/* Stop the DMA transfer */
-> > +			writel(0, port->membase + RZN1_UART_RDMACR);
-> > +			writel(1, port->membase + RZN1_UART_DMASA);
-> > +		}
-> > +	}
-> > +} =20
->=20
-> ...
->=20
-> > +	if (d->is_rzn1 && ((iir & 0x3f) =3D=3D UART_IIR_RX_TIMEOUT))
-> > +		rzn1_8250_handle_irq(p, iir); =20
->=20
-> A few years ago it was a discussion about broken timeout on some platforms
-> with Synopsys DesignWare UART + DMA. Can it be that this is actually requ=
-ired
-> for all of them that uses same combination of IPs?
-
-I am not sure because I went through the fix for this issue and for me
-there are two different things
-
->=20
-> ...
->=20
-> > +static u32 rzn1_get_dmacr_burst(int max_burst)
-> > +{ =20
->=20
-> > +	u32 val =3D 0; =20
->=20
-> Redundant assignment and variable itself. Use return statements directly.
->=20
-> > +	if (max_burst >=3D 8)
-> > +		val =3D RZN1_UART_xDMACR_8_WORD_BURST;
-> > +	else if (max_burst >=3D 4)
-> > +		val =3D RZN1_UART_xDMACR_4_WORD_BURST;
-> > +	else
-> > +		val =3D RZN1_UART_xDMACR_1_WORD_BURST;
-> > +
-> > +	return val;
-> > +} =20
->=20
-> ...
->=20
-> > +static int rzn1_dw8250_tx_dma(struct uart_8250_port *p)
-> > +{
-> > +	struct uart_port		*up =3D &p->port;
-> > +	struct uart_8250_dma		*dma =3D p->dma;
-> > +	struct circ_buf			*xmit =3D &p->port.state->xmit;
-> > +	int tx_size;
-> > +	u32 val;
-> > +
-> > +	if (uart_tx_stopped(&p->port) || dma->tx_running ||
-> > +	    uart_circ_empty(xmit))
-> > +		return 0;
-> > +
-> > +	tx_size =3D CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE); =
-=20
->=20
-> > +	writel(0, up->membase + RZN1_UART_TDMACR);
-> > +	val =3D rzn1_get_dmacr_burst(dma->txconf.dst_maxburst);
-> > +	val |=3D tx_size << RZN1_UART_xDMACR_BLK_SZ_OFFSET;
-> > +	val |=3D RZN1_UART_xDMACR_DMA_EN;
-> > +	writel(val, up->membase + RZN1_UART_TDMACR); =20
->=20
-> Can this be added as a callback to the serial8250_tx_dma()?
-> Ditto for Rx counterpart.
-
-Fair enough.
-
->=20
-> > +	return serial8250_tx_dma(p);
-> > +} =20
->=20
-> ...
->=20
-> > +	data->is_rzn1 =3D of_device_is_compatible(dev->of_node, "renesas,rzn1=
--uart"); =20
->=20
-> Device property API.
-
-I'm not sure to get what you mean here again. The Information is in the
-device tree, the compatible string already gives us what we need, why
-would we need a device property? (or perhaps I misunderstand what
-"device property API" means)
->=20
-> >  	/* Always ask for fixed clock rate from a property. */
-> >  	device_property_read_u32(dev, "clock-frequency", &p->uartclk); =20
->=20
-
-
-Thanks,
-Miqu=C3=A8l
+Yes that would be ARCH_BCM_63XX.
+-- 
+Florian
