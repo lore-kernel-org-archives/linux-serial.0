@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73524C43219
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 16:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9BFC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 16:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239784AbiCJQXU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 11:23:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
+        id S243086AbiCJQXV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:23:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244201AbiCJQW4 (ORCPT
+        with ESMTP id S244226AbiCJQW5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 11:22:56 -0500
+        Thu, 10 Mar 2022 11:22:57 -0500
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E5619ABDF
-        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 08:20:43 -0800 (PST)
-Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 33A7CCE164
-        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 16:17:06 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E7F13C9D4
+        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 08:20:44 -0800 (PST)
+Received: from relay6-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::226])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4A7A4CF244
+        for <linux-serial@vger.kernel.org>; Thu, 10 Mar 2022 16:17:08 +0000 (UTC)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 139A9C0002;
-        Thu, 10 Mar 2022 16:16:53 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D781FC0010;
+        Thu, 10 Mar 2022 16:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646929016;
+        t=1646929022;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OI+rKHEpqRIrjR3Tah2YGtk8yTfjmktV3JYE6NKdQlQ=;
-        b=dTs3NKGUK1vPl99yeVirt1PGt18l2hPMSM0LqG0eRCoCkiAkbPBObpQcEokGH8/FHly5ah
-        ostyAeBni+/FxTM2Wly7YTx7ld7lsHdvCEdW4MpFD47YAsZaxyOT1zmE+yRaFUheR6LBXk
-        KVmRJbYAm2i8XjXbef228Mg8c6vD9eeCLwhmAsK7wf9sKn5iSzVr14z9CkSsuAO9IpYvsR
-        csAoSeqsUzZ1YYmrtJrubQbUN7ZsexWAmAa3FEbRMlBdZyq/eJuvV09UIIB11co1tamwTH
-        W50z2dDtj9gzUhtr94eBYY1k2lpQEBfbvX+Cn3WEptro8AJ1Tw7g0y0VsXR4DA==
+        bh=FPCSyHd7wkuRRyYu2juVlQEYNZijKkKxdQfMbYXWDos=;
+        b=Yc5tsTQC2tsD3R1Nxu1KKab3oHy1kAXFfdc7MytzOdO44xiwC4Fkg6kFRsqpGS1PFJN/PR
+        +dZIllOMm2a5wweNCIhZuAp/gC8dSMyfjNvCuRYs1NB8uVEHLE808vpkKuUaMP3+izvAgs
+        rYAh0KMERNv+O+tz0gtR1qpYnBLKfmNfirJ3Gq19y40bSCc8MOMoEfcS0669GtUZZj+FL7
+        IQ4/3cuO+lfrT5OgNkP5Ah3oo+w0iinA+jhZvWipWazhsH9pjbV2a9VeSN5VByZ9qnEHtQ
+        9P194hravE96WtdsmURc0zNO/SLwYPwLOKW5RyHkZQ2FBTvNn28mxgUdPZw/Kg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     linux-renesas-soc@vger.kernel.org,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 1/7] serial: 8250_dma: Use ->tx_dma function pointer to start next DMA
-Date:   Thu, 10 Mar 2022 17:16:44 +0100
-Message-Id: <20220310161650.289387-2-miquel.raynal@bootlin.com>
+Subject: [PATCH 4/7] serial: 8250_dw: Provide the RZN1 CPR register value
+Date:   Thu, 10 Mar 2022 17:16:47 +0100
+Message-Id: <20220310161650.289387-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220310161650.289387-1-miquel.raynal@bootlin.com>
 References: <20220310161650.289387-1-miquel.raynal@bootlin.com>
@@ -63,43 +63,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Phil Edworthy <phil.edworthy@renesas.com>
+On the RZN1 SoC, the DW serial IP has been synthesized without CPR
+support. In order to continue being able to parse the hardware
+capabilities, provide the equivalent register value as platform data.
 
-The 8250 driver is quite flexible. Regarding DMA handling, there is the
-possibility to either use the default helper (serial8250_tx_dma()) or
-call a specific function. Only the omap and brcm implementation do
-that. In both cases, they don't use the serial8250_tx_dma() helper at
-all.
-
-As we are going to write a new DMA handling function for the RZ/N1 SoCs
-which will use the serial8250_tx_dma() implementation (preceded by a
-couple of register writes), we need the ->tx_dma() pointer to link to
-our own function, but within the __dma_tx_complete() helper we also need
-to call our own implementation instead of the default one directly.
-
-In order to do that, let's call ->tx_dma() instead of
-serial8250_tx_dma() from __dma_tx_complete().
-
-Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-[miquel.raynal@bootlin.com: Re-write commit message]
+Suggested-by: Phil Edworthy <phil.edworthy@renesas.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 890fa7ddaa7f..a0563f2341ac 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -33,7 +33,7 @@ static void __dma_tx_complete(void *param)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&p->port);
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index ee7562a9ec76..1f7a423d6ef2 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -677,11 +677,15 @@ static const struct dev_pm_ops dw8250_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+ };
  
--	ret = serial8250_tx_dma(p);
-+	ret = dma->tx_dma(p);
- 	if (ret)
- 		serial8250_set_THRI(p);
- 
++static const struct dw8250_platform_data rzn1_pdata = {
++	.cpr = 0x00012f32,
++};
++
+ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+ 	{ .compatible = "cavium,octeon-3860-uart" },
+ 	{ .compatible = "marvell,armada-38x-uart" },
+-	{ .compatible = "renesas,rzn1-uart" },
++	{ .compatible = "renesas,rzn1-uart", .data = &rzn1_pdata },
+ 	{ .compatible = "starfive,jh7100-uart" },
+ 	{ /* Sentinel */ }
+ };
 -- 
 2.27.0
 
