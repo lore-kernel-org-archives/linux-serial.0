@@ -2,120 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF1BC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 00:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36904C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 07:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238483AbiCJAPe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Mar 2022 19:15:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        id S234690AbiCJHX5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 02:23:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238468AbiCJAPe (ORCPT
+        with ESMTP id S230314AbiCJHX4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Mar 2022 19:15:34 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622C55BD38
-        for <linux-serial@vger.kernel.org>; Wed,  9 Mar 2022 16:14:34 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id b15so822223edn.4
-        for <linux-serial@vger.kernel.org>; Wed, 09 Mar 2022 16:14:34 -0800 (PST)
+        Thu, 10 Mar 2022 02:23:56 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1AB4F9D0;
+        Wed,  9 Mar 2022 23:22:55 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id l20so7814932lfg.12;
+        Wed, 09 Mar 2022 23:22:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6YOi63Y4UP1PxQIOJspMhCwWLw9KtU08nAJtSydjZYc=;
-        b=ndLnV1n/Cj/VOOqVdnS1BUd+irOj0yq6+IhyDGRmeUD7EdPsTQEL0tSrZjhbJDKx5v
-         HKwiDEpH4dZd1KSzFoOc1+usH/ySFbHje/5+3KfuIxLocRKXPGtD287yO40DXZCx/hJh
-         TtDAT0zyBfLi10li350C7mskcVtQIQ6KYd1Is=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uRNunbfVJZj3V0khFzxC/exb9GUQby76Xdm8mxOwtM0=;
+        b=DPAc3c3nnRtlOHHtjP2fyr/s7e94DFESjfTzk9QZ6Q7yiwbI/nqyNz4TB+C2UKsDiq
+         /73o4A3M9ECUpbR1iBVfXIGYxdgiZF/ZYjHMnhi/YTiMElZ9canqG5ZkxZSsUYQb1MqF
+         rQjEHFnhdrHbfyuee3+Bmx67MhVMUAMJTwEWGyzKRr4tjzqrJBIG3G/0+V9CCEkZQOrJ
+         qmfAVhgBb43mGrPsiigZsBDUc7xxaWbKR3lrVWMst3LNeUHtwaHUMAyN1rrNA7ajwBwq
+         dBCWmQgupSWWsnaPOyrlmIXiO6w1GFtNUR+OBwmObY5jOgPf7MDTaO9UIfaR5sIO8guJ
+         I0pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6YOi63Y4UP1PxQIOJspMhCwWLw9KtU08nAJtSydjZYc=;
-        b=LNeFh3QSzFCu4o9SKYY684MliNX1+Zd001KaKLZWQpeJmqyLGY76zTwDQ1JoOH3S3L
-         8+qZFR19H65KfbA36xXiQ7aRHo0OPYzw9lQK4PadeC4mzOw1v6BpD4+KHs20kSxLc2rY
-         bzdX+jmesW0j+JlRHovK4BZN13LHVvFjL2vSBE56CgSt+Y8Dz7LLa41IdyfxxhPrKKwQ
-         8wvJNe+LF6OhD67tSLPoVNL+2pfl1zLniFCX6NPNvr9pTeBVmvAPqDKR/4wsgQ+NQrqI
-         3uoqOu7UvnxYb0h1OyTh1JCerie3mgOGkhiL3a+qQW/LU1ktUcgCl3vKmUrblxCe5bF6
-         QlCg==
-X-Gm-Message-State: AOAM531u5JZHv0Vq6sua0AacoVXdCcpcKhGVmrdkfujHdWH7vnpciTCM
-        c4633DBKHE+NPyjhS9DiG3dLl2US3UjfZhcu
-X-Google-Smtp-Source: ABdhPJwNjydCkviRZQVDjHK8bAb3jbnpnyPie8SZbRt8nRiM2M8vCJQlonf0gO7KV8D1qrdwX2yeCQ==
-X-Received: by 2002:aa7:d403:0:b0:40f:739c:cbae with SMTP id z3-20020aa7d403000000b0040f739ccbaemr1858040edq.267.1646871272739;
-        Wed, 09 Mar 2022 16:14:32 -0800 (PST)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id h12-20020a1709060f4c00b006b4ec988cc3sm1254630ejj.4.2022.03.09.16.14.31
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 16:14:31 -0800 (PST)
-Received: by mail-wm1-f42.google.com with SMTP id k29-20020a05600c1c9d00b003817fdc0f00so2410362wms.4
-        for <linux-serial@vger.kernel.org>; Wed, 09 Mar 2022 16:14:31 -0800 (PST)
-X-Received: by 2002:a1c:7518:0:b0:37c:7eb:f255 with SMTP id
- o24-20020a1c7518000000b0037c07ebf255mr9408784wmc.29.1646871270537; Wed, 09
- Mar 2022 16:14:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uRNunbfVJZj3V0khFzxC/exb9GUQby76Xdm8mxOwtM0=;
+        b=nuLzegrWJjU6c1aR1xaFBasDHbZBPd96qfj9nFejuXafOq80fEEGhxsGHt1DnlaKlG
+         Hv2T0uF61lsFhW3MG4mVNo0NbHYgyn74w68JZG93PnYgEhY8Vgk3guqO/9z6QNi0utGP
+         5qoC0++JFEfBUGF6QQtqyuTgJq5RijpRi92nBFRQDyGN/U84rCWzLvb9g7HZya73kTUk
+         StiN1+GOxLQAV7fZRIhlpehtt3Uh+AUU/zfgML2+XXBvOv+l8JgWms2KpZ5g5EE+iya7
+         1dP82TGsJE5r+tiAcXbonfbFTtI7ybVIMhelE6bkTatkNXI/oBCoWPYEtC9IbQkbHpa1
+         xeRQ==
+X-Gm-Message-State: AOAM5321MsoHCSDpLnHD8tslMRx9j3KbnzUnt49SEAistcQ5fnrCHSEz
+        2fOSHxVZn4g9rRkT2OvN1ec=
+X-Google-Smtp-Source: ABdhPJx1HRJ6odDkpoCnKTs3Zu46b1u9QFUfxqdZZRDSKc8J875snzWrgbaWzfBjTjwbZjrEq+KrkA==
+X-Received: by 2002:a05:6512:10c8:b0:448:3fdc:6407 with SMTP id k8-20020a05651210c800b004483fdc6407mr2112352lfg.360.1646896974120;
+        Wed, 09 Mar 2022 23:22:54 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id y23-20020a2e95d7000000b00247e4e386aasm894075ljh.121.2022.03.09.23.22.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 23:22:53 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
+Date:   Thu, 10 Mar 2022 08:22:39 +0100
+Message-Id: <20220310072239.4489-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220309033018.17936-1-rdunlap@infradead.org>
-In-Reply-To: <20220309033018.17936-1-rdunlap@infradead.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 9 Mar 2022 16:14:18 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=ViPnSnoSYHSJFvyzkJ+Q+w7JuZFWS7u5BQxN6KHquGyw@mail.gmail.com>
-Message-ID: <CAD=FV=ViPnSnoSYHSJFvyzkJ+Q+w7JuZFWS7u5BQxN6KHquGyw@mail.gmail.com>
-Subject: Re: [PATCH v2] kgdboc: fix return value of __setup handler
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        He Zhe <zhe.he@windriver.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-On Tue, Mar 8, 2022 at 7:30 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> __setup() handlers should return 1 to obsolete_checksetup() in
-> init/main.c to indicate that the boot option has been handled.
-> A return of 0 causes the boot option/value to be listed as an Unknown
-> kernel parameter and added to init's (limited) environment strings.
-> So return 1 from kgdboc_option_setup().
->
-> Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
->   kgdboc=kbd kgdbts=", will be passed to user space.
->
->  Run /sbin/init as init process
->    with arguments:
->      /sbin/init
->    with environment:
->      HOME=/
->      TERM=linux
->      BOOT_IMAGE=/boot/bzImage-517rc7
->      kgdboc=kbd
->      kgdbts=
->
-> Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
-> Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-> Cc: He Zhe <zhe.he@windriver.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: kgdb-bugreport@lists.sourceforge.net
-> Cc: Jason Wessel <jason.wessel@windriver.com>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: linux-serial@vger.kernel.org
-> ---
-> v2- correct Fixes: tag(s) (thanks Doug)
->   - drop Cc: Laura Abbott <labbott@redhat.com> (bouncing)
->   - add a reference to init/main.c::obsolete_checksetup()
->
->  drivers/tty/serial/kgdboc.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+documentation change regarding "depends" usage. Adjust Kconfig entry to
+match current guidelines. Make this symbol available for relevant
+architectures only.
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ drivers/tty/serial/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e952ec5c7a7c..99313e16c2be 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
+ config SERIAL_BCM63XX
+ 	tristate "Broadcom BCM63xx/BCM33xx UART support"
+ 	select SERIAL_CORE
+-	depends on COMMON_CLK
++	depends on MIPS || ARM || ARM64 || COMPILE_TEST
++	default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
+ 	help
+ 	  This enables the driver for the onchip UART core found on
+ 	  the following chipsets:
+-- 
+2.34.1
+
