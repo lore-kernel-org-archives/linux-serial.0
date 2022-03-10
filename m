@@ -2,119 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED441C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 08:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89173C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Mar 2022 08:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240286AbiCJIVL convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Mar 2022 03:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S232250AbiCJIeL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 10 Mar 2022 03:34:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240279AbiCJIVJ (ORCPT
+        with ESMTP id S240361AbiCJIeL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Mar 2022 03:21:09 -0500
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348E37EA1A;
-        Thu, 10 Mar 2022 00:20:09 -0800 (PST)
-Received: by mail-qt1-f175.google.com with SMTP id s15so4000453qtk.10;
-        Thu, 10 Mar 2022 00:20:09 -0800 (PST)
+        Thu, 10 Mar 2022 03:34:11 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DCC5C864;
+        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id s25so6675227lji.5;
+        Thu, 10 Mar 2022 00:33:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
+        b=UrjYq2/KyC3hvwORoAq2rAi9RMIsuR0umGHAz3DXdsGHU46VPLPpRZ7oxHgbMoZzfP
+         TpJPe7CbBMnfx/r97HrJIw8EChbICBje8UAdC9Xur7ScmBVscc+jU56Vbgzb0NFuyZ3L
+         Yr3DRddja/lhGnlemyu7O8ubgNs5p3fxjkfcF9hpjCvEkIDhWBW7Hb4SHkDbe9ZR3sKe
+         JSLTPqNPtGssgo/N6E/lV8jQE4RiK2pu5k5MCrEjkdKQGSt6kEugPFgkbIDoRlYVB0sl
+         u+5CMCvl2xxZtIiEx+I8NV02zzxhBW9yTYM3QTD8161ihrXzLxtgEfWnTWwBF8jH6EzQ
+         PARw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VXCwsz1vlxRfyJE4o5+R6FHrnMiGPF9OZgitO+Nevyc=;
-        b=1VnvRBgE966LFf+pkHbZblfvOSLEedEyzIMClMcbnucaD/kDhCzREy3wsAQvhNIzS0
-         fGP8t+V7+bmt3yu8q0/K1feogJnzEceAsEMzVHzjkV5LEL8IlPW/zWSOV1V9VTobrbTO
-         WyestBLNiNG1/yHvLjHc2B+Oc1fxJ4mKg/w7nJ/KXDVLSz/0DNi8UZVIF5S8MXI6jUXR
-         r5fchmQU3jWlXhjcckgrciRAo5rRPLtOLQf8GxlKj+Nh2kxG+ZD94votk/AR07S3iqrS
-         a9WFa+KvlnogQABbi4ygLRzVDdijzgPHnwDzxEMtwToDFNpdHTPiKqwVh4i3ViHs1BZ/
-         ksLg==
-X-Gm-Message-State: AOAM5332ElyyMYMt5e6MgbraVpk6lwMCkZTjkKrWL1aoHohfhMTqRitp
-        WlRjTNvQeVl/EWvV3iRDaFZG/DN6v0TaJQ==
-X-Google-Smtp-Source: ABdhPJzYJvEw8bUf5xBR6XkHULSNNJu1guSwW1bkZGZgjiTnWekCQx7voDZ+1cZQ2tD39nCnBl8Giw==
-X-Received: by 2002:a05:622a:1454:b0:2de:922e:3209 with SMTP id v20-20020a05622a145400b002de922e3209mr2899776qtx.471.1646900407541;
-        Thu, 10 Mar 2022 00:20:07 -0800 (PST)
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
-        by smtp.gmail.com with ESMTPSA id c16-20020a05622a059000b002dc93dc92d1sm2774990qtb.48.2022.03.10.00.20.06
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5kbIEXrorz/H9DvUKGpzubyMEhfXDoMfMqyoxlkwx5s=;
+        b=5Sh4abJehEyo0VSM39lvJygbENY3Nnhzu7pS7NqESB+Y0beRufDihnkM32zLB8ja2g
+         73a4PDMGbWsa4yrnizk34viClI8fdhjSngsK8+7q5yQnD7yaG7oMw94Am/ElGOpnVTfM
+         KOvV3EbnzhPDVC+dgqlz+urpLNB1yQiQN59HVAdETBLTrRo0yM+6DKVFBb9gqRUEMtmv
+         9JwDrdExcwBZ+O2BcGBmf5YpZ9P3TrAtBGqttSFZ020V54crHQsexaBh6e+GBbvZlhpA
+         cUYKE0fdcppNja9lY8EXYdfCB1SAg6nafGTV0YveLIIiQpU8g8newNS9KTy8gT+v3AmY
+         2JMw==
+X-Gm-Message-State: AOAM531E6ZhOwLRiE3ZyxIAjUBDxoE/DKD+Ofncibdhm8nI69ypf5j2G
+        o09l+pEoLyp6K0TaaslMsqA=
+X-Google-Smtp-Source: ABdhPJxzhyaNeFJBtRmOqugCqJRepynC1ipQE7qbVJiJc/tZWrPO6G4gzHfE6PWCrhciUe6CBTBY2w==
+X-Received: by 2002:a2e:54b:0:b0:248:744:b859 with SMTP id 72-20020a2e054b000000b002480744b859mr2331586ljf.37.1646901187276;
+        Thu, 10 Mar 2022 00:33:07 -0800 (PST)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id j7-20020a2e3c07000000b00247fd2f7f46sm926039lja.47.2022.03.10.00.33.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 00:20:06 -0800 (PST)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2db2add4516so49821587b3.1;
-        Thu, 10 Mar 2022 00:20:06 -0800 (PST)
-X-Received: by 2002:a81:5a08:0:b0:2db:d8c6:7e4f with SMTP id
- o8-20020a815a08000000b002dbd8c67e4fmr3028923ywb.256.1646900406218; Thu, 10
- Mar 2022 00:20:06 -0800 (PST)
+        Thu, 10 Mar 2022 00:33:06 -0800 (PST)
+Message-ID: <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com>
+Date:   Thu, 10 Mar 2022 09:33:06 +0100
 MIME-Version: 1.0
-References: <20220310072239.4489-1-zajec5@gmail.com>
-In-Reply-To: <20220310072239.4489-1-zajec5@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 10 Mar 2022 09:19:54 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
-Message-ID: <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
 Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
         "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
         bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+References: <20220310072239.4489-1-zajec5@gmail.com>
+ <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rafał,
+On 10.03.2022 09:19, Geert Uytterhoeven wrote:
+> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+>> documentation change regarding "depends" usage. Adjust Kconfig entry to
+>> match current guidelines. Make this symbol available for relevant
+>> architectures only.
+>>
+>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+>> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
+>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Thanks for your patch!
+> 
+>> --- a/drivers/tty/serial/Kconfig
+>> +++ b/drivers/tty/serial/Kconfig
+>> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
+>>   config SERIAL_BCM63XX
+>>          tristate "Broadcom BCM63xx/BCM33xx UART support"
+>>          select SERIAL_CORE
+>> -       depends on COMMON_CLK
+>> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
+>> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
+> 
+> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
+> cover MIPS.  Is there some symbol covering ARM so we can change the
+> depends to
+> 
+>      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
+> 
+> ?
 
-On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
->
-> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
-> documentation change regarding "depends" usage. Adjust Kconfig entry to
-> match current guidelines. Make this symbol available for relevant
-> architectures only.
->
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
-> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Florian, Kevin: do you know what other platforms need that driver?
 
-Thanks for your patch!
-
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
->  config SERIAL_BCM63XX
->         tristate "Broadcom BCM63xx/BCM33xx UART support"
->         select SERIAL_CORE
-> -       depends on COMMON_CLK
-> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
-> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
-
-So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
-cover MIPS.  Is there some symbol covering ARM so we can change the
-depends to
-
-    depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-
-?
-
-Anyway, this is definitely a step in the good direction!
-
->         help
->           This enables the driver for the onchip UART core found on
->           the following chipsets:
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Ref: c0ec3fd123e9 ("tty: serial: bcm63xx: Allow bcm63xx_uart to be built on other platforms")
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0ec3fd123e9e64e095fb221ace841e00c04e40b
