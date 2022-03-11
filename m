@@ -2,89 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A74C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 07:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D403C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346685AbiCKHDY (ORCPT
+        id S236544AbiCKJOy convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:03:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
+        Fri, 11 Mar 2022 04:14:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346916AbiCKHDQ (ORCPT
+        with ESMTP id S235073AbiCKJOx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:03:16 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D881AAFEA;
-        Thu, 10 Mar 2022 23:02:14 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id o22so6636284qta.8;
-        Thu, 10 Mar 2022 23:02:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UvaYo2cimBpUC52A1zMiwrJzooNeMXFHyymI5Ni0pQY=;
-        b=bOUtlZpsu4wVKoOC+ID+rxLV9D6EYjf4g/iYWDPPeOpwRsK+Fyqx1Yet4K7S4WQHFF
-         AasMvFtO9ZI5hcBNDqkfu3mPyg8rJ/XrzsKRXkxLk7g5X0PFbwRmO6biYfT4YG47O+TA
-         FmVFFUOvsdmZbz2fHIbs9zogimPS+c1TzWsu2fzbQfJGj9QAJjwVMjzsGRhiSfQT1c5O
-         JvN+S1/vEva+vzVvLkaDbuzeQAWuBSTVEvHSPNKaWfExvdoLhd39RS16CV2mFUe94Pnu
-         epe3dKFiXkjF2qOU3e/sBmctv3naGUIIGmz9CTN10gqs/bovizOOoQR70qzeNa8vBWUW
-         V6LQ==
+        Fri, 11 Mar 2022 04:14:53 -0500
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC841BB716;
+        Fri, 11 Mar 2022 01:13:50 -0800 (PST)
+Received: by mail-qt1-f173.google.com with SMTP id s15so6804816qtk.10;
+        Fri, 11 Mar 2022 01:13:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UvaYo2cimBpUC52A1zMiwrJzooNeMXFHyymI5Ni0pQY=;
-        b=jjNWlN8a7eldy735lhqBBDHc91jZ2Y7n+xlV54RwsvkaQv7DRbTfyCC6bXwhMK7hZR
-         oUUCemBE+KTv1/ycl1LFR1EwlGa4xF1UTNxb/QjaHpSwZuJyOt+U1wav+UzFw6tG5zGC
-         y5aBg2uxkcGC0isGhhyPDHF5cKhoSDMZ+QthXSyT75i9tXXdxvPJyR1xjIc53OfVm6+O
-         UpoZrVsYvUu4H0m8/WZJZJegr2BAyC02xlZarbCltVnF7vvnK6hdIQmJVFi8uJBtGEpI
-         4ojQXMsLY3y7E9Cc8aAnEY9IfW9ACLuN+07TjDz/QybD5kaiHz81OYGGgNmTQyzUBJq+
-         qLZw==
-X-Gm-Message-State: AOAM532FOt2mxvRL13IcxG/qdHb7moHtKdxfcqPHBheRNfdCRHyXarSs
-        WOLery4vyXizJK5zXS4CXV4y/lowB/o=
-X-Google-Smtp-Source: ABdhPJx2kZLNWgXhY+Tv5Ear02WQgXVRYuHG+84lw/Yvp1LZhPYxbxNGrxl045/ZGRpelOTw6ha56Q==
-X-Received: by 2002:a05:622a:1c1:b0:2e1:b35c:2aa9 with SMTP id t1-20020a05622a01c100b002e1b35c2aa9mr4622353qtw.313.1646982133259;
-        Thu, 10 Mar 2022 23:02:13 -0800 (PST)
-Received: from localhost.localdomain (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
-        by smtp.gmail.com with ESMTPSA id k8-20020a05620a138800b00679fc7566fcsm3352834qki.18.2022.03.10.23.02.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 23:02:12 -0800 (PST)
-From:   Trevor Woerner <twoerner@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [PATCH 3/3] serial: 8250_fintek.c: Clean up set_termios() message
-Date:   Fri, 11 Mar 2022 02:02:02 -0500
-Message-Id: <20220311070203.18159-3-twoerner@gmail.com>
-X-Mailer: git-send-email 2.34.1.75.gabe6bb3905
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Qy21Roxk7Jw81ENX+w2eLBpFqTOjz71afyIHHh67koY=;
+        b=JpCokKohe3Vf6rV0NTt7oC3LuZNFXf3lalpq710xBlXxLjP2eKb7PkiC+OSjJl53nt
+         Z0QuHwf9Kkn2yg/6IEMO8vZckX7jRngd/1y+J1aZ3aKGErp/++6AfL8cA5pBspuGmFrK
+         oEatYWvGQZJifD/bs/iIE8Ohg0J5YN0R9Rr0AbWlPm9mWqWc1Dmgy+8QDrB2OPfQo50X
+         zLljhon77fGq1VLrDo2EoKNavvt4BbU3Zw7xC446OUC/i+CYQsJPkOj9eS9xkRorguDO
+         z7yVX2pAZ02pQ8nGl7vd66kloMN0kBjISmKi6o6KExM5+j9+di8Q1AxCTPMFmMWIa2q7
+         dY0w==
+X-Gm-Message-State: AOAM532YaNCgB4mWftw3f7LItZ8g3r9/zQU9/2l7+CbuFpSEcrC42hxb
+        JVhAzZwgEKMKe1JONXWcpJMZSEVy0/fu4w==
+X-Google-Smtp-Source: ABdhPJys4pNJaGnGgKuKQ6lJQlNzMX6ZiS2VMpULUfPkF+iD+DvbEAJ1gNytidkPvG3lnWYOMfjsKA==
+X-Received: by 2002:ac8:5743:0:b0:2e0:6069:8c54 with SMTP id 3-20020ac85743000000b002e060698c54mr7372813qtx.30.1646990028615;
+        Fri, 11 Mar 2022 01:13:48 -0800 (PST)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
+        by smtp.gmail.com with ESMTPSA id f19-20020ac859d3000000b002de4d014733sm4993038qtf.13.2022.03.11.01.13.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 01:13:48 -0800 (PST)
+Received: by mail-yb1-f177.google.com with SMTP id z30so16005797ybi.2;
+        Fri, 11 Mar 2022 01:13:47 -0800 (PST)
+X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
+ 187-20020a250dc4000000b006292337f9eamr7243141ybn.6.1646990027606; Fri, 11 Mar
+ 2022 01:13:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220310072239.4489-1-zajec5@gmail.com> <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
+ <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com> <7d7ed784-f01f-44a0-4387-cd7a76a8abe4@gmail.com>
+In-Reply-To: <7d7ed784-f01f-44a0-4387-cd7a76a8abe4@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 11 Mar 2022 10:13:36 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU92K9ZLptwJPG_opA4Reg61ksOgQ-P+2niHX=bf306Kg@mail.gmail.com>
+Message-ID: <CAMuHMdU92K9ZLptwJPG_opA4Reg61ksOgQ-P+2niHX=bf306Kg@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Kevin Cernekee <cernekee@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Clean up the status message that is given in the case where a custom
-termios() is not installed.
+Hi Florian,
 
-Signed-off-by: Trevor Woerner <twoerner@gmail.com>
----
- drivers/tty/serial/8250/8250_fintek.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Mar 10, 2022 at 10:49 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> On 3/10/22 12:33 AM, Rafał Miłecki wrote:
+> > On 10.03.2022 09:19, Geert Uytterhoeven wrote:
+> >> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+> >>> From: Rafał Miłecki <rafal@milecki.pl>
+> >>>
+> >>> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
+> >>> documentation change regarding "depends" usage. Adjust Kconfig entry to
+> >>> match current guidelines. Make this symbol available for relevant
+> >>> architectures only.
+> >>>
+> >>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> >>> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
+> >>> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform
+> >>> dependency practises")
+> >>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> >>
+> >> Thanks for your patch!
+> >>
+> >>> --- a/drivers/tty/serial/Kconfig
+> >>> +++ b/drivers/tty/serial/Kconfig
+> >>> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
+> >>>   config SERIAL_BCM63XX
+> >>>          tristate "Broadcom BCM63xx/BCM33xx UART support"
+> >>>          select SERIAL_CORE
+> >>> -       depends on COMMON_CLK
+> >>> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
+> >>> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
+> >>
+> >> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
+> >> cover MIPS.  Is there some symbol covering ARM so we can change the
+> >> depends to
+> >>
+> >>      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC ||
+> >> COMPILE_TEST
+> >>
+> >> ?
+> >
+> > Florian, Kevin: do you know what other platforms need that driver?
+>
+> Yes that would be ARCH_BCM_63XX.
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 03ad2354d808..dcab23d1965e 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -333,7 +333,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
- 	default:
- 		/* Don't change clocksource with unknown PID */
- 		dev_warn(port->dev,
--			"%s: pid: %x Not support. use default set_termios.\n",
-+			"%s: chipID: %x not supported; using default set_termios.\n",
- 			__func__, pdata->pid);
- 		goto exit;
- 	}
--- 
-2.34.1.75.gabe6bb3905
+Had to read this twice, before I realized this is different from BCM63XX.
 
+As we already have
+
+    drivers/char/hw_random/Kconfig:    ARCH_BCM_63XX || BCM63XX ||
+BMIPS_GENERIC || COMPILE_TEST
+    drivers/spi/Kconfig: depends on BCM63XX || BMIPS_GENERIC ||
+ARCH_BCM_63XX || COMPILE_TEST
+
+and drivers/tty/serial/Kconfig would be a third case, would it make
+sense to unify BCM63XX and ARCH_BCM_63XX into a single symbol?
+We already share several ARCH_* symbols between arm and arm64,
+and I expect more will be shared with riscv in the future
+(e.g. ARCH_RENESAS).
+
+Or are MIPS BCM63xx and ARM BCM63xx too dissimilar?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
