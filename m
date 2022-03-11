@@ -2,104 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBC9C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07597C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239789AbiCKJdz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:33:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S1346927AbiCKJlR (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Mar 2022 04:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347506AbiCKJdv (ORCPT
+        with ESMTP id S1343772AbiCKJlP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:33:51 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBD46580B;
-        Fri, 11 Mar 2022 01:32:47 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id h11so11297273ljb.2;
-        Fri, 11 Mar 2022 01:32:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=22OynrwRfUmM6HyLJLZTgW4CgzT5GjNvtS3ZAyzd8ks=;
-        b=bl/7bM6eRjZ70uLFQ3B96n/Nip1gGazFbixDvAvHOk76JxUxhxUu08bl+wsnwANU60
-         TQop/jQmB0spSHG1caccnJiBa5iiLa76qRy26zhj9WpGM2uARcwU/HqB+Njt67wo9AZJ
-         fTiz6Uy4W/lCrVbCIHqLuzP8NiI2ekn7zZe7zIg4ekJLJv7AcahFsd5SWQYlwXsJExaN
-         /boti6xqRPRjzLIRJgpfEqbITfEOGJ4SRNkjpC9aPSfLmSWQoB66d6po3+2Or6C0M95L
-         KlXkLTmo/IZMk5qqsAUMDzqfli9Qn9rDp5d5kMBJMbJQhjNnOnX2v4Kdo/PfDaTvC7Sj
-         ldxA==
+        Fri, 11 Mar 2022 04:41:15 -0500
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A321A8065;
+        Fri, 11 Mar 2022 01:40:12 -0800 (PST)
+Received: by mail-qv1-f44.google.com with SMTP id j5so6535906qvs.13;
+        Fri, 11 Mar 2022 01:40:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=22OynrwRfUmM6HyLJLZTgW4CgzT5GjNvtS3ZAyzd8ks=;
-        b=KdTcpEECa3IFFYRlOsEE81HbgigidgxrkWdJnu6fKtujkbaMcYEehWqyBv/QepHQpD
-         m6X8O4kyvIyL+JilpeIMfKHEcvW+xnjIxcbwecSLqoBHCKPkgEwGQuiuOtaJG07KKBAc
-         ze248EZpWZXQznitYvx/htUvX504DQZB55fz3+HocvIDdyu6lcKsr90DCr1PTZ1n2A3O
-         qMdTlWDV40TPTGOEnWHBcV39SMHfxso2N9KrCMAKeE2gbdrfQtJHHaHEsNygDadtsqI4
-         nPvHNlq5+TD0zA6U98R39GvQUP0YlnAesgHkm1WriskjVuBosQQBdBbehbvu5VjCZxwE
-         yCsg==
-X-Gm-Message-State: AOAM532DgSENygzrza1tlyioESe7Hn9ZaF9jHW91YJU+zj4En3T0w2M9
-        SQcUA2Z7BgVJXyQ612NDyyE=
-X-Google-Smtp-Source: ABdhPJwd+CjY/Pi0ZOurKwWT7pB19cIeDyTOOH7yYWDN8VeY0LbziJLcsRiP52SI00Bk4AtNlyrV5g==
-X-Received: by 2002:a2e:871a:0:b0:246:ee2:1109 with SMTP id m26-20020a2e871a000000b002460ee21109mr5459122lji.165.1646991166086;
-        Fri, 11 Mar 2022 01:32:46 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id r7-20020ac25f87000000b004484fed8a9esm1506940lfe.268.2022.03.11.01.32.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 01:32:45 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH V3] tty: serial: bcm63xx: use more precise Kconfig symbol
-Date:   Fri, 11 Mar 2022 10:32:33 +0100
-Message-Id: <20220311093233.10012-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DJTNfmctXP/UVPQLjbBJkIULiILCgJ8uCPGrrjaMgnM=;
+        b=USC1ctS+2V8uMz2GxOIPyJZnqI84lkMvUgm/Eeq/8slH72M3a/ypfiVoFBszhHLMHV
+         evUDO68BQcUjitUmEuCmdC1EVqfK/vmgwgFJzG9bS2UU0ouYetMqJpp9GXuvEQQIdiga
+         Un7cjNTEKdc+Cv/+Iibyv6J3n/i1MGEWsiJQWBg0m6jx0l0kxt4Sg4XUNJMZ836We+qJ
+         Q4K584ncgCKA2iuWOZ1A9dlBJfYhxPoOhh1koAfWtK1RioDQOY/nRkxA38PhHg3+RHtE
+         IzjFpAJg4O6QarwaWLN76E3SrTQZzX6tDNcoJ2Mxx48iuXnmjwsNgeIhFidTdeJ3x2GW
+         YJgA==
+X-Gm-Message-State: AOAM531oFOfCbiiTuYxkuRN5NDJuILRfNE/tDFTpaDQWMglj5N2yh5uw
+        14cMFv0t2YIZCgsFKUrCgnSfHTMMjNfjIw==
+X-Google-Smtp-Source: ABdhPJzBvoPHWD4ozKCKvrePWRPMRIs+MAjKZTuriyGOis1YmvRGQJlr3FvpcxgeeI9ue/+l+CNo0A==
+X-Received: by 2002:a05:6214:5186:b0:435:2bcf:7014 with SMTP id kl6-20020a056214518600b004352bcf7014mr6943285qvb.24.1646991611126;
+        Fri, 11 Mar 2022 01:40:11 -0800 (PST)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id r4-20020a05622a034400b002e1a6750435sm3754350qtw.37.2022.03.11.01.40.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 01:40:10 -0800 (PST)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2db569555d6so86431857b3.12;
+        Fri, 11 Mar 2022 01:40:09 -0800 (PST)
+X-Received: by 2002:a81:5a08:0:b0:2db:d8c6:7e4f with SMTP id
+ o8-20020a815a08000000b002dbd8c67e4fmr7531598ywb.256.1646991609661; Fri, 11
+ Mar 2022 01:40:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220310161650.289387-1-miquel.raynal@bootlin.com> <20220310161650.289387-7-miquel.raynal@bootlin.com>
+In-Reply-To: <20220310161650.289387-7-miquel.raynal@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 11 Mar 2022 10:39:57 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW0VZsx-zAFr__PPBqKBVyu4v7sAU_yV-ROcTLq10fE6g@mail.gmail.com>
+Message-ID: <CAMuHMdW0VZsx-zAFr__PPBqKBVyu4v7sAU_yV-ROcTLq10fE6g@mail.gmail.com>
+Subject: Re: [PATCH 6/7] serial: 8250_dw: Add support for RZ/N1 DMA
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Hi Miquel,
 
-Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
-documentation change regarding "depends" usage. Adjust Kconfig entry to
-match current guidelines. Make this symbol available for relevant
-architectures only.
+On Thu, Mar 10, 2022 at 5:17 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> From: Phil Edworthy <phil.edworthy@renesas.com>
+>
+> The Renesas RZ/N1 devices have a modified Synopsys DW UART. The
+> modifications are mostly related to the DMA handlnig, and so this patch
+> adds support for DMA.
+>
+> The RZ/N1 UART must be used with the peripheral as the flow
+> controller. This means the DMA length should also be programmed into
+> UART registers.
+>
+> Aside from this, there are some points to note about DMA burst sizes.
+> First, DMA must not remove all of the data from the rx FIFO. Otherwise,
+> we do not get a 'character timeout' interrupt, and so do not know that
+> we should push data up the serial stack. Therefore, we have the rx
+> threshold for generating an interrupt set to half the FIFO depth (this
+> is the default for 16550A), and set the DMA burst size when reading the
+> FIFO to a quarter of the FIFO depth.
+>
+> Second, when transmitting data using DMA, the burst size must be limited
+> to 1 byte to handle then case when transmitting just 1 byte. Otherwise
+> the DMA doesn't complete the burst, and nothing happens.
+>
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
-Ref: 18084e435ff6 ("Documentation/kbuild: Document platform dependency practises")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Use precise "depends" (exact platforms)
-V3: Don't default y for COMPILE_TEST
----
- drivers/tty/serial/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks for your patch!
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e952ec5c7a7c..b51341678b8a 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
- config SERIAL_BCM63XX
- 	tristate "Broadcom BCM63xx/BCM33xx UART support"
- 	select SERIAL_CORE
--	depends on COMMON_CLK
-+	depends on ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC || COMPILE_TEST
-+	default ARCH_BCM4908 || ARCH_BCM_63XX || BCM63XX || BMIPS_GENERIC
- 	help
- 	  This enables the driver for the onchip UART core found on
- 	  the following chipsets:
--- 
-2.34.1
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
 
+> @@ -501,6 +589,8 @@ static int dw8250_probe(struct platform_device *pdev)
+>                 data->msr_mask_off |= UART_MSR_TERI;
+>         }
+>
+> +       data->is_rzn1 = of_device_is_compatible(dev->of_node, "renesas,rzn1-uart");
+
+Explicit checks for compatible values are frowned upon if you have
+a match table.
+Please handle this through of_device.data, cfr. the various quirks.
+Please rename "is_rzn1" to something that describes the feature.
+
+> +
+>         /* Always ask for fixed clock rate from a property. */
+>         device_property_read_u32(dev, "clock-frequency", &p->uartclk);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
