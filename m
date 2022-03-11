@@ -2,182 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B435C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 14:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBA1C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 14:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbiCKOuQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40342 "EHLO
+        id S1349397AbiCKOxx (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:53:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245729AbiCKOuQ (ORCPT
+        with ESMTP id S1349439AbiCKOxw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:50:16 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB54ADEA22;
-        Fri, 11 Mar 2022 06:49:10 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id v130-20020a1cac88000000b00389d0a5c511so1225701wme.5;
-        Fri, 11 Mar 2022 06:49:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6dQdHI9dLytxKLqKgd0flhRQJmBT3Sb7jYe1e8xodHs=;
-        b=cbrQ7J7OXrDkMMkI859YK2c4weCQ78c/XwQ8tuTdTcs7SuUmpMO0f0OXChVit9c8Tm
-         qsMUyUB8NUNb1UBHBfe13iuSnlTveikXTDUf3kqBIVOynYGbWjyW6R0lSdsPaZ75gvLn
-         mHFfbqt28rbaOs+L7Uo2Q39YRNyK9bLzv7vla0nWSOl28vkEQjIeF+q4N6oaVqyWIUe/
-         x+LhxJeK9xjphs6z7Avt+Wb1kpuIhuL0SCdoRMkDiP4WKV1LmjOm7lC3x2vzP1ZMuARS
-         PEKZN9NIfh7qLe6I2Ne1+NsSnP7SeTO61QJkNCeltqHMsmrEo8A+hnOODlpSRyNHQgpv
-         Oavg==
+        Fri, 11 Mar 2022 09:53:52 -0500
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EA619CCC5;
+        Fri, 11 Mar 2022 06:52:48 -0800 (PST)
+Received: by mail-oo1-f49.google.com with SMTP id x26-20020a4a621a000000b00320d7d4af22so10752922ooc.4;
+        Fri, 11 Mar 2022 06:52:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=6dQdHI9dLytxKLqKgd0flhRQJmBT3Sb7jYe1e8xodHs=;
-        b=qz3hzrMymnX4/oFOuMSHfWcKAs9h9gt4d+dEHsB9l9NZZOuvrm8PQB2wa9U/YzhG15
-         8uwD7+jDuBLj86WKKsaSfW8O6ioUmdjh5VFEHDCInUIgRQA6R9cGFOuydM12XBsVZq2K
-         g5XddYFFuTa7hwwrMj/HZaYjifTzyz83hwzqCmBvFnChmrVP3iVoCFGOC0Hy0ATshv5n
-         2eg6yeggqkGKX477nCdcKbXrCJ3+MNtVww8EPdlH0QacqZDp05ef0z5QT3AgTwa7h3dX
-         a3++zwOhsdCl6dctym6srEoVlsf6Zp0S7aJCRb+6Gun1emO7rdqcdFFOqlYtnt/Uzl+n
-         Bc0w==
-X-Gm-Message-State: AOAM533PHDpMXY8I6iV47xTEdFCXyJy+Pov0rxo3kGLq7OprFy6eCyN2
-        kCuBFCOfYVP1mOLWTNSnTI8=
-X-Google-Smtp-Source: ABdhPJx0wr/NwEcnZjDvWXiTlVA1I33XM/WlN2KA1GtVmk91sK+8d/QvMbK3laheSeZllrglBHRilQ==
-X-Received: by 2002:a05:600c:2905:b0:381:67e2:3992 with SMTP id i5-20020a05600c290500b0038167e23992mr16073620wmd.182.1647010149211;
-        Fri, 11 Mar 2022 06:49:09 -0800 (PST)
-Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05600c22cb00b00382a960b17csm10509047wmg.7.2022.03.11.06.49.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XouDAonvXlO6XU2IHSFCooSQTQ5SzgR1sMybojkfzAI=;
+        b=EgY27qioBEkTd8PkRaG91a6dO58+0mM0YqJZbufrDf+r2acEGmywtBFL+mwM/YN9iP
+         GnuHRhJ6jRxZXkq8P0pfbFeUZd4Zn+PHz4jpwn57vjY7iA+aeR59C7UzUlHgurDw0UYQ
+         0aIarLUAhdvbTHUIiTR4jfZNc9iDG1Jj36m/CPb0XK/lSmO9aaJwTGySM+TRN6glpRRA
+         XHzfeLmHAhiuroYzESqa9OOpES38e61np89jTkHby/N0xDPtccBMpdOCtu/1L1TV2185
+         mVOZzm7wnkwGkLXDOV3UCi1iS+KZojIThTMy4KvJ3YEhCmw3pLQQtt6Qv1F20HS/pvUT
+         H1Ng==
+X-Gm-Message-State: AOAM532z8ewZSADPxQDfzg2jL7PY2WIO9u8LdIZA3n4+iwhNivW/zsbK
+        x1gVWwjGAySV2m9td8oiag==
+X-Google-Smtp-Source: ABdhPJwVM00FBPusKKPXsuJpjuUgFPFT6v1xv+HzGc+G1sqBrbm5F+Ukz/YBeNSj5BBqeajDFr8FEg==
+X-Received: by 2002:a05:6870:3927:b0:da:34c1:560c with SMTP id b39-20020a056870392700b000da34c1560cmr10991064oap.176.1647010367441;
+        Fri, 11 Mar 2022 06:52:47 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id b63-20020acab242000000b002d9ddf4596fsm3929216oif.49.2022.03.11.06.52.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 06:49:08 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] serial: 8250_dw: Use device tree match data
-Date:   Fri, 11 Mar 2022 15:48:14 +0100
-Message-Id: <20220311144814.21944-1-kernel@esmil.dk>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220311105934.5827d0d6@xps13>
-References: <20220311105934.5827d0d6@xps13>
+        Fri, 11 Mar 2022 06:52:46 -0800 (PST)
+Received: (nullmailer pid 3772694 invoked by uid 1000);
+        Fri, 11 Mar 2022 14:52:45 -0000
+Date:   Fri, 11 Mar 2022 08:52:45 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     krzysztof.kozlowski@canonical.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, jirislaby@kernel.org,
+        kernel@axis.com, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com, linux-serial@vger.kernel.org,
+        robh+dt@kernel.org, gregkh@linuxfoundation.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
+Message-ID: <YitiPSZp4thtal8D@robh.at.kernel.org>
+References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
+ <20220311094515.3223023-2-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311094515.3223023-2-vincent.whitchurch@axis.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-..rather than multiple calls to of_device_is_compatible().
-
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
----
-
-Hi Miquel,
-
-> > > > --- a/drivers/tty/serial/8250/8250_dma.c
-> > > > +++ b/drivers/tty/serial/8250/8250_dma.c =20
-> > > =20
-> > > > @@ -501,6 +589,8 @@ static int dw8250_probe(struct platform_device *p=
-> dev)
-> > > >                 data->msr_mask_off |=3D UART_MSR_TERI;
-> > > >         }
-> > > >
-> > > > +       data->is_rzn1 =3D of_device_is_compatible(dev->of_node, "rene=
-> sas,rzn1-uart"); =20
-> > >
-> > > Explicit checks for compatible values are frowned upon if you have
-> > > a match table.
-> > > Please handle this through of_device.data, cfr. the various quirks. =20
-> >=20
-> > Oops, these are not yet upstream, but present in my tree due to including
-> > support for StarLight, cfr.
-> > https://github.com/esmil/linux/commits/visionfive/drivers/tty/serial/8250=
-> /8250_dw.c
+On Fri, 11 Mar 2022 10:45:14 +0100, Vincent Whitchurch wrote:
+> Add a compatible for the UART on the ARTPEC-8 SoC.  This hardware block
+> is closely related to the variants used on the Exynos chips.  The
+> register layout is identical to Exynos850 et al but the fifo size is
+> different (64 bytes in each direction for all instances).
 > 
-> Oh thanks for pointing it! Too bad that these quirks were not
-> introduced inside a wider structure, I think it's always a must even if
-> there is only one parameter there. Anyway, I'll introduce a wider
-> specific structure and use it.
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+> 
+> Notes:
+>     v2:
+>     - Expand commit message.
+>     - Define required clocks.
+> 
+>  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-For reference this is the patch I wrote for the StarFive JH7100 tree.
-Feel free to use it or do something better as you see fit.
-
-/Emil
-
- drivers/tty/serial/8250/8250_dw.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 1769808031c5..f564a019a7be 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -37,6 +37,11 @@
- /* DesignWare specific register fields */
- #define DW_UART_MCR_SIRE		BIT(6)
- 
-+/* Quirks */
-+#define DW_UART_QUIRK_OCTEON		BIT(0)
-+#define DW_UART_QUIRK_ARMADA_38X	BIT(1)
-+#define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
-+
- struct dw8250_data {
- 	struct dw8250_port_data	data;
- 
-@@ -389,6 +394,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 	struct device_node *np = p->dev->of_node;
- 
- 	if (np) {
-+		unsigned long quirks = (unsigned long)of_device_get_match_data(p->dev);
- 		int id;
- 
- 		/* get index of serial line, if found in DT aliases */
-@@ -396,7 +402,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 		if (id >= 0)
- 			p->line = id;
- #ifdef CONFIG_64BIT
--		if (of_device_is_compatible(np, "cavium,octeon-3860-uart")) {
-+		if (quirks & DW_UART_QUIRK_OCTEON) {
- 			p->serial_in = dw8250_serial_inq;
- 			p->serial_out = dw8250_serial_outq;
- 			p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
-@@ -412,9 +418,9 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 			p->serial_out = dw8250_serial_out32be;
- 		}
- 
--		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
-+		if (quirks & DW_UART_QUIRK_ARMADA_38X)
- 			p->serial_out = dw8250_serial_out38x;
--		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
-+		if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
- 			p->set_termios = dw8250_do_set_termios;
- 
- 	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
-@@ -695,10 +701,10 @@ static const struct dev_pm_ops dw8250_pm_ops = {
- 
- static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "snps,dw-apb-uart" },
--	{ .compatible = "cavium,octeon-3860-uart" },
--	{ .compatible = "marvell,armada-38x-uart" },
-+	{ .compatible = "cavium,octeon-3860-uart", .data = (void *)DW_UART_QUIRK_OCTEON },
-+	{ .compatible = "marvell,armada-38x-uart", .data = (void *)DW_UART_QUIRK_ARMADA_38X },
- 	{ .compatible = "renesas,rzn1-uart" },
--	{ .compatible = "starfive,jh7100-uart" },
-+	{ .compatible = "starfive,jh7100-uart",    .data = (void *)DW_UART_QUIRK_SKIP_SET_RATE },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
--- 
-2.35.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
