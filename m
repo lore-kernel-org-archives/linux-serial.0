@@ -2,173 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3D4C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 13:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA462C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 14:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348998AbiCKN4k (ORCPT
+        id S1349183AbiCKO2G (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:56:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52886 "EHLO
+        Fri, 11 Mar 2022 09:28:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239616AbiCKN4j (ORCPT
+        with ESMTP id S235535AbiCKO2G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:56:39 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400B41C4B1B;
-        Fri, 11 Mar 2022 05:55:35 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id h11so12133522ljb.2;
-        Fri, 11 Mar 2022 05:55:35 -0800 (PST)
+        Fri, 11 Mar 2022 09:28:06 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C307C1C7EBE;
+        Fri, 11 Mar 2022 06:27:02 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id kj21so4180948qvb.11;
+        Fri, 11 Mar 2022 06:27:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=75zvCJ9zIPmwZGQt+Vs2mthvfxo+EmGaG+QYamw7P3A=;
-        b=md56CzXWXhmUpVPInmuiE8Z/dNrOp6r/QcbzXWzvjslwt4ivvbYrJS3MfbuuSXz9Hz
-         XdD5VedSYbVcTbbeZ/Z0zvl+t4A0X02pXT69eZZlWHmvyzx44uL3fw2JRzdc0XWDOIZQ
-         Rm5t+Ax/r4FVK4wlqfw5VdlIMLEerW8nglZ/5IQHEEqLjPMjHCEXKocQOiwv3qfr5VaM
-         JSBV83VZGmD6Dj+kdwRFk7QuNNNjhtLOlvDo0xx045RTm4Opalv5k5JcCrFb3DnM6dt8
-         nVwdIfJRNo+MDKxVT7+6TzBZsVj2digKADY9ax2jCPq9ePc5zRPpnsV2qq6PcdbP3NZ8
-         zKeg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=68CWOwMSv2/Ly+nsrdhsAeru2Ba9NAAn2iQSzGZRvWw=;
+        b=e80phwj1YfnVIQkA0sEcVr4EEbmZjZXtR69W+9YTHG9/Xr4JVpWwwJ77ToWSLiWOtp
+         lFwbRR4x2S4g0pCpt1e1hZ6tesyDbupxZ6hi9qq21kkwDWcXP9RWpL1P34wesiYo5GIa
+         q7zef1mS4kZziRLD/SWaz68A0da3ttJ/1DEwIPUuDGNz5niHr84Olzi7xXtf3UznDb06
+         +lN6oO9lmFUPjGoKl2SQmfViF1QdDTf73Djt65lcGWl20lZeB9fVJp2+AFxlDoJmiuls
+         T3BHYt6aNgS857fi53WJrz58N+84EdLG/4OiNzShY5eNeeMvg0QPxwQuFUmr0OPJc08D
+         W5+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=75zvCJ9zIPmwZGQt+Vs2mthvfxo+EmGaG+QYamw7P3A=;
-        b=GMYvGkmmvjcT+l4giu3C2B9V4hLtg9usiBWK5LxqasUNCEyY4QAzlV47bFn7/YsRRC
-         ZD2vHcwb3fxdL7m/uLeWTdDiZ+j+imRcfVHGWCzf+LD+kPEWI+L/zavHVeMdBchB/A3/
-         ePSF0o7r1Sl4z8jronEzkTpEs2k6NgeYVEBq2tCc5vMcv55PQpPsbVfHHSaSl21ZQdAj
-         HKtdLCIE6R/sxSRX08Stxuct9+U7G/XDpYn8IcNyAmD8uBhjHHuOn05qa/UtiAJAHYGw
-         a6Pc4ygLsaSgVZSVZ6DAkfwKvPCGlPpbBdZG7TFQSRViXXx3fP5ZGFDi4QRmnn070nWN
-         cyLg==
-X-Gm-Message-State: AOAM530qDIgjNflO/V2an5huXdxxaZZ+lvp8mzeHxQSSOkwyPd5fcdvK
-        2jv1WaZwBbVwZ0/Jhn6tAGINPKWa8Qw=
-X-Google-Smtp-Source: ABdhPJxOd6V5XF19FodfxgZpNZ7Jtlep1EIgaHiVzRVT5lA3r+HIL12cmKhjHTdgDpZOo2Bf8n+jLA==
-X-Received: by 2002:a05:651c:905:b0:247:e451:48a5 with SMTP id e5-20020a05651c090500b00247e45148a5mr5948012ljq.313.1647006933035;
-        Fri, 11 Mar 2022 05:55:33 -0800 (PST)
-Received: from dev-box.local ([213.134.179.138])
-        by smtp.googlemail.com with ESMTPSA id l26-20020a2e701a000000b002463f024de9sm1745892ljc.110.2022.03.11.05.55.32
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=68CWOwMSv2/Ly+nsrdhsAeru2Ba9NAAn2iQSzGZRvWw=;
+        b=xIXPddQdjVq6zzlpuqTy7WlSjo3/tNwjpmE2hUns+xYKwxIv+2uP/hx6ueg8qhQjYY
+         cYuwrNYyvdiEahHwc1LkPimzCMdypHpb1m2dS+Q6A96rcA9//MtpU5SK1rr70HfEwlzq
+         RLz/FTSArI8IB3BCAf+r2oXogyGpIQV0ySoHE06+Lq2M1/oel/odgmK7VlaoEXvSmlgg
+         5YL8WbuHlMSg5ZgusUomPfl20wY52InZ3HebQawKe9CfHFsTkJ2Wk9I9zGe2oKEvMQNk
+         +oihWjreKWyFELyfpbKE8j+oYIOvb6bCahScE1SlNvTBzlBLVYrOlzCjYenM7CNuUSbQ
+         k3Lw==
+X-Gm-Message-State: AOAM531+lGfv+bto5SHu+qacgLWHykmMwMo4R43fCzv3dzGBUEcIUnmu
+        +qcy6ycZY945LWFr1VCjCloTbw4o+08=
+X-Google-Smtp-Source: ABdhPJzYrYxFEBtuEGDzojfs9wfbRWu+moiK6O19yJfnRKv8Pwu9az9Y+jnx54mf4Vuc6/n6OmD2eA==
+X-Received: by 2002:a05:6214:21c7:b0:435:3600:c1e3 with SMTP id d7-20020a05621421c700b004353600c1e3mr7871370qvh.127.1647008821732;
+        Fri, 11 Mar 2022 06:27:01 -0800 (PST)
+Received: from localhost (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
+        by smtp.gmail.com with ESMTPSA id p7-20020a05622a13c700b002de9f3894c2sm5632761qtk.50.2022.03.11.06.27.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 05:55:32 -0800 (PST)
-From:   Dawid Buchwald <buchwald.dawid@gmail.com>
-To:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     johan@kernel.org
-Subject: [PATCH] USB: serial: pl2303: Add support for PL2303GS
-Date:   Fri, 11 Mar 2022 14:55:31 +0100
-Message-Id: <20220311135531.12832-1-buchwald.dawid@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 11 Mar 2022 06:27:00 -0800 (PST)
+Date:   Fri, 11 Mar 2022 09:26:59 -0500
+From:   Trevor Woerner <twoerner@gmail.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/3] serial: 8250_fintek.c: Report chipID
+Message-ID: <20220311142659.GA38527@localhost>
+References: <20220311070203.18159-2-twoerner@gmail.com>
+ <0fb3795e-0ab1-494b-aefd-ccfa78420723@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <0fb3795e-0ab1-494b-aefd-ccfa78420723@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This is the issue I have with recently acquired PL2303 adapter:
+Hi Jiri,
 
-[   70.502848] usb 1-2: new full-speed USB device number 5 using xhci_hcd
-[   70.652523] usb 1-2: New USB device found, idVendor=067b,
-idProduct=23f3, bcdDevice= 6.05
-[   70.652533] usb 1-2: New USB device strings: Mfr=1, Product=2,
-SerialNumber=3
-[   70.652538] usb 1-2: Product: USB-Serial Controller
-[   70.652540] usb 1-2: Manufacturer: Prolific Technology Inc.
-[   70.652543] usb 1-2: SerialNumber: CJAKj19B616
-[   70.674558] usbcore: registered new interface driver usbserial_generic
-[   70.674578] usbserial: USB Serial support registered for generic
-[   70.677490] usbcore: registered new interface driver pl2303
-[   70.677498] usbserial: USB Serial support registered for pl2303
-[   70.677510] pl2303 1-2:1.0: pl2303 converter detected
-[   70.677513] pl2303 1-2:1.0: unknown device type, please report to
-linux-usb@vger.kernel.org
+Thanks for your review.
 
-lsusb -v -d 067b:23f3
+On Fri 2022-03-11 @ 10:21:46 AM, Jiri Slaby wrote:
+> On 11. 03. 22, 8:02, Trevor Woerner wrote:
+> > Provide some feedback to confirm this driver is enabled, and specify which
+> > chip was detected.
+> 
+> No, we don't do that. In fact, the output is mostly useless as it doesn't
+> even tell the user what device this is about.
 
-Bus 001 Device 005: ID 067b:23f3 Prolific Technology, Inc. USB-Serial Controller 
-Couldn't open device, some information will be missing
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass            0 
-  bDeviceSubClass         0 
-  bDeviceProtocol         0 
-  bMaxPacketSize0        64
-  idVendor           0x067b Prolific Technology, Inc.
-  idProduct          0x23f3 
-  bcdDevice            6.05
-  iManufacturer           1 Prolific Technology Inc. 
-  iProduct                2 USB-Serial Controller 
-  iSerial                 3 CJAKj19B616
-  bNumConfigurations      1
-  Configuration Descriptor:
-    bLength                 9
-    bDescriptorType         2
-    wTotalLength       0x0027
-    bNumInterfaces          1
-    bConfigurationValue     1
-    iConfiguration          0 
-    bmAttributes         0xa0
-      (Bus Powered)
-      Remote Wakeup
-    MaxPower              100mA
-    Interface Descriptor:
-      bLength                 9
-      bDescriptorType         4
-      bInterfaceNumber        0
-      bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass      0 
-      bInterfaceProtocol      0 
-      iInterface              0 
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x81  EP 1 IN
-        bmAttributes            3
-          Transfer Type            Interrupt
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x000a  1x 10 bytes
-        bInterval               1
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x02  EP 2 OUT
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
-      Endpoint Descriptor:
-        bLength                 7
-        bDescriptorType         5
-        bEndpointAddress     0x83  EP 3 IN
-        bmAttributes            2
-          Transfer Type            Bulk
-          Synch Type               None
-          Usage Type               Data
-        wMaxPacketSize     0x0040  1x 64 bytes
-        bInterval               0
+With this patch, when looking at the kernel's bootup messages one would see:
 
-Signed-off-by: Dawid Buchwald <buchwald.dawid@gmail.com>
+	[    1.809223] Serial: 8250/16550 driver, 5 ports, IRQ sharing enabled
+	[    1.814420] Fintek F81865
+	[    1.815783] 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+	[    1.822078] Fintek F81865
+	[    1.823453] 00:05: ttyS2 at I/O 0x3e8 (irq = 10, base_baud = 115200) is a 16550A
+	[    1.829813] Fintek F81865
+	[    1.831194] 00:06: ttyS3 at I/O 0x2e8 (irq = 10, base_baud = 115200) is a 16550A
+	[    1.837556] Fintek F81865
+	[    1.838943] 00:07: ttyS4 at I/O 0x2c0 (irq = 10, base_baud = 115200) is a 16550A
+	[    1.845350] Fintek F81865
+	[    1.846703] 00:0c: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
 
----
- drivers/usb/serial/pl2303.c | 1 +
- 1 file changed, 1 insertion(+)
+…so the grouping would hopefully be a clue, and anyone looking up what a
+fintek f81865 is would see that it's a SuperIO chip with 6 UARTs.
 
-diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
-index a70fd86f735c..1072f8eb6ab9 100644
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -435,6 +435,7 @@ static int pl2303_detect_type(struct usb_serial *serial)
- 		case 0x105:
- 		case 0x305:
- 		case 0x405:
-+		case 0x605:
- 			/*
- 			 * Assume it's an HXN-type if the device doesn't
- 			 * support the old read request value.
--- 
-2.32.0
+Ideally that information would all be on one line for each port. The first
+line is what I've added, which specifies the actual device, and the second
+line comes from serial_core.c's uart_report_port(). If there were a way to
+pass the fintek information to serial_core, or a way to turn off serial_core's
+uart_report_port() so I could report it in the fintek driver that would be
+better, but neither of those exist.
 
+If I want to know if a kernel has support for a device on my board I would
+normally grep the dmesg output and look for a product id, a chip id, or a
+manufacturer's name. I thought it was strange that with this driver enabled,
+there's no hint that the kernel knows anything about it.
+
+> > Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+> > ---
+> >   drivers/tty/serial/8250/8250_fintek.c | 11 +++++++++++
+> >   1 file changed, 11 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> > index d9f0e546b1a1..03ad2354d808 100644
+> > --- a/drivers/tty/serial/8250/8250_fintek.c
+> > +++ b/drivers/tty/serial/8250/8250_fintek.c
+> > @@ -155,11 +155,22 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+> >   	switch (chip) {
+> >   	case CHIP_ID_F81865:
+> > +		pr_info("Fintek F81865\n");
+> > +		break;
+> >   	case CHIP_ID_F81866:
+> > +		pr_info("Fintek F81866\n");
+> > +		break;
+> >   	case CHIP_ID_F81966:
+> > +		pr_info("Fintek F81966\n");
+> > +		break;
+> >   	case CHIP_ID_F81216AD:
+> > +		pr_info("Fintek F81216AD\n");
+> > +		break;
+> >   	case CHIP_ID_F81216H:
+> > +		pr_info("Fintek F81216H\n");
+> > +		break;
+> >   	case CHIP_ID_F81216:
+> > +		pr_info("Fintek F81216\n");
+> >   		break;
+> >   	default:
+> >   		return -ENODEV;
+> 
+> thanks,
+> -- 
+> js
