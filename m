@@ -2,163 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953C9C4167E
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA949C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347691AbiCKJqe (ORCPT
+        id S1346438AbiCKJxR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
+        Fri, 11 Mar 2022 04:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238116AbiCKJqc (ORCPT
+        with ESMTP id S1347384AbiCKJxO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:46:32 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE281BE4C9;
-        Fri, 11 Mar 2022 01:45:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646991929;
-  x=1678527929;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QOMLzEesVg6HYaOAZ4KCgGOM/7fxz+rqf2h1kQQi9LY=;
-  b=BNklQVJb0nsShtPM3oe2hhSmq3alWsefd/ByhcFCKALmM6GV3CYDmS4l
-   HVVn47z4n7iRZ23+/k3sunyeBw9YMgSkBcNFL8Oo+YRirSRw52yYz3R51
-   mvZT3/GIRYtA/o9Xsv3OCdpkyoSj9K5mC+U3NUkz87qerkPPjU+L7Lw44
-   YlO/nncNZS4NsPNbhaBn6Dsq7yqmv5CTZpLypwmEGfv4ubPSOP0iUH+Rz
-   nlSN3jMv4GBrMCsDRbkPEmM4+hACTUptAqwnf/L/8z3NxhfHZT2xThWaN
-   tZHszSbEnikF6Aw5Mh8DVAIBEcs7Hj4OAzXuChhRgB6rBw3oFzbsoo+Gi
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <robh+dt@kernel.org>,
-        <alim.akhtar@samsung.com>
-Subject: [PATCH v2 2/2] tty: serial: samsung: Add ARTPEC-8 support
-Date:   Fri, 11 Mar 2022 10:45:15 +0100
-Message-ID: <20220311094515.3223023-3-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
-References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
+        Fri, 11 Mar 2022 04:53:14 -0500
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0992A1BF90C;
+        Fri, 11 Mar 2022 01:52:08 -0800 (PST)
+Received: by mail-qt1-f179.google.com with SMTP id o22so6858061qta.8;
+        Fri, 11 Mar 2022 01:52:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dkmWo/M+JXND5dIBXyXfHk8mdEDkeGDFSxUmIrgdUYk=;
+        b=s5dNVibjSnPeLl0ROZHVoyAkMOWS32aActECbN3QFnfmi0hHa/+n7TW/wo3ibAhsVs
+         GNM6jb6LVuDmrSI7+kyk2WHHQn+XjGyJCDyoKjE/MC9OCDweVavrhFOL684+4YWz2gT0
+         lggHEG/xtP5w6a8y1Jpjx0sKQ57ZolNuv83KIJU8OTgyz3dC6/AJLrqa3dBL+N3l1KwO
+         0nUDVD7N3lUsTrHknalX3ZZ35EI6HNx9ppoxkEipUDeBVunwMnNJA6E2BU9YqDNY40bS
+         JugsmLwKca/470KVkO9sFqUqqF0gtHvZ2JNB6OjfNYCc+MPG4cusTIgyXy5SSyzJYt5Q
+         QVww==
+X-Gm-Message-State: AOAM532rs+YOzjFGQ83aIo4VnTbO78KiEaPiYPp34SGTiHIEYegXYO7J
+        Qd8JpcpAH++PxefPT58SNBeb/AaY/xEnGA==
+X-Google-Smtp-Source: ABdhPJwTjOk8jG9ra9zTc3nJgbO0z80xxyQJyhLVEKYFLzPQxzdiCpWUHd8zxVCx9aBZHq4Ie+4WhA==
+X-Received: by 2002:ac8:7e8d:0:b0:2e0:6314:d5f3 with SMTP id w13-20020ac87e8d000000b002e06314d5f3mr7555292qtj.352.1646992326717;
+        Fri, 11 Mar 2022 01:52:06 -0800 (PST)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id t5-20020a05620a034500b00476e85c85b9sm3601180qkm.110.2022.03.11.01.52.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 01:52:05 -0800 (PST)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2dbd8777564so87656197b3.0;
+        Fri, 11 Mar 2022 01:52:05 -0800 (PST)
+X-Received: by 2002:a81:5a08:0:b0:2db:d8c6:7e4f with SMTP id
+ o8-20020a815a08000000b002dbd8c67e4fmr7555666ywb.256.1646992324942; Fri, 11
+ Mar 2022 01:52:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220310161650.289387-1-miquel.raynal@bootlin.com>
+ <20220310161650.289387-7-miquel.raynal@bootlin.com> <CAMuHMdW0VZsx-zAFr__PPBqKBVyu4v7sAU_yV-ROcTLq10fE6g@mail.gmail.com>
+In-Reply-To: <CAMuHMdW0VZsx-zAFr__PPBqKBVyu4v7sAU_yV-ROcTLq10fE6g@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 11 Mar 2022 10:51:53 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXUC2ndMJr1DhPxsg6JX2o0Bh9odq3rvpfzHN+T9miuQg@mail.gmail.com>
+Message-ID: <CAMuHMdXUC2ndMJr1DhPxsg6JX2o0Bh9odq3rvpfzHN+T9miuQg@mail.gmail.com>
+Subject: Re: [PATCH 6/7] serial: 8250_dw: Add support for RZ/N1 DMA
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Emil Renner Berthing <kernel@esmil.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for the UART block on the ARTPEC-8 SoC.  This is closely
-related to the variants used on the Exynos chips.  The register layout
-is identical to Exynos850 et al but the fifo size is different (64 bytes
-in each direction for all instances).
+Hi Miquel,
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
+CC esmil
 
-Notes:
-    v2:
-    - Added Krzysztof's Reviewed-by.
-    - Expanded commit message
-    - Fixed fifo size
-    - Rebased on top of Krzysztof's "minor fixes/cleanups" series.  This needed a
-      couple of fixes for build errors.
-    
-    (I'm always unsure if Reviewed-by should be carried over or not if the fixes
-    are minor.  I apologize in advance if carring it over was the wrong thing to do
-    in this case.)
+On Fri, Mar 11, 2022 at 10:39 AM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+>
+> Hi Miquel,
+>
+> On Thu, Mar 10, 2022 at 5:17 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > From: Phil Edworthy <phil.edworthy@renesas.com>
+> >
+> > The Renesas RZ/N1 devices have a modified Synopsys DW UART. The
+> > modifications are mostly related to the DMA handlnig, and so this patch
+> > adds support for DMA.
+> >
+> > The RZ/N1 UART must be used with the peripheral as the flow
+> > controller. This means the DMA length should also be programmed into
+> > UART registers.
+> >
+> > Aside from this, there are some points to note about DMA burst sizes.
+> > First, DMA must not remove all of the data from the rx FIFO. Otherwise,
+> > we do not get a 'character timeout' interrupt, and so do not know that
+> > we should push data up the serial stack. Therefore, we have the rx
+> > threshold for generating an interrupt set to half the FIFO depth (this
+> > is the default for 16550A), and set the DMA burst size when reading the
+> > FIFO to a quarter of the FIFO depth.
+> >
+> > Second, when transmitting data using DMA, the burst size must be limited
+> > to 1 byte to handle then case when transmitting just 1 byte. Otherwise
+> > the DMA doesn't complete the burst, and nothing happens.
+> >
+> > Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+>
+> Thanks for your patch!
+>
+> > --- a/drivers/tty/serial/8250/8250_dma.c
+> > +++ b/drivers/tty/serial/8250/8250_dma.c
+>
+> > @@ -501,6 +589,8 @@ static int dw8250_probe(struct platform_device *pdev)
+> >                 data->msr_mask_off |= UART_MSR_TERI;
+> >         }
+> >
+> > +       data->is_rzn1 = of_device_is_compatible(dev->of_node, "renesas,rzn1-uart");
+>
+> Explicit checks for compatible values are frowned upon if you have
+> a match table.
+> Please handle this through of_device.data, cfr. the various quirks.
 
- drivers/tty/serial/Kconfig       |  2 +-
- drivers/tty/serial/samsung_tty.c | 37 ++++++++++++++++++++++++++++++++
- 2 files changed, 38 insertions(+), 1 deletion(-)
+Oops, these are not yet upstream, but present in my tree due to including
+support for StarLight, cfr.
+https://github.com/esmil/linux/commits/visionfive/drivers/tty/serial/8250/8250_dw.c
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 0e5ccb25bdb1..bd46e35ded40 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -236,7 +236,7 @@ config SERIAL_CLPS711X_CONSOLE
- 
- config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
--	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || COMPILE_TEST
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || ARCH_APPLE || ARCH_ARTPEC || COMPILE_TEST
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip UARTs on the Samsung
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 74d466cc4152..7d011d3fa3a6 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2828,6 +2828,36 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
- #define S5L_SERIAL_DRV_DATA NULL
- #endif
- 
-+#if defined(CONFIG_ARCH_ARTPEC)
-+static const struct s3c24xx_serial_drv_data artpec8_serial_drv_data = {
-+	.info = {
-+		.name		= "Axis ARTPEC-8 UART",
-+		.type		= TYPE_S3C6400,
-+		.port_type	= PORT_S3C6400,
-+		.fifosize	= 64,
-+		.has_divslot	= 1,
-+		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,
-+		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,
-+		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,
-+		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,
-+		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,
-+		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,
-+		.def_clk_sel	= S3C2410_UCON_CLKSEL0,
-+		.num_clks	= 1,
-+		.clksel_mask	= 0,
-+		.clksel_shift	= 0,
-+	},
-+	.def_cfg = {
-+		.ucon		= S5PV210_UCON_DEFAULT,
-+		.ufcon		= S5PV210_UFCON_DEFAULT,
-+		.has_fracval	= 1,
-+	}
-+};
-+#define ARTPEC8_SERIAL_DRV_DATA (&artpec8_serial_drv_data)
-+#else
-+#define ARTPEC8_SERIAL_DRV_DATA (NULL)
-+#endif
-+
- static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
- 	{
- 		.name		= "s3c2410-uart",
-@@ -2856,6 +2886,9 @@ static const struct platform_device_id s3c24xx_serial_driver_ids[] = {
- 	}, {
- 		.name		= "exynos850-uart",
- 		.driver_data	= (kernel_ulong_t)EXYNOS850_SERIAL_DRV_DATA,
-+	}, {
-+		.name		= "artpec8-uart",
-+		.driver_data	= (kernel_ulong_t)ARTPEC8_SERIAL_DRV_DATA,
- 	},
- 	{ },
- };
-@@ -2881,6 +2914,8 @@ static const struct of_device_id s3c24xx_uart_dt_match[] = {
- 		.data = S5L_SERIAL_DRV_DATA },
- 	{ .compatible = "samsung,exynos850-uart",
- 		.data = EXYNOS850_SERIAL_DRV_DATA },
-+	{ .compatible = "axis,artpec8-uart",
-+		.data = ARTPEC8_SERIAL_DRV_DATA },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
-@@ -3034,6 +3069,8 @@ OF_EARLYCON_DECLARE(s5pv210, "samsung,s5pv210-uart",
- 			s5pv210_early_console_setup);
- OF_EARLYCON_DECLARE(exynos4210, "samsung,exynos4210-uart",
- 			s5pv210_early_console_setup);
-+OF_EARLYCON_DECLARE(artpec8, "axis,artpec8-uart",
-+			s5pv210_early_console_setup);
- 
- /* Apple S5L */
- static int __init apple_s5l_early_console_setup(struct earlycon_device *device,
--- 
-2.34.1
+But you do already have:
 
++       { .compatible = "renesas,rzn1-uart", .data = &rzn1_pdata },
+
+since "[PATCH 4/7] serial: 8250_dw: Provide the RZN1 CPR register value".
+
+> Please rename "is_rzn1" to something that describes the feature.
+>
+> > +
+> >         /* Always ask for fixed clock rate from a property. */
+> >         device_property_read_u32(dev, "clock-frequency", &p->uartclk);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
