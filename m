@@ -2,105 +2,182 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBABC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 14:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B435C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 14:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349943AbiCKOpr (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        id S229586AbiCKOuQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349853AbiCKOpl (ORCPT
+        with ESMTP id S245729AbiCKOuQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:45:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82CF1CF091;
-        Fri, 11 Mar 2022 06:44:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7849E60B63;
-        Fri, 11 Mar 2022 14:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D383EC340EE;
-        Fri, 11 Mar 2022 14:44:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647009857;
-        bh=52lx2+To0HO3wzqy/qJndQmJuAiCIe0dCfR4lN7Rj3U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eOJaTJy2DAV0Ylb+iZMir8TUJxH3XFUQUJ10rClnBAENfVDvM9MwEAkeyK3mNKv7v
-         aPXZi94sP1VTBZFZ2ERSneex/auW4YJMrd6tmDYlZMnYJh8ueK7UP84bcbCleHpjGl
-         PzM5uBahoIEE0X3p0XxkqVASpS75nqWHIG6dL+KhkDdR8Gi1uMEH3ksHIsHxefzR5u
-         W0vvbzbzmQpU8W8uf7q9zHcbkDbGUGwG7ZfsxRAfVc6g5B4I4aqeHwyKrH9ginvG+Y
-         j5ZlYwOibdATk4zbeoOqexB7mNLNZjwetvtRC+dJ3qJFGCIMLjfrR8Cjdy5PC+fmr9
-         MVuo37BaH6Keg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nSgV2-0006Pe-BQ; Fri, 11 Mar 2022 15:44:13 +0100
-Date:   Fri, 11 Mar 2022 15:44:12 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Dawid Buchwald <buchwald.dawid@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] USB: serial: pl2303: Add support for PL2303GS
-Message-ID: <YitgPFuSYj9sTaui@hovoldconsulting.com>
-References: <20220311135531.12832-1-buchwald.dawid@gmail.com>
+        Fri, 11 Mar 2022 09:50:16 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB54ADEA22;
+        Fri, 11 Mar 2022 06:49:10 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id v130-20020a1cac88000000b00389d0a5c511so1225701wme.5;
+        Fri, 11 Mar 2022 06:49:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6dQdHI9dLytxKLqKgd0flhRQJmBT3Sb7jYe1e8xodHs=;
+        b=cbrQ7J7OXrDkMMkI859YK2c4weCQ78c/XwQ8tuTdTcs7SuUmpMO0f0OXChVit9c8Tm
+         qsMUyUB8NUNb1UBHBfe13iuSnlTveikXTDUf3kqBIVOynYGbWjyW6R0lSdsPaZ75gvLn
+         mHFfbqt28rbaOs+L7Uo2Q39YRNyK9bLzv7vla0nWSOl28vkEQjIeF+q4N6oaVqyWIUe/
+         x+LhxJeK9xjphs6z7Avt+Wb1kpuIhuL0SCdoRMkDiP4WKV1LmjOm7lC3x2vzP1ZMuARS
+         PEKZN9NIfh7qLe6I2Ne1+NsSnP7SeTO61QJkNCeltqHMsmrEo8A+hnOODlpSRyNHQgpv
+         Oavg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=6dQdHI9dLytxKLqKgd0flhRQJmBT3Sb7jYe1e8xodHs=;
+        b=qz3hzrMymnX4/oFOuMSHfWcKAs9h9gt4d+dEHsB9l9NZZOuvrm8PQB2wa9U/YzhG15
+         8uwD7+jDuBLj86WKKsaSfW8O6ioUmdjh5VFEHDCInUIgRQA6R9cGFOuydM12XBsVZq2K
+         g5XddYFFuTa7hwwrMj/HZaYjifTzyz83hwzqCmBvFnChmrVP3iVoCFGOC0Hy0ATshv5n
+         2eg6yeggqkGKX477nCdcKbXrCJ3+MNtVww8EPdlH0QacqZDp05ef0z5QT3AgTwa7h3dX
+         a3++zwOhsdCl6dctym6srEoVlsf6Zp0S7aJCRb+6Gun1emO7rdqcdFFOqlYtnt/Uzl+n
+         Bc0w==
+X-Gm-Message-State: AOAM533PHDpMXY8I6iV47xTEdFCXyJy+Pov0rxo3kGLq7OprFy6eCyN2
+        kCuBFCOfYVP1mOLWTNSnTI8=
+X-Google-Smtp-Source: ABdhPJx0wr/NwEcnZjDvWXiTlVA1I33XM/WlN2KA1GtVmk91sK+8d/QvMbK3laheSeZllrglBHRilQ==
+X-Received: by 2002:a05:600c:2905:b0:381:67e2:3992 with SMTP id i5-20020a05600c290500b0038167e23992mr16073620wmd.182.1647010149211;
+        Fri, 11 Mar 2022 06:49:09 -0800 (PST)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id 11-20020a05600c22cb00b00382a960b17csm10509047wmg.7.2022.03.11.06.49.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 06:49:08 -0800 (PST)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] serial: 8250_dw: Use device tree match data
+Date:   Fri, 11 Mar 2022 15:48:14 +0100
+Message-Id: <20220311144814.21944-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220311105934.5827d0d6@xps13>
+References: <20220311105934.5827d0d6@xps13>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311135531.12832-1-buchwald.dawid@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 02:55:31PM +0100, Dawid Buchwald wrote:
-> This is the issue I have with recently acquired PL2303 adapter:
+..rather than multiple calls to of_device_is_compatible().
+
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+---
+
+Hi Miquel,
+
+> > > > --- a/drivers/tty/serial/8250/8250_dma.c
+> > > > +++ b/drivers/tty/serial/8250/8250_dma.c =20
+> > > =20
+> > > > @@ -501,6 +589,8 @@ static int dw8250_probe(struct platform_device *p=
+> dev)
+> > > >                 data->msr_mask_off |=3D UART_MSR_TERI;
+> > > >         }
+> > > >
+> > > > +       data->is_rzn1 =3D of_device_is_compatible(dev->of_node, "rene=
+> sas,rzn1-uart"); =20
+> > >
+> > > Explicit checks for compatible values are frowned upon if you have
+> > > a match table.
+> > > Please handle this through of_device.data, cfr. the various quirks. =20
+> >=20
+> > Oops, these are not yet upstream, but present in my tree due to including
+> > support for StarLight, cfr.
+> > https://github.com/esmil/linux/commits/visionfive/drivers/tty/serial/8250=
+> /8250_dw.c
 > 
-> [   70.502848] usb 1-2: new full-speed USB device number 5 using xhci_hcd
-> [   70.652523] usb 1-2: New USB device found, idVendor=067b,
-> idProduct=23f3, bcdDevice= 6.05
-> [   70.652533] usb 1-2: New USB device strings: Mfr=1, Product=2,
-> SerialNumber=3
-> [   70.652538] usb 1-2: Product: USB-Serial Controller
-> [   70.652540] usb 1-2: Manufacturer: Prolific Technology Inc.
-> [   70.652543] usb 1-2: SerialNumber: CJAKj19B616
-> [   70.674558] usbcore: registered new interface driver usbserial_generic
-> [   70.674578] usbserial: USB Serial support registered for generic
-> [   70.677490] usbcore: registered new interface driver pl2303
-> [   70.677498] usbserial: USB Serial support registered for pl2303
-> [   70.677510] pl2303 1-2:1.0: pl2303 converter detected
-> [   70.677513] pl2303 1-2:1.0: unknown device type, please report to
-> linux-usb@vger.kernel.org
+> Oh thanks for pointing it! Too bad that these quirks were not
+> introduced inside a wider structure, I think it's always a must even if
+> there is only one parameter there. Anyway, I'll introduce a wider
+> specific structure and use it.
 
-> Signed-off-by: Dawid Buchwald <buchwald.dawid@gmail.com>
-> 
-> ---
->  drivers/usb/serial/pl2303.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
-> index a70fd86f735c..1072f8eb6ab9 100644
-> --- a/drivers/usb/serial/pl2303.c
-> +++ b/drivers/usb/serial/pl2303.c
-> @@ -435,6 +435,7 @@ static int pl2303_detect_type(struct usb_serial *serial)
->  		case 0x105:
->  		case 0x305:
->  		case 0x405:
-> +		case 0x605:
->  			/*
->  			 * Assume it's an HXN-type if the device doesn't
->  			 * support the old read request value.
+For reference this is the patch I wrote for the StarFive JH7100 tree.
+Feel free to use it or do something better as you see fit.
 
-Thanks for the update. The corrupt whitespace issue appears to be fixed
-now.
+/Emil
 
-Someone else reported this on Sunday and I totally forgot that you had
-reported the same issue a week earlier and was preparing a v2.
+ drivers/tty/serial/8250/8250_dw.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-I'm really sorry about that. 
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 1769808031c5..f564a019a7be 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -37,6 +37,11 @@
+ /* DesignWare specific register fields */
+ #define DW_UART_MCR_SIRE		BIT(6)
+ 
++/* Quirks */
++#define DW_UART_QUIRK_OCTEON		BIT(0)
++#define DW_UART_QUIRK_ARMADA_38X	BIT(1)
++#define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
++
+ struct dw8250_data {
+ 	struct dw8250_port_data	data;
+ 
+@@ -389,6 +394,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 	struct device_node *np = p->dev->of_node;
+ 
+ 	if (np) {
++		unsigned long quirks = (unsigned long)of_device_get_match_data(p->dev);
+ 		int id;
+ 
+ 		/* get index of serial line, if found in DT aliases */
+@@ -396,7 +402,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 		if (id >= 0)
+ 			p->line = id;
+ #ifdef CONFIG_64BIT
+-		if (of_device_is_compatible(np, "cavium,octeon-3860-uart")) {
++		if (quirks & DW_UART_QUIRK_OCTEON) {
+ 			p->serial_in = dw8250_serial_inq;
+ 			p->serial_out = dw8250_serial_outq;
+ 			p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
+@@ -412,9 +418,9 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 			p->serial_out = dw8250_serial_out32be;
+ 		}
+ 
+-		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
++		if (quirks & DW_UART_QUIRK_ARMADA_38X)
+ 			p->serial_out = dw8250_serial_out38x;
+-		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
++		if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
+ 			p->set_termios = dw8250_do_set_termios;
+ 
+ 	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
+@@ -695,10 +701,10 @@ static const struct dev_pm_ops dw8250_pm_ops = {
+ 
+ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+-	{ .compatible = "cavium,octeon-3860-uart" },
+-	{ .compatible = "marvell,armada-38x-uart" },
++	{ .compatible = "cavium,octeon-3860-uart", .data = (void *)DW_UART_QUIRK_OCTEON },
++	{ .compatible = "marvell,armada-38x-uart", .data = (void *)DW_UART_QUIRK_ARMADA_38X },
+ 	{ .compatible = "renesas,rzn1-uart" },
+-	{ .compatible = "starfive,jh7100-uart" },
++	{ .compatible = "starfive,jh7100-uart",    .data = (void *)DW_UART_QUIRK_SKIP_SET_RATE },
+ 	{ /* Sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, dw8250_of_match);
+-- 
+2.35.1
 
-This has now been fixed with commit:
-
-	5b6ab28d0678 ("USB: serial: pl2303: fix GS type detection")
-
-which will show up in mainline soon and be backported to stable.
-
-Johan
