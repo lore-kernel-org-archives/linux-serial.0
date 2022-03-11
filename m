@@ -2,142 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D403C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C113C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Mar 2022 09:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236544AbiCKJOy convert rfc822-to-8bit (ORCPT
+        id S1347622AbiCKJX2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:14:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
+        Fri, 11 Mar 2022 04:23:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235073AbiCKJOx (ORCPT
+        with ESMTP id S1347464AbiCKJWw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:14:53 -0500
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC841BB716;
-        Fri, 11 Mar 2022 01:13:50 -0800 (PST)
-Received: by mail-qt1-f173.google.com with SMTP id s15so6804816qtk.10;
-        Fri, 11 Mar 2022 01:13:50 -0800 (PST)
+        Fri, 11 Mar 2022 04:22:52 -0500
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84AF41BD05A;
+        Fri, 11 Mar 2022 01:21:49 -0800 (PST)
+Received: by mail-wr1-f52.google.com with SMTP id j17so12043279wrc.0;
+        Fri, 11 Mar 2022 01:21:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Qy21Roxk7Jw81ENX+w2eLBpFqTOjz71afyIHHh67koY=;
-        b=JpCokKohe3Vf6rV0NTt7oC3LuZNFXf3lalpq710xBlXxLjP2eKb7PkiC+OSjJl53nt
-         Z0QuHwf9Kkn2yg/6IEMO8vZckX7jRngd/1y+J1aZ3aKGErp/++6AfL8cA5pBspuGmFrK
-         oEatYWvGQZJifD/bs/iIE8Ohg0J5YN0R9Rr0AbWlPm9mWqWc1Dmgy+8QDrB2OPfQo50X
-         zLljhon77fGq1VLrDo2EoKNavvt4BbU3Zw7xC446OUC/i+CYQsJPkOj9eS9xkRorguDO
-         z7yVX2pAZ02pQ8nGl7vd66kloMN0kBjISmKi6o6KExM5+j9+di8Q1AxCTPMFmMWIa2q7
-         dY0w==
-X-Gm-Message-State: AOAM532YaNCgB4mWftw3f7LItZ8g3r9/zQU9/2l7+CbuFpSEcrC42hxb
-        JVhAzZwgEKMKe1JONXWcpJMZSEVy0/fu4w==
-X-Google-Smtp-Source: ABdhPJys4pNJaGnGgKuKQ6lJQlNzMX6ZiS2VMpULUfPkF+iD+DvbEAJ1gNytidkPvG3lnWYOMfjsKA==
-X-Received: by 2002:ac8:5743:0:b0:2e0:6069:8c54 with SMTP id 3-20020ac85743000000b002e060698c54mr7372813qtx.30.1646990028615;
-        Fri, 11 Mar 2022 01:13:48 -0800 (PST)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id f19-20020ac859d3000000b002de4d014733sm4993038qtf.13.2022.03.11.01.13.47
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3PWKx/GG7lvu/JjEo7HaErVf5eLJj3x+U8mzOkpm4PA=;
+        b=53U5Mw6aVJGlHPEvjR82QFxgDo9mVxy0XlWQ92Yt4S/5p/zZLLrY9BqkDXXJwKgmXN
+         xrX9sDSOGlGR6AxnmqTNnTbMg1w1MjFDsLBovU08kwsvQku1D3Cxq/RHfaL7Ajd0+tjQ
+         0Z/0d99aUyulmHT3vsmctaJXEnmrOrvy1xTGWzeAO5dtc27Gju9jNczXxID+EVZ7dSAp
+         N1qbmd/ITgESxgrJ6dCgvC+KzjylEfKDaFja3TYTOv5jz1wy+64DLwgj2LSuStLkEVni
+         hNr5WZp52+1ZpiJhITk87mnwE872UvmhmzUwWCWE5YtjZJYjaIViVO/b76XPP2HaWKAI
+         a1aw==
+X-Gm-Message-State: AOAM533kcitS6nLbgOHcF2s3PI6CJx6VTg7e6TEJRJqOOw7O50rNpRSj
+        0V7KeECQKzLkN/MuJ3lbVHSuvbN3kDk=
+X-Google-Smtp-Source: ABdhPJw4pyA7cBFM2v3sxvGR9xY4shXmmwYpFXW/tyzlTvFLL+i47S3C+2xWK3LbVXoQeyu7A8WBuA==
+X-Received: by 2002:a5d:59ac:0:b0:203:9615:31db with SMTP id p12-20020a5d59ac000000b00203961531dbmr1665156wrr.457.1646990507935;
+        Fri, 11 Mar 2022 01:21:47 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id r1-20020a5d4941000000b001ed89dcacbbsm6156925wrs.23.2022.03.11.01.21.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 01:13:48 -0800 (PST)
-Received: by mail-yb1-f177.google.com with SMTP id z30so16005797ybi.2;
-        Fri, 11 Mar 2022 01:13:47 -0800 (PST)
-X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
- 187-20020a250dc4000000b006292337f9eamr7243141ybn.6.1646990027606; Fri, 11 Mar
- 2022 01:13:47 -0800 (PST)
+        Fri, 11 Mar 2022 01:21:47 -0800 (PST)
+Message-ID: <0fb3795e-0ab1-494b-aefd-ccfa78420723@kernel.org>
+Date:   Fri, 11 Mar 2022 10:21:46 +0100
 MIME-Version: 1.0
-References: <20220310072239.4489-1-zajec5@gmail.com> <CAMuHMdWQNDABuT9uwAugrzdQM31wFtXX_9F8MviC-BRc-YngKw@mail.gmail.com>
- <145c66e0-2ba5-712c-57de-82378328ec3f@gmail.com> <7d7ed784-f01f-44a0-4387-cd7a76a8abe4@gmail.com>
-In-Reply-To: <7d7ed784-f01f-44a0-4387-cd7a76a8abe4@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 11 Mar 2022 10:13:36 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU92K9ZLptwJPG_opA4Reg61ksOgQ-P+2niHX=bf306Kg@mail.gmail.com>
-Message-ID: <CAMuHMdU92K9ZLptwJPG_opA4Reg61ksOgQ-P+2niHX=bf306Kg@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: bcm63xx: use more precise Kconfig symbol
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 2/3] serial: 8250_fintek.c: Report chipID
+Content-Language: en-US
+To:     Trevor Woerner <twoerner@gmail.com>, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+References: <20220311070203.18159-2-twoerner@gmail.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220311070203.18159-2-twoerner@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Florian,
+On 11. 03. 22, 8:02, Trevor Woerner wrote:
+> Provide some feedback to confirm this driver is enabled, and specify which
+> chip was detected.
 
-On Thu, Mar 10, 2022 at 10:49 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 3/10/22 12:33 AM, Rafał Miłecki wrote:
-> > On 10.03.2022 09:19, Geert Uytterhoeven wrote:
-> >> On Thu, Mar 10, 2022 at 8:22 AM Rafał Miłecki <zajec5@gmail.com> wrote:
-> >>> From: Rafał Miłecki <rafal@milecki.pl>
-> >>>
-> >>> Patches lowering SERIAL_BCM63XX dependencies led to a discussion and
-> >>> documentation change regarding "depends" usage. Adjust Kconfig entry to
-> >>> match current guidelines. Make this symbol available for relevant
-> >>> architectures only.
-> >>>
-> >>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> >>> Ref: f35a07f92616 ("tty: serial: bcm63xx: lower driver dependencies")
-> >>> Ref: 18084e435ff6 ("Documentation/kbuild: Document platform
-> >>> dependency practises")
-> >>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> >>
-> >> Thanks for your patch!
-> >>
-> >>> --- a/drivers/tty/serial/Kconfig
-> >>> +++ b/drivers/tty/serial/Kconfig
-> >>> @@ -1100,7 +1100,8 @@ config SERIAL_TIMBERDALE
-> >>>   config SERIAL_BCM63XX
-> >>>          tristate "Broadcom BCM63xx/BCM33xx UART support"
-> >>>          select SERIAL_CORE
-> >>> -       depends on COMMON_CLK
-> >>> +       depends on MIPS || ARM || ARM64 || COMPILE_TEST
-> >>> +       default ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC
-> >>
-> >> So ARCH_BCM4908 covers ARM64, and BCM63XX || BMIPS_GENERIC
-> >> cover MIPS.  Is there some symbol covering ARM so we can change the
-> >> depends to
-> >>
-> >>      depends on FOO || ARCH_BCM4908 || BCM63XX || BMIPS_GENERIC ||
-> >> COMPILE_TEST
-> >>
-> >> ?
-> >
-> > Florian, Kevin: do you know what other platforms need that driver?
->
-> Yes that would be ARCH_BCM_63XX.
+No, we don't do that. In fact, the output is mostly useless as it 
+doesn't even tell the user what device this is about.
 
-Had to read this twice, before I realized this is different from BCM63XX.
+> Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+> ---
+>   drivers/tty/serial/8250/8250_fintek.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index d9f0e546b1a1..03ad2354d808 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -155,11 +155,22 @@ static int fintek_8250_check_id(struct fintek_8250 *pdata)
+>   
+>   	switch (chip) {
+>   	case CHIP_ID_F81865:
+> +		pr_info("Fintek F81865\n");
+> +		break;
+>   	case CHIP_ID_F81866:
+> +		pr_info("Fintek F81866\n");
+> +		break;
+>   	case CHIP_ID_F81966:
+> +		pr_info("Fintek F81966\n");
+> +		break;
+>   	case CHIP_ID_F81216AD:
+> +		pr_info("Fintek F81216AD\n");
+> +		break;
+>   	case CHIP_ID_F81216H:
+> +		pr_info("Fintek F81216H\n");
+> +		break;
+>   	case CHIP_ID_F81216:
+> +		pr_info("Fintek F81216\n");
+>   		break;
+>   	default:
+>   		return -ENODEV;
 
-As we already have
-
-    drivers/char/hw_random/Kconfig:    ARCH_BCM_63XX || BCM63XX ||
-BMIPS_GENERIC || COMPILE_TEST
-    drivers/spi/Kconfig: depends on BCM63XX || BMIPS_GENERIC ||
-ARCH_BCM_63XX || COMPILE_TEST
-
-and drivers/tty/serial/Kconfig would be a third case, would it make
-sense to unify BCM63XX and ARCH_BCM_63XX into a single symbol?
-We already share several ARCH_* symbols between arm and arm64,
-and I expect more will be shared with riscv in the future
-(e.g. ARCH_RENESAS).
-
-Or are MIPS BCM63xx and ARM BCM63xx too dissimilar?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+thanks,
+-- 
+js
