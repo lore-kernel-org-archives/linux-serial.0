@@ -2,199 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E30B7C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Mar 2022 10:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF12BC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 14 Mar 2022 12:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234054AbiCNKZV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
+        id S241423AbiCNMWj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238450AbiCNKZQ (ORCPT
+        with ESMTP id S243941AbiCNMVZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:25:16 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C973ED32;
-        Mon, 14 Mar 2022 03:24:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647253447; x=1678789447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=+1uZ+2Uca9d4Bi+1Q6hEFqLMXDAGlGvlP/r2E4UXo/E=;
-  b=MlVc2U7dctugiRGyE7bDRtCfZoYCSJsVZI3l4ggYgyXT0YlbT+nKWyMe
-   1ofhI9zbU9ueIh6gXKnoVpy+HE8Pg8MkFunbzRzIQ6CzPnV9Mt+e0i9/L
-   gpMajUF7gDyLLKLmrn5h3Tz1H8NJE3Pkiz3bsoxhROV8Xd2z8VY2OxyJ6
-   M+3WioaKn9t/J5sEPXbuTdu7wmC90BhC3WQQeNzFZaGXnt8IcyZ1Iq7Na
-   3VtaI8bjfM01cVYcDiLice0IdxGr2Uz5cvFEoZsXi9PaieUR6E+k/oExU
-   VyGP6VpM3IK/3/u2+ZVKIZi0j/A5M03mi3izRKdDoyrD9WxKi7RFxUEP0
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="342414047"
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="342414047"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 03:24:06 -0700
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="497554982"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 03:24:04 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nThrH-00H9Xc-2X;
-        Mon, 14 Mar 2022 12:23:23 +0200
-Date:   Mon, 14 Mar 2022 12:23:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Gilles Buloz <gilles.buloz@kontron.com>
-Subject: Re: [PATCH 1/1] serial: 8250: fix XOFF/XON sending when DMA is used
-Message-ID: <Yi8XmuHoxSQKQ92u@smile.fi.intel.com>
-References: <20220314091432.4288-1-ilpo.jarvinen@linux.intel.com>
- <20220314091432.4288-2-ilpo.jarvinen@linux.intel.com>
+        Mon, 14 Mar 2022 08:21:25 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D49E13D24;
+        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id v14so8582827qta.2;
+        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
+        b=n0shuxfyOM8Zda4w8ipEKK8UObmHK3LmrpQ3t+xg0Jj9XkRebEcQhgE9fw4MBbnLRh
+         pcXjvEMVUy+fsgwGqDSA/XrcoUoaFK7DSJfCjCkxVQ+VxWzg6KvCrnORuBMqI97dYnQh
+         7trdl8csfaPCjXopD89hVBdF4f4O69mgHijQ/8+R2Pr213wbGRVi8zC0nDWicljzZNsA
+         i1NS1jI6UZXAnXJLSKxkNzT7Jst8xmZR0j5bIt4L/e24ey/nFEMEoyk3+kbKzLcjVvmp
+         hcbWOiG6OGFGSdBCQG39mMosO9kof/QEQa5rhdcE1y3sk5qMX+mneuZ9HIFYMuWv01pj
+         Pmqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
+        b=EpLXBbZ5lfwgJ3Up+vS4ki2FabbFLgJGSkqnWO/6gMA49sVbSuZJNjtaellw4pCu+M
+         g4B1SFxfuUoJJ6WmP5kJ2kcq6uVIGxUGdgeMtBO+RFOKpVlIjpRLYJas/G3QKt1AWzSS
+         Ae+PQ69X0rqdBYiXrAeaL7Oak/orIXngbeBSIXJCBOBamc3Twbo1pvHYtVY1p0YRMTk/
+         FdjqauiPXAUuplchTgDm/pMbU09y3U3719z78Oqr6n1maIhB5VOvLIMcgCMz0a2vx/8Z
+         AG2WztMMQXUEIs214Rt4OCh5RrSId7F7Q3x4TWjjSbi7ifr34kSVSeknIiptxyccDFGm
+         vK0g==
+X-Gm-Message-State: AOAM5336NWIYFDksY8s0cWy7Fx6b7hqxyPG5fYXz9Os7rysP76A9RJGZ
+        ZA0c/2IzDaii0BgVN46mQG5BOiGU2Dk=
+X-Google-Smtp-Source: ABdhPJxSZ4mzrAEulUGO1qJ/XWF06fSdwlNNmz59bevtMoPaToPh7VyN3clT9vrfsUBK5u285uPDhg==
+X-Received: by 2002:a05:622a:40e:b0:2e1:d4cc:88bb with SMTP id n14-20020a05622a040e00b002e1d4cc88bbmr3180031qtx.595.1647260347262;
+        Mon, 14 Mar 2022 05:19:07 -0700 (PDT)
+Received: from localhost.localdomain (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
+        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm2945349qtx.58.2022.03.14.05.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 05:19:06 -0700 (PDT)
+From:   Trevor Woerner <twoerner@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [PATCH v2 1/3] serial: 8250_fintek: Finish support for the F81865
+Date:   Mon, 14 Mar 2022 08:18:56 -0400
+Message-Id: <20220314121856.10112-1-twoerner@gmail.com>
+X-Mailer: git-send-email 2.35.1.455.g1a4874565f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220314091432.4288-2-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 11:14:32AM +0200, Ilpo Järvinen wrote:
-> When 8250 UART is using DMA, x_char (XON/XOFF) is never sent
-> to the wire. After this change, x_char is injected correctly.
-> 
-> Create uart_xchar_out() helper for sending the x_char out and
-> accounting related to it. It seems that almost every driver
-> does these same steps with x_char. Except for 8250, however,
-> almost all currently lack .serial_out so they cannot immediately
-> take advantage of this new helper.
-> 
-> The downside of this patch is that it might reintroduce
-> the problems some devices faced with mixed DMA/non-DMA transfer
-> which caused revert f967fc8f165f (Revert "serial: 8250_dma:
-> don't bother DMA with small transfers"). However, the impact
-> should be limited to cases with XON/XOFF (that didn't work
-> with DMA capable devices to begin with so this problem is not
-> very likely to cause a major issue, if any at all).
+This driver only partially supports the F81865 device. The UART portions of
+this SuperIO chip behave very similarly to the UART of the F81866, except
+that the F81866 has 128-byte FIFOs whereas the F81865 has 16-byte FIFOs,
+and the IRQ configuration is different. Therefore fill out the support for
+the F81865 in the places where it is missing.
 
-LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-One nit=pick below.
+Tested at 1500000 baud on the iEi NANO-PV-D5251-R10 board.
 
-> Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
-> Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
-> Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_dma.c  | 11 ++++++++++-
->  drivers/tty/serial/8250/8250_port.c |  4 +---
->  drivers/tty/serial/serial_core.c    | 14 ++++++++++++++
->  include/linux/serial_core.h         |  2 ++
->  4 files changed, 27 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index 890fa7ddaa7f..b3c3f7e5851a 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -64,10 +64,19 @@ int serial8250_tx_dma(struct uart_8250_port *p)
->  	struct uart_8250_dma		*dma = p->dma;
->  	struct circ_buf			*xmit = &p->port.state->xmit;
->  	struct dma_async_tx_descriptor	*desc;
-> +	struct uart_port		*up = &p->port;
->  	int ret;
->  
-> -	if (dma->tx_running)
-> +	if (dma->tx_running) {
-> +		if (up->x_char) {
-> +			dmaengine_pause(dma->txchan);
-> +			uart_xchar_out(up, UART_TX);
-> +			dmaengine_resume(dma->txchan);
-> +		}
->  		return 0;
-> +	} else if (up->x_char) {
-> +		uart_xchar_out(up, UART_TX);
-> +	}
+Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-This can be written as
-
-	if (dma->tx_running) {
-		...
-		return 0;
-	}
-
-	if (up->x_char)
-		uart_xchar_out(up, UART_TX);
-
-But I'm fine with the original code (it might make sense to have redundant
-'else' just to keep xON/xOFF handling grouped).
-
->  	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
->  		/* We have been called from __dma_tx_complete() */
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 3b12bfc1ed67..63e9bc6fce06 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1799,9 +1799,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
->  	int count;
->  
->  	if (port->x_char) {
-> -		serial_out(up, UART_TX, port->x_char);
-> -		port->icount.tx++;
-> -		port->x_char = 0;
-> +		uart_xchar_out(port, UART_TX);
->  		return;
->  	}
->  	if (uart_tx_stopped(port)) {
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 0db90be4c3bc..f67540ae2a88 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -644,6 +644,20 @@ static void uart_flush_buffer(struct tty_struct *tty)
->  	tty_port_tty_wakeup(&state->port);
->  }
->  
-> +/*
-> + * This function performs low-level write of high-priority XON/XOFF
-> + * character and accounting for it.
-> + *
-> + * Requires uart_port to implement .serial_out().
-> + */
-> +void uart_xchar_out(struct uart_port *uport, int offset)
-> +{
-> +	serial_port_out(uport, offset, uport->x_char);
-> +	uport->icount.tx++;
-> +	uport->x_char = 0;
-> +}
-> +EXPORT_SYMBOL_GPL(uart_xchar_out);
-> +
->  /*
->   * This function is used to send a high-priority XON/XOFF character to
->   * the device
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index c58cc142d23f..8c32935e1059 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -458,6 +458,8 @@ extern void uart_handle_cts_change(struct uart_port *uport,
->  extern void uart_insert_char(struct uart_port *port, unsigned int status,
->  		 unsigned int overrun, unsigned int ch, unsigned int flag);
->  
-> +void uart_xchar_out(struct uart_port *uport, int offset);
-> +
->  #ifdef CONFIG_MAGIC_SYSRQ_SERIAL
->  #define SYSRQ_TIMEOUT	(HZ * 5)
->  
-> -- 
-> 2.30.2
-> 
-
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 251f0018ae8c..47b15d2d9901 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -63,7 +63,12 @@
+ #define F81216_LDN_HIGH	0x4
+ 
+ /*
+- * F81866/966 registers
++ * F81866/865/966 registers
++ *
++ * The UART portion of the F81865 functions very similarly to the UART
++ * portion of the F81866, so there's no need to duplicate all the #defines
++ * etc. The only differences are: the F81866 has 128-byte FIFOs whereas the
++ * F81865 has 16-byte FIFOs, and the IRQ configuration is different.
+  *
+  * The IRQ setting mode of F81866/966 is not the same with F81216 series.
+  *	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
+@@ -316,6 +321,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
+ 		break;
+ 	case CHIP_ID_F81966:
+ 	case CHIP_ID_F81866:
++	case CHIP_ID_F81865:
+ 		reg = F81866_UART_CLK;
+ 		break;
+ 	default:
+@@ -363,6 +369,7 @@ static void fintek_8250_set_termios_handler(struct uart_8250_port *uart)
+ 	case CHIP_ID_F81216H:
+ 	case CHIP_ID_F81966:
+ 	case CHIP_ID_F81866:
++	case CHIP_ID_F81865:
+ 		uart->port.set_termios = fintek_8250_set_termios;
+ 		break;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1.455.g1a4874565f
 
