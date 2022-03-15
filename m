@@ -2,114 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF12BC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Mar 2022 12:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5851DC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Mar 2022 02:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241423AbiCNMWj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
+        id S1344405AbiCOCb3 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 14 Mar 2022 22:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243941AbiCNMVZ (ORCPT
+        with ESMTP id S236325AbiCOCb2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:25 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D49E13D24;
-        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id v14so8582827qta.2;
-        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
-        b=n0shuxfyOM8Zda4w8ipEKK8UObmHK3LmrpQ3t+xg0Jj9XkRebEcQhgE9fw4MBbnLRh
-         pcXjvEMVUy+fsgwGqDSA/XrcoUoaFK7DSJfCjCkxVQ+VxWzg6KvCrnORuBMqI97dYnQh
-         7trdl8csfaPCjXopD89hVBdF4f4O69mgHijQ/8+R2Pr213wbGRVi8zC0nDWicljzZNsA
-         i1NS1jI6UZXAnXJLSKxkNzT7Jst8xmZR0j5bIt4L/e24ey/nFEMEoyk3+kbKzLcjVvmp
-         hcbWOiG6OGFGSdBCQG39mMosO9kof/QEQa5rhdcE1y3sk5qMX+mneuZ9HIFYMuWv01pj
-         Pmqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
-        b=EpLXBbZ5lfwgJ3Up+vS4ki2FabbFLgJGSkqnWO/6gMA49sVbSuZJNjtaellw4pCu+M
-         g4B1SFxfuUoJJ6WmP5kJ2kcq6uVIGxUGdgeMtBO+RFOKpVlIjpRLYJas/G3QKt1AWzSS
-         Ae+PQ69X0rqdBYiXrAeaL7Oak/orIXngbeBSIXJCBOBamc3Twbo1pvHYtVY1p0YRMTk/
-         FdjqauiPXAUuplchTgDm/pMbU09y3U3719z78Oqr6n1maIhB5VOvLIMcgCMz0a2vx/8Z
-         AG2WztMMQXUEIs214Rt4OCh5RrSId7F7Q3x4TWjjSbi7ifr34kSVSeknIiptxyccDFGm
-         vK0g==
-X-Gm-Message-State: AOAM5336NWIYFDksY8s0cWy7Fx6b7hqxyPG5fYXz9Os7rysP76A9RJGZ
-        ZA0c/2IzDaii0BgVN46mQG5BOiGU2Dk=
-X-Google-Smtp-Source: ABdhPJxSZ4mzrAEulUGO1qJ/XWF06fSdwlNNmz59bevtMoPaToPh7VyN3clT9vrfsUBK5u285uPDhg==
-X-Received: by 2002:a05:622a:40e:b0:2e1:d4cc:88bb with SMTP id n14-20020a05622a040e00b002e1d4cc88bbmr3180031qtx.595.1647260347262;
-        Mon, 14 Mar 2022 05:19:07 -0700 (PDT)
-Received: from localhost.localdomain (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
-        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm2945349qtx.58.2022.03.14.05.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 05:19:06 -0700 (PDT)
-From:   Trevor Woerner <twoerner@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [PATCH v2 1/3] serial: 8250_fintek: Finish support for the F81865
-Date:   Mon, 14 Mar 2022 08:18:56 -0400
-Message-Id: <20220314121856.10112-1-twoerner@gmail.com>
-X-Mailer: git-send-email 2.35.1.455.g1a4874565f
+        Mon, 14 Mar 2022 22:31:28 -0400
+X-Greylist: delayed 1328 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 19:30:17 PDT
+Received: from tmailer.gwdg.de (tmailer.gwdg.de [134.76.10.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D4B47069
+        for <linux-serial@vger.kernel.org>; Mon, 14 Mar 2022 19:30:17 -0700 (PDT)
+Received: from excmbx-17.um.gwdg.de ([134.76.9.228] helo=email.gwdg.de)
+        by mailer.gwdg.de with esmtp (GWDG Mailer)
+        (envelope-from <alexander.vorwerk@stud.uni-goettingen.de>)
+        id 1nTwbX-000Co3-PR; Tue, 15 Mar 2022 03:08:07 +0100
+Received: from notebook.fritz.box (10.250.9.199) by excmbx-17.um.gwdg.de
+ (134.76.9.228) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2375.24; Tue, 15
+ Mar 2022 03:08:07 +0100
+From:   Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+To:     <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+Subject: [PATCH] tty: serial: jsm: fix two assignments in if conditions
+Date:   Tue, 15 Mar 2022 03:07:45 +0100
+Message-ID: <20220315020745.15752-1-alexander.vorwerk@stud.uni-goettingen.de>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.250.9.199]
+X-ClientProxiedBy: excmbx-11.um.gwdg.de (134.76.9.220) To excmbx-17.um.gwdg.de
+ (134.76.9.228)
+X-Virus-Scanned: (clean) by clamav
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This driver only partially supports the F81865 device. The UART portions of
-this SuperIO chip behave very similarly to the UART of the F81866, except
-that the F81866 has 128-byte FIFOs whereas the F81865 has 16-byte FIFOs,
-and the IRQ configuration is different. Therefore fill out the support for
-the F81865 in the places where it is missing.
+Fixes two warnings reported of the form
+"ERROR: do not use assignment in if condition"
+reported by checkpatch.pl.
 
-Tested at 1500000 baud on the iEi NANO-PV-D5251-R10 board.
-
-Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/tty/serial/jsm/jsm_neo.c | 3 ++-
+ drivers/tty/serial/jsm/jsm_tty.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 251f0018ae8c..47b15d2d9901 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -63,7 +63,12 @@
- #define F81216_LDN_HIGH	0x4
+diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+index c6f927a76c3b..29158be88027 100644
+--- a/drivers/tty/serial/jsm/jsm_neo.c
++++ b/drivers/tty/serial/jsm/jsm_neo.c
+@@ -291,7 +291,8 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
+ 	ch->ch_cached_lsr = 0;
  
- /*
-- * F81866/966 registers
-+ * F81866/865/966 registers
-+ *
-+ * The UART portion of the F81865 functions very similarly to the UART
-+ * portion of the F81866, so there's no need to duplicate all the #defines
-+ * etc. The only differences are: the F81866 has 128-byte FIFOs whereas the
-+ * F81865 has 16-byte FIFOs, and the IRQ configuration is different.
-  *
-  * The IRQ setting mode of F81866/966 is not the same with F81216 series.
-  *	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
-@@ -316,6 +321,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
- 		break;
- 	case CHIP_ID_F81966:
- 	case CHIP_ID_F81866:
-+	case CHIP_ID_F81865:
- 		reg = F81866_UART_CLK;
- 		break;
- 	default:
-@@ -363,6 +369,7 @@ static void fintek_8250_set_termios_handler(struct uart_8250_port *uart)
- 	case CHIP_ID_F81216H:
- 	case CHIP_ID_F81966:
- 	case CHIP_ID_F81866:
-+	case CHIP_ID_F81865:
- 		uart->port.set_termios = fintek_8250_set_termios;
- 		break;
+ 	/* Store how much space we have left in the queue */
+-	if ((qleft = tail - head - 1) < 0)
++	qleft = tail - head - 1;
++	if (qleft < 0)
+ 		qleft += RQUEUEMASK + 1;
  
+ 	/*
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+index d74cbbbf33c6..cb58bdec2f43 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -749,7 +749,8 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
+ 	int qleft;
+ 
+ 	/* Store how much space we have left in the queue */
+-	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
++	qleft = ch->ch_r_tail - ch->ch_r_head - 1;
++	if (qleft < 0)
+ 		qleft += RQUEUEMASK + 1;
+ 
+ 	/*
 -- 
-2.35.1.455.g1a4874565f
+2.17.1
 
