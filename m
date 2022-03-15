@@ -2,85 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5851DC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Mar 2022 02:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCE9C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Mar 2022 13:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344405AbiCOCb3 (ORCPT
+        id S1348803AbiCONxu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Mar 2022 22:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
+        Tue, 15 Mar 2022 09:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236325AbiCOCb2 (ORCPT
+        with ESMTP id S242530AbiCONxt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Mar 2022 22:31:28 -0400
-X-Greylist: delayed 1328 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 19:30:17 PDT
-Received: from tmailer.gwdg.de (tmailer.gwdg.de [134.76.10.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D4B47069
-        for <linux-serial@vger.kernel.org>; Mon, 14 Mar 2022 19:30:17 -0700 (PDT)
-Received: from excmbx-17.um.gwdg.de ([134.76.9.228] helo=email.gwdg.de)
-        by mailer.gwdg.de with esmtp (GWDG Mailer)
-        (envelope-from <alexander.vorwerk@stud.uni-goettingen.de>)
-        id 1nTwbX-000Co3-PR; Tue, 15 Mar 2022 03:08:07 +0100
-Received: from notebook.fritz.box (10.250.9.199) by excmbx-17.um.gwdg.de
- (134.76.9.228) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2375.24; Tue, 15
- Mar 2022 03:08:07 +0100
-From:   Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-To:     <gregkh@linuxfoundation.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-Subject: [PATCH] tty: serial: jsm: fix two assignments in if conditions
-Date:   Tue, 15 Mar 2022 03:07:45 +0100
-Message-ID: <20220315020745.15752-1-alexander.vorwerk@stud.uni-goettingen.de>
-X-Mailer: git-send-email 2.17.1
+        Tue, 15 Mar 2022 09:53:49 -0400
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0127953707
+        for <linux-serial@vger.kernel.org>; Tue, 15 Mar 2022 06:52:36 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:1dc0:e57f:6975:ecb9])
+        by andre.telenet-ops.be with bizsmtp
+        id 6dsZ2700S3jtd4z01dsZVM; Tue, 15 Mar 2022 14:52:34 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nU7bF-004ZU2-Dv; Tue, 15 Mar 2022 14:52:33 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nU7bF-002jOr-2N; Tue, 15 Mar 2022 14:52:33 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: SERIAL_SUNPLUS should depend on ARCH_SUNPLUS
+Date:   Tue, 15 Mar 2022 14:52:32 +0100
+Message-Id: <59f46272ab5b16853acac4d585c3333cfd394223.1647352195.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.250.9.199]
-X-ClientProxiedBy: excmbx-11.um.gwdg.de (134.76.9.220) To excmbx-17.um.gwdg.de
- (134.76.9.228)
-X-Virus-Scanned: (clean) by clamav
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fixes two warnings reported of the form
-"ERROR: do not use assignment in if condition"
-reported by checkpatch.pl.
+Sunplus serial ports are only present on Sunplus SoCs.  Hence add a
+dependency on ARCH_SUNPLUS, to prevent asking the user about this driver
+when configuring a kernel without Sunplus SoC support.
 
-Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+Fixes: 9e8d5470325f25be ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/jsm/jsm_neo.c | 3 ++-
- drivers/tty/serial/jsm/jsm_tty.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
-index c6f927a76c3b..29158be88027 100644
---- a/drivers/tty/serial/jsm/jsm_neo.c
-+++ b/drivers/tty/serial/jsm/jsm_neo.c
-@@ -291,7 +291,8 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
- 	ch->ch_cached_lsr = 0;
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e952ec5c7a7c00a3..5551192560bb49d3 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1566,7 +1566,7 @@ config SERIAL_LITEUART_CONSOLE
  
- 	/* Store how much space we have left in the queue */
--	if ((qleft = tail - head - 1) < 0)
-+	qleft = tail - head - 1;
-+	if (qleft < 0)
- 		qleft += RQUEUEMASK + 1;
- 
- 	/*
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
-index d74cbbbf33c6..cb58bdec2f43 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -749,7 +749,8 @@ void jsm_check_queue_flow_control(struct jsm_channel *ch)
- 	int qleft;
- 
- 	/* Store how much space we have left in the queue */
--	if ((qleft = ch->ch_r_tail - ch->ch_r_head - 1) < 0)
-+	qleft = ch->ch_r_tail - ch->ch_r_head - 1;
-+	if (qleft < 0)
- 		qleft += RQUEUEMASK + 1;
- 
- 	/*
+ config SERIAL_SUNPLUS
+ 	tristate "Sunplus UART support"
+-	depends on OF || COMPILE_TEST
++	depends on ARCH_SUNPLUS || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	help
+ 	  Select this option if you would like to use Sunplus serial port on
 -- 
-2.17.1
+2.25.1
 
