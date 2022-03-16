@@ -2,100 +2,191 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 829FAC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Mar 2022 14:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE688C433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Mar 2022 14:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348341AbiCPOjN (ORCPT
+        id S1345866AbiCPOmR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        Wed, 16 Mar 2022 10:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356549AbiCPOjK (ORCPT
+        with ESMTP id S243855AbiCPOmN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:39:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B27C8326
-        for <linux-serial@vger.kernel.org>; Wed, 16 Mar 2022 07:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647441475;
+        Wed, 16 Mar 2022 10:42:13 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B592D5F261;
+        Wed, 16 Mar 2022 07:40:57 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5F69860006;
+        Wed, 16 Mar 2022 14:40:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647441653;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FdaRFj6Txp5dVh+5ToS7luAujkKT+3c923Qns25TpZk=;
-        b=eF9HrZBMUMOCjz+Bgb7263C8DaJlcYicUn09+viv6d/yvstNHxlkTzgR3lkvMdWhw6fEqL
-        /9rzwhql0c7XJDhRhM4Oc/F/9MaEdKyRg1DS/FHeGdSZSaPJvo4FgyYaMareXdb4wZD4fV
-        J0piltlXplrvu6HgSe/z9qtAdQEDJf0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-520-PX3TcyXXMn21kXKpX9Klgg-1; Wed, 16 Mar 2022 10:37:52 -0400
-X-MC-Unique: PX3TcyXXMn21kXKpX9Klgg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 453D91801388;
-        Wed, 16 Mar 2022 14:37:51 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.22.19.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 132C1400F73E;
-        Wed, 16 Mar 2022 14:37:47 +0000 (UTC)
-From:   Wander Lairson Costa <wander@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        bh=KZrHkZTxdSaDlw1duqlnaB5GO9gaLPPnJ7VLgxAsVCM=;
+        b=Sgy6Uw3Hq4bzryd7jgDrLxnlDuFcQNzwj1Ol0d0ZRL2IKeNetEX12zWFLqe3fxDNHq/Mwl
+        lnJRskBlK23oye0baB8eF2Zz3e7H5OInJ9Rm4BIcnXpcAD6N+UaO34Sqtnn07N8/o6vlCy
+        Rh0wAh2fPy/Nw0qz05pub9Rd6wUDCj7fJBZsxo0XO6Y5C+HMvjosDIAV60pQe7NfIRnutB
+        d3ex+/92laIOVgA/Io8u/1uy45zAkQCUlIc7iZg6kwQuY+jfeaYNsmsLigfhNp86cyjDdN
+        Ozh9FDuteZlicqM+Bs1K656LgEBvTZ2naPyx8jNDjPV5V4Erruyn9EKudLUhuQ==
+Date:   Wed, 16 Mar 2022 15:40:50 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Wander Lairson Costa <wander@redhat.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     rostedt@goodmis.org, senozhatsky@chromium.org,
-        andre.goddard@gmail.com, sudipm.mukherjee@gmail.com,
-        andy.shevchenko@gmail.com, David.Laight@aculab.com,
-        jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: [PATCH v4 5/5] serial/8250: Only use fifo after the port is initialized in console_write
-Date:   Wed, 16 Mar 2022 11:36:44 -0300
-Message-Id: <20220316143646.13301-6-wander@redhat.com>
-In-Reply-To: <20220316143646.13301-1-wander@redhat.com>
-References: <20220316143646.13301-1-wander@redhat.com>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: 8250_dw: Use device tree match data
+Message-ID: <20220316154050.317fee11@xps13>
+In-Reply-To: <20220311144814.21944-1-kernel@esmil.dk>
+References: <20220311105934.5827d0d6@xps13>
+        <20220311144814.21944-1-kernel@esmil.dk>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The serial driver set the value of uart_8250_port.fcr in the function
-serial8250_config_port, but only writes the value to the controller
-register later in the initalization code.
+Hi Emil,
 
-That opens a small window in which is not safe to use the fifo for
-console write.
+kernel@esmil.dk wrote on Fri, 11 Mar 2022 15:48:14 +0100:
 
-Make sure the port is initialized correctly before reading the FCR
-cached value.
+> ..rather than multiple calls to of_device_is_compatible().
+>=20
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> ---
+>=20
+> Hi Miquel,
+>=20
+> > > > > --- a/drivers/tty/serial/8250/8250_dma.c
+> > > > > +++ b/drivers/tty/serial/8250/8250_dma.c =3D20 =20
+> > > > =3D20 =20
+> > > > > @@ -501,6 +589,8 @@ static int dw8250_probe(struct platform_devic=
+e *p=3D =20
+> > dev) =20
+> > > > >                 data->msr_mask_off |=3D3D UART_MSR_TERI;
+> > > > >         }
+> > > > >
+> > > > > +       data->is_rzn1 =3D3D of_device_is_compatible(dev->of_node,=
+ "rene=3D =20
+> > sas,rzn1-uart"); =3D20 =20
+> > > >
+> > > > Explicit checks for compatible values are frowned upon if you have
+> > > > a match table.
+> > > > Please handle this through of_device.data, cfr. the various quirks.=
+ =3D20 =20
+> > >=3D20
+> > > Oops, these are not yet upstream, but present in my tree due to inclu=
+ding
+> > > support for StarLight, cfr.
+> > > https://github.com/esmil/linux/commits/visionfive/drivers/tty/serial/=
+8250=3D =20
+> > /8250_dw.c
+> >=20
+> > Oh thanks for pointing it! Too bad that these quirks were not
+> > introduced inside a wider structure, I think it's always a must even if
+> > there is only one parameter there. Anyway, I'll introduce a wider
+> > specific structure and use it. =20
+>=20
+> For reference this is the patch I wrote for the StarFive JH7100 tree.
+> Feel free to use it or do something better as you see fit.
 
-Unfortunately, I lost track of who originally reported the issue. If
-s/he is reading this, please speak up so I can give you the due credit.
+Thanks for the pointers, I've fetched the three 8250_dw patches from
+your tree directly, and will build on top of them!
 
-Signed-off-by: Wander Lairson Costa <wander@redhat.com>
----
- drivers/tty/serial/8250/8250_port.c | 1 +
- 1 file changed, 1 insertion(+)
+Cheers,
+Miqu=C3=A8l
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 4acf620be241..7e2227161555 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		!(up->capabilities & UART_CAP_MINI) &&
- 		up->tx_loadsz > 1 &&
- 		(up->fcr & UART_FCR_ENABLE_FIFO) &&
-+		test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
- 		/*
- 		 * After we put a data in the fifo, the controller will send
- 		 * it regardless of the CTS state. Therefore, only use fifo
--- 
-2.35.1
+>=20
+> /Emil
+>=20
+>  drivers/tty/serial/8250/8250_dw.c | 18 ++++++++++++------
+>  1 file changed, 12 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
+8250_dw.c
+> index 1769808031c5..f564a019a7be 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -37,6 +37,11 @@
+>  /* DesignWare specific register fields */
+>  #define DW_UART_MCR_SIRE		BIT(6)
+> =20
+> +/* Quirks */
+> +#define DW_UART_QUIRK_OCTEON		BIT(0)
+> +#define DW_UART_QUIRK_ARMADA_38X	BIT(1)
+> +#define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
+> +
+>  struct dw8250_data {
+>  	struct dw8250_port_data	data;
+> =20
+> @@ -389,6 +394,7 @@ static void dw8250_quirks(struct uart_port *p, struct=
+ dw8250_data *data)
+>  	struct device_node *np =3D p->dev->of_node;
+> =20
+>  	if (np) {
+> +		unsigned long quirks =3D (unsigned long)of_device_get_match_data(p->de=
+v);
+>  		int id;
+> =20
+>  		/* get index of serial line, if found in DT aliases */
+> @@ -396,7 +402,7 @@ static void dw8250_quirks(struct uart_port *p, struct=
+ dw8250_data *data)
+>  		if (id >=3D 0)
+>  			p->line =3D id;
+>  #ifdef CONFIG_64BIT
+> -		if (of_device_is_compatible(np, "cavium,octeon-3860-uart")) {
+> +		if (quirks & DW_UART_QUIRK_OCTEON) {
+>  			p->serial_in =3D dw8250_serial_inq;
+>  			p->serial_out =3D dw8250_serial_outq;
+>  			p->flags =3D UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
+> @@ -412,9 +418,9 @@ static void dw8250_quirks(struct uart_port *p, struct=
+ dw8250_data *data)
+>  			p->serial_out =3D dw8250_serial_out32be;
+>  		}
+> =20
+> -		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
+> +		if (quirks & DW_UART_QUIRK_ARMADA_38X)
+>  			p->serial_out =3D dw8250_serial_out38x;
+> -		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
+> +		if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
+>  			p->set_termios =3D dw8250_do_set_termios;
+> =20
+>  	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
+> @@ -695,10 +701,10 @@ static const struct dev_pm_ops dw8250_pm_ops =3D {
+> =20
+>  static const struct of_device_id dw8250_of_match[] =3D {
+>  	{ .compatible =3D "snps,dw-apb-uart" },
+> -	{ .compatible =3D "cavium,octeon-3860-uart" },
+> -	{ .compatible =3D "marvell,armada-38x-uart" },
+> +	{ .compatible =3D "cavium,octeon-3860-uart", .data =3D (void *)DW_UART_=
+QUIRK_OCTEON },
+> +	{ .compatible =3D "marvell,armada-38x-uart", .data =3D (void *)DW_UART_=
+QUIRK_ARMADA_38X },
+>  	{ .compatible =3D "renesas,rzn1-uart" },
+> -	{ .compatible =3D "starfive,jh7100-uart" },
+> +	{ .compatible =3D "starfive,jh7100-uart",    .data =3D (void *)DW_UART_=
+QUIRK_SKIP_SET_RATE },
+>  	{ /* Sentinel */ }
+>  };
+>  MODULE_DEVICE_TABLE(of, dw8250_of_match);
 
+
+Thanks,
+Miqu=C3=A8l
