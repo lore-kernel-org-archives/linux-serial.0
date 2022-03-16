@@ -2,105 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A29C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Mar 2022 15:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C9EC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Mar 2022 16:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344253AbiCPP2q convert rfc822-to-8bit (ORCPT
+        id S1345330AbiCPQPU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        Wed, 16 Mar 2022 12:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345245AbiCPP2p (ORCPT
+        with ESMTP id S239089AbiCPQPU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:28:45 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5938673F5
-        for <linux-serial@vger.kernel.org>; Wed, 16 Mar 2022 08:27:30 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-38-f6wgHKZ6OgqCN6WP2rtJ0g-1; Wed, 16 Mar 2022 15:27:27 +0000
-X-MC-Unique: f6wgHKZ6OgqCN6WP2rtJ0g-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 16 Mar 2022 15:27:26 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 16 Mar 2022 15:27:26 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Wander Lairson Costa' <wander@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 16 Mar 2022 12:15:20 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CBBAE78;
+        Wed, 16 Mar 2022 09:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647447245; x=1678983245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eG1MKTEp/lLTZCxtFRGNr8K7zuChwr5qYDUwdyFj178=;
+  b=NVvwDPX/w+Yuf/3xVxKI0arLuZiq6EXoB9OTxkecZU56FKgogHlfoLfQ
+   xueY2Qzaf0jtNLVnStXB8lpKu7ygpbMZVlUyLfBLUfUEX49FnBzPxt5ry
+   ERReH/crHzisFNxSDXAEo7tvSaawC+ennP+4P0pFu8OGz1VyuMAZkBmGc
+   QErmOV4UTpbF8t5aSXjShPI63BHe8EWkJz1Fjwcz1MFtEy5hPgAUb7Z0P
+   62i6eS0yN9X38zxh/SGqV+zzNAWFYCyP64Tg3Y2Ek/sZIycGL0xg7cNM0
+   kQ1+1dz6y4/IXblRMgZGU4uXEzhsl0dCi63GnpL8AD6NU1cSdHVtHF2cH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317368787"
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="317368787"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:14:04 -0700
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="598774648"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:14:00 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nUWH1-000zRv-S8;
+        Wed, 16 Mar 2022 18:13:19 +0200
+Date:   Wed, 16 Mar 2022 18:13:19 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wander Lairson Costa <wander@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Serge Semin <fancer.lancer@gmail.com>,
         Lukas Wunner <lukas@wunner.de>,
-        =?iso-8859-1?Q?Pali_Roh=E1r?= <pali@kernel.org>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-CC:     "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "andre.goddard@gmail.com" <andre.goddard@gmail.com>,
-        "sudipm.mukherjee@gmail.com" <sudipm.mukherjee@gmail.com>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
-        "phil@raspberrypi.com" <phil@raspberrypi.com>
-Subject: RE: [PATCH v4 1/5] serial/8250: Use fifo in 8250 console driver
-Thread-Topic: [PATCH v4 1/5] serial/8250: Use fifo in 8250 console driver
-Thread-Index: AQHYOUNg+UxO79+xmUuDTD6Kl8POG6zCIVEg
-Date:   Wed, 16 Mar 2022 15:27:26 +0000
-Message-ID: <bb5f03ec092f462c9656f224895bb224@AcuMS.aculab.com>
+        open list <linux-kernel@vger.kernel.org>, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andre.goddard@gmail.com,
+        sudipm.mukherjee@gmail.com, David.Laight@aculab.com,
+        jonathanh@nvidia.com, phil@raspberrypi.com
+Subject: Re: [PATCH v4 0/5] tty/8250: Use fifo in 8250 console driver
+Message-ID: <YjIMn/cBf7STIxBU@smile.fi.intel.com>
 References: <20220316143646.13301-1-wander@redhat.com>
- <20220316143646.13301-2-wander@redhat.com>
-In-Reply-To: <20220316143646.13301-2-wander@redhat.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316143646.13301-1-wander@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Wander Lairson Costa
-> Sent: 16 March 2022 14:37
+On Wed, Mar 16, 2022 at 11:36:39AM -0300, Wander Lairson Costa wrote:
+> This version fixes the bugs reported in version v3. The first patch
+> is the same patch of v3 as is. The following commits fix the issues in the
+> original patch. For details, please check the commit log of each patch.
 > 
-> Note: I am using a small test app + driver located at [0] for the
-> problem description. serco is a driver whose write function dispatches
-> to the serial controller. sertest is a user-mode app that writes n bytes
-> to the serial console using the serco driver.
+> I tested these patches in the following systems:
 > 
-> While investigating a bug in the RHEL kernel, I noticed that the serial
-> console throughput is way below the configured speed of 115200 bps in
-> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
-> I got 2.5KB/s.
+> * IBM X3550 M3
+> * HP ProLiant DL380 Gen9
+> * HP ProLiant BL480c G1
+> * Dell PowerEdge R910
+> * Cisco UCSC-C220-M3S
 > 
-> $ time ./sertest -n 2500 /tmp/serco
-> 
-> real    0m0.997s
-> user    0m0.000s
-> sys     0m0.997s
-> 
-> With the help of the function tracer, I then noticed the serial
-> controller was taking around 410us seconds to dispatch one single byte:
+> I cc everybody that reported problems with the previous version of this
+> patch so they can retest and confirm their systems work flawlessly.
 
-Did you verify the baud rate?
+I have got this only message and I don't see any good changelog what has
+been done between v3 and v4.
 
-Or is there some horrid serial redirection going on.
-It is even possible there is a bios smm interrupt
-chugging through on another cpu core.
+> Wander Lairson Costa (5):
+>   serial/8250: Use fifo in 8250 console driver
+>   serial/8250: Use the cache value of the FCR register
+>   serial/8250: Use tx_loadsz as the transmitter fifo size
+>   serial/8250: exclude BCM283x from console_fifo_write
+>   serial/8250: Only use fifo after the port is initialized in
+>     console_write
 
-	David
+-- 
+With Best Regards,
+Andy Shevchenko
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
