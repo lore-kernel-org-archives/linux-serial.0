@@ -2,35 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 840D1C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 17:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A27C43219
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 17:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236984AbiCQRsG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Mar 2022 13:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S237054AbiCQRsH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Mar 2022 13:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237054AbiCQRrw (ORCPT
+        with ESMTP id S237083AbiCQRr4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Mar 2022 13:47:52 -0400
-X-Greylist: delayed 97539 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 10:46:34 PDT
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC221EA5F3;
-        Thu, 17 Mar 2022 10:46:34 -0700 (PDT)
+        Thu, 17 Mar 2022 13:47:56 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68181EFE13;
+        Thu, 17 Mar 2022 10:46:37 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6671AFF805;
-        Thu, 17 Mar 2022 17:46:31 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 25EC3FF80D;
+        Thu, 17 Mar 2022 17:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647539192;
+        t=1647539196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AnAWj0GNVR7vedRh1qVgjfr2ph03zkT1xTwsURAcXYg=;
-        b=Gcm+Z7sGaxiCOe1Q4UNr0RkH6Sss+io1gM04nh4O/Tj5Zy4bOJV/vre2SCZKge/kclsG4L
-        eykZfHkI+CmY8TiMgzj11XWI1riCp8MFRf+fCb/vpxvpXFSg+Jmn+/GSpp6PkLLdpWFr+Y
-        jfxJJrw8eQ8E0ynVkz+bOjWE0D1JZaLPb+FIzOcL+Ll9ZUyUvLOIFDpzK3wANVyC9tglYH
-        zbpuveZQkmpyARAm6BkCZmofJHWA/XtlDFN1/sibPMVnQaBvnRmrHIZ04WGwtu789OEURh
-        DJ3+l3zvjr8Uf09BTtheSY7/nKGUp1Ri/LciORNKrCMf1t6K8570p6BsRd3RzQ==
+        bh=rdYfWqffJTdCQkVjQxkQ/0E062b9xCGzG3oHIsosqO0=;
+        b=auhiC/jN0fH2lKTsvCWrhifO/1njKlnfJPWVdG0xLU0FwfvynAOlRFWg1mg9x7aR8WBeq4
+        veqJ6xDvAFvL7PriKUROnJbm19t9a1WqzHT8BR+0qYyC6/9885enIYE1gbgDKWs0ZfQ4f6
+        5J9vL+bBYmn8cnbZSSgdQMJFBe9ZUat0mmCVU4RkaKZskOJ6D4w++TUFwSB038DMOE5eeq
+        B28ykRwwP/xv5tP1U2aBdUfZDzvLpjfi44pZ0gUbnpSvKNKU2x6K4SeszIrasBdfgRDo38
+        k+Y5GSZ/a4XObM7j/1QucK5qQaymLXiozgmgl1tLkzDEOHkSvqoeBz13K7P4LQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     linux-renesas-soc@vger.kernel.org,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -47,10 +46,11 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
         linux-serial@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v2 01/10] serial: 8250: dw: Move the per-device structure
-Date:   Thu, 17 Mar 2022 18:46:18 +0100
-Message-Id: <20220317174627.360815-2-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [PATCH v2 03/10] serial: 8250: dw: Create a more generic platform data structure
+Date:   Thu, 17 Mar 2022 18:46:20 +0100
+Message-Id: <20220317174627.360815-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220317174627.360815-1-miquel.raynal@bootlin.com>
 References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
@@ -61,83 +61,84 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Phil Edworthy <phil.edworthy@renesas.com>
+Before adding more platform data information, let's turn the quirks
+information as being a member of a wider structure. More fields will be
+added later.
 
-This structure needs to be reused from dwlib, so let's move it into a
-shared header. There is no functional change.
-
-Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-[miquel.raynal@bootlin.com: Extracted from a bigger change]
+Cc: Emil Renner Berthing <kernel@esmil.dk>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/tty/serial/8250/8250_dw.c    | 16 ----------------
- drivers/tty/serial/8250/8250_dwlib.h | 20 ++++++++++++++++++++
- 2 files changed, 20 insertions(+), 16 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c    | 24 +++++++++++++++++++-----
+ drivers/tty/serial/8250/8250_dwlib.h |  4 ++++
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 96a62e95726b..d89731d6c94c 100644
+index 28f0dea2ed88..88fa17882df5 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -42,22 +42,6 @@
- #define DW_UART_QUIRK_ARMADA_38X	BIT(1)
- #define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
- 
--struct dw8250_data {
--	struct dw8250_port_data	data;
--
--	u8			usr_reg;
--	int			msr_mask_on;
--	int			msr_mask_off;
--	struct clk		*clk;
--	struct clk		*pclk;
--	struct notifier_block	clk_notifier;
--	struct work_struct	clk_work;
--	struct reset_control	*rst;
--
--	unsigned int		skip_autocfg:1;
--	unsigned int		uart_16550_compatible:1;
--};
--
- static inline struct dw8250_data *to_dw8250_data(struct dw8250_port_data *data)
+@@ -19,6 +19,7 @@
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/workqueue.h>
+ #include <linux/notifier.h>
+ #include <linux/slab.h>
+@@ -376,7 +377,8 @@ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
+ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
  {
- 	return container_of(data, struct dw8250_data, data);
+ 	struct device_node *np = p->dev->of_node;
+-	unsigned long quirks = (unsigned long)device_get_match_data(p->dev);
++	const struct dw8250_platform_data *pdata = device_get_match_data(p->dev);
++	unsigned long quirks = pdata ? pdata->quirks : 0;
+ 
+ 	if (np) {
+ 		int id;
+@@ -683,13 +685,25 @@ static const struct dev_pm_ops dw8250_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+ };
+ 
++static const struct dw8250_platform_data dw8250_octeon_3860_data = {
++	.quirks = DW_UART_QUIRK_OCTEON,
++};
++
++static const struct dw8250_platform_data dw8250_armada_38x_data = {
++	.quirks = DW_UART_QUIRK_ARMADA_38X,
++};
++
++static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
++	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
++};
++
+ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+-	{ .compatible = "cavium,octeon-3860-uart", .data = (void *)DW_UART_QUIRK_OCTEON },
+-	{ .compatible = "marvell,armada-38x-uart", .data = (void *)DW_UART_QUIRK_ARMADA_38X },
++	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
++	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+ 	{ .compatible = "renesas,rzn1-uart" },
+-	{ .compatible = "starfive,jh7100-hsuart",  .data = (void *)DW_UART_QUIRK_SKIP_SET_RATE },
+-	{ .compatible = "starfive,jh7100-uart",    .data = (void *)DW_UART_QUIRK_SKIP_SET_RATE },
++	{ .compatible = "starfive,jh7100-hsuart", .data = &dw8250_starfive_jh7100_data },
++	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
+ 	{ /* Sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, dw8250_of_match);
 diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-index 83d528e5cc21..6ffbf502829e 100644
+index 6ffbf502829e..766f80799d13 100644
 --- a/drivers/tty/serial/8250/8250_dwlib.h
 +++ b/drivers/tty/serial/8250/8250_dwlib.h
-@@ -2,6 +2,10 @@
- /* Synopsys DesignWare 8250 library header file. */
- 
- #include <linux/types.h>
-+#include <linux/clk.h>
-+#include <linux/notifier.h>
-+#include <linux/workqueue.h>
-+#include <linux/reset.h>
- 
- #include "8250.h"
- 
-@@ -16,5 +20,21 @@ struct dw8250_port_data {
+@@ -20,6 +20,10 @@ struct dw8250_port_data {
  	u8			dlf_size;
  };
  
-+struct dw8250_data {
-+	struct dw8250_port_data	data;
-+
-+	u8			usr_reg;
-+	int			msr_mask_on;
-+	int			msr_mask_off;
-+	struct clk		*clk;
-+	struct clk		*pclk;
-+	struct notifier_block	clk_notifier;
-+	struct work_struct	clk_work;
-+	struct reset_control	*rst;
-+
-+	unsigned int		skip_autocfg:1;
-+	unsigned int		uart_16550_compatible:1;
++struct dw8250_platform_data {
++	unsigned long quirks;
 +};
 +
- void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct ktermios *old);
- void dw8250_setup_port(struct uart_port *p);
+ struct dw8250_data {
+ 	struct dw8250_port_data	data;
+ 
 -- 
 2.27.0
 
