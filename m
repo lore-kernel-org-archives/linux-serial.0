@@ -2,68 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C44C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 12:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4647C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 12:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233387AbiCQMFe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
+        id S233378AbiCQMYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233369AbiCQMFd (ORCPT
+        with ESMTP id S230499AbiCQMYL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:05:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2F3219315A
-        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:04:17 -0700 (PDT)
+        Thu, 17 Mar 2022 08:24:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 693829F3BC
+        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:22:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647518657;
+        s=mimecast20190719; t=1647519773;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FdTSBCWZfRB7gl4NcFBlztb/OOGHep3RIbzmatr6VFQ=;
-        b=doYa7O7SpvTlH0Wc3RixiVHVUzdCBa6XZU2S79U6dO8d989sNw1XMgkeizivEjoIyTQrWj
-        Hed6gl91pKO7Jv6Kmu71hTUKqaaTy8qO69S9mrs3IxoUhduJw1yPGQW3LwJnECXuo5ebU4
-        B9j1cAbqii6JCc1WlmPsWMEJS5yp4cQ=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
+        b=T/fwsf7aMqsLDKmY3Cim6NchmxuEdmFLpfBfuEuLx5p44hGgOhmU9dl1r/iDIBSD/XHAD9
+        wd4h19iixDQjO7zgAYEhFC1Nusissv72pY8IfoSUCs4iJIhFmKUkz6S7OSosz8P4ozCbfA
+        /9U6jEptHWJs9S3oRc1QcH0tppjiixg=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-CfcskwFrPeivHdO6XbTfAA-1; Thu, 17 Mar 2022 08:04:16 -0400
-X-MC-Unique: CfcskwFrPeivHdO6XbTfAA-1
-Received: by mail-lj1-f199.google.com with SMTP id f12-20020a2e918c000000b002496651f1d6so271120ljg.0
-        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:04:15 -0700 (PDT)
+ us-mta-211-0GM9ONsaPUWJ1U5zqoMjPA-1; Thu, 17 Mar 2022 08:22:52 -0400
+X-MC-Unique: 0GM9ONsaPUWJ1U5zqoMjPA-1
+Received: by mail-lf1-f71.google.com with SMTP id z24-20020a056512371800b0043ea4caa07cso1754160lfr.17
+        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:22:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FdTSBCWZfRB7gl4NcFBlztb/OOGHep3RIbzmatr6VFQ=;
-        b=oaBdNUWXG4acvDiyMT4/zicz6wV8PNJP3ikb0l6x66AdsH7k3we5NzUWh+jVgvA3mR
-         5kDmgFeY+hFMLPel432sOPuTV4ZVdKXzUmJTm51p22ZgGzCr6TikRberDavVdZM5onqx
-         5fpzOvA2aAda/BLBIj446bl2bwxhE+VOG1NkXPt9Asc783dDyOgZ7b2tCi6ANQNnRlie
-         czVhjVsmNi1RNqKAdV1ScLAqSk9H8zgQiEv7xCLQmUBGhG8xao+6HenkjtDZESnN0X20
-         +z3/FTfCowKBHsE9HuO5jh1P93ZnX/8T9K1btU4iuFL0Fek9UiGfCnMXkyIU53fwGshG
-         xumg==
-X-Gm-Message-State: AOAM532c+V9c4Mg6sJlGeLjO8102qCJR7HbQkbXbIsA0bDQpjYlxLtIR
-        sjkK6kpXA2+qh64xGLDQqpxDHsD9g6LzyvW07QVFiTMHug2mXd27O1cFG2BPO6HRJOox7hMzHe3
-        hzfU/rNeoUtJUAPpvzuNCxu6zvLPXxl5149oJZoMi
-X-Received: by 2002:a05:6512:44f:b0:449:b929:a301 with SMTP id y15-20020a056512044f00b00449b929a301mr2699667lfk.180.1647518649547;
-        Thu, 17 Mar 2022 05:04:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwn2/gammYMEhSTgjHb3uCUKDlyraLf9N+wqpMA6XqrZ9+XtOOCoVlma0IkJ0zgfZJMfBknwy+BxtFxUgrIIYI=
-X-Received: by 2002:a05:6512:44f:b0:449:b929:a301 with SMTP id
- y15-20020a056512044f00b00449b929a301mr2699643lfk.180.1647518649298; Thu, 17
- Mar 2022 05:04:09 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
+        b=u+xGo9xpbbDV0Ln2d4rgYo529Hv3Kv82xgKkrIzidXDwHfAYGC8qetEabzttP7fo0Q
+         BzqNofXb8cyhTXXLpVwzLRyNgtYT+lxvp5H7/cRU9I29EMwBs6msHZmNBGTQRUh8DGiP
+         8EdZPQCy/yCPIaNmf+12XDhuw8lD5WjwtBPZ0XLt2ijJuKSs9/tzOxCXdx1XxWMjdFfl
+         vqo3bbg/pF/yIrvUyiLWNbNM6dlryhp2nuI1mP8UWIlSHE0vuv7Gtpf0EGRRaqYLYVXu
+         1geZibSRsQDoHmk+jw2XkW97nqeA907clC8et+GTYJi6urHkZyqhT+f+FXBTUJwigWpr
+         w6fw==
+X-Gm-Message-State: AOAM533+JS3sC6UbY55JHqS9+0iRNXkyMDt+xfphtctX+oPf6RjvTj5e
+        Tqfao+5xXXC7pJ9cUOs5HR2IKvuP03SDLNoVyO5XF6mTpLBqk59i6pb+6Cn6m4RqjiRWCOlp34F
+        c6pKTHoru4fM0PbHo/w3q4l7uCho3Vnr9z6D07kaq
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id z9-20020ac24189000000b00448bc2be762mr2576751lfh.471.1647519770416;
+        Thu, 17 Mar 2022 05:22:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx1rJqT6+g/fKTYm+1dcMdSVQxbzMyICiFHJGIWw3B+6PHmjLZGBFQKLst/7DouRH0T5POM7UoxpgR0fSAeKns=
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id
+ z9-20020ac24189000000b00448bc2be762mr2576737lfh.471.1647519770215; Thu, 17
+ Mar 2022 05:22:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-3-wander@redhat.com>
- <ce8be768-6210-c3b-2131-de302a7757d@linux.intel.com>
-In-Reply-To: <ce8be768-6210-c3b-2131-de302a7757d@linux.intel.com>
+References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-6-wander@redhat.com>
+ <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
+In-Reply-To: <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
 From:   Wander Costa <wcosta@redhat.com>
-Date:   Thu, 17 Mar 2022 09:03:55 -0300
-Message-ID: <CAAq0SU==UJpdTN2YNm_2KNGQmSKMOU97fFb-wTV2VM=vO5pPCw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] serial/8250: Use the cache value of the FCR register
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date:   Thu, 17 Mar 2022 09:22:39 -0300
+Message-ID: <CAAq0SUmuwc7KZWQOwoQfDrX+os8TVRhdr2pcXiwFNAgGCeRi=g@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] serial/8250: Only use fifo after the port is
+ initialized in console_write
+To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     Wander Lairson Costa <wander@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Serge Semin <fancer.lancer@gmail.com>,
@@ -83,53 +82,55 @@ Authentication-Results: relay.mimecast.com;
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 5:31 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
+On Thu, Mar 17, 2022 at 4:06 AM Jiri Slaby <jirislaby@kernel.org> wrote:
 >
-> On Wed, 16 Mar 2022, Wander Lairson Costa wrote:
->
-> > commit 5021d709b31b ("tty: serial: Use fifo in 8250 console driver")
-> > erroneous tries to read the FCR register content, but this register is
-> > write-only.
+> On 16. 03. 22, 15:36, Wander Lairson Costa wrote:
+> > The serial driver set the value of uart_8250_port.fcr in the function
+> > serial8250_config_port, but only writes the value to the controller
+> > register later in the initalization code.
 > >
-> > This patch fixes that by reading the content from the port struct fcr
-> > field.
+> > That opens a small window in which is not safe to use the fifo for
+> > console write.
 > >
-> > Thanks to Jon Hunter and Jiri Slaby.
+> > Make sure the port is initialized correctly before reading the FCR
+> > cached value.
 > >
-> > Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> > Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> > Unfortunately, I lost track of who originally reported the issue. If
+> > s/he is reading this, please speak up so I can give you the due credit.
+> >
 > > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 > > ---
-> >  drivers/tty/serial/8250/8250_port.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >   drivers/tty/serial/8250/8250_port.c | 1 +
+> >   1 file changed, 1 insertion(+)
 > >
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-> > index 2abb3de11a48..9f3fa9fe2a4e 100644
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > index 4acf620be241..7e2227161555 100644
 > > --- a/drivers/tty/serial/8250/8250_port.c
 > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -3410,7 +3410,7 @@ void serial8250_console_write(struct uart_8250_po=
-rt *up, const char *s,
-> >
-> >       use_fifo =3D (up->capabilities & UART_CAP_FIFO) &&
-> >               port->fifosize > 1 &&
-> > -             (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &=
-&
-> > +             (up->fcr & UART_FCR_ENABLE_FIFO) &&
+> > @@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+> >               !(up->capabilities & UART_CAP_MINI) &&
+> >               up->tx_loadsz > 1 &&
+> >               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+> > +             test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
 >
-> Didn't you just add this line in 1/5? Please merge this kind of fixes tha=
-t
-> are due to development history of a change to the main patch itself.
+> Cannot be port->state be NULL sometimes here?
 >
 
-The reason is that 1/5 has been applied in 5.17 and then reverted, so
-I thought it would make it easier for reviewers if I sent the new
-fixes in different commits. If that's not the case, I can send a
-squashed version with the changelog described in 0/5.
+IIUC, state is assigned at early port registration in
+uart_add_one_port(), so this function wouldn't be called when state is
+NULL. But I think it causes no harm to add an extra check. Thanks!
+
+> >               /*
+> >                * After we put a data in the FIFO, the controller will send
+> >                * it regardless of the CTS state. Therefore, only use fifo
+>
+>
+> --
+> js
+> suse labs
+>
 
