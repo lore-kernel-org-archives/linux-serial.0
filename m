@@ -2,67 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4647C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 12:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64852C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 12:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbiCQMYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
+        id S233524AbiCQMZF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiCQMYL (ORCPT
+        with ESMTP id S233509AbiCQMZE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:24:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 693829F3BC
-        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:22:54 -0700 (PDT)
+        Thu, 17 Mar 2022 08:25:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF796C12FD
+        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:23:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647519773;
+        s=mimecast20190719; t=1647519827;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
-        b=T/fwsf7aMqsLDKmY3Cim6NchmxuEdmFLpfBfuEuLx5p44hGgOhmU9dl1r/iDIBSD/XHAD9
-        wd4h19iixDQjO7zgAYEhFC1Nusissv72pY8IfoSUCs4iJIhFmKUkz6S7OSosz8P4ozCbfA
-        /9U6jEptHWJs9S3oRc1QcH0tppjiixg=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7jeq6srkn3vKPjwF7bOhXJrvBVH81gTqAX2FFARSZuA=;
+        b=jNKW0nwMRFtuaWfkyvk8gkGMShGg+yumKpN8mV05W5bcM+OCA73dC87a+y0KxLdNV3K3kZ
+        AChh/CjDVpfdwglWPcwi/xc7AsdLzzkzfrRudKKrdNWGOC1I21GbUOJQJ77FZq04EzIEkT
+        LfHlcjRLQXOyHzdglKxHlx+qfYtXrrs=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-211-0GM9ONsaPUWJ1U5zqoMjPA-1; Thu, 17 Mar 2022 08:22:52 -0400
-X-MC-Unique: 0GM9ONsaPUWJ1U5zqoMjPA-1
-Received: by mail-lf1-f71.google.com with SMTP id z24-20020a056512371800b0043ea4caa07cso1754160lfr.17
-        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:22:52 -0700 (PDT)
+ us-mta-574-K2ZVRVvuO0y7xGD_AjQ5bw-1; Thu, 17 Mar 2022 08:23:46 -0400
+X-MC-Unique: K2ZVRVvuO0y7xGD_AjQ5bw-1
+Received: by mail-lj1-f197.google.com with SMTP id 132-20020a2e098a000000b002496771ab30so164929ljj.4
+        for <linux-serial@vger.kernel.org>; Thu, 17 Mar 2022 05:23:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
-        b=u+xGo9xpbbDV0Ln2d4rgYo529Hv3Kv82xgKkrIzidXDwHfAYGC8qetEabzttP7fo0Q
-         BzqNofXb8cyhTXXLpVwzLRyNgtYT+lxvp5H7/cRU9I29EMwBs6msHZmNBGTQRUh8DGiP
-         8EdZPQCy/yCPIaNmf+12XDhuw8lD5WjwtBPZ0XLt2ijJuKSs9/tzOxCXdx1XxWMjdFfl
-         vqo3bbg/pF/yIrvUyiLWNbNM6dlryhp2nuI1mP8UWIlSHE0vuv7Gtpf0EGRRaqYLYVXu
-         1geZibSRsQDoHmk+jw2XkW97nqeA907clC8et+GTYJi6urHkZyqhT+f+FXBTUJwigWpr
-         w6fw==
-X-Gm-Message-State: AOAM533+JS3sC6UbY55JHqS9+0iRNXkyMDt+xfphtctX+oPf6RjvTj5e
-        Tqfao+5xXXC7pJ9cUOs5HR2IKvuP03SDLNoVyO5XF6mTpLBqk59i6pb+6Cn6m4RqjiRWCOlp34F
-        c6pKTHoru4fM0PbHo/w3q4l7uCho3Vnr9z6D07kaq
-X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id z9-20020ac24189000000b00448bc2be762mr2576751lfh.471.1647519770416;
-        Thu, 17 Mar 2022 05:22:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx1rJqT6+g/fKTYm+1dcMdSVQxbzMyICiFHJGIWw3B+6PHmjLZGBFQKLst/7DouRH0T5POM7UoxpgR0fSAeKns=
-X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id
- z9-20020ac24189000000b00448bc2be762mr2576737lfh.471.1647519770215; Thu, 17
- Mar 2022 05:22:50 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7jeq6srkn3vKPjwF7bOhXJrvBVH81gTqAX2FFARSZuA=;
+        b=ZtdyIc9L/ZIx50GHe8+QTK4lyWTU7jEmmX2cVJ9mPNciPjNPaSH34TPzFNU6i8EmO2
+         hTPRI0ekvHaib8DP1cHiBA1sACnAozaDVpg+th6jBpRkWo+WaHOfw4qT6/E4JuuZpDH3
+         LNpkzFaBV9fWCiXx7BdyM61expM+KdYu+k8LVan4/Cbuj7o4LStcJJwi9A+dJsWM6Fcv
+         eSBJCaB4yH4qs/4NxDssA87sENTK+UGxGzP4X3i/BBBlD4rCUzCWQ9Enr1RJ36/KX+5c
+         jHJnAleyfkO1SS6IgvMPR+rpYIPWIFIZFL/FOW4URWXxfHOr5yOuqJDYGT8H6crH4UMX
+         hV5g==
+X-Gm-Message-State: AOAM531f/A8vUwpAh5aIaAPnnRBQUrq/vcX3tIeDcyjLT6IxGg+J0Ql5
+        HZZ8R4Ke3XZsg4enc9/QJXLeeSqkD8EMb+Zc3bzcKGhpM6tlIMsO6YpF/5cRgrIEcYFoj9WDJn+
+        mORzGRlgHvTqzfCRZ2ZMbzN7BZkwTwxZJujS8VI+N
+X-Received: by 2002:a2e:a0c3:0:b0:247:eba1:366b with SMTP id f3-20020a2ea0c3000000b00247eba1366bmr2704381ljm.190.1647519823612;
+        Thu, 17 Mar 2022 05:23:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzo3UqII19WI/p0VdLBXfqVvN1WLU0NnXb91JTrd0VJzRLZZMnD/ko+J4pnliY77wNGREXUQCtRUbMO1vDsylc=
+X-Received: by 2002:a2e:a0c3:0:b0:247:eba1:366b with SMTP id
+ f3-20020a2ea0c3000000b00247eba1366bmr2704371ljm.190.1647519823413; Thu, 17
+ Mar 2022 05:23:43 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-6-wander@redhat.com>
- <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
-In-Reply-To: <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
+ <2f3d386-b82a-9ae1-eaba-f2123b1346f8@linux.intel.com>
+In-Reply-To: <2f3d386-b82a-9ae1-eaba-f2123b1346f8@linux.intel.com>
 From:   Wander Costa <wcosta@redhat.com>
-Date:   Thu, 17 Mar 2022 09:22:39 -0300
-Message-ID: <CAAq0SUmuwc7KZWQOwoQfDrX+os8TVRhdr2pcXiwFNAgGCeRi=g@mail.gmail.com>
+Date:   Thu, 17 Mar 2022 09:23:32 -0300
+Message-ID: <CAAq0SUndENR-Of76g32sAOOD80=nnhmwOfeKzUq7XCboLyFsNQ@mail.gmail.com>
 Subject: Re: [PATCH v4 5/5] serial/8250: Only use fifo after the port is
  initialized in console_write
-To:     Jiri Slaby <jirislaby@kernel.org>
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Wander Lairson Costa <wander@redhat.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Serge Semin <fancer.lancer@gmail.com>,
@@ -82,13 +84,16 @@ Authentication-Results: relay.mimecast.com;
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 4:06 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+On Thu, Mar 17, 2022 at 5:44 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
 >
-> On 16. 03. 22, 15:36, Wander Lairson Costa wrote:
+> On Wed, 16 Mar 2022, Wander Lairson Costa wrote:
+>
 > > The serial driver set the value of uart_8250_port.fcr in the function
 > > serial8250_config_port, but only writes the value to the controller
 > > register later in the initalization code.
@@ -104,33 +109,41 @@ On Thu, Mar 17, 2022 at 4:06 AM Jiri Slaby <jirislaby@kernel.org> wrote:
 > >
 > > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 > > ---
-> >   drivers/tty/serial/8250/8250_port.c | 1 +
-> >   1 file changed, 1 insertion(+)
+> >  drivers/tty/serial/8250/8250_port.c | 1 +
+> >  1 file changed, 1 insertion(+)
 > >
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
 > > index 4acf620be241..7e2227161555 100644
 > > --- a/drivers/tty/serial/8250/8250_port.c
 > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+> > @@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_po=
+rt *up, const char *s,
 > >               !(up->capabilities & UART_CAP_MINI) &&
 > >               up->tx_loadsz > 1 &&
 > >               (up->fcr & UART_FCR_ENABLE_FIFO) &&
-> > +             test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
->
-> Cannot be port->state be NULL sometimes here?
->
-
-IIUC, state is assigned at early port registration in
-uart_add_one_port(), so this function wouldn't be called when state is
-NULL. But I think it causes no harm to add an extra check. Thanks!
-
+> > +             test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags)=
+ &&
 > >               /*
-> >                * After we put a data in the FIFO, the controller will send
-> >                * it regardless of the CTS state. Therefore, only use fifo
+> >                * After we put a data in the fifo, the controller will s=
+end
+> >                * it regardless of the CTS state. Therefore, only use fi=
+fo
 >
+> So it looks like 2-5 just contain your development history and should all
+> be merged to 1/5 (perhaps with Co-developed-by: tags where appropriate).
+>
+> And please don't just merge them "silently" there w/o describing in the
+> message _why_ you ended up doing the things the way you did in the end.
+> The messages you've written for patches 2-5 will serve you as great sourc=
+e
+> material (with small mods, obviously).
+>
+
+Ok, I will merge them in v5.
+
 >
 > --
-> js
-> suse labs
+>  i.
 >
 
