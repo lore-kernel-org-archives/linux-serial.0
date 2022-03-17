@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93002C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 08:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A61C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Mar 2022 08:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiCQIbK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        id S231420AbiCQIoo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiCQIbJ (ORCPT
+        with ESMTP id S231409AbiCQIom (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:31:09 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2AB18F225;
-        Thu, 17 Mar 2022 01:29:53 -0700 (PDT)
+        Thu, 17 Mar 2022 04:44:42 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EBD96813;
+        Thu, 17 Mar 2022 01:43:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647505793; x=1679041793;
+  t=1647506601; x=1679042601;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=YWwbBtyM55w2NVBtFgTtLmpvZGh5He1rqDimrPbgRxM=;
-  b=O8/bivU0g3u5M9l4cZGsZSSlZW7CIlt72MmGU7xq4/IJAEkne59HBSFW
-   aTe57A+kvR/IxypEaZYnFnMLUwm0tOF7GwvHD4WVDLAempY0pECbLF3PU
-   75kfEZ7QKy6wsaCUyA4OFrFE/4JzvDkShMlAPfAJ/TQCSTohv+i9uAl0q
-   QDubxHecmcnqzmdTZzJ29L+DRalh0BFfuRkM6yhaUxDiorod9tSO2z2zT
-   Qs+XUlp1UOF4P2S1mU5wtWmnvfCqAEiUbFTrHXJmRskxZBjEUJYLlKFbM
-   JUpJZjvHuU7ISUmXAB9wdaWJu/ITzhV9U9cjULXgYXNJwnpiXsKoGlp6V
+  bh=fk6weti58MZKAxtUajcq3xIVBK6Sp4rBWIwlnsIXVuc=;
+  b=dPyzvwcEjSWW3LaJ/HgybVPbph+eiGvqtNrJgdtQamnDA/pZz3YZK/81
+   ZVwnKKEmK8M8eY3o7QpLva7aee3FeqrCjn92tuPHr6byDUSguO5vlCWqE
+   I4ZwkK/PzGTc5lCTCPQpJ8mowtEeM8v5zpcfXDQrfAq9qKdf/CNca2QIt
+   jZmN/afZGQ5D24oyjvIKoco90ns61/j1wNsXKzovN/nzj2x97ROyb9bwr
+   W2HI6GsrPwd5jO+RBU+Ks3WHNF0UezxPL7Zj83jHvv8uo2g0ldKYdVFLv
+   bf93L2+6VVKz/sZV4fq19lF80N1z6yibEM/IEOcfJBaUx0Mvx2Iy+GhQu
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="281604689"
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317535538"
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="281604689"
+   d="scan'208";a="317535538"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:29:53 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:43:20 -0700
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="557835326"
+   d="scan'208";a="557840005"
 Received: from msivosuo-mobl1.ger.corp.intel.com ([10.252.54.208])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:29:46 -0700
-Date:   Thu, 17 Mar 2022 10:29:40 +0200 (EET)
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:43:14 -0700
+Date:   Thu, 17 Mar 2022 10:43:11 +0200 (EET)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Wander Lairson Costa <wander@redhat.com>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -52,11 +52,11 @@ cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         senozhatsky@chromium.org, andre.goddard@gmail.com,
         sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
         David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v4 2/5] serial/8250: Use the cache value of the FCR
- register
-In-Reply-To: <20220316143646.13301-3-wander@redhat.com>
-Message-ID: <ce8be768-6210-c3b-2131-de302a7757d@linux.intel.com>
-References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-3-wander@redhat.com>
+Subject: Re: [PATCH v4 5/5] serial/8250: Only use fifo after the port is
+ initialized in console_write
+In-Reply-To: <20220316143646.13301-6-wander@redhat.com>
+Message-ID: <2f3d386-b82a-9ae1-eaba-f2123b1346f8@linux.intel.com>
+References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-6-wander@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -65,35 +65,44 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, 16 Mar 2022, Wander Lairson Costa wrote:
 
-> commit 5021d709b31b ("tty: serial: Use fifo in 8250 console driver")
-> erroneous tries to read the FCR register content, but this register is
-> write-only.
+> The serial driver set the value of uart_8250_port.fcr in the function
+> serial8250_config_port, but only writes the value to the controller
+> register later in the initalization code.
 > 
-> This patch fixes that by reading the content from the port struct fcr
-> field.
+> That opens a small window in which is not safe to use the fifo for
+> console write.
 > 
-> Thanks to Jon Hunter and Jiri Slaby.
+> Make sure the port is initialized correctly before reading the FCR
+> cached value.
 > 
-> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> Unfortunately, I lost track of who originally reported the issue. If
+> s/he is reading this, please speak up so I can give you the due credit.
+> 
 > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/serial/8250/8250_port.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 2abb3de11a48..9f3fa9fe2a4e 100644
+> index 4acf620be241..7e2227161555 100644
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3410,7 +3410,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->  
->  	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
->  		port->fifosize > 1 &&
-> -		(serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &&
-> +		(up->fcr & UART_FCR_ENABLE_FIFO) &&
+> @@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>  		!(up->capabilities & UART_CAP_MINI) &&
+>  		up->tx_loadsz > 1 &&
+>  		(up->fcr & UART_FCR_ENABLE_FIFO) &&
+> +		test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
+>  		/*
+>  		 * After we put a data in the fifo, the controller will send
+>  		 * it regardless of the CTS state. Therefore, only use fifo
 
-Didn't you just add this line in 1/5? Please merge this kind of fixes that 
-are due to development history of a change to the main patch itself.
+So it looks like 2-5 just contain your development history and should all 
+be merged to 1/5 (perhaps with Co-developed-by: tags where appropriate).
+
+And please don't just merge them "silently" there w/o describing in the 
+message _why_ you ended up doing the things the way you did in the end.
+The messages you've written for patches 2-5 will serve you as great source 
+material (with small mods, obviously).
 
 
 -- 
