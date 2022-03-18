@@ -2,48 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8868C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Mar 2022 14:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C32B6C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Mar 2022 14:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237011AbiCRO1M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Mar 2022 10:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
+        id S233816AbiCROfQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Mar 2022 10:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbiCRO1L (ORCPT
+        with ESMTP id S231944AbiCROfO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Mar 2022 10:27:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3596813667D;
-        Fri, 18 Mar 2022 07:25:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647613553; x=1679149553;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HVGWQSN8Ko7B/4rAfzeNU+LVyHQtN/f29tiIE9kf1RE=;
-  b=KmH+BbfbTBGYroCeueCUpsf5b/rbJ5iUhc9RHXYs7P9zRMCS0Pqd8+00
-   vJFFiBdXWOFlUccMx1cJSMiPXquGz7ldDUsDAbH57A559DjR0GlR0cRGP
-   7yOuUc2l18OhXE1xDIvMxk/qoKxOpuoUAE7uTzUJRWmeP7jCH/bBR//mu
-   cQAzJVHJeAsaDhm4XpQbb5eK/i5DQ4VhCYcM5t29niqf/WRfIiLTb0sxf
-   wPsZTOc3iIrg30O8Bg+rFjgxV4vIHrDeKcqgd2lYcrYNp/4nvfohBPAgc
-   +GZdloD5FmHasyIT/wM9mA0Sd5pIkVZQHvUDyM902rGv1lgaXD5AjJBbZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257332515"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="257332515"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:25:34 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="513881332"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 07:25:30 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVDX9-002GrW-EI;
-        Fri, 18 Mar 2022 16:24:51 +0200
-Date:   Fri, 18 Mar 2022 16:24:51 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
+        Fri, 18 Mar 2022 10:35:14 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842612CD808;
+        Fri, 18 Mar 2022 07:33:50 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 53E2E60009;
+        Fri, 18 Mar 2022 14:33:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647614029;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8lOUGQOnlujmyqKVP0r+cQLixrFJgyiaHwH43PeXgJk=;
+        b=am/RZThV4nxuc1rCuP4WUqkPiFdNIXwe3+FGJQWPjpWd2EHFA3FI4DzPBU9l3rNuWuBtq+
+        of28xaVNAeDKvnLUJC+Sje3hnKnMBBjDVig/37SdFJRUwvqIlC6ZM3Sssz0ob7Alc7kf3q
+        S6Pkzgpzfs3DZ2TasR39Ye3tDwV5LinfPL8gKHw4ORUxyMGJHPoLRZGQZb/IRHMa/mJzE3
+        Vu20EZDAFdjvu8w/xa/HDb87m21IxQkNI8KPYIciLPu4CFpWwobWOwkS0h9KI+LiPR3oLp
+        Ih/AJnH4wmg0XVof3IAuwIK+aglBat0736VdN8WGowI5kgMUaegzeruWiX9e1g==
+Date:   Fri, 18 Mar 2022 15:33:46 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-renesas-soc@vger.kernel.org,
         Magnus Damm <magnus.damm@gmail.com>,
         Gareth Williams <gareth.williams.jx@renesas.com>,
@@ -58,60 +47,46 @@ Cc:     linux-renesas-soc@vger.kernel.org,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
         linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 08/10] serial: 8250: dw: Add support for DMA flow
- controlling devices
-Message-ID: <YjSWM5ilahNBXF1b@smile.fi.intel.com>
+Subject: Re: [PATCH v2 05/10] serial: 8250: dw: Check when possible if DMA
+ is effectively supported
+Message-ID: <20220318153346.152b3ff6@xps13>
+In-Reply-To: <YjSOFII3l+vz0q8L@smile.fi.intel.com>
 References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
- <20220317174627.360815-9-miquel.raynal@bootlin.com>
+        <20220317174627.360815-6-miquel.raynal@bootlin.com>
+        <YjSOFII3l+vz0q8L@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317174627.360815-9-miquel.raynal@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 06:46:25PM +0100, Miquel Raynal wrote:
-> From: Phil Edworthy <phil.edworthy@renesas.com>
-> 
-> DW based controllers like the one on Renesas RZ/N1 must be programmed as
-> flow controllers when using DMA.
-> 
-> * Table 11.45 of the system manual, "Flow Control Combinations", states
->   that using UART with DMA requires setting the DMA in the peripheral
->   flow controller mode regardless of the direction.
-> 
-> * Chapter 11.6.1.3 of the system manual, "Basic Interface Definitions",
->   explains that the burst size in the above case must be configured in
->   the peripheral's register DEST/SRC_BURST_SIZE.
-> 
-> Experiments shown that upon Rx timeout, the DMA transaction needed to be
-> manually cleared as well.
+Hi Andy,
 
-...
+andriy.shevchenko@linux.intel.com wrote on Fri, 18 Mar 2022 15:50:12
++0200:
 
-> +#define DW_UART_TDMACR	0x10c /* DMA Control Register Transmit Mode */
-> +#define DW_UART_RDMACR	0x110 /* DMA Control Register Receive Mode */
+> On Thu, Mar 17, 2022 at 06:46:22PM +0100, Miquel Raynal wrote:
+> > The CPR register can give the information whether the IP is DMA capable
+> > or not. Let's extract this information when the CPR register is valid
+> > and use it to discriminate when the DMA cannot be hooked up.
+> >=20
+> > We assume existing designs either provide a valid CPR register or do not
+> > provide any. =20
+>=20
+> ...
+>=20
+> > +	if (!(reg & DW_UART_CPR_DMA_EXTRA))
+> > +		data->no_dma =3D 1; =20
+>=20
+> My question still remains: Does this bit is _guaranteed_ to be set when t=
+his IP
+> is integrated on all possible DMAs?
 
-These are not Synposys ones.
+I'll get rid of that entirely, let's just hope there is always DMA
+support.
 
-...
-
-> +static u32 dw8250_rzn1_get_dmacr_burst(int max_burst)
-> +{
-> +	if (max_burst >= 8)
-> +		return DW_UART_xDMACR_8_WORD_BURST;
-> +	else if (max_burst >= 4)
-> +		return DW_UART_xDMACR_4_WORD_BURST;
-> +	else
-> +		return DW_UART_xDMACR_1_WORD_BURST;
-> +}
-
-Redundant 'else' in all cases.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Miqu=C3=A8l
