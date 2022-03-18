@@ -2,60 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D97C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Mar 2022 08:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA9CC433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Mar 2022 10:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231861AbiCRIJM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Mar 2022 04:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
+        id S234814AbiCRKyD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 18 Mar 2022 06:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231319AbiCRIJM (ORCPT
+        with ESMTP id S231610AbiCRKyC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Mar 2022 04:09:12 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8695626E2;
-        Fri, 18 Mar 2022 01:07:53 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id s11so6331170qtc.3;
-        Fri, 18 Mar 2022 01:07:53 -0700 (PDT)
+        Fri, 18 Mar 2022 06:54:02 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8422D4D4E;
+        Fri, 18 Mar 2022 03:52:43 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id u23so6655045ejt.1;
+        Fri, 18 Mar 2022 03:52:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cmRyc1i4zTT9JhIhbJra7/fAc7CJ0O3rKCVZUptpSnA=;
+        b=QSG4V70aEkbKs5h1yKVtkiAzok/dUwV0YkAWbYj944YOZRVk+NCamQDuRvuQAilt5C
+         Z/w62u9Ouf1gi4uzasYTjrNfZwLfzmegiFB6w1EJe6txdE6Yc0kVmZuSAIVRLlg2j1im
+         qdboRECATBqo5HUxlJDmByhQMhxDXXSI0P1FJMcqGss1C5xRotM36bSYdWPJOyYTEKQ0
+         Q6N+Aga/NMQGkxEbG5uW6XrPQkGkz1nFa6mGCkGccCoUpkM6HnLBH8rozuW4UOhOXB4H
+         rirF2kOyQC9MUOB3vbLqKIbbMOuz55NRhdyCLkORFwbNu/zNPsLJG/VCN8aRWmmmHuzw
+         evgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SJi7Hh8g7svJsq4PVTRTwuQvQyQFmwO96mMMVXAxkKc=;
-        b=UdHhrmQL4I9WAif6MNhl5vCrOsHqji4j3tn/dKpEEn1v5ivt4P8OW+P7j1ut+BWLPO
-         ZUJp3eanmRDi8QyDn8oC2mEFgNH+igLD2SUKBaiwvABgO9vhnTPHJlcJ3zVicnhCsZwn
-         sOmAW3ocGLqGLFPkUN3385Gz6kLI6EYTKzOlPcRaTm4Fj4AxfZaSHWneo+czJTKuTKFL
-         Zy2vnZVdUtC4Ak+DyN9obzt8h2nGf3ikc6N+YDSt8xjjDtn21ezsQY4LBbhBLIG0Nh6v
-         c0cW5vcUB5u9z7LMTn79zGWkPUJfENLgpVPn7JbqCubevwb8ao0sA+4+1H84HLHrVcWE
-         G5FA==
-X-Gm-Message-State: AOAM530S3PQ1ktO+B8nuEn7Ntn12sly5KPy2cBK7pU4/tO705g3DlPF/
-        +mu0/QLjJbxpUnzGNfAvFeRgGcDPY/Kq0XxZ
-X-Google-Smtp-Source: ABdhPJy08kN2jGnzmmFY28kYRbWNylfqMxcPkPgVU1YmnIlDpEATy3BGwN5cIL0VEzzGmjWwbd4K5g==
-X-Received: by 2002:a05:622a:1447:b0:2e1:c405:b05b with SMTP id v7-20020a05622a144700b002e1c405b05bmr6958533qtx.626.1647590872230;
-        Fri, 18 Mar 2022 01:07:52 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id y24-20020a37e318000000b0067d43d76184sm3549619qki.97.2022.03.18.01.07.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Mar 2022 01:07:51 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id o5so14573010ybe.2;
-        Fri, 18 Mar 2022 01:07:51 -0700 (PDT)
-X-Received: by 2002:a25:4fc4:0:b0:633:25c8:7d9 with SMTP id
- d187-20020a254fc4000000b0063325c807d9mr9234354ybb.506.1647590870725; Fri, 18
- Mar 2022 01:07:50 -0700 (PDT)
+        bh=cmRyc1i4zTT9JhIhbJra7/fAc7CJ0O3rKCVZUptpSnA=;
+        b=lYPsTjObi4DiZzfH2LwLNJW1+Uoi04A1xn2KIiBc32xOAO4WVZlx/PsK3thKfquwPG
+         STqQY74Z/2yFJ0cBvqjdceA0aDorPmkIo6XfZM/n8vpx5S4eJZ71Ri/QWAVfrm1UmtdN
+         Yswcei+nK4W9aqv2O1+dTdE3abLrzn9/1lgN05jIJ4XS1+LDyv/ZtU51H06+OpnWLE6f
+         sd+GYcDe3i3HNwlL/8gfhwKTPJXZhDOBxLIkT3J0mSn+Y/02GOdIf+9jFi1tpgMLt9Di
+         SkC7gs2FS/C4Fff6Vb9G3EcEM+tn+dpMte+yfKaDfu+Jnem700fAYEKLsBPkPASK7aPe
+         GPlA==
+X-Gm-Message-State: AOAM531ujz9bdJbpsINgofGo+NRxpFMtJOZFByi75iIkxA2wWpMzwupE
+        T4onm9JYZZ+Vhvz/V64MG6djRRBoIJyZ+jUddYY=
+X-Google-Smtp-Source: ABdhPJy1bmhUdWHHrDILakB/pEMzPeurROPFcxHe7XoceumLy/XOf+ZKpIscQV/GvvZbMVpdU+yZ7e35O/TKiMzbHcc=
+X-Received: by 2002:a17:907:e93:b0:6df:10b3:4fc0 with SMTP id
+ ho19-20020a1709070e9300b006df10b34fc0mr8582505ejc.44.1647600761919; Fri, 18
+ Mar 2022 03:52:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220317174627.360815-1-miquel.raynal@bootlin.com> <20220317174627.360815-4-miquel.raynal@bootlin.com>
-In-Reply-To: <20220317174627.360815-4-miquel.raynal@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 18 Mar 2022 09:07:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV+7MszquFgRUo=7yPORPuQzqkKr2ZqRkSy-rYqs7rwkw@mail.gmail.com>
-Message-ID: <CAMuHMdV+7MszquFgRUo=7yPORPuQzqkKr2ZqRkSy-rYqs7rwkw@mail.gmail.com>
-Subject: Re: [PATCH v2 03/10] serial: 8250: dw: Create a more generic platform
- data structure
+References: <20220317174627.360815-1-miquel.raynal@bootlin.com> <20220317174627.360815-2-miquel.raynal@bootlin.com>
+In-Reply-To: <20220317174627.360815-2-miquel.raynal@bootlin.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 18 Mar 2022 12:51:29 +0200
+Message-ID: <CAHp75Ve-PbTMBdb6Y0TYdaOMDwsJ_2JVoKCkwCFBG=iUd8baEA@mail.gmail.com>
+Subject: Re: [PATCH v2 01/10] serial: 8250: dw: Move the per-device structure
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         Magnus Damm <magnus.damm@gmail.com>,
         Gareth Williams <gareth.williams.jx@renesas.com>,
         Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -65,30 +67,43 @@ Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 6:46 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> Before adding more platform data information, let's turn the quirks
-> information as being a member of a wider structure. More fields will be
-> added later.
+On Thu, Mar 17, 2022 at 9:56 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Cc: Emil Renner Berthing <kernel@esmil.dk>
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> From: Phil Edworthy <phil.edworthy@renesas.com>
+>
+> This structure needs to be reused from dwlib, so let's move it into a
+> shared header. There is no functional change.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+...
 
-Gr{oetje,eeting}s,
+>  #include <linux/types.h>
 
-                        Geert
+> +#include <linux/clk.h>
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+I have mentioned forward declarations.
+So, this can be simply replaced by
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+struct clk;
+
+> +#include <linux/notifier.h>
+> +#include <linux/workqueue.h>
+
+> +#include <linux/reset.h>
+
+Ditto.
+
+struct reset_control;
+
+On top of that, please keep them ordered.
+
+Otherwise it looks good to me.
+
+-- 
+With Best Regards,
+Andy Shevchenko
