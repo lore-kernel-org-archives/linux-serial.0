@@ -2,105 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F384DC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 20 Mar 2022 00:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7164C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 11:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240101AbiCTADD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 19 Mar 2022 20:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
+        id S1343737AbiCULIs (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Mar 2022 07:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239436AbiCTADC (ORCPT
+        with ESMTP id S244325AbiCULIq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 19 Mar 2022 20:03:02 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C71D5EBF3;
-        Sat, 19 Mar 2022 17:01:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1647734472;
-        bh=hFobiD0Av9I4hKkI1kP4GGFNq/s/44RpeMZwSfBgc3c=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=PqKCQoexUgpht1kHUKyWOcgIyUGvwdsEF2BKQ4ntC7CxqdifOJlD7m1jZRDrV8HoV
-         gxqSxo/y/MPcb5FQDJXBPZJolT+MC5eodSMtlPUgg4lyceVyw7MRymanITcbTJbtQ5
-         GHYmxd202Jzv6Q+KWJWAU5kBiBsLTGl+b/TzQKLo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.3.204]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MvbBk-1oKvuw0B6c-00sdcZ; Sun, 20
- Mar 2022 01:01:12 +0100
-Subject: Re: [PATCH v4 1/9] serial: core: move RS485 configuration tasks from
- drivers into core
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     u.kleine-koenig@pengutronix.de, linux@armlinux.org.uk,
-        richard.genoud@gmail.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com
-References: <20220228023928.1067-1-LinoSanfilippo@gmx.de>
- <20220228023928.1067-2-LinoSanfilippo@gmx.de>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <9cf25a55-9597-74d3-7829-6422c8a5a73c@gmx.de>
-Date:   Sun, 20 Mar 2022 01:01:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 21 Mar 2022 07:08:46 -0400
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA026E02A;
+        Mon, 21 Mar 2022 04:07:21 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so1046456wms.2;
+        Mon, 21 Mar 2022 04:07:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G5Fxd6dDMUMlTPBPLtvy82x/psh+jTZud4elMZgGQak=;
+        b=R8Pp2l1T91x62SNoqlbmHZIn5xsVU3Q3D54jUZh8L0ZPQCTm8lZAXNUJcYsP7TuGU7
+         obrI8ZX/jhPkCpTx3ypEqRvvky7r2j5nBBtijZAElwppDpfyw414SjRcf3ErKBKajLZ4
+         NGRK28N167kwp6bom5WTAbNiydcfIMASNI8A03+DlRMxFBSuSH+A3bq6gtSBRNeWg7di
+         7w/Sl8zkcKWa0hqhQ6Iyom5zWuv/VgzP6mFlnL33F1Sk5+0iOdC8pKOSbaxij7qpBGsn
+         6sxHPAxc75kFN1GwPchmtFRyWvB4KMrP7+R3o8/bzcjNu9toxPraRMR9Ecy8kdFLoBpv
+         VhbA==
+X-Gm-Message-State: AOAM531MBkp/1Cfm6+j5FCHKKinSwRvsJs7o8EfieHk/RdOTKDE2v+/x
+        7utQB5mmVWp5cciS/wNimrtZ+sgz2YA=
+X-Google-Smtp-Source: ABdhPJyA99qDboRIT+RILzjvUvWuDFu8KJXg/BEMcQsHfHDUZ6I/MWUPFv2vZg6tBK56BhJ0kuV4PQ==
+X-Received: by 2002:a05:600c:384e:b0:38c:9a8a:d205 with SMTP id s14-20020a05600c384e00b0038c9a8ad205mr7503391wmr.44.1647860840049;
+        Mon, 21 Mar 2022 04:07:20 -0700 (PDT)
+Received: from krzk-bin (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id 185-20020a1c19c2000000b0038a1d06e862sm17453690wmz.14.2022.03.21.04.07.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 04:07:17 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 12:07:15 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: SERIAL_SUNPLUS should depend on ARCH_SUNPLUS
+Message-ID: <20220321110715.qrz2holf5aky2ztm@krzk-bin>
+References: <59f46272ab5b16853acac4d585c3333cfd394223.1647352195.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <20220228023928.1067-2-LinoSanfilippo@gmx.de>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:AUxWCItz1tm+yKQXwbhBjD4S3BmYFzw2v+jNazO1T0kwTCkHtob
- Pecyzp8X20LCrqzhrqfQDinKYmR+24IRLddX89cKYxPqgSYzE5yq3zeyMNG/JeyXJuvCoes
- XNksQk+zEi+BQjku9iX6cgR4Bgf3Yv5b0OJMxgCEcWDJTS0ZgGvQ3d8BCRneK1uL14tG+kl
- 5KSP4UDwyoJeZPqvd2JWQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:USVa+vBjMjo=:YU3b7lq8uHCDGNS9biTLoT
- ci09eq5EIElP6ylgBJdoQkG75c22H3fbdRoeYsBXFCveZ7IqiyoVJaYy8xdMAy2dPUsYm6L8V
- QyeA50MtuZTBZjg1EnWcKYlbg8GC9kTzaS7QzVAn9FR9LPYCVt/hHuc/BKZ4br/qh5wd+3+ev
- LIgOJLv54mNCgyRuH6t6jAMDKfxMHjirhJ8/cVNrt3KUoYk96bZhSKB59wqd0xxKdWelaclBa
- yH/bm6Gaq1lbPZfF2dEoLAzmyZAm5TVNrvNCyFyELkrM0vg3GPxF8aqb6rMwB9/Ma/MxEE7/B
- NgvXNdpXKKfzrL3y5dGYLD39xGgCH6wMuFNX7EGN1qUKfavrgPOBnJgrC+/zBGW1uxuXhOlj0
- 0u6GfvleGUFA6oFIQNVea1ZBxIrriS72JMF5oEZtZVMB0psslFmZklTqs8wzvbk4TsGw943lH
- +qLyWQrxXxve3cuZBRroBFkW6vgFfKxmtYzT5LNeA/Nl/O7s8HWmGMF8JCrkcHwmXQRDRsZ7X
- NOvGQlChwTIQwWPgL3X2PJQ8cvrQRQVNWDuRkvDkmAdT9rJAexFZW/4FgF2DvhNPHFfq0H6tD
- 9rcblGibdNSvmHIzy9DmFUIum7J5/OTggTPSFnswYqSpWQeCPT3kWnv16cQO24PU8jYHPrSNZ
- 1exYdbSkpj3JsYmHj9ane/69lHJqLWrPOoFziqTUHcc8f5s3V1KDIIBc8Ro64/Luk5fTJBleh
- +pw+nz6XbmD5HzR60WkMTAT6XwFtcSIL7fOE7DiCNgpikxWJmfvSNpcJdlTIEnRFGXFruwL3Y
- E/t4LTQwHNBuUxmUOpz9JfJugc/LaAksGp17Ua3jCAjB0mkWww5iLOzukP2YQHosdpbNauRO0
- j+4AqAFnE2uD0WvkDJTY4Q8enKVotRqb6vIzoQBGfdohEnAj8IRvhjVit7wi2YPIexQ7MJ1BZ
- rmPHt7bVL3iWLrgQLr+QGn2Q8NF21SjKHnwjegSqlGlkUMxrrs6CbbWnOoe4GsqVlFTPf0j4u
- fccIrwmBb93tk3XuWP5FiCmC6rWWcAvzvaAM3x2d/L0qWMP53H284y9G8Ycry3cslN4C3ugZt
- r07LEfxtuwD/s0=
+Content-Disposition: inline
+In-Reply-To: <59f46272ab5b16853acac4d585c3333cfd394223.1647352195.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg, Jiri,
+On Tue, Mar 15, 2022 at 02:52:32PM +0100, Geert Uytterhoeven wrote:
+> Sunplus serial ports are only present on Sunplus SoCs.  Hence add a
+> dependency on ARCH_SUNPLUS, to prevent asking the user about this driver
+> when configuring a kernel without Sunplus SoC support.
+> 
+> Fixes: 9e8d5470325f25be ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-On 28.02.22 at 03:39, Lino Sanfilippo wrote:
-> Several drivers that support setting the RS485 configuration via userspa=
-ce
-> implement one or more of the following tasks:
->
-> - in case of an invalid RTS configuration (both RTS after send and RTS o=
-n
->   send set or both unset) fall back to enable RTS on send and disable RT=
-S
->   after send
->
-> - nullify the padding field of the returned serial_rs485 struct
->
-> - copy the configuration into the uart port struct
->
-> - limit RTS delays to 100 ms
->
-> Move these tasks into the serial core to make them generic and to provid=
-e
-> a consistent behaviour among all drivers.
->
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-is this patch series mergeable now? Or is there anything else to do from m=
-y side?
-
-Regards,
-Lino
+Best regards,
+Krzysztof
