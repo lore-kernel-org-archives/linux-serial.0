@@ -2,101 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF1BC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 16:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D77C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 16:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350970AbiCUQQf (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Mar 2022 12:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
+        id S241777AbiCUQcn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Mar 2022 12:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350877AbiCUQQd (ORCPT
+        with ESMTP id S1347366AbiCUQcf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Mar 2022 12:16:33 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F0D26C4;
-        Mon, 21 Mar 2022 09:15:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647879308; x=1679415308;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zpL1KC/LzFW3XuDbWTk/8gL8h7ax9edy561qrE2wzY0=;
-  b=iSlxh+qKJhugBVJVdrRWVspVnBiG7ewWUgWgyNlfObIM1Finp/vT0a5j
-   i74fK4RTMy6qzkAi/zx3nAknfFoyze1Dq/a06xkM+SYLdl0O72Cd+hVq5
-   DAwXtkahXHmXpoCPoddEAYk/YffI26pXffTH11Nuy/GmM3SXuo4Nymy2J
-   Y4JcJhdGzSrQD7E1BQ8jAB52Q+wUUSpjg50u80SMqhiCHsdHg/KI4dWhK
-   TW1fMCojGStPRhNi4hYtq90Gt7CXvsXTzvn2ynLhnUdWwR8BasBDwiwDU
-   /wswymrgRaInlPe+c0UCklyqi4imfSIiZcfw8CSI717FqhWwMODp5p92l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="257306807"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="257306807"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 09:15:08 -0700
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="559934756"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 09:15:05 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nWKfr-0040kY-OS;
-        Mon, 21 Mar 2022 18:14:27 +0200
-Date:   Mon, 21 Mar 2022 18:14:27 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Phil Edworthy <phil.edworthy@renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Mon, 21 Mar 2022 12:32:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECC4F7F5C;
+        Mon, 21 Mar 2022 09:31:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE6BC6135B;
+        Mon, 21 Mar 2022 16:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3218DC340F0;
+        Mon, 21 Mar 2022 16:31:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647880269;
+        bh=G0Iu+15P7J/9+ldVRS0Kh3E5nSoQYqiC6yNgO0mYsEI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pTgGMiUOnY9NUs9Paagrn3RqiWs3DMFROmXDzrmjp2mFPLDMuvl3ii3I9iu1SerXt
+         +07UC/3W+PlrohAX6bdBg7l2105J3TrzDhL4mQ2Exar1y1loJhL3ewsTNRKPyaqCzw
+         5Lve8Zl9+L0MwDENJOFUB4jwOvhQFqv9tog8YZizwfB678fPIdj+Fjlui7SJ+5huqc
+         M7Ne8y+jhNudkxj81RdQIA13wJPUs4vRNPma2aw6VO9apynGJgtiS7e0csbEP0rMyp
+         QpjFShIauPSoKuKGwz2Dau6V7egM2fH8oZaAIu6M+02biOcDcV/OdwscuTLravWi7M
+         J1JsrsVCYvjaA==
+Received: by pali.im (Postfix)
+        id 5D6F6C77; Mon, 21 Mar 2022 17:31:06 +0100 (CET)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Al Cooper <alcooperx@gmail.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH 06/14] serial: 8250: Make SERIAL_8250_EM available for
- arm64 systems
-Message-ID: <YjikYxGyUQfvqsiO@smile.fi.intel.com>
-References: <20220321154232.56315-1-phil.edworthy@renesas.com>
- <20220321154232.56315-7-phil.edworthy@renesas.com>
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] serial: core: Document why UPF_SPD_CUST is not handled in uart_get_baud_rate()
+Date:   Mon, 21 Mar 2022 17:30:53 +0100
+Message-Id: <20220321163055.4058-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220321163055.4058-1-pali@kernel.org>
+References: <20220321163055.4058-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321154232.56315-7-phil.edworthy@renesas.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 03:42:24PM +0000, Phil Edworthy wrote:
-> This is needed for the Renesas RZ/V2M (r9a09g011) SoC.
+Switch in uart_get_baud_rate() function is missing case for UPF_SPD_CUST
+flag. It is not obvious why it is missing here, so add comments explaining
+how deprecated UPF_SPD_CUST flag is handled and how drivers should call
+uart_get_baud_rate() and uart_get_divisor() functions.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/tty/serial/serial_core.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  drivers/tty/serial/8250/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index cd93ea6eed65..fdb6c4188695 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -380,7 +380,7 @@ config SERIAL_8250_DW
->  config SERIAL_8250_EM
->  	tristate "Support for Emma Mobile integrated serial port"
->  	depends on SERIAL_8250 && HAVE_CLK
-> -	depends on (ARM && ARCH_RENESAS) || COMPILE_TEST
-> +	depends on ARCH_RENESAS || COMPILE_TEST
->  	help
->  	  Selecting this option will add support for the integrated serial
->  	  port hardware found on the Emma Mobile line of processors.
-> -- 
-> 2.32.0
-> 
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 1e738f265eea..d8fc2616d62b 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -364,7 +364,17 @@ EXPORT_SYMBOL(uart_update_timeout);
+  *
+  *	Decode the termios structure into a numeric baud rate,
+  *	taking account of the magic 38400 baud rate (with spd_*
+- *	flags), and mapping the %B0 rate to 9600 baud.
++ *	flags, except cust), and mapping the %B0 rate to 9600 baud.
++ *
++ *	UPF_SPD_CUST flag is not handled in this function as it applies
++ *	to the custom divisor. When UPF_SPD_CUST flag is active and in
++ *	use then this function returns value 38400 and not the correct
++ *	baud rate.
++ *
++ *	Drivers should call uart_get_divisor() function with baud rate
++ *	returned from this function to calculate clock divisor. Function
++ *	uart_get_divisor() then handles UPF_SPD_CUST flag with magic
++ *	baud rate value 38400 and returns the correct custom divisor.
+  *
+  *	If the new baud rate is invalid, try the old termios setting.
+  *	If it's still invalid, we try 9600 baud.
+@@ -396,6 +406,7 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ 	case UPF_SPD_WARP:
+ 		altbaud = 460800;
+ 		break;
++	/* Flag UPF_SPD_CUST is not handed here, see description why. */
+ 	default:
+ 		altbaud = 38400;
+ 		break;
+@@ -462,6 +473,8 @@ EXPORT_SYMBOL(uart_get_baud_rate);
+  *	@baud: desired baud rate
+  *
+  *	Calculate the uart clock divisor for the port.
++ *
++ *	Handles also special case when UPF_SPD_CUST flag is in use.
+  */
+ unsigned int
+ uart_get_divisor(struct uart_port *port, unsigned int baud)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
