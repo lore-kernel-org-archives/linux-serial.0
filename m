@@ -2,249 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B05DC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 13:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93841C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 15:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242072AbiCUNe5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Mar 2022 09:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        id S1350453AbiCUPo2 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Mar 2022 11:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236687AbiCUNez (ORCPT
+        with ESMTP id S1350445AbiCUPoY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Mar 2022 09:34:55 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2051.outbound.protection.outlook.com [40.107.20.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9607F33E88;
-        Mon, 21 Mar 2022 06:33:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mh69Df6ZLE1rBjPoxFK5kh2suLVUUfIFoeXmnHr48/53o6IXT46KojPZb7KSQGV4SNOZyeyCXce8KgX9gnHyAOk+KU90kUrAa3rRYJSrf7OgV9UJwvX03oUYSlOu3g9dwvwJA+iYldvYzNOWLzRbkS5VdF9p6E9PE3MK73SdhxpjOUcLmKsums8gk5zsSZIyV+oJPqrREDays2clbxwQX8633H5Juxtj1imoE6at0oIArlmiiWjy+qwrH2eM3ujO3z15SaWF4QPMW58iAl/Snt90plPG8iLRlH53Us6/PDKVZM7Q2OWR+twmDioVOIqVGAo1aCVqsEcednpw2zmlNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R+pUVmUnDBFDrdPfiXX7u2v/2nQJhINr6rhBDssIs8w=;
- b=NetjdjDcBQZZPIsCS2Ec4fT2laSmyQibSis+vMH5ie8L/lqrYhAkquOLFIOoAAsrCnFVJMleZWMllSVi2sPGJca0EkQTlZnIPtdaLLC6LA6axmJCerEmA4u8t1VoTKVL5Lp94ZijeBvAto9OHuD++V1O2NMeTNEzp9vkFPywFHLegLOfs5l+H/QkRuTuBTT8Cs5xOeFLjIPQrVxaxsP4vZXi70k2iJUyme2cesvI+Oh+YGrmSENvjhgwtXuVb0vKtAKdofe3qFwgOtFxPaDH4+rOEtMYDdQgPraQ1b+nPnbHD6bzerLCr/ICNqXbmgl0Q//0Sd+3WhICRMkenly6dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R+pUVmUnDBFDrdPfiXX7u2v/2nQJhINr6rhBDssIs8w=;
- b=cAob8GLUR2Ej+ekrxPwoQ18XXpDEHsjEv3/Ed6D9PlRFsvSzGEFGNtOqf/x87bF/NuTlXWDBlhUwn7zMKXH9tMISjaeyoTd3E1/kzeDA1kscfH5e4Hfzsphw9EMkjJ0U1fQjRNW1byyTJdVw5o+CtELKUYXxzYwGikgKb+02zK0=
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
- by AM0PR04MB5284.eurprd04.prod.outlook.com (2603:10a6:208:cb::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.22; Mon, 21 Mar
- 2022 13:33:24 +0000
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::c121:7f8f:a903:ae7f]) by AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::c121:7f8f:a903:ae7f%5]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
- 13:33:24 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     Sherry Sun <sherry.sun@nxp.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using
- both of_alias_get_id and ida_simple_get
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using
- both of_alias_get_id and ida_simple_get
-Thread-Index: AQHYPRZLkioNdXEb806mHueeH0kdlqzJ1Y2Q
-Date:   Mon, 21 Mar 2022 13:33:24 +0000
-Message-ID: <AM9PR04MB8274AA137A140A4B4DFD0EE889169@AM9PR04MB8274.eurprd04.prod.outlook.com>
-References: <20220321112211.8895-1-sherry.sun@nxp.com>
-In-Reply-To: <20220321112211.8895-1-sherry.sun@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 223cb923-9428-4335-8643-08da0b3f5fae
-x-ms-traffictypediagnostic: AM0PR04MB5284:EE_
-x-microsoft-antispam-prvs: <AM0PR04MB52847F8978174796D8CABC9689169@AM0PR04MB5284.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tQocNzTuqJhqnc3o0b4+Odpx8m/6EttDR9r3oNO7i9/eotRfng6ca4AqXHYMu9bthP8UcJcMbxMcuAbqTHaZXRR3gp1sNr9nHeXr1yyVrvOaZdBpGbHOK6EgMbaToYl4RsB2zU0s+DB6kY6KCO9TrtLWOFgQCHlKcFN1kLdPumjc4fFvSAgrweMWqBgL1kXzGFwrrDGx85/ANRSyNZ19H7Q/KRuEOZEj6at1IQggfJ3FkqnwCCSNaV3nj9kyhyguGETNIFM2wMjAKKhKuVADMsf1tBzMUDqbBOOXqcaa8AV0aqjfdHSU0tQOvdm8CO05n9uROzO5o3rBHIlEhrYFeXGAWxtVjSG1USkkkhIbbtOk/GZAUW3gMMcB4b2Ork8rP9W3VY1Ynz5LxEtYt4BNZgDmyLGc14q4EmerqSIpHahajOgkOenMf5mNT42KucJUuIYNFz5ZUBW8xaoPU11HkFgTRfqmc4y5HXY1K9NU9j//RpetSQSoZzVtKXvwDtdpyk56hpJS2GJF3SprtplbgzfOeUVyn4Cagpm7gXlYx+zHxvhoR8hhR7vGUJgyWO+1x9vFjiwAGkA7D022vuYFu06pg6ivpqEAiRzMq8nbiFwP/SO0YS32OTv9LxEUHq4ZHbJ+SPQzoqOdksIrbEeHxsuoJRQJTa8FMBmvrcxV8pV6It2OWDw8cqBSwqZWCEeYWJs9m1emw/sn8kJizTyVJQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(26005)(66476007)(52536014)(8936002)(316002)(33656002)(38100700002)(44832011)(66446008)(6636002)(64756008)(8676002)(4326008)(66946007)(76116006)(5660300002)(54906003)(55016003)(66556008)(110136005)(2906002)(9686003)(38070700005)(55236004)(71200400001)(86362001)(53546011)(508600001)(122000001)(83380400001)(6506007)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HR0u1emeasx2+UUoSd27TN8bv+sYKWF+qhTVmNYh9BvVo5TWGWcfCQqneufF?=
- =?us-ascii?Q?d8pZv/K8wOf75ve7QMdfzs73iPDVfuiXznzJe6M1kIk1aTAwAYkAGe5NOW6V?=
- =?us-ascii?Q?f5SJYzFE2z6lBnR/CN9qSgrcSOXioq95bkcy0Vn2oIObmeGZoI4aS7g8lbyU?=
- =?us-ascii?Q?YxKPVcwti+wOIpj47QDK4DvYnQm0hTxsbKgKj/9sLxn47+2fokObR4wvTUvV?=
- =?us-ascii?Q?dJDey+y7kN3BvmHWiuZmsgmeG8oE+b+4H/Sn5G5DaZqQkTEUy3dKO5Cet4BU?=
- =?us-ascii?Q?dlR7mBdroinpeGk2g5kwEq5Da++Iif1Kpu+pzwylD0NxxI1HSoHCbSd2AnPL?=
- =?us-ascii?Q?4RwOOQgjqrX0sVeGLYqxWK9ueWVPW9jHb8llpVz1eCYUhsd+gCf/ZuQnrJsj?=
- =?us-ascii?Q?xZu0VYK2M1TKaZwGL5yqUnsW9ZLy2S1mZbxTOjIZYGaJrIrB+apphDbGyK6B?=
- =?us-ascii?Q?6M45VlbhSk+ZTuN8hAhhYJ1t8Zz/1QnkmN2SZL1ZF8G2NbhgO+drgg6CCAzi?=
- =?us-ascii?Q?w3RCMpCUxydOzy3HYxIv4RpmpgDLUHSIQeTZBQdO/iB2dx8f1kb69thGjdcu?=
- =?us-ascii?Q?cQDFRKXuOVWMbo/ApNH+OHqWp1jXOcxrF6qkc9jC3uVb+INBqR8sgFHZlsKp?=
- =?us-ascii?Q?i+D68Rr50RgmzDAYfNtqwyfVVmL0ubUIdzn7ZPTgwADEkzG3p29ZyOwFee1v?=
- =?us-ascii?Q?ZYPLs7HlYcmb2oDlIDxDRtyqoZIKmZ/OIciaQi+o+cQmpX3yrd+WnmZPj/AW?=
- =?us-ascii?Q?IYk4khlwEdccMhR4+s2oxmKJAGrcp2kamycEHf4x8p6I3nY/2PQUPA16DwtH?=
- =?us-ascii?Q?WQoRyT2v3FZMveRqEzBDhfNxGhQ6Rcn0Z/nyEwD2lMBLwFveRKpyPgtOSnhJ?=
- =?us-ascii?Q?q2iCFSimqQIR+Kho9Eb+dsggDyeVRqcfet3Isq7jn5Vuy7hGfspSi24gXiAK?=
- =?us-ascii?Q?/Siavu2IlZgDup4cIq1+KhBuEGfJMDQYtbqC00m7CFCGGNUf8sCQsv0lIWDx?=
- =?us-ascii?Q?3Qsgoz1xVpcGzJUGU2NGRW2mwvBh3HiTv4O7e8iVOsvqKmet2B2Hnz5bvxft?=
- =?us-ascii?Q?SnZGgJHwLsF2qUjCToupnFKf6TkVajgDgDZZhuTH49+x5kbp0sh0Ec5TZjs9?=
- =?us-ascii?Q?fxXM2QCLS0cSp3b3ywfxEdXkAhY0EQhG0ktGjp7bbU8wTr2WXIlHaq9dmHU9?=
- =?us-ascii?Q?Gg1/Gd/1MNk1anp2jHY3Sy5dGMCFvdF5EtD9ePoDVLJMpFcDK48lwkJL6Ufm?=
- =?us-ascii?Q?w75HikP7rt4lGol+lLaSwSHuSadV5+ItWGlxGg3njuc3g6raIN8IwsfGJWm0?=
- =?us-ascii?Q?sMLWhsFb7RycqQ5rIM/oicMtI2oNqRpicHY5kIXX6t7AvMpLHtMiU19Nuv7q?=
- =?us-ascii?Q?7cRrg2awiPGcbHpBef98JHDWx7x8AiTYiN9u5iSSZdHF9pF0ET6UJ4Br4qK7?=
- =?us-ascii?Q?TRIVKyj2KVm7TZay2S92FkBtSMTUb3xv?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 21 Mar 2022 11:44:24 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E70F05EBC6;
+        Mon, 21 Mar 2022 08:42:56 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,198,1643641200"; 
+   d="scan'208";a="114269400"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 22 Mar 2022 00:42:56 +0900
+Received: from vb.home (unknown [10.226.92.216])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id A5E004007539;
+        Tue, 22 Mar 2022 00:42:52 +0900 (JST)
+From:   Phil Edworthy <phil.edworthy@renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M EVK support
+Date:   Mon, 21 Mar 2022 15:42:18 +0000
+Message-Id: <20220321154232.56315-1-phil.edworthy@renesas.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 223cb923-9428-4335-8643-08da0b3f5fae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2022 13:33:24.1527
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YZyLlBUiNsP8eoQLryQQR/OhUAs2nkGm77pkOkAEiBm+xzH+IdqK95HIRgSVVBE9Rh2SqnBISB3FaNdJvD7EUQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5284
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hello,
+
+RZ/V2M has a dual-core Cortex-A53 (1.0 GHz) CPU and built-in AI
+accelerator "DRP-AI" for vision, which is Renesas' original technology.
+It also has a 32-bit LPDDR4 interface and video codec (H.264).
+
+The RZ/V2M is used with ISP firmware that runs on one of the Cortex-A53
+cores. The firmware is an integral part of the SoC such that the HW
+User's Manual documents which of the peripheral modules are used by the
+firmware.
+
+Initial patches enables minimal peripherals on Renesas RZ/V2M EVK board
+and booted via nfs. Ethernet is broadly compatible with the
+etheravb-rcar-gen3 driver, but interrupts need some work so it's not
+been included in this patch set.
+
+Below blocks are enabled on Renesas RZ/V2M EVK board:
+- memory
+- External input clock
+- CPG
+- UART
+
+Links for SoC and EVK:
+[*] https://www.renesas.com/us/en/products/microcontrollers-microprocessors/rz-cortex-a-mpus/rzv2m-dual-cortex-a53-lpddr4x32bit-ai-accelerator-isp-4k-video-codec-4k-camera-input-fhd-display-output
 
 
-> -----Original Message-----
-> From: Sherry Sun <sherry.sun@nxp.com>
-> Sent: Monday, March 21, 2022 6:22 AM
-> To: gregkh@linuxfoundation.org; jirislaby@kernel.org; Vabhav Sharma
-> <vabhav.sharma@nxp.com>
-> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-=
-imx
-> <linux-imx@nxp.com>
-> Subject: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using bo=
-th
-> of_alias_get_id and ida_simple_get
->=20
-> Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in =
-.probe(),
-> which has the potential bug. For example, when remove the
-> lpuart7 alias in dts, of_alias_get_id() will return error, then call
-> ida_simple_get() to allocate the id 0 for lpuart7, this may confilct with=
- the
-> lpuart4 which has alias 0.
+Sorry for cross posting the patches to multiple subsystems, as these are
+just the dt-binding patches included as part of initial bringup patches.
 
-The behavior of ida_simple_get() is to allocate an unused alias number. Do =
-you see any conflict when you test?
+Test logs on Renesas RZ/V2M EVK:
 
-Regards,
-Shenwei
+/ # cat /proc/cpuinfo
+processor       : 0
+BogoMIPS        : 48.00
+Features        : fp asimd evtstrm crc32 cpuid
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x0
+CPU part        : 0xd03
+CPU revision    : 4
 
->=20
->     aliases {
-> 	...
->         serial0 =3D &lpuart4;
->         serial1 =3D &lpuart5;
->         serial2 =3D &lpuart6;
->         serial3 =3D &lpuart7;
->     }
->=20
-> So remove the ida_simple_get() in .probe(), return an error directly when=
- calling
-> of_alias_get_id() fails, which is consistent with other uart drivers beha=
-vior.
->=20
-> Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependenc=
-e")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
->  1 file changed, 4 insertions(+), 20 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
-art.c index
-> 452a015825ba..40465d23d7ad 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -239,8 +239,6 @@
->  /* IMX lpuart has four extra unused regs located at the beginning */
->  #define IMX_REG_OFF	0x10
->=20
-> -static DEFINE_IDA(fsl_lpuart_ida);
-> -
->  enum lpuart_type {
->  	VF610_LPUART,
->  	LS1021A_LPUART,
-> @@ -276,7 +274,6 @@ struct lpuart_port {
->  	int			rx_dma_rng_buf_len;
->  	unsigned int		dma_tx_nents;
->  	wait_queue_head_t	dma_wait;
-> -	bool			id_allocated;
->  };
->=20
->  struct lpuart_soc_data {
-> @@ -2716,23 +2713,18 @@ static int lpuart_probe(struct platform_device
-> *pdev)
->=20
->  	ret =3D of_alias_get_id(np, "serial");
->  	if (ret < 0) {
-> -		ret =3D ida_simple_get(&fsl_lpuart_ida, 0, UART_NR,
-> GFP_KERNEL);
-> -		if (ret < 0) {
-> -			dev_err(&pdev->dev, "port line is full, add device
-> failed\n");
-> -			return ret;
-> -		}
-> -		sport->id_allocated =3D true;
-> +		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-> +		return ret;
->  	}
->  	if (ret >=3D ARRAY_SIZE(lpuart_ports)) {
->  		dev_err(&pdev->dev, "serial%d out of range\n", ret);
-> -		ret =3D -EINVAL;
-> -		goto failed_out_of_range;
-> +		return -EINVAL;
->  	}
->  	sport->port.line =3D ret;
->=20
->  	ret =3D lpuart_enable_clks(sport);
->  	if (ret)
-> -		goto failed_clock_enable;
-> +		return ret;
->  	sport->port.uartclk =3D lpuart_get_baud_clk_rate(sport);
->=20
->  	lpuart_ports[sport->port.line] =3D sport; @@ -2781,10 +2773,6 @@ static
-> int lpuart_probe(struct platform_device *pdev)
->  failed_attach_port:
->  failed_irq_request:
->  	lpuart_disable_clks(sport);
-> -failed_clock_enable:
-> -failed_out_of_range:
-> -	if (sport->id_allocated)
-> -		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
->  	return ret;
->  }
->=20
-> @@ -2794,9 +2782,6 @@ static int lpuart_remove(struct platform_device
-> *pdev)
->=20
->  	uart_remove_one_port(&lpuart_reg, &sport->port);
->=20
-> -	if (sport->id_allocated)
-> -		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
-> -
->  	lpuart_disable_clks(sport);
->=20
->  	if (sport->dma_tx_chan)
-> @@ -2926,7 +2911,6 @@ static int __init lpuart_serial_init(void)
->=20
->  static void __exit lpuart_serial_exit(void)  {
-> -	ida_destroy(&fsl_lpuart_ida);
->  	platform_driver_unregister(&lpuart_driver);
->  	uart_unregister_driver(&lpuart_reg);
->  }
-> --
-> 2.17.1
+/ # cat /proc/meminfo
+MemTotal:        2617088 kB
+MemFree:         2560788 kB
+MemAvailable:    2495544 kB
+Buffers:               0 kB
+Cached:            24840 kB
+SwapCached:            0 kB
+Active:             7988 kB
+Inactive:          23420 kB
+Active(anon):        244 kB
+Inactive(anon):    14816 kB
+Active(file):       7744 kB
+Inactive(file):     8604 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:          6568 kB
+Mapped:             9924 kB
+Shmem:              8492 kB
+KReclaimable:       4244 kB
+Slab:              11768 kB
+SReclaimable:       4244 kB
+SUnreclaim:         7524 kB
+KernelStack:         908 kB
+PageTables:          620 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     1308544 kB
+Committed_AS:      24500 kB
+VmallocTotal:   133143592960 kB
+VmallocUsed:        1208 kB
+VmallocChunk:          0 kB
+Percpu:              124 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+CmaTotal:          32768 kB
+CmaFree:           31208 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+/ #
+/ # cat /proc/interrupts
+           CPU0
+ 11:       3394     GICv2  30 Level     arch_timer
+ 14:       4644     GICv2 283 Level     eth0:ch0:rx_be
+ 15:          0     GICv2 284 Level     eth0:ch1:rx_nc
+ 32:       6706     GICv2 301 Level     eth0:ch18:tx_be
+ 33:          0     GICv2 302 Level     eth0:ch19:tx_nc
+ 36:          0     GICv2 305 Level     eth0:ch22:multi
+ 38:          0     GICv2 309 Level     eth0:ch24:emac
+ 43:        402     GICv2 272 Level     ttyS0
+IPI0:         0       Rescheduling interrupts
+IPI1:         0       Function call interrupts
+IPI2:         0       CPU stop interrupts
+IPI3:         0       CPU stop (for crash dump) interrupts
+IPI4:         0       Timer broadcast interrupts
+IPI5:         0       IRQ work interrupts
+IPI6:         0       CPU wake-up interrupts
+Err:          0
+/ #
+/ # for i in machine family soc_id revision; do echo -n "$i: ";cat /sys/devices/soc0/$i; done
+machine: RZ/V2M Evaluation Kit 2.0
+family: RZ/V2M
+soc_id: r9a09g011
+revision: 1.0
 
+Thanks
+Phil
