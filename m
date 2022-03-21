@@ -2,210 +2,249 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFC1C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 11:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B05DC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Mar 2022 13:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241747AbiCUL0Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Mar 2022 07:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        id S242072AbiCUNe5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 21 Mar 2022 09:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238787AbiCUL0X (ORCPT
+        with ESMTP id S236687AbiCUNez (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Mar 2022 07:26:23 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50049.outbound.protection.outlook.com [40.107.5.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CA62D1C8;
-        Mon, 21 Mar 2022 04:24:58 -0700 (PDT)
+        Mon, 21 Mar 2022 09:34:55 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2051.outbound.protection.outlook.com [40.107.20.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9607F33E88;
+        Mon, 21 Mar 2022 06:33:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hn0XP0UhfcgNMbb5nGVYD4vxzVr9fCMgDqtRWeIRZ6HiARG02wNdMhzT8+VCssMnVCdsSqNU35uQeN3OR+apSUzhvJ4l2ceC9AyoDyK+PYNMeXLpojK7r2b9Zf+x10UsgQmwsHSLzKQNJhVUzle6r+HvxzNfbCpzJKavd0coHKM3sONKNLdGTGR7SXvflNQPJ1geEPdFtaHwflZs9LDGQ+0Z8kzo7bAikUrEu7Mqm/hz7QjTXv0//nfosclaC8h/Ocv9zvxl71b5JFXqcTCfZYxa888do48h8BJRuAyVt0S1NEviPdGljK5BjqsJ3HXZBLijHRRcxAz46+24yFQ5ig==
+ b=Mh69Df6ZLE1rBjPoxFK5kh2suLVUUfIFoeXmnHr48/53o6IXT46KojPZb7KSQGV4SNOZyeyCXce8KgX9gnHyAOk+KU90kUrAa3rRYJSrf7OgV9UJwvX03oUYSlOu3g9dwvwJA+iYldvYzNOWLzRbkS5VdF9p6E9PE3MK73SdhxpjOUcLmKsums8gk5zsSZIyV+oJPqrREDays2clbxwQX8633H5Juxtj1imoE6at0oIArlmiiWjy+qwrH2eM3ujO3z15SaWF4QPMW58iAl/Snt90plPG8iLRlH53Us6/PDKVZM7Q2OWR+twmDioVOIqVGAo1aCVqsEcednpw2zmlNw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MsDCulQpcD9m/DjdIMrWLb4wVyFFnpMan6I3dPox3VE=;
- b=NcCeyJBKKJgk9KGwy4JkZsn/palIjWA95Wif7KUmupynnXSb+pknOxuYkxdpHiXwaikKFHoArSi3I6MX8SmN5s3zXeP4Cedcx2YJiIxvQgTMp2cmDq/JsYqWBdmMPhneEZjsKfJAqzKrcULWCAsNrtSPBR3STj49zJhFA6e3wbRp5HY8SX7lJNv8wDY7kuc50SkyZZQjmzhEe5cX1a/D10bzuO8LLOjnX/GtyjBJj4JZ6XkGFAPzPLsKYM+gFi7IJeZ/09Lp2Bj4fJRRWnFMs0lyhhu5XEOqrxssxtg5n9bSGfppIQR7DcLZDBbCO38esVyIt2MKbGBF2FuRjEjDTA==
+ bh=R+pUVmUnDBFDrdPfiXX7u2v/2nQJhINr6rhBDssIs8w=;
+ b=NetjdjDcBQZZPIsCS2Ec4fT2laSmyQibSis+vMH5ie8L/lqrYhAkquOLFIOoAAsrCnFVJMleZWMllSVi2sPGJca0EkQTlZnIPtdaLLC6LA6axmJCerEmA4u8t1VoTKVL5Lp94ZijeBvAto9OHuD++V1O2NMeTNEzp9vkFPywFHLegLOfs5l+H/QkRuTuBTT8Cs5xOeFLjIPQrVxaxsP4vZXi70k2iJUyme2cesvI+Oh+YGrmSENvjhgwtXuVb0vKtAKdofe3qFwgOtFxPaDH4+rOEtMYDdQgPraQ1b+nPnbHD6bzerLCr/ICNqXbmgl0Q//0Sd+3WhICRMkenly6dg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MsDCulQpcD9m/DjdIMrWLb4wVyFFnpMan6I3dPox3VE=;
- b=LrF4lwrsSlRf1ngbjabLlqtjzgu5rTO/7vemow2YYZNgU8l7hxeyU39PTIEEDsGUyTHUMRB6Wmtyp5UbxivvZQbkWRq4lgKV+HHOdfhhIkMnlCENE5+VzstEAeQVTKOq1MT+Ydfo7C0F9hIs9tJLamOTJcCSlPcBNny4zpIhV4c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8514.eurprd04.prod.outlook.com (2603:10a6:20b:341::24) with
+ bh=R+pUVmUnDBFDrdPfiXX7u2v/2nQJhINr6rhBDssIs8w=;
+ b=cAob8GLUR2Ej+ekrxPwoQ18XXpDEHsjEv3/Ed6D9PlRFsvSzGEFGNtOqf/x87bF/NuTlXWDBlhUwn7zMKXH9tMISjaeyoTd3E1/kzeDA1kscfH5e4Hfzsphw9EMkjJ0U1fQjRNW1byyTJdVw5o+CtELKUYXxzYwGikgKb+02zK0=
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
+ by AM0PR04MB5284.eurprd04.prod.outlook.com (2603:10a6:208:cb::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.22; Mon, 21 Mar
- 2022 11:24:56 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::6972:1f59:5d1c:e557%5]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
- 11:24:56 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        vabhav.sharma@nxp.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using both of_alias_get_id and ida_simple_get
-Date:   Mon, 21 Mar 2022 19:22:11 +0800
-Message-Id: <20220321112211.8895-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0043.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::12) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+ 2022 13:33:24 +0000
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::c121:7f8f:a903:ae7f]) by AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::c121:7f8f:a903:ae7f%5]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
+ 13:33:24 +0000
+From:   Shenwei Wang <shenwei.wang@nxp.com>
+To:     Sherry Sun <sherry.sun@nxp.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        Vabhav Sharma <vabhav.sharma@nxp.com>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using
+ both of_alias_get_id and ida_simple_get
+Thread-Topic: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using
+ both of_alias_get_id and ida_simple_get
+Thread-Index: AQHYPRZLkioNdXEb806mHueeH0kdlqzJ1Y2Q
+Date:   Mon, 21 Mar 2022 13:33:24 +0000
+Message-ID: <AM9PR04MB8274AA137A140A4B4DFD0EE889169@AM9PR04MB8274.eurprd04.prod.outlook.com>
+References: <20220321112211.8895-1-sherry.sun@nxp.com>
+In-Reply-To: <20220321112211.8895-1-sherry.sun@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 223cb923-9428-4335-8643-08da0b3f5fae
+x-ms-traffictypediagnostic: AM0PR04MB5284:EE_
+x-microsoft-antispam-prvs: <AM0PR04MB52847F8978174796D8CABC9689169@AM0PR04MB5284.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tQocNzTuqJhqnc3o0b4+Odpx8m/6EttDR9r3oNO7i9/eotRfng6ca4AqXHYMu9bthP8UcJcMbxMcuAbqTHaZXRR3gp1sNr9nHeXr1yyVrvOaZdBpGbHOK6EgMbaToYl4RsB2zU0s+DB6kY6KCO9TrtLWOFgQCHlKcFN1kLdPumjc4fFvSAgrweMWqBgL1kXzGFwrrDGx85/ANRSyNZ19H7Q/KRuEOZEj6at1IQggfJ3FkqnwCCSNaV3nj9kyhyguGETNIFM2wMjAKKhKuVADMsf1tBzMUDqbBOOXqcaa8AV0aqjfdHSU0tQOvdm8CO05n9uROzO5o3rBHIlEhrYFeXGAWxtVjSG1USkkkhIbbtOk/GZAUW3gMMcB4b2Ork8rP9W3VY1Ynz5LxEtYt4BNZgDmyLGc14q4EmerqSIpHahajOgkOenMf5mNT42KucJUuIYNFz5ZUBW8xaoPU11HkFgTRfqmc4y5HXY1K9NU9j//RpetSQSoZzVtKXvwDtdpyk56hpJS2GJF3SprtplbgzfOeUVyn4Cagpm7gXlYx+zHxvhoR8hhR7vGUJgyWO+1x9vFjiwAGkA7D022vuYFu06pg6ivpqEAiRzMq8nbiFwP/SO0YS32OTv9LxEUHq4ZHbJ+SPQzoqOdksIrbEeHxsuoJRQJTa8FMBmvrcxV8pV6It2OWDw8cqBSwqZWCEeYWJs9m1emw/sn8kJizTyVJQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(26005)(66476007)(52536014)(8936002)(316002)(33656002)(38100700002)(44832011)(66446008)(6636002)(64756008)(8676002)(4326008)(66946007)(76116006)(5660300002)(54906003)(55016003)(66556008)(110136005)(2906002)(9686003)(38070700005)(55236004)(71200400001)(86362001)(53546011)(508600001)(122000001)(83380400001)(6506007)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HR0u1emeasx2+UUoSd27TN8bv+sYKWF+qhTVmNYh9BvVo5TWGWcfCQqneufF?=
+ =?us-ascii?Q?d8pZv/K8wOf75ve7QMdfzs73iPDVfuiXznzJe6M1kIk1aTAwAYkAGe5NOW6V?=
+ =?us-ascii?Q?f5SJYzFE2z6lBnR/CN9qSgrcSOXioq95bkcy0Vn2oIObmeGZoI4aS7g8lbyU?=
+ =?us-ascii?Q?YxKPVcwti+wOIpj47QDK4DvYnQm0hTxsbKgKj/9sLxn47+2fokObR4wvTUvV?=
+ =?us-ascii?Q?dJDey+y7kN3BvmHWiuZmsgmeG8oE+b+4H/Sn5G5DaZqQkTEUy3dKO5Cet4BU?=
+ =?us-ascii?Q?dlR7mBdroinpeGk2g5kwEq5Da++Iif1Kpu+pzwylD0NxxI1HSoHCbSd2AnPL?=
+ =?us-ascii?Q?4RwOOQgjqrX0sVeGLYqxWK9ueWVPW9jHb8llpVz1eCYUhsd+gCf/ZuQnrJsj?=
+ =?us-ascii?Q?xZu0VYK2M1TKaZwGL5yqUnsW9ZLy2S1mZbxTOjIZYGaJrIrB+apphDbGyK6B?=
+ =?us-ascii?Q?6M45VlbhSk+ZTuN8hAhhYJ1t8Zz/1QnkmN2SZL1ZF8G2NbhgO+drgg6CCAzi?=
+ =?us-ascii?Q?w3RCMpCUxydOzy3HYxIv4RpmpgDLUHSIQeTZBQdO/iB2dx8f1kb69thGjdcu?=
+ =?us-ascii?Q?cQDFRKXuOVWMbo/ApNH+OHqWp1jXOcxrF6qkc9jC3uVb+INBqR8sgFHZlsKp?=
+ =?us-ascii?Q?i+D68Rr50RgmzDAYfNtqwyfVVmL0ubUIdzn7ZPTgwADEkzG3p29ZyOwFee1v?=
+ =?us-ascii?Q?ZYPLs7HlYcmb2oDlIDxDRtyqoZIKmZ/OIciaQi+o+cQmpX3yrd+WnmZPj/AW?=
+ =?us-ascii?Q?IYk4khlwEdccMhR4+s2oxmKJAGrcp2kamycEHf4x8p6I3nY/2PQUPA16DwtH?=
+ =?us-ascii?Q?WQoRyT2v3FZMveRqEzBDhfNxGhQ6Rcn0Z/nyEwD2lMBLwFveRKpyPgtOSnhJ?=
+ =?us-ascii?Q?q2iCFSimqQIR+Kho9Eb+dsggDyeVRqcfet3Isq7jn5Vuy7hGfspSi24gXiAK?=
+ =?us-ascii?Q?/Siavu2IlZgDup4cIq1+KhBuEGfJMDQYtbqC00m7CFCGGNUf8sCQsv0lIWDx?=
+ =?us-ascii?Q?3Qsgoz1xVpcGzJUGU2NGRW2mwvBh3HiTv4O7e8iVOsvqKmet2B2Hnz5bvxft?=
+ =?us-ascii?Q?SnZGgJHwLsF2qUjCToupnFKf6TkVajgDgDZZhuTH49+x5kbp0sh0Ec5TZjs9?=
+ =?us-ascii?Q?fxXM2QCLS0cSp3b3ywfxEdXkAhY0EQhG0ktGjp7bbU8wTr2WXIlHaq9dmHU9?=
+ =?us-ascii?Q?Gg1/Gd/1MNk1anp2jHY3Sy5dGMCFvdF5EtD9ePoDVLJMpFcDK48lwkJL6Ufm?=
+ =?us-ascii?Q?w75HikP7rt4lGol+lLaSwSHuSadV5+ItWGlxGg3njuc3g6raIN8IwsfGJWm0?=
+ =?us-ascii?Q?sMLWhsFb7RycqQ5rIM/oicMtI2oNqRpicHY5kIXX6t7AvMpLHtMiU19Nuv7q?=
+ =?us-ascii?Q?7cRrg2awiPGcbHpBef98JHDWx7x8AiTYiN9u5iSSZdHF9pF0ET6UJ4Br4qK7?=
+ =?us-ascii?Q?TRIVKyj2KVm7TZay2S92FkBtSMTUb3xv?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5f5c4db7-29fc-465a-d8dd-08da0b2d6d2d
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8514:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR04MB8514E51279F0984FE0B2EFF492169@AS8PR04MB8514.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EpDwiyD2wnvNpBrCk0eK6V3HiEo16lu5jk/TXeXDqwluFEcWLEt/uTNBmmm/O16xgZKPJUABTjoJJ9m2GyEgVX7grpIhzXisfPBYwvIO+CgI9VShb5odwY1T8XjbCgEfyo7L8jk9MAmD6V/AS5u6M+7FLtMbCOwNnhTH0CIoe0Aj/bhi2QBNbsfk2uom3puY3r9ZjOYdAPVr22/vXzvgzYbsvBfelOBaJFtpmZnt5uqUBMnrTkBUSN8tqmJap/j1WVnOvcBrvSL3zFYBLztLBSYchlErzQMNJktZS+1hYWu7voanUxHbFUi0aIR0yX6NhRxOQPicy+0OJGWf/zLMHezJzHfmp+BlYbmZJOsblXc6dZjRjDVUEXYqicNlsgOFkIYQKD1WpsXXI4YAEhDkKGyi2j9nvV0XQBZeOD8wRUXLk/Obr/SzsMzOb98VQKbKPIcprtHKhDp0Jm5qlAtI8+Ytws6j3XD7Zs/KxNo5t3VqhT0WarD5M0ea8kj7cGAybEhu+/tp3YhrIxDenpSp8Kd48i5bf3eGYwWi0Z7l+c9dqI6bQSxvrZKvxZoulU/pRlDIP0YLoroK72A8krKZRJXftNzC/PU02ORZRNQf8w1vfI5r8BRERmlTutDwg600H+ag6IDqN4Dq3F27okPdJ5qjBIt/YUOzsISDLvLRs8ARVii08r4P9Bc2h6okZMeo0hv7k4ZNvQqQj/aqwxZkqA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(186003)(26005)(44832011)(83380400001)(52116002)(316002)(6506007)(6636002)(5660300002)(38350700002)(6512007)(2906002)(36756003)(66946007)(2616005)(4326008)(8676002)(66476007)(66556008)(38100700002)(6666004)(8936002)(508600001)(1076003)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WD4H9/whvbA304O0M9lUAJ6m9CEibETWvJGPdWSAIoDkVmXQyjg6OJkIDvAH?=
- =?us-ascii?Q?Xz7Z3q+cJ3C5tkfFJ7F1IoAxsksyxPNmDs+yw6vu2uyvZlCGyXWSnM+p5n/4?=
- =?us-ascii?Q?HNaztMu7selc8/YF5YL+bUmQAsfk5jpeLugRJeqFdlyLWDQdA944/VHEFT8O?=
- =?us-ascii?Q?g84nkFJ+N1Ud9DluJsPK9IvWGpjcCmnLXCkbYMw25CMqJXfoJt3FfrgUUvDB?=
- =?us-ascii?Q?UW9+nQf1lyj7TqrX/OS272YAjg6ca0Z4V9yD/W8nNnjbeS8M5ApcR3oA6MYX?=
- =?us-ascii?Q?gImzBrHG10qGCTnhiqRsGrKJrYJHlgHXMI3q24/B0gWByLk7tozrB59PXWy7?=
- =?us-ascii?Q?O/V8SWZf2K2Ieg1Pd+nYQrY39HfuVH78HLV3+oygvvMrg9wprnR6BK/XD2/s?=
- =?us-ascii?Q?dPbhCWh47lq7bn5eAgEfoJr7158aKxAlMJyKP7FY6FK86bVQvElYNaLETCls?=
- =?us-ascii?Q?rQIaqVoROs9rNBOwumsH2wpGskDoABPpdqqkkvxKVCw2y0En5o5EmE/A/nTH?=
- =?us-ascii?Q?KK01kWQq5AoSJtZBoTFnc1wsjV4KbCvM4rVOMEfxrnA2N6ygv36UHQMapjdF?=
- =?us-ascii?Q?m91eBXKKnescdjEM7QNi1j2ZKGcXO5o1MVJCafOR7EOCeTY38+SuMBCVcnWs?=
- =?us-ascii?Q?jI6xTjMNBDo1ZuQcVMHJmrrkoijGQU7/xWBX50npfx2fyy8O3MhIcP4kUsHg?=
- =?us-ascii?Q?9dWpZrYN7yQJ59fAliOgow8HblbjHRizCpfXVMm8s/AQWsLMMMlNN6pugN03?=
- =?us-ascii?Q?Zk7KOgRwNlb1IZy83pFDgFA+lQ1y61yd56imNWJIZE706H16dlhFKf6nItI/?=
- =?us-ascii?Q?VKcKRBxOBtqe5Kv1ICD0R3gRUFNae7U6KXx2lm2Njk+vXyl+58r3JRs3MMCX?=
- =?us-ascii?Q?0Z8oTecSsVnpIv0ZHUWKmDFW7zFbELC6LtIYtwf7JzQcKkeQfeM90HvP82TB?=
- =?us-ascii?Q?TC6JH/bS2KbdJ3Z4NEikaDFxz/OthO3W02dy1hZxqr6JXEuhvjiMAPiunbDk?=
- =?us-ascii?Q?WCIn30uakBRJ69lXAdwrAfdLDcpWCaL6bXBt5OJisr2vWLDdR53+jVIhp8ga?=
- =?us-ascii?Q?U91hlNdHVh2xQqPFWAHVtO1XZLnxBkPLaeeXQcyaeyl+9RfgypZ0hO4t5PG3?=
- =?us-ascii?Q?AAXVovmKdxGzf8LY32j3Evs500QzmF5lXtQ3a0ohSkqjC026V5wkyW8yPGsR?=
- =?us-ascii?Q?32o6vFMnaY9r3teZ4Ogmt7Ioc98nG7VBbrljU/SAc2KWXugsQ7sRPaIxxgMk?=
- =?us-ascii?Q?bVgGFKpmwh9WhLZwDDKheBgtyOhcuvmxaKDlx77zCYfCZ67Qu4m7vSyTEiUm?=
- =?us-ascii?Q?u92NYV6FkMQXkx+120c+vluTnltdX8oXqeUL4I6HRihtaNQ1moJ+7uu83w77?=
- =?us-ascii?Q?rOvN9lduV1Cg86bUPGqcB0eA1Ig4B8zVIt7lT70wBJ8fcqlQeVlIfhr09VFF?=
- =?us-ascii?Q?Jaim4rG7XKW0NZJ8NFrjhwxqwRA6zTRJ?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f5c4db7-29fc-465a-d8dd-08da0b2d6d2d
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 11:24:56.1689
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 223cb923-9428-4335-8643-08da0b3f5fae
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2022 13:33:24.1527
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kXmxxXNPbd4R4zeZbbhCnhAEcL+QMxQRHqeVdBH6sgczG+n2KDr2mFYR7FVwHClgtAIvUuHy3I/LgHuCZkSoiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8514
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YZyLlBUiNsP8eoQLryQQR/OhUAs2nkGm77pkOkAEiBm+xzH+IdqK95HIRgSVVBE9Rh2SqnBISB3FaNdJvD7EUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5284
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in
-.probe(), which has the potential bug. For example, when remove the
-lpuart7 alias in dts, of_alias_get_id() will return error, then call
-ida_simple_get() to allocate the id 0 for lpuart7, this may confilct
-with the lpuart4 which has alias 0.
 
-    aliases {
-	...
-        serial0 = &lpuart4;
-        serial1 = &lpuart5;
-        serial2 = &lpuart6;
-        serial3 = &lpuart7;
-    }
 
-So remove the ida_simple_get() in .probe(), return an error directly
-when calling of_alias_get_id() fails, which is consistent with other
-uart drivers behavior.
+> -----Original Message-----
+> From: Sherry Sun <sherry.sun@nxp.com>
+> Sent: Monday, March 21, 2022 6:22 AM
+> To: gregkh@linuxfoundation.org; jirislaby@kernel.org; Vabhav Sharma
+> <vabhav.sharma@nxp.com>
+> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-=
+imx
+> <linux-imx@nxp.com>
+> Subject: [PATCH] tty: serial: fsl_lpuart: fix potential bug when using bo=
+th
+> of_alias_get_id and ida_simple_get
+>=20
+> Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in =
+.probe(),
+> which has the potential bug. For example, when remove the
+> lpuart7 alias in dts, of_alias_get_id() will return error, then call
+> ida_simple_get() to allocate the id 0 for lpuart7, this may confilct with=
+ the
+> lpuart4 which has alias 0.
 
-Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+The behavior of ida_simple_get() is to allocate an unused alias number. Do =
+you see any conflict when you test?
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 452a015825ba..40465d23d7ad 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -239,8 +239,6 @@
- /* IMX lpuart has four extra unused regs located at the beginning */
- #define IMX_REG_OFF	0x10
- 
--static DEFINE_IDA(fsl_lpuart_ida);
--
- enum lpuart_type {
- 	VF610_LPUART,
- 	LS1021A_LPUART,
-@@ -276,7 +274,6 @@ struct lpuart_port {
- 	int			rx_dma_rng_buf_len;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
--	bool			id_allocated;
- };
- 
- struct lpuart_soc_data {
-@@ -2716,23 +2713,18 @@ static int lpuart_probe(struct platform_device *pdev)
- 
- 	ret = of_alias_get_id(np, "serial");
- 	if (ret < 0) {
--		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "port line is full, add device failed\n");
--			return ret;
--		}
--		sport->id_allocated = true;
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+		return ret;
- 	}
- 	if (ret >= ARRAY_SIZE(lpuart_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n", ret);
--		ret = -EINVAL;
--		goto failed_out_of_range;
-+		return -EINVAL;
- 	}
- 	sport->port.line = ret;
- 
- 	ret = lpuart_enable_clks(sport);
- 	if (ret)
--		goto failed_clock_enable;
-+		return ret;
- 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
- 
- 	lpuart_ports[sport->port.line] = sport;
-@@ -2781,10 +2773,6 @@ static int lpuart_probe(struct platform_device *pdev)
- failed_attach_port:
- failed_irq_request:
- 	lpuart_disable_clks(sport);
--failed_clock_enable:
--failed_out_of_range:
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
- 	return ret;
- }
- 
-@@ -2794,9 +2782,6 @@ static int lpuart_remove(struct platform_device *pdev)
- 
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- 
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
--
- 	lpuart_disable_clks(sport);
- 
- 	if (sport->dma_tx_chan)
-@@ -2926,7 +2911,6 @@ static int __init lpuart_serial_init(void)
- 
- static void __exit lpuart_serial_exit(void)
- {
--	ida_destroy(&fsl_lpuart_ida);
- 	platform_driver_unregister(&lpuart_driver);
- 	uart_unregister_driver(&lpuart_reg);
- }
--- 
-2.17.1
+Regards,
+Shenwei
+
+>=20
+>     aliases {
+> 	...
+>         serial0 =3D &lpuart4;
+>         serial1 =3D &lpuart5;
+>         serial2 =3D &lpuart6;
+>         serial3 =3D &lpuart7;
+>     }
+>=20
+> So remove the ida_simple_get() in .probe(), return an error directly when=
+ calling
+> of_alias_get_id() fails, which is consistent with other uart drivers beha=
+vior.
+>=20
+> Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependenc=
+e")
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
+>  1 file changed, 4 insertions(+), 20 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
+art.c index
+> 452a015825ba..40465d23d7ad 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -239,8 +239,6 @@
+>  /* IMX lpuart has four extra unused regs located at the beginning */
+>  #define IMX_REG_OFF	0x10
+>=20
+> -static DEFINE_IDA(fsl_lpuart_ida);
+> -
+>  enum lpuart_type {
+>  	VF610_LPUART,
+>  	LS1021A_LPUART,
+> @@ -276,7 +274,6 @@ struct lpuart_port {
+>  	int			rx_dma_rng_buf_len;
+>  	unsigned int		dma_tx_nents;
+>  	wait_queue_head_t	dma_wait;
+> -	bool			id_allocated;
+>  };
+>=20
+>  struct lpuart_soc_data {
+> @@ -2716,23 +2713,18 @@ static int lpuart_probe(struct platform_device
+> *pdev)
+>=20
+>  	ret =3D of_alias_get_id(np, "serial");
+>  	if (ret < 0) {
+> -		ret =3D ida_simple_get(&fsl_lpuart_ida, 0, UART_NR,
+> GFP_KERNEL);
+> -		if (ret < 0) {
+> -			dev_err(&pdev->dev, "port line is full, add device
+> failed\n");
+> -			return ret;
+> -		}
+> -		sport->id_allocated =3D true;
+> +		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
+> +		return ret;
+>  	}
+>  	if (ret >=3D ARRAY_SIZE(lpuart_ports)) {
+>  		dev_err(&pdev->dev, "serial%d out of range\n", ret);
+> -		ret =3D -EINVAL;
+> -		goto failed_out_of_range;
+> +		return -EINVAL;
+>  	}
+>  	sport->port.line =3D ret;
+>=20
+>  	ret =3D lpuart_enable_clks(sport);
+>  	if (ret)
+> -		goto failed_clock_enable;
+> +		return ret;
+>  	sport->port.uartclk =3D lpuart_get_baud_clk_rate(sport);
+>=20
+>  	lpuart_ports[sport->port.line] =3D sport; @@ -2781,10 +2773,6 @@ static
+> int lpuart_probe(struct platform_device *pdev)
+>  failed_attach_port:
+>  failed_irq_request:
+>  	lpuart_disable_clks(sport);
+> -failed_clock_enable:
+> -failed_out_of_range:
+> -	if (sport->id_allocated)
+> -		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+>  	return ret;
+>  }
+>=20
+> @@ -2794,9 +2782,6 @@ static int lpuart_remove(struct platform_device
+> *pdev)
+>=20
+>  	uart_remove_one_port(&lpuart_reg, &sport->port);
+>=20
+> -	if (sport->id_allocated)
+> -		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+> -
+>  	lpuart_disable_clks(sport);
+>=20
+>  	if (sport->dma_tx_chan)
+> @@ -2926,7 +2911,6 @@ static int __init lpuart_serial_init(void)
+>=20
+>  static void __exit lpuart_serial_exit(void)  {
+> -	ida_destroy(&fsl_lpuart_ida);
+>  	platform_driver_unregister(&lpuart_driver);
+>  	uart_unregister_driver(&lpuart_reg);
+>  }
+> --
+> 2.17.1
 
