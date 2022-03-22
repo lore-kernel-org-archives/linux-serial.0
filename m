@@ -2,109 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF293C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Mar 2022 14:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B91C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Mar 2022 18:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbiCVObu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Mar 2022 10:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S229470AbiCVSzp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 22 Mar 2022 14:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbiCVObt (ORCPT
+        with ESMTP id S229715AbiCVSzN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Mar 2022 10:31:49 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151E96A033;
-        Tue, 22 Mar 2022 07:30:21 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id o10so17845373ejd.1;
-        Tue, 22 Mar 2022 07:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=n8t1dnR803GS4DcmePZxEgPndEBN5PcTpexwHu5EiSc=;
-        b=dmizTs7zxk1hhLYRs9AwGQJ8/OyjsLl5o8Jyy3Q7IxgnA1GokvStcSDZYMKLDkY0WK
-         csSZBYQCTuxRyYJoCYTfl6+Rq+hrw/Hy4jEB8YtvEoxgHKd2M3Z6dw2dLpEGl61pE5j9
-         xBLW4Jf6LcR3HTlRT2dacIGnVo+nCNhuCIbhW+IrfTeOBuYco/+NZG+CYAtVND5vSU8P
-         NResCI34R2TUAhCoRz4Qo00rDZ/pxQFx7MokCYVyoQJJgcw/Y1q8oU4c3rRI29CCLzTb
-         WKgM2WCHc6f0OBz2pL1BWQE5mUceVOiVQeM0veSkapVqO4y7K0NDxfdCuNkZddUhNi2n
-         b7rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=n8t1dnR803GS4DcmePZxEgPndEBN5PcTpexwHu5EiSc=;
-        b=nNqiP6pjRFtNc9PBaOTCwtSfjPGSDHzaSi3MrH8OjfNUXXr+1BSyJbO1d2ozIFyvXM
-         1d8+UtbuolFV/nUS7odJF/CHE5pX5Ovt4tqjCWPqEhG1ilJFKKX0SX1dpKu5lEEZHZe0
-         ve3RV+yIZ2XxJWOFRD/HQDprUTdiFV+nPnYYta19EFO/LMKUd4ym5YTaVYRcexovF3ah
-         3vMp8/mxc2AUP+LjNtXgojx6UvBLPOgXL7OlIh2KEn3sYzfZB2kClTQEUJdswCV8tLdl
-         z1C49iYC35kLFzTZmUxk0BYQ8ZxRJHiRXO7Y9rQev+MtbKZvhAVFBDXa81KDeT5TOXnJ
-         /Ghw==
-X-Gm-Message-State: AOAM532L53IWcg8rqsXEALEVHByWh3Ffpp7OgwlC3+KCQjfGcntZwogl
-        7fxHZolNhoA546uwe3jwTFLLB9/+GG1bTmTiZarGqcGGUfo=
-X-Google-Smtp-Source: ABdhPJwso+n07HmH0IlW7nmSddH3CFAMkpKeaBLNQSuPhMe+Dv5Q1yIHYUNDWIcP8/xVQPODOApVZrgkpW/gONfjLSs=
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
- hd14-20020a170907968e00b006dbaed543c8mr25687772ejc.636.1647959419419; Tue, 22
- Mar 2022 07:30:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220321163055.4058-1-pali@kernel.org>
-In-Reply-To: <20220321163055.4058-1-pali@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 22 Mar 2022 16:29:08 +0200
-Message-ID: <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+        Tue, 22 Mar 2022 14:55:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F9E252A6;
+        Tue, 22 Mar 2022 11:53:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4394DB81D65;
+        Tue, 22 Mar 2022 18:53:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B78BCC340F0;
+        Tue, 22 Mar 2022 18:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647975222;
+        bh=cg20VRsy1Bj5cHdiezrhsFCOFh8R0/IVZ5CjlnEki3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gREk82tQD4tS0gwZMQ9JVKAQwy/azbwYDGyMctU7CS4MjL5XxriEbjFvlqD+qRzO9
+         3SrPCRV8/YWbWcno8ryGoFsSIiGdRpFhuRBNHH0TtguwC59Crf4246F4NxQbvxZ+bs
+         A1yEgt3ZsyB/h1uErHzA6D+6eioF4I8g0Ldym8D9eI8TZ3hX/Xhl1NekSWLp/IEemz
+         XLK4bmCHHus7ld3IhQS92DblWP52445K71F9/SuJJJmTRTpwVehkgkGZdHA711kplM
+         VWlx7JhffIXbGEnoZNh25f7k67S3Dl7fUiczpoxoAv1y3M5wqG+v8ZY3DTxexJnsy/
+         Jr1a+CfURBZZw==
+Received: by pali.im (Postfix)
+        id 3792F843; Tue, 22 Mar 2022 19:53:40 +0100 (CET)
+Date:   Tue, 22 Mar 2022 19:53:40 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+Message-ID: <20220322185340.eccktabcryfanxnj@pali>
+References: <20220321163055.4058-1-pali@kernel.org>
+ <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 11:07 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
->
-> Support for UPF_SPD_* flags is currently broken in more drivers for two
-> reasons. First one is that uart_update_timeout() function does not
+On Tuesday 22 March 2022 16:29:08 Andy Shevchenko wrote:
+> On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
+> >
+> > Support for UPF_SPD_* flags is currently broken in more drivers for two
+> > reasons. First one is that uart_update_timeout() function does not
+> 
+> the uart_update_timeout()
+> 
+> > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
+> > userspace termios structre is modified by most drivers after each
+> 
+> structure
+> 
+> ...
+> 
+> > (error handling was ommited for simplification)
+> 
+> omitted
+> 
+> > After calling set_active_spd_cust_baud() function SPD custom divisor
+> > should be active and therefore is_spd_cust_active() should return true.
+> >
+> > But it is not active (cfgetospeed does not return B38400) and this patch
+> > series should fix it. I have tested it with 8250 driver.
+> 
+> drivers
+> 
+> > Originally Johan Hovold reported that there may be issue with these
+> > ASYNC_SPD_FLAGS in email:
+> > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
+> >
+> >
+> > Johan, Greg, could you please test these patches if there is not any
+> > regression?
+> 
+> I'm wondering why we are still supporting this ugly hack?
+> Doesn't BOTHER work for you?
 
-the uart_update_timeout()
+Johan pointed in above mentioned patch that it would break
+ASYNC_SPD_FLAGS. So I have looked at how are ASYNC_SPD_FLAGS implemented
+to ensure that they would work correctly...
 
-> calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
-> userspace termios structre is modified by most drivers after each
+> I would rather expect to have this removed completely.
 
-structure
-
-...
-
-> (error handling was ommited for simplification)
-
-omitted
-
-> After calling set_active_spd_cust_baud() function SPD custom divisor
-> should be active and therefore is_spd_cust_active() should return true.
->
-> But it is not active (cfgetospeed does not return B38400) and this patch
-> series should fix it. I have tested it with 8250 driver.
-
-drivers
-
-> Originally Johan Hovold reported that there may be issue with these
-> ASYNC_SPD_FLAGS in email:
-> https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.=
-org/
->
->
-> Johan, Greg, could you please test these patches if there is not any
-> regression?
-
-I'm wondering why we are still supporting this ugly hack?
-Doesn't BOTHER work for you?
-
-I would rather expect to have this removed completely.
-
---=20
-With Best Regards,
-Andy Shevchenko
+Well, if somebody is going to remove it, I have no objections. But I
+understood that ASYNC_SPD_FLAGS should be still supported...
