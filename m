@@ -2,78 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE5EC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Mar 2022 13:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F96EC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Mar 2022 14:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350706AbiCXOAm (ORCPT
+        id S1347268AbiCXO66 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Mar 2022 10:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
+        Thu, 24 Mar 2022 10:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbiCXOAl (ORCPT
+        with ESMTP id S1344773AbiCXO66 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Mar 2022 10:00:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371C153B5D;
-        Thu, 24 Mar 2022 06:59:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648130349; x=1679666349;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=048nY8VsL0lxScI7e1OWenjrAALfi13hwM090OpLTTs=;
-  b=YFApCKGokkKptRPfzfRl+t/CleiDZoB7UyKSAds/PInXXobka2GwZ4Qf
-   Eg7q2MyHdhhnwqp9eCG8qK2uOnAJgoyKr7x16WskHinboxaT1EI6Zx58r
-   RXCXBuLWCfuB09eEIZVb2EZgK2gtkMOK3auzcyfX7ECcBQ0qharmFtUob
-   yo3326UirJUmyzB0R14IVQCjFEcC2tNEpOKuu1Y7rtVnzXF2Dp9nAkE8O
-   jNZygL/4yGX9M4C8mGYbZy4JBtlaSQ1vE8VY0CMK7lZNeWsVtNlbfPGlh
-   OXJ7q+RURSdSsvDtRxdT9xWfLXWyM0A5xCoa4oHGd7IEABxWNU/gqAN7A
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="255948361"
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="255948361"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 06:59:00 -0700
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="601696066"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 06:58:58 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nXNyo-005r2r-9I;
-        Thu, 24 Mar 2022 15:58:22 +0200
-Date:   Thu, 24 Mar 2022 15:58:21 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        robh+dt@kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        romain.perier@gmail.com
-Subject: Re: [PATCH 2/4] serial: 8250_dw: Add MStar MSC313 quirk
-Message-ID: <Yjx4/TXKiizuQ+yH@smile.fi.intel.com>
-References: <20220324124402.3631379-1-daniel@0x0f.com>
- <20220324124402.3631379-3-daniel@0x0f.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324124402.3631379-3-daniel@0x0f.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Thu, 24 Mar 2022 10:58:58 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD0390269;
+        Thu, 24 Mar 2022 07:57:26 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id g19so4158697pfc.9;
+        Thu, 24 Mar 2022 07:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=tzNc5ad6fkQ5y5MbKCIX35JEXgZM7wID1Rs6f6kwTik=;
+        b=jHlQFugxTCVBJTtkEw2sI3mzKn1VbGE434zzaVMrKDLYArfaIkeXOyzYR+devNaKpe
+         JyYYzFkNk40lVnX5GZpXFfSEJMWtRFtOEAcqfoOBqTFZruw7lR4N/yzypK2v9mANU+II
+         YaqQp2TCT4XFwSrMGWBgFLN2ZTL2rfZv/WD6JzH+g4jaoleVCyURs2dhNJRlgOpo4xm2
+         sJ15SaKUQ9iQgAkuZ/T9+bS/iEG2aQHQ4Y62lgnztuau6Vv0Mts1il3URdUgDk7Ud78q
+         2HfCX6QKLWuJMe8y4sgoavoZ6p1pXX0ExrZkZilROriz1XAdhflcn5F3sdhb0HplWYUM
+         iFmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tzNc5ad6fkQ5y5MbKCIX35JEXgZM7wID1Rs6f6kwTik=;
+        b=yUZPP3wOXAZ7tbr8+rNPGGSnkmaU5hozmXwYb35HOHdgK2l8W7RxCPQ5FBfjuY2lHk
+         7nsdNqEGxjhpMVEdOveOKv9zfHybLsN9ZjwoxROVLIGv0UmgSsXMTJbBwqOLpzkIvzq9
+         YQaHXUi3BLY1Gj4VS0PbL6JASXoeauStDVLeZnpB1DkRc6gDbT3nLD0KIle2CVMRpBCk
+         QzE8eImfWOC0VucIoWBM8HcIn7QY1cNfkuJTs+zRCxPRPtDPkwTAj6gcN03hitjib6kJ
+         EbLucsoiB41fLrHq662AgimgxTComHqS32q2dMa2xoL/bh0qiwlUctQOndN4waUr8GAm
+         YohA==
+X-Gm-Message-State: AOAM5333bo4Tt82I//ho6i0iCANaz7QNvq4n/pk8DVDfabO1aVq+aqv6
+        gYaXSsvxqtQC9lfzcmdHMwj0UTr4kIs=
+X-Google-Smtp-Source: ABdhPJyfqqJTjyVzxxr8SCKmhIm0UzVzoI2Oh5aV13ywr19SQop4DfuIs0S6mlfgqcA8y6WBgLU04g==
+X-Received: by 2002:a62:3896:0:b0:4f7:87dc:de5b with SMTP id f144-20020a623896000000b004f787dcde5bmr5741031pfa.49.1648133845664;
+        Thu, 24 Mar 2022 07:57:25 -0700 (PDT)
+Received: from stbsrv-and-01.and.broadcom.net ([192.19.11.250])
+        by smtp.gmail.com with ESMTPSA id t7-20020a056a0021c700b004f737480bb8sm3777397pfj.4.2022.03.24.07.57.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 07:57:25 -0700 (PDT)
+From:   Al Cooper <alcooperx@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Al Cooper <alcooperx@comcast.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH] serial: When UART is suspended, set RTS to false
+Date:   Thu, 24 Mar 2022 10:56:20 -0400
+Message-Id: <20220324145620.41573-1-alcooperx@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 09:44:00PM +0900, Daniel Palmer wrote:
-> The version of the IP used on the MStar MSC313 and later
-> MStar and SigmaStar SoCs has the USR register at a different
-> location. Add a quirk for this.
+From: Al Cooper <alcooperx@comcast.net>
 
-I'm fine with the change if it goes before [1]. Otherwise
-you will need to rebase.
+When flow control is enabled, the UART should set RTS to false
+during suspend to stop incoming data. Currently, the suspend
+routine sets the mctrl register in the uart to zero, but leaves
+the shadow version in the uart_port struct alone so that resume
+can restore it. This causes a problem later in suspend when
+serial8250_do_shutdown() is called which uses the shadow mctrl
+register to clear some additional bits but ends up restoring RTS.
+The solution is to clear RTS from the shadow version before
+serial8250_do_shutdown() is called and restore it after.
 
-[1]: https://lore.kernel.org/linux-serial/20220317174627.360815-1-miquel.raynal@bootlin.com/
+Signed-off-by: Al Cooper <alcooperx@comcast.net>
+---
+ drivers/tty/serial/serial_core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0db90be4c3bc..a788d1c899d4 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2173,6 +2173,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	if (tty_port_initialized(port)) {
+ 		const struct uart_ops *ops = uport->ops;
+ 		int tries;
++		unsigned int mctrl;
+ 
+ 		tty_port_set_suspended(port, 1);
+ 		tty_port_set_initialized(port, 0);
+@@ -2180,6 +2181,9 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 		spin_lock_irq(&uport->lock);
+ 		ops->stop_tx(uport);
+ 		ops->set_mctrl(uport, 0);
++		/* save mctrl so it can be restored on resume */
++		mctrl = uport->mctrl;
++		uport->mctrl = 0;
+ 		ops->stop_rx(uport);
+ 		spin_unlock_irq(&uport->lock);
+ 
+@@ -2193,6 +2197,7 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 				uport->name);
+ 
+ 		ops->shutdown(uport);
++		uport->mctrl = mctrl;
+ 	}
+ 
+ 	/*
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
