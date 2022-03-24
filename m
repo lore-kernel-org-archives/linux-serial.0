@@ -2,97 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09281C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Mar 2022 21:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4B5C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Mar 2022 09:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236311AbiCWWBC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Mar 2022 18:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        id S1344951AbiCXJFw (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 24 Mar 2022 05:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiCWWBA (ORCPT
+        with ESMTP id S242531AbiCXJFv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Mar 2022 18:01:00 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5577045040;
-        Wed, 23 Mar 2022 14:59:29 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 963D292009D; Wed, 23 Mar 2022 22:59:28 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 9423792009C;
-        Wed, 23 Mar 2022 21:59:28 +0000 (GMT)
-Date:   Wed, 23 Mar 2022 21:59:28 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] serial: 8250: Add proper clock handling for OxSemi
- PCIe devices
-In-Reply-To: <YjSL34DkktVVahmy@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.21.2203232126220.52439@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2106260539240.37803@angie.orcam.me.uk> <alpine.DEB.2.21.2106260604540.37803@angie.orcam.me.uk> <YOyi0cPdIVSCcpmw@surfacebook.localdomain> <alpine.DEB.2.21.2107130150420.9461@angie.orcam.me.uk> <CAHp75VfnCG-C6bUzhhC9jQGOSgMXVLZ=QtH0mdhAD85yeqBC7A@mail.gmail.com>
- <alpine.DEB.2.21.2107131504270.9461@angie.orcam.me.uk> <CAHp75VeS3UdK5o4cEKuT=nz+Yob9FBv6RNJ-i116pFZQTGuyuQ@mail.gmail.com> <alpine.DEB.2.21.2202052213110.34636@angie.orcam.me.uk> <YjSL34DkktVVahmy@smile.fi.intel.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 24 Mar 2022 05:05:51 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2068.outbound.protection.outlook.com [40.107.236.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8519D072;
+        Thu, 24 Mar 2022 02:04:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h7LNVLR/BXMeER8dymfdddVXpLR64NqL1Rl4iaxgx0YQhOLl42E/jdP+uJnM7zGc7elLy+/WHearR87z8gjUJ9POW7qeBykZ411mGPnkoC8ieReYT6R9kjUuk0dMDpKMVoaIamL6tNmUTISZvKY4uRVWVWUgMGOt2rjywaZllqmye3T1Gb9ga+3vTwOGZ/p3JURpuYg0ra1Ax9hPwlAN8cY7SVBqCNFa2FypqDC0rIF7Yrd7cXBfvUekEmoNCZN3faZGjVItL8sylSWAyqS7EQynVAba8PknK/H1jowSl4i93eFLU/Ny+EUUhi4qe8oggfIACT86Z1q6YpSlxTRJsQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SfjNmDwryouSBRBxGUZg+jEjZF6DxcuKkyfy7yqXY+4=;
+ b=IeRRAb12c9lAeUv/QVNOJrAT3tNUBQ69evhDRihJ7xM1vE74mx9JfuHlen6lhzeg+H/XP6LTUqn2QVlHsb4821umxrIAXtznpAtWzVmsGfc+jTt6d911fRAzAejqA3YQc63w4VXjO0IsOxgrnwwrjId2vTgmyxBDdkl71xg0Mx6yirc1Oia6ityq8o+KQj2h9fjJZB4PBCWvoiWWrrS2j2ZzDEuRU/9XHYBdoBm9yzLYJyyv/08OTwKuuwEQgxqRpY4ih3q+LtoM7Vtze2h7VCfpJTi2C7KA6FvuuVXUQaig6MQ+X/SaWoHHqmun9lzStFf5Gc/Mx2+Bb0ravy8b1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SfjNmDwryouSBRBxGUZg+jEjZF6DxcuKkyfy7yqXY+4=;
+ b=PBrxGqOpaNZT7g1nZHGrJRonvpYO8gGkgdDsbmVyNMGortLzLvGHgNyqrQx/KMS+ANQk9uRwijM/TO0gIzWAPZdlb2+Ld6FokaevcszpCTZqhMUKWeHc82i0r9BnoDJAEzSoQ07GXGtYGBUPWQNqtdFbf2fEutX5G4XhCtjnYya1lPqGpWhimscmdQNz6Ag1b0xg3ipem/1ubcEZCyEmM82juI3Hub3eit/NRTvlgwAStoCuTAEACXhDmzk8AjPJHXegxqPwcWad5NGRIh8ZYV5qgmzTuAS+HwInLBL7UQwB3RTEsKg2wXVr/ySpnqphocKxme/v1EyhCaA+qTSYrg==
+Received: from DM6PR02CA0147.namprd02.prod.outlook.com (2603:10b6:5:332::14)
+ by PH0PR12MB5402.namprd12.prod.outlook.com (2603:10b6:510:ef::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Thu, 24 Mar
+ 2022 09:04:17 +0000
+Received: from DM6NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::93) by DM6PR02CA0147.outlook.office365.com
+ (2603:10b6:5:332::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17 via Frontend
+ Transport; Thu, 24 Mar 2022 09:04:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT011.mail.protection.outlook.com (10.13.172.108) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5102.17 via Frontend Transport; Thu, 24 Mar 2022 09:04:17 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 24 Mar
+ 2022 09:04:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 24 Mar
+ 2022 02:04:16 -0700
+Received: from kkartik-desktop.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Thu, 24 Mar 2022 02:04:13 -0700
+From:   Kartik <kkartik@nvidia.com>
+To:     <kkartik@nvidia.com>, <ldewangan@nvidia.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>
+Subject: [PATCH] serial: tegra: Correct error handling sequence
+Date:   Thu, 24 Mar 2022 14:34:04 +0530
+Message-ID: <1648112644-16950-1-git-send-email-kkartik@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d8df0955-e2c5-4a94-020b-08da0d7546ea
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5402:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR12MB540239AFED02B7FE95C3C0DACD199@PH0PR12MB5402.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mUmYpnoy2dPGdG4afOIU8QAcNNjUBi3Z9IeqQKoWnL8EFZHnh6B2b/orV3K6wne4+WSADhcGPyUY8/RTxcDtL0UNauVFAVso8h0fpT58VFQ7Tt+uuWSO+5ueMd7Qa0VlvXMGWQUW/OT7yUMYR4lQkga1r+V/GCV5qcGisRcDfk42jDNG/myRc6SDpfY1iakRQBvNlVLHkMYr9PELasDsjY37NWWDvtj0zAsrwOM70I0ERSqe9xHXfx4OsCnqqzYraIOr0YyqsFap+1YiYfAdYi7acmMO9duZYF+mJMbMWTnCAkxRIbeXAVNGfV4j3Qi5nJ5e4dnGAoaUMv9rvO2Gfw7fRa2kAKXn+k/SXmhWmI5Hw5qMP1+U+Sa5uHv+nIUJ2mXbcIkNYBl0zkW1wGdUGK7ImaYIwb1gZnApWq/CJKbCkxEt3sbZcZq6fKHyaxTZoEe4+NMjxjVeQkQKNlDtw2ckYjK1ahHB0m7Zz37F9AHG0YIAktwq3Id5BVDlSyh19YKmZ3iv5qpaDKjJnOYLh1kAelgnU36S17cHbdCJctYga0x1uaswuRqQjDBBMaaHK8YR02Fa6UgJwpiEuf6SpgnqEfUgaNt5a4B32c/J9g9g0OyFnM0mk0kuCTTOGfNJMRwh5wSLCltuYmNZeF/UcpKebfj6NRUfW8zPt63Q7FRKbsFjde6BR2jZilg6bemihg65bTArHJFM7n0cYRUOfA==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(47076005)(36860700001)(82310400004)(86362001)(40460700003)(110136005)(316002)(81166007)(356005)(5660300002)(8676002)(2906002)(70206006)(70586007)(36756003)(508600001)(336012)(186003)(26005)(2616005)(426003)(83380400001)(8936002)(7696005)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 09:04:17.7016
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8df0955-e2c5-4a94-020b-08da0d7546ea
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT011.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5402
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 18 Mar 2022, Andy Shevchenko wrote:
+From: kartik <kkartik@nvidia.com>
 
-> >  It does allow one to program the full clock divider range of the OxSemi 
-> > devices.  I find it appropriate according to my engineer's code of good 
-> > practices.  And it doesn't cause any burden for non-OxSemi code.
-> 
-> How BOTHER does prevent you doing the same?
+In the current error handling sequence the driver checks for break
+error at the end.
 
- It does not allow you to set arbitrary serial port clock rates.  You can 
-only set integer baud rates, and then only those that do not exceed the 
-[1;65535] clock divisor range.
+By handling the break error first, we can avoid a situation where the
+driver keeps processing the errors which can be caused by an unhandled
+break error.
 
-> >  So I have had a look at how it has been done for other drivers and I have 
-> > now convinced myself against such a split.  The primary reason for this 
-> > conclusion is that there is no basic infrastructure for such a split and 
-> > the ultimate result is code duplication with no clear benefit to justify 
-> > it.
-> 
-> Justification for split is to keep certain quirks out of the scope of the
-> generic driver. I'm not sure what duplication you are talking about if the
-> LOC statistics shows otherwise.
+Signed-off-by: kartik <kkartik@nvidia.com>
+---
+ drivers/tty/serial/serial-tegra.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
- All the init/remove code is almost the same across all the devices.  And 
-suspend/resume and PCI error handling code has been removed from the split 
-off devices, and for the functional regression to be fixed:
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index b6223fa..ba78a02 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -440,7 +440,19 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
+ 	char flag = TTY_NORMAL;
+ 
+ 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
+-		if (lsr & UART_LSR_OE) {
++		if (lsr & UART_LSR_BI) {
++			/*
++			 * Break error
++			 * If FIFO read error without any data, reset Rx FIFO
++			 */
++			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
++				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
++			if (tup->uport.ignore_status_mask & UART_LSR_BI)
++				return TTY_BREAK;
++			flag = TTY_BREAK;
++			tup->uport.icount.brk++;
++			dev_dbg(tup->uport.dev, "Got Break\n");
++		} else if (lsr & UART_LSR_OE) {
+ 			/* Overrrun error */
+ 			flag = TTY_OVERRUN;
+ 			tup->uport.icount.overrun++;
+@@ -454,18 +466,6 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
+ 			flag = TTY_FRAME;
+ 			tup->uport.icount.frame++;
+ 			dev_dbg(tup->uport.dev, "Got frame errors\n");
+-		} else if (lsr & UART_LSR_BI) {
+-			/*
+-			 * Break error
+-			 * If FIFO read error without any data, reset Rx FIFO
+-			 */
+-			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
+-				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
+-			if (tup->uport.ignore_status_mask & UART_LSR_BI)
+-				return TTY_BREAK;
+-			flag = TTY_BREAK;
+-			tup->uport.icount.brk++;
+-			dev_dbg(tup->uport.dev, "Got Break\n");
+ 		}
+ 		uart_insert_char(&tup->uport, lsr, UART_LSR_OE, 0, flag);
+ 	}
+-- 
+2.7.4
 
-1. this code would have to be replicated, or
-
-2. handlers from the generic 8250_pci.c driver exported and referred to, 
-   or
-
-3. some kind of a helper library (or a core module) created providing this 
-   stuff to 8250_*.c drivers as required.
-
- I guess the latter is the minimum that could convince me this driver
-framework is usable for implementing device-specific drivers (as I find 
-the other variants rather miserable hacks).
-
- Plus there would have to be clear information provided to the users as 
-otherwise people will be rather confused as to why 3 out of their 4 16x50 
-PCI/e serial cards work with 8250_pci.c while the remaining one does not 
-(probably broken, or is it?).
-
-> You may not want to get the idea, it's fine. The rationale is simple:
-> isolate quirks for certain platform(s) in one place. Each platform
-> in a separate module.
-
- What is a platform in your terminology?  A PCI/e option card you can 
-install in about any modern computer?  I usually think of platforms as 
-specific families of computers rather than option cards.  Variants of 
-otherwise the same device are usually handled with a single driver in 
-Linux.
-
-  Maciej
