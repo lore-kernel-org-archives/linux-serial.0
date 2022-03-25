@@ -2,57 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D963DC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Mar 2022 12:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0140CC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Mar 2022 12:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358987AbiCYM0E (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Mar 2022 08:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
+        id S241209AbiCYM3y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 25 Mar 2022 08:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359108AbiCYMZj (ORCPT
+        with ESMTP id S1359616AbiCYM23 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Mar 2022 08:25:39 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30145E749;
-        Fri, 25 Mar 2022 05:23:26 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id z134so4092401vsz.8;
-        Fri, 25 Mar 2022 05:23:26 -0700 (PDT)
+        Fri, 25 Mar 2022 08:28:29 -0400
+Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BC89D4CE;
+        Fri, 25 Mar 2022 05:26:06 -0700 (PDT)
+Received: by mail-vk1-xa2b.google.com with SMTP id m84so4140726vke.1;
+        Fri, 25 Mar 2022 05:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=WzJ4RYl/IiDljZ0/e3z9WtJ7iVXmWkFLySTizcuAnwU=;
-        b=ScMDpgxeQrCQ0bpP0YyZ+eCD0lC0NTdpCqiVIaX3+BmHuMX9sOhKmWg0BOfGVZfCTq
-         sWl+VvBgX2cE70YBMlPja1pgQL6TNdORmWegGc1lAbgP7WAWZfjxYAxZaaKmQQi6ZlAZ
-         1/NdssbS6Bv7Cyzqy84HaWYK7U6nntiu6gYycnm1rDjPDBNJrHaqY0/+2+Bc5rKwWFSg
-         Hp9AEOSoNTQs9FZRXwpNfDiI5a/X3CBBj/ykXjGj1+Q15tB7fDN/dcn+QzPqK5HBipJ8
-         24bWJKxG7cwlLhNp/eLLDSC+LsPwPK/KC9kcIbwm7mV2WfSXNwnrg81gnMTZAaKoZsgo
-         E54A==
+        bh=OW2X/n8+/Y9eRUhdPagVsT3XevbzyJFnqyDFs/6ofLE=;
+        b=JGVs4nxG87jz1HYwKu/7SuWEduyJ1NrXlEKNDfTjjm9xd/tri5exYN7InR3+xSyCg9
+         Axi8yCHsAoBGxGldoJaU9GiL2BoNxkkmgp96Nl4Ubqff1WKj+nlE4kHbJl0EYIcmp3BQ
+         DPeWRI/i+4wd54SThX6ZomTkEwNHx56/eVOcBZ4cGLJP05uVqKCO19iZDhvo3QoNdLQ0
+         bNPtndNYqKBa6/2uZ5U+vNTx06BYgqJ5u6Z1YvBHKRdJAR2ihyTDMP+Yx4L1mfrMUm9Y
+         QpN7uQSq5jKsgwFBw4n9eF2QDwY88pzTn0+c6KxsyIXt0z5vzpYQua9v6elHK1AiM2Hb
+         c7yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WzJ4RYl/IiDljZ0/e3z9WtJ7iVXmWkFLySTizcuAnwU=;
-        b=weXFBYmeZz9uzL1BNK/nKwBmlgqQYAQuWbsFibQpmVdFcQODCZEF9cnzHVzGWxhlWO
-         7vdcaXmUF1p93SzE4lHPgXb6yrg7ojTCrwT8hVuegHr3EeVDV5W1eXQlOtxHNVshJ6b5
-         dRvoHvARw7t+kubQ0nHcg1IFgiTvbm6xqDx1Y2+E513NGkP1CSsmGHAXA5kty+Dh/dNr
-         2YDcxsOiHAzF+I8Fcs9zsjejidD3Xpee7/Mzt1fFYLYodTPsoSZnyiKb6rQNokDTcI4e
-         l4qAVUCO+S7TO1o6rVhBVuI/Y+5lyjb8a4kFA2K4i+KOfmD5gq/1IP+B19DBR1wtj5wn
-         WTCw==
-X-Gm-Message-State: AOAM530d1/0Ny6aUGdAz7xlbA2YfPeSgVSzWOu0pCgIKCkwSxJn6JY2K
-        7+fsLYuK9ysXSDsCJ/BZ92uGbklMFajo50vQAQs=
-X-Google-Smtp-Source: ABdhPJw3++l05A1j7WSiEEjv3Tjqk8YLk2NsaWWwpdpeQ0iZTJegjo2qhYtGm8uSSYrZ2s8LfjOCqTEkOuEFYHNNSZs=
-X-Received: by 2002:a67:2d8b:0:b0:325:5a6c:819e with SMTP id
- t133-20020a672d8b000000b003255a6c819emr4744424vst.4.1648211005672; Fri, 25
- Mar 2022 05:23:25 -0700 (PDT)
+        bh=OW2X/n8+/Y9eRUhdPagVsT3XevbzyJFnqyDFs/6ofLE=;
+        b=h6Ay8fE1XREGl4eSBJDSOyvCs4EMTJ92P5YKDKw7O7FckAfOQfReObDjzvBnrmsLQA
+         szhO7czRrIoBEib9tb+ZHkLlh4Jl5jOJHzhxU2HvfMxc8n3hV75CQbh1wuFUuCrwuNXI
+         TAp2onJqPScoBM8uul12u/fyAGQy39TNS96BDzIgGV8WTdVy9X1WWSUQAiRN2vdct8t5
+         8SKAj2J5RJF+KhV4P5Y1jtTd3J8gc/MSwNIMMdxxFFmdtYXGjU+zNNwTV3WMKdII1CZa
+         brdPPU6XMZVq35KJ7usZXivjgLehiGokHSrus8zGxfXjIh9jp/H1EHPIsTbE8AGNl2U/
+         QyJQ==
+X-Gm-Message-State: AOAM531XZWAcjERUs8r6p1xRrb62IlCFIHHQOnRi+Dp4JLA1Scx7I9+z
+        7brc6vxmpDYq0UfuTyAfMKQGAEx/I788e6aAoIr7qzK+3tw=
+X-Google-Smtp-Source: ABdhPJzGtQRmOanbE2F813vo1nLbz8KXAs2WCBYRxBOxe6/nfHGjk6QQFqSOGbQwkE5+AsgjCYPnkOxeyZrl/HgETao=
+X-Received: by 2002:a05:6122:50f:b0:337:aa83:8887 with SMTP id
+ x15-20020a056122050f00b00337aa838887mr4913403vko.10.1648211165942; Fri, 25
+ Mar 2022 05:26:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220324124402.3631379-1-daniel@0x0f.com> <20220324124402.3631379-4-daniel@0x0f.com>
-In-Reply-To: <20220324124402.3631379-4-daniel@0x0f.com>
+References: <20220324124402.3631379-1-daniel@0x0f.com> <20220324124402.3631379-5-daniel@0x0f.com>
+In-Reply-To: <20220324124402.3631379-5-daniel@0x0f.com>
 From:   Romain Perier <romain.perier@gmail.com>
-Date:   Fri, 25 Mar 2022 13:23:14 +0100
-Message-ID: <CABgxDoLg4cf8qGVAhnp4Tj1cWZ0X+vM0ueTy2wp68BbgRLGuNQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] ARM: dts: mstar: Switch pm_uart to mstar,msc313-uart
+Date:   Fri, 25 Mar 2022 13:25:54 +0100
+Message-ID: <CABgxDoK=5k94JJr1kry5xxS8NS5cyoBPS8PfMrjR8_h_LTjdBQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ARM: dts: mstar: Add second UART to base dtsi.
 To:     Daniel Palmer <daniel@0x0f.com>
 Cc:     devicetree <devicetree@vger.kernel.org>,
         linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
@@ -68,12 +67,14 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Daniel,
 
+
 Le jeu. 24 mars 2022 =C3=A0 13:44, Daniel Palmer <daniel@0x0f.com> a =C3=A9=
 crit :
 >
-> The UART used in these SoCs is actually a variant of the dw apb uart.
-> Now there is a compatible string in that driver to handle the quirks
-> switch the compatible for pm_uart over to mstar,msc313-uart.
+> Add the second UART to the base dtsi.
 >
 > Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+
+More context in the long message would help, imho.
+Otherwise:
 Reviewed-by: Romain Perier <romain.perier@gmail.com>
