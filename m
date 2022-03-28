@@ -2,102 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3896BC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Mar 2022 13:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D21A5C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 28 Mar 2022 13:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234265AbiC1N2f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        id S239438AbiC1NaH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236582AbiC1N2c (ORCPT
+        with ESMTP id S235022AbiC1NaG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:28:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2126B5E17F;
-        Mon, 28 Mar 2022 06:26:50 -0700 (PDT)
+        Mon, 28 Mar 2022 09:30:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D25BC4;
+        Mon, 28 Mar 2022 06:28:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7C556CE13BA;
-        Mon, 28 Mar 2022 13:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D38C34111;
-        Mon, 28 Mar 2022 13:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6AAFB81126;
+        Mon, 28 Mar 2022 13:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1872C34110;
+        Mon, 28 Mar 2022 13:28:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648474006;
-        bh=AQvdABq5Hxq1MNktjBiqDB3yfDLoZjajlprb/I71spY=;
+        s=k20201202; t=1648474101;
+        bh=tIR5y1hpm4AjO9RJ6v9GsRGC9Ca0AqosOs+7fpsV3Ck=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Jh44AB6PQwrKHG1yUqmMlZ8J//ua/zoX2E/ACH8+sKC3qMdghNqCsCqgjFeu3t/K1
-         8FUM3794iaXlKu6jsrtnADFhH4EyktPQVZsi2ROhv3/5j+MpTF76oVppqdsmJ9Ya1D
-         0fRke3GPSH+DSv1OIWZDxWxjXYVkcpkSm7nnifUL0KR4CJq6XY+c0PrGPydm7MTmPY
-         zhilxaAcN5G5jaABuxRPfcIBtzoQulPxZYLU5wU6QD8bAHNIj4vUdj4Ot7c+Nlmw8A
-         iJdKHm4nxLy/JT40LZhHx/3tHVgpLlmkpQywuqbQzszKI8SpVaGELrJ6J3+f+Asl8x
-         gnbj16r40HeRg==
-Received: by mail-ej1-f53.google.com with SMTP id pv16so28730866ejb.0;
-        Mon, 28 Mar 2022 06:26:46 -0700 (PDT)
-X-Gm-Message-State: AOAM530/gJ0cABwW33CjpV+/3o/Yw7J6kMu5r3D3dMs1Rr336qqga48A
-        aBFwlkBuTWHpmS7kLKIWQa023CuLgWE4652NyQ==
-X-Google-Smtp-Source: ABdhPJyGhH7lmYwMaaU/tzHGQoNYL3u81M6M0BdaLpzWBmjMU0br1//SVrBhdo/wvqx9JKvOvdgSdTq1sPDKtP1oAT0=
-X-Received: by 2002:a17:906:5418:b0:6df:a07f:764b with SMTP id
- q24-20020a170906541800b006dfa07f764bmr26681735ejo.27.1648474005064; Mon, 28
- Mar 2022 06:26:45 -0700 (PDT)
+        b=uiP/2hcfgJ3zmSkfN+z42KczzDVrtCHK1ONpnC3cRb1wim0y2ms+Lxcb3FKqgeelg
+         zkOwT46z506BqRE+39zk4Eswmahgg3XIRbmT1Ys+B8DbUOrQuHP8z1uEqlFuS0kKQ5
+         ofTH73Gor19i5qG7597AQ/gzqQZ4wm7IF4o5afyT8MwRXCdzimNWawAtf5ILEuB4ew
+         gdzM7LdGlIfiF9kLFbipw7kuzEsguACL4WN3+HJ/CpFGXzN/sHlUakkW4g1X0nf/7n
+         rPNmuMmDZ04PBS1MKyRDCtsUYHAJgAtCTMgzv8D9bqdaRTpZBZqDiJtgo2Q8A9VK3F
+         I66kv69HlqD1Q==
+Received: by mail-ej1-f43.google.com with SMTP id qa43so28643126ejc.12;
+        Mon, 28 Mar 2022 06:28:21 -0700 (PDT)
+X-Gm-Message-State: AOAM532L0gU87c2ykn/B1bfhdcOay7mMABSgSqttQVSLxYuqXKDEz7UK
+        R3dgu/w9T0PzJyBjQ29B+V1aHqn0HE3CxGdEow==
+X-Google-Smtp-Source: ABdhPJw9vOvGYrmizEfXrzpQNqE0Cos/IyfXm4WzYVaV3l2V+fNfbJKz/yJlVk2RcFDMbVCV2HDXqIp3k8hJWlRTwAI=
+X-Received: by 2002:a17:907:2d0a:b0:6df:87bd:4cd5 with SMTP id
+ gs10-20020a1709072d0a00b006df87bd4cd5mr27665304ejc.423.1648474099888; Mon, 28
+ Mar 2022 06:28:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1637061057.git.shubhrajyoti.datta@xilinx.com>
- <e1d6913bfe5ce023d7f6ea106d0359142063e694.1637061057.git.shubhrajyoti.datta@xilinx.com>
- <YaVPYiGmDsqY+1at@robh.at.kernel.org> <DM6PR02MB663589B3489C53A34DC25A31AA719@DM6PR02MB6635.namprd02.prod.outlook.com>
- <MN2PR02MB6640017950EFB0FD21D2AD91AA339@MN2PR02MB6640.namprd02.prod.outlook.com>
- <DM6PR02MB66352597DBF172ACC5307274AA179@DM6PR02MB6635.namprd02.prod.outlook.com>
-In-Reply-To: <DM6PR02MB66352597DBF172ACC5307274AA179@DM6PR02MB6635.namprd02.prod.outlook.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 28 Mar 2022 08:26:33 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
-Message-ID: <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: pl011: Add 'arm,xlnx-uart'
-To:     Shubhrajyoti Datta <shubhraj@xilinx.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Raviteja Narayanam <rna@xlnx.xilinx.com>,
-        Srinivas Goud <sgoud@xilinx.com>
+References: <20220324124402.3631379-1-daniel@0x0f.com> <20220324124402.3631379-5-daniel@0x0f.com>
+In-Reply-To: <20220324124402.3631379-5-daniel@0x0f.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 28 Mar 2022 08:28:07 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqL8A78Czx_3GZ6Tsg3_4xGUiL3u14R176gZTe+54CbGHw@mail.gmail.com>
+Message-ID: <CAL_JsqL8A78Czx_3GZ6Tsg3_4xGUiL3u14R176gZTe+54CbGHw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ARM: dts: mstar: Add second UART to base dtsi.
+To:     Daniel Palmer <daniel@0x0f.com>
+Cc:     devicetree@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Romain Perier <romain.perier@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 5:59 AM Shubhrajyoti Datta <shubhraj@xilinx.com> wrote:
+On Thu, Mar 24, 2022 at 7:44 AM Daniel Palmer <daniel@0x0f.com> wrote:
 >
-> <snip>
-> > > > > diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml
-> > > > > b/Documentation/devicetree/bindings/serial/pl011.yaml
-> > > > > index 5ea00f8a283d..6c73923dd15e 100644
-> > > > > --- a/Documentation/devicetree/bindings/serial/pl011.yaml
-> > > > > +++ b/Documentation/devicetree/bindings/serial/pl011.yaml
-> > > > > @@ -24,9 +24,13 @@ select:
-> > > > >
-> > > > >  properties:
-> > > > >    compatible:
-> > > > > -    items:
-> > > > > -      - const: arm,pl011
-> > > > > -      - const: arm,primecell
-> > > > > +    oneOf:
-> > > > > +      - items:
-> > > > > +          - const: arm,pl011
-> > > > > +          - const: arm,primecell
-> > > > > +      - items:
-> > > > > +          - const: arm,pl011
-> > > > > +          - const: arm,xlnx-uart # xilinx uart as platform device
-> > > >
-> > > > 'arm,primecell' means the block has ID registers. Are you saying
-> > > > this implementation doesn't?
-> > >
-> > > The ID registers do not have any Xilinx specific identifiers.
-> > > However there are differences  like 32-bit access.
-> >
-> > Hope that the current approach is fine with you.
+> Add the second UART to the base dtsi.
 >
-> Could you please guide  how to go about it.
+> Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+> ---
+>  arch/arm/boot/dts/mstar-v7.dtsi | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/arch/arm/boot/dts/mstar-v7.dtsi b/arch/arm/boot/dts/mstar-v7.dtsi
+> index 8464a8f1b136..baf2422b9854 100644
+> --- a/arch/arm/boot/dts/mstar-v7.dtsi
+> +++ b/arch/arm/boot/dts/mstar-v7.dtsi
+> @@ -182,6 +182,14 @@ pm_uart: uart@221000 {
+>                                 clock-frequency = <172000000>;
+>                                 status = "disabled";
+>                         };
+> +
+> +                       uart1: uart@221200 {
 
-No, I don't know what the differences are in your h/w. You have ID
-registers, but changed the IP and didn't change the ID registers? How
-has the IP changed?
+serial@...
+
+Please run schema checks on your DT as that should be a warning that I
+don't have to tell you about.
 
 Rob
