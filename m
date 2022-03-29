@@ -2,115 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2918AC433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D088C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbiC2Ibk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
+        id S233016AbiC2IxE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbiC2Ibk (ORCPT
+        with ESMTP id S234238AbiC2Iwt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:31:40 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F915FB7;
-        Tue, 29 Mar 2022 01:29:56 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5424820009;
-        Tue, 29 Mar 2022 08:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648542595;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=j5GWTy6NIAfg/vAYQJzWg3+aSkvKpg08FMN6BwsyIdY=;
-        b=AXg2gqxny4w87SQK9erjxAFYkh/RFuLDxipTe3+6EWjGUN+dyIKGbe/G83jcbB4rS0ZSvO
-        zpXP28oG6Ubd83cjuEMuDKvL3dCepdpPTX/1r3xymgqK04Tfu/1XTXnwO/WvCJQoP/hcI6
-        Q8tYJrIPhJwfkj6cUWnYvktLV6esnnDsNDGZPA1i95RikWpG0aBrnzdQTyjeN2Y1Nwpb8X
-        n2axH402dw66BCE5FVZdX+tuGoFJqH3v9pRxoXGBW59uThnbwOTBh5AyG7rVLjGdIs6aFi
-        25XamlamV0adGl9NejIt+woMglIyTi10OTsMieXj628eDdkDTU2jqOmv3PQbSg==
-Date:   Tue, 29 Mar 2022 10:29:51 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 29 Mar 2022 04:52:49 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2619451E5A;
+        Tue, 29 Mar 2022 01:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648543865; x=1680079865;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
+  b=B/LEcAqrLIBOv2FnFFlIoYTbhf5KrkcjpWjSVjnLtv3EWUt8MWmQn/YM
+   gQxOx68OfTLViQewQl9BN48BzHSAyNq9fvkrGzt1xQaA3CyepQN2RtSAQ
+   M2Uph0WgHgf+QorVEC06yTvxZyOzNiaJyzbKlpPYA8rpnHknQapLgN23T
+   SIS5WEbbHmWNGJ0qpgQl7zCYWKH2inbOn/FT861wvrsm6qe00uKTYa7Lr
+   yvB0a5uRt8/bL9WCtFiGR3xAnRviotlgORj1OMmb4oxLpOtp7hCerzGJJ
+   +nZyViWsl5xhFHn4YRrWaasi/SCtavgPTM9iIIh8YofrvOiD63F2G8hLc
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
+   d="scan'208";a="22954136"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 29 Mar 2022 10:51:02 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Tue, 29 Mar 2022 10:51:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648543862; x=1680079862;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
+  b=QnE21zjVvkmAd27D8EsS86mdmONZwM+HOwPgYUSQiDVnnsYDKln6YqXl
+   OmVNDhiYFx/Bp9SJHkUZzCLOm5mqZAYchtNIoUEfrTeTZjnNXtsSujAx4
+   2hRgsMh6hFDxBKLVCmF67V9xuGvDB0V3NvJUC+Zc23k9A/3N2ARR1FbKx
+   akYeJdHw/sMW8dAAxzhhjPumbIt+ixH4k/gw8dR1TQnbmS/k6M32YqTJ+
+   /Ewm4RryjznrgfTj/CDDSAZ4zjfsv4lOeJ9LQ2Xx0yC1jVelMdIO1rzuj
+   wr3cGjsdIZn+Hb21E1aFaBubxnFHM0hRIBkBYSWUklcIeuw3qlBnIHoeB
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
+   d="scan'208";a="22954135"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C47F3280065;
+        Tue, 29 Mar 2022 10:51:01 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 08/10] serial: 8250: dw: Add support for DMA flow
- controlling devices
-Message-ID: <20220329102951.579e154d@xps13>
-In-Reply-To: <YjSWM5ilahNBXF1b@smile.fi.intel.com>
-References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
-        <20220317174627.360815-9-miquel.raynal@bootlin.com>
-        <YjSWM5ilahNBXF1b@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Lukas Wunner <lukas@wunner.de>
+Cc:     Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH] serial: Revert RS485 polarity change on UART open
+Date:   Tue, 29 Mar 2022 10:50:50 +0200
+Message-Id: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+While the change of the RS485 polarity in
+commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+might have made sense based on the original intention of the
+rs485-rts-active-low flag (*), this is not how it is implemented in
+various drivers:
 
-andriy.shevchenko@linux.intel.com wrote on Fri, 18 Mar 2022 16:24:51
-+0200:
+At least the 8250 and the i.MX UART drivers interpret rs485-rts-active-low
+the other way around. For these drivers, said change broke the initial
+state of the RTS pin after opening the UART, making it impossible to
+receive data until after the first send.
 
-> On Thu, Mar 17, 2022 at 06:46:25PM +0100, Miquel Raynal wrote:
-> > From: Phil Edworthy <phil.edworthy@renesas.com>
-> >=20
-> > DW based controllers like the one on Renesas RZ/N1 must be programmed as
-> > flow controllers when using DMA.
-> >=20
-> > * Table 11.45 of the system manual, "Flow Control Combinations", states
-> >   that using UART with DMA requires setting the DMA in the peripheral
-> >   flow controller mode regardless of the direction.
-> >=20
-> > * Chapter 11.6.1.3 of the system manual, "Basic Interface Definitions",
-> >   explains that the burst size in the above case must be configured in
-> >   the peripheral's register DEST/SRC_BURST_SIZE.
-> >=20
-> > Experiments shown that upon Rx timeout, the DMA transaction needed to be
-> > manually cleared as well. =20
->=20
-> ...
->=20
-> > +#define DW_UART_TDMACR	0x10c /* DMA Control Register Transmit Mode */
-> > +#define DW_UART_RDMACR	0x110 /* DMA Control Register Receive Mode */ =
-=20
->=20
-> These are not Synposys ones.
+I considered fixing up the drivers to match the polarity used for the
+initial state, however doing so would break all existing Device Trees
+that configure RS485 for one of these drivers. Reverting the change
+makes RS485 work correctly again on these devices.
 
-Ok
+[(*) My understanding of the mentioned commit's description is that
+rs485-rts-active-low should have referred to the electical signal level
+of the RTS pin, rather than the logical RTS state as understood by the
+UART controller.]
 
-> ...
->=20
-> > +static u32 dw8250_rzn1_get_dmacr_burst(int max_burst)
-> > +{
-> > +	if (max_burst >=3D 8)
-> > +		return DW_UART_xDMACR_8_WORD_BURST;
-> > +	else if (max_burst >=3D 4)
-> > +		return DW_UART_xDMACR_4_WORD_BURST;
-> > +	else
-> > +		return DW_UART_xDMACR_1_WORD_BURST;
-> > +} =20
->=20
-> Redundant 'else' in all cases.
+Fixes: d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+Fixes: 2dd8a74fddd2 ("serial: core: Initialize rs485 RTS polarity already on probe")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
 
-I'm sorry but dropping the else statement here does not make any
-sense. I find it much easier to the eyes the current way.
+Skimming through a few other drivers with RS485 support, many other
+implementation are in agreement with the 8250 and i.MX drivers. This seems
+to be the case for the OMAP and the STM32 drivers. The PL011 driver on the
+other hand seems to disagree, so it will need to be fixed if the intention
+is to make all drivers consistent (preferable by someone who is familiar
+with that hardware and can test the change).
 
-Thanks,
-Miqu=C3=A8l
+It is unfortunate that different drivers disagree here, as any fix to
+make things more consistent will break some users. One way to avoid that
+would be to deprecate the rs485-rts-active-low flag altogether and replace
+it with something new that is implemented consistently...
+
+I can also propose a clarification for the DT binding documentation, if
+this revert is how we want to proceed with the issue.
+
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6a8963caf954..c1c8bd712a59 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2390,7 +2390,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		port->mctrl &= TIOCM_DTR;
+ 		if (port->rs485.flags & SER_RS485_ENABLED &&
+-		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
++		    !(port->rs485.flags & SER_RS485_RTS_ON_SEND))
+ 			port->mctrl |= TIOCM_RTS;
+ 		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+-- 
+2.25.1
+
