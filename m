@@ -2,41 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1ECC4321E
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 15:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC35C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 15:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbiC2P1C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42956 "EHLO
+        id S238269AbiC2PqU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238549AbiC2P0n (ORCPT
+        with ESMTP id S235919AbiC2PqT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:26:43 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E86B6D96E;
-        Tue, 29 Mar 2022 08:24:54 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5D6E8100014;
-        Tue, 29 Mar 2022 15:24:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648567492;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VjUPIaxQ1WBMLteeByIABCjhVWOu3Y3N20N5eUaJ/3w=;
-        b=TxC19+bpPR0/mVX5SJ7VYjUSKKNtl6/WK99FJnSs7ljlIh3weSe3uhQiWxFKUut4/ETKwe
-        +DUEf9g1Y7l+7u4iVXFJ+9s3W2zgR6fjsn/GBN3W7m2diNf74GdUHI6hsHyiMjc62u1Y0c
-        PGipiWl5BHSSnp6h+qHG/2zV7C6FD0AJDCtvBECOqrUGsuOGlQpoppYUyC+nA5GgsAB+nI
-        wzTGOfr7VoGAKEga4rGMVi42YBmcJaIl0MqCJFK8MG5ofmkEF+Xh2mMLsNFd70rf3kvH4v
-        l+GixIKsoqJ8G6p6771bi0gQGqZa8/sFfEdg6JyVu3Qimx4YWtQrzjRVGDPNEg==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tue, 29 Mar 2022 11:46:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EEE12097;
+        Tue, 29 Mar 2022 08:44:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648568676; x=1680104676;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1eyN9S0VYCjwyCwpGV/EAhe6tNDLsqDHkUFt5FhErFc=;
+  b=go6KHNnloIJi6TgK2WzbMJu19TtUXHGc40RHsTyDiE9JzL/intWg4kIx
+   IUXk5tzO7UxpHB2uvg3SiRLCiSa9B581JR+GfFUztMXzmREsYNBKG2R5F
+   XKZJx7NAfVvpcbJ7MbP34k1NdbKNPzuW3wki8I0CEAozxXvpzMHLZfBjX
+   KOwzkb7SXQCGK+wTMl/U7uDUOOIHa/AmCz8Ykgb9A+p1fqtntl7BEZlJx
+   E7FgIcLet3JnrQrKmttUm14WEQwr/ePgxTbshIwM8RvX8FTmAfQUvfY5/
+   PeBIIGxoSNfeKDatgRkOe1Q6mLkCR+4X2UOeo1thBDdq/eqRaz3tJoQHm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258994634"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="258994634"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 08:44:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="649491727"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 08:44:33 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nZE0l-008pwc-Jr;
+        Tue, 29 Mar 2022 18:43:59 +0300
+Date:   Tue, 29 Mar 2022 18:43:59 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         Milan Stevanovic <milan.stevanovic@se.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
@@ -44,90 +55,35 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>
-Subject: [PATCH v3 10/10] ARM: dts: r9a06g032: Fill the UART DMA properties
-Date:   Tue, 29 Mar 2022 17:24:30 +0200
-Message-Id: <20220329152430.756947-11-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220329152430.756947-1-miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v3 03/10] serial: 8250: dw: Change the quirks type to
+ unsigned int
+Message-ID: <YkMpP3EjNh9O9ByI@smile.fi.intel.com>
 References: <20220329152430.756947-1-miquel.raynal@bootlin.com>
+ <20220329152430.756947-4-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329152430.756947-4-miquel.raynal@bootlin.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-UART 0 to 2 do not have DMA support, while UART 3 to 7 do.
+On Tue, Mar 29, 2022 at 05:24:23PM +0200, Miquel Raynal wrote:
+> Unsigned int is better than unsigned long as its size does not change
+> between setups and we don't really need this variable to be more than a
+> few bits wide for now.
+> 
+> Suggested-by: Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Fill the "dmas" and "dma-names" properties for each of these nodes.
+One tag is enough :-)
 
-Please mind that these nodes go through the dmamux node which will
-redirect the requests to the right DMA controller. The first 4 cells of
-the "dmas" properties will be transferred as-is to the DMA
-controllers. The last 2 cells are consumed by the dmamux. Which means
-cell 0 and 4 are almost redundant, one giving the controller request ID
-and the other the dmamux channel which is a 1:1 translation of the
-request IDs, shifted by 16 when pointing to the second DMA controller.
+Looking into the following patch, I think you may squash this one into it,
+just add an explanation in the commit message that you reduced variable for
+quirks.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- arch/arm/boot/dts/r9a06g032.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 804f2d6f416f..aa447e2622e0 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -128,6 +128,9 @@ uart3: serial@50000000 {
- 			reg-io-width = <4>;
- 			clocks = <&sysctrl R9A06G032_CLK_UART3>, <&sysctrl R9A06G032_HCLK_UART3>;
- 			clock-names = "baudclk", "apb_pclk";
-+			dmas =  <&dmamux 0 0 0 0 0 1>,
-+				<&dmamux 1 0 0 0 1 1>;
-+			dma-names = "rx", "tx";
- 			status = "disabled";
- 		};
- 
-@@ -139,6 +142,9 @@ uart4: serial@50001000 {
- 			reg-io-width = <4>;
- 			clocks = <&sysctrl R9A06G032_CLK_UART4>, <&sysctrl R9A06G032_HCLK_UART4>;
- 			clock-names = "baudclk", "apb_pclk";
-+			dmas =  <&dmamux 2 0 0 0 2 1>,
-+				<&dmamux 3 0 0 0 3 1>;
-+			dma-names = "rx", "tx";
- 			status = "disabled";
- 		};
- 
-@@ -150,6 +156,9 @@ uart5: serial@50002000 {
- 			reg-io-width = <4>;
- 			clocks = <&sysctrl R9A06G032_CLK_UART5>, <&sysctrl R9A06G032_HCLK_UART5>;
- 			clock-names = "baudclk", "apb_pclk";
-+			dmas =  <&dmamux 4 0 0 0 4 1>,
-+				<&dmamux 5 0 0 0 5 1>;
-+			dma-names = "rx", "tx";
- 			status = "disabled";
- 		};
- 
-@@ -161,6 +170,9 @@ uart6: serial@50003000 {
- 			reg-io-width = <4>;
- 			clocks = <&sysctrl R9A06G032_CLK_UART6>, <&sysctrl R9A06G032_HCLK_UART6>;
- 			clock-names = "baudclk", "apb_pclk";
-+			dmas =  <&dmamux 6 0 0 0 6 1>,
-+				<&dmamux 7 0 0 0 7 1>;
-+			dma-names = "rx", "tx";
- 			status = "disabled";
- 		};
- 
-@@ -172,6 +184,9 @@ uart7: serial@50004000 {
- 			reg-io-width = <4>;
- 			clocks = <&sysctrl R9A06G032_CLK_UART7>, <&sysctrl R9A06G032_HCLK_UART7>;
- 			clock-names = "baudclk", "apb_pclk";
-+			dmas =  <&dmamux 4 0 0 0 20 1>,
-+				<&dmamux 5 0 0 0 21 1>;
-+			dma-names = "rx", "tx";
- 			status = "disabled";
- 		};
- 
 -- 
-2.27.0
+With Best Regards,
+Andy Shevchenko
+
 
