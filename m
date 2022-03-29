@@ -2,69 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE10C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2918AC433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbiC2I3w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S231276AbiC2Ibk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbiC2I3v (ORCPT
+        with ESMTP id S230520AbiC2Ibk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:29:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AB01F9754;
-        Tue, 29 Mar 2022 01:28:08 -0700 (PDT)
-Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSN2D2Vg5zgY87;
-        Tue, 29 Mar 2022 16:26:28 +0800 (CST)
-Received: from kwepeml500002.china.huawei.com (7.221.188.128) by
- kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 16:28:06 +0800
-Received: from huawei.com (10.175.104.82) by kwepeml500002.china.huawei.com
- (7.221.188.128) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 16:28:05 +0800
-From:   Huang Guobin <huangguobin4@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] tty: Fix a possible resource leak in icom_probe
-Date:   Tue, 29 Mar 2022 16:46:12 +0800
-Message-ID: <20220329084612.178189-1-huangguobin4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 04:31:40 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F915FB7;
+        Tue, 29 Mar 2022 01:29:56 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5424820009;
+        Tue, 29 Mar 2022 08:29:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648542595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j5GWTy6NIAfg/vAYQJzWg3+aSkvKpg08FMN6BwsyIdY=;
+        b=AXg2gqxny4w87SQK9erjxAFYkh/RFuLDxipTe3+6EWjGUN+dyIKGbe/G83jcbB4rS0ZSvO
+        zpXP28oG6Ubd83cjuEMuDKvL3dCepdpPTX/1r3xymgqK04Tfu/1XTXnwO/WvCJQoP/hcI6
+        Q8tYJrIPhJwfkj6cUWnYvktLV6esnnDsNDGZPA1i95RikWpG0aBrnzdQTyjeN2Y1Nwpb8X
+        n2axH402dw66BCE5FVZdX+tuGoFJqH3v9pRxoXGBW59uThnbwOTBh5AyG7rVLjGdIs6aFi
+        25XamlamV0adGl9NejIt+woMglIyTi10OTsMieXj628eDdkDTU2jqOmv3PQbSg==
+Date:   Tue, 29 Mar 2022 10:29:51 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 08/10] serial: 8250: dw: Add support for DMA flow
+ controlling devices
+Message-ID: <20220329102951.579e154d@xps13>
+In-Reply-To: <YjSWM5ilahNBXF1b@smile.fi.intel.com>
+References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
+        <20220317174627.360815-9-miquel.raynal@bootlin.com>
+        <YjSWM5ilahNBXF1b@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepeml500002.china.huawei.com (7.221.188.128)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+Hi Andy,
 
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
----
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+andriy.shevchenko@linux.intel.com wrote on Fri, 18 Mar 2022 16:24:51
++0200:
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
- 
- 	pci_write_config_dword(dev, PCI_COMMAND,
--- 
-2.25.1
+> On Thu, Mar 17, 2022 at 06:46:25PM +0100, Miquel Raynal wrote:
+> > From: Phil Edworthy <phil.edworthy@renesas.com>
+> >=20
+> > DW based controllers like the one on Renesas RZ/N1 must be programmed as
+> > flow controllers when using DMA.
+> >=20
+> > * Table 11.45 of the system manual, "Flow Control Combinations", states
+> >   that using UART with DMA requires setting the DMA in the peripheral
+> >   flow controller mode regardless of the direction.
+> >=20
+> > * Chapter 11.6.1.3 of the system manual, "Basic Interface Definitions",
+> >   explains that the burst size in the above case must be configured in
+> >   the peripheral's register DEST/SRC_BURST_SIZE.
+> >=20
+> > Experiments shown that upon Rx timeout, the DMA transaction needed to be
+> > manually cleared as well. =20
+>=20
+> ...
+>=20
+> > +#define DW_UART_TDMACR	0x10c /* DMA Control Register Transmit Mode */
+> > +#define DW_UART_RDMACR	0x110 /* DMA Control Register Receive Mode */ =
+=20
+>=20
+> These are not Synposys ones.
 
+Ok
+
+> ...
+>=20
+> > +static u32 dw8250_rzn1_get_dmacr_burst(int max_burst)
+> > +{
+> > +	if (max_burst >=3D 8)
+> > +		return DW_UART_xDMACR_8_WORD_BURST;
+> > +	else if (max_burst >=3D 4)
+> > +		return DW_UART_xDMACR_4_WORD_BURST;
+> > +	else
+> > +		return DW_UART_xDMACR_1_WORD_BURST;
+> > +} =20
+>=20
+> Redundant 'else' in all cases.
+
+I'm sorry but dropping the else statement here does not make any
+sense. I find it much easier to the eyes the current way.
+
+Thanks,
+Miqu=C3=A8l
