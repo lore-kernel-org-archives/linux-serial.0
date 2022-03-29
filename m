@@ -2,97 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50986C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 10:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB06C433FE
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 11:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235475AbiC2K6d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 06:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        id S235582AbiC2LNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235470AbiC2K6b (ORCPT
+        with ESMTP id S235242AbiC2LNm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 06:58:31 -0400
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8E7F1EAC3;
-        Tue, 29 Mar 2022 03:56:48 -0700 (PDT)
-Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 29 Mar 2022 19:56:48 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id E2D292058443;
-        Tue, 29 Mar 2022 19:56:47 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 29 Mar 2022 19:56:47 +0900
-Received: from [10.212.183.172] (unknown [10.212.183.172])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id C5AB8B62B7;
-        Tue, 29 Mar 2022 19:56:46 +0900 (JST)
-Subject: Re: [PATCH] dt-bindings: serial: uniphier: Add "resets" property as
- optional
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Tue, 29 Mar 2022 07:13:42 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0AE35DF0;
+        Tue, 29 Mar 2022 04:12:00 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="241376675"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="241376675"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:11:59 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="618092593"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:11:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1nZ9kw-008hko-7Y;
+        Tue, 29 Mar 2022 14:11:22 +0300
+Date:   Tue, 29 Mar 2022 14:11:21 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Gareth Williams <gareth.williams.jx@renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1648430772-21786-1-git-send-email-hayashi.kunihiko@socionext.com>
- <eff14382-5ef7-8b84-8689-70f69c1521e9@linaro.org>
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Message-ID: <97bfd9cd-6b7c-1e93-e63b-f32764a6f317@socionext.com>
-Date:   Tue, 29 Mar 2022 19:56:46 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Jiri Slaby <jirislaby@kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2 01/10] serial: 8250: dw: Move the per-device structure
+Message-ID: <YkLpWexrf8RS5bfG@smile.fi.intel.com>
+References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
+ <20220317174627.360815-2-miquel.raynal@bootlin.com>
+ <CAHp75Ve-PbTMBdb6Y0TYdaOMDwsJ_2JVoKCkwCFBG=iUd8baEA@mail.gmail.com>
+ <20220329101049.069a0b1b@xps13>
 MIME-Version: 1.0
-In-Reply-To: <eff14382-5ef7-8b84-8689-70f69c1521e9@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329101049.069a0b1b@xps13>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+On Tue, Mar 29, 2022 at 10:10:49AM +0200, Miquel Raynal wrote:
+> andy.shevchenko@gmail.com wrote on Fri, 18 Mar 2022 12:51:29 +0200:
+> > On Thu, Mar 17, 2022 at 9:56 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-On 2022/03/29 4:05, Krzysztof Kozlowski wrote:
-> On 28/03/2022 03:26, Kunihiko Hayashi wrote:
->> UniPhier UART controller has a reset lines from system controller.
->> Add "resets" property to fix the following warning.
->>
->>    uniphier-ld11-global.dtb: serial@54006800: 'resets' does not match any
->> of the regexes: 'pinctrl-[0-9]+'
->>        From schema:
->> Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->>
->> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
->> ---
->>   .../devicetree/bindings/serial/socionext,uniphier-uart.yaml    | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git
->> a/Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->> b/Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->> index d490c7c4b967..d14d8c9cfe4d 100644
->> ---
->> a/Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->> +++
->> b/Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->> @@ -22,6 +22,9 @@ properties:
->>     clocks:
->>       minItems: 1
+...
+
+> > > +#include <linux/clk.h>  
+> > 
+> > I have mentioned forward declarations.
 > 
-> This should be fixed to maxItems as well (separate patch).
+> Why do you want forward declarations more than includes?
 
-I see. In the case of one item, "maxItems" should be used.
-I'll fix it in another patch.
+Because they will speed up the kernel build and avoid dirtifying the namespace
+(less possible collisions).
 
->>
->> +  resets:
->> +    minItems: 1
+> > So, this can be simply replaced by
+> > 
+> > struct clk;
+> > 
+> > > +#include <linux/notifier.h>
+> > > +#include <linux/workqueue.h>  
 > 
-> maxItems
+> And why these two should remain but reset and clk be replaced?
 
-I'll fix it in this patch.
+Because these one are being used, clk and reset are not (the pointers
+are opaque from the point of view of this header).
 
-Thank you,
+> > > +#include <linux/reset.h>  
+> > 
+> > Ditto.
+> > 
+> > struct reset_control;
+> > 
+> > On top of that, please keep them ordered.
+> > 
+> > Otherwise it looks good to me.
 
----
-Best Regards
-Kunihiko Hayashi
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
