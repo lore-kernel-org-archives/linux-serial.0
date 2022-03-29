@@ -2,135 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D088C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95734C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 10:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiC2IxE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        id S229928AbiC2KFS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 06:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234238AbiC2Iwt (ORCPT
+        with ESMTP id S229549AbiC2KFP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:52:49 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2619451E5A;
-        Tue, 29 Mar 2022 01:51:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648543865; x=1680079865;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
-  b=B/LEcAqrLIBOv2FnFFlIoYTbhf5KrkcjpWjSVjnLtv3EWUt8MWmQn/YM
-   gQxOx68OfTLViQewQl9BN48BzHSAyNq9fvkrGzt1xQaA3CyepQN2RtSAQ
-   M2Uph0WgHgf+QorVEC06yTvxZyOzNiaJyzbKlpPYA8rpnHknQapLgN23T
-   SIS5WEbbHmWNGJ0qpgQl7zCYWKH2inbOn/FT861wvrsm6qe00uKTYa7Lr
-   yvB0a5uRt8/bL9WCtFiGR3xAnRviotlgORj1OMmb4oxLpOtp7hCerzGJJ
-   +nZyViWsl5xhFHn4YRrWaasi/SCtavgPTM9iIIh8YofrvOiD63F2G8hLc
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
-   d="scan'208";a="22954136"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 29 Mar 2022 10:51:02 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Tue, 29 Mar 2022 10:51:02 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648543862; x=1680079862;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
-  b=QnE21zjVvkmAd27D8EsS86mdmONZwM+HOwPgYUSQiDVnnsYDKln6YqXl
-   OmVNDhiYFx/Bp9SJHkUZzCLOm5mqZAYchtNIoUEfrTeTZjnNXtsSujAx4
-   2hRgsMh6hFDxBKLVCmF67V9xuGvDB0V3NvJUC+Zc23k9A/3N2ARR1FbKx
-   akYeJdHw/sMW8dAAxzhhjPumbIt+ixH4k/gw8dR1TQnbmS/k6M32YqTJ+
-   /Ewm4RryjznrgfTj/CDDSAZ4zjfsv4lOeJ9LQ2Xx0yC1jVelMdIO1rzuj
-   wr3cGjsdIZn+Hb21E1aFaBubxnFHM0hRIBkBYSWUklcIeuw3qlBnIHoeB
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
-   d="scan'208";a="22954135"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
-Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.138])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C47F3280065;
-        Tue, 29 Mar 2022 10:51:01 +0200 (CEST)
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 29 Mar 2022 06:05:15 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0106E5A588;
+        Tue, 29 Mar 2022 03:03:30 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 6E128102EF014;
+        Tue, 29 Mar 2022 12:03:28 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 4C2A6371B2; Tue, 29 Mar 2022 12:03:28 +0200 (CEST)
+Date:   Tue, 29 Mar 2022 12:03:28 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH] serial: Revert RS485 polarity change on UART open
-Date:   Tue, 29 Mar 2022 10:50:50 +0200
-Message-Id: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
+        Russell King <linux@armlinux.org.uk>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH] serial: Revert RS485 polarity change on UART open
+Message-ID: <20220329100328.GA2090@wunner.de>
+References: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-While the change of the RS485 polarity in
-commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
-might have made sense based on the original intention of the
-rs485-rts-active-low flag (*), this is not how it is implemented in
-various drivers:
+[cc += Ilpo, Lino]
 
-At least the 8250 and the i.MX UART drivers interpret rs485-rts-active-low
-the other way around. For these drivers, said change broke the initial
-state of the RTS pin after opening the UART, making it impossible to
-receive data until after the first send.
+On Tue, Mar 29, 2022 at 10:50:50AM +0200, Matthias Schiffer wrote:
+> While the change of the RS485 polarity in
+> commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+> might have made sense based on the original intention of the
+> rs485-rts-active-low flag (*), this is not how it is implemented in
+> various drivers:
+[...]
+> [(*) My understanding of the mentioned commit's description is that
+> rs485-rts-active-low should have referred to the electical signal level
+> of the RTS pin, rather than the logical RTS state as understood by the
+> UART controller.]
 
-I considered fixing up the drivers to match the polarity used for the
-initial state, however doing so would break all existing Device Trees
-that configure RS485 for one of these drivers. Reverting the change
-makes RS485 work correctly again on these devices.
+Since RTS is often just a GPIO on a pin controller that's configured
+to function as RTS, my expectation would be that the same rules apply
+to RTS polarity as those that apply to *any* GPIO.
 
-[(*) My understanding of the mentioned commit's description is that
-rs485-rts-active-low should have referred to the electical signal level
-of the RTS pin, rather than the logical RTS state as understood by the
-UART controller.]
+According to Documentation/devicetree/bindings/gpio/gpio.txt:
 
-Fixes: d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
-Fixes: 2dd8a74fddd2 ("serial: core: Initialize rs485 RTS polarity already on probe")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
+"A gpio-specifier should contain a flag indicating the GPIO polarity; active-
+ high or active-low. If it does, the following best practices should be
+ followed:
+ The gpio-specifier's polarity flag should represent the physical level at the
+                                                         ^^^^^^^^^^^^^^
+ GPIO controller that achieves (or represents, for inputs) a logically asserted
+ value at the device."
 
-Skimming through a few other drivers with RS485 support, many other
-implementation are in agreement with the 8250 and i.MX drivers. This seems
-to be the case for the OMAP and the STM32 drivers. The PL011 driver on the
-other hand seems to disagree, so it will need to be fixed if the intention
-is to make all drivers consistent (preferable by someone who is familiar
-with that hardware and can test the change).
 
-It is unfortunate that different drivers disagree here, as any fix to
-make things more consistent will break some users. One way to avoid that
-would be to deprecate the rs485-rts-active-low flag altogether and replace
-it with something new that is implemented consistently...
+> At least the 8250 and the i.MX UART drivers interpret rs485-rts-active-low
 
-I can also propose a clarification for the DT binding documentation, if
-this revert is how we want to proceed with the issue.
+Which 8250 driver are you referring to specifically?  When developing
+d3b3404df318, I tested with 8250_bcm2835aux.c and amba-pl011.c.  Both
+worked exactly the way they should.
 
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If imx.c and others have historically interpreted rs485-rts-active-low
+to mean that the physical level is "high" when active, then we could just
+amend imx_uart_probe() such that after calling uart_get_rs485_mode(),
+the SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND bits are
+flipped.  Would that work for you?
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6a8963caf954..c1c8bd712a59 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2390,7 +2390,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		spin_lock_irqsave(&port->lock, flags);
- 		port->mctrl &= TIOCM_DTR;
- 		if (port->rs485.flags & SER_RS485_ENABLED &&
--		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
-+		    !(port->rs485.flags & SER_RS485_RTS_ON_SEND))
- 			port->mctrl |= TIOCM_RTS;
- 		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
--- 
-2.25.1
+I'll go through the drivers to check which ones are affected.  I'm sorry
+that you're seeing breakage, it's surprising to me that these different
+interpretations of rs485-rts-active-low exist.
 
+Thanks,
+
+Lukas
