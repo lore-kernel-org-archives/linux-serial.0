@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBDCC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 15:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49112C4332F
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 15:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238583AbiC2P1A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S238561AbiC2P1A (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 29 Mar 2022 11:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238541AbiC2P0n (ORCPT
+        with ESMTP id S238543AbiC2P0n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 29 Mar 2022 11:26:43 -0400
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3DA6C4B2;
-        Tue, 29 Mar 2022 08:24:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CE8694BC;
+        Tue, 29 Mar 2022 08:24:52 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 05FEF100012;
-        Tue, 29 Mar 2022 15:24:45 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id C08A010000E;
+        Tue, 29 Mar 2022 15:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648567487;
+        t=1648567491;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TmaAsB7MqjQxsyG3QKoQoE2YuJlDhMcg46WoB4wFkog=;
-        b=fTWrE9mhfARobgafXrvOLPz49CFyfqrpzsPh8ep/ulQuNWIfhyLde0GU/aqXilhx35I7Ko
-        0YcjT02Kok+hed3mSCZy7oCqruhblV5vYc+jNFcL+PL3txNHzrE8GHngXkKpHwvC5qxPhp
-        2a6+io9buhe0CVnsyTXDil1ukJCneCPzhThv8u8vQUiw+rzFZYJ8AzW4skrWuu1sPyPnB3
-        4yU6WqCYIzdAHD/CWlh5SCbUFv5NSrIspF2mWQuivlqwXTaWcfbyem5J1I+RDx66RRP2cq
-        TS0GVczvCpH2QTOkzNfuNVTb9uv68ixfTzuM0Ji2jl2Efo1NpPS/fAxuByNpIw==
+        bh=bdmrb1IRZraVgtf2kJEClbv+BN6v8+ptDaZlkUI1uL4=;
+        b=ooz480BI8vR6MdBXw/ZMa3IDPRssejSkPYWYj8R/ZWn0yXIbwtO5GjSnIfIgwqomC18O9v
+        fTBvo98iXrN38UGdbjFr5pRPuS6gPbKlJZ29uU8RxHhdDNWklufadZkRbKyRXxMxBPoPDJ
+        AUuoF/8ztlZGP6C7F0wd5hZH9X984x2syzZDzL4gFEc3Lny4JnhMSoLgVVIe8oayT0/KbF
+        +5XcbkqIg5ESHEY4jXLyc513Rv+do2u06UijYbrHiadvWMQcPENVpXfZBkjJiXpNGMQVcn
+        M4G1ZtwxVtROVg6okw5ZrSsrKQ8qY6D8hd6DJ6sDmC0+j8Y+j9E2nmaWP5hcbg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -43,10 +43,11 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>
-Subject: [PATCH v3 07/10] serial: 8250: dw: Introduce an rx_timeout variable in the IRQ path
-Date:   Tue, 29 Mar 2022 17:24:27 +0200
-Message-Id: <20220329152430.756947-8-miquel.raynal@bootlin.com>
+        Clement Leger <clement.leger@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: [PATCH v3 09/10] serial: 8250: dw: Improve RZN1 support
+Date:   Tue, 29 Mar 2022 17:24:29 +0200
+Message-Id: <20220329152430.756947-10-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220329152430.756947-1-miquel.raynal@bootlin.com>
 References: <20220329152430.756947-1-miquel.raynal@bootlin.com>
@@ -57,38 +58,48 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In a next change we are going to need the same Rx timeout condition as
-we already have in the IRQ handling code. Let's just create a boolean to
-clarify what this operation does before reusing it.
+From: Phil Edworthy <phil.edworthy@renesas.com>
 
-There is no functional change.
+Renesas RZ/N1 SoC features a slightly modified DW UART.
 
+On this SoC, the CPR register value is known but not synthetized in
+hardware. We hence need to provide a CPR value in the platform
+data. This version of the controller also relies on acting as flow
+controller when using DMA, so we need to provide the
+'IS_DMA_FLOW_CONTROLLER' quirk.
+
+Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+Co-developed-by: Miquel Raynal <miquel.raynal@bootlin.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 95c4321022d5..1a6932d69332 100644
+index af9fcc77ee76..efc5c686dbfa 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -228,6 +228,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	struct uart_8250_port *up = up_to_u8250p(p);
- 	struct dw8250_data *d = to_dw8250_data(p->private_data);
- 	unsigned int iir = p->serial_in(p, UART_IIR);
-+	bool rx_timeout = (iir & 0x3f) == UART_IIR_RX_TIMEOUT;
- 	unsigned int status;
- 	unsigned long flags;
+@@ -758,6 +758,11 @@ static const struct dw8250_platform_data dw8250_armada_38x_data = {
+ 	.quirks = DW_UART_QUIRK_ARMADA_38X,
+ };
  
-@@ -241,7 +242,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	 * This problem has only been observed so far when not in DMA mode
- 	 * so we limit the workaround only to non-DMA mode.
- 	 */
--	if (!up->dma && ((iir & 0x3f) == UART_IIR_RX_TIMEOUT)) {
-+	if (!up->dma && rx_timeout) {
- 		spin_lock_irqsave(&p->lock, flags);
- 		status = p->serial_in(p, UART_LSR);
- 
++static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
++	.quirks = DW_UART_QUIRK_IS_DMA_FLOW_CONTROLLER,
++	.cpr = 0x00012f32,
++};
++
+ static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
+ 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+ };
+@@ -766,7 +771,7 @@ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "snps,dw-apb-uart" },
+ 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+ 	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+-	{ .compatible = "renesas,rzn1-uart" },
++	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+ 	{ .compatible = "starfive,jh7100-hsuart", .data = &dw8250_starfive_jh7100_data },
+ 	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
+ 	{ /* Sentinel */ }
 -- 
 2.27.0
 
