@@ -2,111 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD0AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE10C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 08:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233756AbiC2IMj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
+        id S233907AbiC2I3w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiC2IMj (ORCPT
+        with ESMTP id S232411AbiC2I3v (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:12:39 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC73024587;
-        Tue, 29 Mar 2022 01:10:55 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7ABEA60015;
-        Tue, 29 Mar 2022 08:10:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648541454;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NIWeVXp5W7Tm62vf3HbLfCCWgDNazWwRL2/kVsgxxvU=;
-        b=fPwKcMracZgtVY+QxEkAB4PGiZlBSbk3ENnAi+LgEhzlNp2Um/GE2p5n0cwC5d3daLI/ix
-        7aKmE6Eu1Z0ETiHkb3+CjIfGBjsEFAcrK4ZYja1FVBPwt0L2RCrdj+EnkvMftaOSkE6gIX
-        2cjZuatijrYYM224DGEiYyxV9izW6Y9Iz469eRbi9M74cQ9GUNCz3LGfohPy9lNS3XoCG1
-        giAC38DktbX6E9BcNb4GULiveRSFpv0j0cFlRceoYm8gFYEv2YU8Ento/jVSUDHxhoXlyZ
-        WnLWQW/B6l/EMGsNuibAiBCxMN2y1+by54kCL4hy13lSnqjSti3KPp2FJFaBKg==
-Date:   Tue, 29 Mar 2022 10:10:49 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2 01/10] serial: 8250: dw: Move the per-device
- structure
-Message-ID: <20220329101049.069a0b1b@xps13>
-In-Reply-To: <CAHp75Ve-PbTMBdb6Y0TYdaOMDwsJ_2JVoKCkwCFBG=iUd8baEA@mail.gmail.com>
-References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
-        <20220317174627.360815-2-miquel.raynal@bootlin.com>
-        <CAHp75Ve-PbTMBdb6Y0TYdaOMDwsJ_2JVoKCkwCFBG=iUd8baEA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 29 Mar 2022 04:29:51 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AB01F9754;
+        Tue, 29 Mar 2022 01:28:08 -0700 (PDT)
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSN2D2Vg5zgY87;
+        Tue, 29 Mar 2022 16:26:28 +0800 (CST)
+Received: from kwepeml500002.china.huawei.com (7.221.188.128) by
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 16:28:06 +0800
+Received: from huawei.com (10.175.104.82) by kwepeml500002.china.huawei.com
+ (7.221.188.128) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
+ 2022 16:28:05 +0800
+From:   Huang Guobin <huangguobin4@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] tty: Fix a possible resource leak in icom_probe
+Date:   Tue, 29 Mar 2022 16:46:12 +0800
+Message-ID: <20220329084612.178189-1-huangguobin4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepeml500002.china.huawei.com (7.221.188.128)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-andy.shevchenko@gmail.com wrote on Fri, 18 Mar 2022 12:51:29 +0200:
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+---
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> On Thu, Mar 17, 2022 at 9:56 PM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > From: Phil Edworthy <phil.edworthy@renesas.com>
-> >
-> > This structure needs to be reused from dwlib, so let's move it into a
-> > shared header. There is no functional change. =20
->=20
-> ...
->=20
-> >  #include <linux/types.h> =20
->=20
-> > +#include <linux/clk.h> =20
->=20
-> I have mentioned forward declarations.
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 03a2fe9f4c9a..02b375ba2f07 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
+ 
+ 	pci_write_config_dword(dev, PCI_COMMAND,
+-- 
+2.25.1
 
-Why do you want forward declarations more than includes?
-
-> So, this can be simply replaced by
->=20
-> struct clk;
->=20
-> > +#include <linux/notifier.h>
-> > +#include <linux/workqueue.h> =20
-
-And why these two should remain but reset and clk be replaced?
-
->=20
-> > +#include <linux/reset.h> =20
->=20
-> Ditto.
->=20
-> struct reset_control;
->=20
-> On top of that, please keep them ordered.
->=20
-> Otherwise it looks good to me.
->=20
-
-
-Thanks,
-Miqu=C3=A8l
