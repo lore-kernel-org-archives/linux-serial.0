@@ -2,103 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB06C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 11:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1908C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Mar 2022 12:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235582AbiC2LNo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
+        id S236869AbiC2M5f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiC2LNm (ORCPT
+        with ESMTP id S236877AbiC2M5c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:13:42 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0AE35DF0;
-        Tue, 29 Mar 2022 04:12:00 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="241376675"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="241376675"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:11:59 -0700
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="618092593"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:11:56 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nZ9kw-008hko-7Y;
-        Tue, 29 Mar 2022 14:11:22 +0300
-Date:   Tue, 29 Mar 2022 14:11:21 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 29 Mar 2022 08:57:32 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 554A3B6C
+        for <linux-serial@vger.kernel.org>; Tue, 29 Mar 2022 05:55:47 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-306-5I-tp7LzNCi51Sa3kT1ULw-1; Tue, 29 Mar 2022 13:55:43 +0100
+X-MC-Unique: 5I-tp7LzNCi51Sa3kT1ULw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Tue, 29 Mar 2022 13:55:42 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Tue, 29 Mar 2022 13:55:42 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Matthias Schiffer' <matthias.schiffer@ew.tq-group.com>,
+        Lukas Wunner <lukas@wunner.de>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2 01/10] serial: 8250: dw: Move the per-device structure
-Message-ID: <YkLpWexrf8RS5bfG@smile.fi.intel.com>
-References: <20220317174627.360815-1-miquel.raynal@bootlin.com>
- <20220317174627.360815-2-miquel.raynal@bootlin.com>
- <CAHp75Ve-PbTMBdb6Y0TYdaOMDwsJ_2JVoKCkwCFBG=iUd8baEA@mail.gmail.com>
- <20220329101049.069a0b1b@xps13>
+        Russell King <linux@armlinux.org.uk>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?utf-8?B?SWxwbyBKw6RydmluZW4=?= <ilpo.jarvinen@linux.intel.com>,
+        "Lino Sanfilippo" <LinoSanfilippo@gmx.de>
+Subject: RE: [PATCH] serial: Revert RS485 polarity change on UART open
+Thread-Topic: [PATCH] serial: Revert RS485 polarity change on UART open
+Thread-Index: AQHYQ1k5q26PsxFKq0WuXVn++R8i1qzWT4pQ
+Date:   Tue, 29 Mar 2022 12:55:42 +0000
+Message-ID: <749eee7dd2c7464a8c4d9ea5972205fa@AcuMS.aculab.com>
+References: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+         <20220329100328.GA2090@wunner.de>
+ <b2f29129f966685105e09781620b85c8f4f1a88e.camel@ew.tq-group.com>
+In-Reply-To: <b2f29129f966685105e09781620b85c8f4f1a88e.camel@ew.tq-group.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220329101049.069a0b1b@xps13>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 10:10:49AM +0200, Miquel Raynal wrote:
-> andy.shevchenko@gmail.com wrote on Fri, 18 Mar 2022 12:51:29 +0200:
-> > On Thu, Mar 17, 2022 at 9:56 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-
-...
-
-> > > +#include <linux/clk.h>  
-> > 
-> > I have mentioned forward declarations.
-> 
-> Why do you want forward declarations more than includes?
-
-Because they will speed up the kernel build and avoid dirtifying the namespace
-(less possible collisions).
-
-> > So, this can be simply replaced by
-> > 
-> > struct clk;
-> > 
-> > > +#include <linux/notifier.h>
-> > > +#include <linux/workqueue.h>  
-> 
-> And why these two should remain but reset and clk be replaced?
-
-Because these one are being used, clk and reset are not (the pointers
-are opaque from the point of view of this header).
-
-> > > +#include <linux/reset.h>  
-> > 
-> > Ditto.
-> > 
-> > struct reset_control;
-> > 
-> > On top of that, please keep them ordered.
-> > 
-> > Otherwise it looks good to me.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+RnJvbTogTWF0dGhpYXMgU2NoaWZmZXINCj4gU2VudDogMjkgTWFyY2ggMjAyMiAxMTozOQ0KLi4u
+DQo+IEkgZ3Vlc3MgdGhhdCB3b3VsZCB3b3JrLiBUaGUgZmFjdCB0aGF0IGV2ZW4gdGhlIGRpZmZl
+cmVudA0KPiB2YXJpYW50cyBvZiB0aGUgODI1MCBhcmUgaW1wbGVtZW50ZWQgaW5jb25zaXN0ZW50
+bHkgbWFrZXMgdGhpcw0KPiBlc3BlY2lhbGx5IHVnbHkuLi4gSXQgY2VydGFpbmx5IHB1dHMgYSBk
+YW1wZXIgb24gdGhlIGVmZm9ydHMgdG8gbWFrZQ0KPiB0aGUgaGFuZGxpbmcgb2YgUlM0ODUgaW4g
+c2VyaWFsIGRyaXZlcnMgbW9yZSBnZW5lcmljLg0KDQpPbmUgdGhpbmcgdG8gcmVtZW1iZXIgaXMg
+dGhhdCBSUzIzMiAoSUlSQyByZWFsbHkgVi4zOCkgbGluZSBkcml2ZXINCmNoaXBzIGFyZSB0eXBp
+Y2FsbHkgaW52ZXJ0aW5nLg0KDQpTbyB0aGUgbW9kZW0gc2lnbmFscyBvbiBhIFRUTCBsZXZlbCBv
+dXRwdXQgd2lsbCBoYXZlIHRoZQ0Kb3Bwb3NpdGUgcG9sYXJpdHkgdG8gdGhhdCByZXF1aXJlZCBv
+biB0aGUgYWN0dWFsIGNvbm5lY3Rvci4NCg0KTm9ybWFsbHkgYSBVQVJUIHdpbGwgaGF2ZSBhbiAn
+YWN0aXZlIGhpZ2gnIHJlZ2lzdGVyIGJpdCBmb3INCmEgbW9kZW0gc2lnbmFsIHRoYXQgZHJpdmVz
+IGFuZCAnYWN0aXZlIGxvdycgcGluIHNvIHlvdSBnZXQNCnRoZSBjb3JyZWN0IHBvbGFyaXR5IHdp
+dGggYW4gaW52ZXJ0aW5nIGxpbmUgZHJpdmVyLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBB
+ZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMs
+IE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
