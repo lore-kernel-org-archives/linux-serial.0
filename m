@@ -2,35 +2,35 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D22C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Mar 2022 13:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3FCC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Mar 2022 13:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345870AbiC3NWj (ORCPT
+        id S1345880AbiC3NWl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
+        Wed, 30 Mar 2022 09:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345864AbiC3NWi (ORCPT
+        with ESMTP id S1345872AbiC3NWj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:22:38 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFD4488AB;
-        Wed, 30 Mar 2022 06:20:52 -0700 (PDT)
+        Wed, 30 Mar 2022 09:22:39 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BF04924A;
+        Wed, 30 Mar 2022 06:20:53 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 47AF7240011;
-        Wed, 30 Mar 2022 13:20:49 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D538B240018;
+        Wed, 30 Mar 2022 13:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648646450;
+        t=1648646452;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Y2lJyEILsp8NDkKtykYkfjKRpqQEf+GhkYUQftZF+0c=;
-        b=dnAzsA4ZsYQcxNGUI9CMvGqLfLKaPyquhYof+qd/Kc6tqumAWw+gB+cAqEZWV9wSPxNsxB
-        tTDBJLSQvvX4ofkC3qm8Cpjl/Zdps7y8ytLPksA0CbihhTp05XRAEGpDDZtbg8LRPY6GX9
-        cHfTynIqnkRRzzgcJ5AjcinFJ8Nm4zyj6dUqZSKmCqPypo/G+YlkZdgSBl9YiafBrPyTPJ
-        CYde9x13pUAwf+MMX45J2phmqQec7kLlWxHoPBV2WrsBvCVwN7etWEhwhNT/ev8kZFpTV0
-        soPPF1/ADlPK4GeuY+ArfsWG+/gF/YINiKdmTxqLiJ4o/xcR4DQ7bj0XgNJM4A==
+        bh=9D0itae+qu7gnYVXRlDnh8cBlp0g3Y3lWhZwQw2eIPY=;
+        b=bP6hD5Ttd9JBRxHiRcI7G05NeIkO9TKf7UeF8n2zsC+6rjc4035aeSwbpyxHtJYaX0efP2
+        5Kn1o3ihByVgSbPBalbysVIFpeM9fJpU84oBWliAQ68NlS+wKAeC7YlCqWmPSpvOx15Pkb
+        e2vBzQz/rWtNM2jQR3cCMCcyQhT3qGURqMlbcWx0EjUQprRdq1qvU1SlzcOO0LQ9e9ImmZ
+        JWQ0Do1t764dMhUNxMCG4PEDv42T3bunV4jtQYqHuBQjK8FBmgkXM5tYBUbpWCfDSYFVcn
+        3EZAgwRuPSwpHdrauokcDo27B/peOtr2rAU5KA4x0CFv8yaFshNDsinkl+arbg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>
-Subject: [PATCH v4 5/9] serial: 8250: dma: Allow driver operations before starting DMA transfers
-Date:   Wed, 30 Mar 2022 15:20:34 +0200
-Message-Id: <20220330132038.808679-6-miquel.raynal@bootlin.com>
+Subject: [PATCH v4 6/9] serial: 8250: dw: Introduce an rx_timeout variable in the IRQ path
+Date:   Wed, 30 Mar 2022 15:20:35 +0200
+Message-Id: <20220330132038.808679-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220330132038.808679-1-miquel.raynal@bootlin.com>
 References: <20220330132038.808679-1-miquel.raynal@bootlin.com>
@@ -58,77 +58,38 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-One situation where this could be used is when configuring the UART
-controller to be the DMA flow controller. This is a typical case where
-the driver might need to program a few more registers before starting a
-DMA transfer. Provide the necessary infrastructure to support this
-case.
+In a next change we are going to need the same Rx timeout condition as
+we already have in the IRQ handling code. Let's just create a boolean to
+clarify what this operation does before reusing it.
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+There is no functional change.
+
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/tty/serial/8250/8250.h     | 18 ++++++++++++++++++
- drivers/tty/serial/8250/8250_dma.c |  4 ++++
- 2 files changed, 22 insertions(+)
+ drivers/tty/serial/8250/8250_dw.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index db784ace25d8..d19f24e4d13e 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -17,6 +17,8 @@
- struct uart_8250_dma {
- 	int (*tx_dma)(struct uart_8250_port *p);
- 	int (*rx_dma)(struct uart_8250_port *p);
-+	void (*prepare_tx_dma)(struct uart_8250_port *p);
-+	void (*prepare_rx_dma)(struct uart_8250_port *p);
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 70a843e31ffd..a156c6d2f866 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -223,6 +223,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	struct dw8250_data *d = to_dw8250_data(p->private_data);
+ 	unsigned int iir = p->serial_in(p, UART_IIR);
++	bool rx_timeout = (iir & 0x3f) == UART_IIR_RX_TIMEOUT;
+ 	unsigned int status;
+ 	unsigned long flags;
  
- 	/* Filter function */
- 	dma_filter_fn		fn;
-@@ -301,6 +303,22 @@ extern int serial8250_rx_dma(struct uart_8250_port *);
- extern void serial8250_rx_dma_flush(struct uart_8250_port *);
- extern int serial8250_request_dma(struct uart_8250_port *);
- extern void serial8250_release_dma(struct uart_8250_port *);
-+
-+static inline void serial8250_do_prepare_tx_dma(struct uart_8250_port *p)
-+{
-+	struct uart_8250_dma *dma = p->dma;
-+
-+	if (dma->prepare_tx_dma)
-+		dma->prepare_tx_dma(p);
-+}
-+
-+static inline void serial8250_do_prepare_rx_dma(struct uart_8250_port *p)
-+{
-+	struct uart_8250_dma *dma = p->dma;
-+
-+	if (dma->prepare_rx_dma)
-+		dma->prepare_rx_dma(p);
-+}
- #else
- static inline int serial8250_tx_dma(struct uart_8250_port *p)
- {
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 890fa7ddaa7f..558d3a2ac65b 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -77,6 +77,8 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+@@ -236,7 +237,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	 * This problem has only been observed so far when not in DMA mode
+ 	 * so we limit the workaround only to non-DMA mode.
+ 	 */
+-	if (!up->dma && ((iir & 0x3f) == UART_IIR_RX_TIMEOUT)) {
++	if (!up->dma && rx_timeout) {
+ 		spin_lock_irqsave(&p->lock, flags);
+ 		status = p->serial_in(p, UART_LSR);
  
- 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
- 
-+	serial8250_do_prepare_tx_dma(p);
-+
- 	desc = dmaengine_prep_slave_single(dma->txchan,
- 					   dma->tx_addr + xmit->tail,
- 					   dma->tx_size, DMA_MEM_TO_DEV,
-@@ -114,6 +116,8 @@ int serial8250_rx_dma(struct uart_8250_port *p)
- 	if (dma->rx_running)
- 		return 0;
- 
-+	serial8250_do_prepare_rx_dma(p);
-+
- 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
- 					   dma->rx_size, DMA_DEV_TO_MEM,
- 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
 -- 
 2.27.0
 
