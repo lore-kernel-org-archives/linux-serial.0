@@ -2,214 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F24BDC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Mar 2022 11:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E380AC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Mar 2022 13:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235372AbiC3LVy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S1344219AbiC3NWa (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 30 Mar 2022 09:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343587AbiC3LVx (ORCPT
+        with ESMTP id S245017AbiC3NW3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:21:53 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B47711DD34
-        for <linux-serial@vger.kernel.org>; Wed, 30 Mar 2022 04:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648639207; x=1680175207;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=YdOTp1j8oaireE9mr4UUIu/Xm+jlBlbSbjAeNIMb1cg=;
-  b=avJHRKO9t3zi43s6HtYnB45bX0Z02CKUldEn7d7BXD4bviWVuJmsMn9E
-   sMTMZ3nR63SqyAWGTzNanH/cN2G3qXPJF3cXglDv7TuHjeeldLLFitonW
-   fFaKg9qQmWCdrHRhRnPKGZXsiHGyna5aiKnlQ4bvpcV0SiduEa1/cQG7Y
-   eF9XiasU/EgBDeG2CPenyVPuhhBDRCCLQS0vf9hdHh7HcwT4sQcuAvOFn
-   6wolQ0D6KyavhJjn9WWHhK2oFkwzT6F4NY+k3UPGkPnJaieAm+jc4j0nR
-   FaP4XjFPk23AB3H46TM2/viDnWqYw05I3sOp7EsdqS7q79PWNgKVARE2E
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259233078"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="259233078"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 04:20:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="565495298"
-Received: from lsauge-mobl2.ger.corp.intel.com ([10.252.38.174])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 04:20:03 -0700
-Date:   Wed, 30 Mar 2022 14:20:01 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Wed, 30 Mar 2022 09:22:29 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFFA488AB;
+        Wed, 30 Mar 2022 06:20:43 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5916B24000A;
+        Wed, 30 Mar 2022 13:20:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648646441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8tgPc3SBGZRS7mw9Xf7bKDfSZM+aKVUU9tzsvmEqNeI=;
+        b=iKHH/DdXa9MUiHYPO7NqUzAeZxkBR1bYFrP8zIIjoN5hnrYIdaLZivoyGj2FB/hwJX1y0l
+        /QzbKMp9KphVQdhB0K86mjJoHbz2LM/SSAjC5EDuF9qsBbFjRZfkKb8PX3oBLN/ekT3OoO
+        pHEPvFzdVEcap/CPFcLeoVFmYLEBFLZl4pvq0TRU0Z3QY5l+oB9zv+TpzD+Tbmf5OLgjsJ
+        Ka6QdFCFxbb/B2mFnhoGvzMXGUs5BFnUYkaUqYfgpgVLBw7OR6P8vKi2HVLkGxz2CuAqKf
+        rt+fRYgSQJ8NFVfg8ETGR+zGxjI+Amap5p7L4CwYUNl/L3MOmMAw3wuG1PLKyw==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        kernel@pengutronix.de,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Lukas Wunner <lukas.wunner@intel.com>
-Subject: Re: [PATCH v3 1/3] serial: 8250: Handle UART without interrupt on
- TEMT using em485
-In-Reply-To: <20220330104642.229507-2-u.kleine-koenig@pengutronix.de>
-Message-ID: <1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com>
-References: <20220330104642.229507-1-u.kleine-koenig@pengutronix.de> <20220330104642.229507-2-u.kleine-koenig@pengutronix.de>
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>
+Subject: [PATCH v4 0/9] serial: 8250: dw: RZN1 DMA support
+Date:   Wed, 30 Mar 2022 15:20:29 +0200
+Message-Id: <20220330132038.808679-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-846405399-1648637751=:1607"
-Content-ID: <3e9cee38-fc17-e77e-21da-c0ab7c78aa93@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hello,
 
---8323329-846405399-1648637751=:1607
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <9cbc8cc-b39-31f-c3b3-704053a35192@linux.intel.com>
+Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
+UART driver with to bring DMA support for this SoC.
 
-On Wed, 30 Mar 2022, Uwe Kleine-König wrote:
+This short series applies on top of the series bringing RZN1 DMA
+support, currently on its v5, see [1]. Technically speaking, only the DT
+patch needs to be applied after [1]. The other patches can come in at
+any moment, because if no "dmas" property is provided in the DT, DMA
+support will simply be ignored.
 
-> From: Eric Tremblay <etremblay@distech-controls.com>
-> 
-> Introduce the UART_CAP_NOTEMT capability. The capability indicates that
-> the UART doesn't have an interrupt available on TEMT.
-> 
-> In the case where the device does not support it, we calculate the
-> maximum time it could take for the transmitter to empty the
-> shift register. When we get in the situation where we get the
-> THRE interrupt, we check if the TEMT bit is set. If it's not, we start
-> the a timer and recall __stop_tx() after the delay.
-> 
-> The transmit sequence is a bit modified when the capability is set. The
-> new timer is used between the last interrupt(THRE) and a potential
-> stop_tx timer.
+[1] https://lore.kernel.org/dmaengine/20220315191255.221473-1-miquel.raynal@bootlin.com/T/#m0ef3323abce3eec961e142bf2fb35e95b9045fc5
 
-As a general note on this patch, I've also made a version of this patch 
-which I intended to send among my dw rs485 v2 patchset once the merge 
-window is over. I believe my approach is cleaner than this one. It is 
-based on your suggestion on simply taking advantage of stop_tx_timer.
-In addition, I added frame_time into uart_port which removes the need
-for drivers to calculate the timing per usecase themselves (I believe 
-frame_time could replace the timeout in uart_port entirely).
+Thanks,
+MiquÃ¨l
 
-> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
-> [moved to use added UART_CAP_TEMT]
-> Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> [moved to use added UART_CAP_NOTEMT, improve timeout]
-> Signed-off-by: Eric Tremblay <etremblay@distech-controls.com>
-> [rebased to v5.17, making use of tty_get_frame_size]
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/tty/serial/8250/8250.h      |  1 +
->  drivers/tty/serial/8250/8250_port.c | 76 ++++++++++++++++++++++++++++-
->  include/linux/serial_8250.h         |  2 +
->  3 files changed, 77 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index db784ace25d8..39ffeb37786f 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -83,6 +83,7 @@ struct serial8250_config {
->  #define UART_CAP_MINI	BIT(17)	/* Mini UART on BCM283X family lacks:
->  					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
->  					 */
-> +#define UART_CAP_NOTEMT	BIT(18)	/* UART without interrupt on TEMT available */
->  
->  #define UART_BUG_QUOT	BIT(0)	/* UART has buggy quot LSB */
->  #define UART_BUG_TXEN	BIT(1)	/* UART has buggy TX IIR status */
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 3b12bfc1ed67..0af13b4c76a0 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -563,8 +563,21 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
->  	}
->  }
->  
-> +static inline void serial8250_em485_update_temt_delay(struct uart_8250_port *p,
-> +			unsigned int cflag, unsigned int baud)
-> +{
-> +	unsigned int bits;
-> +
-> +	if (!p->em485)
-> +		return;
-> +
-> +	bits = tty_get_frame_size(cflag);
-> +	p->em485->no_temt_delay = DIV_ROUND_UP(bits * NSEC_PER_SEC, baud);
+Changes in v4:
+* Squashed the patch changing the quirks type with the patch introducing
+  the pdata structure. This way I don't need to go through the uintptr_t
+  step. 
+* Added a pdata stub to the DW compatible. This way "if (pdata)" checks
+  are no longer needed and we can avoid ternary operators disliked by
+  Greg.
+* Saved the pdata structure pointer inside the per-device structure to
+  avoid calling the same device property heplper over and over again. 
+* Changed the style a bit to fit Andy's requirements.
 
-This is guaranteed to overflow on some archs?
+Changes in v3:
+* Added Geert's Reviewed-by's.
+* Used forward declaration in dwlib.h when relevant.
+* Reordered the headers when necessary.
+* Added a patch changing the quirks type from unsigned long to unsigned
+  int as advised by Andy.
+* s/up->port.dev/p->dev/ when relevant.
+* Added a debug message in dwlib when no CPR is available.
+* Dropped the CPR_DMA_EXTRA bit addition: we assume DMA is there.
+* Changed the prefix of certain definitions.
 
-> +}
-> +
->  static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t);
->  static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t);
-> +static enum hrtimer_restart serial8250_em485_handle_no_temt(struct hrtimer *t);
->  
->  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
->  {
-> @@ -623,6 +636,16 @@ static int serial8250_em485_init(struct uart_8250_port *p)
->  		     HRTIMER_MODE_REL);
->  	hrtimer_init(&p->em485->start_tx_timer, CLOCK_MONOTONIC,
->  		     HRTIMER_MODE_REL);
-> +
-> +	if (p->capabilities & UART_CAP_NOTEMT) {
-> +		struct tty_struct *tty = p->port.state->port.tty;
+Changes in v2:
+* Rebased on top of Emil's patches. Added platform data structures
+  instead of raw quirk integers in order to provide a CPR value.
+* Added includes in dwlib.h even though it's not particularly useful, it
+  may help preventing a build error later on if we ever decide to include
+  this file from another location.
+* Dropped the call to ->tx_dma and instead implemented a callback that
+  can be called from serial8250_tx/rx_dma.
+* Used the device API instead of the of API.
+* Changed the logic about DMA capabilities to avoid breaking existing
+  designs.
+* Introduced a new quirk related to the flow-control feature of the
+  RZ/N1 version of the UART controller when used with DMA.
+* Re-arranged the entire series as advised by Andy and Geert.
+* Added several preparation patches to ease the review of various
+  functional changes.
 
-Is this safe (it was commented already by Jiri against one of Eric's 
-patchsets)?
+Miquel Raynal (6):
+  serial: 8250: dw: Use the device API
+  serial: 8250: dw: Create a more generic platform data structure
+  serial: 8250: dw: Allow to use a fallback CPR value if not synthesized
+  serial: 8250: dma: Allow driver operations before starting DMA
+    transfers
+  serial: 8250: dw: Introduce an rx_timeout variable in the IRQ path
+  ARM: dts: r9a06g032: Fill the UART DMA properties
 
-> +		serial8250_em485_update_temt_delay(p, tty->termios.c_cflag,
-> +						   tty_get_baud_rate(tty));
-> +		hrtimer_init(&p->em485->no_temt_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-> +		p->em485->no_temt_timer.function = &serial8250_em485_handle_no_temt;
-> +	}
-> +
->  	p->em485->stop_tx_timer.function = &serial8250_em485_handle_stop_tx;
->  	p->em485->start_tx_timer.function = &serial8250_em485_handle_start_tx;
->  	p->em485->port = p;
-> @@ -654,6 +677,7 @@ void serial8250_em485_destroy(struct uart_8250_port *p)
->  
->  	hrtimer_cancel(&p->em485->start_tx_timer);
->  	hrtimer_cancel(&p->em485->stop_tx_timer);
-> +	hrtimer_cancel(&p->em485->no_temt_timer);
->  
->  	kfree(p->em485);
->  	p->em485 = NULL;
-> @@ -1496,6 +1520,11 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
->  	hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
->  }
->  
-> +static void start_hrtimer_ns(struct hrtimer *hrt, unsigned long nsec)
-> +{
-> +	hrtimer_start(hrt, ns_to_ktime(nsec), HRTIMER_MODE_REL);
-> +}
-> +
->  static void __stop_tx_rs485(struct uart_8250_port *p)
->  {
->  	struct uart_8250_em485 *em485 = p->em485;
-> @@ -1527,14 +1556,33 @@ static inline void __stop_tx(struct uart_8250_port *p)
->  
->  	if (em485) {
->  		unsigned char lsr = serial_in(p, UART_LSR);
-> +
-> +		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+Phil Edworthy (3):
+  serial: 8250: dw: Move definitions to the shared header
+  serial: 8250: dw: Add support for DMA flow controlling devices
+  serial: 8250: dw: Improve RZN1 support
 
-This change doesn't belong to this patch. It's an independent fix?
-...I'm not entirely sure it's fixing something though. After all, we're
-talking about half-duplex here so it should not have those rx related 
-flags that need to be saved? It doesn't hurt though even if possibly not 
-strictly mandatory so I'm not strictly against it.
-
-> +
->  		/*
-> -		 * To provide required timeing and allow FIFO transfer,
-> +		 * To provide required timing and allow FIFO transfer,
-
-This too is independent change that should be in its own patch.
+ arch/arm/boot/dts/r9a06g032.dtsi     |  15 ++++
+ drivers/tty/serial/8250/8250.h       |  18 ++++
+ drivers/tty/serial/8250/8250_dma.c   |   4 +
+ drivers/tty/serial/8250/8250_dw.c    | 123 ++++++++++++++++++++-------
+ drivers/tty/serial/8250/8250_dwlib.c |  12 ++-
+ drivers/tty/serial/8250/8250_dwlib.h |  32 +++++++
+ 6 files changed, 172 insertions(+), 32 deletions(-)
 
 -- 
- i.
+2.27.0
 
---8323329-846405399-1648637751=:1607--
