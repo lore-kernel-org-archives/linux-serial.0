@@ -2,69 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF98C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 08:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E1BC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 09:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233414AbiCaIx5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
+        id S232207AbiCaJ1T (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233396AbiCaIxy (ORCPT
+        with ESMTP id S232107AbiCaJ1S (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:53:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B006A078;
-        Thu, 31 Mar 2022 01:52:02 -0700 (PDT)
-Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTcVP524SzdZPx;
-        Thu, 31 Mar 2022 16:51:41 +0800 (CST)
-Received: from kwepeml500002.china.huawei.com (7.221.188.128) by
- kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 16:52:00 +0800
-Received: from huawei.com (10.175.104.82) by kwepeml500002.china.huawei.com
- (7.221.188.128) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 31 Mar
- 2022 16:52:00 +0800
-From:   Huang Guobin <huangguobin4@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] tty: Fix a possible resource leak in icom_probe
-Date:   Thu, 31 Mar 2022 17:10:05 +0800
-Message-ID: <20220331091005.3290753-1-huangguobin4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 31 Mar 2022 05:27:18 -0400
+Received: from esa3.hc1455-7.c3s2.iphmx.com (esa3.hc1455-7.c3s2.iphmx.com [207.54.90.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5D1FCD36;
+        Thu, 31 Mar 2022 02:25:30 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="68135880"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643641200"; 
+   d="scan'208";a="68135880"
+Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
+  by esa3.hc1455-7.c3s2.iphmx.com with ESMTP; 31 Mar 2022 18:25:28 +0900
+Received: from oym-m1.gw.nic.fujitsu.com (oym-nat-oym-m1.gw.nic.fujitsu.com [192.168.87.58])
+        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 7B52AE07EA;
+        Thu, 31 Mar 2022 18:25:27 +0900 (JST)
+Received: from yto-om3.fujitsu.com (yto-om3.o.css.fujitsu.com [10.128.89.164])
+        by oym-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id A192028715D1;
+        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om3.fujitsu.com (Postfix) with ESMTP id 3B74C400C07B8;
+        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
+From:   Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
+To:     linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        linux-serial@vger.kernel.org, sumit.garg@linaro.org
+Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org,
+        hasegawa-hitomi@fujitsu.com
+Subject: [PATCH v3 0/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
+Date:   Thu, 31 Mar 2022 18:22:34 +0900
+Message-Id: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepeml500002.china.huawei.com (7.221.188.128)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+The interrupt is set using pseudo-NMI if it is available. Arm has a
+diagnostic interrupt feature called "Arm Generic Diagnostic Dump and
+Reset device", but the A64FX does not support this feature and instead
+has its own device definition.
 
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
----
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch series assumes that Sumit's patch has been patched.[1]
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
- 
- 	pci_write_config_dword(dev, PCI_COMMAND,
+I tested on FX700:
+$ echo 1 > /proc/sys/kernel/sysrq
+$ echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
+[  124.712351] lkdtm: Performing direct entry HARDLOCKUP
+[  147.232096] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+:
+:
+
+Send the "chassis power diag" command from the management server
+using ipmitool, the following message is shown:
+[  206.061770] sysrq: Trigger a crash
+[  206.061779] Kernel panic - not syncing: sysrq triggered crash
+:
+:
+
+Changes in V3:
+ - Exclude Sumit's patch.
+ - Retest in v5.17.
+
+Changes in V2:
+ - Include Sumit's patch.
+ - The handler calls handle_sysrq() to use the sysrq feature to cause
+   a panic.
+ - request_nmi() and request_irq() now use the same handler, and
+   the function name of the handler has also changed.
+ - Use readl()/writel() instead of readl_relaxed()/writel_relaxed().
+
+[1] https://lore.kernel.org/all/20220307110328.2557655-1-sumit.garg@linaro.org/
+V2: https://lore.kernel.org/linux-arm-kernel/20220304064324.331217-3-hasegawa-hitomi@fujitsu.com/
+V1: https://lore.kernel.org/linux-arm-kernel/20220218092010.1327309-1-hasegawa-hitomi@fujitsu.com/
+
+
+Hitomi Hasegawa (1):
+  soc: fujitsu: Add A64FX diagnostic interrupt driver
+
+ MAINTAINERS                      |   5 +
+ drivers/soc/Kconfig              |   1 +
+ drivers/soc/Makefile             |   1 +
+ drivers/soc/fujitsu/Kconfig      |  13 +++
+ drivers/soc/fujitsu/Makefile     |   3 +
+ drivers/soc/fujitsu/a64fx-diag.c | 151 +++++++++++++++++++++++++++++++
+ 6 files changed, 174 insertions(+)
+ create mode 100644 drivers/soc/fujitsu/Kconfig
+ create mode 100644 drivers/soc/fujitsu/Makefile
+ create mode 100644 drivers/soc/fujitsu/a64fx-diag.c
+
 -- 
-2.25.1
+2.27.0
 
