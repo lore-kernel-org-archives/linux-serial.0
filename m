@@ -2,119 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3983C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 15:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCCAC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 19:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbiCaPwK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S238605AbiCaTFr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Mar 2022 15:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239097AbiCaPwE (ORCPT
+        with ESMTP id S238548AbiCaTFr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:52:04 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0C45EBD1;
-        Thu, 31 Mar 2022 08:50:16 -0700 (PDT)
-Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M4rkF-1nZ7lg3xXr-00208u; Thu, 31 Mar 2022 17:45:11 +0200
-Received: by mail-wr1-f42.google.com with SMTP id h23so341057wrb.8;
-        Thu, 31 Mar 2022 08:45:11 -0700 (PDT)
-X-Gm-Message-State: AOAM531vONq4YljMzzg4lpYoPH0G7AIFTXF8x2q34N+BssxIH7OS/ASN
-        d1rpbebSZK9epEeXVdurRY7LIGtroKu09OIahGI=
-X-Google-Smtp-Source: ABdhPJyINqj20BgrqMVql8P0dLX86b0MRGwI7ZaFK1fyvU3QQ0XJBE7cU28CP6wHHSEMpvM8IDEW2Jl0QfL2BRdivwU=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr4338853wru.317.1648741511582; Thu, 31
- Mar 2022 08:45:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com> <YkWVTEG5oFO82GPL@kroah.com>
-In-Reply-To: <YkWVTEG5oFO82GPL@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 31 Mar 2022 17:44:55 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
-Message-ID: <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        Thu, 31 Mar 2022 15:05:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5662C18D9BD
+        for <linux-serial@vger.kernel.org>; Thu, 31 Mar 2022 12:03:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648753438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FwgU8ObIp8xL0aPzK5GNickvJ2Wwx2TZEWFhuitUlKU=;
+        b=O4YihXWM0lq75/75h5hUDMInf1MR0VQZxN9VwPZMYxC9db7/xVZxDJhknVfkKxIGmdBhhg
+        rCJLcb4dHI78d5MzAIUWihBI5bsbZepf5Gq00QkSkIiUdUPcugS6BoWa3Iy/AvM/n0qsBC
+        FhyeNHtgpEZdjkkCRcIAMqtfqo5MIVE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-449-xr3ADvWvNPmfZ8J5hZslAA-1; Thu, 31 Mar 2022 15:03:52 -0400
+X-MC-Unique: xr3ADvWvNPmfZ8J5hZslAA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9DAF718A6582;
+        Thu, 31 Mar 2022 19:03:51 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.22.35.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 523A353CD;
+        Thu, 31 Mar 2022 19:03:24 +0000 (UTC)
+From:   Wander Lairson Costa <wander@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:kXY2uz+9T3skG3/rQcpWLGZV/wmu9mwnbrEErlu2X5LOl7QcaTT
- LPDDapDBHZn06WODoqpZUW0RO2MsD2bQt6Xr/35LwBOEyinlwc1SF/49dcvUBpewMQnoIci
- NBtzeBbMcytU/nrAQ9EPo01QzsnpisZy5TKLjvbSJUFWeI1lC2Ozrt0TUoTh0MGLRq3f0Qx
- wucjN2gro/MlvLRfWWbUQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8/ixu57X/F0=:D7nw2WCUnDEYMcmc0d8TcP
- Xj+tteEiznHSY2WADjFLxTF4m1kLKXfjmGE8i0IfZPNBuNfv/6/aGaRz7T9lSv0qeoxsRt/Zw
- xPLBk737n2QlgdD5UAErbVLeE8uRZbkJ1LIMuO6KjugibpE6SPS8GSPfpNkAZdiApPWLbWrG7
- 0NQseEkwFT2nRH1pFjqLfMbq9XeM7tAvQHJmJQ7pT6NjT8nqfLGpju6bgOW+MUABrV5HRh9Gp
- 42RHGUQQfmLfjdU7uP8FeSvP8ArhGOxk+2eqg/cgUUYrlHWxc12kJK6coa3h1UkU0lSeH4Lat
- XC7X/NiqdBrCEA94x8q/CtXItiQ1S7jIxFy47drnwCjfKpno5FCGUJzbq8IIPcZBhSpx1AWWa
- W6bNBFQsXx0wq2+6cWfWxFvRt1kgDxktMK3swH1GIcq1aV1u0JIPkZY4sQAjuQiVp3KLHpLf6
- POd50MMfwItMC8Wo5REw7b6t0WB+/E/mUg5gOMFvbmOjj2W98jBloeE4AWVHanVy8dsIyBKaL
- 4H3hvV2qJEDdZZUqapNpAVS81xzhzT7/bohsTK0ArU38d3ZA9VWXL4NV0ldLMx6e1W8n0A9Ah
- vv9+Yya/hNdfKV+PDbeNhrVVW+s0F5oiVilmg3jb3zECV6dJSNvjXDF/i5jpR5EZFiER9f0jS
- 9/Er9A+EX+NvTS8D1vzbnM65TsjfR1FOF4nABgr9OCwPMivAY9CRlWr+MAFXYjRnbBeRyqy3D
- FGUPfw9Sa8mfIMsISlqgKKpGpk8/hk2kPl+EBxVptcWCpu1UxIb70w5gYGMdj3/fi8OfYwXLb
- PZLYCFxpLyVmndjbvwhzGihlanHq+A5dGpgiclFYixTXRkyN+g=
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Wander Lairson Costa <wander@redhat.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     rostedt@goodmis.org, senozhatsky@chromium.org,
+        andre.goddard@gmail.com, sudipm.mukherjee@gmail.com,
+        andy.shevchenko@gmail.com, David.Laight@aculab.com,
+        jonathanh@nvidia.com, phil@raspberrypi.com
+Subject: [PATCH v5 0/1] serial/8250: Use fifo in 8250 console driver
+Date:   Thu, 31 Mar 2022 16:02:54 -0300
+Message-Id: <20220331190257.101781-1-wander@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 1:49 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > +
-> > +static irqreturn_t a64fx_diag_handler(int irq, void *dev_id)
-> > +{
-> > +     handle_sysrq('c');
->
->
-> Why is this calling this sysrq call?  From an interrupt?  Why?
->
-> And you are hard-coding "c", are you sure?
+This is v5 of the serial fifo patch. In relation to the previous
+reverted patch, I describe the main changes in the "What changed from
+v3" section.
 
-This is an actual sysrq driver in the traditional sense, where you can send
-a single interrupt to the machine from the outside over a side channel.
+What changed from v4
+--------------------
 
-I suggested sysrq instead of just panic() to make it a bit more flexible.
-Unfortunately there is no additional data, so it comes down to always
-sending the same character.
+* It squashes all the patches in a single patch
+* It adds `port-state &&` check in the `use_fifo` condition as a
+* preventive measure.
 
-It would be possible to make that character configurable with a module
-parameter or something like that, but I'm not sure that is an improvement.
-Maybe you have another idea for this.
+What changed from v3
+--------------------
 
-> > +static void a64fx_diag_interrupt_clear(struct a64fx_diag_priv *priv)
-> > +{
-> > +     u32 mmsc;
-> > +     const void __iomem *diag_status_reg_addr;
-> > +
-> > +     diag_status_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_STATUS_OFFSET;
-> > +     mmsc = readl(diag_status_reg_addr);
-> > +     if (mmsc & BMC_INTERRUPT_STATUS_MASK)
-> > +             writel(BMC_INTERRUPT_STATUS_MASK, (void *)diag_status_reg_addr);
->
-> No need to wait for the write to complete?
->
-> You shouldn't have to cast diag_status_reg_addr, right?
+* Reads the FCR value from the port struct. The earlier patch
+erroneously read the value from the controller, but FCR is a write-only
+register. Thanks to Jiri Slaby for point this out.
 
-I think the cast is needed because the declaration of
-'diag_status_reg_addr' incorrectly
-marks it as 'const'. However, this should still trigger a 'make C=1'
-warning with sparse
-because it is now missing the __iomem annotation.
+* Use tx_loadsz as the transmitter fifo size. We previously used the
+port->fifosize field, which caused data loss in some controllers. Thanks
+Jon Hunter for the bug report.
 
-The correct solution of course is to remove both the cast and the 'const'.
+* Exclude the BCM283x from fifo write. This is based on Phil Elwell's
+original patch [1].
 
-       Arnd
+* Check if the port is initialized before write through fifo.
+The serial driver set the value of uart_8250_port.fcr in the function
+serial8250_config_port, but only writes the value to the controller
+register later in the initalization code. That opens a small window in
+which is not safe to use the fifo for console write. Unfortunately, I
+lost track of who originally reported the issue. If s/he is reading
+this, please speak up so I can give you the due credit.
+
+[1] https://lore.kernel.org/all/20220126141124.4086065-1-phil@raspberrypi.com/
+
+Wander Lairson Costa (1):
+  serial/8250: Use fifo in 8250 console driver
+
+ drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++---
+ 1 file changed, 62 insertions(+), 6 deletions(-)
+
+-- 
+2.35.1
+
