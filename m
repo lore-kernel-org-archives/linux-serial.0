@@ -2,179 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58695C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 22:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDABC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 31 Mar 2022 23:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238368AbiCaXBk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
+        id S243168AbiCaXqs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiCaXBk (ORCPT
+        with ESMTP id S243160AbiCaXqs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:01:40 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9DAB25E2;
-        Thu, 31 Mar 2022 15:59:51 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id B6FED92009C; Fri,  1 Apr 2022 00:59:49 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id A807E92009B;
-        Thu, 31 Mar 2022 23:59:49 +0100 (BST)
-Date:   Thu, 31 Mar 2022 23:59:49 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     David Laight <David.Laight@ACULAB.COM>
-cc:     Jiri Slaby <jslaby@suse.cz>,
-        =?UTF-8?Q?'Uwe_Kleine-K=C3=B6nig'?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Andy Gross <agross@kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Takao Orito <orito.takao@socionext.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Subject: RE: [PATCH v3] serial: make uart_console_write->putchar()'s character
- an unsigned char
-In-Reply-To: <20f24492d4944de4986245c59e5be71f@AcuMS.aculab.com>
-Message-ID: <alpine.DEB.2.21.2203101334250.47558@angie.orcam.me.uk>
-References: <20220302072732.1916-1-jslaby@suse.cz> <20220302175242.ejiaf36vszr4xvou@pengutronix.de> <5c7045c1910143e08ced432d938b5825@AcuMS.aculab.com> <84ad3854-28b9-e450-f0a2-f1448f32f137@suse.cz> <alpine.DEB.2.21.2203030738170.56670@angie.orcam.me.uk>
- <20f24492d4944de4986245c59e5be71f@AcuMS.aculab.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 31 Mar 2022 19:46:48 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700AA1C9B63;
+        Thu, 31 Mar 2022 16:45:00 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id q189so1155446oia.9;
+        Thu, 31 Mar 2022 16:45:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M6mtxbYAAiRsPFMK/tL1H1rQ1Kmj2pVg6YIYinuDAw4=;
+        b=xEAGxc2tXX6ap4Gy7zGl9HoqU+2TPoUkcZn+9i00zCOxDrbKi7zd2YPjAJyXutvUF6
+         KJZ15z/UGECL3Kodrsl7MkNf0ZP3T5TSOtLrzgm2AM2xMYyC2H6Le6nzer9LUdcZjMyY
+         pE+YVOUhQi7BiPVxyefEmSS43j0OwxugdgMvv924sN/yqQcARNr6Z/OpWfsI92JwJDGz
+         L/rNbdaVKhhDcXh1psNBKdDydCuRLLHnxit2lLSskdTdsYzmamPEikpeFFpFKN+2C0Y6
+         UP0PWFxTk/hF7SXRm6vmkWd2/U4xDgbNqIjd8wTQFiJ5h4eCW9Ac7CrO4epz2Nh+K7ZS
+         bSgg==
+X-Gm-Message-State: AOAM533WhP5X5UlH6etPmejF6JF/1DKShRijbFWlUFYDP8Z1JA9rSUCN
+        vGdPTaIJQa7gzIk2ZTAekIkRp+KVow==
+X-Google-Smtp-Source: ABdhPJzcJTikTpcNMLinxP9sVo0KCKV1+n2mF98uXathWXEvHlZeRZiDR5JjErBsNWB2HSTSm57dtQ==
+X-Received: by 2002:a05:6808:189a:b0:2ec:c59c:71e9 with SMTP id bi26-20020a056808189a00b002ecc59c71e9mr389518oib.153.1648770299780;
+        Thu, 31 Mar 2022 16:44:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k14-20020a056830168e00b005b22c20b195sm485058otr.45.2022.03.31.16.44.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 16:44:59 -0700 (PDT)
+Received: (nullmailer pid 1719043 invoked by uid 1000);
+        Thu, 31 Mar 2022 23:44:58 -0000
+Date:   Thu, 31 Mar 2022 18:44:58 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     Peng Fan <peng.fan@nxp.com>, linux-serial@vger.kernel.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        krzk+dt@kernel.org
+Subject: Re: [PATCH V2] dt-bindings: serial: fsl-lpuart: Add imx93 compatible
+ string
+Message-ID: <YkY8+lYorUkQ8pIn@robh.at.kernel.org>
+References: <20220323093659.1722463-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323093659.1722463-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 3 Mar 2022, David Laight wrote:
-
-> > And indeed it happens with the MIPS target:
-> > 
-> > 803ae47c:	82050000 	lb	a1,0(s0)
-> > 803ae480:	26100001 	addiu	s0,s0,1
-> > 803ae484:	02402025 	move	a0,s2
-> > 803ae488:	0220f809 	jalr	s1
-> > 803ae48c:	30a500ff 	andi	a1,a1,0xff
-> > 
-> > vs current code:
-> > 
-> > 803ae47c:	82050000 	lb	a1,0(s0)
-> > 803ae480:	26100001 	addiu	s0,s0,1
-> > 803ae484:	0220f809 	jalr	s1
-> > 803ae488:	02402025 	move	a0,s2
-> > 
-> > (NB the last instruction shown after the call instruction, JALR, is in the
-> > delay slot that is executed before the PC gets updated).  Now arguably the
-> > compiler might notice that and use an unsigned LBU load instruction rather
-> > than the signed LB load instruction, which would make the ANDI instruction
-> > redundant, but still I think we ought to avoid gratuitous type signedness
-> > changes.
-> > 
-> >  So I'd recommend changing `s' here to `const unsigned char *' or, as I
-> > previously suggested, maybe to `const u8 *' even.
+On Wed, 23 Mar 2022 17:36:59 +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> Or just not worry that the 'char' value (either [128..127] or [0..255])
-> is held in a 'signed int' variable.
-> That basically happens every time it is loaded into a register anyway.
+> The lpuart on i.MX93 is derived from i.MX7ULP with some industrial
+> enhancements, it uses two compatible strings, so update the
+> compatible string for i.MX93.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+> 
+> V2:
+>  Drop fsl,imx93-lpuart-v2, that is software controllable per Design team,
+>  so we may update driver for that.
+>  Update commit message
+> 
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
 
- That might be true with a hypothetical 8-bit ABI on top of a higher-width 
-machine architecture.  It does happen with the 32-bit MIPS ABI (o32) and a 
-64-bit architecture, which is why LW (load word signed) is a universal 
-32-bit and 64-bit instruction while the LWU (load word unsigned) operation 
-is restricted to 64-bit code.
-
- In this case however a signed `char' value ([-128..127]) is sign-extended 
-while an unsigned `char' value ([0..255]) is zero-extended, even though 
-both are carried in a 'signed int' variable from the architecture's point 
-of view.
-
- Anyway I have looked into it some more and the immediate cause for LBU 
-not to be used here is the:
-
-		if (*s == '\n')
-			putchar(port, '\r');
-
-conditional.  If this part is removed, then LBU does get used for the:
-
-		putchar(port, *s);
-
-part and no ANDI is produced.
-
- The reason for that is that the compiler decides to reuse the load used 
-to evaluate (*s == '\n') (which is done using the plain `char' data type) 
-for the following `putchar(port, *s)' call if the expression used as the 
-condition turns out to be false and therefore the value of `*s' has to be 
-subsequently zero-extended:
-
-      b4:	00e08825 	move	s1,a3
-      b8:	2413000a 	li	s3,10
-      bc:	82050000 	lb	a1,0(s0)
-      c0:	00000000 	nop
-      c4:	14b30005 	bne	a1,s3,dc <uart_console_write+0x54>
-      c8:	00000000 	nop
-      cc:	2405000d 	li	a1,13
-      d0:	0220f809 	jalr	s1
-      d4:	02402025 	move	a0,s2
-      d8:	82050000 	lb	a1,0(s0)
-      dc:	26100001 	addiu	s0,s0,1
-      e0:	02402025 	move	a0,s2
-      e4:	0220f809 	jalr	s1
-      e8:	30a500ff 	andi	a1,a1,0xff
-
-(the load at bc is reused for the `putchar' call at e4 unless it's `\n', 
-or otherwise the character is reloaded at d8).
-
- By using a temporary `unsigned char' variable and massaging the source 
-code suitably GCC can be persuaded to use LBU instead, but the obfuscation 
-of the source code and the resulting machine code produced seem not worth 
-the effort IMO, so let's keep it simple.
-
- JFTR,
-
-  Maciej
+Acked-by: Rob Herring <robh@kernel.org>
