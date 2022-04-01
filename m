@@ -2,77 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B06C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 16:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D657C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 17:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348274AbiDAQfG (ORCPT
+        id S1350249AbiDARkw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Apr 2022 12:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        Fri, 1 Apr 2022 13:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348318AbiDAQew (ORCPT
+        with ESMTP id S238303AbiDARkv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Apr 2022 12:34:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3BC22EE49;
-        Fri,  1 Apr 2022 09:07:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 603C2CE2414;
-        Fri,  1 Apr 2022 16:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F380DC2BBE4;
-        Fri,  1 Apr 2022 16:07:06 +0000 (UTC)
-Date:   Fri, 1 Apr 2022 12:07:05 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Fri, 1 Apr 2022 13:40:51 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7520AF1B;
+        Fri,  1 Apr 2022 10:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648834741; x=1680370741;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=z0dQ1kpXFo+5ugqbz/2Q0ztwOv4jf/rgKI47VO6yM7E=;
+  b=bBj+Nbk0cQJSPNZD1HAjMDGpk5QD8+v8aPfj6e3Sbqapu49pIcrp3AJx
+   dUYYaG2TmYzyHRo0xel/bQFb1BZJGjMmSNNkYQVXRtMxQDCC8eUn/U4nE
+   5KcYJRKxIEQ60IvO1H52iqImSN+9O/mkSYdEBBUGaufJ9XjQLjCVsbzVn
+   4BMT6xy9wtBmS/2VEDt2c4h1X5Id8RJPy9aP/BPNhhgGCDKQ/NGVfVtrn
+   yqMNxqAKfV9MvI/FdAfARfA7lugjoMvZojN8sA+l540hXWZpnUMxvqT/M
+   PtgoJMxnY/rbyaW6YnD/Vs2Qk87RW1UiduZLWgjOXlFlRqupvD6bSKTr6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="260375614"
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="260375614"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:39:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
+   d="scan'208";a="504244321"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:38:57 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1naLE8-00AqBV-QU;
+        Fri, 01 Apr 2022 20:38:24 +0300
+Date:   Fri, 1 Apr 2022 20:38:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
-        David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
-Message-ID: <20220401120705.533896e5@gandalf.local.home>
-In-Reply-To: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-References: <20220331190257.101781-1-wander@redhat.com>
-        <20220331190257.101781-2-wander@redhat.com>
-        <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH v4 7/9] serial: 8250: dw: Add support for DMA flow
+ controlling devices
+Message-ID: <Ykc4kGLEnwdoUqZ6@smile.fi.intel.com>
+References: <20220330132038.808679-1-miquel.raynal@bootlin.com>
+ <20220330132038.808679-8-miquel.raynal@bootlin.com>
+ <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 1 Apr 2022 06:35:58 +0200
-Jiri Slaby <jirislaby@kernel.org> wrote:
+On Fri, Apr 01, 2022 at 01:56:49PM +0300, Ilpo Järvinen wrote:
+> On Wed, 30 Mar 2022, Miquel Raynal wrote:
 
-> > With the help of the function tracer, I then noticed the serial
-> > controller was taking around 410us seconds to dispatch one single byte:
-> > 
-> > $ trace-cmd record -p function_graph -g serial8250_console_write \
-> >     ./sertest -n 1 /tmp/serco
-> > 
-> > $ trace-cmd report
-> > 
+...
 
-Note, the function graph tracer can add a noticeable amount of overhead to
-these timings. If you want a more accurate time for a function, just trace
-that one function:
+> > +			writel(0, p->membase + RZN1_UART_RDMACR);
+> > +			writel(1, p->membase + DW_UART_DMASA);
+> 
+> Currently there is serial_out(), dw8250_writel_ext(), and a few writel()s 
+> too for writing to registers. It would be nice to move towards more 
+> homogeneous approach rather than adding more writel()s.
 
-	trace-cmd record -p function_graph -l serial8250_console_write ...
+Actually a good catch!
 
-As that will only trace the serial8250_console_write() function (think of
--l as "limit"), and the overhead of function graph for tracing a single
-function becomes negligible, and then you can see the true time of that
-function.
+> I suggest dw8250_writel_ext() is moved to dwlib.h. Then it could be used 
+> here (and dw8250_readl_ext() too should be moved but IIRC there wasn't 
+> any reads added by this series).
 
--- Steve
+I agree that for the sake of symmetry it's good to move both.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
