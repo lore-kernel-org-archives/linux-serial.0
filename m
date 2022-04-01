@@ -2,241 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068CDC433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 19:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EABFC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 20:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348752AbiDATt6 (ORCPT
+        id S1351101AbiDAUZb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Apr 2022 15:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        Fri, 1 Apr 2022 16:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350824AbiDATt4 (ORCPT
+        with ESMTP id S1352576AbiDAUZN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Apr 2022 15:49:56 -0400
+        Fri, 1 Apr 2022 16:25:13 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52FFD1D67C7
-        for <linux-serial@vger.kernel.org>; Fri,  1 Apr 2022 12:48:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E26F28D2B7
+        for <linux-serial@vger.kernel.org>; Fri,  1 Apr 2022 13:20:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648842485;
+        s=mimecast20190719; t=1648844441;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Io6VZNRjI9qaJmVi46MURpVhR+XT7VFEHaTUpxElIlI=;
-        b=ZOjq1rBekVMMfGjxMmI/2R1o74smei8ghgYrqcrODk9EC3tFEStwhptTTn05PMMIT8M6bJ
-        c85BtqoDHkHzXrQylK3xyiPG/JyjsyMORpHYX3gLPMt7vPwHabRO+gW+zRQ/15qDXq0eoS
-        i0JqXbY8Ct1VBAFQ433k+VK1YaBDJqw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=moFtzAyOAPoCtp/a6KG0UUQYbtXpxVkTbUnLT2+nfP4=;
+        b=jV9XAlXaWr+FUaxhCuGuzifYC27gmSLqYh/6fn4SdbttG9pa2E+gCWemst4csY7cMVwRvX
+        9aQJjlF7rEoFIaE3FjNzHBlX/b2+3Vuwvb5R/3HVk95OUnTcEfO+ExZUG/B2DRrOtdpw3r
+        ivFAfV6eBg5x8bbDiDjaBxAIaqDieso=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-246-PUlnJDudO4G9ULySJUc0ew-1; Fri, 01 Apr 2022 15:48:02 -0400
-X-MC-Unique: PUlnJDudO4G9ULySJUc0ew-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 63CB63820F62;
-        Fri,  1 Apr 2022 19:48:01 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.22.10.139])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1ECBF4292C8;
-        Fri,  1 Apr 2022 19:47:57 +0000 (UTC)
-From:   Wander Lairson Costa <wander@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+ us-mta-344-GDorD9J8Oq6UjksxoGBnlg-1; Fri, 01 Apr 2022 16:20:40 -0400
+X-MC-Unique: GDorD9J8Oq6UjksxoGBnlg-1
+Received: by mail-lf1-f71.google.com with SMTP id bt40-20020a056512262800b004481fbe2d29so1617592lfb.16
+        for <linux-serial@vger.kernel.org>; Fri, 01 Apr 2022 13:20:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=moFtzAyOAPoCtp/a6KG0UUQYbtXpxVkTbUnLT2+nfP4=;
+        b=cSw2X7B2BtlMaLwn6GXvs3udpVvfJJMqmwpvgNxajzWuYMbXgm4CTa5wkisBzzlMUs
+         fjkJFqIMhY+nIEJWfI1UH/5N/rUdrIQ4ubEy9m+qXgO5YxmCgaq3/erLDhm2eV4QPp7f
+         JRGjqoRC4g+nXhxgXd7DqBJwS9TUMY9/a5qSZhWgIX+u2aVwPNB3KoafHKuH5lX5HJ1V
+         vXJDjSRE8+vZHrB8KRDkH0BoZaNUZE4k3FnHH6FU9+2SNTh/KtYe0KtY9z/2oGTnz0Ea
+         f5EFsycL1SdFbA3ZjTzWFVt25IBHdWdp1rcy+ePJci4x+9eVyQo6XC3fU6WwRLKSZzIB
+         RANA==
+X-Gm-Message-State: AOAM531hRqitjszqGrFMOeBtBsFcRC6XYhehJyi2kcG9DeNwCMzW9gX2
+        5wDr7XsLZF8HSWsBea7u17ArmwauYg0xpTHWMXsCcYzM5C1SxjYMBPJtFf7RDI8xfNn8XVs/sJS
+        vf6GT4sa+kA0QgUAYDFpKp1WwSmAmPPAmrRLjEwBM
+X-Received: by 2002:a2e:7d05:0:b0:247:ed41:690d with SMTP id y5-20020a2e7d05000000b00247ed41690dmr14495548ljc.92.1648844438488;
+        Fri, 01 Apr 2022 13:20:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw6C0nNye6mqstGgicxwQGjK28I/pm5vkMPhiF7HWuofBNDZkh6xMWyCF9ZZ3jNE7SwAsx+BSi2rHs0wjJQeCk=
+X-Received: by 2002:a2e:7d05:0:b0:247:ed41:690d with SMTP id
+ y5-20020a2e7d05000000b00247ed41690dmr14495528ljc.92.1648844438292; Fri, 01
+ Apr 2022 13:20:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220331190257.101781-1-wander@redhat.com> <20220331190257.101781-2-wander@redhat.com>
+ <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org> <20220401120705.533896e5@gandalf.local.home>
+In-Reply-To: <20220401120705.533896e5@gandalf.local.home>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Fri, 1 Apr 2022 17:20:27 -0300
+Message-ID: <CAAq0SUnFnbo_ABbbAMJRZsa1+30T=-cojgncvnnpCmfrz77U6g@mail.gmail.com>
+Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Johan Hovold <johan@kernel.org>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Lukas Wunner <lukas@wunner.de>,
-        Wander Lairson Costa <wander@redhat.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     ilpo.jarvinen@linux.intel.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
-        David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: [PATCH v6] serial/8250: Use fifo in 8250 console driver
-Date:   Fri,  1 Apr 2022 16:46:42 -0300
-Message-Id: <20220401194645.1738747-2-wander@redhat.com>
-In-Reply-To: <20220401194645.1738747-1-wander@redhat.com>
-References: <20220401194645.1738747-1-wander@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Note: I am using a small test app + driver located at [0] for the
-problem description. serco is a driver whose write function dispatches
-to the serial controller. sertest is a user-mode app that writes n bytes
-to the serial console using the serco driver.
+On Fri, Apr 1, 2022 at 1:12 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Fri, 1 Apr 2022 06:35:58 +0200
+> Jiri Slaby <jirislaby@kernel.org> wrote:
+>
+> > > With the help of the function tracer, I then noticed the serial
+> > > controller was taking around 410us seconds to dispatch one single byte:
+> > >
+> > > $ trace-cmd record -p function_graph -g serial8250_console_write \
+> > >     ./sertest -n 1 /tmp/serco
+> > >
+> > > $ trace-cmd report
+> > >
+>
+> Note, the function graph tracer can add a noticeable amount of overhead to
+> these timings. If you want a more accurate time for a function, just trace
+> that one function:
+>
+>         trace-cmd record -p function_graph -l serial8250_console_write ...
+>
+> As that will only trace the serial8250_console_write() function (think of
+> -l as "limit"), and the overhead of function graph for tracing a single
+> function becomes negligible, and then you can see the true time of that
+> function.
+>
 
-While investigating a bug in the RHEL kernel, I noticed that the serial
-console throughput is way below the configured speed of 115200 bps in
-a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
-I got 2.5KB/s.
+Thanks for the tip. I used bpftrace as a low overhead tracer. Then I
+used the function-graph tracer to get the details.
 
-$ time ./sertest -n 2500 /tmp/serco
-
-real    0m0.997s
-user    0m0.000s
-sys     0m0.997s
-
-With the help of the function tracer, I then noticed the serial
-controller was taking around 410us seconds to dispatch one single byte:
-
-$ trace-cmd record -p function_graph -g serial8250_console_write \
-   ./sertest -n 1 /tmp/serco
-
-$ trace-cmd report
-
-            |  serial8250_console_write() {
- 0.384 us   |    _raw_spin_lock_irqsave();
- 1.836 us   |    io_serial_in();
- 1.667 us   |    io_serial_out();
-            |    uart_console_write() {
-            |      serial8250_console_putchar() {
-            |        wait_for_xmitr() {
- 1.870 us   |          io_serial_in();
- 2.238 us   |        }
- 1.737 us   |        io_serial_out();
- 4.318 us   |      }
- 4.675 us   |    }
-            |    wait_for_xmitr() {
- 1.635 us   |      io_serial_in();
-            |      __const_udelay() {
- 1.125 us   |        delay_tsc();
- 1.429 us   |      }
-...
-...
-...
- 1.683 us   |      io_serial_in();
-            |      __const_udelay() {
- 1.248 us   |        delay_tsc();
- 1.486 us   |      }
- 1.671 us   |      io_serial_in();
- 411.342 us |    }
-
-In another machine, I measured a throughput of 11.5KB/s, with the serial
-controller taking between 80-90us to send each byte. That matches the
-expected throughput for a configuration of 115200 bps.
-
-This patch changes the serial8250_console_write to use the 16550 fifo
-if available. In my benchmarks I got around 25% improvement in the slow
-machine, and no performance penalty in the fast machine.
-
-Signed-off-by: Wander Lairson Costa <wander@redhat.com>
----
- drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++---
- 1 file changed, 62 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 318af6f13605..8113e6c73407 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2077,10 +2077,7 @@ static void serial8250_break_ctl(struct uart_port *port, int break_state)
- 	serial8250_rpm_put(up);
- }
- 
--/*
-- *	Wait for transmitter & holding register to empty
-- */
--static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-+static void wait_for_lsr(struct uart_8250_port *up, int bits)
- {
- 	unsigned int status, tmout = 10000;
- 
-@@ -2097,6 +2094,16 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- 		udelay(1);
- 		touch_nmi_watchdog();
- 	}
-+}
-+
-+/*
-+ *	Wait for transmitter & holding register to empty
-+ */
-+static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-+{
-+	unsigned int tmout;
-+
-+	wait_for_lsr(up, bits);
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
-@@ -3332,6 +3339,35 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
- }
- 
-+/*
-+ * Print a string to the serial port using the device FIFO
-+ *
-+ * It sends fifosize bytes and then waits for the fifo
-+ * to get empty.
-+ */
-+static void serial8250_console_fifo_write(struct uart_8250_port *up,
-+					  const char *s, unsigned int count)
-+{
-+	int i;
-+	const char *end = s + count;
-+	unsigned int fifosize = up->tx_loadsz;
-+	bool cr_sent = false;
-+
-+	while (s != end) {
-+		wait_for_lsr(up, UART_LSR_THRE);
-+
-+		for (i = 0; i < fifosize && s != end; ++i) {
-+			if (*s == '\n' && !cr_sent) {
-+				serial_out(up, UART_TX, '\r');
-+				cr_sent = true;
-+			} else {
-+				serial_out(up, UART_TX, *s++);
-+				cr_sent = false;
-+			}
-+		}
-+	}
-+}
-+
- /*
-  *	Print a string to the serial port trying not to disturb
-  *	any possible real use of the port...
-@@ -3347,7 +3383,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	struct uart_8250_em485 *em485 = up->em485;
- 	struct uart_port *port = &up->port;
- 	unsigned long flags;
--	unsigned int ier;
-+	unsigned int ier, use_fifo;
- 	int locked = 1;
- 
- 	touch_nmi_watchdog();
-@@ -3379,7 +3415,27 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		mdelay(port->rs485.delay_rts_before_send);
- 	}
- 
--	uart_console_write(port, s, count, serial8250_console_putchar);
-+	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-+		/*
-+		 * BCM283x requires to check the fifo
-+		 * after each byte.
-+		 */
-+		!(up->capabilities & UART_CAP_MINI) &&
-+		up->tx_loadsz > 1 &&
-+		(up->fcr & UART_FCR_ENABLE_FIFO) &&
-+		port->state &&
-+		test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
-+		/*
-+		 * After we put a data in the fifo, the controller will send
-+		 * it regardless of the CTS state. Therefore, only use fifo
-+		 * if we don't use control flow.
-+		 */
-+		!(up->port.flags & UPF_CONS_FLOW);
-+
-+	if (likely(use_fifo))
-+		serial8250_console_fifo_write(up, s, count);
-+	else
-+		uart_console_write(port, s, count, serial8250_console_putchar);
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
--- 
-2.35.1
+> -- Steve
+>
 
