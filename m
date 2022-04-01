@@ -2,70 +2,233 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EF4C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 00:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 937FEC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 04:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiDAAWr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 31 Mar 2022 20:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
+        id S244873AbiDAEiD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Apr 2022 00:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233391AbiDAAWr (ORCPT
+        with ESMTP id S232741AbiDAEhw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 31 Mar 2022 20:22:47 -0400
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AA811CF53;
-        Thu, 31 Mar 2022 17:20:59 -0700 (PDT)
-Received: by mail-ot1-f44.google.com with SMTP id o20-20020a9d7194000000b005cb20cf4f1bso1042351otj.7;
-        Thu, 31 Mar 2022 17:20:59 -0700 (PDT)
+        Fri, 1 Apr 2022 00:37:52 -0400
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18FA243713;
+        Thu, 31 Mar 2022 21:36:03 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id h23so2431141wrb.8;
+        Thu, 31 Mar 2022 21:36:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qMr0vmhCCi1+boKrcsJRNJNXvbkGry96BandV3tYE90=;
-        b=Ayn5v9m434EUMX20m7MgZfosy5/zU5q0rd4U08fgiVp1D8ZAtUfWk0ac9YZ0GOxhU5
-         g/paewQKbq8nB+jZJqjK5cpjKipMcr4XK9IeuvW1na8taI3NdRcAEpKJvaJ7JnozNomV
-         y0f5bcj9RZrh6TXHp7EWU0GtPKeSXziCYP9+YUe8+v5YXLPkLYDwiz87rL6hlyyr8aHC
-         7jstXBuaXH3IgOdBf3xa5b1Wwp0S/vwaOdWkSCbqA+wV2a/XsO/jUvSqTAgFeSklzETp
-         JuRbF4vbld3TdnY1bzsFR3F1SZdJEJFB33EdoEDCCYNwZH9mrqHypJMjYxh5FVerDCuR
-         xNSA==
-X-Gm-Message-State: AOAM5308sX66Pa0TyxoOAfQbwKJcEW/gRzlUhX11rzll1tjIzbsIgoN+
-        kg+m965QpDWy5C2fuXQyNA==
-X-Google-Smtp-Source: ABdhPJzaMqViLjIPniizWGBgNLH2NK32f/pBjLLDbJlKFKiAk6a338Fi8mCtQC8M/7+D4C6XvV85BQ==
-X-Received: by 2002:a9d:7c90:0:b0:5b2:2ae8:43ec with SMTP id q16-20020a9d7c90000000b005b22ae843ecmr6728577otn.379.1648772458493;
-        Thu, 31 Mar 2022 17:20:58 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g8-20020acab608000000b002ecf38fb699sm388649oif.38.2022.03.31.17.20.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 17:20:58 -0700 (PDT)
-Received: (nullmailer pid 1770056 invoked by uid 1000);
-        Fri, 01 Apr 2022 00:20:57 -0000
-Date:   Thu, 31 Mar 2022 19:20:57 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     romain.perier@gmail.com, robh+dt@kernel.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, andriy.shevchenko@linux.intel.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: serial: snps-dw-apb-uart: Add MStar
- MSC313 uarts
-Message-ID: <YkZFaZChWJoTDqB/@robh.at.kernel.org>
-References: <20220324124402.3631379-1-daniel@0x0f.com>
- <20220324124402.3631379-2-daniel@0x0f.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=olW/xLwuiQra0w+84+rmqpMcAO9wN+Sku9gVx0ollFo=;
+        b=julqckNObXM5HJ743nwZ/yFGool+34eAu9o9Dq86iWJm4//8lJfAkR+Al1BtsdHe7n
+         4M23xx4jDPhF103GFAshfFbY3/wLfBe8lVINtum20ueiYYKtWHj4uqTlReIjm+x9Q/qU
+         HoFrNCPLWU/+qEQlvLkKB0NgUqC+l/iLS8VRL/0QXbTF15nF74FF5C/7+uTptMZ0dK2H
+         4Ocn2tuclJo4mwGN0NzF7qTd2qWnVk71e5xYdyXIeVyy9UYJbmDK1ncN63USvZB5mQTD
+         GvaVCFxFg/l1EoiItvawcdsfMUfJbXPTYl6Us+XzvJ/sfv6MZK8bAqQG+R1CSj3hbn/o
+         +a3g==
+X-Gm-Message-State: AOAM531CTqouTuPUpIWtlbKng/GZrSCMrc1LGMfBhxYt7GPCeegRBfwp
+        ziqpBt9dRlnBqXixQBTiQXY=
+X-Google-Smtp-Source: ABdhPJyv+IBI4CGl6Q1AzmNDsJMYYp7uyj/VURBMSErPvxbpLB2F+eOKSl02X9xcbUiYDXLPR3jLeQ==
+X-Received: by 2002:a05:6000:f:b0:203:d97a:947 with SMTP id h15-20020a056000000f00b00203d97a0947mr6366606wrx.654.1648787762171;
+        Thu, 31 Mar 2022 21:36:02 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id t6-20020a05600c198600b0038cafe3d47dsm857337wmq.42.2022.03.31.21.36.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 21:36:01 -0700 (PDT)
+Message-ID: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
+Date:   Fri, 1 Apr 2022 06:35:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324124402.3631379-2-daniel@0x0f.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
+Content-Language: en-US
+To:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     rostedt@goodmis.org, senozhatsky@chromium.org,
+        andre.goddard@gmail.com, sudipm.mukherjee@gmail.com,
+        andy.shevchenko@gmail.com, David.Laight@aculab.com,
+        jonathanh@nvidia.com, phil@raspberrypi.com
+References: <20220331190257.101781-1-wander@redhat.com>
+ <20220331190257.101781-2-wander@redhat.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220331190257.101781-2-wander@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 24 Mar 2022 21:43:59 +0900, Daniel Palmer wrote:
-> Add compatible for the MStar MSC313 uarts.
+On 31. 03. 22, 21:02, Wander Lairson Costa wrote:
+> Note: I am using a small test app + driver located at [0] for the
+> problem description. serco is a driver whose write function dispatches
+> to the serial controller. sertest is a user-mode app that writes n bytes
+> to the serial console using the serco driver.
 > 
-> Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+> While investigating a bug in the RHEL kernel, I noticed that the serial
+> console throughput is way below the configured speed of 115200 bps in
+> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
+> I got 2.5KB/s.
+> 
+> $ time ./sertest -n 2500 /tmp/serco
+> 
+> real    0m0.997s
+> user    0m0.000s
+> sys     0m0.997s
+> 
+> With the help of the function tracer, I then noticed the serial
+> controller was taking around 410us seconds to dispatch one single byte:
+> 
+> $ trace-cmd record -p function_graph -g serial8250_console_write \
+>     ./sertest -n 1 /tmp/serco
+> 
+> $ trace-cmd report
+> 
+>              |  serial8250_console_write() {
+>   0.384 us   |    _raw_spin_lock_irqsave();
+>   1.836 us   |    io_serial_in();
+>   1.667 us   |    io_serial_out();
+>              |    uart_console_write() {
+>              |      serial8250_console_putchar() {
+>              |        wait_for_xmitr() {
+>   1.870 us   |          io_serial_in();
+>   2.238 us   |        }
+>   1.737 us   |        io_serial_out();
+>   4.318 us   |      }
+>   4.675 us   |    }
+>              |    wait_for_xmitr() {
+>   1.635 us   |      io_serial_in();
+>              |      __const_udelay() {
+>   1.125 us   |        delay_tsc();
+>   1.429 us   |      }
+> ...
+> ...
+> ...
+>   1.683 us   |      io_serial_in();
+>              |      __const_udelay() {
+>   1.248 us   |        delay_tsc();
+>   1.486 us   |      }
+>   1.671 us   |      io_serial_in();
+>   411.342 us |    }
+> 
+> In another machine, I measured a throughput of 11.5KB/s, with the serial
+> controller taking between 80-90us to send each byte. That matches the
+> expected throughput for a configuration of 115200 bps.
+> 
+> This patch changes the serial8250_console_write to use the 16550 fifo
+> if available. In my benchmarks I got around 25% improvement in the slow
+> machine, and no performance penalty in the fast machine.
+> 
+> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 > ---
->  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 3 +++
->  1 file changed, 3 insertions(+)
+>   drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++---
+>   1 file changed, 62 insertions(+), 6 deletions(-)
 > 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 318af6f13605..8f7eba5e71cf 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2077,10 +2077,7 @@ static void serial8250_break_ctl(struct uart_port *port, int break_state)
+>   	serial8250_rpm_put(up);
+>   }
+>   
+> -/*
+> - *	Wait for transmitter & holding register to empty
+> - */
+> -static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+> +static void wait_for_lsr(struct uart_8250_port *up, int bits)
+>   {
+>   	unsigned int status, tmout = 10000;
+>   
+> @@ -2097,6 +2094,16 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+>   		udelay(1);
+>   		touch_nmi_watchdog();
+>   	}
+> +}
+> +
+> +/*
+> + *	Wait for transmitter & holding register to empty
+> + */
+> +static void wait_for_xmitr(struct uart_8250_port *up, int bits)
+> +{
+> +	unsigned int tmout;
+> +
+> +	wait_for_lsr(up, bits);
+>   
+>   	/* Wait up to 1s for flow control if necessary */
+>   	if (up->port.flags & UPF_CONS_FLOW) {
+> @@ -3332,6 +3339,35 @@ static void serial8250_console_restore(struct uart_8250_port *up)
+>   	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
+>   }
+>   
+> +/*
+> + * Print a string to the serial port using the device FIFO
+> + *
+> + * It sends fifosize bytes and then waits for the fifo
+> + * to get empty.
+> + */
+> +static void serial8250_console_fifo_write(struct uart_8250_port *up,
+> +					  const char *s, unsigned int count)
+> +{
+> +	int i;
+> +	const char *end = s + count;
+> +	unsigned int fifosize = up->tx_loadsz;
+> +	bool cr_sent = false;
+> +
+> +	while (s != end) {
+> +		wait_for_lsr(up, UART_LSR_THRE);
+> +
+> +		for (i = 0; i < fifosize && s != end; ++i) {
+> +			if (*s == '\n' && !cr_sent) {
+> +				serial_out(up, UART_TX, '\r');
+> +				cr_sent = true;
+> +			} else {
+> +				serial_out(up, UART_TX, *s++);
+> +				cr_sent = false;
+> +			}
+> +		}
+> +	}
+> +}
+> +
+>   /*
+>    *	Print a string to the serial port trying not to disturb
+>    *	any possible real use of the port...
+> @@ -3347,7 +3383,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>   	struct uart_8250_em485 *em485 = up->em485;
+>   	struct uart_port *port = &up->port;
+>   	unsigned long flags;
+> -	unsigned int ier;
+> +	unsigned int ier, use_fifo;
+>   	int locked = 1;
+>   
+>   	touch_nmi_watchdog();
+> @@ -3379,7 +3415,27 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+>   		mdelay(port->rs485.delay_rts_before_send);
+>   	}
+>   
+> -	uart_console_write(port, s, count, serial8250_console_putchar);
+> +	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+> +		/*
+> +		 * BCM283x requires to check the fifo
+> +		 * after each byte.
+> +		 */
+> +		!(up->capabilities & UART_CAP_MINI) &&
+> +		up->tx_loadsz > 1 &&
+> +		(up->fcr & UART_FCR_ENABLE_FIFO) &&
+> +		port-state &&
 
-Acked-by: Rob Herring <robh@kernel.org>
+">" missing here. Doesn't a compiler warn about subtracting different types?
+
+regards,
+-- 
+js
+suse labs
