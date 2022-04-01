@@ -2,233 +2,153 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937FEC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 04:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4A1C433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 10:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244873AbiDAEiD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Apr 2022 00:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
+        id S1345250AbiDAK6w (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Apr 2022 06:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbiDAEhw (ORCPT
+        with ESMTP id S244272AbiDAK6w (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Apr 2022 00:37:52 -0400
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18FA243713;
-        Thu, 31 Mar 2022 21:36:03 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id h23so2431141wrb.8;
-        Thu, 31 Mar 2022 21:36:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=olW/xLwuiQra0w+84+rmqpMcAO9wN+Sku9gVx0ollFo=;
-        b=julqckNObXM5HJ743nwZ/yFGool+34eAu9o9Dq86iWJm4//8lJfAkR+Al1BtsdHe7n
-         4M23xx4jDPhF103GFAshfFbY3/wLfBe8lVINtum20ueiYYKtWHj4uqTlReIjm+x9Q/qU
-         HoFrNCPLWU/+qEQlvLkKB0NgUqC+l/iLS8VRL/0QXbTF15nF74FF5C/7+uTptMZ0dK2H
-         4Ocn2tuclJo4mwGN0NzF7qTd2qWnVk71e5xYdyXIeVyy9UYJbmDK1ncN63USvZB5mQTD
-         GvaVCFxFg/l1EoiItvawcdsfMUfJbXPTYl6Us+XzvJ/sfv6MZK8bAqQG+R1CSj3hbn/o
-         +a3g==
-X-Gm-Message-State: AOAM531CTqouTuPUpIWtlbKng/GZrSCMrc1LGMfBhxYt7GPCeegRBfwp
-        ziqpBt9dRlnBqXixQBTiQXY=
-X-Google-Smtp-Source: ABdhPJyv+IBI4CGl6Q1AzmNDsJMYYp7uyj/VURBMSErPvxbpLB2F+eOKSl02X9xcbUiYDXLPR3jLeQ==
-X-Received: by 2002:a05:6000:f:b0:203:d97a:947 with SMTP id h15-20020a056000000f00b00203d97a0947mr6366606wrx.654.1648787762171;
-        Thu, 31 Mar 2022 21:36:02 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id t6-20020a05600c198600b0038cafe3d47dsm857337wmq.42.2022.03.31.21.36.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 21:36:01 -0700 (PDT)
-Message-ID: <4767809d-5818-ad40-a0e7-b3af40aa071e@kernel.org>
-Date:   Fri, 1 Apr 2022 06:35:58 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v5 1/1] serial/8250: Use fifo in 8250 console driver
-Content-Language: en-US
-To:     Wander Lairson Costa <wander@redhat.com>,
+        Fri, 1 Apr 2022 06:58:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1758826B3AD;
+        Fri,  1 Apr 2022 03:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648810621; x=1680346621;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=5FJzMWBGQ//xzF1sSbPPyai5Ulzm/2PfDun4fIr6bUI=;
+  b=MlrpST4AkelMjpGmBOr0ldbzoHYxKI92rvoyyNDnVNzv6cGYtCxayYpT
+   wpdDULiXp1Oq93xEEsTs+dFTOVetv9b0umoylCeQhjqTGtkP3/JSue6Pv
+   glMc11F5qv+dJojmNAEajHq8qyLJMsfh5C9U/mBbGl40nXitDHftErtAO
+   gCUxKYDuoXKVG2Zs+vPGb6x6xvEEJAzlt2MnbS/VoGIv72kd8b5776nzG
+   xLzxoOSoSaT/z4Bwou5dtBskRtfqxrMjiu/oij6kcKqwiiE55Pz6tjK6Y
+   ZsqTxgyQ4YDXQI6J8JBTj3UOwxK6Ib28bU8EVExoWaEuOEFsH7JrR4JJG
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="247612605"
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="247612605"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 03:57:00 -0700
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="567389981"
+Received: from elsaidmo-mobl1.ger.corp.intel.com ([10.252.40.187])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 03:56:55 -0700
+Date:   Fri, 1 Apr 2022 13:56:49 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     rostedt@goodmis.org, senozhatsky@chromium.org,
-        andre.goddard@gmail.com, sudipm.mukherjee@gmail.com,
-        andy.shevchenko@gmail.com, David.Laight@aculab.com,
-        jonathanh@nvidia.com, phil@raspberrypi.com
-References: <20220331190257.101781-1-wander@redhat.com>
- <20220331190257.101781-2-wander@redhat.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220331190257.101781-2-wander@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-renesas-soc@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH v4 7/9] serial: 8250: dw: Add support for DMA flow
+ controlling devices
+In-Reply-To: <20220330132038.808679-8-miquel.raynal@bootlin.com>
+Message-ID: <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
+References: <20220330132038.808679-1-miquel.raynal@bootlin.com> <20220330132038.808679-8-miquel.raynal@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 31. 03. 22, 21:02, Wander Lairson Costa wrote:
-> Note: I am using a small test app + driver located at [0] for the
-> problem description. serco is a driver whose write function dispatches
-> to the serial controller. sertest is a user-mode app that writes n bytes
-> to the serial console using the serco driver.
+On Wed, 30 Mar 2022, Miquel Raynal wrote:
+
+> From: Phil Edworthy <phil.edworthy@renesas.com>
 > 
-> While investigating a bug in the RHEL kernel, I noticed that the serial
-> console throughput is way below the configured speed of 115200 bps in
-> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
-> I got 2.5KB/s.
+> DW based controllers like the one on Renesas RZ/N1 must be programmed as
+> flow controllers when using DMA.
 > 
-> $ time ./sertest -n 2500 /tmp/serco
+> * Table 11.45 of the system manual, "Flow Control Combinations", states
+>   that using UART with DMA requires setting the DMA in the peripheral
+>   flow controller mode regardless of the direction.
 > 
-> real    0m0.997s
-> user    0m0.000s
-> sys     0m0.997s
+> * Chapter 11.6.1.3 of the system manual, "Basic Interface Definitions",
+>   explains that the burst size in the above case must be configured in
+>   the peripheral's register DEST/SRC_BURST_SIZE.
 > 
-> With the help of the function tracer, I then noticed the serial
-> controller was taking around 410us seconds to dispatch one single byte:
+> Experiments shown that upon Rx timeout, the DMA transaction needed to be
+> manually cleared as well.
 > 
-> $ trace-cmd record -p function_graph -g serial8250_console_write \
->     ./sertest -n 1 /tmp/serco
-> 
-> $ trace-cmd report
-> 
->              |  serial8250_console_write() {
->   0.384 us   |    _raw_spin_lock_irqsave();
->   1.836 us   |    io_serial_in();
->   1.667 us   |    io_serial_out();
->              |    uart_console_write() {
->              |      serial8250_console_putchar() {
->              |        wait_for_xmitr() {
->   1.870 us   |          io_serial_in();
->   2.238 us   |        }
->   1.737 us   |        io_serial_out();
->   4.318 us   |      }
->   4.675 us   |    }
->              |    wait_for_xmitr() {
->   1.635 us   |      io_serial_in();
->              |      __const_udelay() {
->   1.125 us   |        delay_tsc();
->   1.429 us   |      }
-> ...
-> ...
-> ...
->   1.683 us   |      io_serial_in();
->              |      __const_udelay() {
->   1.248 us   |        delay_tsc();
->   1.486 us   |      }
->   1.671 us   |      io_serial_in();
->   411.342 us |    }
-> 
-> In another machine, I measured a throughput of 11.5KB/s, with the serial
-> controller taking between 80-90us to send each byte. That matches the
-> expected throughput for a configuration of 115200 bps.
-> 
-> This patch changes the serial8250_console_write to use the 16550 fifo
-> if available. In my benchmarks I got around 25% improvement in the slow
-> machine, and no performance penalty in the fast machine.
-> 
-> Signed-off-by: Wander Lairson Costa <wander@redhat.com>
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Co-developed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->   drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++---
->   1 file changed, 62 insertions(+), 6 deletions(-)
+>  drivers/tty/serial/8250/8250_dw.c | 64 +++++++++++++++++++++++++++++++
+>  1 file changed, 64 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 318af6f13605..8f7eba5e71cf 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2077,10 +2077,7 @@ static void serial8250_break_ctl(struct uart_port *port, int break_state)
->   	serial8250_rpm_put(up);
->   }
->   
-> -/*
-> - *	Wait for transmitter & holding register to empty
-> - */
-> -static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-> +static void wait_for_lsr(struct uart_8250_port *up, int bits)
->   {
->   	unsigned int status, tmout = 10000;
->   
-> @@ -2097,6 +2094,16 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
->   		udelay(1);
->   		touch_nmi_watchdog();
->   	}
-> +}
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index a156c6d2f866..977a473535e8 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -34,14 +34,26 @@
+>  
+>  /* Offsets for the DesignWare specific registers */
+>  #define DW_UART_USR	0x1f /* UART Status Register */
+> +#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
 > +
-> +/*
-> + *	Wait for transmitter & holding register to empty
-> + */
-> +static void wait_for_xmitr(struct uart_8250_port *up, int bits)
-> +{
-> +	unsigned int tmout;
+> +#define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
+> +#define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+>  
+>  /* DesignWare specific register fields */
+>  #define DW_UART_MCR_SIRE		BIT(6)
+>  
+> +/* Renesas specific register fields */
+> +#define RZN1_UART_xDMACR_DMA_EN		BIT(0)
+> +#define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
+> +#define RZN1_UART_xDMACR_4_WORD_BURST	(1 << 1)
+> +#define RZN1_UART_xDMACR_8_WORD_BURST	(3 << 1)
+> +#define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
 > +
-> +	wait_for_lsr(up, bits);
->   
->   	/* Wait up to 1s for flow control if necessary */
->   	if (up->port.flags & UPF_CONS_FLOW) {
-> @@ -3332,6 +3339,35 @@ static void serial8250_console_restore(struct uart_8250_port *up)
->   	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
->   }
->   
-> +/*
-> + * Print a string to the serial port using the device FIFO
-> + *
-> + * It sends fifosize bytes and then waits for the fifo
-> + * to get empty.
-> + */
-> +static void serial8250_console_fifo_write(struct uart_8250_port *up,
-> +					  const char *s, unsigned int count)
-> +{
-> +	int i;
-> +	const char *end = s + count;
-> +	unsigned int fifosize = up->tx_loadsz;
-> +	bool cr_sent = false;
-> +
-> +	while (s != end) {
-> +		wait_for_lsr(up, UART_LSR_THRE);
-> +
-> +		for (i = 0; i < fifosize && s != end; ++i) {
-> +			if (*s == '\n' && !cr_sent) {
-> +				serial_out(up, UART_TX, '\r');
-> +				cr_sent = true;
-> +			} else {
-> +				serial_out(up, UART_TX, *s++);
-> +				cr_sent = false;
-> +			}
-> +		}
-> +	}
-> +}
-> +
->   /*
->    *	Print a string to the serial port trying not to disturb
->    *	any possible real use of the port...
-> @@ -3347,7 +3383,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->   	struct uart_8250_em485 *em485 = up->em485;
->   	struct uart_port *port = &up->port;
->   	unsigned long flags;
-> -	unsigned int ier;
-> +	unsigned int ier, use_fifo;
->   	int locked = 1;
->   
->   	touch_nmi_watchdog();
-> @@ -3379,7 +3415,27 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
->   		mdelay(port->rs485.delay_rts_before_send);
->   	}
->   
-> -	uart_console_write(port, s, count, serial8250_console_putchar);
-> +	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> +		/*
-> +		 * BCM283x requires to check the fifo
-> +		 * after each byte.
-> +		 */
-> +		!(up->capabilities & UART_CAP_MINI) &&
-> +		up->tx_loadsz > 1 &&
-> +		(up->fcr & UART_FCR_ENABLE_FIFO) &&
-> +		port-state &&
+>  /* Quirks */
+>  #define DW_UART_QUIRK_OCTEON		BIT(0)
+>  #define DW_UART_QUIRK_ARMADA_38X	BIT(1)
+>  #define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
+> +#define DW_UART_QUIRK_IS_DMA_FC		BIT(3)
+>  
+>  static inline struct dw8250_data *clk_to_dw8250_data(struct notifier_block *nb)
+>  {
+> @@ -224,6 +236,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+>  	struct dw8250_data *d = to_dw8250_data(p->private_data);
+>  	unsigned int iir = p->serial_in(p, UART_IIR);
+>  	bool rx_timeout = (iir & 0x3f) == UART_IIR_RX_TIMEOUT;
+> +	unsigned int quirks = d->pdata->quirks;
+>  	unsigned int status;
+>  	unsigned long flags;
+>  
+> @@ -247,6 +260,15 @@ static int dw8250_handle_irq(struct uart_port *p)
+>  		spin_unlock_irqrestore(&p->lock, flags);
+>  	}
+>  
+> +	/* Manually stop the Rx DMA transfer when acting as flow controller */
+> +	if (up->dma && up->dma->rx_running && rx_timeout && quirks & DW_UART_QUIRK_IS_DMA_FC) {
+> +		status = p->serial_in(p, UART_LSR);
+> +		if (status & (UART_LSR_DR | UART_LSR_BI)) {
+> +			writel(0, p->membase + RZN1_UART_RDMACR);
+> +			writel(1, p->membase + DW_UART_DMASA);
 
-">" missing here. Doesn't a compiler warn about subtracting different types?
+Currently there is serial_out(), dw8250_writel_ext(), and a few writel()s 
+too for writing to registers. It would be nice to move towards more 
+homogeneous approach rather than adding more writel()s.
 
-regards,
+I suggest dw8250_writel_ext() is moved to dwlib.h. Then it could be used 
+here (and dw8250_readl_ext() too should be moved but IIRC there wasn't 
+any reads added by this series).
+
 -- 
-js
-suse labs
+ i.
+
