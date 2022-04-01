@@ -2,101 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D657C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 17:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D65C433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Apr 2022 19:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350249AbiDARkw (ORCPT
+        id S1350242AbiDATtx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Apr 2022 13:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        Fri, 1 Apr 2022 15:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238303AbiDARkv (ORCPT
+        with ESMTP id S1349070AbiDATtw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Apr 2022 13:40:51 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7520AF1B;
-        Fri,  1 Apr 2022 10:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648834741; x=1680370741;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=z0dQ1kpXFo+5ugqbz/2Q0ztwOv4jf/rgKI47VO6yM7E=;
-  b=bBj+Nbk0cQJSPNZD1HAjMDGpk5QD8+v8aPfj6e3Sbqapu49pIcrp3AJx
-   dUYYaG2TmYzyHRo0xel/bQFb1BZJGjMmSNNkYQVXRtMxQDCC8eUn/U4nE
-   5KcYJRKxIEQ60IvO1H52iqImSN+9O/mkSYdEBBUGaufJ9XjQLjCVsbzVn
-   4BMT6xy9wtBmS/2VEDt2c4h1X5Id8RJPy9aP/BPNhhgGCDKQ/NGVfVtrn
-   yqMNxqAKfV9MvI/FdAfARfA7lugjoMvZojN8sA+l540hXWZpnUMxvqT/M
-   PtgoJMxnY/rbyaW6YnD/Vs2Qk87RW1UiduZLWgjOXlFlRqupvD6bSKTr6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10304"; a="260375614"
-X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
-   d="scan'208";a="260375614"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:39:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,228,1643702400"; 
-   d="scan'208";a="504244321"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 10:38:57 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1naLE8-00AqBV-QU;
-        Fri, 01 Apr 2022 20:38:24 +0300
-Date:   Fri, 1 Apr 2022 20:38:24 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 1 Apr 2022 15:49:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FE031D7D90
+        for <linux-serial@vger.kernel.org>; Fri,  1 Apr 2022 12:48:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648842480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=8yU+4t/rW+YFNbdqOagodLy2byNHGn7oDJru4qzRMQk=;
+        b=I2EP+ponP/VvSIlNMy9Dv6enloApgjz5G3SDbUvpoP8lrh8hhGAwWNPLi/4giIDftIEzg8
+        hrvUnjkRm9jKoOa3DIMWNhkI0ZCWkssWvcHIh/3Mfr+FN3RLehE6ig2EEweEpp6YfRMCSl
+        JqdjMfmWtMjSr5n2GaDBtV5/kW2uXYo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-599-9ek7tJcnPtm8NstXdq-B9g-1; Fri, 01 Apr 2022 15:47:56 -0400
+X-MC-Unique: 9ek7tJcnPtm8NstXdq-B9g-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D5E553C01D82;
+        Fri,  1 Apr 2022 19:47:55 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.22.10.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F36634292C8;
+        Fri,  1 Apr 2022 19:47:50 +0000 (UTC)
+From:   Wander Lairson Costa <wander@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH v4 7/9] serial: 8250: dw: Add support for DMA flow
- controlling devices
-Message-ID: <Ykc4kGLEnwdoUqZ6@smile.fi.intel.com>
-References: <20220330132038.808679-1-miquel.raynal@bootlin.com>
- <20220330132038.808679-8-miquel.raynal@bootlin.com>
- <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     ilpo.jarvinen@linux.intel.com, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andre.goddard@gmail.com,
+        sudipm.mukherjee@gmail.com, andy.shevchenko@gmail.com,
+        David.Laight@aculab.com, jonathanh@nvidia.com, phil@raspberrypi.com
+Subject: [PATCH v6 0/1] serial/8250: Use fifo in 8250 console driver
+Date:   Fri,  1 Apr 2022 16:46:41 -0300
+Message-Id: <20220401194645.1738747-1-wander@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 01:56:49PM +0300, Ilpo Järvinen wrote:
-> On Wed, 30 Mar 2022, Miquel Raynal wrote:
+This is v6 of the serial fifo patch. In relation to the previous
+reverted patch, I describe the main changes in the "What changed from
+v3" section.
 
-...
+What changed from v5
+--------------------
 
-> > +			writel(0, p->membase + RZN1_UART_RDMACR);
-> > +			writel(1, p->membase + DW_UART_DMASA);
-> 
-> Currently there is serial_out(), dw8250_writel_ext(), and a few writel()s 
-> too for writing to registers. It would be nice to move towards more 
-> homogeneous approach rather than adding more writel()s.
+* Fixed a typo in patch patch "port-state" becomes "port->state".
 
-Actually a good catch!
+What changed from v4
+--------------------
 
-> I suggest dw8250_writel_ext() is moved to dwlib.h. Then it could be used 
-> here (and dw8250_readl_ext() too should be moved but IIRC there wasn't 
-> any reads added by this series).
+* It squashes all the patches in a single patch
+* It adds `port-state &&` check in the `use_fifo` condition as a
+* preventive measure.
 
-I agree that for the sake of symmetry it's good to move both.
+What changed from v3
+--------------------
+
+* Reads the FCR value from the port struct. The earlier patch
+erroneously read the value from the controller, but FCR is a write-only
+register. Thanks to Jiri Slaby for point this out.
+
+* Use tx_loadsz as the transmitter fifo size. We previously used the
+port->fifosize field, which caused data loss in some controllers. Thanks
+Jon Hunter for the bug report.
+
+* Exclude the BCM283x from fifo write. This is based on Phil Elwell's
+original patch [1].
+
+* Check if the port is initialized before write through fifo.
+The serial driver set the value of uart_8250_port.fcr in the function
+serial8250_config_port, but only writes the value to the controller
+register later in the initalization code. That opens a small window in
+which is not safe to use the fifo for console write. Unfortunately, I
+lost track of who originally reported the issue. If s/he is reading
+this, please speak up so I can give you the due credit.
+
+[1] https://lore.kernel.org/all/20220126141124.4086065-1-phil@raspberrypi.com/
+
+Wander Lairson Costa (1):
+  serial/8250: Use fifo in 8250 console driver
+
+ drivers/tty/serial/8250/8250_port.c | 68 ++++++++++++++++++++++++++---
+ 1 file changed, 62 insertions(+), 6 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
