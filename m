@@ -2,116 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A896C433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 10:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A28C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 15:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350133AbiDBKWZ (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 06:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
+        id S235198AbiDBPjw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 2 Apr 2022 11:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240469AbiDBKWY (ORCPT
+        with ESMTP id S233255AbiDBPjw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 2 Apr 2022 06:22:24 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA58312629;
-        Sat,  2 Apr 2022 03:20:32 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVtMz3DGqz9sSK;
-        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id xnPhM1sjivqw; Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVtMz2NVhz9sQx;
-        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 370848B76D;
-        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id N76mO51tVULW; Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.136])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E9FBA8B768;
-        Sat,  2 Apr 2022 12:20:30 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 232AKK2x685186
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sat, 2 Apr 2022 12:20:20 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 232AKJrg685185;
-        Sat, 2 Apr 2022 12:20:19 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] tty: serial: Prepare cleanup of powerpc's asm/prom.h
-Date:   Sat,  2 Apr 2022 12:20:19 +0200
-Message-Id: <49fc0d4b6446da630b1e9f29c4bab38f8ed087bf.1648833419.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Sat, 2 Apr 2022 11:39:52 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF55A147AC3
+        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 08:37:59 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id yy13so11651961ejb.2
+        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 08:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
+        b=JVpQL/v5kWGf/e2/0JHBaEUGGw/gj3Ojbu7L/yyxICvL6KyitRYisyaCKKvLuhnzRR
+         bAfAQP9PDU2bjs9AqA2JVHTfBGMh8fmWIugeGXrIAu6aDnRrJW7zkBjzeIA3lxhPcJak
+         SZkNWnlrUSlK3Rd3vLkZqXMrEcEVjAlK+O5bwuXqMDa1vGIOlmnhvuK68upNgJyomv7G
+         sc3KNTc4y9T5EXLE/guXbGP0nyME9ORiSoViSq/PG2SA573R80+wm5VdUkKA1OWYXX0R
+         pTnm9LSwLzLb/WXEzClRvpw2rsunxAiftvC1xqcKI18olKG7ZZnq5RGSNnw/MlN5LwvF
+         6Qug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
+        b=b0JYH65AbM03+ycIpLTyW/rsSdjp9x99zL1I1/4m2RYaa27kV3vN3Lk5bQdvNiF2iP
+         G4Xh+WQuSG802b2tYPvfHvfOCrkIOkKYrf70xjlCETeUwzsqQRQhEsffrS592KyCd6Z9
+         MmfU5DcZlLmwNDx6CMxDpUWSVxhZtSNJVzDXNFY9uz+Ap6SYNuIlv0Yqq5kcQpclfG7O
+         tGBEkruYYXAQNoxNQhQaxq6qzqHnykt13oOMNe2sQtNM/Xxc2tcIqqYmbwXL1CIfQJ4a
+         uiXE+EWIDXK50W7xb/KJ7jO/5Cf5K5ZeBmW/+JvSM6H3Dga8ZJmnYVqjPnHT5zGGsX8C
+         qXFQ==
+X-Gm-Message-State: AOAM531JN3ytShbdIsl0XO7DV3g+HlD9zwR6QdvSXzg3PKdL9vUAnYae
+        3x5c7J0lGeJ99nT4ixUygtEreA==
+X-Google-Smtp-Source: ABdhPJyxFZOKe4x3u3oQufe6RweNYX1YclatcvzBUnGqI5aWiZseTdOA+bMUDSEEh3I460buuu9lLA==
+X-Received: by 2002:a17:907:7f0c:b0:6e1:42ee:3e71 with SMTP id qf12-20020a1709077f0c00b006e142ee3e71mr4248325ejc.127.1648913878505;
+        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
+Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id i14-20020a50cfce000000b0041cbaba8743sm434843edk.56.2022.04.02.08.37.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
+Message-ID: <523c6f46-54eb-22f0-221c-981879b8311e@linaro.org>
+Date:   Sat, 2 Apr 2022 17:37:57 +0200
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648894818; l=1666; s=20211009; h=from:subject:message-id; bh=OEjRDeZAfp+2QT3pAyv3SoV3GY3UmYAVBWs0TMUxvZk=; b=gpK/gwFq/JdRwA2dEZAy3dkq+jhAAP6bs68z/l7be45EW2seiobjWw7j79KO9+C/n55e0WTDpdlY psC3jgNUBm2sYm75W9rJK8EMKY0mVuyHTfRe6nECvrGSfYfBOLlU
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/5] dt-bindings: serial: Update Qualcomm geni based QUP
+ uart bindings
+Content-Language: en-US
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220402051206.6115-1-singh.kuldeep87k@gmail.com>
+ <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't
-need itself.
+On 02/04/2022 07:12, Kuldeep Singh wrote:
+> Similar to i2c controller, move geni based QUP uart controller bindings
 
-In order to clean it up, first add missing headers in
-users of asm/prom.h
+s/i2c/I2C/
+s/uart/UART/
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 1 -
- drivers/tty/serial/mpc52xx_uart.c           | 2 ++
- drivers/tty/serial/pmac_zilog.c             | 1 -
- 3 files changed, 2 insertions(+), 2 deletions(-)
+> out from parent schema to an individual binding and let parent refer to
+> child schema later on. Uart bindings also stand incomplete right now
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-index 6a1cd03bfe39..108af254e8f3 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-@@ -25,7 +25,6 @@
- #include <asm/io.h>
- #include <asm/irq.h>
- #include <asm/fs_pd.h>
--#include <asm/prom.h>
- 
- #include <linux/serial_core.h>
- #include <linux/kernel.h>
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 8a6958377764..4ec785e4f9b1 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -38,6 +38,8 @@
- #include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/clk.h>
- 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index 5d97c201ad88..c903085acb8d 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -51,7 +51,6 @@
- #include <asm/irq.h>
- 
- #ifdef CONFIG_PPC_PMAC
--#include <asm/prom.h>
- #include <asm/machdep.h>
- #include <asm/pmac_feature.h>
- #include <asm/dbdma.h>
--- 
-2.35.1
+s/Uart/UART/
 
+> similar to i2c, complete it along this process.
+
+s/i2c/I2C/
+
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
