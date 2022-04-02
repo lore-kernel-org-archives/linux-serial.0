@@ -2,98 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A28C433EF
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 15:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E479AC433FE
+	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 18:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235198AbiDBPjw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 11:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
+        id S245159AbiDBSmO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 2 Apr 2022 14:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233255AbiDBPjw (ORCPT
+        with ESMTP id S245005AbiDBSmM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 2 Apr 2022 11:39:52 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF55A147AC3
-        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 08:37:59 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id yy13so11651961ejb.2
-        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 08:37:59 -0700 (PDT)
+        Sat, 2 Apr 2022 14:42:12 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C694483A4
+        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 11:40:18 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id v30so757688wra.8
+        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 11:40:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
-        b=JVpQL/v5kWGf/e2/0JHBaEUGGw/gj3Ojbu7L/yyxICvL6KyitRYisyaCKKvLuhnzRR
-         bAfAQP9PDU2bjs9AqA2JVHTfBGMh8fmWIugeGXrIAu6aDnRrJW7zkBjzeIA3lxhPcJak
-         SZkNWnlrUSlK3Rd3vLkZqXMrEcEVjAlK+O5bwuXqMDa1vGIOlmnhvuK68upNgJyomv7G
-         sc3KNTc4y9T5EXLE/guXbGP0nyME9ORiSoViSq/PG2SA573R80+wm5VdUkKA1OWYXX0R
-         pTnm9LSwLzLb/WXEzClRvpw2rsunxAiftvC1xqcKI18olKG7ZZnq5RGSNnw/MlN5LwvF
-         6Qug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R0bwaoRy8YP0Kka6d0PR4kRnGp6k/gPNidKoi7gvCCI=;
+        b=URDJ3cCHTnlp0bYj+GpNw8EIKiC1517X/uMlkAr23rxB/6VlQHcy/jrd0G6QM65nZX
+         2Luj++y1IZb5rOWXfFShm94mRf+nigTy7tk8+eiRNSXmVSUA07YeV8/G97iDXbAoySFP
+         wtrkxCHLyhLHZXrDRoMbnW0AFkVAsb18orB2ZK0Z0Cv0QD2unyangyc7QXsFHPjYOXpL
+         8GglQZrPbQSNPWHhMzsfoAWjBOF3ddtl1U3te8n8yEn7LmKtTNDeL/wO/j8yzMPDi0wd
+         d1Qc2LmnDf8Hkm2wZSQ0NW+bcExEihlFBUGL2EhfHKzYp4q8vERtnhJuda6dEG07gAHZ
+         /cWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Om7g1lbZHptt45F5/8EMxdm2FJFfgH0D0EuLInj36vU=;
-        b=b0JYH65AbM03+ycIpLTyW/rsSdjp9x99zL1I1/4m2RYaa27kV3vN3Lk5bQdvNiF2iP
-         G4Xh+WQuSG802b2tYPvfHvfOCrkIOkKYrf70xjlCETeUwzsqQRQhEsffrS592KyCd6Z9
-         MmfU5DcZlLmwNDx6CMxDpUWSVxhZtSNJVzDXNFY9uz+Ap6SYNuIlv0Yqq5kcQpclfG7O
-         tGBEkruYYXAQNoxNQhQaxq6qzqHnykt13oOMNe2sQtNM/Xxc2tcIqqYmbwXL1CIfQJ4a
-         uiXE+EWIDXK50W7xb/KJ7jO/5Cf5K5ZeBmW/+JvSM6H3Dga8ZJmnYVqjPnHT5zGGsX8C
-         qXFQ==
-X-Gm-Message-State: AOAM531JN3ytShbdIsl0XO7DV3g+HlD9zwR6QdvSXzg3PKdL9vUAnYae
-        3x5c7J0lGeJ99nT4ixUygtEreA==
-X-Google-Smtp-Source: ABdhPJyxFZOKe4x3u3oQufe6RweNYX1YclatcvzBUnGqI5aWiZseTdOA+bMUDSEEh3I460buuu9lLA==
-X-Received: by 2002:a17:907:7f0c:b0:6e1:42ee:3e71 with SMTP id qf12-20020a1709077f0c00b006e142ee3e71mr4248325ejc.127.1648913878505;
-        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
-Received: from [192.168.0.171] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id i14-20020a50cfce000000b0041cbaba8743sm434843edk.56.2022.04.02.08.37.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Apr 2022 08:37:58 -0700 (PDT)
-Message-ID: <523c6f46-54eb-22f0-221c-981879b8311e@linaro.org>
-Date:   Sat, 2 Apr 2022 17:37:57 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/5] dt-bindings: serial: Update Qualcomm geni based QUP
- uart bindings
-Content-Language: en-US
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        bh=R0bwaoRy8YP0Kka6d0PR4kRnGp6k/gPNidKoi7gvCCI=;
+        b=3qngy3SxeB/95wv+n3j1H3qHPSObfWM/7Zy/Ta1jxH+hho3W2iS4TKYfUEfm38i4pK
+         iWhdx5idZzS0UKDQd28xBi/tf8NA/o6NOaHKzUmbozc+VkVqBItkRlzKOBm38q0bTfqI
+         IhmmGTYBnRSwRzAxpAYDSInibxY1Q21omWgGQlIH2QWJ/XscofNmASCesrK0HClvuIpL
+         gfguEGZMqhclmdCMBnzna4pKBOcuIkNFRiN3wOnf+xIEGnxNswLQBhUvOSCmck/H4QqJ
+         7APKDua10MxYEH4wCH2W6FiNT9IQr2N7EBQn95Z7t0wWIBcPbB7vhm9PoSYxNaD4Porp
+         5KUQ==
+X-Gm-Message-State: AOAM5333hXyP2mO0lh/wR4/CgLUwo5gMhWjFz8pY1X7NtNBLA1PL5Pz7
+        EX7tYk23TM+sl+lgUhC04c6IYg==
+X-Google-Smtp-Source: ABdhPJyr8f7Kmujacwvt6D5jb632G4JW2j0OdeTO8iHDHsAdsWcTY+7h1E41JoLr7Iu+uJ1G3+sN2g==
+X-Received: by 2002:a05:6000:1887:b0:204:2917:ad3e with SMTP id a7-20020a056000188700b002042917ad3emr11877380wri.138.1648924816609;
+        Sat, 02 Apr 2022 11:40:16 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 11:40:16 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220402051206.6115-1-singh.kuldeep87k@gmail.com>
- <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 0/9] dt-bindings: qcom: convert entire GSBI (QUP I2C/SPI/UART) to DT schema
+Date:   Sat,  2 Apr 2022 20:40:02 +0200
+Message-Id: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 02/04/2022 07:12, Kuldeep Singh wrote:
-> Similar to i2c controller, move geni based QUP uart controller bindings
+Hi,
 
-s/i2c/I2C/
-s/uart/UART/
+Changes since v2
+================
+1. Several new schema patches (GSBI, I2C and UART schema).
+2. Several DTS fixes for clocks and DMAs. The choice of dma tx-rx
+   and clocks core-iface was by more-or-less number of fixes needed.
+3. Add Kuldeep acks to patches without changes.
 
-> out from parent schema to an individual binding and let parent refer to
-> child schema later on. Uart bindings also stand incomplete right now
+Changes since v1
+================
+1. Fix path in com/qcom,gsbi.txt.
+2. Merge clock-names in example, correct $ref path (Kuldeep).
 
-s/Uart/UART/
+Merging
+=======
+1. The DTS patches are independent and silence warnings pointed
+    out by schema.
 
-> similar to i2c, complete it along this process.
-
-s/i2c/I2C/
-
-
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+2. The DT schema patches should be taken together as GSBI (final patch)
+   depends on previous bindings.
 
 Best regards,
 Krzysztof
+
+Cc: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+
+Krzysztof Kozlowski (9):
+  arm64: dts: qcom: align dmas in I2C/SPI/UART with DT schema
+  arm64: dts: qcom: align clocks in I2C/SPI with DT schema
+  ARM: dts: qcom: ipq4019: align dmas in SPI/UART with DT schema
+  ARM: dts: qcom: ipq4019: align clocks in I2C with DT schema
+  ARM: dts: qcom: msm8660: disable GSBI8
+  spi: dt-bindings: qcom,spi-qup: convert to dtschema
+  dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
+  dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
+  dt-bindings: qcom: qcom,gsbi: convert to dtschema
+
+ .../devicetree/bindings/i2c/qcom,i2c-qup.txt  |  40 ------
+ .../devicetree/bindings/i2c/qcom,i2c-qup.yaml |  89 ++++++++++++
+ .../bindings/serial/qcom,msm-uartdm.txt       |  81 -----------
+ .../bindings/serial/qcom,msm-uartdm.yaml      | 112 +++++++++++++++
+ .../bindings/soc/qcom/qcom,gsbi.txt           |  87 ------------
+ .../bindings/soc/qcom/qcom,gsbi.yaml          | 133 ++++++++++++++++++
+ .../devicetree/bindings/spi/qcom,spi-qup.txt  | 103 --------------
+ .../devicetree/bindings/spi/qcom,spi-qup.yaml |  81 +++++++++++
+ arch/arm/boot/dts/qcom-ipq4019.dtsi           |  36 ++---
+ arch/arm/boot/dts/qcom-msm8660.dtsi           |   1 +
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi         |  20 +--
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi         |  40 +++---
+ arch/arm64/boot/dts/qcom/msm8916.dtsi         |  68 ++++-----
+ arch/arm64/boot/dts/qcom/msm8953.dtsi         |  48 +++----
+ arch/arm64/boot/dts/qcom/msm8994.dtsi         |  42 +++---
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         |  36 ++---
+ arch/arm64/boot/dts/qcom/qcs404.dtsi          |  92 ++++++------
+ 17 files changed, 607 insertions(+), 502 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
+ create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+ delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+ create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
+
+-- 
+2.32.0
+
