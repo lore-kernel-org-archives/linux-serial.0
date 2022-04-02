@@ -2,52 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F090FC41535
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 18:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F010C46467
+	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 18:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232535AbiDBSmr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 14:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356951AbiDBSme (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
+        id S1356521AbiDBSme (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
         Sat, 2 Apr 2022 14:42:34 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E284F463
-        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 11:40:27 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso3245547wmz.4
-        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 11:40:27 -0700 (PDT)
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229851AbiDBSmP (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 2 Apr 2022 14:42:15 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3510F4BFE8
+        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 11:40:20 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id b19so8573737wrh.11
+        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 11:40:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ioo4qYHnBpK0bxlPRJXj59EcubEzOJoJqknqq3RnCBw=;
-        b=xma+QvotMCwq4nd+T0G157q34QrtyX/iVRaUZgz9leMHEKtLfnGWtCQp1qauSyt8Oj
-         xZty09uDqkupVvcrNaESq5Nik+Zoh0e8dZ3Dx8YlbNIgMIOF/nnxiwJTdUTgdxzzrute
-         0fyVQVUC1+HecFIivTKLVoka9sQaTn8frreKf8BxLXcOGYe3fsol6PSCK7/sjycNRBka
-         oZfeqyaNf796DBAyPBJf3SRBqJiqUumAUj6sXEK6D+7zuotYZmppvdETD5odmtIFWKnp
-         /+MkcBXTotxDgZSFs0qfIsPJeTrlEg2kOLBHQAaGbG29ztAYkkyWjgMYRgu8zjVIKP20
-         Jw9w==
+        bh=JQKmzATQgOwA4osgUu1k2T5QNkAXEVbGPsChUjRUxPs=;
+        b=SJX0cwjygaCcbqoiwQ5kBZ040ZFfn0pmmO2aXhnkVYdAsXZWH8Ko5L3n00Mu5jXU7G
+         h0znNbSTVFFSP0Tj69o9F1lN/LVqeoHSS6tHZjZ4ZQnIkgDjB5USobUcdx47UwvxSp5j
+         kHE+P1joBMzEvZ/m2cB/qpa6KDWOl1nzT+XGd2fidocqmKoRWu7Ou8DI7YXxYHQ1OYlh
+         fl76c+xOhd+igJnJAObQ7soKwnizgsSRhoLzmMlZyO67uliqcKWXdamqoeNWuSkvzc3r
+         ZUpaOIpn7uxkx+6lVGmbi6YsVWxw3cOMNVcQv5+cbHRVx9gybc858kkZbSikbKmpwRv+
+         O5ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ioo4qYHnBpK0bxlPRJXj59EcubEzOJoJqknqq3RnCBw=;
-        b=ZLmr4D7xd1OOWOVvDkaT36Qe/CbRV7YhyZQEixxLivVC3h6TR0VXzf/2iu4Hy+zKF2
-         eCmIDZzAII/kyyOAajG7LbyDSQ+IxoDjtOWOruyAF/BwkLa3QLCnvIobe9QlaWbKKMvL
-         ZMo9FilgZvQqBZCB6lCEWcaNnqH8FW8o/RLpPG+jGtMKigYNIRkPBfWEB07W0puPl6Wj
-         D/NZtk+EhOI+lbaFFmT62hOUe8R40MOtcKOZLll6W++z1ofJ51M8axEwcfCJxUGc3k9q
-         EDkgkIkE+KpSVjnMqLcCdkoCKW5HwMlgsFtYTt+vP+wtKU8kNnLajmBqvGbpJJG8WO/u
-         ITAA==
-X-Gm-Message-State: AOAM531DcMx5XzPLc0c6/vy9qdmOL5EgIidrh4fHObIjddX3yL8tCQey
-        0i5W2PNROwfzYfr4lBlGLWXF7w==
-X-Google-Smtp-Source: ABdhPJzpCLjjgITs+9CV2ej1DV1wUHUNq1oeHEUvFhvgoGV8sGtKsUPTboSbrVztBQfDTSWpsae2Xg==
-X-Received: by 2002:a05:600c:4f0f:b0:38c:c8f5:73e7 with SMTP id l15-20020a05600c4f0f00b0038cc8f573e7mr13045640wmq.201.1648924825831;
-        Sat, 02 Apr 2022 11:40:25 -0700 (PDT)
+        bh=JQKmzATQgOwA4osgUu1k2T5QNkAXEVbGPsChUjRUxPs=;
+        b=hO6l7JTvF3llxcoHf38tVhcKZkOFrrBoP/kfHzFCcifdqg+ymAig1MJ980je6blz87
+         xjmFaBRQtjOcqfqOcZI07omQ5yh1jdAPdHNu4BbEJP9uZzvxbK2WGt/+pbVqndG8ZFsa
+         kzIV6wMkzWVg9MKO7dkcT+k72Tyi3QbcZj/R1IFYQVoR0tY5oJPpUZIbhmIB6D7/AIWJ
+         KYSuvADBhNQftzAldi6w4u2k4ci8OROXsOoSxrJX0oY2phe8RuqLzUN9MWjMvTHDfiHf
+         99SzFkP5jJltd5225hRW1qm3M71z3xqSinRb4r/OBede0tE5sBiP7VbownxXB4JQVZbF
+         E2Pw==
+X-Gm-Message-State: AOAM533zzJQtBVzNudWyIxM7xllNAK4oOEBGsTce7oWlQQoYf2EnStOi
+        eThdFlqgFmvvuQu6Ed1GjqtOkQ==
+X-Google-Smtp-Source: ABdhPJygYkHfhQ8Nrgj4ProKGE0PO9rvlhY/lIdLRSZokNLlZpuhZMkuyWNu4nUYoQf42n3hLlbZuA==
+X-Received: by 2002:a5d:5849:0:b0:205:8206:86d3 with SMTP id i9-20020a5d5849000000b00205820686d3mr11659435wrf.327.1648924819019;
+        Sat, 02 Apr 2022 11:40:19 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.24
+        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 11:40:25 -0700 (PDT)
+        Sat, 02 Apr 2022 11:40:18 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,9 +61,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-spi@vger.kernel.org
 Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 8/9] dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
-Date:   Sat,  2 Apr 2022 20:40:10 +0200
-Message-Id: <20220402184011.132465-9-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 2/9] arm64: dts: qcom: align clocks in I2C/SPI with DT schema
+Date:   Sat,  2 Apr 2022 20:40:04 +0200
+Message-Id: <20220402184011.132465-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
 References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
@@ -72,161 +73,636 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the Qualcomm Universal Peripheral (QUP) I2C controller to DT
-Schema.
-
-Add missing properties: dma and dma-names, pinctrl states (to indicate
-support for sleep pinctrl).
+The DT schema expects clocks core-iface order.  No functional change.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/i2c/qcom,i2c-qup.txt  | 40 ---------
- .../devicetree/bindings/i2c/qcom,i2c-qup.yaml | 89 +++++++++++++++++++
- 2 files changed, 89 insertions(+), 40 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
- create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
 
-diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
-deleted file mode 100644
-index dc71754a56af..000000000000
---- a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
-+++ /dev/null
-@@ -1,40 +0,0 @@
--Qualcomm Universal Peripheral (QUP) I2C controller
--
--Required properties:
-- - compatible: Should be:
--   * "qcom,i2c-qup-v1.1.1" for 8660, 8960 and 8064.
--   * "qcom,i2c-qup-v2.1.1" for 8974 v1.
--   * "qcom,i2c-qup-v2.2.1" for 8974 v2 and later.
-- - reg: Should contain QUP register address and length.
-- - interrupts: Should contain I2C interrupt.
--
-- - clocks: A list of phandles + clock-specifiers, one for each entry in
--   clock-names.
-- - clock-names: Should contain:
--   * "core" for the core clock
--   * "iface" for the AHB clock
--
-- - #address-cells: Should be <1> Address cells for i2c device address
-- - #size-cells: Should be <0> as i2c addresses have no size component
--
--Optional properties:
-- - clock-frequency: Should specify the desired i2c bus clock frequency in Hz,
--                    defaults to 100kHz if omitted.
--
--Child nodes should conform to i2c bus binding.
--
--Example:
--
-- i2c@f9924000 {
-- 	compatible = "qcom,i2c-qup-v2.2.1";
-- 	reg = <0xf9924000 0x1000>;
-- 	interrupts = <0 96 0>;
--
-- 	clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
-- 	clock-names = "core", "iface";
--
-- 	clock-frequency = <355000>;
--
-- 	#address-cells = <1>;
-- 	#size-cells = <0>;
-- };
-diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
-new file mode 100644
-index 000000000000..f43947514d48
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
-@@ -0,0 +1,89 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i2c/qcom,i2c-qup.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Universal Peripheral (QUP) I2C controller
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+allOf:
-+  - $ref: /schemas/i2c/i2c-controller.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,i2c-qup-v1.1.1     # for 8660, 8960 and 8064
-+      - qcom,i2c-qup-v2.1.1     # for 8974 v1
-+      - qcom,i2c-qup-v2.2.1     # for 8974 v2 and later
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: core
-+      - const: iface
-+
-+  clock-frequency:
-+    default: 100000
-+
-+  dmas:
-+    maxItems: 2
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  pinctrl-0: true
-+  pinctrl-1: true
-+
-+  pinctrl-names:
-+    minItems: 1
-+    items:
-+      - const: default
-+      - const: sleep
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - clock-names
-+  - clocks
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,gcc-msm8998.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    i2c@c175000 {
-+        compatible = "qcom,i2c-qup-v2.2.1";
-+        reg = <0x0c175000 0x600>;
-+        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+
-+        clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
-+                 <&gcc GCC_BLSP1_AHB_CLK>;
-+        clock-names = "core", "iface";
-+        dmas = <&blsp1_dma 6>, <&blsp1_dma 7>;
-+        dma-names = "tx", "rx";
-+        pinctrl-names = "default", "sleep";
-+        pinctrl-0 = <&blsp1_i2c1_default>;
-+        pinctrl-1 = <&blsp1_i2c1_sleep>;
-+        clock-frequency = <400000>;
-+
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+    };
+---
+
+Dropped Kuldeep's ack because of changes - more properties changed.
+---
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 12 ++---
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi | 24 ++++-----
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 36 +++++++-------
+ arch/arm64/boot/dts/qcom/msm8953.dtsi | 48 +++++++++---------
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 42 ++++++++--------
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 36 +++++++-------
+ arch/arm64/boot/dts/qcom/qcs404.dtsi  | 72 +++++++++++++--------------
+ 7 files changed, 135 insertions(+), 135 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 87c28ffa44d3..8032d7933c66 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -318,9 +318,9 @@ i2c_0: i2c@78b6000 {
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x078b6000 0x0 0x600>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				<&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency  = <400000>;
+ 			dmas = <&blsp_dma 14>, <&blsp_dma 15>;
+ 			dma-names = "tx", "rx";
+@@ -333,9 +333,9 @@ i2c_1: i2c@78b7000 { /* BLSP1 QUP2 */
+ 			#size-cells = <0>;
+ 			reg = <0x0 0x078b7000 0x0 0x600>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				<&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency  = <400000>;
+ 			dmas = <&blsp_dma 16>, <&blsp_dma 17>;
+ 			dma-names = "tx", "rx";
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+index 2072638006a4..8e41c910b8f9 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -467,9 +467,9 @@ blsp1_i2c2: i2c@78b6000 {
+ 			#size-cells = <0>;
+ 			reg = <0x078b6000 0x600>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				<&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp_dma 14>, <&blsp_dma 15>;
+ 			dma-names = "tx", "rx";
+@@ -484,9 +484,9 @@ blsp1_i2c3: i2c@78b7000 {
+ 			#size-cells = <0>;
+ 			reg = <0x078b7000 0x600>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				<&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <100000>;
+ 			dmas = <&blsp_dma 16>, <&blsp_dma 17>;
+ 			dma-names = "tx", "rx";
+@@ -499,9 +499,9 @@ blsp1_i2c5: i2c@78b9000 {
+ 			#size-cells = <0>;
+ 			reg = <0x78b9000 0x600>;
+ 			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp_dma 20>, <&blsp_dma 21>;
+ 			dma-names = "tx", "rx";
+@@ -514,9 +514,9 @@ blsp1_i2c6: i2c@78ba000 {
+ 			#size-cells = <0>;
+ 			reg = <0x078ba000 0x600>;
+ 			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <100000>;
+ 			dmas = <&blsp_dma 22>, <&blsp_dma 23>;
+ 			dma-names = "tx", "rx";
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 384fc8738130..15d9731469ca 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -1511,9 +1511,9 @@ blsp_i2c1: i2c@78b5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b5000 0x500>;
+ 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c1_default>;
+ 			pinctrl-1 = <&i2c1_sleep>;
+@@ -1543,9 +1543,9 @@ blsp_i2c2: i2c@78b6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b6000 0x500>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c2_default>;
+ 			pinctrl-1 = <&i2c2_sleep>;
+@@ -1575,9 +1575,9 @@ blsp_i2c3: i2c@78b7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b7000 0x500>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c3_default>;
+ 			pinctrl-1 = <&i2c3_sleep>;
+@@ -1607,9 +1607,9 @@ blsp_i2c4: i2c@78b8000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b8000 0x500>;
+ 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c4_default>;
+ 			pinctrl-1 = <&i2c4_sleep>;
+@@ -1639,9 +1639,9 @@ blsp_i2c5: i2c@78b9000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b9000 0x500>;
+ 			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c5_default>;
+ 			pinctrl-1 = <&i2c5_sleep>;
+@@ -1671,9 +1671,9 @@ blsp_i2c6: i2c@78ba000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078ba000 0x500>;
+ 			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c6_default>;
+ 			pinctrl-1 = <&i2c6_sleep>;
+diff --git a/arch/arm64/boot/dts/qcom/msm8953.dtsi b/arch/arm64/boot/dts/qcom/msm8953.dtsi
+index 431228faacdd..2a70263a701d 100644
+--- a/arch/arm64/boot/dts/qcom/msm8953.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8953.dtsi
+@@ -923,9 +923,9 @@ i2c_1: i2c@78b5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x78b5000 0x600>;
+ 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
+ 
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_1_default>;
+@@ -941,9 +941,9 @@ i2c_2: i2c@78b6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x78b6000 0x600>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
+ 
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_2_default>;
+@@ -959,9 +959,9 @@ i2c_3: i2c@78b7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x78b7000 0x600>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_3_default>;
+ 			pinctrl-1 = <&i2c_3_sleep>;
+@@ -976,9 +976,9 @@ i2c_4: i2c@78b8000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x78b8000 0x600>;
+ 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_4_default>;
+ 			pinctrl-1 = <&i2c_4_sleep>;
+@@ -993,9 +993,9 @@ i2c_5: i2c@7af5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x7af5000 0x600>;
+ 			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_5_default>;
+ 			pinctrl-1 = <&i2c_5_sleep>;
+@@ -1010,9 +1010,9 @@ i2c_6: i2c@7af6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x7af6000 0x600>;
+ 			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP2_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP2_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_6_default>;
+ 			pinctrl-1 = <&i2c_6_sleep>;
+@@ -1027,9 +1027,9 @@ i2c_7: i2c@7af7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x7af7000 0x600>;
+ 			interrupts = <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP3_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP2_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_7_default>;
+ 			pinctrl-1 = <&i2c_7_sleep>;
+@@ -1044,9 +1044,9 @@ i2c_8: i2c@7af8000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x7af8000 0x600>;
+ 			interrupts = <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>;
+-			clock-names = "iface", "core";
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP4_I2C_APPS_CLK>;
++			clock-names = "core", "iface";
++			clocks = <&gcc GCC_BLSP2_QUP4_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&i2c_8_default>;
+ 			pinctrl-1 = <&i2c_8_sleep>;
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 8c1dc5155b71..209f9ef030e5 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -519,9 +519,9 @@ blsp1_i2c1: i2c@f9923000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9923000 0x500>;
+ 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-						<&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp1_dma 12>, <&blsp1_dma 13>;
+ 			dma-names = "tx", "rx";
+@@ -555,9 +555,9 @@ blsp1_i2c2: i2c@f9924000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9924000 0x500>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-						<&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp1_dma 14>, <&blsp1_dma 15>;
+ 			dma-names = "tx", "rx";
+@@ -575,9 +575,9 @@ blsp1_i2c4: i2c@f9926000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9926000 0x500>;
+ 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-						<&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp1_dma 18>, <&blsp1_dma 19>;
+ 			dma-names = "tx", "rx";
+@@ -593,9 +593,9 @@ blsp1_i2c5: i2c@f9927000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9927000 0x500>;
+ 			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-						<&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP5_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp2_dma 20>, <&blsp2_dma 21>;
+ 			dma-names = "tx", "rx";
+@@ -611,9 +611,9 @@ blsp1_i2c6: i2c@f9928000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9928000 0x500>;
+ 			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-						<&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP6_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp1_dma 22>, <&blsp1_dma 23>;
+ 			dma-names = "tx", "rx";
+@@ -657,9 +657,9 @@ blsp2_i2c1: i2c@f9963000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9963000 0x500>;
+ 			interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-					<&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			dmas = <&blsp2_dma 12>, <&blsp2_dma 13>;
+ 			dma-names = "tx", "rx";
+@@ -693,9 +693,9 @@ blsp2_i2c5: i2c@f9967000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0xf9967000 0x500>;
+ 			interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-						<&gcc GCC_BLSP2_QUP5_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP5_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <355000>;
+ 			dmas = <&blsp2_dma 20>, <&blsp2_dma 21>;
+ 			dma-names = "tx", "rx";
+diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+index f0f81c23c16f..dc77880e8927 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -2786,9 +2786,9 @@ blsp1_i2c3: i2c@7577000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x07577000 0x1000>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				<&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&blsp1_i2c3_default>;
+ 			pinctrl-1 = <&blsp1_i2c3_sleep>;
+@@ -2834,9 +2834,9 @@ blsp2_i2c1: i2c@75b5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x075b5000 0x1000>;
+ 			interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				<&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&blsp2_i2c1_default>;
+ 			pinctrl-1 = <&blsp2_i2c1_sleep>;
+@@ -2851,9 +2851,9 @@ blsp2_i2c2: i2c@75b6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x075b6000 0x1000>;
+ 			interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				<&gcc GCC_BLSP2_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&blsp2_i2c2_default>;
+ 			pinctrl-1 = <&blsp2_i2c2_sleep>;
+@@ -2868,9 +2868,9 @@ blsp2_i2c3: i2c@75b7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x075b7000 0x1000>;
+ 			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				<&gcc GCC_BLSP2_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			clock-frequency = <400000>;
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&blsp2_i2c3_default>;
+@@ -2886,9 +2886,9 @@ blsp2_i2c5: i2c@75b9000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x75b9000 0x1000>;
+ 			interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				<&gcc GCC_BLSP2_QUP5_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP5_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp2_i2c5_default>;
+ 			dmas = <&blsp2_dma 20>, <&blsp2_dma 21>;
+@@ -2902,9 +2902,9 @@ blsp2_i2c6: i2c@75ba000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x75ba000 0x1000>;
+ 			interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				<&gcc GCC_BLSP2_QUP6_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP6_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default", "sleep";
+ 			pinctrl-0 = <&blsp2_i2c6_default>;
+ 			pinctrl-1 = <&blsp2_i2c6_sleep>;
+diff --git a/arch/arm64/boot/dts/qcom/qcs404.dtsi b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+index 6b3a8e1006d0..acf120f91b42 100644
+--- a/arch/arm64/boot/dts/qcom/qcs404.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs404.dtsi
+@@ -914,9 +914,9 @@ blsp1_i2c0: i2c@78b5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b5000 0x600>;
+ 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP0_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP0_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_i2c0_default>;
+ 			#address-cells = <1>;
+@@ -928,9 +928,9 @@ blsp1_spi0: spi@78b5000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x078b5000 0x600>;
+ 			interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP0_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP0_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_spi0_default>;
+ 			#address-cells = <1>;
+@@ -942,9 +942,9 @@ blsp1_i2c1: i2c@78b6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b6000 0x600>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_i2c1_default>;
+ 			#address-cells = <1>;
+@@ -956,9 +956,9 @@ blsp1_spi1: spi@78b6000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x078b6000 0x600>;
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_spi1_default>;
+ 			#address-cells = <1>;
+@@ -970,9 +970,9 @@ blsp1_i2c2: i2c@78b7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b7000 0x600>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_i2c2_default>;
+ 			#address-cells = <1>;
+@@ -984,9 +984,9 @@ blsp1_spi2: spi@78b7000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x078b7000 0x600>;
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP2_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP2_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_spi2_default>;
+ 			#address-cells = <1>;
+@@ -998,9 +998,9 @@ blsp1_i2c3: i2c@78b8000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b8000 0x600>;
+ 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_i2c3_default>;
+ 			#address-cells = <1>;
+@@ -1012,9 +1012,9 @@ blsp1_spi3: spi@78b8000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x078b8000 0x600>;
+ 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP3_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP3_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_spi3_default>;
+ 			#address-cells = <1>;
+@@ -1026,9 +1026,9 @@ blsp1_i2c4: i2c@78b9000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x078b9000 0x600>;
+ 			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP4_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_i2c4_default>;
+ 			#address-cells = <1>;
+@@ -1040,9 +1040,9 @@ blsp1_spi4: spi@78b9000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x078b9000 0x600>;
+ 			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
+-				 <&gcc GCC_BLSP1_QUP4_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP1_QUP4_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP1_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp1_spi4_default>;
+ 			#address-cells = <1>;
+@@ -1078,9 +1078,9 @@ blsp2_i2c0: i2c@7af5000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			reg = <0x07af5000 0x600>;
+ 			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP0_I2C_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP0_I2C_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp2_i2c0_default>;
+ 			#address-cells = <1>;
+@@ -1092,9 +1092,9 @@ blsp2_spi0: spi@7af5000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			reg = <0x07af5000 0x600>;
+ 			interrupts = <GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&gcc GCC_BLSP2_AHB_CLK>,
+-				 <&gcc GCC_BLSP2_QUP0_SPI_APPS_CLK>;
+-			clock-names = "iface", "core";
++			clocks = <&gcc GCC_BLSP2_QUP0_SPI_APPS_CLK>,
++				 <&gcc GCC_BLSP2_AHB_CLK>;
++			clock-names = "core", "iface";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&blsp2_spi0_default>;
+ 			#address-cells = <1>;
 -- 
 2.32.0
 
