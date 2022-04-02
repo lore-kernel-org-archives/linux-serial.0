@@ -2,175 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F44C43217
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 05:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A896C433F5
+	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 10:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiDBFOT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 01:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
+        id S1350133AbiDBKWZ (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 2 Apr 2022 06:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353742AbiDBFOP (ORCPT
+        with ESMTP id S240469AbiDBKWY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 2 Apr 2022 01:14:15 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F20018D9AE;
-        Fri,  1 Apr 2022 22:12:24 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id k14so3935787pga.0;
-        Fri, 01 Apr 2022 22:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MErvedHfDHC4lr+xkiSj1NOx3p7e7op+yy3jW2e34dI=;
-        b=J1J5AyiKM1mnABNbsSad47zaxB3zki9ezzHOrLKCltEqxoW3hiCTrs5YvkV8RVA+Uv
-         e4JIscypTiH3roW18PET81j5+hZintrUhxB1rxn7GwYHKEI31mhiGXe8EexttDM2Ugrz
-         XEDe9Wb0YKpgZ0JEj8MPkk/wuQ8HLKHQsS4HHNnzyyn63botdv4cmxK0HE06Q7cUiJvq
-         kWHpBBa6Dw6oexF5hbnspAStjULllvspFVCQakGeigEMUnGM1XswmrxAxLaC+4+uCUDv
-         QBPdWnxXQ0n9mVg1YRC38/bsHThuNTEcXQaZR86viR0bp1InRTDIZ4OjYR5jvwWFfv7S
-         OHXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MErvedHfDHC4lr+xkiSj1NOx3p7e7op+yy3jW2e34dI=;
-        b=Ftr1pzHQBvKivg5yDv75CFNjCxzG0w1M+klIiLUwkLOKyMv8uAVKkakz3+O5Q7ztWC
-         bRoA2+mXjfGwpVEI+Kb6pRpiAHi0KowJ+Kr32gvBH9QGHfGpQDwMgQZ1Hi9/q+Pv8+4I
-         QdS7ibOxYdlKa8AjlBqTROseBHwPz4M5kGkn50NQ7skHFfQnGmHSbSe2LHbQf9xOSXfZ
-         WsSgZRFxEOp2EiLE/+K1ED9EbxgIDK54kK7nXZgS19v/8j14ibPjOQx7908BlpRIAnPx
-         k0lUi+/6uYnnbq1ezjxDXW6m7ff5qx3QsoFoI7z/R1+U/vqOrwoXBLta2B6ZtUzybCh4
-         w52Q==
-X-Gm-Message-State: AOAM531DkMnf7kDh5nOVy/v80iK9iOwPyIEiIwZcu4d+Ju0PZW/LNau7
-        QEMz+GRRlQnYo0X+Hd2Sy48bSaXmbiI=
-X-Google-Smtp-Source: ABdhPJwpo0SffUyF7/y1s+uJHNxuHjfDEdKm7Wa4JaOVgyke1VERVUw5eEsf7qWr+462HzK6oFNRFA==
-X-Received: by 2002:a63:d149:0:b0:384:b288:8704 with SMTP id c9-20020a63d149000000b00384b2888704mr17416252pgj.112.1648876343770;
-        Fri, 01 Apr 2022 22:12:23 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id u10-20020a63b54a000000b00380ea901cd2sm3834721pgo.6.2022.04.01.22.12.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 22:12:23 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 3/5] dt-bindings: serial: Update Qualcomm geni based QUP uart bindings
-Date:   Sat,  2 Apr 2022 10:42:04 +0530
-Message-Id: <20220402051206.6115-4-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220402051206.6115-1-singh.kuldeep87k@gmail.com>
-References: <20220402051206.6115-1-singh.kuldeep87k@gmail.com>
+        Sat, 2 Apr 2022 06:22:24 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA58312629;
+        Sat,  2 Apr 2022 03:20:32 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KVtMz3DGqz9sSK;
+        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xnPhM1sjivqw; Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVtMz2NVhz9sQx;
+        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 370848B76D;
+        Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id N76mO51tVULW; Sat,  2 Apr 2022 12:20:31 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.136])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E9FBA8B768;
+        Sat,  2 Apr 2022 12:20:30 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 232AKK2x685186
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Sat, 2 Apr 2022 12:20:20 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 232AKJrg685185;
+        Sat, 2 Apr 2022 12:20:19 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] tty: serial: Prepare cleanup of powerpc's asm/prom.h
+Date:   Sat,  2 Apr 2022 12:20:19 +0200
+Message-Id: <49fc0d4b6446da630b1e9f29c4bab38f8ed087bf.1648833419.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648894818; l=1666; s=20211009; h=from:subject:message-id; bh=OEjRDeZAfp+2QT3pAyv3SoV3GY3UmYAVBWs0TMUxvZk=; b=gpK/gwFq/JdRwA2dEZAy3dkq+jhAAP6bs68z/l7be45EW2seiobjWw7j79KO9+C/n55e0WTDpdlY psC3jgNUBm2sYm75W9rJK8EMKY0mVuyHTfRe6nECvrGSfYfBOLlU
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Similar to i2c controller, move geni based QUP uart controller bindings
-out from parent schema to an individual binding and let parent refer to
-child schema later on. Uart bindings also stand incomplete right now
-similar to i2c, complete it along this process.
+powerpc's asm/prom.h brings some headers that it doesn't
+need itself.
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+In order to clean it up, first add missing headers in
+users of asm/prom.h
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- .../serial/qcom,serial-geni-qcom.yaml         | 86 +++++++++++++++++++
- 1 file changed, 86 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 1 -
+ drivers/tty/serial/mpc52xx_uart.c           | 2 ++
+ drivers/tty/serial/pmac_zilog.c             | 1 -
+ 3 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-new file mode 100644
-index 000000000000..717b0909280a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-@@ -0,0 +1,86 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/serial/qcom,serial-geni-qcom.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Qualcomm Geni based QUP UART interface
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+
-+allOf:
-+  - $ref: /schemas/serial/serial.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,geni-uart
-+      - qcom,geni-debug-uart
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: se
-+
-+  interconnects:
-+    maxItems: 2
-+
-+  interconnect-names:
-+    items:
-+      - const: qup-core
-+      - const: qup-config
-+
-+  interrupts:
-+    minItems: 1
-+    items:
-+      - description: UART core irq
-+      - description: Wakeup irq (RX GPIO)
-+
-+  operating-points-v2: true
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+  pinctrl-0: true
-+  pinctrl-1: true
-+
-+  pinctrl-names:
-+    minItems: 1
-+    items:
-+      - const: default
-+      - const: sleep
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/qcom,gcc-sc7180.h>
-+    #include <dt-bindings/interconnect/qcom,sc7180.h>
-+
-+    serial@a88000 {
-+        compatible = "qcom,geni-uart";
-+        reg = <0xa88000 0x7000>;
-+        interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
-+        clock-names = "se";
-+        clocks = <&gcc GCC_QUPV3_WRAP0_S0_CLK>;
-+        pinctrl-0 = <&qup_uart0_default>;
-+        pinctrl-names = "default";
-+        interconnects = <&qup_virt MASTER_QUP_CORE_0 0 &qup_virt SLAVE_QUP_CORE_0 0>,
-+                        <&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_QUP_0 0>;
-+        interconnect-names = "qup-core", "qup-config";
-+    };
-+...
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+index 6a1cd03bfe39..108af254e8f3 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+@@ -25,7 +25,6 @@
+ #include <asm/io.h>
+ #include <asm/irq.h>
+ #include <asm/fs_pd.h>
+-#include <asm/prom.h>
+ 
+ #include <linux/serial_core.h>
+ #include <linux/kernel.h>
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 8a6958377764..4ec785e4f9b1 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -38,6 +38,8 @@
+ #include <linux/delay.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+ #include <linux/clk.h>
+ 
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 5d97c201ad88..c903085acb8d 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -51,7 +51,6 @@
+ #include <asm/irq.h>
+ 
+ #ifdef CONFIG_PPC_PMAC
+-#include <asm/prom.h>
+ #include <asm/machdep.h>
+ #include <asm/pmac_feature.h>
+ #include <asm/dbdma.h>
 -- 
-2.25.1
+2.35.1
 
