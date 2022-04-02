@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660C5C43217
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 18:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC31C433EF
+	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 18:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358785AbiDBSmg (ORCPT
+        id S1344080AbiDBSmr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 14:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38992 "EHLO
+        Sat, 2 Apr 2022 14:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355389AbiDBSme (ORCPT
+        with ESMTP id S1357122AbiDBSme (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sat, 2 Apr 2022 14:42:34 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5514B848
-        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 11:40:25 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id u3so8629647wrg.3
-        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 11:40:24 -0700 (PDT)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A022E50044
+        for <linux-serial@vger.kernel.org>; Sat,  2 Apr 2022 11:40:28 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id n35so3519681wms.5
+        for <linux-serial@vger.kernel.org>; Sat, 02 Apr 2022 11:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8UQnzpzJ7atASYcdmmpmKJN+w3hsF0/X9rG8MRnHqSQ=;
-        b=sJkGlXQ6t/GZu/niHOpOZmjDOll5gznf77yzZ+d3nFHFi9zhmIBYWzO8zJm1lUtvHj
-         mokqESv8EymQtzEj4HdDpdh2imD09qSWclAOV5dBnXy4uA+tnXRLnjsm8L52Jrcz1aBD
-         kft5rp5Ubmhhn8OQ0zGKHEb/EyaRcr/tlJodiNTpHbeCiPHltu97uL/1OlqRkY4079Ap
-         PPg1j02nGQGh2DU4qKEIpT+GG18rbfHnbmqU64fyVrAwR6ypo8aNywPOWJvt4ri3a6+U
-         xDyAB98bBcx+xekpEefl5Ep6auS2KksQI4H1HtBOtqA38NlidZDO3ztz35Os8Cy+EN0Q
-         pISg==
+        bh=Sp/oLqlbge5GU7mZsZW/vx3cnsSFA9iABPk+CXY4wNg=;
+        b=uQermoBxdAv6ihdtqTEbNjddI5LOjv2sgP8uaq/x7bM+rs+7OvofhXs1aFzKnXMqXs
+         VqZ9BIvz2+6qyO6KrBEjovUZvAY3RjAJXc+uk2MUj4xYKyfTyipQBym0Lyar3l6iTFye
+         gMChWkuyapkbpPU8fzvoZ8OzqRq7u7pUS5FWnSvzAjItqng+dJXb48A1IctyOJhTfL0y
+         wGc/+JvG2Sx4PcyZlO6YEyO/JEDehtr8sUeWLNLSHNCsIcDfupzDab8ij3duScj2m4YB
+         KfFLHIfkAIA7kIhfMJkQOS5xv55ZPFI8q9gLrlD+HUgU2kW+cwQ1eyQTSpOUIbDoi2qt
+         /+Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8UQnzpzJ7atASYcdmmpmKJN+w3hsF0/X9rG8MRnHqSQ=;
-        b=31X2C0QUUQzAYDOcRGQov/IS5Mwfei/fuQoOX2fU+GeoPkq1XWf7F00YaJl9BVylaj
-         ygdJm10Ni4hLUGvIuJR0xBhAZb6bjkz2QVZwCH9r8Y+63hLTp13M1jySjan1a6dZIMt0
-         bCarbW/XOJ02Lf8CGyss9MMp6wjG3IrsvTEFHENYyoEO4d8z8g0RW/RgJABOdzRA12OC
-         N7rp1/0kopH0mfsvv4K+9DVmNR7qIeCRP8mE+DtM/tLmEE268lTY+SAc1i1yUA45wkQ4
-         0yOB7bH9D/FqB5KnD+jWNjDr6Nzcz6Vwrzw7x2649xVs/tcpnIthBxJCfVUZ5DWWabxl
-         cgiw==
-X-Gm-Message-State: AOAM5316I5S1CL4wXmUjpIvLiv/SFXXTUmvTaWzXUwASQE5rA447Ggj3
-        ZZJBiczsGK0IxmNE4PH+CZkU6Q==
-X-Google-Smtp-Source: ABdhPJzgfFjUaD8MoK9zh4Fy6hmHDi8obj/pudrAdpzyXg8ImEW0WyON+B6gInWAdwqVSGua/RsS/A==
-X-Received: by 2002:a5d:5111:0:b0:205:a1aa:ab71 with SMTP id s17-20020a5d5111000000b00205a1aaab71mr11786912wrt.67.1648924823523;
-        Sat, 02 Apr 2022 11:40:23 -0700 (PDT)
+        bh=Sp/oLqlbge5GU7mZsZW/vx3cnsSFA9iABPk+CXY4wNg=;
+        b=HddN+NnIYxUnCRiD1U1IfPVBsouW17jeUwqQi9ME0e65pl+pcmCc8DFAd0TT/0PNZP
+         l26LQ6QVv6x4Okj5TjnNHRfNuE0h3n1AvHSXLFXh6+knNx74fRMedEO51OWhiku1enOc
+         3Udg2EUw7s0AQA3x0HuldRrHFDFhjh1BCPJpSF78xUMQNDKK+a5nwW7yBu0AuZ1jkQ32
+         +4J/9oOGB2IkWSw4I+qylSQzc6E36MpO/mgdVgJfZ/xv2HJU0aCB0qY5ghfbG6q9IhMe
+         Yzs6xHcd/maHZrlHYpLNOPIL3YI1TNXGqTy9PAnP0OKmBER8CHiX6NmOKqPjBj7gRUy1
+         c6rg==
+X-Gm-Message-State: AOAM5307jsnKXMIPPeykZFyRem3uUK6qBsyAPOFclB9+h1XclCRhwsfN
+        kZwIqtb9/ZYgKwS4N84Mh9td3A==
+X-Google-Smtp-Source: ABdhPJzKWhMSetsdvl9+noYgz+2YR/oqaR3HdqGzxC62zE4oTWSrcJcdEMLv0GwYLxCeb80tJWa+MA==
+X-Received: by 2002:a05:600c:600a:b0:38c:f953:adc0 with SMTP id az10-20020a05600c600a00b0038cf953adc0mr13523252wmb.188.1648924827120;
+        Sat, 02 Apr 2022 11:40:27 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.22
+        by smtp.gmail.com with ESMTPSA id m20-20020a05600c4f5400b0038b5162260csm6760502wmq.23.2022.04.02.11.40.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 11:40:23 -0700 (PDT)
+        Sat, 02 Apr 2022 11:40:26 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -61,9 +61,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-spi@vger.kernel.org
 Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 6/9] spi: dt-bindings: qcom,spi-qup: convert to dtschema
-Date:   Sat,  2 Apr 2022 20:40:08 +0200
-Message-Id: <20220402184011.132465-7-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 9/9] dt-bindings: qcom: qcom,gsbi: convert to dtschema
+Date:   Sat,  2 Apr 2022 20:40:11 +0200
+Message-Id: <20220402184011.132465-10-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
 References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
@@ -73,140 +73,123 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the Qualcomm Universal Peripheral (QUP) Serial Peripheral
-Interface (SPI) bindings to DT Schema.
+Convert the Qualcomm General Serial Bus Interface (GSBI) to DT
+Schema.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 ---
- .../devicetree/bindings/spi/qcom,spi-qup.txt  | 103 ------------------
- .../devicetree/bindings/spi/qcom,spi-qup.yaml |  81 ++++++++++++++
- 2 files changed, 81 insertions(+), 103 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
- create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
+ .../bindings/soc/qcom/qcom,gsbi.txt           |  87 ------------
+ .../bindings/soc/qcom/qcom,gsbi.yaml          | 133 ++++++++++++++++++
+ 2 files changed, 133 insertions(+), 87 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
 
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt b/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
 deleted file mode 100644
-index 5c090771c016..000000000000
---- a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+index fe1855f09dcc..000000000000
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
 +++ /dev/null
-@@ -1,103 +0,0 @@
--Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
+@@ -1,87 +0,0 @@
+-QCOM GSBI (General Serial Bus Interface) Driver
 -
--The QUP core is an AHB slave that provides a common data path (an output FIFO
--and an input FIFO) for serial peripheral interface (SPI) mini-core.
--
--SPI in master mode supports up to 50MHz, up to four chip selects, programmable
--data path from 4 bits to 32 bits and numerous protocol variants.
+-The GSBI controller is modeled as a node with zero or more child nodes, each
+-representing a serial sub-node device that is mux'd as part of the GSBI
+-configuration settings.  The mode setting will govern the input/output mode of
+-the 4 GSBI IOs.
 -
 -Required properties:
--- compatible:     Should contain:
--		  "qcom,spi-qup-v1.1.1" for 8660, 8960 and 8064.
--		  "qcom,spi-qup-v2.1.1" for 8974 and later
--		  "qcom,spi-qup-v2.2.1" for 8974 v2 and later.
--
--- reg:            Should contain base register location and length
--- interrupts:     Interrupt number used by this controller
--
--- clocks:         Should contain the core clock and the AHB clock.
--- clock-names:    Should be "core" for the core clock and "iface" for the
--                  AHB clock.
--
--- #address-cells: Number of cells required to define a chip select
--                  address on the SPI bus. Should be set to 1.
--- #size-cells:    Should be zero.
+-- compatible:	Should contain "qcom,gsbi-v1.0.0"
+-- cell-index:	Should contain the GSBI index
+-- reg: Address range for GSBI registers
+-- clocks: required clock
+-- clock-names: must contain "iface" entry
+-- qcom,mode : indicates MUX value for configuration of the serial interface.
+-  Please reference dt-bindings/soc/qcom,gsbi.h for valid mux values.
 -
 -Optional properties:
--- spi-max-frequency: Specifies maximum SPI clock frequency,
--                     Units - Hz. Definition as per
--                     Documentation/devicetree/bindings/spi/spi-bus.txt
--- num-cs:	total number of chipselects
--- cs-gpios:	should specify GPIOs used for chipselects.
--		The gpios will be referred to as reg = <index> in the SPI child
--		nodes.  If unspecified, a single SPI device without a chip
--		select can be used.
+-- qcom,crci : indicates CRCI MUX value for QUP CRCI ports.  Please reference
+-  dt-bindings/soc/qcom,gsbi.h for valid CRCI mux values.
+-- syscon-tcsr: indicates phandle of TCSR syscon node.  Required if child uses
+-  dma.
 -
--- dmas:         Two DMA channel specifiers following the convention outlined
--                in bindings/dma/dma.txt
--- dma-names:    Names for the dma channels, if present. There must be at
--                least one channel named "tx" for transmit and named "rx" for
--                receive.
+-Required properties if child node exists:
+-- #address-cells: Must be 1
+-- #size-cells: Must be 1
+-- ranges: Must be present
 -
--SPI slave nodes must be children of the SPI master node and can contain
--properties described in Documentation/devicetree/bindings/spi/spi-bus.txt
+-Properties for children:
 -
--Example:
+-A GSBI controller node can contain 0 or more child nodes representing serial
+-devices.  These serial devices can be a QCOM UART, I2C controller, spi
+-controller, or some combination of aforementioned devices.
 -
--	spi_8: spi@f9964000 { /* BLSP2 QUP2 */
+-See the following for child node definitions:
+-Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
+-Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+-Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
 -
--		compatible = "qcom,spi-qup-v2";
+-Example for APQ8064:
+-
+-#include <dt-bindings/soc/qcom,gsbi.h>
+-
+-	gsbi4@16300000 {
+-		compatible = "qcom,gsbi-v1.0.0";
+-		cell-index = <4>;
+-		reg = <0x16300000 0x100>;
+-		clocks = <&gcc GSBI4_H_CLK>;
+-		clock-names = "iface";
 -		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0xf9964000 0x1000>;
--		interrupts = <0 102 0>;
--		spi-max-frequency = <19200000>;
+-		#size-cells = <1>;
+-		ranges;
+-		qcom,mode = <GSBI_PROT_I2C_UART>;
+-		qcom,crci = <GSBI_CRCI_QUP>;
 -
--		clocks = <&gcc GCC_BLSP2_QUP2_SPI_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
--		clock-names = "core", "iface";
+-		syscon-tcsr = <&tcsr>;
 -
--		dmas = <&blsp1_bam 13>, <&blsp1_bam 12>;
--		dma-names = "rx", "tx";
+-		/* child nodes go under here */
 -
--		pinctrl-names = "default";
--		pinctrl-0 = <&spi8_default>;
+-		i2c_qup4: i2c@16380000 {
+-			compatible = "qcom,i2c-qup-v1.1.1";
+-			reg = <0x16380000 0x1000>;
+-			interrupts = <0 153 0>;
 -
--		device@0 {
--			compatible = "arm,pl022-dummy";
+-			clocks = <&gcc GSBI4_QUP_CLK>, <&gcc GSBI4_H_CLK>;
+-			clock-names = "core", "iface";
+-
+-			clock-frequency = <200000>;
+-
 -			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <0>; /* Chip select 0 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
+-			#size-cells = <0>;
+-
 -		};
 -
--		device@1 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <1>; /* Chip select 1 */
--			spi-max-frequency = <9600000>;
--			spi-cpha;
--		};
--
--		device@2 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <2>; /* Chip select 2 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
--			spi-cpha;
--		};
--
--		device@3 {
--			compatible = "arm,pl022-dummy";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			reg = <3>; /* Chip select 3 */
--			spi-max-frequency = <19200000>;
--			spi-cpol;
--			spi-cpha;
--			spi-cs-high;
+-		uart4:	serial@16340000 {
+-			compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+-			reg = <0x16340000 0x1000>,
+-				<0x16300000 0x1000>;
+-			interrupts = <0 152 0x0>;
+-			clocks = <&gcc GSBI4_UART_CLK>, <&gcc GSBI4_H_CLK>;
+-			clock-names = "core", "iface";
 -		};
 -	};
-diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
+-
+-	tcsr: syscon@1a400000 {
+-		compatible = "qcom,apq8064-tcsr", "syscon";
+-		reg = <0x1a400000 0x100>;
+-	};
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
 new file mode 100644
-index 000000000000..93f14dd01afc
+index 000000000000..b97e359f3f90
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
-@@ -0,0 +1,81 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+@@ -0,0 +1,133 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/spi/qcom,spi-qup.yaml#
++$id: http://devicetree.org/schemas/soc/qcom/qcom,gsbi.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
++title: Qualcomm General Serial Bus Interface (GSBI)
 +
 +maintainers:
 +  - Andy Gross <agross@kernel.org>
@@ -214,72 +197,124 @@ index 000000000000..93f14dd01afc
 +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 +
 +description:
-+  The QUP core is an AHB slave that provides a common data path (an output FIFO
-+  and an input FIFO) for serial peripheral interface (SPI) mini-core.
++  The GSBI controller is modeled as a node with zero or more child nodes, each
++  representing a serial sub-node device that is mux'd as part of the GSBI
++  configuration settings.  The mode setting will govern the input/output mode
++  of the 4 GSBI IOs.
 +
-+  SPI in master mode supports up to 50MHz, up to four chip selects,
-+  programmable data path from 4 bits to 32 bits and numerous protocol variants.
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-controller.yaml#
++  A GSBI controller node can contain 0 or more child nodes representing serial
++  devices.  These serial devices can be a QCOM UART, I2C controller, spi
++  controller, or some combination of aforementioned devices.
 +
 +properties:
 +  compatible:
 +    enum:
-+      - qcom,spi-qup-v1.1.1 # for 8660, 8960 and 8064
-+      - qcom,spi-qup-v2.1.1 # for 8974 and later
-+      - qcom,spi-qup-v2.2.1 # for 8974 v2 and later
++      - qcom,gsbi-v1.0.0
++
++  '#address-cells':
++    const: 1
++
++  cell-index:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      The GSBI index.
 +
 +  clocks:
-+    maxItems: 2
++    maxItems: 1
 +
 +  clock-names:
-+    items:
-+      - const: core
-+      - const: iface
++    const: iface
 +
-+  dmas:
-+    maxItems: 2
++  qcom,crci:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      CRCI MUX value for QUP CRCI ports.  Please reference
++      include/dt-bindings/soc/qcom,gsbi.h for valid CRCI mux values.
 +
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
++  qcom,mode:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      MUX value for configuration of the serial interface.  Please reference
++      include/dt-bindings/soc/qcom,gsbi.h for valid mux values.
 +
-+  interrupts:
-+    maxItems: 1
++  '#size-cells':
++    const: 1
++
++  syscon-tcsr:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle of TCSR syscon node.Required if child uses dma.
++
++  ranges: true
 +
 +  reg:
 +    maxItems: 1
 +
++patternProperties:
++  "spi@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/spi/qcom,spi-qup.yaml#
++
++  "i2c@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/i2c/qcom,i2c-qup.yaml#
++
++  "serial@[0-9a-f]+$":
++    type: object
++    $ref: /schemas/serial/qcom,msm-uartdm.yaml#
++
 +required:
 +  - compatible
++  - cell-index
 +  - clocks
 +  - clock-names
-+  - interrupts
++  - qcom,mode
 +  - reg
 +
-+unevaluatedProperties: false
++additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/qcom,gcc-msm8996.h>
++    #include <dt-bindings/clock/qcom,gcc-msm8960.h>
 +    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/soc/qcom,gsbi.h>
 +
-+    spi@7575000 {
-+        compatible = "qcom,spi-qup-v2.2.1";
-+        reg = <0x07575000 0x600>;
-+        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>,
-+                 <&gcc GCC_BLSP1_AHB_CLK>;
-+        clock-names = "core", "iface";
-+        pinctrl-names = "default", "sleep";
-+        pinctrl-0 = <&blsp1_spi1_default>;
-+        pinctrl-1 = <&blsp1_spi1_sleep>;
-+        dmas = <&blsp1_dma 12>, <&blsp1_dma 13>;
-+        dma-names = "tx", "rx";
++    gsbi@12440000 {
++        compatible = "qcom,gsbi-v1.0.0";
++        reg = <0x12440000 0x100>;
++        cell-index = <1>;
++        clocks = <&gcc GSBI1_H_CLK>;
++        clock-names = "iface";
 +        #address-cells = <1>;
-+        #size-cells = <0>;
++        #size-cells = <1>;
++        ranges;
++
++        syscon-tcsr = <&tcsr>;
++        qcom,mode = <GSBI_PROT_I2C_UART>;
++
++        serial@12450000 {
++            compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
++            reg = <0x12450000 0x100>,
++                  <0x12400000 0x03>;
++            interrupts = <0 193 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&gcc GSBI1_UART_CLK>, <&gcc GSBI1_H_CLK>;
++            clock-names = "core", "iface";
++        };
++
++        i2c@12460000 {
++            compatible = "qcom,i2c-qup-v1.1.1";
++            reg = <0x12460000 0x1000>;
++            pinctrl-0 = <&i2c1_pins>;
++            pinctrl-1 = <&i2c1_pins_sleep>;
++            pinctrl-names = "default", "sleep";
++            interrupts = <0 194 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&gcc GSBI1_QUP_CLK>, <&gcc GSBI1_H_CLK>;
++            clock-names = "core", "iface";
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            status = "disabled"; /* UART chosen */
++        };
 +    };
 -- 
 2.32.0
