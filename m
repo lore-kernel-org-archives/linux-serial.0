@@ -2,118 +2,172 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC4CC433F5
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Apr 2022 15:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B744C433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  3 Apr 2022 15:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353389AbiDCP26 (ORCPT
+        id S1359256AbiDCQA2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Apr 2022 11:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
+        Sun, 3 Apr 2022 12:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359155AbiDCP25 (ORCPT
+        with ESMTP id S236415AbiDCQA1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Apr 2022 11:28:57 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F7838BEF
-        for <linux-serial@vger.kernel.org>; Sun,  3 Apr 2022 08:27:03 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso6278471wma.0
-        for <linux-serial@vger.kernel.org>; Sun, 03 Apr 2022 08:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PFOxZJSIkEuRH7+x+0E7FGzZMvu81a++E+04w4EdYOo=;
-        b=mLe1nqkQm/WYDjmgYHzH1IzfEKGbK1xN5PwsgbVBKMBp1HHksMKX75/H3nsXQvyf7P
-         kN0TerGSv75TtEEYvCTLz09V/2NoU90j/dKSesSkNNfZTVSTa6aVueIBe0yBwEJtmBJD
-         piKKhWpRPhw9PjRK6w+X/yINhjKBK0Pqymkp3FxLe1SKwsLFL7wWY0KTTc9KhQz1gJMe
-         Jp/vHm3A2DlN5EGLconoPDU8nzasfLDrSaazxcs1Y5+kHljBxuR80JuUCssK4bLXdebJ
-         sAGeD2wK/7qGaJ5kV1YyDVLk8ukOGSGuewKmAFG/iBCVMtvO9ibA/jtMnNBGunuwlQpw
-         VWkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PFOxZJSIkEuRH7+x+0E7FGzZMvu81a++E+04w4EdYOo=;
-        b=TlSd9ppj/rmGsgnxafanCmvAnLfVpgG7ULMXozc81ieI9bfx78GquiQ2diOMlDLYQM
-         mjlleXCAhBT3ax+7f9MWnfgREd9e2vmw7M4BfU6QVlaDhF5n2BjjOCuLwyDP+TKzqPWr
-         p1nQCvs+FigT7H6Vv/gfZFoU73N0ZJmCWbgtScz9N3Cr9/+RPRsRyO6PGHOfVffw1Mp1
-         L46PHswe0q3ULnnf782vcvo9T1l5FLWIxiBmBbkAETythhLUroWuNmMyrbIsI1hbPR42
-         w9j9WZhGyAkz/hcKwvDiBt9+WL3XTZB1Vvh6asGM0ojmZY1evtEpFuFLeUc5JtzJt15X
-         njAA==
-X-Gm-Message-State: AOAM530V4XRnYxMf7721tV2h2CmYrcJpBx6fdFd18UXKd0wFHjDGIYWl
-        Uux26NxdI8eAQOI892hStw4NQw==
-X-Google-Smtp-Source: ABdhPJztd+cseoQHkVMvguQ0dw29taCQ0Lt/J3+7YmYNbllOxEZX5RY+QxuLkxBYOKT1w2v/60agvg==
-X-Received: by 2002:a05:600c:2304:b0:38e:4748:d902 with SMTP id 4-20020a05600c230400b0038e4748d902mr14136111wmo.177.1648999621575;
-        Sun, 03 Apr 2022 08:27:01 -0700 (PDT)
-Received: from [192.168.0.172] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id i15-20020a5d584f000000b00204171ba528sm6876940wrf.109.2022.04.03.08.27.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Apr 2022 08:27:01 -0700 (PDT)
-Message-ID: <5ef9de4c-59e0-5652-1755-6ec373c34fff@linaro.org>
-Date:   Sun, 3 Apr 2022 17:27:00 +0200
+        Sun, 3 Apr 2022 12:00:27 -0400
+X-Greylist: delayed 1342 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 03 Apr 2022 08:58:31 PDT
+Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F082AE8
+        for <linux-serial@vger.kernel.org>; Sun,  3 Apr 2022 08:58:31 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway33.websitewelcome.com (Postfix) with ESMTP id C88BB148C1C7
+        for <linux-serial@vger.kernel.org>; Sun,  3 Apr 2022 10:36:08 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id b2GunCm3Tdx86b2GungREE; Sun, 03 Apr 2022 10:36:08 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=S9kyq3prUNE5HlsvNUnZDxnM3YNPjxnZKzbpLeHWtg4=; b=c4M3VL07wbRVvrKjSmkp3QOqSm
+        adMlo6Kg9Lb2yNZPZmvLcKrDA80lw6W8IB3lcd3ZKvvVsDULx/j5jplAbY1fGHzIx1mdUt9gDNv/l
+        DkfYW97FxsYWpgOi3BvWbWznBqOd8sZYr92Cnk3E31b7R4mXu9C+P5Ry32/pPRgjndrGoqiVcwNci
+        FWCIlY0obiz+wrK9jriGBEv8KCeeLK1hC5g7RveJhCuwee7vpws0ZbSsepsVBgQEa11dhLKQVOsFa
+        5b6sqe/WGpbfGac+nFqETCb8y5TPdwIcXM7V6Y1DzbCt0gmprSJ9dkb9H5HwDNmdSJWo/8Una13nj
+        1L9MH6kQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57822 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nb2Gu-0041Pb-Cx; Sun, 03 Apr 2022 15:36:08 +0000
+Date:   Sun, 3 Apr 2022 08:36:07 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] tty: serial: mpc52xx_uart: make rx/tx hooks return
+ unsigned
+Message-ID: <20220403153607.GA3644508@roeck-us.net>
+References: <20220224111028.20917-1-jslaby@suse.cz>
+ <20220224111028.20917-2-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 7/9] dt-bindings: serial: qcom,msm-uartdm: convert to
- dtschema
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-spi@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
- <20220402184011.132465-8-krzysztof.kozlowski@linaro.org>
- <1648995636.595500.3013369.nullmailer@robh.at.kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1648995636.595500.3013369.nullmailer@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224111028.20917-2-jslaby@suse.cz>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nb2Gu-0041Pb-Cx
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57822
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 2
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03/04/2022 16:20, Rob Herring wrote:
-> On Sat, 02 Apr 2022 20:40:09 +0200, Krzysztof Kozlowski wrote:
->> Convert the Qualcomm MSM Serial UARTDM bindings to DT Schema.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  .../bindings/serial/qcom,msm-uartdm.txt       |  81 -------------
->>  .../bindings/serial/qcom,msm-uartdm.yaml      | 112 ++++++++++++++++++
->>  2 files changed, 112 insertions(+), 81 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
->>  create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
->>
+On Thu, Feb 24, 2022 at 12:10:24PM +0100, Jiri Slaby wrote:
+> All these return bitmasks, so it makes more sense to return unsigned --
+> this is what a reader and also all the callers expect.
 > 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+With this patch in place:
+
+drivers/tty/serial/mpc52xx_uart.c:static unsigned int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
+drivers/tty/serial/mpc52xx_uart.c:static int mpc512x_psc_raw_tx_rdy(struct uart_port *port)
+                                         ^^^
+drivers/tty/serial/mpc52xx_uart.c:static int mpc5125_psc_raw_tx_rdy(struct uart_port *port)
+                                         ^^^
+
+Same for other functions. This results in lots of compile errors.
+
+Guenter
+
+> ---
+>  drivers/tty/serial/mpc52xx_uart.c | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
 > 
-> yamllint warnings/errors:
+> diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+> index 2704dc988e4a..8a6958377764 100644
+> --- a/drivers/tty/serial/mpc52xx_uart.c
+> +++ b/drivers/tty/serial/mpc52xx_uart.c
+> @@ -83,11 +83,11 @@ static irqreturn_t mpc5xxx_uart_process_int(struct uart_port *port);
+>  
+>  struct psc_ops {
+>  	void		(*fifo_init)(struct uart_port *port);
+> -	int		(*raw_rx_rdy)(struct uart_port *port);
+> -	int		(*raw_tx_rdy)(struct uart_port *port);
+> -	int		(*rx_rdy)(struct uart_port *port);
+> -	int		(*tx_rdy)(struct uart_port *port);
+> -	int		(*tx_empty)(struct uart_port *port);
+> +	unsigned int	(*raw_rx_rdy)(struct uart_port *port);
+> +	unsigned int	(*raw_tx_rdy)(struct uart_port *port);
+> +	unsigned int	(*rx_rdy)(struct uart_port *port);
+> +	unsigned int	(*tx_rdy)(struct uart_port *port);
+> +	unsigned int	(*tx_empty)(struct uart_port *port);
+>  	void		(*stop_rx)(struct uart_port *port);
+>  	void		(*start_tx)(struct uart_port *port);
+>  	void		(*stop_tx)(struct uart_port *port);
+> @@ -203,34 +203,34 @@ static void mpc52xx_psc_fifo_init(struct uart_port *port)
+>  	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
+>  }
+>  
+> -static int mpc52xx_psc_raw_rx_rdy(struct uart_port *port)
+> +static unsigned int mpc52xx_psc_raw_rx_rdy(struct uart_port *port)
+>  {
+>  	return in_be16(&PSC(port)->mpc52xx_psc_status)
+>  	    & MPC52xx_PSC_SR_RXRDY;
+>  }
+>  
+> -static int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
+> +static unsigned int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
+>  {
+>  	return in_be16(&PSC(port)->mpc52xx_psc_status)
+>  	    & MPC52xx_PSC_SR_TXRDY;
+>  }
+>  
+>  
+> -static int mpc52xx_psc_rx_rdy(struct uart_port *port)
+> +static unsigned int mpc52xx_psc_rx_rdy(struct uart_port *port)
+>  {
+>  	return in_be16(&PSC(port)->mpc52xx_psc_isr)
+>  	    & port->read_status_mask
+>  	    & MPC52xx_PSC_IMR_RXRDY;
+>  }
+>  
+> -static int mpc52xx_psc_tx_rdy(struct uart_port *port)
+> +static unsigned int mpc52xx_psc_tx_rdy(struct uart_port *port)
+>  {
+>  	return in_be16(&PSC(port)->mpc52xx_psc_isr)
+>  	    & port->read_status_mask
+>  	    & MPC52xx_PSC_IMR_TXRDY;
+>  }
+>  
+> -static int mpc52xx_psc_tx_empty(struct uart_port *port)
+> +static unsigned int mpc52xx_psc_tx_empty(struct uart_port *port)
+>  {
+>  	u16 sts = in_be16(&PSC(port)->mpc52xx_psc_status);
+>  
+> @@ -1365,7 +1365,7 @@ static const struct uart_ops mpc52xx_uart_ops = {
+>  /* Interrupt handling                                                       */
+>  /* ======================================================================== */
+>  
+> -static inline int
+> +static inline unsigned int
+>  mpc52xx_uart_int_rx_chars(struct uart_port *port)
+>  {
+>  	struct tty_port *tport = &port->state->port;
+> -- 
+> 2.35.1
 > 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:0: 'tx' was expected
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:1: 'rx' was expected
-> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
-
-My bad, I'll fix it.
-
-> 
-> doc reference errors (make refcheckdocs):
-> Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-> Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-> Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
-> Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
-
-These should be fixed in last patch in series where I convert the
-qcom,gsbi.txt to YAML.
-
-Best regards,
-Krzysztof
