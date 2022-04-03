@@ -2,135 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48879C433F5
-	for <linux-serial@archiver.kernel.org>; Sat,  2 Apr 2022 21:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B327C433FE
+	for <linux-serial@archiver.kernel.org>; Sun,  3 Apr 2022 14:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiDBVC4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 2 Apr 2022 17:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        id S1354909AbiDCOWd (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 3 Apr 2022 10:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiDBVCz (ORCPT
+        with ESMTP id S236161AbiDCOWd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 2 Apr 2022 17:02:55 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DF0654B3;
-        Sat,  2 Apr 2022 14:01:02 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so1535439pjb.0;
-        Sat, 02 Apr 2022 14:01:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ep31zfzXgtGPRrK4JzjcT4OsqwVUibu1oi7iQV6wMvk=;
-        b=omQXM9rtM1ebTOd9z8Ztav/WBoT+BCHziqEXwKWAlkioz9DLMeAftY4UcrbPRF9dvo
-         iMHIqhBJ9HMNXG//Hjyk0XTZSaeCqnlM2A5aofHxAibbOUdnvHBjxiXOGuQ5tYYhIyO1
-         SoXc5o5jQ0DrsbD4yjkJKCSXvYG4amJfPA2Kl0VW5lUg4Ji/H072psVjvLOq6Wyy1tRq
-         OINubE8bnpoZEu78zYfE05TRpk/YnxYkPzAbOMIat9Dv63xoS16Tkya1xAs9dogtMaQW
-         BNpctb9fvWMaxbp4kOsrdI33JWavTeVRlusI9oeNfS4484++uizErQPu/8lBwlZB9K7w
-         TX9A==
+        Sun, 3 Apr 2022 10:22:33 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF93396A1;
+        Sun,  3 Apr 2022 07:20:38 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id n19-20020a9d7113000000b005cd9cff76c3so5577360otj.1;
+        Sun, 03 Apr 2022 07:20:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ep31zfzXgtGPRrK4JzjcT4OsqwVUibu1oi7iQV6wMvk=;
-        b=pS+aCfcY64YNuluT25mIeNvPiwO1FvhYmZRJf04esUAYUJNRGO+Fb20feZgXrVLJEU
-         6Uq0XA3W+IQhVBS8DR/sO95liNb+4LrXjJhSO054kFgq+qrMexwTez2/GJmIvdXF5FIP
-         8J5xmxbjdM7gCPIDIrntKOYs7WFpLsxmrNve9yJ3Wl9prSlAzwEIJSsrlrJkCZ/NfkIJ
-         lxMu7vB0+z0YRDp05b1OWZvsJvnnecfXVQxDNWlLxAbeA8KJMuraeRDJVtpfNJYdVEqU
-         +IF+4ioLDJO9b2iSdM59WM6Ia8ET+I71+gN6yjzWfuz5aQ+dcjX59QLEl5lHUGl3jS7D
-         8GlA==
-X-Gm-Message-State: AOAM531i0021svKiu1G/hS/byACrDxNz8ZG8BY0srKPoLHUMAI6u0W7e
-        7Rgc4e4u6p9r1M0OghOWMPMYZd2fU4E=
-X-Google-Smtp-Source: ABdhPJxj78ez9xkFhutTGi0ECjYCluuCwbPoK7lVzjaR9HcfVHQxlmELJUaq1hfN74k4vofie6i9Kg==
-X-Received: by 2002:a17:902:bb92:b0:153:4eae:c77e with SMTP id m18-20020a170902bb9200b001534eaec77emr51730419pls.93.1648933261795;
-        Sat, 02 Apr 2022 14:01:01 -0700 (PDT)
-Received: from 9a2d8922b8f1 ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id f15-20020a056a001acf00b004fb2ad05521sm7259339pfv.215.2022.04.02.14.00.57
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=IhdvutP6+1VN96Sw+l5rljGDZzsDxpR3h7q1f/N7UZo=;
+        b=ifeO/0nr8m0s/2shOX7IKX9aVXd9LriBiEeK8vAvxvajBL2YfxBGMPaGG9TnLH++Lh
+         a3eSo1M+FpOfH52OT5Xhg4Hq5TK/De3JoUwl2UVFClqwSae3y7twKwFwy7BQ9uTJLFPq
+         PeS7RvKArYT6euY3wovGMLfXtXMP+DjxDXZ3ukIo2iIuCInJnYSMDUzs4UXEXe9/lTky
+         ZIqsUL3n36OB/qAqNLGnCKFLJes0+w8bubK32p28pHCWdoAfmPC/jWy4KK7aO7LPNLOP
+         K+dwfR3ExaMVLQ63JWw5pnMtM2MvLzmyLflRuXqfr38aO8fk9MPvv5URaVpX2aVDIzVD
+         k1FA==
+X-Gm-Message-State: AOAM531sLtIZHVpY1R9J+C1hVPBL8XvfYVwBUBSMLWMVxOCY+EAOLdZu
+        VTns3u/sgGr9nRotFVhZ/w==
+X-Google-Smtp-Source: ABdhPJwL6nKTkad4e13KB87xfRjBKcTmMkYqLyj+VlysWvRbdX14GGrw5+09grM+gkgg3WSF68Touw==
+X-Received: by 2002:a05:6830:34a1:b0:5c4:3dca:b666 with SMTP id c33-20020a05683034a100b005c43dcab666mr10640719otu.328.1648995637852;
+        Sun, 03 Apr 2022 07:20:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 190-20020a4a0dc7000000b003244ae0bbd5sm3032383oob.7.2022.04.03.07.20.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 14:01:01 -0700 (PDT)
-Date:   Sun, 3 Apr 2022 02:30:54 +0530
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+        Sun, 03 Apr 2022 07:20:37 -0700 (PDT)
+Received: (nullmailer pid 3013370 invoked by uid 1000);
+        Sun, 03 Apr 2022 14:20:36 -0000
+From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
+Cc:     Mark Brown <broonie@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-spi@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org
-Subject: Re: [PATCH v3 9/9] dt-bindings: qcom: qcom,gsbi: convert to dtschema
-Message-ID: <20220402210054.GA36286@9a2d8922b8f1>
-References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org>
- <20220402184011.132465-10-krzysztof.kozlowski@linaro.org>
- <20220402202917.GA36054@9a2d8922b8f1>
- <9a584eac-6ac9-e4ed-ef90-49569f4a4baa@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9a584eac-6ac9-e4ed-ef90-49569f4a4baa@linaro.org>
+        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20220402184011.132465-8-krzysztof.kozlowski@linaro.org>
+References: <20220402184011.132465-1-krzysztof.kozlowski@linaro.org> <20220402184011.132465-8-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v3 7/9] dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
+Date:   Sun, 03 Apr 2022 09:20:36 -0500
+Message-Id: <1648995636.595500.3013369.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 10:38:23PM +0200, Krzysztof Kozlowski wrote:
-> On 02/04/2022 22:29, Kuldeep Singh wrote:
-> > On Sat, Apr 02, 2022 at 08:40:11PM +0200, Krzysztof Kozlowski wrote:
-> >> Convert the Qualcomm General Serial Bus Interface (GSBI) to DT
-> >> Schema.
-> >>
-> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >> ---
-> >>  .../bindings/soc/qcom/qcom,gsbi.txt           |  87 ------------
-> >>  .../bindings/soc/qcom/qcom,gsbi.yaml          | 133 ++++++++++++++++++
-> >>  2 files changed, 133 insertions(+), 87 deletions(-)
-> >>  delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
-> >>  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
-> > 
-> > Great initiative to convert everything in one go!
-> > 
-> > [...]
-> > 
-> >> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
-> >> new file mode 100644
-> >> index 000000000000..b97e359f3f90
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
-> >> @@ -0,0 +1,133 @@
-> >> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-> >> +%YAML 1.2
-> >> +---
-> >> +$id: http://devicetree.org/schemas/soc/qcom/qcom,gsbi.yaml#
-> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >> +
-> >> +title: Qualcomm General Serial Bus Interface (GSBI)
-> >> +
-> >> +maintainers:
-> >> +  - Andy Gross <agross@kernel.org>
-> >> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
-> >> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >> +
-> >> +description:
-> >> +  The GSBI controller is modeled as a node with zero or more child nodes, each
-> >> +  representing a serial sub-node device that is mux'd as part of the GSBI
-> >> +  configuration settings.  The mode setting will govern the input/output mode
-> >> +  of the 4 GSBI IOs.
-> >> +
-> >> +  A GSBI controller node can contain 0 or more child nodes representing serial
-> >> +  devices.  These serial devices can be a QCOM UART, I2C controller, spi
-> >> +  controller, or some combination of aforementioned devices.
-> >> +
-> >> +properties:
-> >> +  compatible:
-> >> +    enum:
-> >> +      - qcom,gsbi-v1.0.0
-> > 
-> > Only 1 entry? const.
+On Sat, 02 Apr 2022 20:40:09 +0200, Krzysztof Kozlowski wrote:
+> Convert the Qualcomm MSM Serial UARTDM bindings to DT Schema.
 > 
-> v1.0.0 looks like there could be some more, although they did not reach
-> mainline. The GSBI seems to be replaced by different blocks, so maybe
-> there will be no new entries here.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/serial/qcom,msm-uartdm.txt       |  81 -------------
+>  .../bindings/serial/qcom,msm-uartdm.yaml      | 112 ++++++++++++++++++
+>  2 files changed, 112 insertions(+), 81 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+> 
 
-Yes, GSBI seems pretty old and only v1 rolled out.
-Don't think there are more revisions on the cards. Still can't say so.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:0: 'tx' was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.example.dt.yaml: serial@f991e000: dma-names:1: 'rx' was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+
+doc reference errors (make refcheckdocs):
+Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+Warning: Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt references a file that doesn't exist: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
+Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt: Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
