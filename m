@@ -2,103 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E33DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 15:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CFBC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 15:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378167AbiDDPWi (ORCPT
+        id S1378533AbiDDP1s (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34724 "EHLO
+        Mon, 4 Apr 2022 11:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378000AbiDDPWh (ORCPT
+        with ESMTP id S1378619AbiDDP1m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:22:37 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09693C4A6;
-        Mon,  4 Apr 2022 08:20:38 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 56E106000E;
-        Mon,  4 Apr 2022 15:20:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649085637;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pf3BDr9pTmMgLASkcEQPq8RGMyR6nbtEmBoI0sglVBE=;
-        b=AEe0Scdk1GqT8csFlplS0nBzAozBaESPovht4Q0ySx59ES/dte0X0Izqs/LZtPQW7PYC0L
-        D2APvpJV9J7SWrlZ83Jybh8UW9KK6St9m/w7LvKsNyeB7A8Y3qAYJKv/HSlu61CpZ5oVlN
-        6ysdjgKHnt3NvYNioIN7y28gLe3hwStYMhv6m6qXsFQRYs+3L8KxUDf0zzovByGpH3owip
-        7ZOG+3Sz+j8DyXg1lKt9e84LBObiu0UigOCj5pBzw9+OV5IOo/XI3NFxbOv2LLqidiPpFi
-        bi15ria7VlkeLriBybQ0xfKMes/qf0jyeS6HhQqNNnc6j1Lutr0infE9o28SEA==
-Date:   Mon, 4 Apr 2022 17:20:33 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH v4 7/9] serial: 8250: dw: Add support for DMA flow
- controlling devices
-Message-ID: <20220404172033.56c55a37@xps13>
-In-Reply-To: <Ykc4kGLEnwdoUqZ6@smile.fi.intel.com>
-References: <20220330132038.808679-1-miquel.raynal@bootlin.com>
-        <20220330132038.808679-8-miquel.raynal@bootlin.com>
-        <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>
-        <Ykc4kGLEnwdoUqZ6@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 4 Apr 2022 11:27:42 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A911E3EB;
+        Mon,  4 Apr 2022 08:25:45 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 125so281424pgc.11;
+        Mon, 04 Apr 2022 08:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=C7kc0WBXzki7SKGLSUPjAVPvpQOiseE27/OA4Hb8PjU=;
+        b=CM7bruVNar6ViIQtL5n44QYXZE1Uvm8jsK5oP95zGN41v0xkZ3xDN2Z0O1LhhLWcth
+         yeHjhi+BLqb3YtgH9k8FJF8fHFLNgt92VqN9avK5xON8iKnrWLJ68OVH2dWAtuVclOt2
+         zdDQ7u6f3kROW8veWKQgnCg7wfnfIck08sVMm4tQX2MUUvJfx350164m5clvR6NwOCii
+         klydz0jLwiWkkOOlIB2sXoBsHLmq43RgWgVUej5+ZB7nxVRT2b05w5HhVP7i1DwMXwPX
+         UqC5oA5oai9l5YIERIli0KXdpdTrzBI+gbvyVoT6BtUQbBNUT4Bc6MBwv9kN+ejPA5NV
+         gkGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=C7kc0WBXzki7SKGLSUPjAVPvpQOiseE27/OA4Hb8PjU=;
+        b=Z6ztcXaCK3iPa8j9FKlaELhmmdWtxKYWbevULB9UGMIMrmLgJIbonwIBOECDY6hvJZ
+         1idWoyZlO9kTB/e+sEOBVQXSM6TUN3l0zi1COpRru4tlVl4Ml7pnCZhAEI0t9kS6WJKs
+         /9ogNfbAuTp4js368eGc74VVyV6cWiAdXtmW3nD/XczlTagNPAbOV+mAwL3bc3I73iwO
+         mbzJNC71G7QchSiVbsgJgkQh+FfE7hRsm+Vg2lK12yYGDBGsJQLG3rpnlFgqoAJ6reV+
+         eo1Z/BA9pCHKPsOLNHZ91cuNzUNFQlk0WKUuS4WUQU+i6kGMUl/ZXdaB5+v0LMu7bnzC
+         gfjQ==
+X-Gm-Message-State: AOAM533Y3JwsO0R9wav1Gkp5hu7Mc7+ZtomZBS9OSFv/vTGy2GYLZWIB
+        bo9FSnDeOXkvfsnIuBT4pGE=
+X-Google-Smtp-Source: ABdhPJyX1HGc5HkE1B4GZBABO2GZpRStGi3sYjqdjfv7Puk6FAmTQOSVQpHoLIdgEJmPNQaOj7MB3g==
+X-Received: by 2002:a65:654f:0:b0:378:b8f6:ebe4 with SMTP id a15-20020a65654f000000b00378b8f6ebe4mr306781pgw.399.1649085944813;
+        Mon, 04 Apr 2022 08:25:44 -0700 (PDT)
+Received: from VICKYMQLIN-NB1.localdomain ([106.39.148.25])
+        by smtp.gmail.com with ESMTPSA id v17-20020a63b951000000b0038644f62aeesm10772528pgo.68.2022.04.04.08.25.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 Apr 2022 08:25:44 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 23:25:38 +0800
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Zev Weiss <zev@bewilderbeest.net>,
+        Johan Hovold <johan@kernel.org>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_aspeed_vuart: Fix potential NULL
+ dereference in aspeed_vuart_probe
+Message-ID: <20220404152538.GA35@VICKYMQLIN-NB1.localdomain>
+References: <20220404143842.16960-1-linmq006@gmail.com>
+ <YksEnnyJDoL+fE5d@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YksEnnyJDoL+fE5d@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy, Ilpo,
+On Mon, Apr 04, 2022 at 04:45:50PM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Apr 04, 2022 at 02:38:40PM +0000, Miaoqian Lin wrote:
+> > platform_get_resource() may fail and return NULL, so we should
+> > better check it's return value to avoid a NULL pointer dereference.
+> > 
+> > Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> > index 93fe10c680fb..9d2a7856784f 100644
+> > --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> > +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+> > @@ -429,6 +429,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+> >  	timer_setup(&vuart->unthrottle_timer, aspeed_vuart_unthrottle_exp, 0);
+> >  
+> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	if (!res)
+> > +		return -EINVAL;
+> 
+> How did you test this change was correct?
 
-andriy.shevchenko@linux.intel.com wrote on Fri, 1 Apr 2022 20:38:24
-+0300:
+Hi,
 
-> On Fri, Apr 01, 2022 at 01:56:49PM +0300, Ilpo J=C3=A4rvinen wrote:
-> > On Wed, 30 Mar 2022, Miquel Raynal wrote: =20
->=20
-> ...
->=20
-> > > +			writel(0, p->membase + RZN1_UART_RDMACR);
-> > > +			writel(1, p->membase + DW_UART_DMASA); =20
-> >=20
-> > Currently there is serial_out(), dw8250_writel_ext(), and a few writel(=
-)s=20
-> > too for writing to registers. It would be nice to move towards more=20
-> > homogeneous approach rather than adding more writel()s. =20
->=20
-> Actually a good catch!
->=20
-> > I suggest dw8250_writel_ext() is moved to dwlib.h. Then it could be use=
-d=20
-> > here (and dw8250_readl_ext() too should be moved but IIRC there wasn't=
-=20
-> > any reads added by this series). =20
->=20
-> I agree that for the sake of symmetry it's good to move both.
+   I look into the implementation of platform_get_resource(),
+and do cross-check the usages of it in the codebase, especially
+the usages in other probe function. 
+And I go through some simliar bugfix commits in the revision history——
+add check for return value of platform_get_resource() in probe
+functions，to learn the way to fix this kind of bugs. 
+But sorry I don't have the corresponding device for running test.
 
-I moved them both to dwlib.h as suggested.
-
-I had a look at the current uses of readb/l and writeb/l in dw.c but
-converting all these function calls is not as straightforward as I
-initially thought so I decided to limit myself to moving these helpers
-and using them in my additions, I hope this is fine.
-
-Thanks,
-Miqu=C3=A8l
