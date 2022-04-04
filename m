@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5C9C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 08:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A210DC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 08:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233877AbiDDIb3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
+        id S235548AbiDDIbg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Apr 2022 04:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbiDDIb3 (ORCPT
+        with ESMTP id S235038AbiDDIbf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:31:29 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E3D2126F;
-        Mon,  4 Apr 2022 01:29:33 -0700 (PDT)
+        Mon, 4 Apr 2022 04:31:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76964220C5
+        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 01:29:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649060973; x=1680596973;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FLxmnc9d1Pb0jRJ6nx+PlBunfeOH15+yiIjwrxE4am4=;
-  b=RrJLZcDrJw17wkLIX8QCTI7t3/xjBGcSGWfgJx7VqfHyZpJp1ldx6Odc
-   5GUeT7FTFPQd+bmbUOEFm2t3aUt16jXr3jgtlQFtYi3wdSRoniZOWfD+K
-   1D4eu4UNCk90y/628KGppNOEqkM3A9qRybOEPqvez4Kr2eZzZxH+gaIj1
-   DDWazso9esW1iHYR2H5lHPCyZb46OmUCdv3uKMAhDl0qhWRej4w/beFL8
-   qtICnbGt1j1BH5uMfi5nV3ZCOou/l9FBJoU4v+Ls5i2QqkBf4TCcP84AI
-   kJieCME0/rdmNQxMrLu22LbHecOpSzXplCiv1ywpNkjqSvsrVbjDMdsB8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260453863"
+  t=1649060979; x=1680596979;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aEQDCTG965JKg0vtyx56wV9VxW6CjI19u0rSutPHh/8=;
+  b=E4k0Fw2XwHQ7gSEVsya2ga+jiyhbTWcN0zspOIlQ/1yIbSr0au/F5eXF
+   qPe3smBRF/CgJe7Xf4NfE0ooiNdNmbJhnLFNbz2qu2zbgO9WS4lDPURLe
+   zxTWPhY+J+wi1oBSkubZAZt/M3VQQ7VrRwaF+3QzV+BJ1NauQMXJZc+yF
+   x3W0bTa70oC/ze/4IX65K2YgrfkFjyVKcKLNiLNDXGzaF7oCzVy4OVyCZ
+   3eF6xtNQAF4vK6HQx+5kyHPM3X4bCmw7Vox/J1JA5mW+uVpqPNCMvnxzd
+   dOu/knAP3IJMQQd78514lIfSBrM/HXTwmvRtniTv0x0kfpBZpr7vGXc6/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="241052768"
 X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
-   d="scan'208";a="260453863"
+   d="scan'208";a="241052768"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:33 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:39 -0700
 X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
-   d="scan'208";a="569293304"
+   d="scan'208";a="569293325"
 Received: from rhamza-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.211.126])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:29 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:35 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -47,12 +47,13 @@ Cc:     Johan Hovold <johan@kernel.org>, heiko@sntech.de,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-api@vger.kernel.org
-Subject: [PATCH v2 00/12] Add RS485 support to DW UART
-Date:   Mon,  4 Apr 2022 11:29:00 +0300
-Message-Id: <20220404082912.6885-1-ilpo.jarvinen@linux.intel.com>
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 01/12] serial: Store character timing information to uart_port
+Date:   Mon,  4 Apr 2022 11:29:01 +0300
+Message-Id: <20220404082912.6885-2-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220404082912.6885-1-ilpo.jarvinen@linux.intel.com>
+References: <20220404082912.6885-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -60,118 +61,84 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patchset adds RS-485 support to the DW UART driver. The patchset
-has two main parts. The first part adds HW support for RS-485 itself
-in various modes of operation and the second part focuses on enabling
-9th bit addressing mode that can be used on a multipoint RS-485
-communications line.
+Struct uart_port currently stores FIFO timeout. Having character
+timing information readily available is useful. Even serial core
+itself determines char_time from port->timeout using inverse
+calculation.
 
-To configure multipoint addressing, ADDRB flag is added to termios
-and two new IOCTLs are added into serial core. Lukas Wunner brought up
-during v1 review that if this addressing is only going to be used with
-RS-485, doing it within rs485_config would avoid having to add those
-IOCTLs. There was some counterexample w/o further details mentioned for
-RS-232 usage by Andy Shevchenko. I left the IOCTL approach there but if
-somebody has further input on this, please voice it as it is user-space
-facing API.
+Store frame_time directly into uart_port. Character time is stored
+in nanoseconds to have reasonable precision with high rates.
+To avoid overflow, 64-bit math is necessary.
 
-I decided to rewrite the UART_CAP_NOTEMT patch from scratch myself
-based on Uwe Kleine-König's earlier suggestion and include it to this
-series. To make waiting for a single character easy and to avoid
-storing it per purpose in the uart drivers, I decided to add
-frame_time into uart_port. It turned out to beneficial also for serial
-core which had to reverse calculate it from uart_port->timeout). I was
-thinking of removing uart_port->timeout entirely and derive the value
-timeout from frame_time and fifosize where needed but I was not sure
-if that's ok to do lockingwise (not that fifosize is a variable that
-is expected to change so maybe I'm just being too cautious).
+It might be possible to determine timeout from frame_time by
+multiplying it with fifosize as needed but only part of the
+users seem to be protected by a lock. Thus, this patch does
+not pursue storing only frame_time in uart_port.
 
-I added some sketch on the ACPI enumeration file to satisfy Andy's
-request but I really don't know much about what should be put there.
-Please check it out and comment if I managed to make a mess out of it.
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/serial_core.c | 14 ++++++++------
+ include/linux/serial_core.h      |  1 +
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-I'm aware of the RS485 changes Lino Sanfilippo recently posted
-to linux-serial list which will make one assignment in the patchset
-redundant. I'll make the adjustment if those get applied into
-upstream.
-
-Cc: linux-api@vger.kernel.org
-
-v1 -> v2:
-- Add uart_port->frame_time to avoid the need to store it per purpose
-- Included NOTEMT patch rewritten from scratch
-- Merge HW half & full-duplex patches
-- Detect RS485 HW using RE_EN register write+read
-- Removed SER_RS485_SW_RX_OR_TX
-- Relocated/renamed RE polarity DT prop
-- Use SER_RS485_RTS_ON_SEND rather than DT prop directly
-- Removed DE polarity prop, it is still configurable but with rts one instead
-- Make DE active-high by default in dwlib
-- Don't unnecessarily clear DE/RE_EN for non-RS485 mode
-- Prevent ADDRB and addrmode desync for RS485->RS232 transition
-- Added ACPI enumeration doc
-- Changed -EINVAL to -ENOTTY if no set/get_addr handler is present
-- Clear ADDRB in set_termios of a few more drivers
-- Added filtering for addresses to avoid them leaking into data stream
-- Reworded comments & commit messages as requested
-
-Ilpo Järvinen (12):
-  serial: Store character timing information to uart_port
-  serial: 8250: Handle UART without interrupt on TEMT
-  serial: 8250_dwlib: RS485 HW half & full duplex support
-  serial: 8250_dwlib: Implement SW half duplex support
-  dt_bindings: rs485: Add receiver enable polarity
-  ACPI / property: Document RS485 _DSD properties
-  serial: termbits: ADDRB to indicate 9th bit addressing mode
-  serial: General support for multipoint addresses
-  serial: 8250: make saved LSR larger
-  serial: 8250: create lsr_save_mask
-  serial: 8250_lpss: Use 32-bit reads
-  serial: 8250_dwlib: Support for 9th bit multipoint addressing
-
- .../devicetree/bindings/serial/rs485.yaml     |   5 +
- .../driver-api/serial/serial-rs485.rst        |  23 +-
- .../firmware-guide/acpi/enumeration.rst       |  25 ++
- arch/alpha/include/uapi/asm/ioctls.h          |   3 +
- arch/alpha/include/uapi/asm/termbits.h        |   1 +
- arch/mips/include/uapi/asm/ioctls.h           |   3 +
- arch/mips/include/uapi/asm/termbits.h         |   1 +
- arch/parisc/include/uapi/asm/ioctls.h         |   3 +
- arch/parisc/include/uapi/asm/termbits.h       |   1 +
- arch/powerpc/include/uapi/asm/ioctls.h        |   3 +
- arch/powerpc/include/uapi/asm/termbits.h      |   1 +
- arch/sh/include/uapi/asm/ioctls.h             |   3 +
- arch/sparc/include/uapi/asm/ioctls.h          |   3 +
- arch/sparc/include/uapi/asm/termbits.h        |   1 +
- arch/xtensa/include/uapi/asm/ioctls.h         |   3 +
- drivers/char/pcmcia/synclink_cs.c             |   2 +
- drivers/ipack/devices/ipoctal.c               |   2 +
- drivers/mmc/core/sdio_uart.c                  |   2 +
- drivers/net/usb/hso.c                         |   3 +-
- drivers/s390/char/tty3270.c                   |   3 +
- drivers/staging/greybus/uart.c                |   2 +
- drivers/tty/amiserial.c                       |   6 +-
- drivers/tty/moxa.c                            |   1 +
- drivers/tty/mxser.c                           |   1 +
- drivers/tty/serial/8250/8250.h                |   1 +
- drivers/tty/serial/8250/8250_core.c           |   6 +-
- drivers/tty/serial/8250/8250_dwlib.c          | 232 +++++++++++++++++-
- drivers/tty/serial/8250/8250_dwlib.h          |   5 +
- drivers/tty/serial/8250/8250_lpss.c           |   2 +-
- drivers/tty/serial/8250/8250_port.c           |  42 ++--
- drivers/tty/serial/serial_core.c              |  76 +++++-
- drivers/tty/synclink_gt.c                     |   2 +
- drivers/tty/tty_ioctl.c                       |   2 +
- drivers/usb/class/cdc-acm.c                   |   2 +
- drivers/usb/serial/usb-serial.c               |   6 +-
- include/linux/serial_8250.h                   |   7 +-
- include/linux/serial_core.h                   |   7 +
- include/uapi/asm-generic/ioctls.h             |   3 +
- include/uapi/asm-generic/termbits.h           |   1 +
- include/uapi/linux/serial.h                   |   8 +
- net/bluetooth/rfcomm/tty.c                    |   2 +
- 41 files changed, 470 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 846192a7b4bf..c6ac91033e38 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -24,6 +24,7 @@
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/math64.h>
+ #include <linux/security.h>
+ 
+ #include <linux/irq.h>
+@@ -333,15 +334,18 @@ void
+ uart_update_timeout(struct uart_port *port, unsigned int cflag,
+ 		    unsigned int baud)
+ {
+-	unsigned int size;
++	unsigned int size = tty_get_frame_size(cflag);
++	u64 frame_time;
+ 
+-	size = tty_get_frame_size(cflag) * port->fifosize;
++	frame_time = (u64)size * NSEC_PER_SEC;
++	size *= port->fifosize;
+ 
+ 	/*
+ 	 * Figure the timeout to send the above number of bits.
+ 	 * Add .02 seconds of slop
+ 	 */
+ 	port->timeout = (HZ * size) / baud + HZ/50;
++	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
+ }
+ EXPORT_SYMBOL(uart_update_timeout);
+ 
+@@ -1596,10 +1600,8 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	 * Note: we have to use pretty tight timings here to satisfy
+ 	 * the NIST-PCTS.
+ 	 */
+-	char_time = (port->timeout - HZ/50) / port->fifosize;
+-	char_time = char_time / 5;
+-	if (char_time == 0)
+-		char_time = 1;
++	char_time = max(nsecs_to_jiffies(port->frame_time / 5), 1UL);
++
+ 	if (timeout && timeout < char_time)
+ 		char_time = timeout;
+ 
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 31f7fe527395..504d365e2803 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -232,6 +232,7 @@ struct uart_port {
+ 	int			hw_stopped;		/* sw-assisted CTS flow state */
+ 	unsigned int		mctrl;			/* current modem ctrl settings */
+ 	unsigned int		timeout;		/* character-based timeout */
++	unsigned int		frame_time;		/* frame timing in ns */
+ 	unsigned int		type;			/* port type */
+ 	const struct uart_ops	*ops;
+ 	unsigned int		custom_divisor;
 -- 
 2.30.2
 
