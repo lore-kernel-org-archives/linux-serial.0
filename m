@@ -2,205 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C72C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 08:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5C9C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 08:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238317AbiDDISS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S233877AbiDDIb3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Apr 2022 04:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234320AbiDDISQ (ORCPT
+        with ESMTP id S232775AbiDDIb3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 04:18:16 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14DA3B3E0
-        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 01:16:19 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6d4d:d9ec:3c70:7c2c])
-        by baptiste.telenet-ops.be with bizsmtp
-        id EYG82700R40M8zK01YG8cT; Mon, 04 Apr 2022 10:16:17 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nbHse-0089Aj-Eu; Mon, 04 Apr 2022 10:16:08 +0200
-Date:   Mon, 4 Apr 2022 10:16:08 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     linux-kernel@vger.kernel.org
-cc:     linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        linux-rdma@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-xfs@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-s390@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc1
-In-Reply-To: <20220404074734.1092959-1-geert@linux-m68k.org>
-Message-ID: <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com> <20220404074734.1092959-1-geert@linux-m68k.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 4 Apr 2022 04:31:29 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E3D2126F;
+        Mon,  4 Apr 2022 01:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649060973; x=1680596973;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FLxmnc9d1Pb0jRJ6nx+PlBunfeOH15+yiIjwrxE4am4=;
+  b=RrJLZcDrJw17wkLIX8QCTI7t3/xjBGcSGWfgJx7VqfHyZpJp1ldx6Odc
+   5GUeT7FTFPQd+bmbUOEFm2t3aUt16jXr3jgtlQFtYi3wdSRoniZOWfD+K
+   1D4eu4UNCk90y/628KGppNOEqkM3A9qRybOEPqvez4Kr2eZzZxH+gaIj1
+   DDWazso9esW1iHYR2H5lHPCyZb46OmUCdv3uKMAhDl0qhWRej4w/beFL8
+   qtICnbGt1j1BH5uMfi5nV3ZCOou/l9FBJoU4v+Ls5i2QqkBf4TCcP84AI
+   kJieCME0/rdmNQxMrLu22LbHecOpSzXplCiv1ywpNkjqSvsrVbjDMdsB8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260453863"
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="260453863"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:33 -0700
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="569293304"
+Received: from rhamza-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.211.126])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 01:29:29 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Johan Hovold <johan@kernel.org>, heiko@sntech.de,
+        giulio.benetti@micronovasrl.com,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-api@vger.kernel.org
+Subject: [PATCH v2 00/12] Add RS485 support to DW UART
+Date:   Mon,  4 Apr 2022 11:29:00 +0300
+Message-Id: <20220404082912.6885-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 4 Apr 2022, Geert Uytterhoeven wrote:
-> Below is the list of build error/warning regressions/improvements in
-> v5.18-rc1[1] compared to v5.17[2].
->
-> Summarized:
->  - build errors: +36/-15
->  - build warnings: +5/-38
->
-> Happy fixing! ;-)
->
-> Thanks to the linux-next team for providing the build service.
->
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3123109284176b1532874591f7c81f3837bbdc17/ (all 96 configs)
-> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (all 96 configs)
->
->
-> *** ERRORS ***
->
-> 36 error regressions:
->  + /kisskb/src/arch/m68k/include/asm/bitops.h: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]:  => 329:20
+This patchset adds RS-485 support to the DW UART driver. The patchset
+has two main parts. The first part adds HW support for RS-485 itself
+in various modes of operation and the second part focuses on enabling
+9th bit addressing mode that can be used on a multipoint RS-485
+communications line.
 
-m68k-gcc8/m68k-allmodconfig (assumed gcc8 bug)
+To configure multipoint addressing, ADDRB flag is added to termios
+and two new IOCTLs are added into serial core. Lukas Wunner brought up
+during v1 review that if this addressing is only going to be used with
+RS-485, doing it within rs485_config would avoid having to add those
+IOCTLs. There was some counterexample w/o further details mentioned for
+RS-232 usage by Andy Shevchenko. I left the IOCTL approach there but if
+somebody has further input on this, please voice it as it is user-space
+facing API.
 
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: .cfi_endproc without corresponding .cfi_startproc:  => 32
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: bad or irreducible absolute expression:  => 16
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: junk at end of line, first unrecognized character is `:':  => 16
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `be 0x100(%sr2,%r0)':  => 29
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldi 0,%r20':  => 30
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldw 0(%sp),%r31':  => 26
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ble 0x100(%sr2,%r0)':  => 51, 46
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 0,%r25':  => 44
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 1,%r25':  => 49
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 173,%r20':  => 45, 50
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.callinfo':  => 40
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.entry':  => 41
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.exit':  => 54
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.proc':  => 39
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.procend':  => 55
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.stringz':  => 76
+I decided to rewrite the UART_CAP_NOTEMT patch from scratch myself
+based on Uwe Kleine-König's earlier suggestion and include it to this
+series. To make waiting for a single character easy and to avoid
+storing it per purpose in the uart drivers, I decided to add
+frame_time into uart_port. It turned out to beneficial also for serial
+core which had to reverse calculate it from uart_port->timeout). I was
+thinking of removing uart_port->timeout entirely and derive the value
+timeout from frame_time and fifosize where needed but I was not sure
+if that's ok to do lockingwise (not that fifosize is a variable that
+is expected to change so maybe I'm just being too cautious).
 
-parisc64-gcc8/generic-64bit_defconfig
-parisc-gcc8/generic-32bit_defconfig
-parisc-gcc8/parisc-allmodconfig
-parisc-gcc8/parisc-allnoconfig
+I added some sketch on the ACPI enumeration file to satisfy Andy's
+request but I really don't know much about what should be put there.
+Please check it out and comment if I managed to make a mess out of it.
 
->  + /kisskb/src/arch/sparc/kernel/irq_32.c: error: array subscript [16, 79] is outside array bounds of 'struct tt_entry[1]' [-Werror=array-bounds]:  => 262:14, 261:46, 259:14, 258:14, 263:14
+I'm aware of the RS485 changes Lino Sanfilippo recently posted
+to linux-serial list which will make one assignment in the patchset
+redundant. I'll make the adjustment if those get applied into
+upstream.
 
-sparc64-gcc11/sparc-allmodconfig
+Cc: linux-api@vger.kernel.org
 
->  + /kisskb/src/drivers/gpu/drm/r128/r128_cce.c: error: case label does not reduce to an integer constant:  => 417:2, 418:2
+v1 -> v2:
+- Add uart_port->frame_time to avoid the need to store it per purpose
+- Included NOTEMT patch rewritten from scratch
+- Merge HW half & full-duplex patches
+- Detect RS485 HW using RE_EN register write+read
+- Removed SER_RS485_SW_RX_OR_TX
+- Relocated/renamed RE polarity DT prop
+- Use SER_RS485_RTS_ON_SEND rather than DT prop directly
+- Removed DE polarity prop, it is still configurable but with rts one instead
+- Make DE active-high by default in dwlib
+- Don't unnecessarily clear DE/RE_EN for non-RS485 mode
+- Prevent ADDRB and addrmode desync for RS485->RS232 transition
+- Added ACPI enumeration doc
+- Changed -EINVAL to -ENOTTY if no set/get_addr handler is present
+- Clear ADDRB in set_termios of a few more drivers
+- Added filtering for addresses to avoid them leaking into data stream
+- Reworded comments & commit messages as requested
 
-arm64-gcc5.4/arm64-allmodconfig
-mipsel/mips-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/powerpc-allyesconfig
-powerpc-gcc5/ppc32_allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
+Ilpo Järvinen (12):
+  serial: Store character timing information to uart_port
+  serial: 8250: Handle UART without interrupt on TEMT
+  serial: 8250_dwlib: RS485 HW half & full duplex support
+  serial: 8250_dwlib: Implement SW half duplex support
+  dt_bindings: rs485: Add receiver enable polarity
+  ACPI / property: Document RS485 _DSD properties
+  serial: termbits: ADDRB to indicate 9th bit addressing mode
+  serial: General support for multipoint addresses
+  serial: 8250: make saved LSR larger
+  serial: 8250: create lsr_save_mask
+  serial: 8250_lpss: Use 32-bit reads
+  serial: 8250_dwlib: Support for 9th bit multipoint addressing
 
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function):  => 149:37
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor':  => 149:22
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]:  => 150:1
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
+ .../devicetree/bindings/serial/rs485.yaml     |   5 +
+ .../driver-api/serial/serial-rs485.rst        |  23 +-
+ .../firmware-guide/acpi/enumeration.rst       |  25 ++
+ arch/alpha/include/uapi/asm/ioctls.h          |   3 +
+ arch/alpha/include/uapi/asm/termbits.h        |   1 +
+ arch/mips/include/uapi/asm/ioctls.h           |   3 +
+ arch/mips/include/uapi/asm/termbits.h         |   1 +
+ arch/parisc/include/uapi/asm/ioctls.h         |   3 +
+ arch/parisc/include/uapi/asm/termbits.h       |   1 +
+ arch/powerpc/include/uapi/asm/ioctls.h        |   3 +
+ arch/powerpc/include/uapi/asm/termbits.h      |   1 +
+ arch/sh/include/uapi/asm/ioctls.h             |   3 +
+ arch/sparc/include/uapi/asm/ioctls.h          |   3 +
+ arch/sparc/include/uapi/asm/termbits.h        |   1 +
+ arch/xtensa/include/uapi/asm/ioctls.h         |   3 +
+ drivers/char/pcmcia/synclink_cs.c             |   2 +
+ drivers/ipack/devices/ipoctal.c               |   2 +
+ drivers/mmc/core/sdio_uart.c                  |   2 +
+ drivers/net/usb/hso.c                         |   3 +-
+ drivers/s390/char/tty3270.c                   |   3 +
+ drivers/staging/greybus/uart.c                |   2 +
+ drivers/tty/amiserial.c                       |   6 +-
+ drivers/tty/moxa.c                            |   1 +
+ drivers/tty/mxser.c                           |   1 +
+ drivers/tty/serial/8250/8250.h                |   1 +
+ drivers/tty/serial/8250/8250_core.c           |   6 +-
+ drivers/tty/serial/8250/8250_dwlib.c          | 232 +++++++++++++++++-
+ drivers/tty/serial/8250/8250_dwlib.h          |   5 +
+ drivers/tty/serial/8250/8250_lpss.c           |   2 +-
+ drivers/tty/serial/8250/8250_port.c           |  42 ++--
+ drivers/tty/serial/serial_core.c              |  76 +++++-
+ drivers/tty/synclink_gt.c                     |   2 +
+ drivers/tty/tty_ioctl.c                       |   2 +
+ drivers/usb/class/cdc-acm.c                   |   2 +
+ drivers/usb/serial/usb-serial.c               |   6 +-
+ include/linux/serial_8250.h                   |   7 +-
+ include/linux/serial_core.h                   |   7 +
+ include/uapi/asm-generic/ioctls.h             |   3 +
+ include/uapi/asm-generic/termbits.h           |   1 +
+ include/uapi/linux/serial.h                   |   8 +
+ net/bluetooth/rfcomm/tty.c                    |   2 +
+ 41 files changed, 470 insertions(+), 35 deletions(-)
 
-um-x86_64/um-allmodconfig
-um-x86_64/um-allyesconfig
+-- 
+2.30.2
 
->  + /kisskb/src/drivers/media/platform/nxp/imx-pxp.h: error: initializer element is not constant:  => 582:38
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-
->  + /kisskb/src/drivers/misc/habanalabs/common/memory.c: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]:  => 153:49, 153:7
-
-mipsel/mips-allmodconfig
-mips-gcc8/mips-allmodconfig
-sparc64/sparc-allmodconfig
-xtensa-gcc11/xtensa-allmodconfig
-
->  + /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant:  => 4917:4
->  + /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: error: case label does not reduce to an integer constant:  => 3798:2, 3809:2
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-
->  + /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant:  => 1983:2
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
->  + /kisskb/src/drivers/tty/serial/mpc52xx_uart.c: error: initialization from incompatible pointer type [-Werror=incompatible-pointer-types]:  => 1004:12, 1005:12, 1006:14, 970:12, 968:16, 971:14, 969:12, 1002:16, 1003:16, 967:16
-
-powerpc-gcc5/ppc32_allmodconfig
-
->  + /kisskb/src/drivers/usb/typec/tcpm/tcpm.c: error: case label does not reduce to an integer constant:  => 4724:3
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-
->  + /kisskb/src/fs/xfs/xfs_buf.h: error: initializer element is not constant:  => 46:23
->  + /kisskb/src/sound/usb/midi.c: error: case label does not reduce to an integer constant:  => 1389:2
-
-arm64-gcc5.4/arm64-allmodconfig
-mipsel/mips-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/powerpc-allyesconfig
-powerpc-gcc5/ppc32_allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
->  + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_402' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
->  + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_404' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-
-powerpc-gcc5/powerpc-allmodconfig
-
-
-> *** WARNINGS ***
->
-> 5 warning regressions:
->  + /kisskb/src/arch/m68k/include/asm/string.h: warning: '__builtin_memset' offset [0, 11] is out of the bounds [0, 0] [-Warray-bounds]:  => 68:25
-
-m68k-gcc11/sun3_defconfig
-
->  + /kisskb/src/arch/s390/kernel/machine_kexec.c: warning: 'memcpy' offset [0, 511] is out of the bounds [0, 0] [-Warray-bounds]:  => 57:9
-
-s390x-gcc11/s390-defconfig
-
->  + /kisskb/src/drivers/net/ethernet/i825xx/sun3_82586.c: warning: array subscript 1 is above array bounds of 'volatile struct transmit_cmd_struct *[1]' [-Warray-bounds]:  => 989:108, 989:122
-
-m68k-gcc11/sun3_defconfig
-m68k-gcc8/sun3_defconfig
-
->  + /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]:  => 5400:40, 5403:43, 5396:40
-
-powerpc-gcc11/skiroot_defconfig
-
->  + modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-
-sparc64-gcc11/sparc64-defconfig
-sparc64/sparc64-defconfig
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
