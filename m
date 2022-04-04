@@ -2,161 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A456C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5641C4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376450AbiDDVZP (ORCPT
+        id S1350570AbiDDVZb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
+        Mon, 4 Apr 2022 17:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379091AbiDDQeT (ORCPT
+        with ESMTP id S1380270AbiDDT0W (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 12:34:19 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644BE36E0C
-        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 09:32:23 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id bo5so9477167pfb.4
-        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 09:32:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
-        b=QRTuRBVdMggNkZKDKiVvRCfbxLmN/4Scvw/NVPF7mRZ6Ng7eYBz4lEM8ZpODjayuz6
-         fHIj9gn+tCSfkLNwzzluQHLAI2YPvxvzhKEE9MRM0emAM5N+T/84llSb51wruVmWrtvS
-         XEfdi++KzE+e3iOjOVtFEcKg7tUbFt9GjJOMQ=
+        Mon, 4 Apr 2022 15:26:22 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3809E26AD7;
+        Mon,  4 Apr 2022 12:24:26 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-df0940c4eeso11897121fac.8;
+        Mon, 04 Apr 2022 12:24:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
-        b=67wRs+AMt3ANh7XkcCP+xrRk2tbX89Ehnfh7jKhlQ0v4lMtOwi3JdhTfo7P4/pTE4S
-         +x0Ov9PrKjmKPLxaC303GxJWSpy87UxBmveLXtPGo89VUUzjV6UIIr2Sr208TjjYXNqt
-         HBijCPBm1EWo+UfsjoVbwlKzN8jZVyLU6/o6vXkOoSYckY5MXMeFb68In3b0+3lBpY9n
-         1Annj/RzWm8d/cDtGrKAl/aBeccOaUprdm7VznxyEIJe6Nu+dHar3SWOg5QY7+T5Nt9E
-         W9SEYqx4vYMcIn/kujlJhMEG7EoWi3Bz7wwOyXi0E4Y9PMngM6wnPflyTPhfaVGUcmY0
-         nP2A==
-X-Gm-Message-State: AOAM53358fpP1gvxqUv7lyR/Z8+qjdT6x507jD5OTXhp10gwZOzMI6rv
-        g4ovft5FrGXF2Nr9iR1G3adEQw==
-X-Google-Smtp-Source: ABdhPJwKOuEHl+BnsbgNxrNKz+t2civ6hhXWxr7p+FhUpmTI1La4qStQ4P50t0JSRmOGG8TiOxxaqA==
-X-Received: by 2002:a05:6a00:10c7:b0:4fd:9ee6:4130 with SMTP id d7-20020a056a0010c700b004fd9ee64130mr375022pfu.84.1649089942793;
-        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:1ebc:cb71:2a38:38db])
-        by smtp.gmail.com with UTF8SMTPSA id s20-20020aa78d54000000b004fac74c83b3sm12466884pfe.186.2022.04.04.09.32.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 09:32:19 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
-        dianders@chromium.org
-Subject: Re: [PATCH] drivers/tty/serial/qcom-geni-serial: Do stop_rx in
- suspend path for console if console_suspend is disabled
-Message-ID: <Yksdk+YTxXRDWBbj@google.com>
-References: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
+        bh=ifeIhYfjlW0ULRJDooo6QxPNwMkL7upjn0RvWlwhS08=;
+        b=WqsXxI2+zw4X5A7N1ZjMVVq3wctAKjqFr+x1x7MaPX35yIP7EJstPfQnSzmMRIEVKh
+         dIlnQM3v8fQ92NvHqMsjWVH538RUMQZ8kBBnQbwbBhrbc/E5X88md4hJmOVwQDMRqsZL
+         mdMjucjlBEO3kbr6KThywQJ15p4HgkK8wyLrHlmrXN+4ivJpr5sejlXNt6BHYhkIb1a4
+         i3vT/M/DF3bQj+S51BxxzTcApFjBk+USdnbaKlhAHOu+c80HIbxPfWmWIlGc6D4wBOkW
+         r5L/POA317J++yn5VVTdXuz/2vlQvuguoeFR9x2kPwZafxt5z5b/aB1hkj3dfuOeKygb
+         pzbA==
+X-Gm-Message-State: AOAM531KPJ+9dfICD0g6Rk/wXk8BZX/8upLCQLOPtfwXTb1VdGd9khUI
+        VWcMgyZREKQGUbCuYFfXAAO5nHA0mw==
+X-Google-Smtp-Source: ABdhPJyyEsDRAlCfD0eED8AW8ndC/mu5ruwNAUWUYcjpoI113iNC4TpuLXvJcoJ4qCgfLjhvko8CnA==
+X-Received: by 2002:a05:6870:b6a6:b0:dd:999f:6596 with SMTP id cy38-20020a056870b6a600b000dd999f6596mr418543oab.106.1649100265424;
+        Mon, 04 Apr 2022 12:24:25 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id d1-20020a056830138100b005cf2f29d89csm4535284otq.77.2022.04.04.12.24.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 12:24:24 -0700 (PDT)
+Received: (nullmailer pid 1805190 invoked by uid 1000);
+        Mon, 04 Apr 2022 19:24:24 -0000
+Date:   Mon, 4 Apr 2022 14:24:24 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>, devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH v2 02/13] dt-bindings: serial: renesas,em-uart: Document
+ r9a09g011 bindings
+Message-ID: <YktF6LTG9+cM7axp@robh.at.kernel.org>
+References: <20220330154024.112270-1-phil.edworthy@renesas.com>
+ <20220330154024.112270-3-phil.edworthy@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
+In-Reply-To: <20220330154024.112270-3-phil.edworthy@renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:47:24PM +0530, Vijaya Krishna Nivarthi wrote:
-> [Why]
-> For the case of console_suspend disabled, if back to back suspend/resume
-> test is executed, at the end of test, sometimes console would appear to
-> be frozen not responding to input. This would happen because, for
-> console_suspend disabled, suspend/resume routines only turn resources
-> off/on but don't do a port close/open.
-> As a result, during resume, some rx transactions come in before system is
-> ready, malfunction of rx happens in turn resulting in console appearing
-> to be stuck.
+On Wed, 30 Mar 2022 16:40:13 +0100, Phil Edworthy wrote:
+> The Renesas RZ/V2M (r9a09g011) SoC uses a uart that is compatible with the
+> EMMA Mobile SoC.
 > 
-> [How]
-
-Please drop the [Why] / [How] 'tags'
-
-> Do a stop_rx in suspend sequence to prevent this. start_rx is already
-> present in resume sequence as part of call to set_termios which does a
-> stop_rx/start_rx.
-> Additionally other changes have been made at same place
-> a) replace the hardcoded flags with macros
-> b) perform voting before calling resume_port in resume sequence
-> c) consequently, swap the order in suspend sequence
-
-This patch is short, but IMO it still does too many things at once which
-aren't all directly related. At the very least the change from hardcoded
-flags to macros should be in a separate patch. If the ICC voting order
-isn't direcly related with the console_suspend issue then I'd also suggest
-to split it out into its own patch.
-
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
->  drivers/tty/serial/qcom_geni_serial.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
+> v2: Fix dtbs_check by adding missing alternative binding
+> ---
+>  .../devicetree/bindings/serial/renesas,em-uart.yaml      | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index aedc388..37d064f 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -19,6 +19,7 @@
->  #include <linux/slab.h>
->  #include <linux/tty.h>
->  #include <linux/tty_flip.h>
-> +#include <dt-bindings/interconnect/qcom,icc.h>
->  
->  /* UART specific GENI registers */
->  #define SE_UART_LOOPBACK_CFG		0x22c
-> @@ -1477,34 +1478,38 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
->  
->  static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
->  {
-> +	int ret;
->  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
->  	struct uart_port *uport = &port->uport;
->  	struct qcom_geni_private_data *private_data = uport->private_data;
->  
-> +	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
-> +	if (!console_suspend_enabled && uart_console(uport))
-> +		uport->ops->stop_rx(uport);
-> +
->  	/*
->  	 * This is done so we can hit the lowest possible state in suspend
->  	 * even with no_console_suspend
->  	 */
-> +	ret = uart_suspend_port(private_data->drv, uport);
->  	if (uart_console(uport)) {
-> -		geni_icc_set_tag(&port->se, 0x3);
-> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
->  		geni_icc_set_bw(&port->se);
->  	}
-> -	return uart_suspend_port(private_data->drv, uport);
-> +	return ret;
->  }
->  
->  static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
->  {
-> -	int ret;
->  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
->  	struct uart_port *uport = &port->uport;
->  	struct qcom_geni_private_data *private_data = uport->private_data;
->  
-> -	ret = uart_resume_port(private_data->drv, uport);
->  	if (uart_console(uport)) {
-> -		geni_icc_set_tag(&port->se, 0x7);
-> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
->  		geni_icc_set_bw(&port->se);
->  	}
-> -	return ret;
-> +	return uart_resume_port(private_data->drv, uport);
->  }
->  
->  static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
-> -- 
-> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
-> 
+
+Acked-by: Rob Herring <robh@kernel.org>
