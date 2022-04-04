@@ -2,85 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118DCC47095
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 21:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A456C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 21:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378716AbiDDVZN (ORCPT
+        id S1376450AbiDDVZP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        Mon, 4 Apr 2022 17:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380030AbiDDSlV (ORCPT
+        with ESMTP id S1379091AbiDDQeT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 14:41:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959D85F99;
-        Mon,  4 Apr 2022 11:39:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42A3FB818D8;
-        Mon,  4 Apr 2022 18:39:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81B0EC340F3;
-        Mon,  4 Apr 2022 18:39:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649097561;
-        bh=uoCUt9kRip3xmuGeLGDqglk9GEPAPCSc46dVFwVFFvs=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=pWjK8T/SiEbCNPFdLabaKBhPZF8HEsxpYiFOPoj11AhzUzWc0mFSTNoTlb44mzjIt
-         F3UZs1LSUjPo/vOdjOWkHWODjT6vCZV4ZDdN74DxYDMI5v/o8GBHU2fLfKRNJyKNv7
-         gtUzy0Kf5ojn5swpmgVLnbCnNNgCbQO7w0i9dnoCj/kzOzhXBF6WNWKxFi9motkxV1
-         mAZPq5pTW07Pv3EOFvaB4dD/VUmByyweb+IizmotBRaNxe2OECt5SeCdq2GbRkzw8s
-         AQKJTPhJozQ/0jP8eneP9qLPjEAktInngDlNV+gUc4cd2uHWA+D6yPbPP1WfCZEgV2
-         5G+GoDEs7Lu2A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        linux-rdma@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-xfs@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-s390@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc1
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
-        <20220404074734.1092959-1-geert@linux-m68k.org>
-        <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
-Date:   Mon, 04 Apr 2022 21:39:15 +0300
-In-Reply-To: <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg> (Geert
-        Uytterhoeven's message of "Mon, 4 Apr 2022 10:16:08 +0200 (CEST)")
-Message-ID: <874k38u20c.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Mon, 4 Apr 2022 12:34:19 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644BE36E0C
+        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 09:32:23 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id bo5so9477167pfb.4
+        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 09:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
+        b=QRTuRBVdMggNkZKDKiVvRCfbxLmN/4Scvw/NVPF7mRZ6Ng7eYBz4lEM8ZpODjayuz6
+         fHIj9gn+tCSfkLNwzzluQHLAI2YPvxvzhKEE9MRM0emAM5N+T/84llSb51wruVmWrtvS
+         XEfdi++KzE+e3iOjOVtFEcKg7tUbFt9GjJOMQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2bL0zVy+T84o1RMeqMcnjFfLYjA+GUYGgoiquYSSAHY=;
+        b=67wRs+AMt3ANh7XkcCP+xrRk2tbX89Ehnfh7jKhlQ0v4lMtOwi3JdhTfo7P4/pTE4S
+         +x0Ov9PrKjmKPLxaC303GxJWSpy87UxBmveLXtPGo89VUUzjV6UIIr2Sr208TjjYXNqt
+         HBijCPBm1EWo+UfsjoVbwlKzN8jZVyLU6/o6vXkOoSYckY5MXMeFb68In3b0+3lBpY9n
+         1Annj/RzWm8d/cDtGrKAl/aBeccOaUprdm7VznxyEIJe6Nu+dHar3SWOg5QY7+T5Nt9E
+         W9SEYqx4vYMcIn/kujlJhMEG7EoWi3Bz7wwOyXi0E4Y9PMngM6wnPflyTPhfaVGUcmY0
+         nP2A==
+X-Gm-Message-State: AOAM53358fpP1gvxqUv7lyR/Z8+qjdT6x507jD5OTXhp10gwZOzMI6rv
+        g4ovft5FrGXF2Nr9iR1G3adEQw==
+X-Google-Smtp-Source: ABdhPJwKOuEHl+BnsbgNxrNKz+t2civ6hhXWxr7p+FhUpmTI1La4qStQ4P50t0JSRmOGG8TiOxxaqA==
+X-Received: by 2002:a05:6a00:10c7:b0:4fd:9ee6:4130 with SMTP id d7-20020a056a0010c700b004fd9ee64130mr375022pfu.84.1649089942793;
+        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:1ebc:cb71:2a38:38db])
+        by smtp.gmail.com with UTF8SMTPSA id s20-20020aa78d54000000b004fac74c83b3sm12466884pfe.186.2022.04.04.09.32.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 09:32:22 -0700 (PDT)
+Date:   Mon, 4 Apr 2022 09:32:19 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
+        dianders@chromium.org
+Subject: Re: [PATCH] drivers/tty/serial/qcom-geni-serial: Do stop_rx in
+ suspend path for console if console_suspend is disabled
+Message-ID: <Yksdk+YTxXRDWBbj@google.com>
+References: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1648491444-17137-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
+On Mon, Mar 28, 2022 at 11:47:24PM +0530, Vijaya Krishna Nivarthi wrote:
+> [Why]
+> For the case of console_suspend disabled, if back to back suspend/resume
+> test is executed, at the end of test, sometimes console would appear to
+> be frozen not responding to input. This would happen because, for
+> console_suspend disabled, suspend/resume routines only turn resources
+> off/on but don't do a port close/open.
+> As a result, during resume, some rx transactions come in before system is
+> ready, malfunction of rx happens in turn resulting in console appearing
+> to be stuck.
+> 
+> [How]
 
->> /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:
->> error: case label does not reduce to an integer constant: => 3798:2,
->> 3809:2
->
-> arm64-gcc5.4/arm64-allmodconfig
-> powerpc-gcc5/powerpc-allmodconfig
-> powerpc-gcc5/ppc64_book3e_allmodconfig
+Please drop the [Why] / [How] 'tags'
 
-After v5.17 there were two commits to brcmfmac/sdio.c:
+> Do a stop_rx in suspend sequence to prevent this. start_rx is already
+> present in resume sequence as part of call to set_termios which does a
+> stop_rx/start_rx.
+> Additionally other changes have been made at same place
+> a) replace the hardcoded flags with macros
+> b) perform voting before calling resume_port in resume sequence
+> c) consequently, swap the order in suspend sequence
 
-$ git log --oneline v5.17.. drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-ed26edf7bfd9 brcmfmac: Add BCM43454/6 support
-6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
+This patch is short, but IMO it still does too many things at once which
+aren't all directly related. At the very least the change from hardcoded
+flags to macros should be in a separate patch. If the ICC voting order
+isn't direcly related with the console_suspend issue then I'd also suggest
+to split it out into its own patch.
 
-I can't see how either of them could cause this warning. Could something
-else cause this or am I missing something?
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index aedc388..37d064f 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/tty.h>
+>  #include <linux/tty_flip.h>
+> +#include <dt-bindings/interconnect/qcom,icc.h>
+>  
+>  /* UART specific GENI registers */
+>  #define SE_UART_LOOPBACK_CFG		0x22c
+> @@ -1477,34 +1478,38 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
+>  
+>  static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+>  {
+> +	int ret;
+>  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+>  	struct uart_port *uport = &port->uport;
+>  	struct qcom_geni_private_data *private_data = uport->private_data;
+>  
+> +	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
+> +	if (!console_suspend_enabled && uart_console(uport))
+> +		uport->ops->stop_rx(uport);
+> +
+>  	/*
+>  	 * This is done so we can hit the lowest possible state in suspend
+>  	 * even with no_console_suspend
+>  	 */
+> +	ret = uart_suspend_port(private_data->drv, uport);
+>  	if (uart_console(uport)) {
+> -		geni_icc_set_tag(&port->se, 0x3);
+> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
+>  		geni_icc_set_bw(&port->se);
+>  	}
+> -	return uart_suspend_port(private_data->drv, uport);
+> +	return ret;
+>  }
+>  
+>  static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
+>  {
+> -	int ret;
+>  	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+>  	struct uart_port *uport = &port->uport;
+>  	struct qcom_geni_private_data *private_data = uport->private_data;
+>  
+> -	ret = uart_resume_port(private_data->drv, uport);
+>  	if (uart_console(uport)) {
+> -		geni_icc_set_tag(&port->se, 0x7);
+> +		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
+>  		geni_icc_set_bw(&port->se);
+>  	}
+> -	return ret;
+> +	return uart_resume_port(private_data->drv, uport);
+>  }
+>  
+>  static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
+> -- 
+> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+> 
