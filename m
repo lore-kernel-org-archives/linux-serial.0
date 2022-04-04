@@ -2,172 +2,155 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B744C433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Apr 2022 15:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B84EC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 05:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359256AbiDCQA2 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Apr 2022 12:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
+        id S242595AbiDDFxZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Apr 2022 01:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236415AbiDCQA1 (ORCPT
+        with ESMTP id S1377383AbiDDFxU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Apr 2022 12:00:27 -0400
-X-Greylist: delayed 1342 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 03 Apr 2022 08:58:31 PDT
-Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F082AE8
-        for <linux-serial@vger.kernel.org>; Sun,  3 Apr 2022 08:58:31 -0700 (PDT)
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id C88BB148C1C7
-        for <linux-serial@vger.kernel.org>; Sun,  3 Apr 2022 10:36:08 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id b2GunCm3Tdx86b2GungREE; Sun, 03 Apr 2022 10:36:08 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=S9kyq3prUNE5HlsvNUnZDxnM3YNPjxnZKzbpLeHWtg4=; b=c4M3VL07wbRVvrKjSmkp3QOqSm
-        adMlo6Kg9Lb2yNZPZmvLcKrDA80lw6W8IB3lcd3ZKvvVsDULx/j5jplAbY1fGHzIx1mdUt9gDNv/l
-        DkfYW97FxsYWpgOi3BvWbWznBqOd8sZYr92Cnk3E31b7R4mXu9C+P5Ry32/pPRgjndrGoqiVcwNci
-        FWCIlY0obiz+wrK9jriGBEv8KCeeLK1hC5g7RveJhCuwee7vpws0ZbSsepsVBgQEa11dhLKQVOsFa
-        5b6sqe/WGpbfGac+nFqETCb8y5TPdwIcXM7V6Y1DzbCt0gmprSJ9dkb9H5HwDNmdSJWo/8Una13nj
-        1L9MH6kQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57822 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nb2Gu-0041Pb-Cx; Sun, 03 Apr 2022 15:36:08 +0000
-Date:   Sun, 3 Apr 2022 08:36:07 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] tty: serial: mpc52xx_uart: make rx/tx hooks return
- unsigned
-Message-ID: <20220403153607.GA3644508@roeck-us.net>
-References: <20220224111028.20917-1-jslaby@suse.cz>
- <20220224111028.20917-2-jslaby@suse.cz>
+        Mon, 4 Apr 2022 01:53:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2717C326F6;
+        Sun,  3 Apr 2022 22:51:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 913F11F383;
+        Mon,  4 Apr 2022 05:51:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649051483; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=fj+wd/2v6FRkr034Acv8LZELXHqGPrWGbj+tFgFbubY=;
+        b=kaOgw6HGtvpDqeWH1CKjqQSi72DzrDVnoF0CU0UPZCWT+QQk5UOrMBokL0Cgka8ERVtZjj
+        877I1qwDxQTVgsRC4IVE2UmU2+sJrkD6NpzSOVCppOQ8kOon32713rD6+VNTIx2rtvR/Ew
+        nQQ/KTOILjB3Rmh8jgBCWofXDqNlv5I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649051483;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=fj+wd/2v6FRkr034Acv8LZELXHqGPrWGbj+tFgFbubY=;
+        b=27WJJ7igCjs3DXe7ttPbMZkzDZsf7bC3ueDeKiASacGR5LNYofIYb5e4rLTM/rjIhMNllA
+        jzRyDzTO8KbZlYAA==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 583A1A3B82;
+        Mon,  4 Apr 2022 05:51:23 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] tty: serial: mpc52xx_uart: make rx/tx hooks return unsigned, part II.
+Date:   Mon,  4 Apr 2022 07:51:22 +0200
+Message-Id: <20220404055122.31194-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224111028.20917-2-jslaby@suse.cz>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nb2Gu-0041Pb-Cx
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57822
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 2
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:10:24PM +0100, Jiri Slaby wrote:
-> All these return bitmasks, so it makes more sense to return unsigned --
-> this is what a reader and also all the callers expect.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+The below commit changed types of some hooks in struct psc_ops. It also
+changed the types of the functions which are referenced in the instances
+of the above struct.
 
-With this patch in place:
+However the commit did so only for CONFIG_PPC_MPC52xx, but not for
+CONFIG_PPC_MPC512x. This results in build errors like:
+  mpc52xx_uart.c:static unsigned int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
+  mpc52xx_uart.c:static int mpc512x_psc_raw_tx_rdy(struct uart_port *port)
+                        ^^^
+  mpc52xx_uart.c:static int mpc5125_psc_raw_tx_rdy(struct uart_port *port)
+                        ^^^
 
-drivers/tty/serial/mpc52xx_uart.c:static unsigned int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
-drivers/tty/serial/mpc52xx_uart.c:static int mpc512x_psc_raw_tx_rdy(struct uart_port *port)
-                                         ^^^
-drivers/tty/serial/mpc52xx_uart.c:static int mpc5125_psc_raw_tx_rdy(struct uart_port *port)
-                                         ^^^
+Therefore, fix the latter case now too.
 
-Same for other functions. This results in lots of compile errors.
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 18662a1d8f35 (tty: serial: mpc52xx_uart: make rx/tx hooks return unsigned)
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/mpc52xx_uart.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-Guenter
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 8a6958377764..3acc0f185762 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -436,31 +436,31 @@ static void mpc512x_psc_fifo_init(struct uart_port *port)
+ 	out_be32(&FIFO_512x(port)->rximr, MPC512x_PSC_FIFO_ALARM);
+ }
+ 
+-static int mpc512x_psc_raw_rx_rdy(struct uart_port *port)
++static unsigned int mpc512x_psc_raw_rx_rdy(struct uart_port *port)
+ {
+ 	return !(in_be32(&FIFO_512x(port)->rxsr) & MPC512x_PSC_FIFO_EMPTY);
+ }
+ 
+-static int mpc512x_psc_raw_tx_rdy(struct uart_port *port)
++static unsigned int mpc512x_psc_raw_tx_rdy(struct uart_port *port)
+ {
+ 	return !(in_be32(&FIFO_512x(port)->txsr) & MPC512x_PSC_FIFO_FULL);
+ }
+ 
+-static int mpc512x_psc_rx_rdy(struct uart_port *port)
++static unsigned int mpc512x_psc_rx_rdy(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_512x(port)->rxsr)
+ 	    & in_be32(&FIFO_512x(port)->rximr)
+ 	    & MPC512x_PSC_FIFO_ALARM;
+ }
+ 
+-static int mpc512x_psc_tx_rdy(struct uart_port *port)
++static unsigned int mpc512x_psc_tx_rdy(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_512x(port)->txsr)
+ 	    & in_be32(&FIFO_512x(port)->tximr)
+ 	    & MPC512x_PSC_FIFO_ALARM;
+ }
+ 
+-static int mpc512x_psc_tx_empty(struct uart_port *port)
++static unsigned int mpc512x_psc_tx_empty(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_512x(port)->txsr)
+ 	    & MPC512x_PSC_FIFO_EMPTY;
+@@ -780,29 +780,29 @@ static void mpc5125_psc_fifo_init(struct uart_port *port)
+ 	out_be32(&FIFO_5125(port)->rximr, MPC512x_PSC_FIFO_ALARM);
+ }
+ 
+-static int mpc5125_psc_raw_rx_rdy(struct uart_port *port)
++static unsigned int mpc5125_psc_raw_rx_rdy(struct uart_port *port)
+ {
+ 	return !(in_be32(&FIFO_5125(port)->rxsr) & MPC512x_PSC_FIFO_EMPTY);
+ }
+ 
+-static int mpc5125_psc_raw_tx_rdy(struct uart_port *port)
++static unsigned int mpc5125_psc_raw_tx_rdy(struct uart_port *port)
+ {
+ 	return !(in_be32(&FIFO_5125(port)->txsr) & MPC512x_PSC_FIFO_FULL);
+ }
+ 
+-static int mpc5125_psc_rx_rdy(struct uart_port *port)
++static unsigned int mpc5125_psc_rx_rdy(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_5125(port)->rxsr) &
+ 	       in_be32(&FIFO_5125(port)->rximr) & MPC512x_PSC_FIFO_ALARM;
+ }
+ 
+-static int mpc5125_psc_tx_rdy(struct uart_port *port)
++static unsigned int mpc5125_psc_tx_rdy(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_5125(port)->txsr) &
+ 	       in_be32(&FIFO_5125(port)->tximr) & MPC512x_PSC_FIFO_ALARM;
+ }
+ 
+-static int mpc5125_psc_tx_empty(struct uart_port *port)
++static unsigned int mpc5125_psc_tx_empty(struct uart_port *port)
+ {
+ 	return in_be32(&FIFO_5125(port)->txsr) & MPC512x_PSC_FIFO_EMPTY;
+ }
+-- 
+2.35.1
 
-> ---
->  drivers/tty/serial/mpc52xx_uart.c | 22 +++++++++++-----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-> index 2704dc988e4a..8a6958377764 100644
-> --- a/drivers/tty/serial/mpc52xx_uart.c
-> +++ b/drivers/tty/serial/mpc52xx_uart.c
-> @@ -83,11 +83,11 @@ static irqreturn_t mpc5xxx_uart_process_int(struct uart_port *port);
->  
->  struct psc_ops {
->  	void		(*fifo_init)(struct uart_port *port);
-> -	int		(*raw_rx_rdy)(struct uart_port *port);
-> -	int		(*raw_tx_rdy)(struct uart_port *port);
-> -	int		(*rx_rdy)(struct uart_port *port);
-> -	int		(*tx_rdy)(struct uart_port *port);
-> -	int		(*tx_empty)(struct uart_port *port);
-> +	unsigned int	(*raw_rx_rdy)(struct uart_port *port);
-> +	unsigned int	(*raw_tx_rdy)(struct uart_port *port);
-> +	unsigned int	(*rx_rdy)(struct uart_port *port);
-> +	unsigned int	(*tx_rdy)(struct uart_port *port);
-> +	unsigned int	(*tx_empty)(struct uart_port *port);
->  	void		(*stop_rx)(struct uart_port *port);
->  	void		(*start_tx)(struct uart_port *port);
->  	void		(*stop_tx)(struct uart_port *port);
-> @@ -203,34 +203,34 @@ static void mpc52xx_psc_fifo_init(struct uart_port *port)
->  	out_be16(&psc->mpc52xx_psc_imr, port->read_status_mask);
->  }
->  
-> -static int mpc52xx_psc_raw_rx_rdy(struct uart_port *port)
-> +static unsigned int mpc52xx_psc_raw_rx_rdy(struct uart_port *port)
->  {
->  	return in_be16(&PSC(port)->mpc52xx_psc_status)
->  	    & MPC52xx_PSC_SR_RXRDY;
->  }
->  
-> -static int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
-> +static unsigned int mpc52xx_psc_raw_tx_rdy(struct uart_port *port)
->  {
->  	return in_be16(&PSC(port)->mpc52xx_psc_status)
->  	    & MPC52xx_PSC_SR_TXRDY;
->  }
->  
->  
-> -static int mpc52xx_psc_rx_rdy(struct uart_port *port)
-> +static unsigned int mpc52xx_psc_rx_rdy(struct uart_port *port)
->  {
->  	return in_be16(&PSC(port)->mpc52xx_psc_isr)
->  	    & port->read_status_mask
->  	    & MPC52xx_PSC_IMR_RXRDY;
->  }
->  
-> -static int mpc52xx_psc_tx_rdy(struct uart_port *port)
-> +static unsigned int mpc52xx_psc_tx_rdy(struct uart_port *port)
->  {
->  	return in_be16(&PSC(port)->mpc52xx_psc_isr)
->  	    & port->read_status_mask
->  	    & MPC52xx_PSC_IMR_TXRDY;
->  }
->  
-> -static int mpc52xx_psc_tx_empty(struct uart_port *port)
-> +static unsigned int mpc52xx_psc_tx_empty(struct uart_port *port)
->  {
->  	u16 sts = in_be16(&PSC(port)->mpc52xx_psc_status);
->  
-> @@ -1365,7 +1365,7 @@ static const struct uart_ops mpc52xx_uart_ops = {
->  /* Interrupt handling                                                       */
->  /* ======================================================================== */
->  
-> -static inline int
-> +static inline unsigned int
->  mpc52xx_uart_int_rx_chars(struct uart_port *port)
->  {
->  	struct tty_port *tport = &port->state->port;
-> -- 
-> 2.35.1
-> 
