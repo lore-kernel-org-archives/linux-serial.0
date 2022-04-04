@@ -2,111 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CFBC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 15:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 080F4C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 15:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378533AbiDDP1s (ORCPT
+        id S1359752AbiDDPbS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 11:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        Mon, 4 Apr 2022 11:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378619AbiDDP1m (ORCPT
+        with ESMTP id S1356192AbiDDPbQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 11:27:42 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A911E3EB;
-        Mon,  4 Apr 2022 08:25:45 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 125so281424pgc.11;
-        Mon, 04 Apr 2022 08:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=C7kc0WBXzki7SKGLSUPjAVPvpQOiseE27/OA4Hb8PjU=;
-        b=CM7bruVNar6ViIQtL5n44QYXZE1Uvm8jsK5oP95zGN41v0xkZ3xDN2Z0O1LhhLWcth
-         yeHjhi+BLqb3YtgH9k8FJF8fHFLNgt92VqN9avK5xON8iKnrWLJ68OVH2dWAtuVclOt2
-         zdDQ7u6f3kROW8veWKQgnCg7wfnfIck08sVMm4tQX2MUUvJfx350164m5clvR6NwOCii
-         klydz0jLwiWkkOOlIB2sXoBsHLmq43RgWgVUej5+ZB7nxVRT2b05w5HhVP7i1DwMXwPX
-         UqC5oA5oai9l5YIERIli0KXdpdTrzBI+gbvyVoT6BtUQbBNUT4Bc6MBwv9kN+ejPA5NV
-         gkGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=C7kc0WBXzki7SKGLSUPjAVPvpQOiseE27/OA4Hb8PjU=;
-        b=Z6ztcXaCK3iPa8j9FKlaELhmmdWtxKYWbevULB9UGMIMrmLgJIbonwIBOECDY6hvJZ
-         1idWoyZlO9kTB/e+sEOBVQXSM6TUN3l0zi1COpRru4tlVl4Ml7pnCZhAEI0t9kS6WJKs
-         /9ogNfbAuTp4js368eGc74VVyV6cWiAdXtmW3nD/XczlTagNPAbOV+mAwL3bc3I73iwO
-         mbzJNC71G7QchSiVbsgJgkQh+FfE7hRsm+Vg2lK12yYGDBGsJQLG3rpnlFgqoAJ6reV+
-         eo1Z/BA9pCHKPsOLNHZ91cuNzUNFQlk0WKUuS4WUQU+i6kGMUl/ZXdaB5+v0LMu7bnzC
-         gfjQ==
-X-Gm-Message-State: AOAM533Y3JwsO0R9wav1Gkp5hu7Mc7+ZtomZBS9OSFv/vTGy2GYLZWIB
-        bo9FSnDeOXkvfsnIuBT4pGE=
-X-Google-Smtp-Source: ABdhPJyX1HGc5HkE1B4GZBABO2GZpRStGi3sYjqdjfv7Puk6FAmTQOSVQpHoLIdgEJmPNQaOj7MB3g==
-X-Received: by 2002:a65:654f:0:b0:378:b8f6:ebe4 with SMTP id a15-20020a65654f000000b00378b8f6ebe4mr306781pgw.399.1649085944813;
-        Mon, 04 Apr 2022 08:25:44 -0700 (PDT)
-Received: from VICKYMQLIN-NB1.localdomain ([106.39.148.25])
-        by smtp.gmail.com with ESMTPSA id v17-20020a63b951000000b0038644f62aeesm10772528pgo.68.2022.04.04.08.25.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 04 Apr 2022 08:25:44 -0700 (PDT)
-Date:   Mon, 4 Apr 2022 23:25:38 +0800
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Zev Weiss <zev@bewilderbeest.net>,
-        Johan Hovold <johan@kernel.org>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_aspeed_vuart: Fix potential NULL
- dereference in aspeed_vuart_probe
-Message-ID: <20220404152538.GA35@VICKYMQLIN-NB1.localdomain>
-References: <20220404143842.16960-1-linmq006@gmail.com>
- <YksEnnyJDoL+fE5d@kroah.com>
+        Mon, 4 Apr 2022 11:31:16 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF082528C;
+        Mon,  4 Apr 2022 08:29:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649086160; x=1680622160;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=vndZ3kJZ6l/muoOzYrxE6LSO++WUAQUZd7dQKpa+WZA=;
+  b=ObtEAb8EKGpdF+rQn/f0EM+QXiEXayxbxvX432mj3varJ9wBS4YBFskI
+   omv1dv1P0TFlc6OTQ01suqdin3fYktVrQE5QiQMj/idT9R/hemp3ECQM0
+   Z40ni53CdZy15nEm9ngQZVBMkfxpH4v36MXwMjhrxywNjWGeAU88ZZtVy
+   YVRKB6Ir1r5kQnJzPeS5rXGTOz8zmwMloRyKyq/2PsTQzA++7UnvvV87D
+   oV8mZqPJI/R+NUSzyNQxe3ihQCYjiU8EKprHJZx6QaLhTnPUN7+ZscWfp
+   fIiJplU29Weg3H02CSMHr++UviGIeFNLbngz3er6kk5gvOi8l6bxNtA1I
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="248053708"
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="248053708"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 08:29:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
+   d="scan'208";a="569428775"
+Received: from rhamza-mobl.ger.corp.intel.com ([10.251.211.126])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 08:29:14 -0700
+Date:   Mon, 4 Apr 2022 18:29:11 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH v4 7/9] serial: 8250: dw: Add support for DMA flow
+ controlling devices
+In-Reply-To: <20220404172033.56c55a37@xps13>
+Message-ID: <dcf9f1b3-87fa-2171-3f2d-f4a45c9efdb@linux.intel.com>
+References: <20220330132038.808679-1-miquel.raynal@bootlin.com>        <20220330132038.808679-8-miquel.raynal@bootlin.com>        <24becf8-82c5-5a12-690-5b9e067ec1c@linux.intel.com>        <Ykc4kGLEnwdoUqZ6@smile.fi.intel.com>
+ <20220404172033.56c55a37@xps13>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YksEnnyJDoL+fE5d@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/mixed; boundary="8323329-746848247-1649086158=:11904"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 04:45:50PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Apr 04, 2022 at 02:38:40PM +0000, Miaoqian Lin wrote:
-> > platform_get_resource() may fail and return NULL, so we should
-> > better check it's return value to avoid a NULL pointer dereference.
-> > 
-> > Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> > index 93fe10c680fb..9d2a7856784f 100644
-> > --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> > +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> > @@ -429,6 +429,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
-> >  	timer_setup(&vuart->unthrottle_timer, aspeed_vuart_unthrottle_exp, 0);
-> >  
-> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	if (!res)
-> > +		return -EINVAL;
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-746848247-1649086158=:11904
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Mon, 4 Apr 2022, Miquel Raynal wrote:
+
+> Hi Andy, Ilpo,
 > 
-> How did you test this change was correct?
+> andriy.shevchenko@linux.intel.com wrote on Fri, 1 Apr 2022 20:38:24
+> +0300:
+> 
+> > On Fri, Apr 01, 2022 at 01:56:49PM +0300, Ilpo Järvinen wrote:
+> > > On Wed, 30 Mar 2022, Miquel Raynal wrote:  
+> > 
+> > ...
+> > 
+> > > > +			writel(0, p->membase + RZN1_UART_RDMACR);
+> > > > +			writel(1, p->membase + DW_UART_DMASA);  
+> > > 
+> > > Currently there is serial_out(), dw8250_writel_ext(), and a few writel()s 
+> > > too for writing to registers. It would be nice to move towards more 
+> > > homogeneous approach rather than adding more writel()s.  
+> > 
+> > Actually a good catch!
+> > 
+> > > I suggest dw8250_writel_ext() is moved to dwlib.h. Then it could be used 
+> > > here (and dw8250_readl_ext() too should be moved but IIRC there wasn't 
+> > > any reads added by this series).  
+> > 
+> > I agree that for the sake of symmetry it's good to move both.
+> 
+> I moved them both to dwlib.h as suggested.
+> 
+> I had a look at the current uses of readb/l and writeb/l in dw.c but
+> converting all these function calls is not as straightforward as I
+> initially thought so I decided to limit myself to moving these helpers
+> and using them in my additions, I hope this is fine.
 
-Hi,
+Yes, I think it's enough for this series.
 
-   I look into the implementation of platform_get_resource(),
-and do cross-check the usages of it in the codebase, especially
-the usages in other probe function. 
-And I go through some simliar bugfix commits in the revision history——
-add check for return value of platform_get_resource() in probe
-functions，to learn the way to fix this kind of bugs. 
-But sorry I don't have the corresponding device for running test.
 
+-- 
+ i.
+
+--8323329-746848247-1649086158=:11904--
