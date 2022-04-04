@@ -2,102 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45528C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 14:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17690C433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 14:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351849AbiDDOpa (ORCPT
+        id S1359769AbiDDOpa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Mon, 4 Apr 2022 10:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379290AbiDDOof (ORCPT
+        with ESMTP id S1378920AbiDDOoC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 10:44:35 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC7943AF8;
-        Mon,  4 Apr 2022 07:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649083199; x=1680619199;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=1gQ3++FzrayW9QOsopIIgb0F8M/Kgf9VfCcFL8iZW1k=;
-  b=BnosQoInZRr5iyjq2XpnLQjMs39GNYS0caOAD0TizgtPFRhRN1QsMaNZ
-   xBIWUbg/U48bbFMp+c37e/OaQEmKBKEuCClnwbvk+ScJfbbU7lUMrI2z3
-   7xFPWQGlulcfTaNflcM18JL4u4KwFoYUJ5Zi1DeWif+Lh3QwUgJPAIZFF
-   0fddql9e3y4DfL1EjlsBX7Pgik6B4Vm8hhh6msmFk+S5mwG5bsuA13UOQ
-   vKaAjfRYCT06QOJfGt0+WcM4KYrb21bazYJvvFhN47+JA4GoP0ge64KJM
-   RtJ6DlM1q7OQOL7L94ABCXKv1GBhVAe4vanLbBz5RmyBYTGe8dCeQXFDB
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="260225020"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="260225020"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 07:39:45 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="569409446"
-Received: from rhamza-mobl.ger.corp.intel.com ([10.251.211.126])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 07:39:40 -0700
-Date:   Mon, 4 Apr 2022 17:39:38 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 4 Apr 2022 10:44:02 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100CA6448;
+        Mon,  4 Apr 2022 07:38:49 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id n6-20020a17090a670600b001caa71a9c4aso2097379pjj.1;
+        Mon, 04 Apr 2022 07:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=/OOC2V7xZiaknaBKj4i3q7VnOh6KcuMP7wXUOuaSHIk=;
+        b=XbFFVR/b5q9T/ccQwMNV7oS8jmz/8ydhO2wbuZ4dnTMtjIzB6jdnZMtjVA+gVPOlNi
+         Fh3L/YtSRG0H+pWEhoLWfqjheiDJivSt2rc02u/dwUeHsKoBGABxJRp9Jbb48MYAIpim
+         O64PfE/ok5JMyRZ3CQZiEICQ5VUUxCnwUPfrsPhqA1dALFfBxFleTbQd5I0odX5BNO59
+         lKbzkBuY3TkjHZXaiTT997YZJcB8tyMTKt+oGo6mJ+/QS2cIoRy8bam9Qw/r6vdNGJhI
+         sSITUz76YsxGcaKHQZJ+gQ3pAf+eeVfQMh7bey9qc6JpwoJpJoEYlSE3bBgYBWIehayO
+         Q7kA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=/OOC2V7xZiaknaBKj4i3q7VnOh6KcuMP7wXUOuaSHIk=;
+        b=BoydGO77atrjfF2zcrlWfOxz4jHY7/z1y0+TejU4z15VG817H8yF+f9YNTmaSDazEl
+         j0RCnMfoZ6EVrAUqtcIwT/CgQwdrStcWLHqH2wRLM4Hs67i2iHTHwnci3Icon0+nxyfa
+         kSVLJJAS5d1eEbHWlJsWNl+UOl/Rue7K7hN8qnKUZkBH53Q02VgqNNyYfuUSPzU5MfaR
+         PVYG8GvoR/Pppfjz7X4uN28SLgVgj7zbgaAAmh1eBWAsOHi0csIUuxEZXVI4/tFsEU9D
+         7wlgmB8asKAJTW5h7yZ/2vbVTRUkyyYGhcNu7fLV5T3N0UAt3zEH7vX0MbA5HjUWSt8/
+         qD9g==
+X-Gm-Message-State: AOAM53364hQU/fJaYqKwG6wXB177NjAOCu446Wf+E7TfOFXZguvkOUhe
+        dAgbMnNR8itbPBUU4uq2UyM=
+X-Google-Smtp-Source: ABdhPJyhtOBPPj1peqOQfSYtTssZudXWivrHTu/PMrPp1u6em61raME54CbKsHs/3PFKQmSppHnJWA==
+X-Received: by 2002:a17:90b:4d85:b0:1c7:3933:d810 with SMTP id oj5-20020a17090b4d8500b001c73933d810mr27001609pjb.129.1649083128678;
+        Mon, 04 Apr 2022 07:38:48 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id a11-20020a056a000c8b00b004fade889fb3sm13135860pfv.18.2022.04.04.07.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 07:38:48 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>
-Subject: Re: [PATCH v4 0/9] serial: 8250: dw: RZN1 DMA support
-In-Reply-To: <20220404162050.7831ebfe@xps13>
-Message-ID: <42b8671b-48a2-43f0-975b-3b9e98202328@linux.intel.com>
-References: <20220330132038.808679-1-miquel.raynal@bootlin.com> <YkRlfGUM/lb1fKC6@smile.fi.intel.com> <20220404162050.7831ebfe@xps13>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Zev Weiss <zev@bewilderbeest.net>,
+        Johan Hovold <johan@kernel.org>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_aspeed_vuart: Fix potential NULL dereference in aspeed_vuart_probe
+Date:   Mon,  4 Apr 2022 14:38:40 +0000
+Message-Id: <20220404143842.16960-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 4 Apr 2022, Miquel Raynal wrote:
+platform_get_resource() may fail and return NULL, so we should
+better check it's return value to avoid a NULL pointer dereference.
 
-> Hello,
-> 
-> andriy.shevchenko@linux.intel.com wrote on Wed, 30 Mar 2022 17:13:16
-> +0300:
-> 
-> > On Wed, Mar 30, 2022 at 03:20:29PM +0200, Miquel Raynal wrote:
-> > > Hello,
-> > > 
-> > > Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
-> > > UART driver with to bring DMA support for this SoC.
-> > > 
-> > > This short series applies on top of the series bringing RZN1 DMA
-> > > support, currently on its v5, see [1]. Technically speaking, only the DT
-> > > patch needs to be applied after [1]. The other patches can come in at
-> > > any moment, because if no "dmas" property is provided in the DT, DMA
-> > > support will simply be ignored.
-> > > 
-> > > [1] https://lore.kernel.org/dmaengine/20220315191255.221473-1-miquel.raynal@bootlin.com/T/#m0ef3323abce3eec961e142bf2fb35e95b9045fc5  
-> > 
-> > Couple of versions ago I have asked you to Cc the series to Ilpo (Cc'ed).
-> > I hope you will not forget it in v5.
-> 
-> Sorry I forgot to re-add manually Ilpo in the recipients.
-> 
-> Anyway, if Ilpo really needs to be Cc'ed, then there is something to do
-> on MAINTAINER's side.
+Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-While I'm considering doing like you suggest, I don't think it can be in 
-general said that people who you're specificially told to Cc would be ok 
-to get dropped unless they're among the listed maintainers.
-
-
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 93fe10c680fb..9d2a7856784f 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -429,6 +429,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	timer_setup(&vuart->unthrottle_timer, aspeed_vuart_unthrottle_exp, 0);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 
+ 	memset(&port, 0, sizeof(port));
+ 	port.port.private_data = vuart;
 -- 
- i.
+2.17.1
 
