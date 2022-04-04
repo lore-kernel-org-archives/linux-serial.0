@@ -2,158 +2,168 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EFEC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 09:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528CCC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Apr 2022 13:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354015AbiDDJei (ORCPT
+        id S1348837AbiDDN3l (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Apr 2022 05:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        Mon, 4 Apr 2022 09:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354189AbiDDJeh (ORCPT
+        with ESMTP id S229764AbiDDN3l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Apr 2022 05:34:37 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F413BF98;
-        Mon,  4 Apr 2022 02:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649064761; x=1680600761;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Jy1xBW1BgIX5lMNSOseMdp/EtP27vGCho0iLE98NMKs=;
-  b=mxgsymapJUMnkQHz64yiFTBtnkjSordmdxzi/owWbf9tPEZOxuDF3Nmf
-   ieh3knLEs03NaS2haySYs6h1DzzifOHA/gtMnT30+uVTL1CI4Qt6FGwly
-   APAcHOtoLFQvIQJ/w40mG2jof6sPjYqQBLUDh7YN5hC14PGWZRc1X3TQ9
-   eTGTrQkeQ5qrBuMxyuqyww1g3i9/IoYVUU9ZSNO7QyQxPplmJWZhL9RLF
-   hQ2dwAp2MnvzVLDwJFyMpoTB2RnFOxGy7cVfGnCNiBCsUXivklABVdjCD
-   TQlhi5mXPypGs96gKNib6k62E5fnphpYIyQBqIhiP9tUxq1ayGfw5uKOd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260463957"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="260463957"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 02:32:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="641167689"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 02:32:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nbJ49-00CUUY-Rl;
-        Mon, 04 Apr 2022 12:32:05 +0300
-Date:   Mon, 4 Apr 2022 12:32:05 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wander Lairson Costa <wander@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 4 Apr 2022 09:29:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B0E63B3FD
+        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 06:27:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649078864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fA3QEC/J4uwNO/VuL8noIhoYNRgoUgQqydq3qWm/bX8=;
+        b=E0VQViYndtwHxccpEgrWlPOZHBvEdql2eKXkDsHmbFuvNSzxWSmXn9qeGH2JhRZZ+PlOyF
+        E7r7H4P9G61Hh98sbMNFNIfYsP6NYa+oIEq/MBaDX96Yb49Flzvbm++a4WEp2MblWa8jnO
+        MCwvrmEzO+Dey0hyAUi8mIB3UxzovVA=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-103-xwsbhKbKP-epdScDvu8mRQ-1; Mon, 04 Apr 2022 09:27:43 -0400
+X-MC-Unique: xwsbhKbKP-epdScDvu8mRQ-1
+Received: by mail-lj1-f200.google.com with SMTP id c25-20020a2e9d99000000b0024afd964c98so2907248ljj.21
+        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 06:27:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fA3QEC/J4uwNO/VuL8noIhoYNRgoUgQqydq3qWm/bX8=;
+        b=i2pLfSyWdqn7kQJgt9SUrg1+dySSO252e28lWYcw1B63b6lmlUwlzJ03yZMs1YJi9Y
+         JWhqAHkxhZlmfMbU355waz/mRbfhjYSQNX9KJrqAWYvbRSMaBa8HePuk5HMr1R7uaj4K
+         afAOm4CLuseahq29Wizei+udfayT7ddN14+E1ikvZNjoVLAc6bJwSaw+xy8hIzfvyrfa
+         JLEx93e9SFnGJcbvYWnoOrnKYM0iWUNRROtXQ8nbm/ldeRAm7a08w1znRofULdbySIFd
+         Z4FVgeuZBlYEzIWpTCWQ3L/UZSWE84Ua6mTcPANCxSCgitbCWSrHG0w2PkQN0UB2HbA7
+         N2IA==
+X-Gm-Message-State: AOAM531rZDwZCiJa3ZEu7eQlxvgl1S4l1QNAYHWDBVA9wN27FgYb6nbE
+        pj31CkPLpzA29Etq/pBBbZzECzrzQhbgNtKZh9ZJ48NcnAxLYNATcvoPHFwCMumIp4tHuYhCGqX
+        3r4FjjhgfzGqKTKi6uw98APKIlGD+xHmHA+MPjYDi
+X-Received: by 2002:a05:6512:1585:b0:445:908b:ad71 with SMTP id bp5-20020a056512158500b00445908bad71mr22009155lfb.200.1649078862034;
+        Mon, 04 Apr 2022 06:27:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw3wxX7ukk/8p5oUa8pql/EHH/fhejvtNBX+mEYrWomsbqP6fX+aeO9S+2VGedeUtOnqoaWXau++bebvLESFZs=
+X-Received: by 2002:a05:6512:1585:b0:445:908b:ad71 with SMTP id
+ bp5-20020a056512158500b00445908bad71mr22009136lfb.200.1649078861804; Mon, 04
+ Apr 2022 06:27:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220401194645.1738747-1-wander@redhat.com> <20220401194645.1738747-2-wander@redhat.com>
+ <Ykq7FXhQfsvr9TtC@smile.fi.intel.com>
+In-Reply-To: <Ykq7FXhQfsvr9TtC@smile.fi.intel.com>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Mon, 4 Apr 2022 10:27:30 -0300
+Message-ID: <CAAq0SUn4Z2y4-7fJcZ-T5rrnuwdJCt2+W-bGGmCxU6t+pA165A@mail.gmail.com>
+Subject: Re: [PATCH v6] serial/8250: Use fifo in 8250 console driver
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Lukas Wunner <lukas@wunner.de>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
-        ilpo.jarvinen@linux.intel.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andre.goddard@gmail.com,
-        sudipm.mukherjee@gmail.com, David.Laight@aculab.com,
-        jonathanh@nvidia.com, phil@raspberrypi.com
-Subject: Re: [PATCH v6] serial/8250: Use fifo in 8250 console driver
-Message-ID: <Ykq7FXhQfsvr9TtC@smile.fi.intel.com>
-References: <20220401194645.1738747-1-wander@redhat.com>
- <20220401194645.1738747-2-wander@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401194645.1738747-2-wander@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=wcosta@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 04:46:42PM -0300, Wander Lairson Costa wrote:
-> Note: I am using a small test app + driver located at [0] for the
-> problem description. serco is a driver whose write function dispatches
-> to the serial controller. sertest is a user-mode app that writes n bytes
-> to the serial console using the serco driver.
-> 
-> While investigating a bug in the RHEL kernel, I noticed that the serial
-> console throughput is way below the configured speed of 115200 bps in
-> a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
-> I got 2.5KB/s.
-> 
-> $ time ./sertest -n 2500 /tmp/serco
-> 
-> real    0m0.997s
-> user    0m0.000s
-> sys     0m0.997s
-> 
-> With the help of the function tracer, I then noticed the serial
-> controller was taking around 410us seconds to dispatch one single byte:
-> 
-> $ trace-cmd record -p function_graph -g serial8250_console_write \
->    ./sertest -n 1 /tmp/serco
-> 
-> $ trace-cmd report
-> 
->             |  serial8250_console_write() {
->  0.384 us   |    _raw_spin_lock_irqsave();
->  1.836 us   |    io_serial_in();
->  1.667 us   |    io_serial_out();
->             |    uart_console_write() {
->             |      serial8250_console_putchar() {
->             |        wait_for_xmitr() {
->  1.870 us   |          io_serial_in();
->  2.238 us   |        }
->  1.737 us   |        io_serial_out();
->  4.318 us   |      }
->  4.675 us   |    }
->             |    wait_for_xmitr() {
->  1.635 us   |      io_serial_in();
->             |      __const_udelay() {
->  1.125 us   |        delay_tsc();
->  1.429 us   |      }
+On Mon, Apr 4, 2022 at 6:32 AM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Fri, Apr 01, 2022 at 04:46:42PM -0300, Wander Lairson Costa wrote:
+> > Note: I am using a small test app + driver located at [0] for the
+> > problem description. serco is a driver whose write function dispatches
+> > to the serial controller. sertest is a user-mode app that writes n bytes
+> > to the serial console using the serco driver.
+> >
+> > While investigating a bug in the RHEL kernel, I noticed that the serial
+> > console throughput is way below the configured speed of 115200 bps in
+> > a HP Proliant DL380 Gen9. I was expecting something above 10KB/s, but
+> > I got 2.5KB/s.
+> >
+> > $ time ./sertest -n 2500 /tmp/serco
+> >
+> > real    0m0.997s
+> > user    0m0.000s
+> > sys     0m0.997s
+> >
+> > With the help of the function tracer, I then noticed the serial
+> > controller was taking around 410us seconds to dispatch one single byte:
+> >
+> > $ trace-cmd record -p function_graph -g serial8250_console_write \
+> >    ./sertest -n 1 /tmp/serco
+> >
+> > $ trace-cmd report
+> >
+> >             |  serial8250_console_write() {
+> >  0.384 us   |    _raw_spin_lock_irqsave();
+> >  1.836 us   |    io_serial_in();
+> >  1.667 us   |    io_serial_out();
+> >             |    uart_console_write() {
+> >             |      serial8250_console_putchar() {
+> >             |        wait_for_xmitr() {
+> >  1.870 us   |          io_serial_in();
+> >  2.238 us   |        }
+> >  1.737 us   |        io_serial_out();
+> >  4.318 us   |      }
+> >  4.675 us   |    }
+> >             |    wait_for_xmitr() {
+> >  1.635 us   |      io_serial_in();
+> >             |      __const_udelay() {
+> >  1.125 us   |        delay_tsc();
+> >  1.429 us   |      }
+> > ...
+> > ...
+> > ...
+> >  1.683 us   |      io_serial_in();
+> >             |      __const_udelay() {
+> >  1.248 us   |        delay_tsc();
+> >  1.486 us   |      }
+> >  1.671 us   |      io_serial_in();
+> >  411.342 us |    }
+> >
+> > In another machine, I measured a throughput of 11.5KB/s, with the serial
+> > controller taking between 80-90us to send each byte. That matches the
+> > expected throughput for a configuration of 115200 bps.
+> >
+> > This patch changes the serial8250_console_write to use the 16550 fifo
+> > if available. In my benchmarks I got around 25% improvement in the slow
+> > machine, and no performance penalty in the fast machine.
+>
 > ...
-> ...
-> ...
->  1.683 us   |      io_serial_in();
->             |      __const_udelay() {
->  1.248 us   |        delay_tsc();
->  1.486 us   |      }
->  1.671 us   |      io_serial_in();
->  411.342 us |    }
-> 
-> In another machine, I measured a throughput of 11.5KB/s, with the serial
-> controller taking between 80-90us to send each byte. That matches the
-> expected throughput for a configuration of 115200 bps.
-> 
-> This patch changes the serial8250_console_write to use the 16550 fifo
-> if available. In my benchmarks I got around 25% improvement in the slow
-> machine, and no performance penalty in the fast machine.
+>
+> > +     use_fifo = (up->capabilities & UART_CAP_FIFO) &&
+> > +             /*
+> > +              * BCM283x requires to check the fifo
+> > +              * after each byte.
+> > +              */
+> > +             !(up->capabilities & UART_CAP_MINI) &&
+>
+> Perhaps you need to also comment why we are using tx_loadsz and not fifosize.
+>
 
-...
+Maybe it is better to document their difference in the struct
+declaration and not in a random usage.
 
-> +	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
-> +		/*
-> +		 * BCM283x requires to check the fifo
-> +		 * after each byte.
-> +		 */
-> +		!(up->capabilities & UART_CAP_MINI) &&
 
-Perhaps you need to also comment why we are using tx_loadsz and not fifosize.
-
-> +		up->tx_loadsz > 1 &&
-> +		(up->fcr & UART_FCR_ENABLE_FIFO) &&
-> +		port->state &&
-> +		test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
-> +		/*
-> +		 * After we put a data in the fifo, the controller will send
-> +		 * it regardless of the CTS state. Therefore, only use fifo
-> +		 * if we don't use control flow.
-> +		 */
-> +		!(up->port.flags & UPF_CONS_FLOW);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+[snip]
 
