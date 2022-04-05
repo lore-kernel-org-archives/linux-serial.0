@@ -2,200 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A01C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5E4C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiDEGmt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        id S230478AbiDEGsX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiDEGmr (ORCPT
+        with ESMTP id S229961AbiDEGsT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:42:47 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD8051584
-        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 23:40:49 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220405064044epoutp037665bfebffcfb2729f9967fb17e43898~i7NxLXpc70200502005epoutp03B
-        for <linux-serial@vger.kernel.org>; Tue,  5 Apr 2022 06:40:44 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220405064044epoutp037665bfebffcfb2729f9967fb17e43898~i7NxLXpc70200502005epoutp03B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649140844;
-        bh=AGDcIVWKuM0iLeBsDgZsrsbO80+RisT3bm2qxbskRg4=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=U8FVdoDK62AgxEIzedG18DxgWFjlKSSeDgIk+o+jQLUjPKlsAMOzx3oJWQ1AfXV0T
-         Jm1TbWnPOM2SNEZmB8nlsL+UJEAwd5afsqUpaYFtYumsq+3Y14z3O2NAPY1agfCj10
-         u1fMrAQVTiPYQAQP57FhOYQiq5fh+lXfraBspT8Y=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220405064043epcas2p3b05a6ed1c73bae131f95e1d35e7ed272~i7Nwc5TS-2285922859epcas2p3B;
-        Tue,  5 Apr 2022 06:40:43 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.98]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4KXdLx42GHz4x9Q1; Tue,  5 Apr
-        2022 06:40:41 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        49.69.10444.864EB426; Tue,  5 Apr 2022 15:40:40 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220405064040epcas2p3e5d3687bf67384c85d61c5d4ee24acaf~i7NtGidre2065120651epcas2p3H;
-        Tue,  5 Apr 2022 06:40:40 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220405064040epsmtrp2c4f2f37859554611fe724b4eebdf65cb~i7NtF0oag0813708137epsmtrp2u;
-        Tue,  5 Apr 2022 06:40:40 +0000 (GMT)
-X-AuditID: b6c32a45-4fdff700000228cc-9c-624be46868c1
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E8.82.24342.764EB426; Tue,  5 Apr 2022 15:40:40 +0900 (KST)
-Received: from KORCO006858 (unknown [10.229.18.72]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220405064039epsmtip2e6314ae5982b52b513a44d516fcd5061~i7Ns8-M3k3244732447epsmtip2b;
-        Tue,  5 Apr 2022 06:40:39 +0000 (GMT)
-From:   "Jaewon Kim" <jaewon02.kim@samsung.com>
-To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
-Cc:     "'Krzysztof Kozlowski'" <krzk@kernel.org>,
-        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
-        "'Jiri Slaby'" <jirislaby@kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "'Chanho Park'" <chanho61.park@samsung.com>
-In-Reply-To: <YkvNQJ5hBhQKCwcU@kroah.com>
-Subject: RE: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt
- and console_write
-Date:   Tue, 5 Apr 2022 15:40:39 +0900
-Message-ID: <001601d848b8$10c97490$325c5db0$@samsung.com>
+        Tue, 5 Apr 2022 02:48:19 -0400
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D9A57175;
+        Mon,  4 Apr 2022 23:46:20 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id v2so9708009qtc.5;
+        Mon, 04 Apr 2022 23:46:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UuWjfy1DmKGBwxecHn9QW28Mp8RGeP8Fe6idp3HhRGs=;
+        b=XM48JdQlRjpvDo6pAnEfInZQ02JydMyJSRb+hGGXieNxNU8mZ3kXD/gEu0mZV++O2k
+         BqS6NEIoz2gsS8qU754qXmlGGdecWLhxBKTy8nQHlXUP7/An4b0tCe6BQQkN8HUGP3mg
+         CZ/Aro8sSU0utf0rAYn2baDlmL3oNG88I8GpFzbPK/CacovKR6jKzxmPjLaSSRenV6Ph
+         BvXPV8XItBJUMXSpzEcjVzhTBf3m5fL8OHSPHARPfMlGu7keGZVa8qfRRKOu3BXJNv2O
+         2xdRgdMmflZWYsTNNuF3/AlnRJKOjBKcZ+veIgQodE67F/b2u0SX2U4pATdnsUqAv6g5
+         WrqA==
+X-Gm-Message-State: AOAM532nBU/gi9XQjDN33cMYjxk2EBLOmHtK3YNCKQilvc6FC+iT8SSA
+        ZP4ihtDGGD79/PMkzdXb+luSSoATM5GxDA==
+X-Google-Smtp-Source: ABdhPJwkZT+cT8EcW9YAwiSyF8z2cWBBKHK+j5v06cUcI/z3ZQE/vjvuRTuaahHCBiEU5I/o9Rlyjg==
+X-Received: by 2002:ac8:5c84:0:b0:2e1:eede:8b1b with SMTP id r4-20020ac85c84000000b002e1eede8b1bmr1709809qta.228.1649141179007;
+        Mon, 04 Apr 2022 23:46:19 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id q8-20020a05622a04c800b002e06d7c1eabsm10360081qtx.16.2022.04.04.23.46.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 23:46:18 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id g9so21718806ybf.1;
+        Mon, 04 Apr 2022 23:46:18 -0700 (PDT)
+X-Received: by 2002:a25:45:0:b0:633:96e2:2179 with SMTP id 66-20020a250045000000b0063396e22179mr1490905yba.393.1649141178137;
+ Mon, 04 Apr 2022 23:46:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: ko
-Thread-Index: AQIGb4zGqJBuoSbl8bInG1JCGdzaKQGgf2fpAhFXrQICNgTaqaxVSdrA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmuW7GE+8kg42PlC0ezNvGZnF5v7ZF
-        8+L1bBbv5spYnD+/gd1i0+NrrBaXd81hs5hxfh+TxZnFvewOnB6bVnWyeeyfu4bdY/OSeo++
-        LasYPT5vkgtgjcq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ
-        0HXLzAG6RkmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1pi
-        ZWhgYGQKVJiQndGz+wJbwT2BihVLzrM0MM7i7WLk5JAQMJG4/fc7WxcjF4eQwA5GiQMzFrJA
-        OJ8YJb596GSHcL4xSuxseAFUxgHWcu6OBUR8L6PE3t3/oYpeMEqcm72HDWQum4CuxM6Nr9hB
-        bBEBc4m5D4+D2cwCB5kkTvXygNicApoSxxa3gNULC8RJzNi1HcxmEVCR2PH+J5jNK2ApcXPa
-        TWYIW1Di5MwnLBBz5CW2v53DDPGDgsTPp8tYIeIiErM725gh9rpJnGycwARynITASg6J/4/e
-        sUA0uEjsmtjCCmELS7w6voUdwpaS+PxuLxuEXSxxvOc7VHMDo8TZOwegGowlZj1rZwQFBTPQ
-        B+t36UNCRVniyC2o2/gkOg7/ZYcI80p0tAlBNKpJ3J96Dmq6jMSkIyuZJjAqzULy2Swkn81C
-        8s0shF0LGFlWMYqlFhTnpqcWGxUYwiM7OT93EyM4oWq57mCc/PaD3iFGJg7GQ4wSHMxKIrw5
-        QZ5JQrwpiZVVqUX58UWlOanFhxhNgWE9kVlKNDkfmNLzSuINTSwNTMzMDM2NTA3MlcR5vVI2
-        JAoJpCeWpGanphakFsH0MXFwSjUwrZ5+2OfqArVWoTjXTIfl1b5ea0MV17bu5+duNJgWI/g+
-        O+9Q7VOLu0VLmjc7J+2yffXuxY3zafkiF6/sOZ9zwm1FXciM8JATrv3xAszbfk8yuOonGaH9
-        omySdPTbV93Pthj3GwsZ6YtLTN28dIawwKoay423+ZoFNGx5vz0rOpT1SqG7MvUiX1Du1htS
-        273DLsUmXbpwj3fHTqEpJ3Z+Y1Hmm5JuseXl0mUb5jLf2Hf8D7Pz7JzCuLdz1W22aT7c8Znf
-        h8VLep5XauF3A8NFbr5PzK1vMkfy7DG58GzXoqjLFVIvftUW2C4/XrnpeP4l6R8xu/f/DBDi
-        fnU/xseQY/aKxX6yqkm3XLZ7MUuYK7EUZyQaajEXFScCAJD1fnMxBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgkeLIzCtJLcpLzFFi42LZdlhJXjfjiXeSQe92JosH87axWVzer23R
-        vHg9m8W7uTIW589vYLfY9Pgaq8XlXXPYLGac38dkcWZxL7sDp8emVZ1sHvvnrmH32Lyk3qNv
-        yypGj8+b5AJYo7hsUlJzMstSi/TtErgyenZfYCu4J1CxYsl5lgbGWbxdjBwcEgImEufuWHQx
-        cnIICexmlLg3PRXElhCQkVj+rI8NwhaWuN9yhLWLkQuo5hmjxK73f1hBEmwCuhI7N75iB7FF
-        BMwl5j48zg5SxCxwnEli2ZsWdoiOB4wSex6uYgGp4hTQlDi2uAVsrLBAjMTtiafB4iwCKhI7
-        3v8Ei/MKWErcnHaTGcIWlDg58wkLyKXMAnoSbRsZQcLMAvIS29/OYYa4TkHi59NlrBBxEYnZ
-        nW3MEAe5SZxsnMA0gVF4FpJJsxAmzUIyaRaS7gWMLKsYJVMLinPTc4sNCwzzUsv1ihNzi0vz
-        0vWS83M3MYIjS0tzB+P2VR/0DjEycTAeYpTgYFYS4c0J8kwS4k1JrKxKLcqPLyrNSS0+xCjN
-        waIkznuh62S8kEB6YklqdmpqQWoRTJaJg1OqgemELve6BwafFlZO1O2c/XPNNPmrEVzirGcW
-        sVryZbhOs/j6sVfzh/+qt6HeUy8+5TAKSO14ulFvbaRphtantufvYk75zi+YkvVoneBNaYm8
-        S7nfL15tWCSXW39yVlrNbOaJcTy9trtLHmU+Sq7+xxMTJcm87fjqZbaRn/xFSt8sM1Q07Jzm
-        1royROcBz3SvgjPK68zv3QjhjOf+/DO8enOEgea9tq4diXJ13AcCTt9QefbKe/FdBfnDzdEn
-        rsaf2vzZb23kadlHAWtCDq/eZpLpuqklUmv6zKtLXfiSk5438tcw1ObeOZxzR9jKijWc81sz
-        k8rxlcfe89doiOtMmXrA5v2kUJ+apzdv8r+M7VFiKc5INNRiLipOBACXg3/7GwMAAA==
-X-CMS-MailID: 20220405064040epcas2p3e5d3687bf67384c85d61c5d4ee24acaf
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220405033448epcas2p397080e15c54369d24eaf94c2a27bd06c
-References: <20220405033854.110374-1-jaewon02.kim@samsung.com>
-        <CGME20220405033448epcas2p397080e15c54369d24eaf94c2a27bd06c@epcas2p3.samsung.com>
-        <20220405033854.110374-2-jaewon02.kim@samsung.com>
-        <YkvNQJ5hBhQKCwcU@kroah.com>
+References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
+ <20220404074734.1092959-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
+ <874k38u20c.fsf@tynnyri.adurom.net>
+In-Reply-To: <874k38u20c.fsf@tynnyri.adurom.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 5 Apr 2022 08:46:06 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV_-3TOHYehUsHeqwHjQtzN1Ot886K7vwPr4P-4u8eehw@mail.gmail.com>
+Message-ID: <CAMuHMdV_-3TOHYehUsHeqwHjQtzN1Ot886K7vwPr4P-4u8eehw@mail.gmail.com>
+Subject: Re: Build regressions/improvements in v5.18-rc1
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        scsi <linux-scsi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        linux-xfs@vger.kernel.org,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        linux-s390 <linux-s390@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello
+Hi Kalle,
 
-On 22. 4. 5. 14:01, Greg Kroah-Hartman wrote:
-> On Tue, Apr 05, 2022 at 12:38:54PM +0900, Jaewon Kim wrote:
-> > The console_write and IRQ handler can run concurrently.
-> > Problems may occurs console_write is continuously executed while the
-> > IRQ handler is running.
+On Mon, Apr 4, 2022 at 8:39 PM Kalle Valo <kvalo@kernel.org> wrote:
+> Geert Uytterhoeven <geert@linux-m68k.org> writes:
+> >> /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:
+> >> error: case label does not reduce to an integer constant: => 3798:2,
+> >> 3809:2
 > >
-> > Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
-> > ---
-> >  drivers/tty/serial/samsung_tty.c | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> 
-> What commit does this fix?
+> > arm64-gcc5.4/arm64-allmodconfig
+> > powerpc-gcc5/powerpc-allmodconfig
+> > powerpc-gcc5/ppc64_book3e_allmodconfig
+>
+> After v5.17 there were two commits to brcmfmac/sdio.c:
+>
+> $ git log --oneline v5.17.. drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> ed26edf7bfd9 brcmfmac: Add BCM43454/6 support
+> 6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
+>
+> I can't see how either of them could cause this warning. Could something
+> else cause this or am I missing something?
 
-This is not an issue caused by anohter commits.
-There was potential issue from the beginning.
+Doh, I should not have reduced the CC list in the xfs subthread...
 
-Other drivers were fixed, but samsung_tty was not.
-PL011 patch : https://lkml.org/lkml/2012/2/1/495
+The builds above are all gcc-5 builds, so they are affected by the same
+issue as XFS: unsigned constants that don't fit in int are lacking a
+"U" suffix.
 
+I assume Arnd's patch for
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+fixes this?
+https://lore.kernel.org/all/CAK8P3a0wRiS03imdXk2WbGONkSSczEGdE-ue5ubF6UyyDE9dQg@mail.gmail.com
 
-> 
-> >
-> > diff --git a/drivers/tty/serial/samsung_tty.c
-> > b/drivers/tty/serial/samsung_tty.c
-> > index e1585fbae909..d362e8e114f1 100644
-> > --- a/drivers/tty/serial/samsung_tty.c
-> > +++ b/drivers/tty/serial/samsung_tty.c
-> > @@ -2480,12 +2480,26 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
-> >  			     unsigned int count)
-> >  {
-> >  	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-> > +	unsigned long flags;
-> > +	int locked = 1;
-> 
-> bool?
+Gr{oetje,eeting}s,
 
-It is return value of spin_trylock()
-I used int because mose drivers used int.
-If you guide to change int to bool, I will change it.
+                        Geert
 
-> 
-> >
-> >  	/* not possible to xmit on unconfigured port */
-> >  	if (!s3c24xx_port_configured(ucon))
-> >  		return;
-> >
-> > +	local_irq_save(flags);
-> > +	if (cons_uart->sysrq)
-> > +		locked = 0;
-> > +	else if (oops_in_progress)
-> > +		locked = spin_trylock(&cons_uart->lock);
-> > +	else
-> > +		spin_lock(&cons_uart->lock);
-> > +
-> >  	uart_console_write(cons_uart, s, count,
-> > s3c24xx_serial_console_putchar);
-> > +
-> > +	if (locked)
-> > +		spin_unlock(&cons_uart->lock);
-> > +	local_irq_restore(flags);
-> 
-> Why is irq_save required as well as a spinlock?
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-No special reason.
-I will change spin_trylock() -? spin_trylock_irqsave().
-spin_lock -> spin_lock_irqsave().
-And, remove local_irq_save/restore.
-It looks more clean.
-
-
-> 
-> thanks,
-> 
-> greg k-h
-
-Thanks
-Jaewon Kim
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
