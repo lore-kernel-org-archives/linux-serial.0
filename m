@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DCBC43217
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 127C0C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbiDEGh3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
+        id S230420AbiDEGhf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbiDEGhN (ORCPT
+        with ESMTP id S230324AbiDEGhY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:37:13 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B732A192B2
-        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 23:35:14 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id n6so10493677ejc.13
-        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 23:35:14 -0700 (PDT)
+        Tue, 5 Apr 2022 02:37:24 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94391186EA
+        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 23:35:19 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a6so13624024ejk.0
+        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 23:35:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oehOK4VAqzTxqC5buHxSssXxgO+RDZMIgj7zOteyqjI=;
-        b=Hy193/1AngSh5NoyrzCWhMqh1HfWhAFXyMQFGQnXsKByL+K7x9NaO8EtKKgIPFZglX
-         dr61Z9qLcEB9Q9xrGub+cXEbob9EjuotHEUZgPHmsbmWYHnRuk5zWfJ/tXUCeLJnEE3d
-         At4VHp02QmmXe+Ajv6QWNbk8feLGu+QNQyHrHD24/tf0lTmMcxCiKKHdeUlxPMxI0viG
-         sZ4i+B2DYEL0j1rt+8DDvJMYmyC+HW1YiZf00tBwYeb8c2rVaFCVxlkcvRoAVMmk+CKE
-         5anCalLk0GLFFoJwR6XEXh+D/uzrv3Oe+MovpcVCuvTOHgf9LaTwsPe//IkEYVZwIIBt
-         rvtA==
+        bh=PXat78f8/tubBNW8LJanTApTQCkbmtmWKkbw0yn/VXE=;
+        b=E2OZ+0DTiVAcOEAE6GCFcLJ2W6ZNFGxuKex22MXv9uFXoWbWfgDB2/1kFc2JB+Zopk
+         7t9RwCshROyxf3fhqX76KDQipmXXwvpvpi8vg4ZwWNsbzTZTS+oomDWInY8H49FGYAOk
+         /NuFoWgvwVyxuoWq3NiR2h9/yj1YBVEj8vAB+mHJ5RIN6Ty9xDjuJjTwaCcJPebR5X3L
+         K+dQ9luM8VSVAzTlJxoWMvCQZU3XSA93ZG8flnJ8VXkY5emAKbUdWXI+mLqThK7VNvso
+         L8FDImOI5SvMFDK0KeAoXHSOYEuSIskz4upP5PrfwrwOQR97yB/8eLG2x9JHHjCrF00k
+         OCxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oehOK4VAqzTxqC5buHxSssXxgO+RDZMIgj7zOteyqjI=;
-        b=aU+Pp6stgXi38xEQyFvXw19ZJl38CSBtClTpiqsdzt01PIMayOEH2/aIItfIFq8CXS
-         bCk6TcjMsU3Cw1spuYufRtvIsic/xV7/8i8YO6PTn4S+HRCdzS2LFUPSPDCdyhROPyyE
-         mTrUgvW29GIGpkZWYnuBlHnnd6GiaJ99bytYl2nbhsNKtidK1r6gFn/smVH1BxGkkV2B
-         m5kboG/iN32d2EGttn44G2ZbHZo1UnGWOmC5TCfhX2Zlu8J13YLKGjM+P/Gf2NSn9Vfq
-         Fmp823mYylNxAm0NtSvYDgNQB2HtIRzCvJt+te03mi0ATSZp5G1vP/vKkZQSLhr3NfOz
-         ZyeA==
-X-Gm-Message-State: AOAM532iSG4h7IfrDXQ5MvcsteiJA3D8af1sEBkg5naJU0XFx52jFdAZ
-        brZqkYEucx22o/56wgLxWLmVtQ==
-X-Google-Smtp-Source: ABdhPJx5QUnjVh8yXIsk3kKBa6+qdhCQDojbFltvtAoIpuG1MWrKxZhMXJ9aa7AJHvkiY2e8/vcWVQ==
-X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr1929200ejc.287.1649140513236;
-        Mon, 04 Apr 2022 23:35:13 -0700 (PDT)
+        bh=PXat78f8/tubBNW8LJanTApTQCkbmtmWKkbw0yn/VXE=;
+        b=hFq/zAd2r9uyUROdB59faEh13IROFQzdAjcPfHwzpw4IK/W4dkT9kFrFDAScJaKAN+
+         x5Ir2dYonpg3XU7POtjZXefLEM31ZX/Phk/ae6PAOp4rLCNyeGnevZd6FJCpwsqGdt31
+         pWhOMKqRGvgLXzHl6SC+0r75Ic296bsJwbt3kLJHLj+ZIhymmEx9C3nqQr9FusNBm2ww
+         QouEDfVF1hdjT4qKnenYhYor8JTCcY3TZ+LGpi2Pctso86+519OPUmNq+w6ploZ6VAtz
+         dM8++9OnFR+buLI/ER0FARDhyA3FwRpFyLcWL5zqH/WLgnpHTRT4WTzNr7XkRbNKJvs9
+         d11Q==
+X-Gm-Message-State: AOAM530gnLdbdUosbjrJAQJGe0MzOBAp/63X+8u8wz/GQdk2IlbYlLVN
+        M3BZdLgJMseahpHSJ9BezsbLpw==
+X-Google-Smtp-Source: ABdhPJwg159L/KHI/Ggs//6CuvZE3Z9vQce8K8NSIPP8A14NKYJwMn44ismGrh5EdlEqL4HvtyHygg==
+X-Received: by 2002:a17:907:6e88:b0:6da:8f01:7a8f with SMTP id sh8-20020a1709076e8800b006da8f017a8fmr1969592ejc.619.1649140518048;
+        Mon, 04 Apr 2022 23:35:18 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.12
+        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 23:35:12 -0700 (PDT)
+        Mon, 04 Apr 2022 23:35:17 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,10 +59,11 @@ To:     Andy Gross <agross@kernel.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org
 Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 4/9] ARM: dts: qcom: ipq4019: align clocks in I2C with DT schema
-Date:   Tue,  5 Apr 2022 08:34:46 +0200
-Message-Id: <20220405063451.12011-5-krzysztof.kozlowski@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 8/9] dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
+Date:   Tue,  5 Apr 2022 08:34:50 +0200
+Message-Id: <20220405063451.12011-9-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
 References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
@@ -72,43 +73,162 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The DT schema expects clocks core-iface order.  No functional change.
+Convert the Qualcomm Universal Peripheral (QUP) I2C controller to DT
+Schema.
+
+Add missing properties: dma and dma-names, pinctrl states (to indicate
+support for sleep pinctrl).
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ .../devicetree/bindings/i2c/qcom,i2c-qup.txt  | 40 ---------
+ .../devicetree/bindings/i2c/qcom,i2c-qup.yaml | 89 +++++++++++++++++++
+ 2 files changed, 89 insertions(+), 40 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
+ create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index 1f6c4ab7f37e..897442157f5f 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -276,9 +276,9 @@ blsp1_i2c3: i2c@78b7000 { /* BLSP1 QUP3 */
- 			compatible = "qcom,i2c-qup-v2.2.1";
- 			reg = <0x78b7000 0x600>;
- 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
--				 <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>;
--			clock-names = "iface", "core";
-+			clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
-+				 <&gcc GCC_BLSP1_AHB_CLK>;
-+			clock-names = "core", "iface";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			dmas = <&blsp_dma 8>, <&blsp_dma 9>;
-@@ -290,9 +290,9 @@ blsp1_i2c4: i2c@78b8000 { /* BLSP1 QUP4 */
- 			compatible = "qcom,i2c-qup-v2.2.1";
- 			reg = <0x78b8000 0x600>;
- 			interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&gcc GCC_BLSP1_AHB_CLK>,
--				 <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>;
--			clock-names = "iface", "core";
-+			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
-+				 <&gcc GCC_BLSP1_AHB_CLK>;
-+			clock-names = "core", "iface";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			dmas = <&blsp_dma 10>, <&blsp_dma 11>;
+diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
+deleted file mode 100644
+index dc71754a56af..000000000000
+--- a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
++++ /dev/null
+@@ -1,40 +0,0 @@
+-Qualcomm Universal Peripheral (QUP) I2C controller
+-
+-Required properties:
+- - compatible: Should be:
+-   * "qcom,i2c-qup-v1.1.1" for 8660, 8960 and 8064.
+-   * "qcom,i2c-qup-v2.1.1" for 8974 v1.
+-   * "qcom,i2c-qup-v2.2.1" for 8974 v2 and later.
+- - reg: Should contain QUP register address and length.
+- - interrupts: Should contain I2C interrupt.
+-
+- - clocks: A list of phandles + clock-specifiers, one for each entry in
+-   clock-names.
+- - clock-names: Should contain:
+-   * "core" for the core clock
+-   * "iface" for the AHB clock
+-
+- - #address-cells: Should be <1> Address cells for i2c device address
+- - #size-cells: Should be <0> as i2c addresses have no size component
+-
+-Optional properties:
+- - clock-frequency: Should specify the desired i2c bus clock frequency in Hz,
+-                    defaults to 100kHz if omitted.
+-
+-Child nodes should conform to i2c bus binding.
+-
+-Example:
+-
+- i2c@f9924000 {
+- 	compatible = "qcom,i2c-qup-v2.2.1";
+- 	reg = <0xf9924000 0x1000>;
+- 	interrupts = <0 96 0>;
+-
+- 	clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
+- 	clock-names = "core", "iface";
+-
+- 	clock-frequency = <355000>;
+-
+- 	#address-cells = <1>;
+- 	#size-cells = <0>;
+- };
+diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
+new file mode 100644
+index 000000000000..f43947514d48
+--- /dev/null
++++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-qup.yaml
+@@ -0,0 +1,89 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/i2c/qcom,i2c-qup.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Universal Peripheral (QUP) I2C controller
++
++maintainers:
++  - Andy Gross <agross@kernel.org>
++  - Bjorn Andersson <bjorn.andersson@linaro.org>
++  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++
++allOf:
++  - $ref: /schemas/i2c/i2c-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - qcom,i2c-qup-v1.1.1     # for 8660, 8960 and 8064
++      - qcom,i2c-qup-v2.1.1     # for 8974 v1
++      - qcom,i2c-qup-v2.2.1     # for 8974 v2 and later
++
++  clocks:
++    maxItems: 2
++
++  clock-names:
++    items:
++      - const: core
++      - const: iface
++
++  clock-frequency:
++    default: 100000
++
++  dmas:
++    maxItems: 2
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++  interrupts:
++    maxItems: 1
++
++  pinctrl-0: true
++  pinctrl-1: true
++
++  pinctrl-names:
++    minItems: 1
++    items:
++      - const: default
++      - const: sleep
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - clock-names
++  - clocks
++  - interrupts
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-msm8998.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    i2c@c175000 {
++        compatible = "qcom,i2c-qup-v2.2.1";
++        reg = <0x0c175000 0x600>;
++        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
++
++        clocks = <&gcc GCC_BLSP1_QUP1_I2C_APPS_CLK>,
++                 <&gcc GCC_BLSP1_AHB_CLK>;
++        clock-names = "core", "iface";
++        dmas = <&blsp1_dma 6>, <&blsp1_dma 7>;
++        dma-names = "tx", "rx";
++        pinctrl-names = "default", "sleep";
++        pinctrl-0 = <&blsp1_i2c1_default>;
++        pinctrl-1 = <&blsp1_i2c1_sleep>;
++        clock-frequency = <400000>;
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++    };
 -- 
 2.32.0
 
