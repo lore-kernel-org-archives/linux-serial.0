@@ -2,108 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 645D0C4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C519C433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 08:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbiDEGyp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
+        id S234660AbiDEIZ7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Apr 2022 04:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbiDEGym (ORCPT
+        with ESMTP id S239503AbiDEIUI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:54:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA948FE49;
-        Mon,  4 Apr 2022 23:52:44 -0700 (PDT)
+        Tue, 5 Apr 2022 04:20:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E6CF2;
+        Tue,  5 Apr 2022 01:14:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABD42B81B96;
-        Tue,  5 Apr 2022 06:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5887BC340F3;
-        Tue,  5 Apr 2022 06:52:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649141561;
-        bh=sfI+F1qddgBQPEPVyPm4UsT8iPzrWXdjhWe583jbPNo=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=V/qs96FwacDoAwIb3AYjsXmHxIyAPgkVCDF70o06rl9Kv/EU36wYnE2B+iVWmFDuY
-         9yuhSTxtp1RApbos0thzGGcgBcYzB4OUjwwadhMoCk9ddnMLEKl7z5ojHVyxLNPTxe
-         fkI47UjfZEnf1/Ud4Zb2n1JXmLeINpIf17so9GlwWdiyUMNfRV7wQ5S+MxBnAEYklV
-         Y8YdKnoXbq3CdeKDF/1PwekiJc2XNSMWQ0QvtapOIX7H8ZI+dMggm5cQNjfN6CVOOX
-         7Pm2r4QROcmMfAGlnaeACUWbHHdwgaBx6T+/ZTGZ0SVcsrXuQJQPOhC5ncYhaHg04Y
-         CE7JnbN9mYeEw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        "open list\:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-xfs@vger.kernel.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        linux-s390 <linux-s390@vger.kernel.org>
-Subject: Re: Build regressions/improvements in v5.18-rc1
-In-Reply-To: <CAMuHMdV_-3TOHYehUsHeqwHjQtzN1Ot886K7vwPr4P-4u8eehw@mail.gmail.com>
-        (Geert Uytterhoeven's message of "Tue, 5 Apr 2022 08:46:06 +0200")
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
-        <20220404074734.1092959-1-geert@linux-m68k.org>
-        <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
-        <874k38u20c.fsf@tynnyri.adurom.net>
-        <CAMuHMdV_-3TOHYehUsHeqwHjQtzN1Ot886K7vwPr4P-4u8eehw@mail.gmail.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Tue, 05 Apr 2022 09:52:33 +0300
-Message-ID: <87czhwrphq.fsf@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B87D4609D0;
+        Tue,  5 Apr 2022 08:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C036C385A0;
+        Tue,  5 Apr 2022 08:14:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649146483;
+        bh=JCLM8YKiiHyma2HgpUKFb0VzrXsL8iLb6rFhuU6ooFw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bIyOMeCM3OR5PYfHyUoqmtjjLthbWkued8Kdc1wDYRiNPwRxMmuAbxaWc4ydpqz6Y
+         uY5frKN5He5HIKlsHo+DwAJxNlbH/lGNcDR+YFOSWNih1sr2THFEWscWNXuihJGiHL
+         HGRSNXm+f/VGU4YDKpYPDvBVs0tWR1pEzZ3ctsHg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-serial@vger.kernel.org,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 0780/1126] kgdboc: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:25:27 +0200
+Message-Id: <20220405070430.471480461@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+References: <20220405070407.513532867@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
+From: Randy Dunlap <rdunlap@infradead.org>
 
-> On Mon, Apr 4, 2022 at 8:39 PM Kalle Valo <kvalo@kernel.org> wrote:
->> Geert Uytterhoeven <geert@linux-m68k.org> writes:
->> >> /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:
->> >> error: case label does not reduce to an integer constant: => 3798:2,
->> >> 3809:2
->> >
->> > arm64-gcc5.4/arm64-allmodconfig
->> > powerpc-gcc5/powerpc-allmodconfig
->> > powerpc-gcc5/ppc64_book3e_allmodconfig
->>
->> After v5.17 there were two commits to brcmfmac/sdio.c:
->>
->> $ git log --oneline v5.17.. drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->> ed26edf7bfd9 brcmfmac: Add BCM43454/6 support
->> 6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
->>
->> I can't see how either of them could cause this warning. Could something
->> else cause this or am I missing something?
->
-> Doh, I should not have reduced the CC list in the xfs subthread...
->
-> The builds above are all gcc-5 builds, so they are affected by the same
-> issue as XFS: unsigned constants that don't fit in int are lacking a
-> "U" suffix.
->
-> I assume Arnd's patch for
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> fixes this?
-> https://lore.kernel.org/all/CAK8P3a0wRiS03imdXk2WbGONkSSczEGdE-ue5ubF6UyyDE9dQg@mail.gmail.com
+[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
 
-Great, thanks. I assume Arnd will submit it officially at some point.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
+So return 1 from kgdboc_option_setup().
 
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
+Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
+Cc: He Zhe <zhe.he@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/kgdboc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 49d0c7f2b29b..79b7db8580e0 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -403,16 +403,16 @@ static int kgdboc_option_setup(char *opt)
+ {
+ 	if (!opt) {
+ 		pr_err("config string not provided\n");
+-		return -EINVAL;
++		return 1;
+ 	}
+ 
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		pr_err("config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("kgdboc=", kgdboc_option_setup);
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.34.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+
