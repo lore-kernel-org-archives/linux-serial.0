@@ -2,33 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4E6C433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 09:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B41C433FE
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 11:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238668AbiDEJfF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Apr 2022 05:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        id S241845AbiDELJh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Apr 2022 07:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344023AbiDEJQu (ORCPT
+        with ESMTP id S242864AbiDEKfe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 05:16:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FFD13D37;
-        Tue,  5 Apr 2022 02:03:35 -0700 (PDT)
+        Tue, 5 Apr 2022 06:35:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686E92B192;
+        Tue,  5 Apr 2022 03:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9287A61573;
-        Tue,  5 Apr 2022 09:03:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFFBC385A0;
-        Tue,  5 Apr 2022 09:03:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 044E8617CC;
+        Tue,  5 Apr 2022 10:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E07CCC385A1;
+        Tue,  5 Apr 2022 10:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649149415;
+        s=korg; t=1649154013;
         bh=JCLM8YKiiHyma2HgpUKFb0VzrXsL8iLb6rFhuU6ooFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQ1wTUPZpXOGGXMvhjXxxDW3UztkKUlUiEeVEdK7u9SIykQgXBkk2dYVoDy+lBHjO
-         34ION0wMPqZnlAfSrO9HkwNxBsWCCGDtDTuZF/FCH9KPx5DwE8FJMS+r8Y6f9upms5
-         BeYxVhthC4awAPIlisYYT7N1WEM91pjznQIH+9sw=
+        b=X8cJOmxF6VQXoHqkdC80pu7028J73fUWuda+bVMgr0Hgn/opBdTFJ91v2BTwQOohM
+         VVr2kgUpEJj7nSdDMYVgEWjGYE/lw49ahZRg89z6FWRsq92RY+zzvprkhNuRneXxzF
+         ZiPrptOsI64nuDxMzYpUk8qur/EmQ0dPlzTpm5lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -42,12 +42,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Igor Zhbanov <i.zhbanov@omprussia.ru>,
         Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0705/1017] kgdboc: fix return value of __setup handler
-Date:   Tue,  5 Apr 2022 09:26:58 +0200
-Message-Id: <20220405070415.197909605@linuxfoundation.org>
+Subject: [PATCH 5.10 426/599] kgdboc: fix return value of __setup handler
+Date:   Tue,  5 Apr 2022 09:32:00 +0200
+Message-Id: <20220405070311.509873524@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
+References: <20220405070258.802373272@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
