@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E63DDC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AEBC4332F
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Apr 2022 06:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbiDEGhm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Apr 2022 02:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        id S230354AbiDEGiX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Apr 2022 02:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiDEGhd (ORCPT
+        with ESMTP id S230329AbiDEGhY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 02:37:33 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21AE19285
-        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 23:35:20 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id qh7so14508521ejb.11
-        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 23:35:20 -0700 (PDT)
+        Tue, 5 Apr 2022 02:37:24 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA3319001
+        for <linux-serial@vger.kernel.org>; Mon,  4 Apr 2022 23:35:18 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id k23so21092888ejd.3
+        for <linux-serial@vger.kernel.org>; Mon, 04 Apr 2022 23:35:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CBvlbU43jHzlylVBNIqHKM031Xg4IT9urGiAHQVtPUQ=;
-        b=II3h2PtUIgEV6c5K+3sALeQYfGFWVVfOmHcA+KQYJewDuem5RY1eAAR4hoPWhjJqYs
-         1LrqSLJt6tDpxWU3S9XndOtaZKz1DoA2+/AqybjdcNI8/+C3rPgVEuKdO3CeCHWDnubJ
-         a6JWFuovkctm1Yy2t6qnq1zgffR3LWt/7tPnSIEoVmKpu5aidJHfq79jwO7GYJTxs+BA
-         eTJNRXiyZGeqqGikyCd8iOzPEd3V1BSx1E1FCcpsi7CEfCLXqKln2gHHFnct/QZqVVX9
-         CLML1z7QttWQ5VZGVSY05P6b3KPZM1CMyothq7HZ+FORKf18dMFd/xhdO62Fl3ZeJ/mA
-         tCzQ==
+        bh=4aRapulVleACHaRVpaRemPKR+at6Oa4NBeEZ+s+WImo=;
+        b=sxY1JQ+pX73S1Bwlv3xrdFu/cmB3MqveCA78+V9LgccrAJi76NfLA7HVbtygTtSE1Z
+         Wz2z7Sn85AiCsElpF3qtwk8+6v5/SdT4IMyxNerOcYeaSQYV2EZzHDZOH/ZVGCn5sq4e
+         hoJilmgzv+kNBIfcBVwh0KpoN2L/2CREp53CUJZzucYnJv1DpviSZvXY5GBqywgGC0gS
+         THKDxRkHnIuPr+j6afCkQ6vXuidor91dtksLB5AjbDmIbVu20Af3nFZqPpA33zwnOX4F
+         b071/mGLhSMtiG46sSXLExekcHx/9f+1C7M9ZZgbCi2XR5mg1fFeYN3lzZKxkrSWEGey
+         rxiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CBvlbU43jHzlylVBNIqHKM031Xg4IT9urGiAHQVtPUQ=;
-        b=8RdBr4grzQsX+b6bfLbEbW3LrfjzxEDvy8j/de7va9L27Y/y4fnk394vINJY6+Usca
-         QrDi4mtFvEJms4lq6xIz+LNHDMfduuk2s5WfktdDWzr6U5/mHVGKTO5fkvdoRamsS4y9
-         0hOHDbmG3wNRSjgMYUcJBF7uHrN8o7FVbnLnXyNNYnWZIvUGJDUrgWJxMqd456893Nj8
-         gJaXwEI7+pLfCePZXkA02c2/ykWhpm6RpzW99vk6q3YS/WDaHyx8vMXpcIWZzaHZ9ywv
-         ccalSJtG7yIbDE5wj/dDC29G+qs4jIuJY9fN8fdetDPmVmSEQe5nQEKwE5rheJza9R6N
-         hEew==
-X-Gm-Message-State: AOAM531MU6ncBEYXGVt5N4o5vvqC9soY6qRi3xeTbGCeEOjoWWc6ncb9
-        Is/R7vVERooSMo6XRM/dkMPVlQ==
-X-Google-Smtp-Source: ABdhPJzuIslR7e62msxXDGKisOMK2+YPFnREc28H4X8PEniBM44xQHZDnA6eym9Q3LGIpL0Gxsuc1Q==
-X-Received: by 2002:a17:907:7d89:b0:6e7:fdc1:255b with SMTP id oz9-20020a1709077d8900b006e7fdc1255bmr1986753ejc.340.1649140519232;
-        Mon, 04 Apr 2022 23:35:19 -0700 (PDT)
+        bh=4aRapulVleACHaRVpaRemPKR+at6Oa4NBeEZ+s+WImo=;
+        b=q838cKME9kzv88Wf0oo/HsUowx31HbLJso/jo78z1w457jQMHRgKBxLcVIYpZzA+OP
+         u0cyi4IUXVJle970pBm8isQGdIZHeQvD0ZHCQRHWArD6ELBKc9NRDHGOxsnPjOwcuoax
+         Kf4gERHeKrnwXFWg2ckN4VIIOyZ4RE8/Gt7+SnKRBb5V3tbzrLT6e584UlxcTvdtRpuB
+         qBCxBldvZHtfmvuw5LC22GYaIKheO3jr7UjjzwSLGF7M18RZuF8WAH2Dg3yoamqxYYAD
+         DKchi5nggxR1flQDJEoZ5BI2EKonh0wEiSJrVqioglUI89m+u4VqRfoklw6CUxCQ5cwA
+         Rwtg==
+X-Gm-Message-State: AOAM531IuDKeJhkpHWaeiD+EU1iagWiJcePXNTyuZTZNuYvLsh64xLAV
+        E7eb6D1XNuTt1C0ymlceDIlQBg==
+X-Google-Smtp-Source: ABdhPJwjK52iLr3z/j3CSrDW9cArzWMU7Uadld+yfwG2I1BCADlrbG+s4oWwtM/f3FsI0tyMDLEQ2Q==
+X-Received: by 2002:a17:907:7f04:b0:6e1:39b8:d1a5 with SMTP id qf4-20020a1709077f0400b006e139b8d1a5mr2012819ejc.83.1649140516637;
+        Mon, 04 Apr 2022 23:35:16 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.18
+        by smtp.gmail.com with ESMTPSA id bs7-20020a056402304700b004197e5d2350sm6086543edb.54.2022.04.04.23.35.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 23:35:18 -0700 (PDT)
+        Mon, 04 Apr 2022 23:35:16 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,11 +59,10 @@ To:     Andy Gross <agross@kernel.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org
 Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 9/9] dt-bindings: qcom: qcom,gsbi: convert to dtschema
-Date:   Tue,  5 Apr 2022 08:34:51 +0200
-Message-Id: <20220405063451.12011-10-krzysztof.kozlowski@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 7/9] dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
+Date:   Tue,  5 Apr 2022 08:34:49 +0200
+Message-Id: <20220405063451.12011-8-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
 References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
@@ -73,248 +72,220 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the Qualcomm General Serial Bus Interface (GSBI) to DT
-Schema.
+Convert the Qualcomm MSM Serial UARTDM bindings to DT Schema.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/soc/qcom/qcom,gsbi.txt           |  87 ------------
- .../bindings/soc/qcom/qcom,gsbi.yaml          | 132 ++++++++++++++++++
- 2 files changed, 132 insertions(+), 87 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
- create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+ .../bindings/serial/qcom,msm-uartdm.txt       |  81 -------------
+ .../bindings/serial/qcom,msm-uartdm.yaml      | 112 ++++++++++++++++++
+ 2 files changed, 112 insertions(+), 81 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
 
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
 deleted file mode 100644
-index fe1855f09dcc..000000000000
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.txt
+index 9d098cf73b53..000000000000
+--- a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
 +++ /dev/null
-@@ -1,87 +0,0 @@
--QCOM GSBI (General Serial Bus Interface) Driver
+@@ -1,81 +0,0 @@
+-* MSM Serial UARTDM
 -
--The GSBI controller is modeled as a node with zero or more child nodes, each
--representing a serial sub-node device that is mux'd as part of the GSBI
--configuration settings.  The mode setting will govern the input/output mode of
--the 4 GSBI IOs.
+-The MSM serial UARTDM hardware is designed for high-speed use cases where the
+-transmit and/or receive channels can be offloaded to a dma-engine. From a
+-software perspective it's mostly compatible with the MSM serial UART except
+-that it supports reading and writing multiple characters at a time.
 -
 -Required properties:
--- compatible:	Should contain "qcom,gsbi-v1.0.0"
--- cell-index:	Should contain the GSBI index
--- reg: Address range for GSBI registers
--- clocks: required clock
--- clock-names: must contain "iface" entry
--- qcom,mode : indicates MUX value for configuration of the serial interface.
--  Please reference dt-bindings/soc/qcom,gsbi.h for valid mux values.
+-- compatible: Should contain at least "qcom,msm-uartdm".
+-              A more specific property should be specified as follows depending
+-	      on the version:
+-		"qcom,msm-uartdm-v1.1"
+-		"qcom,msm-uartdm-v1.2"
+-		"qcom,msm-uartdm-v1.3"
+-		"qcom,msm-uartdm-v1.4"
+-- reg: Should contain UART register locations and lengths. The first
+-       register shall specify the main control registers. An optional second
+-       register location shall specify the GSBI control region.
+-       "qcom,msm-uartdm-v1.3" is the only compatible value that might
+-       need the GSBI control region.
+-- interrupts: Should contain UART interrupt.
+-- clocks: Should contain the core clock and the AHB clock.
+-- clock-names: Should be "core" for the core clock and "iface" for the
+-	       AHB clock.
 -
 -Optional properties:
--- qcom,crci : indicates CRCI MUX value for QUP CRCI ports.  Please reference
--  dt-bindings/soc/qcom,gsbi.h for valid CRCI mux values.
--- syscon-tcsr: indicates phandle of TCSR syscon node.  Required if child uses
--  dma.
+-- dmas: Should contain dma specifiers for transmit and receive channels
+-- dma-names: Should contain "tx" for transmit and "rx" for receive channels
+-- qcom,tx-crci: Identificator <u32> for Client Rate Control Interface to be
+-           used with TX DMA channel. Required when using DMA for transmission
+-           with UARTDM v1.3 and below.
+-- qcom,rx-crci: Identificator <u32> for Client Rate Control Interface to be
+-           used with RX DMA channel. Required when using DMA for reception
+-           with UARTDM v1.3 and below.
 -
--Required properties if child node exists:
--- #address-cells: Must be 1
--- #size-cells: Must be 1
--- ranges: Must be present
+-Note: Aliases may be defined to ensure the correct ordering of the UARTs.
+-The alias serialN will result in the UART being assigned port N.  If any
+-serialN alias exists, then an alias must exist for each enabled UART.  The
+-serialN aliases should be in a .dts file instead of in a .dtsi file.
 -
--Properties for children:
+-Examples:
 -
--A GSBI controller node can contain 0 or more child nodes representing serial
--devices.  These serial devices can be a QCOM UART, I2C controller, spi
--controller, or some combination of aforementioned devices.
+-- A uartdm v1.4 device with dma capabilities.
 -
--See the following for child node definitions:
--Documentation/devicetree/bindings/i2c/qcom,i2c-qup.txt
--Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
--Documentation/devicetree/bindings/serial/qcom,msm-uartdm.txt
--
--Example for APQ8064:
--
--#include <dt-bindings/soc/qcom,gsbi.h>
--
--	gsbi4@16300000 {
--		compatible = "qcom,gsbi-v1.0.0";
--		cell-index = <4>;
--		reg = <0x16300000 0x100>;
--		clocks = <&gcc GSBI4_H_CLK>;
--		clock-names = "iface";
--		#address-cells = <1>;
--		#size-cells = <1>;
--		ranges;
--		qcom,mode = <GSBI_PROT_I2C_UART>;
--		qcom,crci = <GSBI_CRCI_QUP>;
--
--		syscon-tcsr = <&tcsr>;
--
--		/* child nodes go under here */
--
--		i2c_qup4: i2c@16380000 {
--			compatible = "qcom,i2c-qup-v1.1.1";
--			reg = <0x16380000 0x1000>;
--			interrupts = <0 153 0>;
--
--			clocks = <&gcc GSBI4_QUP_CLK>, <&gcc GSBI4_H_CLK>;
--			clock-names = "core", "iface";
--
--			clock-frequency = <200000>;
--
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--		};
--
--		uart4:	serial@16340000 {
--			compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
--			reg = <0x16340000 0x1000>,
--				<0x16300000 0x1000>;
--			interrupts = <0 152 0x0>;
--			clocks = <&gcc GSBI4_UART_CLK>, <&gcc GSBI4_H_CLK>;
--			clock-names = "core", "iface";
--		};
+-	serial@f991e000 {
+-		compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
+-		reg = <0xf991e000 0x1000>;
+-		interrupts = <0 108 0x0>;
+-		clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
+-		clock-names = "core", "iface";
+-		dmas = <&dma0 0>, <&dma0 1>;
+-		dma-names = "tx", "rx";
 -	};
 -
--	tcsr: syscon@1a400000 {
--		compatible = "qcom,apq8064-tcsr", "syscon";
--		reg = <0x1a400000 0x100>;
+-- A uartdm v1.3 device without dma capabilities and part of a GSBI complex.
+-
+-	serial@19c40000 {
+-		compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+-		reg = <0x19c40000 0x1000>,
+-		<0x19c00000 0x1000>;
+-		interrupts = <0 195 0x0>;
+-		clocks = <&gsbi5_uart_cxc>, <&gsbi5_ahb_cxc>;
+-		clock-names = "core", "iface";
 -	};
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
+-
+-- serialN alias.
+-
+-	aliases {
+-		serial0 = &uarta;
+-		serial1 = &uartc;
+-		serial2 = &uartb;
+-	};
+-
+-	uarta: serial@12490000 {
+-	};
+-
+-	uartb: serial@16340000 {
+-	};
+-
+-	uartc: serial@1a240000 {
+-	};
+diff --git a/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
 new file mode 100644
-index 000000000000..c33704333e49
+index 000000000000..484b9a51f6a9
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,gsbi.yaml
-@@ -0,0 +1,132 @@
++++ b/Documentation/devicetree/bindings/serial/qcom,msm-uartdm.yaml
+@@ -0,0 +1,112 @@
 +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/soc/qcom/qcom,gsbi.yaml#
++$id: http://devicetree.org/schemas/serial/qcom,msm-uartdm.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Qualcomm General Serial Bus Interface (GSBI)
++title: Qualcomm MSM Serial UARTDM
 +
 +maintainers:
 +  - Andy Gross <agross@kernel.org>
 +  - Bjorn Andersson <bjorn.andersson@linaro.org>
 +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 +
-+description:
-+  The GSBI controller is modeled as a node with zero or more child nodes, each
-+  representing a serial sub-node device that is mux'd as part of the GSBI
-+  configuration settings.  The mode setting will govern the input/output mode
-+  of the 4 GSBI IOs.
++description: |
++  The MSM serial UARTDM hardware is designed for high-speed use cases where the
++  transmit and/or receive channels can be offloaded to a dma-engine. From a
++  software perspective it's mostly compatible with the MSM serial UART except
++  that it supports reading and writing multiple characters at a time.
 +
-+  A GSBI controller node can contain 0 or more child nodes representing serial
-+  devices.  These serial devices can be a QCOM UART, I2C controller, spi
-+  controller, or some combination of aforementioned devices.
++  Note:: Aliases may be defined to ensure the correct ordering of the UARTs.
++  The alias serialN will result in the UART being assigned port N.  If any
++  serialN alias exists, then an alias must exist for each enabled UART.  The
++  serialN aliases should be in a .dts file instead of in a .dtsi file.
 +
 +properties:
 +  compatible:
-+    const: qcom,gsbi-v1.0.0
-+
-+  '#address-cells':
-+    const: 1
-+
-+  cell-index:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The GSBI index.
++    items:
++      - enum:
++          - qcom,msm-uartdm-v1.1
++          - qcom,msm-uartdm-v1.2
++          - qcom,msm-uartdm-v1.3
++          - qcom,msm-uartdm-v1.4
++      - const: qcom,msm-uartdm
 +
 +  clocks:
-+    maxItems: 1
++    maxItems: 2
 +
 +  clock-names:
-+    const: iface
++    items:
++      - const: core
++      - const: iface
 +
-+  qcom,crci:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      CRCI MUX value for QUP CRCI ports.  Please reference
-+      include/dt-bindings/soc/qcom,gsbi.h for valid CRCI mux values.
++  dmas:
++    maxItems: 2
 +
-+  qcom,mode:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      MUX value for configuration of the serial interface.  Please reference
-+      include/dt-bindings/soc/qcom,gsbi.h for valid mux values.
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
 +
-+  '#size-cells':
-+    const: 1
-+
-+  syscon-tcsr:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle of TCSR syscon node.Required if child uses dma.
-+
-+  ranges: true
-+
-+  reg:
++  interrupts:
 +    maxItems: 1
 +
-+patternProperties:
-+  "spi@[0-9a-f]+$":
-+    type: object
-+    $ref: /schemas/spi/qcom,spi-qup.yaml#
++  qcom,rx-crci:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Identificator for Client Rate Control Interface to be used with RX DMA
++      channel. Required when using DMA for reception with UARTDM v1.3 and
++      below.
 +
-+  "i2c@[0-9a-f]+$":
-+    type: object
-+    $ref: /schemas/i2c/qcom,i2c-qup.yaml#
++  qcom,tx-crci:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Identificator for Client Rate Control Interface to be used with TX DMA
++      channel. Required when using DMA for transmission with UARTDM v1.3 and
++      below.
 +
-+  "serial@[0-9a-f]+$":
-+    type: object
-+    $ref: /schemas/serial/qcom,msm-uartdm.yaml#
++  reg:
++    minItems: 1
++    items:
++      - description: Main control registers
++      - description: An optional second register location shall specify the GSBI control region.
 +
 +required:
 +  - compatible
-+  - cell-index
-+  - clocks
 +  - clock-names
-+  - qcom,mode
++  - clocks
++  - interrupts
 +  - reg
 +
-+additionalProperties: false
++unevaluatedProperties: false
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: qcom,msm-uartdm-v1.3
++    then:
++      properties:
++        reg:
++          minItems: 2
++    else:
++      properties:
++        reg:
++          maxItems: 1
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/qcom,gcc-msm8960.h>
 +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/soc/qcom,gsbi.h>
 +
-+    gsbi@12440000 {
-+        compatible = "qcom,gsbi-v1.0.0";
-+        reg = <0x12440000 0x100>;
-+        cell-index = <1>;
-+        clocks = <&gcc GSBI1_H_CLK>;
-+        clock-names = "iface";
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        ranges;
-+
-+        syscon-tcsr = <&tcsr>;
-+        qcom,mode = <GSBI_PROT_I2C_UART>;
-+
-+        serial@12450000 {
-+            compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
-+            reg = <0x12450000 0x100>,
-+                  <0x12400000 0x03>;
-+            interrupts = <0 193 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&gcc GSBI1_UART_CLK>, <&gcc GSBI1_H_CLK>;
-+            clock-names = "core", "iface";
-+        };
-+
-+        i2c@12460000 {
-+            compatible = "qcom,i2c-qup-v1.1.1";
-+            reg = <0x12460000 0x1000>;
-+            pinctrl-0 = <&i2c1_pins>;
-+            pinctrl-1 = <&i2c1_pins_sleep>;
-+            pinctrl-names = "default", "sleep";
-+            interrupts = <0 194 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&gcc GSBI1_QUP_CLK>, <&gcc GSBI1_H_CLK>;
-+            clock-names = "core", "iface";
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            status = "disabled"; /* UART chosen */
-+        };
++    serial@f991e000 {
++        compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
++        reg = <0xf991e000 0x1000>;
++        interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&blsp1_uart2_apps_cxc>, <&blsp1_ahb_cxc>;
++        clock-names = "core", "iface";
++        dmas = <&dma0 0>, <&dma0 1>;
++        dma-names = "tx", "rx";
 +    };
 -- 
 2.32.0
