@@ -2,114 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF78C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 11:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5568FC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 11:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiDFLpN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
+        id S230028AbiDFLtm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbiDFLok (ORCPT
+        with ESMTP id S230054AbiDFLt2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:44:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CA644A4C0;
-        Wed,  6 Apr 2022 01:32:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40EAE60AEA;
-        Wed,  6 Apr 2022 08:32:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A203C385A3;
-        Wed,  6 Apr 2022 08:32:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649233959;
-        bh=nodaLOb2Mo4981eaXRtfGTuGpT7Ve2hplGDZmVY4lH4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bHC839FxFtktNSaxKSHjAb5Wq6B7+6E5lEZHyVZT9sqrz3DchyxkUjKJVMrR5nnPU
-         ym8lhCH1clIjiO7zYIe3IfEGqdQn3bS8NpDmrXU3cYwGcDP7Wv5r64FVd+z3Zjm9ju
-         muoNMnWCzNtFOL4RxqmTF7TuPeVtlIYEzqQFBiqE=
-Date:   Wed, 6 Apr 2022 10:32:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_msavaliy@quicinc.com, dianders@chromium.org
-Subject: Re: [V2] drivers/tty/serial/qcom-geni-serial: Do stop_rx in suspend
- path for console if console_suspend is disabled
-Message-ID: <Yk1QH18D0qAerqQ9@kroah.com>
-References: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
+        Wed, 6 Apr 2022 07:49:28 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5987C588352;
+        Wed,  6 Apr 2022 01:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649234827; x=1680770827;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=D6uurLf636+ymW4i3C9iuhVPW35WF/OF/XxWwpCTNQY=;
+  b=P00h3mdCL+LDy1FiXqWgP8f61D+PmiZPUTCivSqWpzc9cShcNtFpf/I4
+   0jxqOhJqbp9vRMMCxpbfWkUH+AKJp71m+jnbw1eJ7JzT8IoYWKeUR4Ds1
+   8D8/3y3Izf0ZkEpjGlXR0DKJ/3HwpLrqeClCLQ+qunmKB9fKV4dQKJQKr
+   GQ9wQJCmifv4Cl2AuOovGzDR0l6F3ag6cCl7lQ4yVlC34f9Ju3XlOizbh
+   KsF+JLe+EPEwJsPn0NHZ9luIsrwLe9ChA0ExAvpBhOkts1xavWaN2wVZx
+   jeUPETeaLXASWfpBDHcmqXPKHYmgcbFZI1MDE0sl+Alezcze4Yyk9GUuu
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259822970"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="259822970"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:47:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="570417321"
+Received: from hott-mobl.ger.corp.intel.com ([10.249.44.209])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:47:04 -0700
+Date:   Wed, 6 Apr 2022 11:46:57 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
+In-Reply-To: <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
+Message-ID: <10263812-e52-9d8d-f9f0-75e5f0c85f60@linux.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com> <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com> <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Type: multipart/mixed; boundary="8323329-1236514060-1649234826=:1612"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 01:56:52PM +0530, Vijaya Krishna Nivarthi wrote:
-> For the case of console_suspend disabled, if back to back suspend/resume
-> test is executed, at the end of test, sometimes console would appear to
-> be frozen not responding to input. This would happen because, for
-> console_suspend disabled, suspend/resume routines only turn resources
-> off/on but don't do a port close/open.
-> As a result, during resume, some rx transactions come in before system is
-> ready, malfunction of rx happens in turn resulting in console appearing
-> to be stuck.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1236514060-1649234826=:1612
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 6 Apr 2022, Jiri Slaby wrote:
+
+> On 05. 04. 22, 12:24, Ilpo Järvinen wrote:
+> > After lookahead for XON/XOFF characters is added by the next
+> > patch, the receive side needs to ensure the flow-control
+> > actions are not retaken later on when those same characters
+> > get read by TTY.
+> > 
+> > Thus, pass lookahead count to receive_buf and skip
+> > flow-control character actions if already taken for the
+> > character in question. Lookahead count will become live after
+> > the next patch.
+> ...
+> > --- a/include/linux/tty_ldisc.h
+> > +++ b/include/linux/tty_ldisc.h
+> > @@ -224,11 +224,11 @@ struct tty_ldisc_ops {
+> >   	 * The following routines are called from below.
+> >   	 */
+> >   	void	(*receive_buf)(struct tty_struct *tty, const unsigned char
+> > *cp,
+> > -			       const char *fp, int count);
+> > +			       const char *fp, int count, int
+> > lookahead_count);
+> >   	void	(*write_wakeup)(struct tty_struct *tty);
+> >   	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
+> >   	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char
+> > *cp,
+> > -				const char *fp, int count);
+> > +				const char *fp, int count, int
+> > lookahead_count);
 > 
-> Do a stop_rx in suspend sequence to prevent this. start_rx is already
-> present in resume sequence as part of call to set_termios which does a
-> stop_rx/start_rx.
+> Please always use unsigned if you don't expect negative numbers. count should
+> be changed to unsigned in long term too.
+
+Ok. I had just used the same types as there were previously. The types are 
+a big mess, int and size_t conversions being done back and forth within 
+that callchain for count. And now that you mentioned unsigned it 
+seems that fp (flag ptr) is also inconsistent.
+
+> > diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+> > index 58e9619116b7..1871a6a9cb00 100644
+> > --- a/include/linux/tty_port.h
+> > +++ b/include/linux/tty_port.h
+> > @@ -39,7 +39,7 @@ struct tty_port_operations {
+> >   };
+> >     struct tty_port_client_operations {
+> > -	int (*receive_buf)(struct tty_port *port, const unsigned char *, const
+> > unsigned char *, size_t);
+> > +	int (*receive_buf)(struct tty_port *port, const unsigned char *, const
+> > unsigned char *, size_t, size_t);
 > 
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 1543a60..6f767c7 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1481,6 +1481,10 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
->  	struct uart_port *uport = &port->uport;
->  	struct qcom_geni_private_data *private_data = uport->private_data;
->  
-> +	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
-> +	if (!console_suspend_enabled && uart_console(uport))
-> +		uport->ops->stop_rx(uport);
-> +
->  	/*
->  	 * This is done so we can hit the lowest possible state in suspend
->  	 * even with no_console_suspend
-> -- 
-> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
-> 
+> Good, here it is unsigned and even of size_t size (I don't immediately see
+> why, but OK).
 
-Hi,
+You mean that the flag ptr is now unsigned char * (which I didn't even 
+touch)?
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Your comment leaves me to wonder though, what you now want for the 
+lookahead count (the last arg), size_t or unsigned int? Lookahead count 
+cannot be negative, and AFAICT, count neither because that would mean tty 
+has to return some characters back :-).
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+...Maybe I'll do another patch post these fix ones to match/correct the 
+types.
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+-- 
+ i.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+--8323329-1236514060-1649234826=:1612--
