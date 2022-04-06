@@ -2,107 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DD0C43217
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4584C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232543AbiDFM2K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        id S231240AbiDFMiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233378AbiDFM1i (ORCPT
+        with ESMTP id S232211AbiDFMhm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:27:38 -0400
+        Wed, 6 Apr 2022 08:37:42 -0400
 Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93A93B38CE
-        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 01:18:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9279C574209
+        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 01:39:20 -0700 (PDT)
 Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220406081827epoutp03b4800097cd4ff8ab9b21b5403e9ed07a~jQMXqplJU2033420334epoutp03z
-        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 08:18:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220406081827epoutp03b4800097cd4ff8ab9b21b5403e9ed07a~jQMXqplJU2033420334epoutp03z
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220406083917epoutp030cf9e280ca5532f0354cb8f70e6d2f62~jQekGxeSE1035810358epoutp03B
+        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 08:39:17 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220406083917epoutp030cf9e280ca5532f0354cb8f70e6d2f62~jQekGxeSE1035810358epoutp03B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649233107;
-        bh=pZ68lE/yVojdDH0LXtiSiATpeoPKm9HOHcGFlaOhWAo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k31NT6S+v+reWpc0rMoGz1Qow2lqCWqoSg5LeaxqkWaW6Jc9jutbpRxfJ24wSP/tV
-         bo3hE6XmYmYnfq0eK0yGEHpzS2zf90obmolqVy7LG/6TFyIezJXB5GAgMZILaeaMj3
-         Fs9C9bMJooL9TW90ga6mr5xITQLtS3AtzM9EMLuw=
+        s=mail20170921; t=1649234357;
+        bh=c54J3bp3plJLsFTEsC6S4PiShdQ+U2ETlWezGJ5k9AU=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=GgTfNlu/DqsW/v+kbvyZhMvnMFBp5HWny63eXhyVnqMLhKd3js+qYF4bNEfrZ/8iS
+         bEp+IuGhQD6P7HdWvt9cni8OkC7PMITCDWx3HPvQurjl7rFTAYp2vDxTP97PFBjN2O
+         ldpuBFkdyWLlso/B45mIxtzs7n1gzItl8zjVeBzY=
 Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220406081826epcas2p4c69bea871ea256d610ba66a73c2ed872~jQMXJl8IV2886628866epcas2p4L;
-        Wed,  6 Apr 2022 08:18:26 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.89]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KYHTF2KFfz4x9Q0; Wed,  6 Apr
-        2022 08:18:25 +0000 (GMT)
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220406083916epcas2p30ee3bd4de04a7094344cb5b8d505cf97~jQejeaHxI1105711057epcas2p3L;
+        Wed,  6 Apr 2022 08:39:16 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4KYHxG5LbKz4x9QP; Wed,  6 Apr
+        2022 08:39:14 +0000 (GMT)
 Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
         epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        41.37.25540.0DC4D426; Wed,  6 Apr 2022 17:18:24 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f~jQMUbDwbC1713417134epcas2p2K;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
+        7D.73.25540.1B15D426; Wed,  6 Apr 2022 17:39:13 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba~jQefHh_or1577715777epcas2p4a;
+        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
 Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220406081823epsmtrp19183c8d1a985530de3d2a5eba5063025~jQMUaL53y1921919219epsmtrp1m;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
-X-AuditID: b6c32a47-831ff700000063c4-e2-624d4cd0a85f
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220406083912epsmtrp26b4cbfbb2728036861c67c2a23586fa8~jQefDrx8S0804408044epsmtrp2T;
+        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
+X-AuditID: b6c32a47-831ff700000063c4-3b-624d51b12991
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
         epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        21.1C.03370.FCC4D426; Wed,  6 Apr 2022 17:18:23 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.229.9.51]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220406081823epsmtip11172b4e3fe7884a960870fbe196feaa6~jQMULi29s2148221482epsmtip1x;
-        Wed,  6 Apr 2022 08:18:23 +0000 (GMT)
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chanho Park <chanho61.park@samsung.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt and
- console_write
-Date:   Wed,  6 Apr 2022 17:22:16 +0900
-Message-Id: <20220406082216.11206-2-jaewon02.kim@samsung.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406082216.11206-1-jaewon02.kim@samsung.com>
+        AE.2E.03370.0B15D426; Wed,  6 Apr 2022 17:39:12 +0900 (KST)
+Received: from KORCO006858 (unknown [10.229.18.72]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220406083912epsmtip27e9c3fce16ef8727cfd6495a3dde8d86~jQee38F521809018090epsmtip2r;
+        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
+From:   "Jaewon Kim" <jaewon02.kim@samsung.com>
+To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
+Cc:     "'Krzysztof Kozlowski'" <krzk@kernel.org>,
+        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        "'Jiri Slaby'" <jirislaby@kernel.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "'Chanho Park'" <chanho61.park@samsung.com>
+In-Reply-To: <Yk1NmTdUgMcSIq1O@kroah.com>
+Subject: RE: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt
+ and console_write
+Date:   Wed, 6 Apr 2022 17:39:11 +0900
+Message-ID: <042701d84991$ca50d410$5ef27c30$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFJsWRmVeSWpSXmKPExsWy7bCmme4FH98kg6/9PBYP5m1js7i8X9ui
-        efF6NosdDUdYLd7NlbE4f34Du8Wmx9dYLS7vmsNmMeP8PiaLM4t72R24PDat6mTz2D93DbvH
-        5iX1Hn1bVjF6fN4kF8AalW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ib
-        aqvk4hOg65aZA3SSkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafAvECvODG3uDQv
-        XS8vtcTK0MDAyBSoMCE7Y9735ewF3zgr1s07ytbAOI+ji5GTQ0LARKLzRSdbFyMXh5DADkaJ
-        9oufWCGcT4wSJ7u6mSGcz4wSc3ZuYoFpOb7oGFRiF6PE46lLmCCcj4wSK/6dZwKpYhPQlvi+
-        fjHYLBGB04wSh7cfBXOYQbbsav8OViUsECXxf/YMMJtFQFXi1ZxjYDavgK3EjePnGSH2yUt0
-        //sDtptTwE5i18OdbBA1ghInZz4BizMD1TRvnQ12k4RAI4fEr1m3gYo4gBwXiZuPQyHmCEu8
-        Or6FHcKWknjZ3wZlF0sc7/nOBNHbwChx9s4BVoiEscSsZ+2MIHOYBTQl1u/ShxipLHHkFtRa
-        PomOw3/ZIcK8Eh1tQhCNahL3p55jg7BlJCYdWckEYXtILLmyERrYExklPu7sYpnAqDALyTez
-        kHwzC2HxAkbmVYxiqQXFuempxUYFxvA4Ts7P3cQITqRa7jsYZ7z9oHeIkYmD8RCjBAezkghv
-        Va5PkhBvSmJlVWpRfnxRaU5q8SFGU2BYT2SWEk3OB6byvJJ4QxNLAxMzM0NzI1MDcyVxXq+U
-        DYlCAumJJanZqakFqUUwfUwcnFINTPmqpunhvelnJl2yZzi6LC7pZYRqxKM373dkMf1z/Hrp
-        xu8p1/xLHi+8IsvwU0mjQlmmZb+bTEfEMedFMxoN+4pT6ubb2m1cfdP2+6wKVjNn86Kv1/l7
-        2OaJWlQkzNj0r9XjoeDHJANLXdewfSy3DZXeqRmy1rT8Xl1+he2fwEEx0VybaW283DqXb31/
-        scTh3pmH6QkeVd9l5RPl3infL+lte5IyKeZV71uW1+Ez7LaprHY0rlnSb8Hqkj7H5U3adr3C
-        Mgvf+Zk8To7F77bs7a2ftOwC8+1Ifem1JudvbK47uuqp7pYJk/vmrJA9FBLL2jFb4N9jbuvQ
-        knCJwwkmaoULV6zy+BBdv5n3ywF9JZbijERDLeai4kQAWK8xMS0EAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKLMWRmVeSWpSXmKPExsWy7bCSnO55H98kg4/LdS0ezNvGZnF5v7ZF
-        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
-        zUvqPfq2rGL0+LxJLoA1issmJTUnsyy1SN8ugStj3vfl7AXfOCvWzTvK1sA4j6OLkZNDQsBE
-        4viiY8xdjFwcQgI7GCU2PXzHCpGQkVj+rI8NwhaWuN9yhBWi6D2jxINjW1lAEmwC2hLf1y8G
-        S4gInGeUmPz4DRuIwyywh1FizezvzCBVwgIREmu2nWEEsVkEVCVezTnGBGLzCthK3Dh+nhFi
-        hbxE978/YFM5Bewkdj3cCbZaCKhm15o3rBD1ghInZz4Bq2EGqm/eOpt5AqPALCSpWUhSCxiZ
-        VjFKphYU56bnFhsWGOWllusVJ+YWl+al6yXn525iBIe8ltYOxj2rPugdYmTiYDzEKMHBrCTC
-        W5XrkyTEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTEktTs1NSC1CKYLBMHp1QDk+ND
-        xdK/lktNvnEXBFYv+M0nO1fb7vKvq5tDG+ZoXdrgZnJ3Cdsdveb8tA9HV01/l7b4j5OGoSh/
-        1rcpz48Y+Urd+pfMdO6SQvGLxvRqR+nLhRXz/Y92xL2awnvjfOTWb+KWm3oFU29v9Vm+Y02o
-        xsWoferv05g+vf/6d4aN6NU7N32qZ8vqvgz/4KOjuPCV+5KcTXr7Jbv23enceSiG9yXT6jkZ
-        WlnlX9ny9OxePgwzVpfdenpJT/hd3Zm7eJrvVtd4zm1k5cu4fPSYYp/loTizlVdz74hoL5vr
-        s3dFgmup26xXc/N3n/hXGLz/O9uJzTvKghMnLz1yvLzHpTNr17XGqy1xb1dGOV8KUohpUFZi
-        Kc5INNRiLipOBABobSbH6AIAAA==
-X-CMS-MailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQKAReulhVQQuLhL7TJZSLDDSdoOSgMPy/dDAfNn9KQCezrJxqtWoyVQ
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmme7GQN8kg7l93BYP5m1js7i8X9ui
+        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
+        llWMHp83yQWwRmXbZKQmpqQWKaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE
+        6Lpl5gBdo6RQlphTChQKSCwuVtK3synKLy1JVcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2x
+        MjQwMDIFKkzIzug895Gl4DFHxeTetywNjL/Yuhg5OSQETCQ2TvrH3sXIxSEksINRYsXXrUwQ
+        zidGiXXfzkM5nxklpu/uZIVpOdY7ESqxi1Hi4aTDYLOEBF4wSuzbzA1iswnoSuzc+IodxBYR
+        MJeY+/A4mM0scJBJ4lQvD4jNKaAp8XTeebBeYYE4iRm7toPZLAIqEtPebgar5xWwlNg+eRIr
+        hC0ocXLmExaIOfIS29/OYYY4SEHi59NlrBBxEYnZnW3MEHvdJF49uMoIcqiEwFIOiU3bF0E9
+        7SJxbu1xRghbWOLV8S3sELaUxOd3e6FqiiWO93xngmhuYJQ4e+cA1PvGErOetQM1cwBt05RY
+        v0sfxJQQUJY4cgvqNj6JjsN/2SHCvBIdbUIQjWoS96eeg5ouIzHpyEqmCYxKs5B8NgvJZ7OQ
+        fDMLYdcCRpZVjGKpBcW56anFRgXG8MhOzs/dxAhOqFruOxhnvP2gd4iRiYPxEKMEB7OSCG9V
+        rk+SEG9KYmVValF+fFFpTmrxIUZTYFhPZJYSTc4HpvS8knhDE0sDEzMzQ3MjUwNzJXFer5QN
+        iUIC6YklqdmpqQWpRTB9TBycUg1MG6/3WbELlrQV85xfxOKWnv94vU+bR8LiUx650ZL+pjvj
+        hIIvCHT+ZNG+r2dsXZx2cGdZr3bh+atS6h1nVTdNkQsPizqlnKnCs+Lan/OM+7b8MLyxq84g
+        0p3Fy42JU4TDdU3i9KIF6Zm8B/pe5xQ9+7PQi3fbg445l8w3/X3+V3Dq4n063HuMivrPXZd+
+        uTQjTv3cCoN7Ob4TLGKMqzbcVP26Sch46gJviwtzVPY/fMYnnyTd4STLNenzQ5sZJ0UrEyc3
+        6d49en7RpJ9L0nOPRFbsXhaY+/v28nnxtlVLhBX2JmZqPNLtEi/7FvzgKVs321QnwUPPdVW2
+        zlr5wESh4Mo8Vruy9vyd63oaVvcqsRRnJBpqMRcVJwIAGb05bDEEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkkeLIzCtJLcpLzFFi42LZdlhJXndDoG+SwcILHBYP5m1js7i8X9ui
+        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
+        llWMHp83yQWwRnHZpKTmZJalFunbJXBldJ77yFLwmKNicu9blgbGX2xdjJwcEgImEsd6JzJ1
+        MXJxCAnsYJS4Nm0NO0RCRmL5sz6oImGJ+y1HWCGKnjFK3P6yiAUkwSagK7Fz4yuwBhEBc4m5
+        D4+zgxQxCxxnklj2pgUsISRwj1FiRbc2iM0poCnxdN55sKnCAjEStyeeBhvEIqAiMe3tZrB6
+        XgFLie2TJ7FC2IISJ2c+AarhABqqJ9G2kREkzCwgL7H97RxmiOMUJH4+XcYKEReRmN3Zxgxx
+        j5vEqwdXGScwCs9CMmkWwqRZSCbNQtK9gJFlFaNkakFxbnpusWGBUV5quV5xYm5xaV66XnJ+
+        7iZGcGxpae1g3LPqg94hRiYOxkOMEhzMSiK8Vbk+SUK8KYmVValF+fFFpTmpxYcYpTlYlMR5
+        L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwMfiFy7peerY+xVShfG8K70KZ2xNEl+9OuRxYq+fL
+        MkUrLPfLTJMpRfP2/rG2uCFxXzfw5AQuxcZrrhuYtq3dlhIoxXw4qCRx6y3HvN6ZgiaNTZss
+        bp9bIX7o8RyZ9x5nj3luaj7/qOjcUl3f2mMaNtoJ4Vsn3Dt9+1nF4ll/yp/pBkl959qy/fw6
+        oUdFjOL7+udMFNrW6dQTt+FS06ffa8rqE7s+PAmLWTB7adSEYoaTAQFnF1n9Mvu9d9vWzVz7
+        Dzv5ZX+aM+sIV+6cDVLi3FovhWdo7lrT/U55xr7mtwwyYfPV+VksM87KSYV/eZ81VdBu4eEK
+        ya+Hvgjq3bln0b9MZjeX6au6eVsTvaVOJymxFGckGmoxFxUnAgCFkTMMHAMAAA==
+X-CMS-MailID: 20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: AUTO_CONFIDENTIAL
@@ -112,48 +113,44 @@ X-CFilter-Loop: Reflected
 X-CMS-RootMailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
 References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
         <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
+        <20220406082216.11206-2-jaewon02.kim@samsung.com>
+        <Yk1NmTdUgMcSIq1O@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The console_write and IRQ handler can run concurrently.
-Problems may occurs console_write is continuously executed while
-the IRQ handler is running.
+Hello 
 
-Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
----
- drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+On 22. 4. 6. 17:21, Greg Kroah-Hartman wrote: 
+> On Wed, Apr 06, 2022 at 05:22:16PM +0900, Jaewon Kim wrote:
+> > The console_write and IRQ handler can run concurrently.
+> > Problems may occurs console_write is continuously executed while the
+> > IRQ handler is running.
+> >
+> > Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+> > ---
+> >  drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/samsung_tty.c
+> > b/drivers/tty/serial/samsung_tty.c
+> > index e1585fbae909..9db479d728b5 100644
+> > --- a/drivers/tty/serial/samsung_tty.c
+> > +++ b/drivers/tty/serial/samsung_tty.c
+> > @@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
+> >  			     unsigned int count)
+> >  {
+> >  	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
+> > +	unsigned long flags;
+> > +	bool locked = 1;
+> 
+> "1" is not a boolean :)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e1585fbae909..9db479d728b5 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
- 			     unsigned int count)
- {
- 	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-+	unsigned long flags;
-+	bool locked = 1;
- 
- 	/* not possible to xmit on unconfigured port */
- 	if (!s3c24xx_port_configured(ucon))
- 		return;
- 
-+	if (cons_uart->sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
-+		locked = spin_trylock_irqsave(&cons_uart->lock, flags);
-+	else
-+		spin_lock_irqsave(&cons_uart->lock, flags);
-+
- 	uart_console_write(cons_uart, s, count, s3c24xx_serial_console_putchar);
-+
-+	if (locked)
-+		spin_unlock_irqrestore(&cons_uart->lock, flags);
- }
- 
- /* Shouldn't be __init, as it can be instantiated from other module */
--- 
-2.35.1
+return value of spin_trylock() is 1 or 0.
+It seems better to keep it as an int than to change it to bool.
+I will return it to int.
+
+
+Thanks
+Jaewon Kim
 
