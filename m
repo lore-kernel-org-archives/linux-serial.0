@@ -2,147 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB088C433FE
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 05:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C193C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 11:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243680AbiDFFYI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S242780AbiDFL1p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457608AbiDEQQA (ORCPT
+        with ESMTP id S241900AbiDFL1B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Apr 2022 12:16:00 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA8719018;
-        Tue,  5 Apr 2022 09:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649175241; x=1680711241;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ur19xDOlDI9/rWRs+TqnfwNVLI1D8qVYS/itVUtgTbs=;
-  b=jFvFqMmaNz/WWa5pevdVc4G5pOvCnX2Jah2FBst1sLrf6l3hiAOWyoao
-   ww6Ee/J+I5WNy43gmffTR9dIq4CFtI6fRU5wkZ5bOA+/LN23tJVMhMAAj
-   eAgOVhLDZtP7GWk8CYp8kTdtLxElFoRVzm4Ea1d3FMoNPASw3boETImk6
-   kthX6k06Bzl5Ye5sw8bDD+cxEyEVVhIgTsCA3/ZEorZIhH4ixBykOJXoe
-   YeduQ3TNPJPxrvpIJFJBQ1H+q67O7kUSTn87ZdnhkNLmVaWA2XgzPdN42
-   ot5udIAxb/pve3xN+aFbArqRF1S9dTdedP+e3eTFvbrDtJuDNZsegMKUd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="258375370"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="258375370"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:37 -0700
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="524055940"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:11:34 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nbllo-00DSdK-94;
-        Tue, 05 Apr 2022 19:11:04 +0300
-Date:   Tue, 5 Apr 2022 19:11:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF timely
-Message-ID: <YkxqGDsURPpkDM5W@smile.fi.intel.com>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
- <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
+        Wed, 6 Apr 2022 07:27:01 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA6B55F353;
+        Wed,  6 Apr 2022 01:13:39 -0700 (PDT)
+Received: by mail-ej1-f47.google.com with SMTP id ot30so2552004ejb.12;
+        Wed, 06 Apr 2022 01:13:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nbgR+IckzJRUGptIoNowdGGPeNkA0puvrWRLQTOMQtg=;
+        b=b9ZCrlDB+GTB2tVlJ/03f4DiB6XAjJLJKb4ju2RtXtfz2tJbZYXFz71/nhsJDZOsLo
+         L6raeh7/AIHcw83pF3yrDE4JGlD2ik+B4sCAwit8Ppm3GKgHrlmhhHSm4mGY32xNPa8H
+         Ua9b8nJOpDTu9x+Jrpcpogv4mtiSYHw/ub8rC97JIaByLspqNSI7NAGdAhGjr5E4f8tU
+         82bTW/HjL+6XlA2c0VQQBYENjhWK9k1Mta4sJE6n1Vi/tF2V1ZWrSqNHJdkU2hJGeQ5h
+         n1+3vlgoZYK9Q7a7mkXf7XNgagipkFHKtDsrI0xhYIGyjBDKZcKHe6PeyV57qPlMb0Zq
+         W8LA==
+X-Gm-Message-State: AOAM531adGUewbHwKMnLe3tMcNrg+us/HWT5o3H5UmsvZixEJqcQ0pyz
+        Y5PGfAvOpy4Of374/Vld9Y8=
+X-Google-Smtp-Source: ABdhPJxi7OtObunO4HoGzaVX4GKdsXdaUsE1FqYamU4yS4gwOCjIaGhCC1e2eJVmIPDZ2UdFExQpcQ==
+X-Received: by 2002:a17:907:3f9c:b0:6d8:116d:476b with SMTP id hr28-20020a1709073f9c00b006d8116d476bmr7036757ejc.432.1649232818074;
+        Wed, 06 Apr 2022 01:13:38 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170906340e00b006ce98f2581asm6270629ejb.205.2022.04.06.01.13.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:13:37 -0700 (PDT)
+Message-ID: <7cb1cc42-ef98-cbbe-1779-107602747d07@kernel.org>
+Date:   Wed, 6 Apr 2022 10:13:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] tty: Add lookahead param to receive_buf
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
+ <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220405102437.4842-2-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
-> When tty is not read from, XON/XOFF may get stuck into an
-> intermediate buffer. As those characters are there to do software
-> flow-control, it is not very useful. In the case where neither end
-> reads from ttys, the receiving ends might not be able receive the
-> XOFF characters and just keep sending more data to the opposite
-> direction. This problem is almost guaranteed to occur with DMA
-> which sends data in large chunks.
+On 05. 04. 22, 12:24, Ilpo JÃ¤rvinen wrote:
+> After lookahead for XON/XOFF characters is added by the next
+> patch, the receive side needs to ensure the flow-control
+> actions are not retaken later on when those same characters
+> get read by TTY.
 > 
-> If TTY is slow to process characters, that is, eats less than given
-> amount in receive_buf, invoke lookahead for the rest of the chars
-> to process potential XON/XOFF characters.
-> 
-> The guards necessary for ensuring the XON/XOFF character are
-> processed only once were added by the previous patch. All this patch
-> needs to do on that front is to pass the lookahead count (that can
-> now be non-zero) into port->client_ops->receive_buf().
-
+> Thus, pass lookahead count to receive_buf and skip
+> flow-control character actions if already taken for the
+> character in question. Lookahead count will become live after
+> the next patch.
 ...
+> --- a/include/linux/tty_ldisc.h
+> +++ b/include/linux/tty_ldisc.h
+> @@ -224,11 +224,11 @@ struct tty_ldisc_ops {
+>   	 * The following routines are called from below.
+>   	 */
+>   	void	(*receive_buf)(struct tty_struct *tty, const unsigned char *cp,
+> -			       const char *fp, int count);
+> +			       const char *fp, int count, int lookahead_count);
+>   	void	(*write_wakeup)(struct tty_struct *tty);
+>   	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
+>   	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char *cp,
+> -				const char *fp, int count);
+> +				const char *fp, int count, int lookahead_count);
 
-> +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-> +					 bool lookahead_done)
-> +{
-> +	if (!I_IXON(tty))
-> +		return false;
-> +
-> +	if (c == START_CHAR(tty)) {
-> +		if (!lookahead_done) {
-> +			start_tty(tty);
-> +			process_echoes(tty);
-> +		}
-> +		return true;
-> +	}
-> +	if (c == STOP_CHAR(tty)) {
-> +		if (!lookahead_done)
-> +			stop_tty(tty);
-> +		return true;
-> +	}
-> +	return false;
-> +}
+Please always use unsigned if you don't expect negative numbers. count 
+should be changed to unsigned in long term too.
 
-Looking into this I would first make a preparatory patch that splits out
-current code into something like
+> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
+> index 58e9619116b7..1871a6a9cb00 100644
+> --- a/include/linux/tty_port.h
+> +++ b/include/linux/tty_port.h
+> @@ -39,7 +39,7 @@ struct tty_port_operations {
+>   };
+>   
+>   struct tty_port_client_operations {
+> -	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t);
+> +	int (*receive_buf)(struct tty_port *port, const unsigned char *, const unsigned char *, size_t, size_t);
 
-static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
-{
-	...current code...
-}
+Good, here it is unsigned and even of size_t size (I don't immediately 
+see why, but OK).
 
-Then in the patch 1 you add
-
-static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
-{
-	...
-}
-
-static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-					 bool lookahead_done)
-{
-	if (!I_IXON(tty))
-		return false;
-
-	if (lookahead_done)
-		return _lookahead();
-
-	return _no_lookahead();
-}
-
-?
-
-...
-
-/*
- * Also start multi-line comments with
- * capital letter and finish with
- * grammar period.
- */
-
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+js
+suse labs
