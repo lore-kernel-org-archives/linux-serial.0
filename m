@@ -2,155 +2,152 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4584C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE95C433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbiDFMiZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        id S230394AbiDFMrL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiDFMhm (ORCPT
+        with ESMTP id S230116AbiDFMqy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:37:42 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9279C574209
-        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 01:39:20 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220406083917epoutp030cf9e280ca5532f0354cb8f70e6d2f62~jQekGxeSE1035810358epoutp03B
-        for <linux-serial@vger.kernel.org>; Wed,  6 Apr 2022 08:39:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220406083917epoutp030cf9e280ca5532f0354cb8f70e6d2f62~jQekGxeSE1035810358epoutp03B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649234357;
-        bh=c54J3bp3plJLsFTEsC6S4PiShdQ+U2ETlWezGJ5k9AU=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=GgTfNlu/DqsW/v+kbvyZhMvnMFBp5HWny63eXhyVnqMLhKd3js+qYF4bNEfrZ/8iS
-         bEp+IuGhQD6P7HdWvt9cni8OkC7PMITCDWx3HPvQurjl7rFTAYp2vDxTP97PFBjN2O
-         ldpuBFkdyWLlso/B45mIxtzs7n1gzItl8zjVeBzY=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220406083916epcas2p30ee3bd4de04a7094344cb5b8d505cf97~jQejeaHxI1105711057epcas2p3L;
-        Wed,  6 Apr 2022 08:39:16 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KYHxG5LbKz4x9QP; Wed,  6 Apr
-        2022 08:39:14 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        7D.73.25540.1B15D426; Wed,  6 Apr 2022 17:39:13 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba~jQefHh_or1577715777epcas2p4a;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220406083912epsmtrp26b4cbfbb2728036861c67c2a23586fa8~jQefDrx8S0804408044epsmtrp2T;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-X-AuditID: b6c32a47-831ff700000063c4-3b-624d51b12991
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AE.2E.03370.0B15D426; Wed,  6 Apr 2022 17:39:12 +0900 (KST)
-Received: from KORCO006858 (unknown [10.229.18.72]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220406083912epsmtip27e9c3fce16ef8727cfd6495a3dde8d86~jQee38F521809018090epsmtip2r;
-        Wed,  6 Apr 2022 08:39:12 +0000 (GMT)
-From:   "Jaewon Kim" <jaewon02.kim@samsung.com>
-To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
-Cc:     "'Krzysztof Kozlowski'" <krzk@kernel.org>,
-        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
-        "'Jiri Slaby'" <jirislaby@kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "'Chanho Park'" <chanho61.park@samsung.com>
-In-Reply-To: <Yk1NmTdUgMcSIq1O@kroah.com>
-Subject: RE: [PATCH 1/1] tty: serial: samsung: add spin_lock for interrupt
- and console_write
-Date:   Wed, 6 Apr 2022 17:39:11 +0900
-Message-ID: <042701d84991$ca50d410$5ef27c30$@samsung.com>
+        Wed, 6 Apr 2022 08:46:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D375933E5;
+        Wed,  6 Apr 2022 01:50:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649235053; x=1680771053;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=4HsEIEA6lqkchGpdlbP1+HwGf7g8BXb8TpkxJaEOXhQ=;
+  b=cP5C/OuWJNLrON7iVg9mpl7M0iI1V3uf8mvOV7vozQ9Z+6QkAOTNflH3
+   YyVaHulMjEQqGxNWQ/NaOUpgwSMAmLTT3bm3BPAbOgiSfzY0rmsj3N1H/
+   xbtloU+N0VAhFuIvrCiDnkKIm0rENV3CDd994L28N8j98hOq0sko6RsrQ
+   egCo/ujOe667gMwBZfkpPNslYSvU61PmfJNBqqloR6KBFBh4L0xNfEAJC
+   E408L4NX6u13iFlFsLytyj1s9+pkjHywYHJTknAL3IrXbN0TmGiEFxSaO
+   AuBMFtRvy0fuV5l6EYT4Mq4oo4icfLgx6jLQ680SZH3yST0blpsy2xJpR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259823733"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="259823733"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:50:53 -0700
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="570418389"
+Received: from hott-mobl.ger.corp.intel.com ([10.249.44.209])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:50:50 -0700
+Date:   Wed, 6 Apr 2022 11:50:47 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF
+ timely
+In-Reply-To: <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
+Message-ID: <cf8d1e81-1811-d66f-21fc-a733bfad198@linux.intel.com>
+References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com> <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com> <YkxqGDsURPpkDM5W@smile.fi.intel.com> <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: ko
-Thread-Index: AQKAReulhVQQuLhL7TJZSLDDSdoOSgMPy/dDAfNn9KQCezrJxqtWoyVQ
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmme7GQN8kg7l93BYP5m1js7i8X9ui
-        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
-        llWMHp83yQWwRmXbZKQmpqQWKaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE
-        6Lpl5gBdo6RQlphTChQKSCwuVtK3synKLy1JVcjILy6xVUotSMkpMC/QK07MLS7NS9fLSy2x
-        MjQwMDIFKkzIzug895Gl4DFHxeTetywNjL/Yuhg5OSQETCQ2TvrH3sXIxSEksINRYsXXrUwQ
-        zidGiXXfzkM5nxklpu/uZIVpOdY7ESqxi1Hi4aTDYLOEBF4wSuzbzA1iswnoSuzc+IodxBYR
-        MJeY+/A4mM0scJBJ4lQvD4jNKaAp8XTeebBeYYE4iRm7toPZLAIqEtPebgar5xWwlNg+eRIr
-        hC0ocXLmExaIOfIS29/OYYY4SEHi59NlrBBxEYnZnW3MEHvdJF49uMoIcqiEwFIOiU3bF0E9
-        7SJxbu1xRghbWOLV8S3sELaUxOd3e6FqiiWO93xngmhuYJQ4e+cA1PvGErOetQM1cwBt05RY
-        v0sfxJQQUJY4cgvqNj6JjsN/2SHCvBIdbUIQjWoS96eeg5ouIzHpyEqmCYxKs5B8NgvJZ7OQ
-        fDMLYdcCRpZVjGKpBcW56anFRgXG8MhOzs/dxAhOqFruOxhnvP2gd4iRiYPxEKMEB7OSCG9V
-        rk+SEG9KYmVValF+fFFpTmrxIUZTYFhPZJYSTc4HpvS8knhDE0sDEzMzQ3MjUwNzJXFer5QN
-        iUIC6YklqdmpqQWpRTB9TBycUg1MG6/3WbELlrQV85xfxOKWnv94vU+bR8LiUx650ZL+pjvj
-        hIIvCHT+ZNG+r2dsXZx2cGdZr3bh+atS6h1nVTdNkQsPizqlnKnCs+Lan/OM+7b8MLyxq84g
-        0p3Fy42JU4TDdU3i9KIF6Zm8B/pe5xQ9+7PQi3fbg445l8w3/X3+V3Dq4n063HuMivrPXZd+
-        uTQjTv3cCoN7Ob4TLGKMqzbcVP26Sch46gJviwtzVPY/fMYnnyTd4STLNenzQ5sZJ0UrEyc3
-        6d49en7RpJ9L0nOPRFbsXhaY+/v28nnxtlVLhBX2JmZqPNLtEi/7FvzgKVs321QnwUPPdVW2
-        zlr5wESh4Mo8Vruy9vyd63oaVvcqsRRnJBpqMRcVJwIAGb05bDEEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupkkeLIzCtJLcpLzFFi42LZdlhJXndDoG+SwcILHBYP5m1js7i8X9ui
-        efF6Not3c2Uszp/fwG6x6fE1VovLu+awWcw4v4/J4sziXnYHTo9NqzrZPPbPXcPusXlJvUff
-        llWMHp83yQWwRnHZpKTmZJalFunbJXBldJ77yFLwmKNicu9blgbGX2xdjJwcEgImEsd6JzJ1
-        MXJxCAnsYJS4Nm0NO0RCRmL5sz6oImGJ+y1HWCGKnjFK3P6yiAUkwSagK7Fz4yuwBhEBc4m5
-        D4+zgxQxCxxnklj2pgUsISRwj1FiRbc2iM0poCnxdN55sKnCAjEStyeeBhvEIqAiMe3tZrB6
-        XgFLie2TJ7FC2IISJ2c+AarhABqqJ9G2kREkzCwgL7H97RxmiOMUJH4+XcYKEReRmN3Zxgxx
-        j5vEqwdXGScwCs9CMmkWwqRZSCbNQtK9gJFlFaNkakFxbnpusWGBUV5quV5xYm5xaV66XnJ+
-        7iZGcGxpae1g3LPqg94hRiYOxkOMEhzMSiK8Vbk+SUK8KYmVValF+fFFpTmpxYcYpTlYlMR5
-        L3SdjBcSSE8sSc1OTS1ILYLJMnFwSjUwMfiFy7peerY+xVShfG8K70KZ2xNEl+9OuRxYq+fL
-        MkUrLPfLTJMpRfP2/rG2uCFxXzfw5AQuxcZrrhuYtq3dlhIoxXw4qCRx6y3HvN6ZgiaNTZss
-        bp9bIX7o8RyZ9x5nj3luaj7/qOjcUl3f2mMaNtoJ4Vsn3Dt9+1nF4ll/yp/pBkl959qy/fw6
-        oUdFjOL7+udMFNrW6dQTt+FS06ffa8rqE7s+PAmLWTB7adSEYoaTAQFnF1n9Mvu9d9vWzVz7
-        Dzv5ZX+aM+sIV+6cDVLi3FovhWdo7lrT/U55xr7mtwwyYfPV+VksM87KSYV/eZ81VdBu4eEK
-        ya+Hvgjq3bln0b9MZjeX6au6eVsTvaVOJymxFGckGmoxFxUnAgCFkTMMHAMAAA==
-X-CMS-MailID: 20220406083912epcas2p4aa5946cfaf84e6bac9c56dd25e1dedba
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f
-References: <20220406082216.11206-1-jaewon02.kim@samsung.com>
-        <CGME20220406081823epcas2p2f7afa27e2402c4fc02c9bee5972bed4f@epcas2p2.samsung.com>
-        <20220406082216.11206-2-jaewon02.kim@samsung.com>
-        <Yk1NmTdUgMcSIq1O@kroah.com>
+Content-Type: multipart/mixed; boundary="8323329-2114925272-1649235052=:1612"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On 22. 4. 6. 17:21, Greg Kroah-Hartman wrote: 
-> On Wed, Apr 06, 2022 at 05:22:16PM +0900, Jaewon Kim wrote:
-> > The console_write and IRQ handler can run concurrently.
-> > Problems may occurs console_write is continuously executed while the
-> > IRQ handler is running.
-> >
-> > Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
-> > ---
-> >  drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/samsung_tty.c
-> > b/drivers/tty/serial/samsung_tty.c
-> > index e1585fbae909..9db479d728b5 100644
-> > --- a/drivers/tty/serial/samsung_tty.c
-> > +++ b/drivers/tty/serial/samsung_tty.c
-> > @@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
-> >  			     unsigned int count)
-> >  {
-> >  	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
-> > +	unsigned long flags;
-> > +	bool locked = 1;
+--8323329-2114925272-1649235052=:1612
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 6 Apr 2022, Jiri Slaby wrote:
+
+> On 05. 04. 22, 18:11, Andy Shevchenko wrote:
+> > On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
+> > > When tty is not read from, XON/XOFF may get stuck into an
+> > > intermediate buffer. As those characters are there to do software
+> > > flow-control, it is not very useful. In the case where neither end
+> > > reads from ttys, the receiving ends might not be able receive the
+> > > XOFF characters and just keep sending more data to the opposite
+> > > direction. This problem is almost guaranteed to occur with DMA
+> > > which sends data in large chunks.
+> > > 
+> > > If TTY is slow to process characters, that is, eats less than given
+> > > amount in receive_buf, invoke lookahead for the rest of the chars
+> > > to process potential XON/XOFF characters.
+> > > 
+> > > The guards necessary for ensuring the XON/XOFF character are
+> > > processed only once were added by the previous patch. All this patch
+> > > needs to do on that front is to pass the lookahead count (that can
+> > > now be non-zero) into port->client_ops->receive_buf().
+> > 
+> > ...
+> > 
+> > > +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned
+> > > char c,
+> > > +					 bool lookahead_done)
+> > > +{
+> > > +	if (!I_IXON(tty))
+> > > +		return false;
+> > > +
+> > > +	if (c == START_CHAR(tty)) {
+> > > +		if (!lookahead_done) {
+> > > +			start_tty(tty);
+> > > +			process_echoes(tty);
+> > > +		}
+> > > +		return true;
+> > > +	}
+> > > +	if (c == STOP_CHAR(tty)) {
+> > > +		if (!lookahead_done)
+> > > +			stop_tty(tty);
+> > > +		return true;
+> > > +	}
+> > > +	return false;
+> > > +}
+> > 
+> > Looking into this I would first make a preparatory patch that splits out
+> > current code into something like
+> > 
+> > static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct
+> > *tty, unsigned char c)
+> > {
+> > 	...current code...
+> > }
+> > 
+> > Then in the patch 1 you add
+> > 
+> > static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty,
+> > unsigned char c)
+> > {
+> > 	...
+> > }
+> > 
+> > static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned
+> > char c,
+> > 					 bool lookahead_done)
 > 
-> "1" is not a boolean :)
+> This should be dubbed better. Maybe n_tty_receive_char_flow_control()?
+> 
+> And I would place the if (I_IXON(tty)) to the caller. I am a bit lost in this
+> pseudo code, so maybe this doesn't make sense in your proposal. I have
+> something like in my mind:
+> 
+> if (I_IXON(tty))
+>   return n_tty_receive_char_flow_control();
+>
+> Historically, these n_tty_receive* function names were a big mess. Don't
+> produce more of that by simply prepending only "__".
 
-return value of spin_trylock() is 1 or 0.
-It seems better to keep it as an int than to change it to bool.
-I will return it to int.
+Ok, I'll see what I can do.
+
+Thanks to both of you for the comments.
 
 
-Thanks
-Jaewon Kim
+-- 
+ i.
 
+--8323329-2114925272-1649235052=:1612--
