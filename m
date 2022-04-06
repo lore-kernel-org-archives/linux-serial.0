@@ -2,46 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B1EC433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455EEC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Apr 2022 12:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231402AbiDFMyy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        id S231633AbiDFMzf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231448AbiDFMyP (ORCPT
+        with ESMTP id S231281AbiDFMzT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:54:15 -0400
+        Wed, 6 Apr 2022 08:55:19 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0A5388C60;
-        Wed,  6 Apr 2022 01:58:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5083250E15;
+        Wed,  6 Apr 2022 01:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649235486; x=1680771486;
+  t=1649235355; x=1680771355;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=p8nBEB+MNXhz5UaO1/EM6bxXdwDLzhXQjFRAKQlIL8A=;
-  b=bDsmAURJulz3qvXTukFLpsecKZSulv3Z6K31WeVy1fjSif1vNEPGFQa0
-   tabQWoWlhd5KOx/6kj/BgFUzvVRMUVY9jlZE2vCJdEeV3Vzdzf+KA4czJ
-   qdRS/MqjI5/KA1L6Bz6b1A6Htif8sOBEDN7rIKtE1m3BExXDqrNqpaiqq
-   H8fbJIF8xJfB4Jg0sF1qRUCH/6qFN6RYtGifrW6BOlEA6EjaoYmHcqQ83
-   k5bgv1wiSeam7dCy7+TZq4UorKCEFaAfMc2pGlfwpAz/j81CUxvBkKRBg
-   reYGGZjRNBdepk4v+3huAijg6KFKgMUf3/HlgJ4Ylg/Vrb598e3C3dEHJ
+  bh=oQ/+Wg3GyoNAcQbYLklGfVrwQ6XwL0N97xAXaF7/B+A=;
+  b=Lr7Ls7hqx6LCKpeE6a8mm0LAb84h3ikmB5/6g0Yr+8BDMa3L/uRabbuL
+   ZNClWV5J9Uy9kcsAg9CNSIPtfAAwSfyaPCiLkc8cqCGh9DY6jOwXMb9Bf
+   LTBiSP4vMVbkT7WIwm0/BIcc4wFnaa7cZvxfFyKw8yN/QyNgVy2ZVnaqd
+   yqpNXJ/kwuCVSchsQ26/wz0r8nLT0Uba0KpcpI+bq7/wxeducy1HC1IAa
+   tRfniveTZDEA3M8fD2YtB1mIYa0l57Lhg1v1SB9OWt6ufo7UgZJl3m8pF
+   fgwNiHNZB1Kc+ZqRAsYyQSQHWIDmPexgDmfKr4TAUV5TFCMcurJgwELky
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241576990"
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241576610"
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="241576990"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:57:40 -0700
+   d="scan'208";a="241576610"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:55:38 -0700
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="608812355"
+   d="scan'208";a="524383433"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:57:38 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:55:36 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nc1SR-000BIE-Aj;
-        Wed, 06 Apr 2022 11:56:07 +0300
-Date:   Wed, 6 Apr 2022 11:56:07 +0300
+        id 1nc1QT-000BGu-Cl;
+        Wed, 06 Apr 2022 11:54:05 +0300
+Date:   Wed, 6 Apr 2022 11:54:05 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
@@ -50,95 +50,116 @@ Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Gilles Buloz <gilles.buloz@kontron.com>,
         Johan Hovold <johan@kernel.org>
 Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF timely
-Message-ID: <Yk1Vp+nQQBRE+MjN@smile.fi.intel.com>
+Message-ID: <Yk1VLWMmMu6jJEWo@smile.fi.intel.com>
 References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com>
  <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com>
  <YkxqGDsURPpkDM5W@smile.fi.intel.com>
  <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
- <Yk1VLWMmMu6jJEWo@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yk1VLWMmMu6jJEWo@smile.fi.intel.com>
+In-Reply-To: <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 11:54:05AM +0300, Andy Shevchenko wrote:
-> On Wed, Apr 06, 2022 at 10:21:12AM +0200, Jiri Slaby wrote:
-> > On 05. 04. 22, 18:11, Andy Shevchenko wrote:
-> > > On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
-
-> > > > +	if (c == START_CHAR(tty)) {
-> > > > +		if (!lookahead_done) {
-> > > > +			start_tty(tty);
-> > > > +			process_echoes(tty);
-> > > > +		}
-> > > > +		return true;
-> > > > +	}
-> > > > +	if (c == STOP_CHAR(tty)) {
-> > > > +		if (!lookahead_done)
-> > > > +			stop_tty(tty);
-> > > > +		return true;
-> > > > +	}
-
-> > > Looking into this I would first make a preparatory patch that splits out
-> > > current code into something like
+On Wed, Apr 06, 2022 at 10:21:12AM +0200, Jiri Slaby wrote:
+> On 05. 04. 22, 18:11, Andy Shevchenko wrote:
+> > On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
+> > > When tty is not read from, XON/XOFF may get stuck into an
+> > > intermediate buffer. As those characters are there to do software
+> > > flow-control, it is not very useful. In the case where neither end
+> > > reads from ttys, the receiving ends might not be able receive the
+> > > XOFF characters and just keep sending more data to the opposite
+> > > direction. This problem is almost guaranteed to occur with DMA
+> > > which sends data in large chunks.
 > > > 
-> > > static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
-> > > {
-> > > 	...current code...
-> > > }
+> > > If TTY is slow to process characters, that is, eats less than given
+> > > amount in receive_buf, invoke lookahead for the rest of the chars
+> > > to process potential XON/XOFF characters.
 > > > 
-> > > Then in the patch 1 you add
-> > > 
-> > > static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
-> > > {
-> > > 	...
-> > > }
-> > > 
-> > > static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
-> > > 					 bool lookahead_done)
+> > > The guards necessary for ensuring the XON/XOFF character are
+> > > processed only once were added by the previous patch. All this patch
+> > > needs to do on that front is to pass the lookahead count (that can
+> > > now be non-zero) into port->client_ops->receive_buf().
 > > 
-> > This should be dubbed better. Maybe n_tty_receive_char_flow_control()?
+> > ...
 > > 
-> > And I would place the if (I_IXON(tty)) to the caller. I am a bit lost in
-> > this pseudo code, so maybe this doesn't make sense in your proposal. I have
-> > something like in my mind:
+> > > +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+> > > +					 bool lookahead_done)
+> > > +{
+> > > +	if (!I_IXON(tty))
+> > > +		return false;
+> > > +
+> > > +	if (c == START_CHAR(tty)) {
+> > > +		if (!lookahead_done) {
+> > > +			start_tty(tty);
+> > > +			process_echoes(tty);
+> > > +		}
+> > > +		return true;
+> > > +	}
+> > > +	if (c == STOP_CHAR(tty)) {
+> > > +		if (!lookahead_done)
+> > > +			stop_tty(tty);
+> > > +		return true;
+> > > +	}
+> > > +	return false;
+> > > +}
 > > 
-> > if (I_IXON(tty))
-> >   return n_tty_receive_char_flow_control();
+> > Looking into this I would first make a preparatory patch that splits out
+> > current code into something like
+> > 
+> > static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct *tty, unsigned char c)
+> > {
+> > 	...current code...
+> > }
+> > 
+> > Then in the patch 1 you add
+> > 
+> > static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty, unsigned char c)
+> > {
+> > 	...
+> > }
+> > 
+> > static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned char c,
+> > 					 bool lookahead_done)
 > 
-> My point to have three helpers which make each change cleaner:
+> This should be dubbed better. Maybe n_tty_receive_char_flow_control()?
 > 
->   .-> n_tty_receive_char_flow_control_lah()
->   |
->   |  .-> n_tty_receive_char_flow_control_no_lah()
->   |  |
->   `- + -- n_tty_receive_char_flow_control()
+> And I would place the if (I_IXON(tty)) to the caller. I am a bit lost in
+> this pseudo code, so maybe this doesn't make sense in your proposal. I have
+> something like in my mind:
 > 
-> Where no_lah variant can be split as preparatory patch prepending the current
-> series.
+> if (I_IXON(tty))
+>   return n_tty_receive_char_flow_control();
 
-Another possibility to keep one function, but split it first in a separate
-patch and then modify.
+My point to have three helpers which make each change cleaner:
 
-> And yes, calling I_IXON at the caller seems better.
+  .-> n_tty_receive_char_flow_control_lah()
+  |
+  |  .-> n_tty_receive_char_flow_control_no_lah()
+  |  |
+  `- + -- n_tty_receive_char_flow_control()
+
+Where no_lah variant can be split as preparatory patch prepending the current
+series.
+
+And yes, calling I_IXON at the caller seems better.
+
+> Historically, these n_tty_receive* function names were a big mess. Don't
+> produce more of that by simply prepending only "__".
 > 
-> > Historically, these n_tty_receive* function names were a big mess. Don't
-> > produce more of that by simply prepending only "__".
+> > {
+> > 	if (!I_IXON(tty))
+> > 		return false;
 > > 
-> > > {
-> > > 	if (!I_IXON(tty))
-> > > 		return false;
-> > > 
-> > > 	if (lookahead_done)
-> > > 		return _lookahead();
-> > > 
-> > > 	return _no_lookahead();
-> > > }
+> > 	if (lookahead_done)
+> > 		return _lookahead();
+> > 
+> > 	return _no_lookahead();
+> > }
 
 -- 
 With Best Regards,
