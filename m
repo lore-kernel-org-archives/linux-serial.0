@@ -2,93 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DE1C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 12:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240C0C433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 13:37:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245541AbiDGM4n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
+        id S1343689AbiDGNi6 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235962AbiDGM4m (ORCPT
+        with ESMTP id S1343761AbiDGNil (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:56:42 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 678FA25A49E;
-        Thu,  7 Apr 2022 05:54:39 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 20:54:13
- +0800 (GMT+08:00)
-X-Originating-IP: [10.181.226.201]
-Date:   Thu, 7 Apr 2022 20:54:13 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, chris@zankel.net, jcmvbkbc@gmail.com,
-        mustafa.ismail@intel.com, shiraz.saleem@intel.com, jgg@ziepe.ca,
-        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, jes@trained-monkey.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alexander.deucher@amd.com, linux-xtensa@linux-xtensa.org,
-        linux-rdma@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hippi@sunsite.dk,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
- irdma_cleanup_cm_core()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220407112455.GK3293@kadam>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
- <20220407112455.GK3293@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 7 Apr 2022 09:38:41 -0400
+X-Greylist: delayed 544 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 06:36:32 PDT
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C352E2B185
+        for <linux-serial@vger.kernel.org>; Thu,  7 Apr 2022 06:36:28 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id C8B2E8125;
+        Thu,  7 Apr 2022 13:25:00 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 16:27:22 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        kernel@pengutronix.de,
+        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        regressions@lists.linux.dev
+Subject: Re: [PATCH] serial: 8250: Return early in .start_tx() if there are
+ no chars to send
+Message-ID: <Yk7muv2McT5Sjqbk@atomide.com>
+References: <20220217211839.443039-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Message-ID: <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgDnXmL13k5iNReTAQ--.17805W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZE4DQAFsX
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220217211839.443039-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTQ6MjQ6NTYgKzAzMDAgRGFuIENhcnBlbnRlciB3
-cm90ZToKCj4gPiBUaGVyZSBpcyBhIGRlYWRsb2NrIGluIGlyZG1hX2NsZWFudXBfY21fY29yZSgp
-LCB3aGljaCBpcyBzaG93bgo+ID4gYmVsb3c6Cj4gPiAKPiA+ICAgIChUaHJlYWQgMSkgICAgICAg
-ICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8
-IGlyZG1hX3NjaGVkdWxlX2NtX3RpbWVyKCkKPiA+IGlyZG1hX2NsZWFudXBfY21fY29yZSgpICAg
-IHwgIGFkZF90aW1lcigpCj4gPiAgc3Bpbl9sb2NrX2lycXNhdmUoKSAvLygxKSB8ICAod2FpdCBh
-IHRpbWUpCj4gPiAgLi4uICAgICAgICAgICAgICAgICAgICAgICB8IGlyZG1hX2NtX3RpbWVyX3Rp
-Y2soKQo+ID4gIGRlbF90aW1lcl9zeW5jKCkgICAgICAgICAgfCAgc3Bpbl9sb2NrX2lycXNhdmUo
-KSAvLygyKQo+ID4gICh3YWl0IHRpbWVyIHRvIHN0b3ApICAgICAgfCAgLi4uCj4gPiAKPiA+IFdl
-IGhvbGQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEgYW5kCj4g
-PiB1c2UgZGVsX3RpbWVyX3N5bmMoKSB0byB3YWl0IHRpbWVyIHRvIHN0b3AsIGJ1dCB0aW1lciBo
-YW5kbGVyCj4gPiBhbHNvIG5lZWQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMikgb2Yg
-dGhyZWFkIDIuCj4gPiBBcyBhIHJlc3VsdCwgaXJkbWFfY2xlYW51cF9jbV9jb3JlKCkgd2lsbCBi
-bG9jayBmb3JldmVyLgo+ID4gCj4gPiBUaGlzIHBhdGNoIGV4dHJhY3RzIGRlbF90aW1lcl9zeW5j
-KCkgZnJvbSB0aGUgcHJvdGVjdGlvbiBvZgo+ID4gc3Bpbl9sb2NrX2lycXNhdmUoKSwgd2hpY2gg
-Y291bGQgbGV0IHRpbWVyIGhhbmRsZXIgdG8gb2J0YWluCj4gPiB0aGUgbmVlZGVkIGxvY2suCj4g
-PiAKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+
-ID4gLS0tCj4gPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgfCA1ICsrKystCj4g
-PiAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+ID4gCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgYi9kcml2ZXJz
-L2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gaW5kZXggZGVkYjNiN2VkZDguLjAxOWRkOGJm
-ZTA4IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMKPiA+
-ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jCj4gPiBAQCAtMzI1Miw4ICsz
-MjUyLDExIEBAIHZvaWQgaXJkbWFfY2xlYW51cF9jbV9jb3JlKHN0cnVjdCBpcmRtYV9jbV9jb3Jl
-ICpjbV9jb3JlKQo+ID4gIAkJcmV0dXJuOwo+ID4gIAo+ID4gIAlzcGluX2xvY2tfaXJxc2F2ZSgm
-Y21fY29yZS0+aHRfbG9jaywgZmxhZ3MpOwo+ID4gLQlpZiAodGltZXJfcGVuZGluZygmY21fY29y
-ZS0+dGNwX3RpbWVyKSkKPiA+ICsJaWYgKHRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1l
-cikpIHsKPiA+ICsJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZs
-YWdzKTsKPiA+ICAJCWRlbF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGltZXIpOwo+ID4gKwkJ
-c3Bpbl9sb2NrX2lycXNhdmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ICsJfQo+ID4g
-IAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFncyk7Cj4gCj4g
-VGhpcyBsb2NrIGRvZXNuJ3Qgc2VlbSB0byBiZSBwcm90ZWN0aW5nIGFueXRoaW5nLiAgQWxzbyBk
-byB3ZSBuZWVkIHRvCj4gY2hlY2sgdGltZXJfcGVuZGluZygpPyAgSSB0aGluayB0aGUgZGVsX3Rp
-bWVyX3N5bmMoKSBmdW5jdGlvbiB3aWxsIGp1c3QKPiByZXR1cm4gZGlyZWN0bHkgaWYgdGhlcmUg
-aXNuJ3QgYSBwZW5kaW5nIGxvY2s/CgpUaGFua3MgYSBsb3QgZm9yIHlvdXIgYWR2aWNlLCBJIHdp
-bGwgcmVtb3ZlIHRoZSB0aW1lcl9wZW5kaW5nKCkgYW5kIHRoZQpyZWR1bmRhbnQgbG9jay4KCkJl
-c3QgcmVnYXJkcywKRHVvbWluZyBaaG91
+Hi,
+
+* Uwe Kleine-König <u.kleine-koenig@pengutronix.de> [700101 02:00]:
+> From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+> 
+> Don't start the whole chain for TX if there is no data to send. This is
+> mostly relevant for rs485 mode as there might be rts-before-send and
+> rts-after-send delays involved.
+> 
+> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+> Hello,
+> 
+> a few other drivers have such an early exit already (imx, stm32-usart).
+> I wonder if it applies to all UART drivers that there is nothing to do
+> in .start_tx() if the circ buffer is empty and there is no x_char to
+> send. In this case it would be more sensible to ensure in serial_core
+> that .start_tx() is only ever called if there is something to do.
+
+This patch seems to cause a runtime PM regression in v5.18-rc1 where
+8250 is never idled for omaps.
+
+Looks like the return added here is not paired with put for the
+serial8250_rpm_get_tx() call above?
+
+Regards,
+
+Tony
+
+#regzbot ^introduced 932d596378b0
+
+>  drivers/tty/serial/8250/8250_port.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 3b12bfc1ed67..5d4668f12f71 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1657,6 +1657,9 @@ static void serial8250_start_tx(struct uart_port *port)
+>  
+>  	serial8250_rpm_get_tx(up);
+>  
+> +	if (!port->x_char && uart_circ_empty(&port->state->xmit))
+> +		return;
+> +
+>  	if (em485 &&
+>  	    em485->active_timer == &em485->start_tx_timer)
+>  		return;
+> 
+> base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
+> -- 
+> 2.34.1
+> 
