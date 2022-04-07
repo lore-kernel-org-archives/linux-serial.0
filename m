@@ -2,139 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A97D1C433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 07:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE00C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 07:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240247AbiDGHOl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
+        id S231377AbiDGHYM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbiDGHOf (ORCPT
+        with ESMTP id S229591AbiDGHYK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:14:35 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E299C31923
-        for <linux-serial@vger.kernel.org>; Thu,  7 Apr 2022 00:12:32 -0700 (PDT)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220407071226epoutp01b65cd44149d3bab829104cd84329e691~ji8BQ9tho1210612106epoutp01d
-        for <linux-serial@vger.kernel.org>; Thu,  7 Apr 2022 07:12:26 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220407071226epoutp01b65cd44149d3bab829104cd84329e691~ji8BQ9tho1210612106epoutp01d
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649315546;
-        bh=l7xJjaagiLTfCODKz8+QKDCkzzsU969u/zrB90J2OgI=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=CNy6XJCnXD2b3t/C+iOIQAwWSCnS+3+FEO9K6DRW/G7F5fx2fMXeCJp2LtqU14zAL
-         vdVP5AxkV6YiGSkb/pt5nJEa5y5i4y7FjEhYnRXkUKNsBaL6IDTMKAaeqIbANhnXXr
-         xyKo1dh7U2lHnhTSx8VhpTZ4+0bX3r+lJdJ2f70A=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220407071225epcas2p339c2289b6c7c5b32d7fc99e7942bf385~ji8AjpAl61510115101epcas2p3e;
-        Thu,  7 Apr 2022 07:12:25 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4KYsyc0Z88z4x9Pv; Thu,  7 Apr
-        2022 07:12:24 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        FD.26.25540.7DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220407071223epcas2p2f25428844528dbd505d1b49e0778133d~ji79_RzF93109231092epcas2p20;
-        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220407071223epsmtrp2aa847720b15dccbeb1552341fa698391~ji799ccbE0860608606epsmtrp2_;
-        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
-X-AuditID: b6c32a47-81bff700000063c4-95-624e8ed7aee4
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        4D.96.24342.6DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.229.9.51]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220407071222epsmtip1b87c83bb15ef3fd808e69de7d47aed6e~ji79vSI-K2313523135epsmtip1j;
-        Thu,  7 Apr 2022 07:12:22 +0000 (GMT)
-From:   Jaewon Kim <jaewon02.kim@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-samsung-soc@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chanho Park <chanho61.park@samsung.com>,
-        Jaewon Kim <jaewon02.kim@samsung.com>
-Subject: [PATCH v3 0/1] tty: serial: samsung: add spin_lock in console_write
-Date:   Thu,  7 Apr 2022 16:16:18 +0900
-Message-Id: <20220407071619.102249-1-jaewon02.kim@samsung.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 7 Apr 2022 03:24:10 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033A4DBB;
+        Thu,  7 Apr 2022 00:22:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id l7so3531039ejn.2;
+        Thu, 07 Apr 2022 00:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vwGQPeLGONcDmqJfPIeESPpipQ500aFLCZgIRy5zqZ0=;
+        b=cGpUq0EaSPKZUmC5xLx1Jzohz8q2BA0SCfgkM8wrethxxkDt/+g2N32fYAJT3XYV7c
+         gQbz6QMaUUd43OLUA3Qr9ybm972y3GG09XSDuFu30DSIEbHhMHSFAgUidWPsz8GrgGeW
+         s7tbaW4vOsf45FRd0naJvDCrCyKtKsWV4L7c0X8uFXIFfWJcIPONICfRuDmKWStRxSCw
+         O51niQQXIBWe/kqVxIekXIQ/hHMRE3f0A3lQ3oU7dB+SGmXs9PVY3nPhJ24PTFgfotQd
+         B8VGD/Fzr7+dIrGtF2FRhhrKgQ9sbMeozCRly8MMFIdcZp6QMqHRMmi7EmTJnuHLjSxB
+         q5fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vwGQPeLGONcDmqJfPIeESPpipQ500aFLCZgIRy5zqZ0=;
+        b=eSHnZOiNGhZwGg8k5lAaG1nZZs4y1xnXp4A6nZNaNTohPEfwBw8onMMr/DLnQ0Ls1L
+         0wUXekcsyykhAqCxj/qwUMFSoKYTxpBWMlVWU/XCS83HM/cSKk7zT9F0KhAcV9K48mBN
+         7dxoBJUbIejmY4LL5k+f4Bzavi9vWA7GWO2Wex711nf6p1anzQrSxNIJyHtFxnzuugnJ
+         bEMXe1V46OWh3zJfWm8z6mauFG+4jKf7+fMZPNclNcUwUYeHEoVKuMe7y5+DQ6U8kmcN
+         vC3fllTzwm9daE9AVQOVuSW6uG3tFNj97Et1I6ir0csQh9YGjo+eFIFdHHhoCXsPogAU
+         dT1Q==
+X-Gm-Message-State: AOAM532PCUE5LW8a8rvdvhLWKz2RBemkwgSllZGY6IIxXzJ8v/6QK6iV
+        7/WW/qjbHKE0qN/jj80nJvNR9dfusThSxiRjhHE=
+X-Google-Smtp-Source: ABdhPJzQRq8/eIccgTS4Y7+Q3Go4ejR4ddyxfTtgPRrDE8QiY00n90m58Se3srjqqXXHUSIg52T71GhZZnCQSkeWe4o=
+X-Received: by 2002:a17:907:8a26:b0:6e1:2646:ef23 with SMTP id
+ sc38-20020a1709078a2600b006e12646ef23mr12386094ejc.109.1649316129522; Thu, 07
+ Apr 2022 00:22:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphk+LIzCtJLcpLzFFi42LZdljTQvd6n1+SwdkXMhYP5m1js7i8X9ui
-        efF6NosdDUdYLd7NlbE4f34Du8Wmx9dYLS7vmsNmMeP8PiaLM4t72R24PDat6mTz2D93DbvH
-        5iX1Hn1bVjF6fN4kF8AalW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ib
-        aqvk4hOg65aZA3SSkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafAvECvODG3uDQv
-        XS8vtcTK0MDAyBSoMCE74+rp+SwF31grJv79xNrA+JCli5GTQ0LARKJ5Ti9TFyMXh5DADkaJ
-        /5fnM0M4nxgl1sy8CZX5xijRtWoLG0zLpEnz2SESexkllt19ygSSEBL4yCgx91gyiM0moC3x
-        ff1iVpAiEYHTjBKHtx8Fc5hBluxq/w7UwcEhLOAj8WyJFkgDi4CqxJymi+wgNq+AnURnbzcT
-        xDZ5ie5/f1gg4oISJ2c+AbOZgeLNW2eD3SohcI9d4tyZDqiPXCTWn3oNdaqwxKvjW9ghbCmJ
-        z+/2QsWLJY73fGeCaG5glDh75wArRMJYYtazdkaQ45gFNCXW79IHMSUElCWO3ILayyfRcfgv
-        O0SYV6KjTQiiUU3i/tRzUNNlJCYdWQl1vofE912HWCDhEyvR1b+JZQKj/Cwk38xC8s0shL0L
-        GJlXMYqlFhTnpqcWGxUYw2M1OT93EyM4WWq572Cc8faD3iFGJg7GQ4wSHMxKIrxVuT5JQrwp
-        iZVVqUX58UWlOanFhxhNgeE7kVlKNDkfmK7zSuINTSwNTMzMDM2NTA3MlcR5vVI2JAoJpCeW
-        pGanphakFsH0MXFwSjUwLVftaFg7Oa9fQnTOi2Ihu8OTPGQPTd3VNGPKr657U/yj3u//5HZV
-        SGjC/KUaZzibnVU+1mtdv2nC8SFyt6ZyQYdcyKnqKZJc7IKW92XXPRVbZ2F+e8lqLZslv9KP
-        G65YkBOz9KyVeemiGXzqwmEbTl3g8VzHbVFm4xR/lGtR/bXt/g+1SrYlqr99IuvGLaJwpM0/
-        8crLyQ3zry7WElF0fuc/R+yTskjz/IqvR7stt889rbbx4+uyl5H9p3ez/X0sce+P2PuV/9d7
-        FL29HJzoJmYTXjF1j/CBq8+1uiyWFmcKsbxyfnDZ3qTtI/ME1b21N2fo2m1ovmxpor7DOIAt
-        5cC089m+z5hzr3q9ld3yWomlOCPRUIu5qDgRAD8hCEcfBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLLMWRmVeSWpSXmKPExsWy7bCSnO71Pr8kg7O7GS0ezNvGZnF5v7ZF
-        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
-        zUvqPfq2rGL0+LxJLoA1issmJTUnsyy1SN8ugSvj6un5LAXfWCsm/v3E2sD4kKWLkZNDQsBE
-        YtKk+exdjFwcQgK7GSUunOyCSshILH/WxwZhC0vcbznCClH0nlHi3dNmsCI2AW2J7+sXgyVE
-        BM4zSkx+/IYNxGEW2MMosWb2d2aQKmEBX4kd/96CjWIRUJWY03SRHcTmFbCT6OztZoJYIS/R
-        /e8PC0RcUOLkzCdgNjNQvHnrbOYJjHyzkKRmIUktYGRaxSiZWlCcm55bbFhgmJdarlecmFtc
-        mpeul5yfu4kRHMJamjsYt6/6oHeIkYmD8RCjBAezkghvVa5PkhBvSmJlVWpRfnxRaU5q8SFG
-        aQ4WJXHeC10n44UE0hNLUrNTUwtSi2CyTBycUg1M0yQVmX2bypeJ38hyqowPKzllGKjkfNRw
-        x+Vwe8GuSyaJ8n53+I1/scq/zlBuWez9+MJT3qy4e2o/XlXN3cXFMaF5okHKwh279O/06Qdd
-        1Tq/avfjE5Uls826WDKTcn2u5egd8NFeU/bm/Y+iz4E/H/6VeWWk8c0+zuuhd5sWyzqlTxy1
-        WmckTSZMdFj8xvHA5m6fmMjXEUInZkSKXTLLWcsn/Dej8blWj7X6vrKomzYePAcuP/vJ4PF7
-        TsWG6t2HBD4dCNq2aJbCvnnVH7TNX/DNW7K77aqLyKsXMaaFJiY74/8Hn2JSsWpiZZh70/D4
-        G7bdiaKLt61fLcMxr/rFhkSb+PMNVcUvrTdFeT5RYinOSDTUYi4qTgQAOin67tACAAA=
-X-CMS-MailID: 20220407071223epcas2p2f25428844528dbd505d1b49e0778133d
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220407071223epcas2p2f25428844528dbd505d1b49e0778133d
-References: <CGME20220407071223epcas2p2f25428844528dbd505d1b49e0778133d@epcas2p2.samsung.com>
+References: <cover.1649310812.git.duoming@zju.edu.cn> <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
+In-Reply-To: <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Thu, 7 Apr 2022 00:21:58 -0700
+Message-ID: <CAMo8BfLG_u2z2HwY9Qo6cFgNoSrrz2mS2iD+rtj-uyrKhZYmLw@mail.gmail.com>
+Subject: Re: [PATCH 11/11] arch: xtensa: platforms: Fix deadlock in rs_close()
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Chris Zankel <chris@zankel.net>, mustafa.ismail@intel.com,
+        shiraz.saleem@intel.com, jgg@ziepe.ca, wg@grandegger.com,
+        mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        jes@trained-monkey.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, alexander.deucher@amd.com,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, linux-rdma@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-hippi@sunsite.dk, linux-staging@lists.linux.dev,
+        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When console and printk log are printed at the same time,
-they are called through tty driver and console driver concurrently.
-In this case, this could lead to potintial issue that
-data loss or fifo full.
+Hi Duoming,
 
-This issue also occurred with other drivers and has been fixed.
-"serial: amba-pl011: lock console writes against interrupts"
- - https://lkml.org/lkml/2012/2/1/495
+On Wed, Apr 6, 2022 at 11:38 PM Duoming Zhou <duoming@zju.edu.cn> wrote:
+>
+> There is a deadlock in rs_close(), which is shown
+> below:
+>
+>    (Thread 1)              |      (Thread 2)
+>                            | rs_open()
+> rs_close()                 |  mod_timer()
+>  spin_lock_bh() //(1)      |  (wait a time)
+>  ...                       | rs_poll()
+>  del_timer_sync()          |  spin_lock() //(2)
+>  (wait timer to stop)      |  ...
+>
+> We hold timer_lock in position (1) of thread 1 and
+> use del_timer_sync() to wait timer to stop, but timer handler
+> also need timer_lock in position (2) of thread 2.
+> As a result, rs_close() will block forever.
 
----
-Changes since v2:
- - value of lock is chanaged to true/false
+I agree with this.
 
-Changes since v1:
- - locked variable type changed bool from int
- - spin_lock() changed to spin_lock_irqsave()
+> This patch extracts del_timer_sync() from the protection of
+> spin_lock_bh(), which could let timer handler to obtain
+> the needed lock.
 
-Jaewon Kim (1):
-  tty: serial: samsung: add spin_lock for interrupt and console_write
+Looking at the timer_lock I don't really understand what it protects.
+It looks like it is not needed at all.
 
- drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Also, I see that rs_poll rewinds the timer regardless of whether del_timer_sync
+was called or not, which violates del_timer_sync requirements.
+
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  arch/xtensa/platforms/iss/console.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
+> index 81d7c7e8f7e..d431b61ae3c 100644
+> --- a/arch/xtensa/platforms/iss/console.c
+> +++ b/arch/xtensa/platforms/iss/console.c
+> @@ -51,8 +51,10 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+>  static void rs_close(struct tty_struct *tty, struct file * filp)
+>  {
+>         spin_lock_bh(&timer_lock);
+> -       if (tty->count == 1)
+> +       if (tty->count == 1) {
+> +               spin_unlock_bh(&timer_lock);
+>                 del_timer_sync(&serial_timer);
+> +       }
+>         spin_unlock_bh(&timer_lock);
+
+Now in case tty->count == 1 the timer_lock would be unlocked twice.
 
 -- 
-2.35.1
-
+Thanks.
+-- Max
