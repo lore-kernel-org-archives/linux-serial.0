@@ -2,71 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38B2C433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 08:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C2EC433F5
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 09:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243088AbiDGIdi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
+        id S238886AbiDGJol (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243091AbiDGIdh (ORCPT
+        with ESMTP id S237161AbiDGJok (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:33:37 -0400
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E9C1B6959;
-        Thu,  7 Apr 2022 01:31:34 -0700 (PDT)
-Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Thu, 7 Apr 2022
- 16:15:28 +0800
-From:   Yu Tu <yu.tu@amlogic.com>
-To:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Yu Tu <yu.tu@amlogic.com>
-Subject: [PATCH 3/3] tty: serial: meson: Added S4 SOC compatibility
-Date:   Thu, 7 Apr 2022 16:13:55 +0800
-Message-ID: <20220407081355.13602-4-yu.tu@amlogic.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220407081355.13602-1-yu.tu@amlogic.com>
-References: <20220407081355.13602-1-yu.tu@amlogic.com>
+        Thu, 7 Apr 2022 05:44:40 -0400
+Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F38718D9AD;
+        Thu,  7 Apr 2022 02:42:37 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru C1ADB20CD431
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 11/11] arch: xtensa: platforms: Fix deadlock in rs_close()
+To:     Duoming Zhou <duoming@zju.edu.cn>, <linux-kernel@vger.kernel.org>
+CC:     <chris@zankel.net>, <jcmvbkbc@gmail.com>,
+        <mustafa.ismail@intel.com>, <shiraz.saleem@intel.com>,
+        <jgg@ziepe.ca>, <wg@grandegger.com>, <mkl@pengutronix.de>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <jes@trained-monkey.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <alexander.deucher@amd.com>,
+        <linux-xtensa@linux-xtensa.org>, <linux-rdma@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-hippi@sunsite.dk>, <linux-staging@lists.linux.dev>,
+        <linux-serial@vger.kernel.org>, <linux-usb@vger.kernel.org>
+References: <cover.1649310812.git.duoming@zju.edu.cn>
+ <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <1195e776-328d-12fe-d1f8-22085dc77b44@omp.ru>
+Date:   Thu, 7 Apr 2022 12:42:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.18.11.248]
+In-Reply-To: <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Make UART driver compatible with S4 SOC UART. Meanwhile, the S4 SOC
-UART uses 12MHz as the clock source for baud rate calculations.
+Hello!
 
-Signed-off-by: Yu Tu <yu.tu@amlogic.com>
----
- drivers/tty/serial/meson_uart.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On 4/7/22 9:37 AM, Duoming Zhou wrote:
 
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 7e77693a1318..03c9a305d805 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -803,6 +803,10 @@ static const struct of_device_id meson_uart_dt_match[] = {
- 	{ .compatible = "amlogic,meson8-uart" },
- 	{ .compatible = "amlogic,meson8b-uart" },
- 	{ .compatible = "amlogic,meson-gx-uart" },
-+	{
-+		.compatible = "amlogic,meson-s4-uart",
-+		.data = (void *)true,
-+	},
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
--- 
-2.33.1
+> There is a deadlock in rs_close(), which is shown
+> below:
+> 
+>    (Thread 1)              |      (Thread 2)
+>                            | rs_open()
+> rs_close()                 |  mod_timer()
+>  spin_lock_bh() //(1)      |  (wait a time)
+>  ...                       | rs_poll()
+>  del_timer_sync()          |  spin_lock() //(2)
+>  (wait timer to stop)      |  ...
+> 
+> We hold timer_lock in position (1) of thread 1 and
+> use del_timer_sync() to wait timer to stop, but timer handler
+> also need timer_lock in position (2) of thread 2.
+> As a result, rs_close() will block forever.
+> 
+> This patch extracts del_timer_sync() from the protection of
+> spin_lock_bh(), which could let timer handler to obtain
+> the needed lock.
+> 
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  arch/xtensa/platforms/iss/console.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
+> index 81d7c7e8f7e..d431b61ae3c 100644
+> --- a/arch/xtensa/platforms/iss/console.c
+> +++ b/arch/xtensa/platforms/iss/console.c
+> @@ -51,8 +51,10 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+>  static void rs_close(struct tty_struct *tty, struct file * filp)
+>  {
+>  	spin_lock_bh(&timer_lock);
+> -	if (tty->count == 1)
+> +	if (tty->count == 1) {
+> +		spin_unlock_bh(&timer_lock);
+>  		del_timer_sync(&serial_timer);
+> +	}
+>  	spin_unlock_bh(&timer_lock);
 
+   Double unlock iff tty->count == 1?
+
+[...]
+
+MBR, Sergey
