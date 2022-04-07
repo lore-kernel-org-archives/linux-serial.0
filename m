@@ -2,129 +2,158 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D669C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 07:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074C4C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 07:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238150AbiDGHEN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
+        id S235165AbiDGHOa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236592AbiDGHEK (ORCPT
+        with ESMTP id S239827AbiDGHO2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:04:10 -0400
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4591EF9DB;
-        Thu,  7 Apr 2022 00:02:09 -0700 (PDT)
-Received: by mail-ed1-f53.google.com with SMTP id c42so5290241edf.3;
-        Thu, 07 Apr 2022 00:02:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=46G4DElr2lTCJKQvU2NBw5+Ku6Z9RIMMPeVF6jkEn4U=;
-        b=O8v6DuJ263WlV1eGdk/1DSkiR8EoXqVEWtmXFaX/ODGTAScxC8MPLn6yFO9u2up9JG
-         PzozbZSyxn7s5jGRHKIsSko1ySx8uIKmlqwonX37Jjn1zYaBjdJAen6OyS+BwolkUPvL
-         kXzz0k6slYzccH59O/iHsGAUH8d8F97fK1EqeZRDO/ZeWJFijv4hGhhFzvf2QIdYa6wC
-         Wl1UCOGIIKw3SGlgsy/BK2eScAa6okEZ2BRCfpGFxeaSQsAzhS3fNVFQxPKfJL+LukgS
-         s2/ODsQnbPAH7PwErJMwh3KF1T1blebX0IBjlysPo/QCZGkhCfiVOfPKwSK78Fd1023L
-         rzfQ==
-X-Gm-Message-State: AOAM530SpzQT3aatvWZcWbiBh8KknO2B7rDWElAuuFAxQsA934PzeFtI
-        DKZxJKy5LBn8gUmP1eqJD81KTGwrIUt5eg==
-X-Google-Smtp-Source: ABdhPJyVCanP2uW7lJxkIPHF3GlJ1OHZfNBFV6sC53moBL0MR5YRphUv/uvWzQu3TDqz1ql0BUTMLw==
-X-Received: by 2002:a05:6402:5243:b0:419:52a1:a743 with SMTP id t3-20020a056402524300b0041952a1a743mr12778753edd.269.1649314927858;
-        Thu, 07 Apr 2022 00:02:07 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id q3-20020a50da83000000b0041cdd6e92b1sm3870276edj.27.2022.04.07.00.02.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 00:02:07 -0700 (PDT)
-Message-ID: <656ffd1d-e7cf-d2c0-e0e6-c10215ba422b@kernel.org>
-Date:   Thu, 7 Apr 2022 09:02:05 +0200
+        Thu, 7 Apr 2022 03:14:28 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E214338A5
+        for <linux-serial@vger.kernel.org>; Thu,  7 Apr 2022 00:12:29 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220407071227epoutp02bb687e4ef7c42bafbd50b620f1c152c8~ji8B6YHjk2898128981epoutp02e
+        for <linux-serial@vger.kernel.org>; Thu,  7 Apr 2022 07:12:27 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220407071227epoutp02bb687e4ef7c42bafbd50b620f1c152c8~ji8B6YHjk2898128981epoutp02e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1649315547;
+        bh=ZnyEmVL3ZHhbWaj7peONv8ze7ksH6X5qLj9vqgtd1I4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IFeYf5/fT+NrqhaTYo2kdz7x2Lp7iQ1oYjgypqSaXj08d5h+GuK2Smh9GgCq3Urbx
+         rS91fcb4OgCYcespsCUyPo7oy3W5L09zJNaQybt0LjHOb1CZnAPQj+Lb6/M2oC+IS3
+         qPgCRzYb69D10p4lkPx0hIc0Nhxy5pt6QG8TfQOs=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220407071226epcas2p4355bdef78da7e26911fc40dbae6e5960~ji8BR9VNb0437904379epcas2p4O;
+        Thu,  7 Apr 2022 07:12:26 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.90]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4KYsyd0PKwz4x9QH; Thu,  7 Apr
+        2022 07:12:25 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        13.18.40405.7DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844~ji7_GH5xo3124531245epcas2p1s;
+        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220407071223epsmtrp1d9a9050dab0233aab6fe80d18e4bbab5~ji7_FeKLK0308203082epsmtrp1f;
+        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
+X-AuditID: b6c32a46-ba1ff70000009dd5-16-624e8ed7a238
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        67.AE.03370.7DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.51]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220407071222epsmtip19b83dd3634c87ce13bb390bd4b6d0c8c~ji791aH2v2354723547epsmtip1X;
+        Thu,  7 Apr 2022 07:12:22 +0000 (GMT)
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-samsung-soc@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chanho Park <chanho61.park@samsung.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v3 1/1] tty: serial: samsung: add spin_lock for interrupt
+ and console_write
+Date:   Thu,  7 Apr 2022 16:16:19 +0900
+Message-Id: <20220407071619.102249-2-jaewon02.kim@samsung.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407071619.102249-1-jaewon02.kim@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 01/11] drivers: tty: serial: Fix deadlock in
- sa1100_set_termios()
-Content-Language: en-US
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
-Cc:     chris@zankel.net, jcmvbkbc@gmail.com, mustafa.ismail@intel.com,
-        shiraz.saleem@intel.com, jgg@ziepe.ca, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, jes@trained-monkey.org,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        linux-xtensa@linux-xtensa.org, linux-rdma@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hippi@sunsite.dk, linux-staging@lists.linux.dev,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <e82ff9358d4ef90a7e9f624534d6d54fc193467f.1649310812.git.duoming@zju.edu.cn>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <e82ff9358d4ef90a7e9f624534d6d54fc193467f.1649310812.git.duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprOJsWRmVeSWpSXmKPExsWy7bCmhe71Pr8kg/U/DCwezNvGZnF5v7ZF
+        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
+        zUvqPfq2rGL0+LxJLoA1KtsmIzUxJbVIITUvOT8lMy/dVsk7ON453tTMwFDX0NLCXEkhLzE3
+        1VbJxSdA1y0zB+gkJYWyxJxSoFBAYnGxkr6dTVF+aUmqQkZ+cYmtUmpBSk6BeYFecWJucWle
+        ul5eaomVoYGBkSlQYUJ2RsO1h8wFfzkrFn76ydLAuJSji5GDQ0LARGLWfPsuRi4OIYEdjBKz
+        mr8xdjFyAjmfGCUW7o6FSHxmlNhwYAITSAKk4XjDDzaIol2MEhPWcEIUfWSUuN0+nQUkwSag
+        LfF9/WJWkISIwGlGicPbj4I5zCA7drV/BxslLBArMenlbFYQm0VAVeLPxodgu3kF7CR+3JvN
+        BrFOXqL73x+wqZwC9hInly2DqhGUODnzCVicGaimeetsZpAFEgI/2SWO7VrODtHsIjHv9jeo
+        u4UlXh3fAhWXknjZ3wZlF0sc7wE5CKS5gVHi7J0DrBAJY4lZz9oZQaHELKApsX6XPiTAlCWO
+        3ILayyfRcfgvO0SYV6KjTQiiUU3i/tRzUOfLSEw6spIJosRDYuWjXEhgTWKUeHrhL/sERoVZ
+        SL6ZheSbWQh7FzAyr2IUSy0ozk1PLTYqMIJHcHJ+7iZGcArVctvBOOXtB71DjEwcjIcYJTiY
+        lUR4q3J9koR4UxIrq1KL8uOLSnNSiw8xmgLDeiKzlGhyPjCJ55XEG5pYGpiYmRmaG5kamCuJ
+        83qlbEgUEkhPLEnNTk0tSC2C6WPi4JRqYJrquFrBKjrqpLzYwUy1W5+Xfw5gal7cWJVe/FOb
+        k/2nwwrB0yHs2zI/v30/+ckNjktSJ9/xT58yL8Gp6q+R+mVXP33mw/yi+xUC1DcsePPaMmpJ
+        +Kniv+znNm7aYLTv607lMz9NGwIviL8RbL6oeo9tokm/x1xOvjb5mYlRWeyVvzUaviy4Zen0
+        ueDuDRPNtzo22myqLSw1Nt/es7qsWvPacteSQ++3ejUwnba0sy/wWKvPcJnt3UL1WafZBHzi
+        2vawu62wLLFNMc4yra9UYlliXbD8ym/uL8JHF3yPEjxyNcfBnD3T/qbhq63FKSz5L/ktdovu
+        3D7v+/STeaFxbc+lLt2xL/Hb+IvL7d3n60osxRmJhlrMRcWJAFpWr00qBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKLMWRmVeSWpSXmKPExsWy7bCSnO71Pr8kgyWr2S0ezNvGZnF5v7ZF
+        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
+        zUvqPfq2rGL0+LxJLoA1issmJTUnsyy1SN8ugSuj4dpD5oK/nBULP/1kaWBcytHFyMkhIWAi
+        cbzhB1sXIxeHkMAORom2ifdZIRIyEsuf9bFB2MIS91uOsEIUvWeU2DJ3A1gRm4C2xPf1i8ES
+        IgLnGSUmP34DNopZYA+jxJrZ35lBqoQFoiW+3GwGs1kEVCX+bHzICGLzCthJ/Lg3G2qFvET3
+        vz8sIDangL3EyWXLwGqEgGr2TLwJVS8ocXLmE7AaZqD65q2zmScwCsxCkpqFJLWAkWkVo2Rq
+        QXFuem6xYYFRXmq5XnFibnFpXrpecn7uJkZwyGtp7WDcs+qD3iFGJg7GQ4wSHMxKIrxVuT5J
+        QrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJITyxJzU5NLUgtgskycXBKNTAJzxaYtPrc
+        u91+Gy+++NeSc9ase8dX5ath8eanbPh4i4puvyr6uGG1zqtV+gbMXiH9S9c3vJvulFDgIWCn
+        53MwXtbqYfi2Uxt2f+/6av6ErYBZ+7O44ZVH1Vp7t3ewvu+Q7tez0D5sXNi+7W/tiiVJX2dV
+        vvFyf/f90JWURgezp3OsJvs32jjp2ac8bzne5DeTZ7/3wU2r1wVuuq4g90A8PcxCqj9yy1th
+        0aWZ/+y5P9k3eFhNkzI5+r9AUm6h1unWfc9SH64NcWpOfRWz49zl24etr8Wkz9334sSfhouJ
+        tm/nzclwkar4+nNNjyvnd9N9x+a8OHG3aT/PvZysY/Gix0UnP36hc7Zot1cAt4uXEktxRqKh
+        FnNRcSIAtWh3uegCAAA=
+X-CMS-MailID: 20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844
+References: <20220407071619.102249-1-jaewon02.kim@samsung.com>
+        <CGME20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844@epcas2p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 04. 22, 8:33, Duoming Zhou wrote:
-> There is a deadlock in sa1100_set_termios(), which is shown
-> below:
-> 
->     (Thread 1)              |      (Thread 2)
->                             | sa1100_enable_ms()
-> sa1100_set_termios()       |  mod_timer()
->   spin_lock_irqsave() //(1) |  (wait a time)
->   ...                       | sa1100_timeout()
->   del_timer_sync()          |  spin_lock_irqsave() //(2)
->   (wait timer to stop)      |  ...
-> 
-> We hold sport->port.lock in position (1) of thread 1 and
-> use del_timer_sync() to wait timer to stop, but timer handler
-> also need sport->port.lock in position (2) of thread 2. As a result,
-> sa1100_set_termios() will block forever.
-> 
-> This patch extracts del_timer_sync() from the protection of
-> spin_lock_irqsave(), which could let timer handler to obtain
-> the needed lock.
-> 
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> ---
->   drivers/tty/serial/sa1100.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-> index 5fe6cccfc1a..3a5f12ced0b 100644
-> --- a/drivers/tty/serial/sa1100.c
-> +++ b/drivers/tty/serial/sa1100.c
-> @@ -476,7 +476,9 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
->   				UTSR1_TO_SM(UTSR1_ROR);
->   	}
->   
-> +	spin_unlock_irqrestore(&sport->port.lock, flags);
+The console_write and IRQ handler can run concurrently.
+Problems may occurs console_write is continuously executed while
+the IRQ handler is running.
 
-Unlocking the lock at this point doesn't look safe at all. Maybe moving 
-the timer deletion before the lock? There is no current maintainer to 
-ask. Most of the driver originates from rmk. Ccing him just in case.
+Signed-off-by: Jaewon Kim <jaewon02.kim@samsung.com>
+---
+ drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-FWIW the lock was moved by this commit around linux 2.5.55 (from 
-full-history-linux [1])
-commit f38aef3e62c26a33ea360a86fde9b27e183a3748
-Author: Russell King <rmk@flint.arm.linux.org.uk>
-Date:   Fri Jan 3 15:42:09 2003 +0000
-
-     [SERIAL] Convert change_speed() to settermios()
-
-[1] 
-https://archive.org/download/git-history-of-linux/full-history-linux.git.tar
-
->   	del_timer_sync(&sport->timer);
-> +	spin_lock_irqsave(&sport->port.lock, flags);
->   
->   	/*
->   	 * Update the per-port timeout.
-
-thanks,
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index e1585fbae909..8af5aceb9f4e 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2480,12 +2480,24 @@ s3c24xx_serial_console_write(struct console *co, const char *s,
+ 			     unsigned int count)
+ {
+ 	unsigned int ucon = rd_regl(cons_uart, S3C2410_UCON);
++	unsigned long flags;
++	bool locked = true;
+ 
+ 	/* not possible to xmit on unconfigured port */
+ 	if (!s3c24xx_port_configured(ucon))
+ 		return;
+ 
++	if (cons_uart->sysrq)
++		locked = false;
++	else if (oops_in_progress)
++		locked = spin_trylock_irqsave(&cons_uart->lock, flags);
++	else
++		spin_lock_irqsave(&cons_uart->lock, flags);
++
+ 	uart_console_write(cons_uart, s, count, s3c24xx_serial_console_putchar);
++
++	if (locked)
++		spin_unlock_irqrestore(&cons_uart->lock, flags);
+ }
+ 
+ /* Shouldn't be __init, as it can be instantiated from other module */
 -- 
-js
-suse labs
+2.35.1
+
