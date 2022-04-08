@@ -2,46 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D649C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BCFC433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235924AbiDHMu5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
+        id S234192AbiDHMzJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235925AbiDHMux (ORCPT
+        with ESMTP id S233840AbiDHMzI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:50:53 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1ACF3FA7;
-        Fri,  8 Apr 2022 05:48:49 -0700 (PDT)
+        Fri, 8 Apr 2022 08:55:08 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F516590;
+        Fri,  8 Apr 2022 05:53:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649422129; x=1680958129;
+  t=1649422384; x=1680958384;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=fyPhH983rnz7ANS3kCWC9cdmOb0b8sUABX/0ZPpm5R0=;
-  b=BiTG+HZf8LgSNKpgtuawTxAOU4K7hXtBTzHm/GLOzCTHwwrjmYr11ecM
-   3IO2NV5Xm+2NplpLODN1N3GXzTExfvdDZMFcxphpupJkyy926dRZkjVQi
-   cGu8/vqKm3wJ6Mm0MEtZ7jLLse3T0i4xRy71ZoXvBEBF8SPWbXFnZLbCc
-   QzE0TQeQdv4c3vWS4kAlTxwO6ed0USJQZs7aGQDylbn3evoI+Mrx/EKvq
-   DFlDC4NfEw06l7U5RqUIPj/w2ZHN84xVVATpUNp9mzOslItXMolTCrRA0
-   +iOAt/n/Vw5MXeUelEGUEfTF4yMGAG3Tl0s6ouTAjvQcR+Po0zKanEJwj
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261760531"
+  bh=j4WT+QkS5ARvkWcd8WkQSnzVMZ9Z9qQyb45mo3nJ7oE=;
+  b=YCVU4UvSg5l8AGcem/mT/Swss1slAyd8L2uLOAkaHu9UumZ7XRXTuNII
+   grJdVelC8RhlSTvezbOnXjBwmnh85a/56r70+Gy0La8vNronV0Jzj4LxJ
+   3sirKQsFRac7wysJuCPXhZaWMSfSwPHR6FVFEg3Mdz35j3lJLB/ThW7PA
+   Te8hZELb1Dhx6+CvWCFY2etKSKlKmYY0LZWM1p6OaBvuUg7DnRz9z/85F
+   twoI1aTZcPtfcbZ/COvuHBHXYTyeN+6pEwT/21FiNJNydOR8yj5yy7+RN
+   vp/mCIWzjCFvdiFF0HVaFavDbZtskfHdZ1cuj05/Cr783cuo2LvJdriEZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259184073"
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="261760531"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:48:49 -0700
+   d="scan'208";a="259184073"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:53:03 -0700
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="653244341"
+   d="scan'208";a="525365038"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:48:47 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:53:01 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncnz8-000Hts-EJ;
-        Fri, 08 Apr 2022 15:45:06 +0300
-Date:   Fri, 8 Apr 2022 15:45:06 +0300
+        id 1nco3E-000Hxa-C3;
+        Fri, 08 Apr 2022 15:49:20 +0300
+Date:   Fri, 8 Apr 2022 15:49:20 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial <linux-serial@vger.kernel.org>,
@@ -50,73 +50,62 @@ Cc:     linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Gilles Buloz <gilles.buloz@kontron.com>,
         Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2 1/3] tty: Add functions for handling flow control chars
-Message-ID: <YlAuUpOZ4IVqZTFk@smile.fi.intel.com>
+Subject: Re: [PATCH v2 2/3] tty: Add lookahead param to receive_buf
+Message-ID: <YlAvUL2rMreUZwdF@smile.fi.intel.com>
 References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
- <20220408113954.9749-2-ilpo.jarvinen@linux.intel.com>
- <YlAkK16xqh3DgY20@smile.fi.intel.com>
- <d79c4c20-1cfd-a3a1-516b-b6b51360527c@linux.intel.com>
+ <20220408113954.9749-3-ilpo.jarvinen@linux.intel.com>
+ <YlAjfAab+Oh3HcCR@smile.fi.intel.com>
+ <42fc2746-6a7c-9b44-87a5-32f219c1231@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <d79c4c20-1cfd-a3a1-516b-b6b51360527c@linux.intel.com>
+In-Reply-To: <42fc2746-6a7c-9b44-87a5-32f219c1231@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 03:20:07PM +0300, Ilpo Järvinen wrote:
+On Fri, Apr 08, 2022 at 03:34:27PM +0300, Ilpo Järvinen wrote:
 > On Fri, 8 Apr 2022, Andy Shevchenko wrote:
-> > On Fri, Apr 08, 2022 at 02:39:52PM +0300, Ilpo Järvinen wrote:
-> > > Move receive path flow control character handling to own function
-> > > and a helper.
-> > > 
-> > > This seems cleanest approach especially once skipping due to lookahead
-> > > is added. Its downside is the duplicated START_CHAR and STOP_CHAR
-> > > checks.
-> > > 
-> > > No functional changes.
+> > On Fri, Apr 08, 2022 at 02:39:53PM +0300, Ilpo Järvinen wrote:
+
+...
+
+> > > +		if (c == STOP_CHAR(tty)) {
+> > > +			if (!lookahead_done)
 > > 
-> > But it seems the change. See below.
+> > But now it can be as below
 > > 
-> > ...
+> > 		if (c == STOP_CHAR(tty) && !lookahead_done)
 > > 
-> > > +static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> > > +{
-> > > +	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
-> > > +}
-> > > +
-> > > +/* Returns true if c is consumed as flow-control character */
-> > > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> > > +{
-> > > +	if (!n_tty_is_char_flow_ctrl(tty, c))
-> > > +		return false;
-> > > +
-> > > +	if (c == START_CHAR(tty)) {
-> > > +		start_tty(tty);
-> > > +		process_echoes(tty);
-> > 
-> > > +	} else if (c == STOP_CHAR(tty)) {
-> > 
-> > In the original code no 'else' was present.
-> >
-> > Perhaps it's not a functional change, but this detail has to be explained.
+> > > +				stop_tty(tty);
+> > > +		} else if ((c == START_CHAR(tty) && !lookahead_done) ||
+> > >  			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> > >  			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> > >  			  c != SUSP_CHAR(tty))) {
 > 
-> Correct that the previous code didn't have else, however, there was return 
-> with the same effect. Adding this else here was no accident from my part 
-> but it is intentionally there to have no functional change for the 
-> START_CHAR == STOP_CHAR case!
+> Are you sure about this? ...If I make that change to the first if, the 
+> second part of the else if's condition get a chance it didn't have 
+> previously.
 
-Perhaps you can split this change to a separate patch with this explanation
-given.
+Oh, indeed. This will give a chance to the rest of the second conditional to be
+triggered because of ||.
 
-> > > +		stop_tty(tty);
-> > > +	}
-> > > +
-> > > +	return true;
-> > > +}
+> What I'd like to do here is to take advantage of the function that was 
+> added:
+> 
+> 		if (!n_tty_receive_char_flow_ctrl(tty, c) &&
+> 		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+>         	    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> 	            c != SUSP_CHAR(tty))) {
+> 			start_tty(tty);
+> 			process_echoes(tty);
+> 		}
+> ...but it will change STOP_CHAR vs START_CHAR precedence for the case 
+> where they're the same characters. I don't know if it matters.
 
+No idea of impact of such change.
 
 -- 
 With Best Regards,
