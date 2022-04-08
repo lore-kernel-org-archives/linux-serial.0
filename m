@@ -2,136 +2,90 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61A7C433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4480EC433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234369AbiDHMWR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
+        id S235675AbiDHM3a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiDHMWQ (ORCPT
+        with ESMTP id S235671AbiDHM33 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:22:16 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C2B33D0D3;
-        Fri,  8 Apr 2022 05:20:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649420412; x=1680956412;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=WPsslrFd0S6sXmVgTxDUoYEL32FPotRMU+1lqBKb5iU=;
-  b=bgjvTtW0I20mqkt5dHcgUItHH17Z+qewfQNWHsJwcYIE3w+aGwLZ4STF
-   ejqn1xjXsVg8sYoLKQTTD5Wi3q4Js8/dwuxL1myXeNKERhmThSDxq6dUM
-   O/UqoM7ppRmEz8SenT/hhbBFlHbSKN5BblCHrcbH3qhs7uFjVgEdDsQyw
-   kG7GW0s4U5eEcZ3nXEnBZHXKw2flmIEiCS7I3TfWEsazLoN9XOCRYmq83
-   Dm6weIKJDMs7ATVLEDSgmWJG74k/VrS2JhbheaJdhPyaiY0fORzLlnesi
-   UIAqEQ9jCJg2nLCV2fu4mf7Hsg1OmEvPxyGtCrFQ+BKEpadUcaGIcV3bk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="249110195"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="249110195"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:20:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="571473128"
-Received: from aecajiao-mobl.amr.corp.intel.com ([10.252.48.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:20:09 -0700
-Date:   Fri, 8 Apr 2022 15:20:07 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2 1/3] tty: Add functions for handling flow control
- chars
-In-Reply-To: <YlAkK16xqh3DgY20@smile.fi.intel.com>
-Message-ID: <d79c4c20-1cfd-a3a1-516b-b6b51360527c@linux.intel.com>
-References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com> <20220408113954.9749-2-ilpo.jarvinen@linux.intel.com> <YlAkK16xqh3DgY20@smile.fi.intel.com>
+        Fri, 8 Apr 2022 08:29:29 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38B633DCA7;
+        Fri,  8 Apr 2022 05:27:24 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2389niGA022034;
+        Fri, 8 Apr 2022 14:27:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=dTAXQp+cFjdIWlRb6J7G7W0/qZzdDyJ57D7J0I+JRLE=;
+ b=2kt2tzQ0xJEwsVv/p6RD8AeVwBts83H5Zwyswg20qjAYuGRw9iUTfj0NW5l1Api1G+Rg
+ 5XFIUrVWGmpSqKnNdLP7+NNVjCw0EGCWcYEyAPEOmBVGFtc5SWpMA0qBHHDlt2Kd1PFe
+ t9yeyWEVKAWzoheBb1/e9DJkwHICxxx4v4wetnX03dmcSmAhz/qMluxOC1AtUWx2Zxrz
+ hC10JAYHoAoeaTU3HBQQSP1L45v0tkw+VaukveEvMzcqz6OZIQvVumaumNJl9ZMS7Y1a
+ kljROp4Jh58qsRZO2P14ZCwFU5nFu8GS4YZeMAT+2MeaQZUPMPKo7t0Kid330teRwMiV Bg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f8x9gu5ej-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Apr 2022 14:27:03 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 04F8C10002A;
+        Fri,  8 Apr 2022 14:27:03 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id F1FA121A21E;
+        Fri,  8 Apr 2022 14:27:02 +0200 (CEST)
+Received: from localhost (10.75.127.49) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 8 Apr 2022 14:27:02
+ +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH V2 0/3] serial: stm32: add earlycon and polling mode
+Date:   Fri, 8 Apr 2022 14:26:33 +0200
+Message-ID: <20220408122636.505737-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-865545589-1649420348=:1643"
-Content-ID: <d3d8d4fb-baab-977-cbb3-46e5455dab@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-08_04,2022-04-08_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+- Add support of early console and polling mode in stm32-usart driver.
+- Avoid a possible infinite loop in putchar function.
 
---8323329-865545589-1649420348=:1643
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <aed6b5c-6a20-30e9-96ef-1532ea8b2e1@linux.intel.com>
+Changes since v1:
+- Fix warning "unused variable 'ret'"
 
-On Fri, 8 Apr 2022, Andy Shevchenko wrote:
+Valentin Caron (3):
+  serial: stm32: remove infinite loop possibility in putchar function
+  serial: stm32: add KGDB support
+  serial: stm32: add earlycon support
 
-> On Fri, Apr 08, 2022 at 02:39:52PM +0300, Ilpo Järvinen wrote:
-> > Move receive path flow control character handling to own function
-> > and a helper.
-> > 
-> > This seems cleanest approach especially once skipping due to lookahead
-> > is added. Its downside is the duplicated START_CHAR and STOP_CHAR
-> > checks.
-> > 
-> > No functional changes.
-> 
-> But it seems the change. See below.
-> 
-> ...
-> 
-> > +static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> > +{
-> > +	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
-> > +}
-> > +
-> > +/* Returns true if c is consumed as flow-control character */
-> > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> > +{
-> > +	if (!n_tty_is_char_flow_ctrl(tty, c))
-> > +		return false;
-> > +
-> > +	if (c == START_CHAR(tty)) {
-> > +		start_tty(tty);
-> > +		process_echoes(tty);
-> 
-> > +	} else if (c == STOP_CHAR(tty)) {
-> 
-> In the original code no 'else' was present.
->
-> Perhaps it's not a functional change, but this detail has to be explained.
-
-Correct that the previous code didn't have else, however, there was return 
-with the same effect. Adding this else here was no accident from my part 
-but it is intentionally there to have no functional change for the 
-START_CHAR == STOP_CHAR case!
-
-> > +		stop_tty(tty);
-> > +	}
-> > +
-> > +	return true;
-> > +}
-> 
-> ...
-> 
-> > -	if (I_IXON(tty)) {
-> > -		if (c == START_CHAR(tty)) {
-> > -			start_tty(tty);
-> > -			process_echoes(tty);
-> > -			return;
-> > -		}
-> > -		if (c == STOP_CHAR(tty)) {
-> > -			stop_tty(tty);
-> > -			return;
-> > -		}
-> > -	}
-> > +	if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c))
-> > +		return;
-> 
-> 
+ .../admin-guide/kernel-parameters.txt         |   6 ++
+ drivers/tty/serial/Kconfig                    |   1 +
+ drivers/tty/serial/stm32-usart.c              | 100 +++++++++++++++++-
+ drivers/tty/serial/stm32-usart.h              |   2 +
+ 4 files changed, 104 insertions(+), 5 deletions(-)
 
 -- 
- i.
---8323329-865545589-1649420348=:1643--
+2.25.1
+
