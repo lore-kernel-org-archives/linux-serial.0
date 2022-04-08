@@ -2,127 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA77C433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 15:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D213C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 23:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237309AbiDHPEM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S234092AbiDHXiN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 19:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbiDHPEK (ORCPT
+        with ESMTP id S230403AbiDHXiN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:04:10 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30813BD24A
-        for <linux-serial@vger.kernel.org>; Fri,  8 Apr 2022 08:02:06 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id q20so5687626wmq.1
-        for <linux-serial@vger.kernel.org>; Fri, 08 Apr 2022 08:02:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iz+c1WD+2kFnJShyZVo2mhzJoonjpk5NKsWkeEnebGQ=;
-        b=y9ibWseywVkczs7jv5ix8tRuxiKUjgfy4DezaUm/nwfvBNH2KSmqMIZdDbd9Mxvv7Q
-         7d6lbxe8qJxKshaiQTWrOHkXpVrOESzVp7N88yLH8SVEFx/tMn+C5FvL9SQuW4Ay3+Yg
-         kSi8XOTA4wjkMuNLadheSj28sSDK5z38Ee1DcrcVQbj2Tp4RAw4jX4mO4u8u3PotdWP+
-         4rwzqeiKpc/NRLnCjb7gzfPM5Xo+lIiaadoAqFt2SGcXiW6HFApmYmbg1YR/aTboB9b0
-         pvDHwdri2n3mKhUfpnyIMM/KIZc/KMielcqidnee3d1WMhqUTDnXHyblKRaaoaI47zkA
-         ekMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iz+c1WD+2kFnJShyZVo2mhzJoonjpk5NKsWkeEnebGQ=;
-        b=xnDA5rPcvDyCqk77L6sC0s21k55zqjYUm+/0BQsYXaicMGPv+XoD4CUiH4BNRGiTTk
-         iaFxFgMgS4p5nF1aNB7iIaF/svvzCHySFt5Qlrzl3q5EbpQTEjRGI18r/jH4uLSYPkY2
-         X/dwFJo3Ic0YwYVkjindDA2hUT4Xdk3Q6156Uqo48xzbU2lIGPkaTugNmEYiAicjiG/9
-         ZOT4zmsvmQp92eopP1SC9E/BQHF89L2Ll4TZtUC5TI8aDppnwvq/2Zj2KQ4U1xM5PXg5
-         BvMdYa59yZuVtcD4jroNiDobQ2xMS3YDTWi0pls2Xr86dxtiA1Qv5zezPy4fUnrTQXTA
-         aMMA==
-X-Gm-Message-State: AOAM530asGAH90H7xnsK4f1BVZSNVghyAsLY+/2q5Nxu09eOcwdeMiYF
-        A8Cl5wQWRx64pll6ZpdOTB6xfg==
-X-Google-Smtp-Source: ABdhPJySCidxaQPfz8lG3tCiCVWv3xpUiU9+LN8RUHhf594sVG3Xhb9svnvuZsqc2c0PWxIs36RpWA==
-X-Received: by 2002:a7b:ce84:0:b0:37c:52fe:a3ff with SMTP id q4-20020a7bce84000000b0037c52fea3ffmr17153661wmj.48.1649430125474;
-        Fri, 08 Apr 2022 08:02:05 -0700 (PDT)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id f13-20020a5d64cd000000b0020787751295sm4287477wri.35.2022.04.08.08.02.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 08:02:04 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 16:02:02 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mike Travis <mike.travis@hpe.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt
- driver
-Message-ID: <20220408150202.yhn3qppqwm7wzmo3@maple.lan>
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com>
- <YkWVTEG5oFO82GPL@kroah.com>
- <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
- <20220408133246.fyw5554lgli4olvg@maple.lan>
- <CAK8P3a0u2xa9BFmakG+f4kyLsqNZQbE6KQ6jz2356Fyen=1EHw@mail.gmail.com>
- <YlBE6hZHmLo9/wrU@kroah.com>
- <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
+        Fri, 8 Apr 2022 19:38:13 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53CAC6B4E;
+        Fri,  8 Apr 2022 16:36:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649460959;
+        bh=PE93BArNOfspKWatWSSijWYxkhAMOPY4ZFX7FNX7uHQ=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=DVOU7uZJ0aWbIf5Fdt57sirk94Etp+kJguemPm2oQJnkiKn/VHl2zI/F9zSXe9/jX
+         w/WXaVwglLyCAaA6DqNdoGLqN5YQLP65MqT/C5W1zkM6KIrDRUAzHliNRpVewyjY+7
+         L2mZVKdts8qS8If7E/6aLPczbwL18wbWLvt41o8w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.2.213]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MdebB-1oCIxi15hB-00ZcVv; Sat, 09
+ Apr 2022 01:35:59 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.rosenberger@kunbus.com, lukas@wunner.de,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>, stable@vger.kernel.org
+Subject: [PATCH] serial: amba-pl011: do not time out prematurely when draining tx fifo
+Date:   Sat,  9 Apr 2022 01:35:02 +0200
+Message-Id: <20220408233503.7251-1-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:2Pi391PVpa6mz3HDqrEJVvoWX3RP/HWxrw14lQr48Wx7DltIAtf
+ 8FWeQrDo3ShvEexNvnNKwtwOrEBi8gnsakCStv2bg1751YJF/pJRO+1WCdm1aIRMWYNAOcI
+ 4MqcCvYZHrIKZWYP0tAyQnBDHwTPv0KwBOajHxojwOiBbNn1woVMA2Hz+RPvSBMBX53tzEY
+ rUtDV0HYRY7e9zGN9mPYA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1WIr7NdhmBo=:qrqZHMQgybDqyVMSBON3kN
+ S0woaUywjvcNPEqa9b9/3SuSNqJgJku17bjnEdvGX2gFeyGshXwCzf2w3XjyKtdBuaJHVSPpw
+ j9HTm2UtR0qqriWGJ96W5j2NKXdSa3p+6R9W4o98okDPGs4npj5JKbJGTQ0k3Etf50r5IeueL
+ ADcZIgnissMobyr8nQgfOF+JdPJesYS7ZhUFPQKbH2d59fkYrhzlrOmJ81pSDat7KgIEF5Ueq
+ V1/DXS8HSf7nlNv6tN9azg6sSuGKOSlE41X47gyHt7tv+gby5xuSfGtU5HMglEy6h/qpDAXu/
+ rWqreuoLq1OB6Zz3y4MDe/LUK6a9n58T8zjmR+lO5D/DWvslM02bvkkD84nvZPsJVaktTn+fV
+ SlBlBbMTzlA/kWH2u3mV6Zz/wkzfOjQsvATdeJn1hmNLSetksJvaKMw6ASL2FD0qBfVP/J5XU
+ 2f9HdCPE4ik8KXhIAMqq20K/OjBv+AVUA3G+8EpFGsWPYQmYQonK+HNzL6r958k6MMpavt++A
+ Ygn3LXN8ir3OcqQdR9Nn4FACi4wcbabctA/GDQRvH4KQEu0L5uEllZP0+3LxMtL+fIJL2Ql1O
+ AJQJQ2rx3dB81I1sdrECC1Sa4n+RyUVwG7MIcb6n2E3BhhbTfVAXWBXub2/+E90ENqk1vvSzZ
+ OBrWHB0wscwp51HR8wGPB3hKznZcxcisj2vzbxus/cm1zvSImc4NGJAtUY5ie//0KIqgPIrx6
+ qvch+791bduXYUxRt1IsfmA5tZriDO+BjgNOzemegPnNlvcvLwtVm3z9jlyr0+D+KrjSotgS4
+ kpLIOP9JRFwDaYCCnMm6yRqoNzt4oq0gTOAOQBjI6V9CsS7Z5H/9CKvoYO2cWRWbICi0Dwkyu
+ wYF6unvYD4i2mSGavB+2wZm6LpSBEe6B1FhxSblTowCyuoBTj1f5j9bkhwShw5bfLIgMvnsZU
+ Owf6d5tpXClOiwgmDSRl6viFMttoYcLbkffFsayHtrh4f9vng7vPTJ+Rgsi+m8rLqF3NW9OEQ
+ 2HVHWEO+PzkQGt17QvxXUwbQtAK2k8VgN/LJKMU9SDCUQB9gN4SLIgmkk5ltT+EYlrIENg4AM
+ MSoONKNBbSiWRE=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 04:49:31PM +0200, Arnd Bergmann wrote:
-> On Fri, Apr 8, 2022 at 4:21 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Fri, Apr 08, 2022 at 04:17:16PM +0200, Arnd Bergmann wrote:
-> > > On Fri, Apr 8, 2022 at 3:32 PM Daniel Thompson
-> > > <daniel.thompson@linaro.org> wrote:
-> > > > On Thu, Mar 31, 2022 at 05:44:55PM +0200, Arnd Bergmann wrote:
-> > > >
-> > > > There is some prior art for this sort of feature. AFAICT SGI UV has a
-> > > > similar mechanism that can send an NMI-with-no-side-channel to the
-> > > > kernel. The corresponding driver offers a range of actions using a
-> > > > module parameter:
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/platform/uv/uv_nmi.c#n180
-> > > >
-> > > > I don't think a hardcoded 'c' makes any sense. With a hardcoded argument
-> > > > it is just obfuscation. However it is certainly seems attractive to be
-> > > > able to reuse handle_sysrq() to provide a more powerful set of actions.
-> > >
-> > > How about a module parameter that allows picking a sysrq character then?
-> >
-> > Module parameters are so 1990, as this is a platform device, why not get
-> > it from DT?
-> 
-> This machine doesn't use DT. I suppose the same could be done with an EFI
-> variable, but with a module parameter you get the added benefit of having both
-> a boot time kernel command line argument, and the option to override it at
-> run time.
-
-Pushing the decision on what action to take into firmware (whether that
-is DT or ACPI) implies that the firmware is well positioned to make a
-decision.  I don't think that is true here.
-
-To me, it seems more like an admin choice... and admins are conditioned
-to use kernel arguments.
-
-If these type of diagnostics request were more common then perhaps we'd
-be looking at a sysctl and call to handle_diagnostic_sysrq().
-
-
-Daniel.
+VGhlIGN1cnJlbnQgdGltZW91dCBmb3IgZHJhaW5pbmcgdGhlIHR4IGZpZm8gaW4gUlM0ODUgbW9k
+ZSBpcyBjYWxjdWxhdGVkIGJ5Cm11bHRpcGx5aW5nIHRoZSB0aW1lIGl0IHRha2VzIHRvIHRyYW5z
+bWl0IG9uZSBjaGFyYWN0ZXIgKHdpdGggdGhlIGdpdmVuCmJhdWQgcmF0ZSkgd2l0aCB0aGUgbWF4
+aW1hbCBudW1iZXIgb2YgY2hhcmFjdGVycyBpbiB0aGUgdHggcXVldWUuCgpUaGlzIHRpbWVvdXQg
+aXMgdG9vIHNob3J0IGZvciB0d28gcmVhc29uczoKRmlyc3Qgd2hlbiBjYWxjdWxhdGluZyB0aGUg
+dGltZSB0byB0cmFuc21pdCBvbmUgY2hhcmFjdGVyIGludGVnZXIgZGl2aXNpb24KaXMgdXNlZCB3
+aGljaCBtYXkgcm91bmQgZG93biB0aGUgcmVzdWx0IGluIGNhc2Ugb2YgYSByZW1haW5kZXIgb2Yg
+dGhlCmRpdmlzaW9uLgoKRml4IHRoaXMgYnkgcm91bmRpbmcgdXAgdGhlIGRpdmlzaW9uIHJlc3Vs
+dC4KClNlY29uZCB0aGUgaGFyZHdhcmUgbWF5IG5lZWQgYWRkaXRpb25hbCB0aW1lIChlLmcgZm9y
+IGZpcnN0IHB1dHRpbmcgdGhlCmNoYXJhY3RlcnMgZnJvbSB0aGUgZmlmbyBpbnRvIHRoZSBzaGlm
+dCByZWdpc3RlcikgYmVmb3JlIHRoZSBjaGFyYWN0ZXJzIGFyZQphY3R1YWxseSBwdXQgb250byB0
+aGUgd2lyZS4KClRvIGJlIG9uIHRoZSBzYWZlIHNpZGUgZG91YmxlIHRoZSBjdXJyZW50IG1heGlt
+dW0gbnVtYmVyIG9mIGl0ZXJhdGlvbnMKdGhhdCBhcmUgdXNlZCB0byB3YWl0IGZvciB0aGUgcXVl
+dWUgZHJhaW5pbmcuCgpGaXhlczogOGQ0NzkyMzc3MjdjICgic2VyaWFsOiBhbWJhLXBsMDExOiBh
+ZGQgUlM0ODUgc3VwcG9ydCIpCkNjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnClNpZ25lZC1vZmYt
+Ynk6IExpbm8gU2FuZmlsaXBwbyA8TGlub1NhbmZpbGlwcG9AZ214LmRlPgotLS0KIGRyaXZlcnMv
+dHR5L3NlcmlhbC9hbWJhLXBsMDExLmMgfCA5ICsrKysrKystLQogMSBmaWxlIGNoYW5nZWQsIDcg
+aW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
+ZXJpYWwvYW1iYS1wbDAxMS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2FtYmEtcGwwMTEuYwppbmRl
+eCA1MWVjYjA1MGFlNDAuLjRkMTFhM2U1NDdmOSAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2Vy
+aWFsL2FtYmEtcGwwMTEuYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYW1iYS1wbDAxMS5jCkBA
+IC0xMjU1LDEzICsxMjU1LDE4IEBAIHN0YXRpYyBpbmxpbmUgYm9vbCBwbDAxMV9kbWFfcnhfcnVu
+bmluZyhzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCkKIAogc3RhdGljIHZvaWQgcGwwMTFfcnM0
+ODVfdHhfc3RvcChzdHJ1Y3QgdWFydF9hbWJhX3BvcnQgKnVhcCkKIHsKKwkvKgorCSAqIFRvIGJl
+IG9uIHRoZSBzYWZlIHNpZGUgb25seSB0aW1lIG91dCBhZnRlciB0d2ljZSBhcyBtYW55IGl0ZXJh
+dGlvbnMKKwkgKiBhcyBmaWZvIHNpemUuCisJICovCisJY29uc3QgaW50IE1BWF9UWF9EUkFJTl9J
+VEVSUyA9IHVhcC0+cG9ydC5maWZvc2l6ZSAqIDI7CiAJc3RydWN0IHVhcnRfcG9ydCAqcG9ydCA9
+ICZ1YXAtPnBvcnQ7CiAJaW50IGkgPSAwOwogCXUzMiBjcjsKIAogCS8qIFdhaXQgdW50aWwgaGFy
+ZHdhcmUgdHggcXVldWUgaXMgZW1wdHkgKi8KIAl3aGlsZSAoIXBsMDExX3R4X2VtcHR5KHBvcnQp
+KSB7Ci0JCWlmIChpID09IHBvcnQtPmZpZm9zaXplKSB7CisJCWlmIChpID4gTUFYX1RYX0RSQUlO
+X0lURVJTKSB7CiAJCQlkZXZfd2Fybihwb3J0LT5kZXYsCiAJCQkJICJ0aW1lb3V0IHdoaWxlIGRy
+YWluaW5nIGhhcmR3YXJlIHR4IHF1ZXVlXG4iKTsKIAkJCWJyZWFrOwpAQCAtMjA1Miw3ICsyMDU3
+LDcgQEAgcGwwMTFfc2V0X3Rlcm1pb3Moc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0IGt0
+ZXJtaW9zICp0ZXJtaW9zLAogCSAqIHdpdGggdGhlIGdpdmVuIGJhdWQgcmF0ZS4gV2UgdXNlIHRo
+aXMgYXMgdGhlIHBvbGwgaW50ZXJ2YWwgd2hlbiB3ZQogCSAqIHdhaXQgZm9yIHRoZSB0eCBxdWV1
+ZSB0byBlbXB0eS4KIAkgKi8KLQl1YXAtPnJzNDg1X3R4X2RyYWluX2ludGVydmFsID0gKGJpdHMg
+KiAxMDAwICogMTAwMCkgLyBiYXVkOworCXVhcC0+cnM0ODVfdHhfZHJhaW5faW50ZXJ2YWwgPSBE
+SVZfUk9VTkRfVVAoYml0cyAqIDEwMDAgKiAxMDAwLCBiYXVkKTsKIAogCXBsMDExX3NldHVwX3N0
+YXR1c19tYXNrcyhwb3J0LCB0ZXJtaW9zKTsKIAoKYmFzZS1jb21taXQ6IDFhM2IxYmJhN2M3YTVl
+YjhhMTE1MTNjZjg4NDI3Y2I5ZDc3YmM2MGEKLS0gCjIuMzUuMQoK
