@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16052C4332F
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A8AC433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235678AbiDHM3c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        id S235681AbiDHM3d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbiDHM33 (ORCPT
+        with ESMTP id S235672AbiDHM3a (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:29:29 -0400
+        Fri, 8 Apr 2022 08:29:30 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510EA33DCAB;
-        Fri,  8 Apr 2022 05:27:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6366A33DCAC;
+        Fri,  8 Apr 2022 05:27:26 -0700 (PDT)
 Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2389j3P9000551;
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2389i7HP000594;
         Fri, 8 Apr 2022 14:27:05 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=selector1;
- bh=OzzsSeRZXTJPRZje9ui1T8+kROrim9zZTezfZrmqwVA=;
- b=g9pEZNsoYYlGs5g2LsrK5fLiu589Fxw1KHMSO0CId/eEqsrdIBXj6aKTW+eD8ltMsGgE
- Lmo260J0JhOSP7+0q6M1B/R9dJ8DCktbMGqZ4jU2MR7bKblxcZXYXDj/HLenA4x6JuV1
- GxpxUrt+JnIKxaEH85wK6gRR3zIVInqb0/T9CmSzK552YxFgLzHvfOtY4DTLLw1xbbZ5
- UDIaiJV5O85hvXJlE1uKarAfUTL6j0LghhtsifE0PWAyBmwTkxVuycc8aH7RWkhJKjM4
- kfPbnN04JyVNJ+xhM1hlbpHavSUKqxYxE4CW7HuDrOs7s5HvpWs8CQinBrJROwov5khc 7Q== 
+ content-transfer-encoding : content-type; s=selector1;
+ bh=kl/405WO6BWkxCmfDNNimImVgYIdQ5yPoKlOLHS/+kc=;
+ b=yjXu8DxGT9GVFUcdu8MFk0cHGGuYhB/tXiRBU3q8ICaJp+5a/oLaw5E6PAlAiXvEbRrA
+ fEs6bgmd3k4/O2G3GfVHU2p6HKJkpzSbF7hTX9acyqHRKTxQ9zuAB2xjenwTAtQPiHqR
+ ySb5z4ze8xkxUIP4JHcD4SutI4+yv/uDcgn+iWI6Q0ZNYF4wCw8MVIoiakN5Nfhv/q6j
+ 0WypSfw5hWNSwmzZ0ckAHKVeDK10mguIGmzaWUl2mXVIiGLbXpPY4E9UBGjHDxouvXGe
+ X7lKQRSjESg8IC9Av/PWp15FOqHN/akBb3nj1yKMFo6iw9hRVdAbhYA6vUgSMBNue+gd EQ== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f9wr7r1p9-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f9wr7r1pb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Fri, 08 Apr 2022 14:27:05 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8EA7B100038;
-        Fri,  8 Apr 2022 14:27:03 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9BDA310002A;
+        Fri,  8 Apr 2022 14:27:04 +0200 (CEST)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8666321A21E;
-        Fri,  8 Apr 2022 14:27:03 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 8 Apr 2022 14:27:03
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9409221A21E;
+        Fri,  8 Apr 2022 14:27:04 +0200 (CEST)
+Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 8 Apr 2022 14:27:04
  +0200
 From:   Valentin Caron <valentin.caron@foss.st.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -52,16 +52,16 @@ CC:     Jiri Slaby <jirislaby@kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH V2 1/3] serial: stm32: remove infinite loop possibility in putchar function
-Date:   Fri, 8 Apr 2022 14:26:34 +0200
-Message-ID: <20220408122636.505737-2-valentin.caron@foss.st.com>
+Subject: [PATCH V2 3/3] serial: stm32: add earlycon support
+Date:   Fri, 8 Apr 2022 14:26:36 +0200
+Message-ID: <20220408122636.505737-4-valentin.caron@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220408122636.505737-1-valentin.caron@foss.st.com>
 References: <20220408122636.505737-1-valentin.caron@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.50]
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.51]
 X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -71,52 +71,107 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rework stm32_usart_console_putchar() function in order to anticipate
-the case where the character can never be sent.
+Add early console support in stm32 uart driver.
 
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
 ---
- drivers/tty/serial/stm32-usart.c | 12 +++++++++---
- drivers/tty/serial/stm32-usart.h |  2 ++
- 2 files changed, 11 insertions(+), 3 deletions(-)
+ .../admin-guide/kernel-parameters.txt         |  6 +++
+ drivers/tty/serial/Kconfig                    |  1 +
+ drivers/tty/serial/stm32-usart.c              | 51 +++++++++++++++++++
+ 3 files changed, 58 insertions(+)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed..e941c3351c7a 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1264,6 +1264,12 @@
+ 			address must be provided, and the serial port must
+ 			already be setup and configured.
+ 
++		stm32,<addr>
++			Use early console provided by ST Microelectronics
++			serial driver for STM32 SoCs. A valid base address
++			must be provided, and the serial port must already
++			be setup and configured.
++
+ 	earlyprintk=	[X86,SH,ARM,M68k,S390]
+ 			earlyprintk=vga
+ 			earlyprintk=sclp
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 6949e883ffab..ed59de8d2e11 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1443,6 +1443,7 @@ config SERIAL_STM32_CONSOLE
+ 	bool "Support for console on STM32"
+ 	depends on SERIAL_STM32=y
+ 	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
+ 
+ config SERIAL_MVEBU_UART
+ 	bool "Marvell EBU serial port support"
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 87b5cd4c9743..83895da84891 100644
+index 4307c822afe4..65988e6efaa2 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -1645,10 +1645,16 @@ static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch
- {
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
-+	u32 isr;
-+	int ret;
+@@ -1766,6 +1766,57 @@ static struct console stm32_console = {
+ #define STM32_SERIAL_CONSOLE NULL
+ #endif /* CONFIG_SERIAL_STM32_CONSOLE */
  
--	while (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
--		cpu_relax();
--
-+	ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr, isr,
-+						(isr & USART_SR_TXE), 100,
-+						STM32_USART_TIMEOUT_USEC);
-+	if (ret != 0) {
-+		dev_err(port->dev, "Error while sending data in UART TX : %d\n", ret);
-+		return;
-+	}
- 	writel_relaxed(ch, port->membase + ofs->tdr);
- }
- 
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index feab952aec16..d734c4a5fd24 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -251,6 +251,8 @@ struct stm32_usart_info stm32h7_info = {
- #define RX_BUF_P (RX_BUF_L / 2)	 /* dma rx buffer period     */
- #define TX_BUF_L RX_BUF_L	 /* dma tx buffer length     */
- 
-+#define STM32_USART_TIMEOUT_USEC USEC_PER_SEC /* 1s timeout in µs */
++#ifdef CONFIG_SERIAL_EARLYCON
++static void early_stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
++{
++	struct stm32_usart_info *info = port->private_data;
 +
- struct stm32_port {
- 	struct uart_port port;
- 	struct clk *clk;
++	while (!(readl_relaxed(port->membase + info->ofs.isr) & USART_SR_TXE))
++		cpu_relax();
++
++	writel_relaxed(ch, port->membase + info->ofs.tdr);
++}
++
++static void early_stm32_serial_write(struct console *console, const char *s, unsigned int count)
++{
++	struct earlycon_device *device = console->data;
++	struct uart_port *port = &device->port;
++
++	uart_console_write(port, s, count, early_stm32_usart_console_putchar);
++}
++
++static int __init early_stm32_h7_serial_setup(struct earlycon_device *device, const char *options)
++{
++	if (!(device->port.membase || device->port.iobase))
++		return -ENODEV;
++	device->port.private_data = &stm32h7_info;
++	device->con->write = early_stm32_serial_write;
++	return 0;
++}
++
++static int __init early_stm32_f7_serial_setup(struct earlycon_device *device, const char *options)
++{
++	if (!(device->port.membase || device->port.iobase))
++		return -ENODEV;
++	device->port.private_data = &stm32f7_info;
++	device->con->write = early_stm32_serial_write;
++	return 0;
++}
++
++static int __init early_stm32_f4_serial_setup(struct earlycon_device *device, const char *options)
++{
++	if (!(device->port.membase || device->port.iobase))
++		return -ENODEV;
++	device->port.private_data = &stm32f4_info;
++	device->con->write = early_stm32_serial_write;
++	return 0;
++}
++
++OF_EARLYCON_DECLARE(stm32, "st,stm32h7-uart", early_stm32_h7_serial_setup);
++OF_EARLYCON_DECLARE(stm32, "st,stm32f7-uart", early_stm32_f7_serial_setup);
++OF_EARLYCON_DECLARE(stm32, "st,stm32-uart", early_stm32_f4_serial_setup);
++#endif /* CONFIG_SERIAL_EARLYCON */
++
+ static struct uart_driver stm32_usart_driver = {
+ 	.driver_name	= DRIVER_NAME,
+ 	.dev_name	= STM32_SERIAL_NAME,
 -- 
 2.25.1
 
