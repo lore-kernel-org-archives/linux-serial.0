@@ -2,121 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A0AC433F5
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 13:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0BEC433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 14:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236227AbiDHNey (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
+        id S236777AbiDHOTz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbiDHNex (ORCPT
+        with ESMTP id S229981AbiDHOTy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:34:53 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332281E8156
-        for <linux-serial@vger.kernel.org>; Fri,  8 Apr 2022 06:32:50 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so6015156wmq.0
-        for <linux-serial@vger.kernel.org>; Fri, 08 Apr 2022 06:32:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pDC9L0lcr1QHf8qfh13ooZQp7CHb5z3+opmiIbCpO5g=;
-        b=jmrr9ES2B8XWO03NQZzQI4F2KKQwsDwVsKRsbWp63khlAKSkmi9C+eilQOfzSCKath
-         b3no7GA5N4PEoy7SBC5oRO6EjCTlned/SX99tuyEsBpExUCpvQy48bLQ5u/Ei8+f7+70
-         JjoSwIq3ChdypUMSjHJMZXtPDo6LBN4VWGLzEibGOseVKZTsmd8rOjKDQID9fcDLqQLJ
-         NDZUZYPMPUPPbnyc0e1+Kc+f3IMnC7PXOXkmbrtOHF4HITAHh0MbxX93nNvzfRQLYfBj
-         JRUU1LkEyrPi6gVeOgj1vX501pObHoK8SRG8vDH2evWMkgLQFKGNabXNKtnXXbfryVtb
-         7B1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pDC9L0lcr1QHf8qfh13ooZQp7CHb5z3+opmiIbCpO5g=;
-        b=xmi8yStDuatVQSAmAlbpOiYKvMoLcmvX9XSK0pzQfz5IABlPZkYQ848K8mx1jC9HGF
-         WsrJgrBGvuXXBUjSlqfYGI0BJpNjPU8NgD63QQhr69V2pl88+XJIVn8e2QM4MjrFh37e
-         bcnZGi2GlisZHMgNoAXPg9tF1GFwsy6Ncy7t93OlVVp99dmBbY5DzD6LTRiXQgDYu+Ah
-         OssvGKSUvbm3lVg191rX80NpEMjejoPjQVjCn/f/byuR7asJ1XpXrbZoM1uMG67dTFB5
-         EJJN9u8vdtuzQQ1Z5cwqg4gf7GPFNIdWPE2A2RveLk7ZolX0EltFXyejjDxGyy0ZJ9SF
-         fHsA==
-X-Gm-Message-State: AOAM532Ze8La+I0ToFO6Z0iTu/79vpGJRhKVfIcGaEjsazyuX2XYxs6w
-        cPI4QwmDnOVw34+uUm8IoVB/pA==
-X-Google-Smtp-Source: ABdhPJyeiw4bwAQfXU133L8POlyN9oSdy3Td0K/5lQO2DSbqQQ73iq/K4PM/64Hhgx/RD0NCcuI3hQ==
-X-Received: by 2002:a05:600c:34c5:b0:38c:30e3:1e6c with SMTP id d5-20020a05600c34c500b0038c30e31e6cmr17255479wmq.144.1649424768622;
-        Fri, 08 Apr 2022 06:32:48 -0700 (PDT)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id v26-20020a1cf71a000000b0038ea373273bsm1707695wmh.47.2022.04.08.06.32.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 06:32:48 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 14:32:46 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        Fri, 8 Apr 2022 10:19:54 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8BF1B84D9;
+        Fri,  8 Apr 2022 07:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649427470; x=1680963470;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=nR19yTP/j92Eufx9RhmueAKoutE5mSKeE4sBlnP8y1g=;
+  b=F75JH8dDpNr60ONrRU2QPq2MXxK2AHhV5y6MB3G6ZuoVEKhhMDMqccA+
+   xZTbeU9GxqP6YxL8DxPffedNXiU0sOB5k5OcC9abZerH6I5r7nnyyfRjX
+   L21bV4rPVpMRWANPm0nRpk4Jh8imV+NzsH80Pih0gb1NtQ3EYmoU/er4H
+   DUrig/azyALH1NuVQyscnWJQWi6rYv/RtwEf+9Ykjg9tHitYSdB9u65dg
+   XOP5VbsqXJnKJwTd9CA6VQzf/AzfixHr/RaunpAA8MLjiHk918ogreOvj
+   bwQ6w+rTZnIwIR8wZ+gaSp2Tj6tT4AdXN8D35BcHiOYOJc1A2ZGmAq1MG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="243734622"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="243734622"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 07:17:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="571501341"
+Received: from aecajiao-mobl.amr.corp.intel.com ([10.252.48.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 07:17:47 -0700
+Date:   Fri, 8 Apr 2022 17:17:45 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mike Travis <mike.travis@hpe.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt
- driver
-Message-ID: <20220408133246.fyw5554lgli4olvg@maple.lan>
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com>
- <YkWVTEG5oFO82GPL@kroah.com>
- <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
+        LKML <linux-kernel@vger.kernel.org>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v2 2/3] tty: Add lookahead param to receive_buf
+In-Reply-To: <YlAvUL2rMreUZwdF@smile.fi.intel.com>
+Message-ID: <7148dd63-3450-46e8-4cc0-8f4d607d882@linux.intel.com>
+References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com> <20220408113954.9749-3-ilpo.jarvinen@linux.intel.com> <YlAjfAab+Oh3HcCR@smile.fi.intel.com> <42fc2746-6a7c-9b44-87a5-32f219c1231@linux.intel.com> <YlAvUL2rMreUZwdF@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-810036969-1649425381=:1643"
+Content-ID: <e3275aad-c166-d433-aeb2-96e32dccb4f@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 05:44:55PM +0200, Arnd Bergmann wrote:
-> On Thu, Mar 31, 2022 at 1:49 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > +
-> > > +static irqreturn_t a64fx_diag_handler(int irq, void *dev_id)
-> > > +{
-> > > +     handle_sysrq('c');
-> >
-> >
-> > Why is this calling this sysrq call?  From an interrupt?  Why?
-> >
-> > And you are hard-coding "c", are you sure?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-810036969-1649425381=:1643
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <9d5a9cfd-6275-80fb-36ae-e45e616f2ca@linux.intel.com>
+
+On Fri, 8 Apr 2022, Andy Shevchenko wrote:
+
+> On Fri, Apr 08, 2022 at 03:34:27PM +0300, Ilpo Järvinen wrote:
+> > On Fri, 8 Apr 2022, Andy Shevchenko wrote:
+> > > On Fri, Apr 08, 2022 at 02:39:53PM +0300, Ilpo Järvinen wrote:
 > 
-> This is an actual sysrq driver in the traditional sense, where you can send
-> a single interrupt to the machine from the outside over a side channel.
+> > What I'd like to do here is to take advantage of the function that was 
+> > added:
+> > 
+> > 		if (!n_tty_receive_char_flow_ctrl(tty, c) &&
+> > 		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> >         	    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> > 	            c != SUSP_CHAR(tty))) {
+> > 			start_tty(tty);
+> > 			process_echoes(tty);
+> > 		}
+> > ...but it will change STOP_CHAR vs START_CHAR precedence for the case 
+> > where they're the same characters. I don't know if it matters.
 > 
-> I suggested sysrq instead of just panic() to make it a bit more flexible.
-> Unfortunately there is no additional data, so it comes down to always
-> sending the same character.
-> 
-> It would be possible to make that character configurable with a module
-> parameter or something like that, but I'm not sure that is an improvement.
-> Maybe you have another idea for this.
+> No idea of impact of such change.
 
-Given the interrupt can be dismissed then offering non-fatal actions in
-response the chassis command seems reasonable.
+What I could do, is to create a separate change out of this outlined 
+change alone so it would be possible to bisect to the very change, if it 
+would cause a regression for somebody.
 
-There is some prior art for this sort of feature. AFAICT SGI UV has a
-similar mechanism that can send an NMI-with-no-side-channel to the
-kernel. The corresponding driver offers a range of actions using a
-module parameter:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/platform/uv/uv_nmi.c#n180
+It doesn't feel very useful to have START_CHAR and STOP_CHAR match but 
+who knows what is out there. I tested it briefly with stty and I know it 
+"works" on the normal receive path (doesn't stop) but usefulness of such
+a config seems rather doubtful.
 
-I don't think a hardcoded 'c' makes any sense. With a hardcoded argument
-it is just obfuscation. However it is certainly seems attractive to be
-able to reuse handle_sysrq() to provide a more powerful set of actions.
+One interesting difference is that here in the closing path, stop has 
+higher precedence and on the normal path, start takes preference. I don't 
+know if that's intentional or not.
 
 
-Daniel.
+-- 
+ i.
+--8323329-810036969-1649425381=:1643--
