@@ -2,126 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5763AC433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61A7C433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 12:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbiDHMIb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51438 "EHLO
+        id S234369AbiDHMWR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:22:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235834AbiDHMIC (ORCPT
+        with ESMTP id S229550AbiDHMWQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:08:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA72FFB53;
-        Fri,  8 Apr 2022 05:05:51 -0700 (PDT)
+        Fri, 8 Apr 2022 08:22:16 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C2B33D0D3;
+        Fri,  8 Apr 2022 05:20:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649419551; x=1680955551;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=UcRlRW5b7oJzAdGekoxvGobq0K9KZIlLu2yxSMEnG0E=;
-  b=CDj4eHutEQmsl0rKh0k6NpmveisZHBYpbdW0uij0TlOAuB155F6RAtvG
-   Zh2Qak9Oc3/ggnuwnsXM57GTzeyP2GHkm+c8mElO4o5VCzRdJCIISOB9i
-   suAW5qzDALYncuDrk1D6SErJS2rJUlBLTod3cq1PgNtpQVs4xaCt+r3H6
-   /SX2SK6RNqhL5CSZ8yKb2t7xFxU/RzaqrGNvCqt9s2ubAPPjIufT/s+gx
-   5AzlGCHZjHdpHBLfdLLj3LktTkZNzKfObwzS3qWYsNsQJQh8VCD1XqUv2
-   RF1+4Rd8ptx4qELfDGScIxue7nT3wu2vi2RJyY290r4HkqLe+mBfqE+Vd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261269428"
+  t=1649420412; x=1680956412;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=WPsslrFd0S6sXmVgTxDUoYEL32FPotRMU+1lqBKb5iU=;
+  b=bgjvTtW0I20mqkt5dHcgUItHH17Z+qewfQNWHsJwcYIE3w+aGwLZ4STF
+   ejqn1xjXsVg8sYoLKQTTD5Wi3q4Js8/dwuxL1myXeNKERhmThSDxq6dUM
+   O/UqoM7ppRmEz8SenT/hhbBFlHbSKN5BblCHrcbH3qhs7uFjVgEdDsQyw
+   kG7GW0s4U5eEcZ3nXEnBZHXKw2flmIEiCS7I3TfWEsazLoN9XOCRYmq83
+   Dm6weIKJDMs7ATVLEDSgmWJG74k/VrS2JhbheaJdhPyaiY0fORzLlnesi
+   UIAqEQ9jCJg2nLCV2fu4mf7Hsg1OmEvPxyGtCrFQ+BKEpadUcaGIcV3bk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="249110195"
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="261269428"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:05:31 -0700
+   d="scan'208";a="249110195"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:20:11 -0700
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="659463232"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:05:29 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncnJE-000HDJ-3z;
-        Fri, 08 Apr 2022 15:01:48 +0300
-Date:   Fri, 8 Apr 2022 15:01:47 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+   d="scan'208";a="571473128"
+Received: from aecajiao-mobl.amr.corp.intel.com ([10.252.48.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:20:09 -0700
+Date:   Fri, 8 Apr 2022 15:20:07 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
         Gilles Buloz <gilles.buloz@kontron.com>,
         Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2 1/3] tty: Add functions for handling flow control chars
-Message-ID: <YlAkK16xqh3DgY20@smile.fi.intel.com>
-References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
- <20220408113954.9749-2-ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v2 1/3] tty: Add functions for handling flow control
+ chars
+In-Reply-To: <YlAkK16xqh3DgY20@smile.fi.intel.com>
+Message-ID: <d79c4c20-1cfd-a3a1-516b-b6b51360527c@linux.intel.com>
+References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com> <20220408113954.9749-2-ilpo.jarvinen@linux.intel.com> <YlAkK16xqh3DgY20@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220408113954.9749-2-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: multipart/mixed; BOUNDARY="8323329-865545589-1649420348=:1643"
+Content-ID: <d3d8d4fb-baab-977-cbb3-46e5455dab@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:39:52PM +0300, Ilpo Järvinen wrote:
-> Move receive path flow control character handling to own function
-> and a helper.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-865545589-1649420348=:1643
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <aed6b5c-6a20-30e9-96ef-1532ea8b2e1@linux.intel.com>
+
+On Fri, 8 Apr 2022, Andy Shevchenko wrote:
+
+> On Fri, Apr 08, 2022 at 02:39:52PM +0300, Ilpo Järvinen wrote:
+> > Move receive path flow control character handling to own function
+> > and a helper.
+> > 
+> > This seems cleanest approach especially once skipping due to lookahead
+> > is added. Its downside is the duplicated START_CHAR and STOP_CHAR
+> > checks.
+> > 
+> > No functional changes.
 > 
-> This seems cleanest approach especially once skipping due to lookahead
-> is added. Its downside is the duplicated START_CHAR and STOP_CHAR
-> checks.
+> But it seems the change. See below.
 > 
-> No functional changes.
+> ...
+> 
+> > +static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+> > +{
+> > +	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
+> > +}
+> > +
+> > +/* Returns true if c is consumed as flow-control character */
+> > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+> > +{
+> > +	if (!n_tty_is_char_flow_ctrl(tty, c))
+> > +		return false;
+> > +
+> > +	if (c == START_CHAR(tty)) {
+> > +		start_tty(tty);
+> > +		process_echoes(tty);
+> 
+> > +	} else if (c == STOP_CHAR(tty)) {
+> 
+> In the original code no 'else' was present.
+>
+> Perhaps it's not a functional change, but this detail has to be explained.
 
-But it seems the change. See below.
+Correct that the previous code didn't have else, however, there was return 
+with the same effect. Adding this else here was no accident from my part 
+but it is intentionally there to have no functional change for the 
+START_CHAR == STOP_CHAR case!
 
-...
-
-> +static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> +{
-> +	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
-> +}
-> +
-> +/* Returns true if c is consumed as flow-control character */
-> +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
-> +{
-> +	if (!n_tty_is_char_flow_ctrl(tty, c))
-> +		return false;
-> +
-> +	if (c == START_CHAR(tty)) {
-> +		start_tty(tty);
-> +		process_echoes(tty);
-
-> +	} else if (c == STOP_CHAR(tty)) {
-
-In the original code no 'else' was present.
-
-Perhaps it's not a functional change, but this detail has to be explained.
-
-> +		stop_tty(tty);
-> +	}
-> +
-> +	return true;
-> +}
-
-...
-
-> -	if (I_IXON(tty)) {
-> -		if (c == START_CHAR(tty)) {
-> -			start_tty(tty);
-> -			process_echoes(tty);
-> -			return;
-> -		}
-> -		if (c == STOP_CHAR(tty)) {
-> -			stop_tty(tty);
-> -			return;
-> -		}
-> -	}
-> +	if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c))
-> +		return;
+> > +		stop_tty(tty);
+> > +	}
+> > +
+> > +	return true;
+> > +}
+> 
+> ...
+> 
+> > -	if (I_IXON(tty)) {
+> > -		if (c == START_CHAR(tty)) {
+> > -			start_tty(tty);
+> > -			process_echoes(tty);
+> > -			return;
+> > -		}
+> > -		if (c == STOP_CHAR(tty)) {
+> > -			stop_tty(tty);
+> > -			return;
+> > -		}
+> > -	}
+> > +	if (I_IXON(tty) && n_tty_receive_char_flow_ctrl(tty, c))
+> > +		return;
+> 
+> 
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+ i.
+--8323329-865545589-1649420348=:1643--
