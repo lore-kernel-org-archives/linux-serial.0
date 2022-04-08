@@ -2,112 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6868BC433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Apr 2022 17:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C64C433F5
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Apr 2022 00:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236924AbiDGRtA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S232883AbiDHAik (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Apr 2022 20:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235671AbiDGRs7 (ORCPT
+        with ESMTP id S232174AbiDHAij (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:48:59 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D632186FB;
-        Thu,  7 Apr 2022 10:46:58 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-d39f741ba0so7107973fac.13;
-        Thu, 07 Apr 2022 10:46:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MmJLuyekwoblpDX5b95jqgHit0wkMxVufsew2de6Slo=;
-        b=0T5kaHlE1ipsHES8GxwMFE+DH+UvG7yo9S1SjOA8OaNGX0IYQzJZo76rn0/intxKMZ
-         K8NK3KQ1dN+0sl8WOZ02/N46Lc8fb9hrdG7BdBQd2iepC2Bim6q1d53u3BLucg4zT9pu
-         O5kShshmE5PSZIfYNoVJqV0hZ+vGJI8F3GV5Gp9/M2YeuL1sMKhqbJtxOGn5yZUnclsv
-         9MvEAozfXc7r2sGIEsRav/byS/MGRed01yqoFimbNOb7vvXb9E1hDvlrp5Jr1uDG1OY1
-         rxI1Ll9U6ANtOtjiPL6Q5XEX2Lp8guKUMCzVwiZXEuCELrGDCMXgTFmJdlu3R/TlmPyD
-         V+FA==
-X-Gm-Message-State: AOAM530oNeayLCliorKugaC151UzHBIFWIX6pJXW/QHK11eSjUUf03Kw
-        7cLwE1yj+jZ9IFecKMYE2Q==
-X-Google-Smtp-Source: ABdhPJw754vwBgnN/nBlQiTizQIA1UI3kDsgOYrCH4cfGSEpTe/2uKtRnMgf93qE3ml0Uw6wprvEeA==
-X-Received: by 2002:a05:6870:2310:b0:da:b3f:2b76 with SMTP id w16-20020a056870231000b000da0b3f2b76mr6804229oao.277.1649353617755;
-        Thu, 07 Apr 2022 10:46:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o17-20020a9d5c11000000b005b2611a13edsm8263373otk.61.2022.04.07.10.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:46:57 -0700 (PDT)
-Received: (nullmailer pid 1614078 invoked by uid 1000);
-        Thu, 07 Apr 2022 17:46:56 -0000
-Date:   Thu, 7 Apr 2022 12:46:56 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Subject: Re: [PATCH v4 0/9] dt-bindings: qcom: convert entire GSBI (QUP
- I2C/SPI/UART) to DT schema
-Message-ID: <Yk8jkJepgcRMo73l@robh.at.kernel.org>
-References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
+        Thu, 7 Apr 2022 20:38:39 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49B83106136;
+        Thu,  7 Apr 2022 17:36:35 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Fri, 8 Apr 2022 08:35:49
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.67.219]
+Date:   Fri, 8 Apr 2022 08:35:49 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     "Dan Carpenter" <dan.carpenter@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "chris@zankel.net" <chris@zankel.net>,
+        "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "jes@trained-monkey.org" <jes@trained-monkey.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "alexander.deucher@amd.com" <alexander.deucher@amd.com>,
+        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hippi@sunsite.dk" <linux-hippi@sunsite.dk>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: Re: RE: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
+ irdma_cleanup_cm_core()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <MWHPR11MB00293D107510E728769874DFE9E69@MWHPR11MB0029.namprd11.prod.outlook.com>
+References: <cover.1649310812.git.duoming@zju.edu.cn>
+ <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
+ <20220407112455.GK3293@kadam>
+ <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
+ <20220407142908.GO12805@kadam>
+ <MWHPR11MB00293D107510E728769874DFE9E69@MWHPR11MB0029.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
+Message-ID: <7775f2d3.3fd15.18006994530.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgCHj6dlg09ist7pAA--.33797W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0OAVZdtZFLwwACsl
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 08:34:42AM +0200, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> Changes since v3
-> ================
-> 1. Correct dmas in serial/UART bindings example.
-> 2. Use "const" in compatible for GSBI.
-> 3. Add review tags.
-> 
-> Changes since v2
-> ================
-> 1. Several new schema patches (GSBI, I2C and UART schema).
-> 2. Several DTS fixes for clocks and DMAs. The choice of dma tx-rx
->    and clocks core-iface was by more-or-less number of fixes needed.
-> 3. Add Kuldeep acks to patches without changes.
-> 
-> Changes since v1
-> ================
-> 1. Fix path in com/qcom,gsbi.txt.
-> 2. Merge clock-names in example, correct $ref path (Kuldeep).
-> 
-> Merging
-> =======
-> 1. The DTS patches are independent and silence warnings pointed
->     out by schema.
-> 
-> 2. The DT schema patches should be taken together as GSBI (final patch)
->    depends on previous bindings.
-> 
-> Best regards,
-> Krzysztof
-> 
-> Cc: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-> 
-> Krzysztof Kozlowski (9):
->   arm64: dts: qcom: align dmas in I2C/SPI/UART with DT schema
->   arm64: dts: qcom: align clocks in I2C/SPI with DT schema
->   ARM: dts: qcom: ipq4019: align dmas in SPI/UART with DT schema
->   ARM: dts: qcom: ipq4019: align clocks in I2C with DT schema
->   ARM: dts: qcom: msm8660: disable GSBI8
->   spi: dt-bindings: qcom,spi-qup: convert to dtschema
->   dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
->   dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
->   dt-bindings: qcom: qcom,gsbi: convert to dtschema
+SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTc6MzY6MTIgKzAwMDAgU2FsZWVtLCBTaGlyYXog
+d3JvdGU6CiAKPiA+IFN1YmplY3Q6IFJlOiBSZTogW1BBVENIIDA5LzExXSBkcml2ZXJzOiBpbmZp
+bmliYW5kOiBodzogRml4IGRlYWRsb2NrIGluCj4gPiBpcmRtYV9jbGVhbnVwX2NtX2NvcmUoKQo+
+ID4gCj4gPiBPbiBUaHUsIEFwciAwNywgMjAyMiBhdCAwODo1NDoxM1BNICswODAwLCBkdW9taW5n
+QHpqdS5lZHUuY24gd3JvdGU6Cj4gPiA+IEhlbGxvLAo+ID4gPgo+ID4gPiBPbiBUaHUsIDcgQXBy
+IDIwMjIgMTQ6MjQ6NTYgKzAzMDAgRGFuIENhcnBlbnRlciB3cm90ZToKPiA+ID4KPiA+ID4gPiA+
+IFRoZXJlIGlzIGEgZGVhZGxvY2sgaW4gaXJkbWFfY2xlYW51cF9jbV9jb3JlKCksIHdoaWNoIGlz
+IHNob3duCj4gPiA+ID4gPiBiZWxvdzoKPiA+ID4gPiA+Cj4gPiA+ID4gPiAgICAoVGhyZWFkIDEp
+ICAgICAgICAgICAgICB8ICAgICAgKFRocmVhZCAyKQo+ID4gPiA+ID4gICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgfCBpcmRtYV9zY2hlZHVsZV9jbV90aW1lcigpCj4gPiA+ID4gPiBpcmRtYV9j
+bGVhbnVwX2NtX2NvcmUoKSAgICB8ICBhZGRfdGltZXIoKQo+ID4gPiA+ID4gIHNwaW5fbG9ja19p
+cnFzYXZlKCkgLy8oMSkgfCAgKHdhaXQgYSB0aW1lKQo+ID4gPiA+ID4gIC4uLiAgICAgICAgICAg
+ICAgICAgICAgICAgfCBpcmRtYV9jbV90aW1lcl90aWNrKCkKPiA+ID4gPiA+ICBkZWxfdGltZXJf
+c3luYygpICAgICAgICAgIHwgIHNwaW5fbG9ja19pcnFzYXZlKCkgLy8oMikKPiA+ID4gPiA+ICAo
+d2FpdCB0aW1lciB0byBzdG9wKSAgICAgIHwgIC4uLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFdlIGhv
+bGQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEgYW5kIHVzZQo+
+ID4gPiA+ID4gZGVsX3RpbWVyX3N5bmMoKSB0byB3YWl0IHRpbWVyIHRvIHN0b3AsIGJ1dCB0aW1l
+ciBoYW5kbGVyIGFsc28KPiA+ID4gPiA+IG5lZWQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlv
+biAoMikgb2YgdGhyZWFkIDIuCj4gPiA+ID4gPiBBcyBhIHJlc3VsdCwgaXJkbWFfY2xlYW51cF9j
+bV9jb3JlKCkgd2lsbCBibG9jayBmb3JldmVyLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFRoaXMgcGF0
+Y2ggZXh0cmFjdHMgZGVsX3RpbWVyX3N5bmMoKSBmcm9tIHRoZSBwcm90ZWN0aW9uIG9mCj4gPiA+
+ID4gPiBzcGluX2xvY2tfaXJxc2F2ZSgpLCB3aGljaCBjb3VsZCBsZXQgdGltZXIgaGFuZGxlciB0
+byBvYnRhaW4gdGhlCj4gPiA+ID4gPiBuZWVkZWQgbG9jay4KPiA+ID4gPiA+Cj4gPiA+ID4gPiBT
+aWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+ID4gPiA+
+IC0tLQo+ID4gPiA+ID4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jIHwgNSArKysr
+LQo+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkKPiA+ID4gPiA+Cj4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3
+L2lyZG1hL2NtLmMKPiA+ID4gPiA+IGIvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMK
+PiA+ID4gPiA+IGluZGV4IGRlZGIzYjdlZGQ4Li4wMTlkZDhiZmUwOCAxMDA2NDQKPiA+ID4gPiA+
+IC0tLSBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jCj4gPiA+ID4gPiArKysgYi9k
+cml2ZXJzL2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gPiA+ID4gQEAgLTMyNTIsOCArMzI1
+MiwxMSBAQCB2b2lkIGlyZG1hX2NsZWFudXBfY21fY29yZShzdHJ1Y3QKPiA+IGlyZG1hX2NtX2Nv
+cmUgKmNtX2NvcmUpCj4gPiA+ID4gPiAgCQlyZXR1cm47Cj4gPiA+ID4gPgo+ID4gPiA+ID4gIAlz
+cGluX2xvY2tfaXJxc2F2ZSgmY21fY29yZS0+aHRfbG9jaywgZmxhZ3MpOwo+ID4gPiA+ID4gLQlp
+ZiAodGltZXJfcGVuZGluZygmY21fY29yZS0+dGNwX3RpbWVyKSkKPiA+ID4gPiA+ICsJaWYgKHRp
+bWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIHsKPiA+ID4gPiA+ICsJCXNwaW5fdW5s
+b2NrX2lycXJlc3RvcmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ID4gPiA+ICAJCWRl
+bF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGltZXIpOwo+ID4gPiA+ID4gKwkJc3Bpbl9sb2Nr
+X2lycXNhdmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ID4gPiA+ICsJfQo+ID4gPiA+
+ID4gIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFncyk7Cj4g
+PiA+ID4KPiA+ID4gPiBUaGlzIGxvY2sgZG9lc24ndCBzZWVtIHRvIGJlIHByb3RlY3RpbmcgYW55
+dGhpbmcuICBBbHNvIGRvIHdlIG5lZWQKPiA+ID4gPiB0byBjaGVjayB0aW1lcl9wZW5kaW5nKCk/
+ICBJIHRoaW5rIHRoZSBkZWxfdGltZXJfc3luYygpIGZ1bmN0aW9uCj4gPiA+ID4gd2lsbCBqdXN0
+IHJldHVybiBkaXJlY3RseSBpZiB0aGVyZSBpc24ndCBhIHBlbmRpbmcgbG9jaz8KPiA+ID4KPiA+
+ID4gVGhhbmtzIGEgbG90IGZvciB5b3VyIGFkdmljZSwgSSB3aWxsIHJlbW92ZSB0aGUgdGltZXJf
+cGVuZGluZygpIGFuZAo+ID4gPiB0aGUgcmVkdW5kYW50IGxvY2suCj4gPiAKPiA+IEkgZGlkbid0
+IGdpdmUgYW55IGFkdmljZS4gOlAgSSBvbmx5IGFzayBxdWVzdGlvbnMgd2hlbiBJIGRvbid0IGtu
+b3cgdGhlIGFuc3dlcnMuCj4gPiBTb21lb25lIHByb2JhYmx5IG5lZWRzIHRvIGxvb2sgYXQgJmNt
+X2NvcmUtPmh0X2xvY2sgYW5kIGZpZ3VyZSBvdXQgd2hhdCBpdCdzCj4gPiBwcm90ZWN0aW5nLgo+
+ID4gCj4gQWdyZWVkIG9uIHRoaXMgZml4Lgo+IAo+IFdlIHNob3VsZCBub3QgbG9jayBhcm91bmQg
+ZGVsX3RpbWVyX3N5bmMgb3IgbmVlZCB0byBjaGVjayBvbiB0aW1lcl9wZW5kaW5nLgo+IAo+IEhv
+d2V2ZXIsIHdlIGRvIG5lZWQgc2VyaWFsaXplIGFkZGl0aW9uIG9mIGEgdGltZXIgd2hpY2ggY2Fu
+IGJlIGNhbGxlZCBmcm9tIG11bHRpcGxlIHBhdGhzLCBpLmUuIHRoZSB0aW1lciBoYW5kbGVyIGFu
+ZCBpcmRtYV9zY2hlZHVsZV9jbV90aW1lci4KCkkgdGhpbmsgd2Ugc2hvdWxkIHJlcGxhY2UgdGhl
+IGNoZWNrICJpZiAoIXRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIiB0bwoiaWYg
+KHRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIiBpbiBpcmRtYV9jbV90aW1lcl90
+aWNrKCksIGFuZCByZXBsYWNlCiJpZiAoIXdhc190aW1lcl9zZXQpIiB0byAiaWYgKHdhc190aW1l
+cl9zZXQpIiBpbiBpcmRtYV9zY2hlZHVsZV9jbV90aW1lcigpIGluIG9yZGVyCnRvIGd1YXJhbnRl
+ZSB0aGUgdGltZXIgY291bGQgYmUgZXhlY3V0ZWQuIEkgd2lsbCBzZW5kIHRoZSBtb2RpZmllZCBw
+YXRjaCBhcyBzb29uIGFzIApwb3NzaWJsZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cgo=
 
-Patches 6-9 applied.
-
-Rob
