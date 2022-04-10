@@ -2,76 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB05C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 10 Apr 2022 12:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEFDC433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 10 Apr 2022 20:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235767AbiDJMxf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 10 Apr 2022 08:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
+        id S243890AbiDJUOg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiDJMxe (ORCPT
+        with ESMTP id S242784AbiDJUOf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 10 Apr 2022 08:53:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AF163BDF;
-        Sun, 10 Apr 2022 05:51:24 -0700 (PDT)
+        Sun, 10 Apr 2022 16:14:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D794B1D0;
+        Sun, 10 Apr 2022 13:12:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6977C60FD4;
-        Sun, 10 Apr 2022 12:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FB92C385A4;
-        Sun, 10 Apr 2022 12:51:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649595083;
-        bh=K+Xm3pX6N4tIOqUaw3aVj6EhwKZMhA1GN1ShZ3oZ2jM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=msSL5WS9g6eRcnfFj5mHj8kpRiB2Pbok1CwN82JdK2IaigadQSxmmW8VWGzh5YroU
-         AOEfp7v+BH6TxRKIhsGAatpWr4nMGNePA6FiPG6b23mdNU2sOoBN/H0ZdHq7AVWID9
-         hgwOZ8BPpRS0gSwO6e2S6ewo5PMqqpwFmPwVi4Kw=
-Date:   Sun, 10 Apr 2022 14:51:21 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59140B80E7A;
+        Sun, 10 Apr 2022 20:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 21E25C385A1;
+        Sun, 10 Apr 2022 20:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649621541;
+        bh=8paowOEL0F6ps9/ZTGBg7dqxv6sITcl+JySDoAnKdeQ=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=C7izLsmvxOs43h8tyFfmCu1hbECZ4TBUjSjMxoy8nlWZyGW8MJzi+3yKa6COtMGfk
+         mbOKbi/8PI72HorPIj+oGBekMqkdCRAglAS5r8Z7t7gSyGWDl41iPlQaL+AvhmqRRZ
+         Xr3Nnex4z8ZRGGZRJTfyTFbvsFUu3sY8FRoCwyXCbLNscxgjxd4GkXYEFhPv3cwsgo
+         aIs74nEpOuZnMxYiP/sw6jVxjZ3Rsk/6pbERKVnTjTi5lJRsQTDz9UYKkSjp2yJw/g
+         LuGHh3NYVAwa8k9wRqCxsJYGk9vc77atjkpmk/IiXXfcLai8vdmL2sgJ+oIT0bubQf
+         OPQBiCqXtee2w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0C71FE8DD5D;
+        Sun, 10 Apr 2022 20:12:20 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fix for 5.18-rc2
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YlLSyUv83naZO3Lz@kroah.com>
+References: <YlLSyUv83naZO3Lz@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YlLSyUv83naZO3Lz@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc2
+X-PR-Tracked-Commit-Id: dbf3f09322141b6f04a33949453b7626f62d9e0b
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8b57b3046107b50ebecb65537a172ef3d6cec673
+Message-Id: <164962154004.385.10080255578914154729.pr-tracker-bot@kernel.org>
+Date:   Sun, 10 Apr 2022 20:12:20 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fix for 5.18-rc2
-Message-ID: <YlLSyUv83naZO3Lz@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+The pull request you sent on Sun, 10 Apr 2022 14:51:21 +0200:
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc2
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8b57b3046107b50ebecb65537a172ef3d6cec673
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc2
+Thank you!
 
-for you to fetch changes up to dbf3f09322141b6f04a33949453b7626f62d9e0b:
-
-  tty: serial: mpc52xx_uart: make rx/tx hooks return unsigned, part II. (2022-04-04 10:33:02 +0200)
-
-----------------------------------------------------------------
-Serial driver fix for 5.18-rc2
-
-This is a single serial driver fix for a build issue that showed up due
-to changes that came in through the tty tree in 5.18-rc1 that were
-missed previously.  It resolves a build error with the mpc52xx_uart
-driver.
-
-It has been in linux-next this week with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Jiri Slaby (1):
-      tty: serial: mpc52xx_uart: make rx/tx hooks return unsigned, part II.
-
- drivers/tty/serial/mpc52xx_uart.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
