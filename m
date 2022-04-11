@@ -2,125 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C966C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 10:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BD4C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 10:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343643AbiDKKEd (ORCPT
+        id S1345151AbiDKKNW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        Mon, 11 Apr 2022 06:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242327AbiDKKEb (ORCPT
+        with ESMTP id S1345215AbiDKKMt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:04:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C7A40E69
-        for <linux-serial@vger.kernel.org>; Mon, 11 Apr 2022 03:02:17 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ndqs3-0001VG-FJ; Mon, 11 Apr 2022 12:02:07 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ndqs3-002MQB-9j; Mon, 11 Apr 2022 12:02:05 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ndqs1-002ZTf-2q; Mon, 11 Apr 2022 12:02:05 +0200
-Date:   Mon, 11 Apr 2022 12:02:02 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Tony Lindgren <tony@atomide.com>
+        Mon, 11 Apr 2022 06:12:49 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57A493A711;
+        Mon, 11 Apr 2022 03:10:36 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id EF152809F;
+        Mon, 11 Apr 2022 10:08:04 +0000 (UTC)
+Date:   Mon, 11 Apr 2022 13:10:34 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Johan Hovold <johan@kernel.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andriy.shevchenko@intel.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org,
+        "Matwey V . Kornilov" <matwey@sai.msu.ru>,
         Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: Re: [PATCH 2/2] serial: 8250: Fix runtime PM for start_tx() for
- empty buffer
-Message-ID: <20220411100202.5mzcogksfzk4hlk6@pengutronix.de>
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] serial: 8250: Fix runtime PM for start_tx() for RS485
+Message-ID: <YlP+muZF1nDIU0t4@atomide.com>
 References: <20220411094805.45696-1-tony@atomide.com>
- <20220411094805.45696-2-tony@atomide.com>
+ <YlP7eArvvNWnbMF2@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mog63zosfq7sgn7x"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220411094805.45696-2-tony@atomide.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <YlP7eArvvNWnbMF2@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+* Johan Hovold <johan@kernel.org> [220411 09:54]:
+> On Mon, Apr 11, 2022 at 12:48:04PM +0300, Tony Lindgren wrote:
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -1681,8 +1681,10 @@ static void serial8250_start_tx(struct uart_port *port)
+> >  		return;
+> >  
+> >  	if (em485 &&
+> > -	    em485->active_timer == &em485->start_tx_timer)
+> > +	    em485->active_timer == &em485->start_tx_timer) {
+> > +		serial8250_rpm_put_tx(up);
+> >  		return;
+> > +	}
+> 
+> I was just taking a quick look at your report about this and also
+> noticed this return statement.
+> 
+> The runtime PM implementation is a bit of mess as we've discussed
+> elsewhere, but the change you propose here doesn't look right.
 
---mog63zosfq7sgn7x
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Frankly "a bit of mess" applies "a bit more" than just the serial runtime
+PM :)
 
-On Mon, Apr 11, 2022 at 12:48:05PM +0300, Tony Lindgren wrote:
-> Commit 932d596378b0 ("serial: 8250: Return early in .start_tx() if there
-> are no chars to send") caused a regression where the drivers implementing
-> runtime PM stopped idling.
->=20
-> We need to call serial8250_rpm_put_tx() on early exit, it normally gets
-> called later on at __stop_tx().
->=20
-> Fixes: 932d596378b0 ("serial: 8250: Return early in .start_tx() if there =
-are no chars to send")
-> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1677,8 +1677,10 @@ static void serial8250_start_tx(struct uart_port *=
-port)
-> =20
->  	serial8250_rpm_get_tx(up);
-> =20
-> -	if (!port->x_char && uart_circ_empty(&port->state->xmit))
-> +	if (!port->x_char && uart_circ_empty(&port->state->xmit)) {
-> +		serial8250_rpm_put_tx(up);
->  		return;
-> +	}
+> start_tx() can be deferred in the rs485 case, but that doesn't mean you
+> should suspend the device here. In fact, that look like it would just
+> break runtime PM (the parts that may work to some extent).
 
-Assuming you don't need serial8250_rpm_get_tx() to check the condition,
-it would be easier to move the early return before the call to
-serial8250_rpm_get_tx().
+AFAIK there's currently nothing paired with the serial8250_rpm_get_tx(up)
+call at the beginning of serial8250_start_tx() for the early exit cases
+if start_tx_rs485() or __start_tx() won't get called.
 
-Best regards
-Uwe
+Care to clarify a bit more what you have in mind?
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Regards,
 
---mog63zosfq7sgn7x
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJT/JcACgkQwfwUeK3K
-7AmWNgf+IEwsufAbM3FLCmMNkfpzUsHgYf7rkVnWWCEQMp6Gp1L6uaZtqT0bYI+5
-wUukJuaYFU1PVp+oy8JB/ZduyFrp/e4qOnPJ9hl2tJg0J6pZ21PH2tO/RYRjbrIT
-h7srAdGQSX/e/u4R/TWRTuakJdwUBJHMpEO6KbXLC4xwpsUNtQeZjdsHUbalsoZg
-SvtjbdFrzeQU05ZF/an8fIgRl5/4LTnauf3YRPR2CBHwuElpuWIUqwR4E4kd7HFc
-OvVnpyGSb5fZ2k9Xvjla/CwW4I+e0At7T8Y4na0Jy6vKO/PhzcdIx2SDPvngYL5E
-ikIrMVTSxTA5IWNHOfJcUvAEqpKxgw==
-=/HZe
------END PGP SIGNATURE-----
-
---mog63zosfq7sgn7x--
+Tony
