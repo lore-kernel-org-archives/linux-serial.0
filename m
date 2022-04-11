@@ -2,146 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE16C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5E0C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242974AbiDKLZN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
+        id S238682AbiDKLel (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbiDKLZL (ORCPT
+        with ESMTP id S237928AbiDKLek (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:25:11 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF084550A
-        for <linux-serial@vger.kernel.org>; Mon, 11 Apr 2022 04:22:58 -0700 (PDT)
+        Mon, 11 Apr 2022 07:34:40 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A744550F;
+        Mon, 11 Apr 2022 04:32:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649676178; x=1681212178;
+  t=1649676747; x=1681212747;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=08RKjpMMHV3KkyFUunxkaSF7HTKjtoAVmsGrjtmyMow=;
-  b=IScd2exlnhPf0qvBC6cJCIaxh/I0mMXdassxD+bucw3ifkk/b0oHkH0H
-   UnpEU5uzWZWUsr57oblnXAziYX1nXSyJpfX2vzsMzJadOAgfXN8Bdj83+
-   ONJjPlPXWB9mECQrqZm9blv4KzUKmIYNlElJbXNdlZv40rAAorcjrVYFB
-   xU80ooJW//RESH8r0oMQjawje+qIw9rbXJJyKVg+lHJSZogWXhIywQxXy
-   2GWXhgOVKIMLkiKMksP9JsQaRMQGnoiXLqmJppnbn5AtiXqOBhiQPT1Zm
-   C1Sr8XTBR7TV7Fvdmn5c+kGxUjLzowt4EJ1QzSjjWPRuuXZQHEZRdPa9t
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261529555"
+  bh=TYy9NxpTkSA66TQfkmpTqBo09yMyp2M0WmZn0CW2F1A=;
+  b=kQ+YQsCg6G/4xCsXFjzLezWgd2rQavHB+BeNX4WZk5QEKds1Fr/ROoJX
+   Y4kqL7Yi8t5j+8mFeHlsaJGmEasqFHZ7Dzv35p/XvFKCt2TbaCck05BUU
+   BG1zL/T/rbI8WWarGTE+5h+WKQld/bwJLThZ9O4ixzhQBQI+2vC4QfBn1
+   jjzADhXwt/6h1oIat1f7QJEN0wxUKXHhhp9DsC31qHonWeoSw9IAiUWt6
+   y6th+uM/bFhQ13rY57IA+iFApzc1yE4d13Rqu4JDBRSJ1cH7ZbKBgcaqa
+   sNu9Gui3RrkSdElcC5EMifGkM79BT7qvViLZzzJduuaypQJuGs/RV48bq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="259689278"
 X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="261529555"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:22:57 -0700
+   d="scan'208";a="259689278"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:26 -0700
 X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="723929659"
+   d="scan'208";a="589846699"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:22:54 -0700
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:24 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nds4g-001BxB-Kb;
-        Mon, 11 Apr 2022 14:19:14 +0300
-Date:   Mon, 11 Apr 2022 14:19:14 +0300
+        id 1ndsDt-001C3i-1e;
+        Mon, 11 Apr 2022 14:28:45 +0300
+Date:   Mon, 11 Apr 2022 14:28:44 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Johan Hovold <johan@kernel.org>, heiko@sntech.de,
-        giulio.benetti@micronovasrl.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Raymond Tan <raymond.tan@intel.com>,
-        Lakshmi Sowjanya <lakshmi.sowjanya.d@intel.com>
-Subject: Re: [PATCH v3 12/12] serial: 8250_dwlib: Support for 9th bit
- multipoint addressing
-Message-ID: <YlQOsiJAsYYA45B7@smile.fi.intel.com>
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
- <20220411083321.9131-13-ilpo.jarvinen@linux.intel.com>
+        linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v3 5/5] tty: Use flow-control char function on closing
+ path
+Message-ID: <YlQQ7MYBiK98n5XK@smile.fi.intel.com>
+References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com>
+ <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220411083321.9131-13-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:33:21AM +0300, Ilpo Järvinen wrote:
-> This change adds 9th bit multipoint addressing mode for DW UART using
-> the new ioctls introduced in the previous change. 9th bit addressing
-> can be used only when HW RS485 is available.
+On Mon, Apr 11, 2022 at 12:48:59PM +0300, Ilpo Järvinen wrote:
+> Use n_tty_receive_char_flow_ctrl also on the closing path. This makes
+> the code cleaner and consistent.
 > 
-> Updating RAR (receive address register) is bit tricky because
-> busy indication is not be available when DW UART is strictly
-> 16550 compatible, which is the case with the hardware I was
-> testing with. RAR should not be updated while receive is in
-> progress which is now achieved by deasserting RE and waiting
-> for one frame (in case rx would be in progress, the driver
-> seems to have no way of knowing it w/o busy indication).
+> However, there a small change of regression!
+> 
+> The earlier closing path has a small difference compared with the
+> normal receive path. If START_CHAR and STOP_CHAR are equal, their
+> precedence is different depending on which path a character is
+> processed. I don't know whether this difference was intentional or
+> not, and if equal START_CHAR and STOP_CHAR is actually used anywhere.
+> But it feels not so useful corner case.
+> 
+> While this change would logically belong to those earlier changes,
+> having a separate patch for this is useful. If this regresses, bisect
+> can pinpoint this change rather than the large patch. Also, this
+> change is not necessary to minimal fix for the issue addressed in
+> the previous patch.
 
-...
+This is nice, if it flies!
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> +static void dw8250_update_rar(struct uart_port *p, u32 addr)
-> +{
-> +	u32 re_en = dw8250_readl_ext(p, DW_UART_RE_EN);
-> +
-> +	/*
-> +	 * RAR shouldn't be changed while receiving. Thus, de-assert RE_EN
-> +	 * if asserted and wait.
-> +	 */
-> +	if (re_en)
-> +		dw8250_writel_ext(p, DW_UART_RE_EN, 0);
-> +	dw8250_wait_re_deassert(p);
-> +	dw8250_writel_ext(p, DW_UART_RAR, addr);
-> +	if (re_en)
-> +		dw8250_writel_ext(p, DW_UART_RE_EN, re_en);
-
-I would write it
-
-	u32 re_en;
-
-	/*
-	 * RAR shouldn't be changed while receiving. Thus, de-assert RE_EN
-	 * if asserted and wait.
-	 */
-	re_en = dw8250_readl_ext(p, DW_UART_RE_EN);
-	if (re_en) {
-		dw8250_writel_ext(p, DW_UART_RE_EN, 0);
-		dw8250_wait_re_deassert(p);
-		dw8250_writel_ext(p, DW_UART_RAR, addr);
-		dw8250_writel_ext(p, DW_UART_RE_EN, re_en);
-	} else {
-		dw8250_wait_re_deassert(p);
-		dw8250_writel_ext(p, DW_UART_RAR, addr);
-	}
-
-or something similar with extracting these two lines into another function.
-
-But it's up to you, it's just pure style thingy.
-
-> +}
-
-...
-
-> +		dw8250_writel_ext(p, DW_UART_TAR, addr->addr & 0xff);
-
-GENMASK() ?
-Perhaps even a separate definition?
-
-...
-
-> +		addr->addr = dw8250_readl_ext(p, DW_UART_TAR) & 0xff;
-
-Ditto.
-
-...
-
-> +			addr->addr = dw8250_readl_ext(p, DW_UART_RAR) & 0xff;
-
-Ditto.
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/n_tty.c | 13 ++++---------
+>  1 file changed, 4 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index fede29ed8daf..e6f47858f98f 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -1414,15 +1414,10 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
+>  		c = tolower(c);
+>  
+>  	if (I_IXON(tty)) {
+> -		if (c == STOP_CHAR(tty)) {
+> -			if (!lookahead_done)
+> -				stop_tty(tty);
+> -		} else if (c == START_CHAR(tty) && lookahead_done) {
+> -			return;
+> -		} else if (c == START_CHAR(tty) ||
+> -			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> -			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> -			  c != SUSP_CHAR(tty))) {
+> +		if (!n_tty_receive_char_flow_ctrl(tty, c, lookahead_done) &&
+> +		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> +		    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> +		    c != SUSP_CHAR(tty)) {
+>  			start_tty(tty);
+>  			process_echoes(tty);
+>  		}
+> -- 
+> 2.30.2
+> 
 
 -- 
 With Best Regards,
