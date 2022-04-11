@@ -2,42 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E32DC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 09:49:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3060BC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 09:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344746AbiDKJv1 (ORCPT
+        id S1344802AbiDKJwJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
+        Mon, 11 Apr 2022 05:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344767AbiDKJvR (ORCPT
+        with ESMTP id S1344744AbiDKJwB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:51:17 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23C084160B;
-        Mon, 11 Apr 2022 02:48:38 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 3556C8191;
-        Mon, 11 Apr 2022 09:45:42 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Mon, 11 Apr 2022 05:52:01 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25274160B;
+        Mon, 11 Apr 2022 02:49:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649670559; x=1681206559;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tLQnkkpIQ4X3yEMlGxAP4IEwUxyB9+6gl5gfqvuRap8=;
+  b=ANF+1/wQGT3vU5NcyP8UNQY5OVz6IKw3ceID3fMnLDYhLWpgZkfrAr9/
+   bx4MDn9kVlt7UIXDX90NNRFl6D5g44py1AbQf8JxjTxGrgS3JgC1vleyE
+   ddpNxcLuud5lVqSgJSa+N5a51Gu0tXSyc/Y6fDjU4AMBO9ex+lBo8UZks
+   +IgK/D1rkvW7q+iWpOTjHKjq0+oarWdEaFU8AQp+6Yz6YF3Z1tik4r0H2
+   1iaDU5OqGEpwFuctFn9XE//atIRyD/dX5jjJb+8qlUZNyrWfGiRHkJmEY
+   NlP64cPsXOapZhImLyiPWaR8ypUNF7iYAwcPVhQf8mSOA3KqLoRR7KXq8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="242014210"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="242014210"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:49:18 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="572053806"
+Received: from azahoner-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.232])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:49:15 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
         Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>
-Subject: [PATCH 2/2] serial: 8250: Fix runtime PM for start_tx() for empty buffer
-Date:   Mon, 11 Apr 2022 12:48:05 +0300
-Message-Id: <20220411094805.45696-2-tony@atomide.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411094805.45696-1-tony@atomide.com>
-References: <20220411094805.45696-1-tony@atomide.com>
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v3 2/5] tty: Simplify receive flow control char logic
+Date:   Mon, 11 Apr 2022 12:48:56 +0300
+Message-Id: <20220411094859.10894-3-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com>
+References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -45,35 +59,54 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 932d596378b0 ("serial: 8250: Return early in .start_tx() if there
-are no chars to send") caused a regression where the drivers implementing
-runtime PM stopped idling.
+Add a helper to check if the character is a flow control one.
+Reorder return places, add else for the case where START_CHAR
+and STOP_CHAR are the same, w/o else both would match.
 
-We need to call serial8250_rpm_put_tx() on early exit, it normally gets
-called later on at __stop_tx().
+This seems cleanest approach once skipping due to lookahead
+is added by the next patch. Its downside is the duplicated
+START_CHAR and STOP_CHAR checks.
 
-Fixes: 932d596378b0 ("serial: 8250: Return early in .start_tx() if there are no chars to send")
-Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/n_tty.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1677,8 +1677,10 @@ static void serial8250_start_tx(struct uart_port *port)
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index c7edfc001fd0..90b3e06cbeb1 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1220,20 +1220,25 @@ n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
+ 		process_echoes(tty);
+ }
  
- 	serial8250_rpm_get_tx(up);
++static bool n_tty_is_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
++{
++	return c == START_CHAR(tty) || c == STOP_CHAR(tty);
++}
++
+ /* Returns true if c is consumed as flow-control character */
+ static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+ {
++	if (!n_tty_is_char_flow_ctrl(tty, c))
++		return false;
++
+ 	if (c == START_CHAR(tty)) {
+ 		start_tty(tty);
+ 		process_echoes(tty);
+-		return true;
+-	}
+-	if (c == STOP_CHAR(tty)) {
++	} else if (c == STOP_CHAR(tty)) {
+ 		stop_tty(tty);
+-		return true;
+ 	}
  
--	if (!port->x_char && uart_circ_empty(&port->state->xmit))
-+	if (!port->x_char && uart_circ_empty(&port->state->xmit)) {
-+		serial8250_rpm_put_tx(up);
- 		return;
-+	}
+-	return false;
++	return true;
+ }
  
- 	if (em485 &&
- 	    em485->active_timer == &em485->start_tx_timer) {
+ static void n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
 -- 
-2.35.1
+2.30.2
+
