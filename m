@@ -2,91 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE37C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38884C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345831AbiDKLEG (ORCPT
+        id S1345828AbiDKLEY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
+        Mon, 11 Apr 2022 07:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344902AbiDKLEB (ORCPT
+        with ESMTP id S1346078AbiDKLCf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:04:01 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CA8C47;
-        Mon, 11 Apr 2022 04:01:46 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 590741F7AC;
-        Mon, 11 Apr 2022 11:01:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649674905; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VLW61QJTv1mS1iixu/oufPW4nB7MoJz4abXXNGERoBw=;
-        b=hXUt6rPwHh7Vs4roB28o3Q9/zgpqyth62Q07ZdKCCAAXebLpHxlmG948sOL/LIYmoAb4RQ
-        VfCUGfFAamkiBTf9BR2MsUZABDJ8WEjPuaXu8RpbC0LMjTioheoUF5eQNhMitH/sq2DCxB
-        pgVF382g8CZXucxsI9eJzV9Wco+NyJk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649674905;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VLW61QJTv1mS1iixu/oufPW4nB7MoJz4abXXNGERoBw=;
-        b=cNhAOTLlTGnBUTocPH70By6aJaNZGSb9l6NSjAB5Lp/Rh2fBq1pxxQoIsn4e+pLsC5CR52
-        2BpoZg3K+vAN46BA==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 262D3A3B89;
-        Mon, 11 Apr 2022 11:01:45 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5/6] Documentation: tty: n_gsm, delete "Additional Documentation"
-Date:   Mon, 11 Apr 2022 13:01:42 +0200
-Message-Id: <20220411110143.10019-6-jslaby@suse.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411110143.10019-1-jslaby@suse.cz>
-References: <20220411110143.10019-1-jslaby@suse.cz>
+        Mon, 11 Apr 2022 07:02:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E924504A
+        for <linux-serial@vger.kernel.org>; Mon, 11 Apr 2022 04:00:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649674814; x=1681210814;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=jYgo/pskezyKWbM20xhS/s9H18em5qzPlsxzrjkorgc=;
+  b=eF1gKpBfmkz/LqCoHitxyYNHD5Vg1UhjiCoYsvQuPmjIhDKY8IITSCgs
+   B34XCXaxDQHU/tWQgvsYaZo7E5YnooWZ0oxZ5txv3cOylNKOHlcWieFGQ
+   boe8B96dbAwPjUI4IkeXwR5LA4g+0v416BWfBp9OxAsG7lfwyAAkZMImu
+   vhaXsWcEuthMhklAtRhuE27pJOCDqHGg/93MXHIcLWUodhILKWiu2ftvi
+   Hlo2RKaAlYl+EbN4BH7rxssiCX6V/Vs81MMLq1GekkqoOcnfwgOgheVqo
+   9a6JA5XOsmxLJ7/fZXuu7H1KQZiZzvSXyGVYGDc6Y5zqRzKYfmcJege81
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261832371"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="261832371"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:00:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="644040267"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:00:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndria-001BcR-FW;
+        Mon, 11 Apr 2022 13:56:24 +0300
+Date:   Mon, 11 Apr 2022 13:56:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Johan Hovold <johan@kernel.org>, heiko@sntech.de,
+        giulio.benetti@micronovasrl.com,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 01/12] serial: Store character timing information to
+ uart_port
+Message-ID: <YlQJWHVTMeN2YsPA@smile.fi.intel.com>
+References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
+ <20220411083321.9131-2-ilpo.jarvinen@linux.intel.com>
+ <YlQIYatkKoeLekFJ@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YlQIYatkKoeLekFJ@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-All of the URLs give 404. There is a little point to preserve them. If
-really need be, we could try archive.org if the documents are not there
-by a chance.
+On Mon, Apr 11, 2022 at 01:52:18PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 11, 2022 at 11:33:10AM +0300, Ilpo Järvinen wrote:
+> > Struct uart_port currently stores FIFO timeout. Having character
+> > timing information readily available is useful. Even serial core
+> > itself determines char_time from port->timeout using inverse
+> > calculation.
+> > 
+> > Store frame_time directly into uart_port. Character time is stored
+> > in nanoseconds to have reasonable precision with high rates.
+> > To avoid overflow, 64-bit math is necessary.
+> > 
+> > It might be possible to determine timeout from frame_time by
+> > multiplying it with fifosize as needed but only part of the
+> > users seem to be protected by a lock. Thus, this patch does
+> > not pursue storing only frame_time in uart_port.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- Documentation/driver-api/tty/n_gsm.rst | 10 ----------
- 1 file changed, 10 deletions(-)
+...
 
-diff --git a/Documentation/driver-api/tty/n_gsm.rst b/Documentation/driver-api/tty/n_gsm.rst
-index 49956509ad73..04308a7a194a 100644
---- a/Documentation/driver-api/tty/n_gsm.rst
-+++ b/Documentation/driver-api/tty/n_gsm.rst
-@@ -146,14 +146,4 @@ Major parts of the initialization program :
- 	daemon(0,0);
- 	pause();
- 
--Additional Documentation
--------------------------
--More practical details on the protocol and how it's supported by industrial
--modems can be found in the following documents :
--
--- http://www.telit.com/module/infopool/download.php?id=616
--- http://www.u-blox.com/images/downloads/Product_Docs/LEON-G100-G200-MuxImplementation_ApplicationNote_%28GSM%20G1-CS-10002%29.pdf
--- http://www.sierrawireless.com/Support/Downloads/AirPrime/WMP_Series/~/media/Support_Downloads/AirPrime/Application_notes/CMUX_Feature_Application_Note-Rev004.ashx
--- http://wm.sim.com/sim/News/photo/2010721161442.pdf
--
- 11-03-08 - Eric BÃ©nard - <eric@eukrea.com>
+> > -	char_time = (port->timeout - HZ/50) / port->fifosize;
+> > -	char_time = char_time / 5;
+> > -	if (char_time == 0)
+> > -		char_time = 1;
+> > +	char_time = max(nsecs_to_jiffies(port->frame_time / 5), 1UL);
+> > +
+> >  	if (timeout && timeout < char_time)
+> >  		char_time = timeout;
+> 
+> Seems it can be packed to something like
+> 
+> 	char_time = min_not_zero(nsecs_to_jiffies(port->frame_time / 5), timeout);
+> 
+> ?
+
+Actually:
+
+	char_time = min_not_zero(timeout, nsecs_to_jiffies(port->frame_time / 5));
+
+Ah, either way it would still miss the case when both == 0. So, we need
+something like minmax3_not_zero, where 1UL is implied argument. Probably
+a suggesting for the future, since here it doesn't make much sense to
+introduce.
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
