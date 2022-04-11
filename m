@@ -2,106 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A8FC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 10:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEEBC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343501AbiDKK6Q (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36242 "EHLO
+        id S245605AbiDKLD7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245016AbiDKK6P (ORCPT
+        with ESMTP id S235973AbiDKLD7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:58:15 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF263B2A8
-        for <linux-serial@vger.kernel.org>; Mon, 11 Apr 2022 03:56:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649674561; x=1681210561;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=3XS+zMt/2GJSDWFAnh7v6Du9fAG72B3xZKxzLdCY/Gc=;
-  b=ep2OT0YKbv/N2dMkuRN00svO+dgl7lirTquRLQXzR3kpNrO37RpUkJhM
-   aI03hpWox/Xtp7U7p4JvQEEl7IxEW4LErKQhAvEuEh0GkQZpEUzDGrsLP
-   8tLtJb65ScqJRn3oJx+QBefCJ049lsJwFkujr5EOWVt6va9KoscBgskDQ
-   Xy/MRS718KLL9WCsu1TKue2l+ePfG24bmfCqfUdTymbMpf0vz57onsX7+
-   8D4lbLx+/VDs58RhhiKh7XKqyu99BdAmc0SkklfpF9EnaHPL4cmD8Ivgd
-   rXs1Se1KHXwls4DpPLAVm3wvT6DVtoYZHh8SFZdDY0Vz7lgtcn6VxRWO6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="243971679"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="243971679"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:56:00 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="525479515"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:55:58 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ndrec-001BZ7-6Q;
-        Mon, 11 Apr 2022 13:52:18 +0300
-Date:   Mon, 11 Apr 2022 13:52:17 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Johan Hovold <johan@kernel.org>, heiko@sntech.de,
-        giulio.benetti@micronovasrl.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v3 01/12] serial: Store character timing information to
- uart_port
-Message-ID: <YlQIYatkKoeLekFJ@smile.fi.intel.com>
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
- <20220411083321.9131-2-ilpo.jarvinen@linux.intel.com>
+        Mon, 11 Apr 2022 07:03:59 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8193AD7E;
+        Mon, 11 Apr 2022 04:01:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3B1C0215FD;
+        Mon, 11 Apr 2022 11:01:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649674904; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=45TauevK7dP+XLm2GxxbZ+B2Sm4ZxkU0Rw11agbZb2g=;
+        b=fDBfsbC3Nq09IP9NcbgsTHVJL+C4OluYs7l2f6vx2Gpxbvsa+nzpzzDemLlJKysN9f5cIm
+        uEVexj+CTG7qvaZNBgR8vBcNt8JKsUKYkTZDHoGoNaXLV+QIPoJbSxh/Hh5RSIqPQFEsZw
+        F8hhsrISGzyfoV6KgnficZV1clRwlTg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649674904;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=45TauevK7dP+XLm2GxxbZ+B2Sm4ZxkU0Rw11agbZb2g=;
+        b=4ugekRtF9A+LIGU0JyBtWy+WPcCKARPXNAMKmYxvCGhf8BRxNFKnF4rm0KVj+5Wtnhieni
+        pxDJuMhcxUIAdOAQ==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D914EA3B89;
+        Mon, 11 Apr 2022 11:01:43 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>, Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 1/6] Documentation: move tty to driver-api
+Date:   Mon, 11 Apr 2022 13:01:38 +0200
+Message-Id: <20220411110143.10019-2-jslaby@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411110143.10019-1-jslaby@suse.cz>
+References: <20220411110143.10019-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220411083321.9131-2-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:33:10AM +0300, Ilpo Järvinen wrote:
-> Struct uart_port currently stores FIFO timeout. Having character
-> timing information readily available is useful. Even serial core
-> itself determines char_time from port->timeout using inverse
-> calculation.
-> 
-> Store frame_time directly into uart_port. Character time is stored
-> in nanoseconds to have reasonable precision with high rates.
-> To avoid overflow, 64-bit math is necessary.
-> 
-> It might be possible to determine timeout from frame_time by
-> multiplying it with fifosize as needed but only part of the
-> users seem to be protected by a lock. Thus, this patch does
-> not pursue storing only frame_time in uart_port.
+Based on discussion starting as 87mthw2o93.fsf@meer.lwn.net, let's move
+the tty documentation to driver-api. It's more appropriate there.
 
-...
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Cc: Jonathan Corbet <corbet@lwn.net>
+---
+ Documentation/driver-api/index.rst                   | 1 +
+ Documentation/driver-api/serial/driver.rst           | 2 +-
+ Documentation/{ => driver-api}/tty/index.rst         | 9 ++++-----
+ Documentation/{ => driver-api}/tty/n_tty.rst         | 0
+ Documentation/{ => driver-api}/tty/tty_buffer.rst    | 0
+ Documentation/{ => driver-api}/tty/tty_driver.rst    | 0
+ Documentation/{ => driver-api}/tty/tty_internals.rst | 0
+ Documentation/{ => driver-api}/tty/tty_ldisc.rst     | 0
+ Documentation/{ => driver-api}/tty/tty_port.rst      | 0
+ Documentation/{ => driver-api}/tty/tty_struct.rst    | 0
+ Documentation/index.rst                              | 1 -
+ 11 files changed, 6 insertions(+), 7 deletions(-)
+ rename Documentation/{ => driver-api}/tty/index.rst (86%)
+ rename Documentation/{ => driver-api}/tty/n_tty.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_buffer.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_driver.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_internals.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_ldisc.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_port.rst (100%)
+ rename Documentation/{ => driver-api}/tty/tty_struct.rst (100%)
 
-> -	char_time = (port->timeout - HZ/50) / port->fifosize;
-> -	char_time = char_time / 5;
-> -	if (char_time == 0)
-> -		char_time = 1;
-> +	char_time = max(nsecs_to_jiffies(port->frame_time / 5), 1UL);
-> +
->  	if (timeout && timeout < char_time)
->  		char_time = timeout;
-
-Seems it can be packed to something like
-
-	char_time = min_not_zero(nsecs_to_jiffies(port->frame_time / 5), timeout);
-
-?
-
+diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
+index a7b0223e2886..bbbbcf20b7ce 100644
+--- a/Documentation/driver-api/index.rst
++++ b/Documentation/driver-api/index.rst
+@@ -101,6 +101,7 @@ available subsections can be seen below.
+    surface_aggregator/index
+    switchtec
+    sync_file
++   tty
+    vfio-mediated-device
+    vfio
+    vfio-pci-device-specific-driver-acceptance
+diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+index 7dc3791addeb..3c2d12acfd54 100644
+--- a/Documentation/driver-api/serial/driver.rst
++++ b/Documentation/driver-api/serial/driver.rst
+@@ -339,7 +339,7 @@ hardware.
+ 	This call must not sleep
+ 
+   set_ldisc(port,termios)
+-	Notifier for discipline change. See Documentation/tty/tty_ldisc.rst.
++	Notifier for discipline change. See ../tty/tty_ldisc.rst.
+ 
+ 	Locking: caller holds tty_port->mutex
+ 
+diff --git a/Documentation/tty/index.rst b/Documentation/driver-api/tty/index.rst
+similarity index 86%
+rename from Documentation/tty/index.rst
+rename to Documentation/driver-api/tty/index.rst
+index 21ea0cb21e55..2240e52203d6 100644
+--- a/Documentation/tty/index.rst
++++ b/Documentation/driver-api/tty/index.rst
+@@ -43,11 +43,10 @@ Writing TTY Driver
+ ==================
+ 
+ Before one starts writing a TTY driver, they must consider
+-:doc:`Serial <../driver-api/serial/driver>` and :doc:`USB Serial
+-<../usb/usb-serial>` layers
+-first. Drivers for serial devices can often use one of these specific layers to
+-implement a serial driver. Only special devices should be handled directly by
+-the TTY Layer. If you are about to write such a driver, read on.
++:doc:`Serial <../serial/driver>` and :doc:`USB Serial <../../usb/usb-serial>`
++layers first. Drivers for serial devices can often use one of these specific
++layers to implement a serial driver. Only special devices should be handled
++directly by the TTY Layer. If you are about to write such a driver, read on.
+ 
+ A *typical* sequence a TTY driver performs is as follows:
+ 
+diff --git a/Documentation/tty/n_tty.rst b/Documentation/driver-api/tty/n_tty.rst
+similarity index 100%
+rename from Documentation/tty/n_tty.rst
+rename to Documentation/driver-api/tty/n_tty.rst
+diff --git a/Documentation/tty/tty_buffer.rst b/Documentation/driver-api/tty/tty_buffer.rst
+similarity index 100%
+rename from Documentation/tty/tty_buffer.rst
+rename to Documentation/driver-api/tty/tty_buffer.rst
+diff --git a/Documentation/tty/tty_driver.rst b/Documentation/driver-api/tty/tty_driver.rst
+similarity index 100%
+rename from Documentation/tty/tty_driver.rst
+rename to Documentation/driver-api/tty/tty_driver.rst
+diff --git a/Documentation/tty/tty_internals.rst b/Documentation/driver-api/tty/tty_internals.rst
+similarity index 100%
+rename from Documentation/tty/tty_internals.rst
+rename to Documentation/driver-api/tty/tty_internals.rst
+diff --git a/Documentation/tty/tty_ldisc.rst b/Documentation/driver-api/tty/tty_ldisc.rst
+similarity index 100%
+rename from Documentation/tty/tty_ldisc.rst
+rename to Documentation/driver-api/tty/tty_ldisc.rst
+diff --git a/Documentation/tty/tty_port.rst b/Documentation/driver-api/tty/tty_port.rst
+similarity index 100%
+rename from Documentation/tty/tty_port.rst
+rename to Documentation/driver-api/tty/tty_port.rst
+diff --git a/Documentation/tty/tty_struct.rst b/Documentation/driver-api/tty/tty_struct.rst
+similarity index 100%
+rename from Documentation/tty/tty_struct.rst
+rename to Documentation/driver-api/tty/tty_struct.rst
+diff --git a/Documentation/index.rst b/Documentation/index.rst
+index ee639a500278..71cc2d1f35f2 100644
+--- a/Documentation/index.rst
++++ b/Documentation/index.rst
+@@ -138,7 +138,6 @@ needed).
+    misc-devices/index
+    scheduler/index
+    mhi/index
+-   tty/index
+    peci/index
+ 
+ Architecture-agnostic documentation
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
