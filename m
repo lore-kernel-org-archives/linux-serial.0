@@ -2,63 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F546C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 14:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79287C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 14:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346865AbiDKOEs (ORCPT
+        id S1347583AbiDKPBn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        Mon, 11 Apr 2022 11:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346884AbiDKOEq (ORCPT
+        with ESMTP id S1347580AbiDKPBl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:04:46 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1ED0432045;
-        Mon, 11 Apr 2022 07:02:32 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 658FC809F;
-        Mon, 11 Apr 2022 14:00:00 +0000 (UTC)
-Date:   Mon, 11 Apr 2022 17:02:30 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] serial: core: Start managing serial controllers to
- enable runtime PM
-Message-ID: <YlQ09mizfY8z5REh@atomide.com>
-References: <20220411120218.17422-1-tony@atomide.com>
- <YlQsTWcM3is9TGdw@smile.fi.intel.com>
+        Mon, 11 Apr 2022 11:01:41 -0400
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A221E06;
+        Mon, 11 Apr 2022 07:59:27 -0700 (PDT)
+Received: by mail-qk1-f172.google.com with SMTP id b33so10825289qkp.13;
+        Mon, 11 Apr 2022 07:59:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yUq/l2eFC4o7PuogV4g6ysQ8qWlSny+TA+UhI++mHfU=;
+        b=E7Oydqafp1Ye+7rSEheT3Vk8E2s7P4xfcCMvF6l3vwuMytFrvtmifUva0C35539irM
+         Fict1Oe6lNXZgadclQFLxjSj1afwS2WC+vkUeL5yUaAbZsN/TIS3s4k2jREpb/U0wILm
+         Y2iZSGBzR9UPZos/Q5DcoWv+CEnZgObdhUhT5TOpJt2YYEOkUFd71h7E24UqOW8sFAqq
+         qxNoFl9Ga3vYzC6Fyh5Ig8Cl5F1qm3pdzmR38hIQgbalWXSDZ2CzmuFUu6KdGnlU03tc
+         Iw6gIjLj4hiEVXudZvTq8ymnVhQqXr4ZQn1+yKqoH//FFVFoCad/gHpH0YrGzveo4GIW
+         k9NA==
+X-Gm-Message-State: AOAM533eA1ubrQ5IYBKfA8ETn+LDp5FWcN+CluMV1nKUpjuEYiHDwNej
+        CELkE+tk9H1B8yvxwhLUSOkcqHeeGYkI4g==
+X-Google-Smtp-Source: ABdhPJwXXobat+RR5zXQ9srHJH7D9PuWKPe705W1XxLfwdseXxqXdskAH/9lU59ySFm5QRhp9togFQ==
+X-Received: by 2002:a05:620a:a57:b0:69c:2bc2:6579 with SMTP id j23-20020a05620a0a5700b0069c2bc26579mr1916343qka.455.1649689165887;
+        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id g4-20020ac87d04000000b002e06b4674a1sm25478505qtb.61.2022.04.11.07.59.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2db2add4516so168862767b3.1;
+        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
+X-Received: by 2002:a81:3d81:0:b0:2eb:8069:5132 with SMTP id
+ k123-20020a813d81000000b002eb80695132mr26323646ywa.438.1649689164877; Mon, 11
+ Apr 2022 07:59:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlQsTWcM3is9TGdw@smile.fi.intel.com>
+References: <20220408122636.505737-1-valentin.caron@foss.st.com> <20220408122636.505737-4-valentin.caron@foss.st.com>
+In-Reply-To: <20220408122636.505737-4-valentin.caron@foss.st.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 11 Apr 2022 16:59:13 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWD8fxeqPUaT_CwnYdq02aaTsnQM_G-YyOGWooS5epCeQ@mail.gmail.com>
+Message-ID: <CAMuHMdWD8fxeqPUaT_CwnYdq02aaTsnQM_G-YyOGWooS5epCeQ@mail.gmail.com>
+Subject: Re: [PATCH V2 3/3] serial: stm32: add earlycon support
+To:     Valentin Caron <valentin.caron@foss.st.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Andy Shevchenko <andriy.shevchenko@intel.com> [220411 13:26]:
-> On Mon, Apr 11, 2022 at 03:02:18PM +0300, Tony Lindgren wrote:
-> >  	unsigned char		hub6;			/* this should be in the 8250 driver */
-> >  	unsigned char		suspended;
-> >  	unsigned char		console_reinit;
-> > +	unsigned long		supports_autosuspend:1;
-> 
-> Hmm... Maybe use unsigned char and convert all of them to something else if needed?
+Hi Valentin,
 
-Sorry forgot to reply to this. This can be unsigned char no problem.
-Most of the runtime PM related flags are in the struct serial_controller
-anyways now.
+On Fri, Apr 8, 2022 at 3:14 PM Valentin Caron
+<valentin.caron@foss.st.com> wrote:
+> Add early console support in stm32 uart driver.
+>
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
 
-Regards,
+Thanks for your patch!
 
-Tony
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1264,6 +1264,12 @@
+>                         address must be provided, and the serial port must
+>                         already be setup and configured.
+>
+> +               stm32,<addr>
+> +                       Use early console provided by ST Microelectronics
+> +                       serial driver for STM32 SoCs. A valid base address
+> +                       must be provided, and the serial port must already
+> +                       be setup and configured.
 
+Why do you need this parameter?
 
+Given this driver uses DT, can't it figure out the serial port address
+from chosen/stdout-path?
 
++OF_EARLYCON_DECLARE(stm32, "st,stm32h7-uart", early_stm32_h7_serial_setup);
++OF_EARLYCON_DECLARE(stm32, "st,stm32f7-uart", early_stm32_f7_serial_setup);
++OF_EARLYCON_DECLARE(stm32, "st,stm32-uart", early_stm32_f4_serial_setup);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
