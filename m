@@ -2,96 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05191C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13841C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 11:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344427AbiDKLEA (ORCPT
+        id S1345457AbiDKLEC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        Mon, 11 Apr 2022 07:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbiDKLD7 (ORCPT
+        with ESMTP id S244029AbiDKLD7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 11 Apr 2022 07:03:59 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1568DC47;
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D2DF54;
         Mon, 11 Apr 2022 04:01:45 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C10A4215FC;
-        Mon, 11 Apr 2022 11:01:43 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8F1E91F38D;
+        Mon, 11 Apr 2022 11:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649674903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=TOslUvi/cDmQavLrpqh4QEcnpVMqxdKoJ62gjCK8ziE=;
-        b=JtBV4ZhgmdXf8dZaJA6HD71mXaHPDMZcSZy5VmAnLNCRnOt28GdDdSKadhIVhJxSuzINWk
-        p4WL1phACClTu4Ao11X3I6YMERR3cQ3eZmhA8VUHnHkwx5+o/jBmYeppN0rejqZtjKadJ7
-        H2fB4N0Re26OK4Hfl4pKxuEDeYO1vcE=
+        t=1649674904; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8WwcSwEoRIsYo08Smc2ynJx4QiZ1jV+4uaiirsM9T5s=;
+        b=ExG9hubBsJJFmIK6G1QJObJ0+zPMZBZoLwo2PwegofraJMASsfUGDLRaFvY4J2xpGqWnJD
+        cByEd6t1LCLCE4+eZr7NGZNZinDYE4s2gDb2AaHgJSZ3GLmp8/YLmoCbxR6tM1LB3apeq7
+        vcKOBnn7GjngfE4rMbcrAHrVfxWAfhw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649674903;
+        s=susede2_ed25519; t=1649674904;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=TOslUvi/cDmQavLrpqh4QEcnpVMqxdKoJ62gjCK8ziE=;
-        b=Sl7m5Js0SIxcFKOk2BZEI3qkI0fUIDCKPpEsQ84MF6629tN/T0zTGBZ01djLx2K8MiutZY
-        6F3xs+OBaqHJWWBQ==
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8WwcSwEoRIsYo08Smc2ynJx4QiZ1jV+4uaiirsM9T5s=;
+        b=zrBWr4OjkkbRwyf76IM0xFzEB6geK1lDI6BvvjrSxL3TjzBT2thRAoB4bpKiF+exQSlUVI
+        sybRUcQsL2+5vtAw==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9556FA3B88;
-        Mon, 11 Apr 2022 11:01:43 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4F2BFA3B87;
+        Mon, 11 Apr 2022 11:01:44 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 0/6] tty: Documentation moves and updates.
-Date:   Mon, 11 Apr 2022 13:01:37 +0200
-Message-Id: <20220411110143.10019-1-jslaby@suse.cz>
+Subject: [PATCH 2/6] Documentation: tty: introduce "Other Documentation"
+Date:   Mon, 11 Apr 2022 13:01:39 +0200
+Message-Id: <20220411110143.10019-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411110143.10019-1-jslaby@suse.cz>
+References: <20220411110143.10019-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This moves tty to driver-api, move more tty documents there and updates
-them. Either to use ReST properly or update so that they correspond to
-the current state.
+So far only n_tty belongs here, but in the next patches, more will come.
 
-Jiri Slaby (6):
-  Documentation: move tty to driver-api
-  Documentation: tty: introduce "Other Documentation"
-  Documentation: tty: move n_gsm to tty
-  Documentation: tty: move moxa-smartio.rst to tty
-  Documentation: tty: n_gsm, delete "Additional Documentation"
-  Documentation: tty: n_gsm, use power of ReST
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ Documentation/driver-api/tty/index.rst | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
- Documentation/driver-api/index.rst            |   1 +
- Documentation/driver-api/serial/driver.rst    |   2 +-
- Documentation/driver-api/serial/index.rst     |   2 -
- Documentation/driver-api/serial/n_gsm.rst     | 159 ------------------
- Documentation/{ => driver-api}/tty/index.rst  |  22 ++-
- .../{serial => tty}/moxa-smartio.rst          |   0
- Documentation/driver-api/tty/n_gsm.rst        | 153 +++++++++++++++++
- Documentation/{ => driver-api}/tty/n_tty.rst  |   0
- .../{ => driver-api}/tty/tty_buffer.rst       |   0
- .../{ => driver-api}/tty/tty_driver.rst       |   0
- .../{ => driver-api}/tty/tty_internals.rst    |   0
- .../{ => driver-api}/tty/tty_ldisc.rst        |   0
- .../{ => driver-api}/tty/tty_port.rst         |   0
- .../{ => driver-api}/tty/tty_struct.rst       |   0
- Documentation/index.rst                       |   1 -
- 15 files changed, 171 insertions(+), 169 deletions(-)
- delete mode 100644 Documentation/driver-api/serial/n_gsm.rst
- rename Documentation/{ => driver-api}/tty/index.rst (81%)
- rename Documentation/driver-api/{serial => tty}/moxa-smartio.rst (100%)
- create mode 100644 Documentation/driver-api/tty/n_gsm.rst
- rename Documentation/{ => driver-api}/tty/n_tty.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_buffer.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_driver.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_internals.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_ldisc.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_port.rst (100%)
- rename Documentation/{ => driver-api}/tty/tty_struct.rst (100%)
-
+diff --git a/Documentation/driver-api/tty/index.rst b/Documentation/driver-api/tty/index.rst
+index 2240e52203d6..e6a7f717a9a5 100644
+--- a/Documentation/driver-api/tty/index.rst
++++ b/Documentation/driver-api/tty/index.rst
+@@ -36,7 +36,6 @@ In-detail description of the named TTY structures is in separate documents:
+    tty_struct
+    tty_ldisc
+    tty_buffer
+-   n_tty
+    tty_internals
+ 
+ Writing TTY Driver
+@@ -60,3 +59,13 @@ A *typical* sequence a TTY driver performs is as follows:
+ Steps regarding driver, i.e. 1., 3., and 5. are described in detail in
+ :doc:`tty_driver`. For the other two (devices handling), look into
+ :doc:`tty_port`.
++
++Other Documentation
++===================
++
++Miscellaneous documentation can be further found in these documents:
++
++.. toctree::
++   :maxdepth: 2
++
++   n_tty
 -- 
 2.35.1
 
