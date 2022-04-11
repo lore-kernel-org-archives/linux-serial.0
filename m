@@ -2,53 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD92C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 10:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B897C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Apr 2022 10:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345687AbiDKKr0 (ORCPT
+        id S1345683AbiDKKrg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35564 "EHLO
+        Mon, 11 Apr 2022 06:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345684AbiDKKrZ (ORCPT
+        with ESMTP id S1345690AbiDKKr1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:47:25 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2734E12AF9;
+        Mon, 11 Apr 2022 06:47:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A9413CC3;
         Mon, 11 Apr 2022 03:45:12 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id DC90B215FD;
-        Mon, 11 Apr 2022 10:45:10 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8CA3C1F864;
+        Mon, 11 Apr 2022 10:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649673910; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1649673911; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3UaJrwZ35b5PfLiZGtmO7k6+jGdgy3u8eolCyPOX7Bk=;
-        b=WAn0BHpI1gjrWAB2lZTv6/O863lJPaj+fkkxp9elG+Y23v1HIpKZkN39HG4HC5YyUIq+x/
-        5oZkQJ1pheh0Cyo/6dub+XCm+DB5ayJ0ukYDaMujhVQx2Ds1+He5rMDGreZkwRWuN5Jfj1
-        d4v9Zp8IgppQQ0kF0vMpHEEOeIjNxis=
+        bh=zGE3QD6z+mw6oVDHzRqdqpWGIUM4LnUnXOrLoFmEk7o=;
+        b=Lh+SCQtDUeJKJSpxBy4Gy/KSBUKznVcw3tchP02SlruZA+o5DZ9lRCfwPuazcOFWAnt044
+        oQLlePmyhB4oXPXmCfbgdiluWhNmXtNz8QxvesMqV8lN6d/8ORX+6qZrzKEevGja8EPelm
+        SUDQr16mUnEgrGFcuxrCimDf6IDwQqo=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649673910;
+        s=susede2_ed25519; t=1649673911;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3UaJrwZ35b5PfLiZGtmO7k6+jGdgy3u8eolCyPOX7Bk=;
-        b=V8KzJC8CDfB1m4EVRw7Zzz+GDlgn2EueI8gPP6kCEUDh6GmZcZrUqLNZUejFmaSJ6CLH5B
-        4x7OHYwFBFpAh6CQ==
+        bh=zGE3QD6z+mw6oVDHzRqdqpWGIUM4LnUnXOrLoFmEk7o=;
+        b=OvMO7talElJztTKB6xkPxpPfl0t2e4YQ1Nxe9LQ/McMpE2MooOn4yjh+KX04NU01P7lK+Z
+        MhYyC5HN/8RIGjAg==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A985DA3B89;
-        Mon, 11 Apr 2022 10:45:10 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4EE0BA3B96;
+        Mon, 11 Apr 2022 10:45:11 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/3] tty: serial: mpc52xx_uart: remove double ifdeffery
-Date:   Mon, 11 Apr 2022 12:45:04 +0200
-Message-Id: <20220411104506.8990-2-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>,
+        Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH 3/3] tty: serial: altera: use altera_jtaguart_stop_tx()
+Date:   Mon, 11 Apr 2022 12:45:06 +0200
+Message-Id: <20220411104506.8990-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220411104506.8990-1-jslaby@suse.cz>
 References: <20220411104506.8990-1-jslaby@suse.cz>
@@ -58,37 +59,35 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The code now contains:
- #ifdef CONFIG_PPC_MPC512x
- ...
- #endif
+altera_jtaguart_tx_chars() duplicates what altera_jtaguart_stop_tx()
+already does. So instead of the duplication, call the helper instead.
 
- #ifdef CONFIG_PPC_MPC512x
- ...
- #endif
+Not only it makes the code cleaner, but it also says what the "if"
+really does.
 
-So remove the endif+ifdef from the middle, provided it's about the same
-define.
-
+Cc: Tobias Klauser <tklauser@distanz.ch>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/mpc52xx_uart.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/tty/serial/altera_jtaguart.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 3acc0f185762..c4b590dd6f23 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -754,9 +754,6 @@ static void mpc512x_psc_get_irq(struct uart_port *port, struct device_node *np)
- 	port->irqflags = IRQF_SHARED;
- 	port->irq = psc_fifoc_irq;
- }
--#endif
--
--#ifdef CONFIG_PPC_MPC512x
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 1c16345d0a1f..cb791c5149a3 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -168,10 +168,8 @@ static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
+ 		}
+ 	}
  
- #define PSC_5125(port) ((struct mpc5125_psc __iomem *)((port)->membase))
- #define FIFO_5125(port) ((struct mpc512x_psc_fifo __iomem *)(PSC_5125(port)+1))
+-	if (pending == 0) {
+-		pp->imr &= ~ALTERA_JTAGUART_CONTROL_WE_MSK;
+-		writel(pp->imr, port->membase + ALTERA_JTAGUART_CONTROL_REG);
+-	}
++	if (pending == 0)
++		altera_jtaguart_stop_tx(port);
+ }
+ 
+ static irqreturn_t altera_jtaguart_interrupt(int irq, void *data)
 -- 
 2.35.1
 
