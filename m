@@ -2,34 +2,34 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82099C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Apr 2022 07:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC207C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Apr 2022 07:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbiDMHyY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Apr 2022 03:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
+        id S233504AbiDMHyZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233504AbiDMHyO (ORCPT
+        with ESMTP id S233511AbiDMHyU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Apr 2022 03:54:14 -0400
+        Wed, 13 Apr 2022 03:54:20 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91F52B24B;
-        Wed, 13 Apr 2022 00:51:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C7E35244;
+        Wed, 13 Apr 2022 00:51:57 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C1568FF80F;
-        Wed, 13 Apr 2022 07:51:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7F8EBFF80A;
+        Wed, 13 Apr 2022 07:51:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649836312;
+        t=1649836316;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vPuYPzUCJIiRBLxRQdpRrYuxESn/7Z8jFgmSKedcXtE=;
-        b=GF/eFfizenP2ulFukFVmg34iwAFaLrbo/H+YbHF0eTOzt7NO6iTkQcDpEQo6ytksc5HtiZ
-        Wf2z+fizWX8Oap5h4yMm6UfA4qt0Kl0A2wrBAHP1jKfVWocWQyVTvcQI2XLruxQZ1PdbHf
-        jZWihNLFBpabmOiH6OeZcmLt51Iht/yoGEwxJYksu281zrhxJAdrKyq+OPHHl1mac2/OcV
-        Rx4sJqwNJccEn1flHmyxocezpKa414M70BRSBZfwxqVo3n3sLGcY70woKpqQI0gngkLbV+
-        91YPtTPcMSMvlY6bbPH6eBGW6846ByaUqsJiCkMC2hGisE+uAnq7MySCnN/+Jg==
+        bh=hu+HXpU5fvItezBgUktELOmw8lOKDRbwtb1XKK2BkRs=;
+        b=WFCAXwBGotYQeL1HnzCUVrXc94k+ZTe+LtC++ap37l8oEi3EFllgD2S7wm9GGkEkWysiiR
+        dX8jyzFA8u9+6tkhh207x9ny6oplyO0r6E6WiCZOeyVG5719OtGhJ8ooCRv3lHPxOBKJHk
+        d2vUQB57wMCm12bNC0TDun9mPSknXX/JUYn+IfruEBv0l9Rubf5dt2AAdDIyYNQGRnrHt1
+        YarYn5w5jPrfHJd1qogIXD7jWyi0UBfzAx8jXhWEY9Yb5PRkrwdGQMLqFXhPSmmpzTbmme
+        vsIAAZ1qWJ7b7MfXg1RcnyF717gKXm/+Ff7pGS6JR16UybfjxKrig4YDTmA8tw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
         Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v5 04/11] serial: 8250: dw: Move the USR register to pdata
-Date:   Wed, 13 Apr 2022 09:51:34 +0200
-Message-Id: <20220413075141.72777-5-miquel.raynal@bootlin.com>
+Subject: [PATCH v5 06/11] serial: 8250: dma: Allow driver operations before starting DMA transfers
+Date:   Wed, 13 Apr 2022 09:51:36 +0200
+Message-Id: <20220413075141.72777-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220413075141.72777-1-miquel.raynal@bootlin.com>
 References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
@@ -58,104 +58,78 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This offset is a good candidate to pdata's because it changes depending
-on the vendor implementation. Let's move the usr_reg entry from regular
-to pdata. This way we can drop initializing it at run time.
-
-Let's also use a define for it instead of defining only the default
-value.
+One situation where this could be used is when configuring the UART
+controller to be the DMA flow controller. This is a typical case where
+the driver might need to program a few more registers before starting a
+DMA transfer. Provide the necessary infrastructure to support this
+case.
 
 Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dw.c    | 11 ++++++++---
- drivers/tty/serial/8250/8250_dwlib.h |  2 +-
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250.h     | 18 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_dma.c |  4 ++++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 93b112f3bc49..babf5dc597a8 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -35,6 +35,8 @@
- /* Offsets for the DesignWare specific registers */
- #define DW_UART_USR	0x1f /* UART Status Register */
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index db784ace25d8..d19f24e4d13e 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -17,6 +17,8 @@
+ struct uart_8250_dma {
+ 	int (*tx_dma)(struct uart_8250_port *p);
+ 	int (*rx_dma)(struct uart_8250_port *p);
++	void (*prepare_tx_dma)(struct uart_8250_port *p);
++	void (*prepare_rx_dma)(struct uart_8250_port *p);
  
-+#define OCTEON_UART_USR	0x27 /* UART Status Register */
+ 	/* Filter function */
+ 	dma_filter_fn		fn;
+@@ -301,6 +303,22 @@ extern int serial8250_rx_dma(struct uart_8250_port *);
+ extern void serial8250_rx_dma_flush(struct uart_8250_port *);
+ extern int serial8250_request_dma(struct uart_8250_port *);
+ extern void serial8250_release_dma(struct uart_8250_port *);
 +
- /* DesignWare specific register fields */
- #define DW_UART_MCR_SIRE		BIT(6)
++static inline void serial8250_do_prepare_tx_dma(struct uart_8250_port *p)
++{
++	struct uart_8250_dma *dma = p->dma;
++
++	if (dma->prepare_tx_dma)
++		dma->prepare_tx_dma(p);
++}
++
++static inline void serial8250_do_prepare_rx_dma(struct uart_8250_port *p)
++{
++	struct uart_8250_dma *dma = p->dma;
++
++	if (dma->prepare_rx_dma)
++		dma->prepare_rx_dma(p);
++}
+ #else
+ static inline int serial8250_tx_dma(struct uart_8250_port *p)
+ {
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index b3c3f7e5851a..1bdc8d6432fe 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -86,6 +86,8 @@ int serial8250_tx_dma(struct uart_8250_port *p)
  
-@@ -251,7 +253,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
  
- 	if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
- 		/* Clear the USR */
--		(void)p->serial_in(p, d->usr_reg);
-+		(void)p->serial_in(p, d->pdata->usr_reg);
++	serial8250_do_prepare_tx_dma(p);
++
+ 	desc = dmaengine_prep_slave_single(dma->txchan,
+ 					   dma->tx_addr + xmit->tail,
+ 					   dma->tx_size, DMA_MEM_TO_DEV,
+@@ -123,6 +125,8 @@ int serial8250_rx_dma(struct uart_8250_port *p)
+ 	if (dma->rx_running)
+ 		return 0;
  
- 		return 1;
- 	}
-@@ -387,7 +389,6 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- 			p->serial_out = dw8250_serial_outq;
- 			p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
- 			p->type = PORT_OCTEON;
--			data->usr_reg = 0x27;
- 			data->skip_autocfg = true;
- 		}
- #endif
-@@ -462,7 +463,6 @@ static int dw8250_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	data->data.dma.fn = dw8250_fallback_dma_filter;
--	data->usr_reg = DW_UART_USR;
- 	data->pdata = device_get_match_data(p->dev);
- 	p->private_data = &data->data;
- 
-@@ -681,20 +681,25 @@ static const struct dev_pm_ops dw8250_pm_ops = {
- };
- 
- static const struct dw8250_platform_data dw8250_dw_apb = {
-+	.usr_reg = DW_UART_USR,
- };
- 
- static const struct dw8250_platform_data dw8250_octeon_3860_data = {
-+	.usr_reg = OCTEON_UART_USR,
- 	.quirks = DW_UART_QUIRK_OCTEON,
- };
- 
- static const struct dw8250_platform_data dw8250_armada_38x_data = {
-+	.usr_reg = DW_UART_USR,
- 	.quirks = DW_UART_QUIRK_ARMADA_38X,
- };
- 
- static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
-+	.usr_reg = DW_UART_USR,
- };
- 
- static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
-+	.usr_reg = DW_UART_USR,
- 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
- };
- 
-diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-index 68bb81bee660..0df6baa6eaee 100644
---- a/drivers/tty/serial/8250/8250_dwlib.h
-+++ b/drivers/tty/serial/8250/8250_dwlib.h
-@@ -22,6 +22,7 @@ struct dw8250_port_data {
- };
- 
- struct dw8250_platform_data {
-+	u8 usr_reg;
- 	unsigned int quirks;
- };
- 
-@@ -29,7 +30,6 @@ struct dw8250_data {
- 	struct dw8250_port_data	data;
- 	const struct dw8250_platform_data *pdata;
- 
--	u8			usr_reg;
- 	int			msr_mask_on;
- 	int			msr_mask_off;
- 	struct clk		*clk;
++	serial8250_do_prepare_rx_dma(p);
++
+ 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+ 					   dma->rx_size, DMA_DEV_TO_MEM,
+ 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
 -- 
 2.27.0
 
