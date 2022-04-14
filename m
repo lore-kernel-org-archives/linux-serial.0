@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C47B4C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF3AC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239482AbiDNJqZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
+        id S241926AbiDNJq0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241917AbiDNJqT (ORCPT
+        with ESMTP id S241920AbiDNJqT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Apr 2022 05:46:19 -0400
-X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:54 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8976EB29
-        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:54 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2022041409424729e8b058f02a169858
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:55 PDT
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C3B6F49F
+        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:55 -0700 (PDT)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20220414094246afbca207bc7a7a30e3
         for <linux-serial@vger.kernel.org>;
         Thu, 14 Apr 2022 11:42:52 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=wiF23XObNbK0UPCKxihGtA9aFYAmV/dIBUR0MDgOqIs=;
- b=GrKeR/n/sbvCoxbddvGvy3y6V4S0/lRGJEyrSW9xatcp7KFXlbvYJ8EuLIzZUWqeoqKA6Q
- 6GIkCD1Y2PLMBefrImjhGlqrdioLJOHWcpG/m6DHMwmFsABXUnWBGQ2+RzPnMOxXa3A/3E5n
- XV4yvkOOyGmLpudAKIThBdO/JvD84=;
+ bh=PQKsbg+lNJZPyvz7TfsGHHbXuaZxjlFMilmR10dAP5U=;
+ b=mOFb7SpzdHyOeMQAAL522kbsqZxYgaSRoemGxte58uYOuG1rUoGTJnS0qLa/OxUt/G69o7
+ 7mZnS71zHlGNvFTErwwJEzEQp3D9qSMORuHE640TGb95z2w4GCpDCsKC4NPI/XeV3FwMsNgH
+ J3MT7vfJ8KMFGRup8k9gTxV7WCaKE=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 11/20] tty: n_gsm: fix wrong command retry handling
-Date:   Thu, 14 Apr 2022 02:42:16 -0700
-Message-Id: <20220414094225.4527-11-daniel.starke@siemens.com>
+Subject: [PATCH 10/20] tty: n_gsm: fix missing explicit ldisc flush
+Date:   Thu, 14 Apr 2022 02:42:15 -0700
+Message-Id: <20220414094225.4527-10-daniel.starke@siemens.com>
 In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
 References: <20220414094225.4527-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,63 +46,32 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
-maximum number of retransmissions (N2) is from 0 to 255 (both including).
-gsm_config() fails to limit this range correctly. Furthermore,
-gsm_control_retransmit() handles this number incorrectly by performing
-N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
-retransmission attempts.
-Fix the range check in gsm_config() and the value handling in
-gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
+In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
+However, removing the queues is done without explicit control of the
+underlying buffers. Flush those before freeing up our queues to ensure
+that all outgoing queues are cleared consistently. Otherwise, a new mux
+connection establishment attempt may time out while the underlying tty is
+still busy sending out the remaining data from the previous connection.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/n_gsm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1430d7f83bd2..628bda5f0622 100644
+index 6b953dfbb155..1430d7f83bd2 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1354,7 +1354,6 @@ static void gsm_control_retransmit(struct timer_list *t)
- 	spin_lock_irqsave(&gsm->control_lock, flags);
- 	ctrl = gsm->pending_cmd;
- 	if (ctrl) {
--		gsm->cretries--;
- 		if (gsm->cretries == 0) {
- 			gsm->pending_cmd = NULL;
- 			ctrl->error = -ETIMEDOUT;
-@@ -1363,6 +1362,7 @@ static void gsm_control_retransmit(struct timer_list *t)
- 			wake_up(&gsm->event);
- 			return;
- 		}
-+		gsm->cretries--;
- 		gsm_control_transmit(gsm, ctrl);
- 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
- 	}
-@@ -1403,7 +1403,7 @@ static struct gsm_control *gsm_control_send(struct gsm_mux *gsm,
- 
- 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
- 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
--		gsm->cretries = 1;
-+		gsm->cretries = 0;
- 	else
- 		gsm->cretries = gsm->n2;
- 
-@@ -2343,7 +2343,7 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- 	/* Check the MRU/MTU range looks sane */
- 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
- 		return -EINVAL;
--	if (c->n2 < 3)
-+	if (c->n2 > 255)
- 		return -EINVAL;
- 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
- 		return -EINVAL;
+@@ -2152,6 +2152,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	mutex_unlock(&gsm->mutex);
+ 	/* Now wipe the queues */
++	tty_ldisc_flush(gsm->tty);
+ 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
+ 		kfree(txq);
+ 	INIT_LIST_HEAD(&gsm->tx_list);
 -- 
 2.25.1
 
