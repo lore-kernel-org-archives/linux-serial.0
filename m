@@ -2,131 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F92C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57DFC433F5
 	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350577AbiDNOWf (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
+        id S244423AbiDNOWf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 14 Apr 2022 10:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345104AbiDNNpI (ORCPT
+        with ESMTP id S1346530AbiDNN52 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB342CCA9;
-        Thu, 14 Apr 2022 06:42:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC35EB82968;
-        Thu, 14 Apr 2022 13:42:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0426FC385A1;
-        Thu, 14 Apr 2022 13:42:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943720;
-        bh=QMtNxulyfx81R37POF0+7xpByUSFgPbFT4ZF2J9sYZQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WfrEXbpLzhO5omWfE9/cCK+LaYzw3FC76KOgDLqnlx9rG8h9MOLX4zJR4X3VM9+kO
-         nmlSdDlfJlYVVriBmuDQ3hAeY16AxX3Qg5YydvLfZzLrs7f5jGjNAZaxCyks4f7Ymc
-         xt/1GNW7Z2okHUUApAY711/LgoZ5VH3n8CBvJoC0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
+        Thu, 14 Apr 2022 09:57:28 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B68695F8F0;
+        Thu, 14 Apr 2022 06:47:18 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 9933A92009C; Thu, 14 Apr 2022 15:47:17 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 9485992009B;
+        Thu, 14 Apr 2022 14:47:17 +0100 (BST)
+Date:   Thu, 14 Apr 2022 14:47:17 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-serial@vger.kernel.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 256/475] kgdboc: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:10:41 +0200
-Message-Id: <20220414110902.274474002@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
+ 950 UARTs
+In-Reply-To: <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk> <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk> <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Thu, 14 Apr 2022, Andy Shevchenko wrote:
 
-[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
+> > >  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.
+> > > As the change for the default FIFO rx trigger level has been already
+> > > merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels
+> > > for OxSemi 950 devices") only one patch of the original series remains.
+> >
+> >  Ping for:
+> > <https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk/>
+> 
+> I still didn't get the answer why BOTHER can't be used instead of
+> spreading the old hack.
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
-So return 1 from kgdboc_option_setup().
+ I just fail to see any sense in repeating myself over and over.
 
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
+> You mentioned fractional baud rates and
+> something else, and I asked why do you need them and from where you
+> got the limitation of 16-bit values for dividers when using BOTHER.
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
+ Sigh, I have documented it there with the original submission 10 months 
+ago and then repeated with every reiteration:
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
-Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
-Cc: He Zhe <zhe.he@windriver.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: linux-serial@vger.kernel.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/kgdboc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+>  Finally the 16-bit UART_DIV_MAX limitation of the baud rate requested
+> with `serial8250_get_baud_rate' makes the standard rates of 200bps and
+> lower inaccessible in the regular way with the baud base of 15625000.
+> That could be avoided by tweaking our 8250 driver core appropriately, but
+> I have figured out with modern serial port usage that would not be the
+> best use of my time.  Someone who does have a real need to use an Oxford
+> device at these low rates can step in and make the necessary chances.
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index f5608ad68ae1..6d4792ec9e5f 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -391,16 +391,16 @@ static int kgdboc_option_setup(char *opt)
- {
- 	if (!opt) {
- 		pr_err("config string not provided\n");
--		return -EINVAL;
-+		return 1;
- 	}
- 
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		pr_err("config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
- 
--	return 0;
-+	return 1;
- }
- 
- __setup("kgdboc=", kgdboc_option_setup);
--- 
-2.34.1
+ To put it shortly: the `spd_cust' feature is out there and it works, and 
+contrary to what you assert requires no maintenance effort if you just 
+leave it alone, while the alternative has various shortcomings that do 
+require effort if they were to be addressed.  So please just get over it 
+and let users choose what suits them best while letting developers focus 
+on other stuff that keeps waiting.  If someone is happy with what BOTHER 
+offers, then by no means I keep them from using it.
 
+ I fail to understand really why a piece of code to correct and improve 
+broken UART baud rate calculation has to be stuck in limbo for almost a 
+year.  There is nothing wrong with this code and it has a proper change 
+description and my observation has been that actually broken code often 
+with half a sentence serving as justification gets accepted with no fuss 
+all the time. :(
 
-
+  Maciej
