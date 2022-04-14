@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C8DC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D42C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241922AbiDNJqU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S241474AbiDNJqV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241900AbiDNJqP (ORCPT
+        with ESMTP id S241902AbiDNJqP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 14 Apr 2022 05:46:15 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:50 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01C570924
-        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:50 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220414094242f3bd7b303f1dd5c7c3
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:51 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E3970928
+        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:51 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220414094243b4faf2ca977c6dcba7
         for <linux-serial@vger.kernel.org>;
         Thu, 14 Apr 2022 11:42:47 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=JjX0QExE5G0gdz7UMXnS8e0N4K1XjQpP52q6ISsyKsU=;
- b=YFV5IXw4YFUyNLztxoQnz4iwDHjU2ZZ7ie3Yvvn5YDEXtidCy8U1db6wpK47Kzd3mecqGe
- GLMIjIN03UMbs9aDhv3ztElAX7nYURG7S61RPancztV4uzuyo8HianLsTIAbwhMMzWQlCIOc
- 7yRp2aaB+nIUnJr6xLxtwdXEBGQvg=;
+ bh=MyuV2ejM3EZJoNjQSkskelEubJjJKEoQ8hVNMMGTKWg=;
+ b=R4BJf9+OOBsvdZoC5eSSAb9myKqgdbBVM2mNVyTAE9CWEeWsHKhcDG8XBsDHByrCaKt7RE
+ u2HzNV62ZaamvMTbNRsc7oPOK9Mcyr0epyOEV2//i0pWxRT0PDWysZfCEpxjzCPMAYt2dtzd
+ WgMUM+jy6jQqtM9j98hDTePHbQx7E=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 05/20] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
-Date:   Thu, 14 Apr 2022 02:42:10 -0700
-Message-Id: <20220414094225.4527-5-daniel.starke@siemens.com>
+Subject: [PATCH 06/20] tty: n_gsm: fix frame reception handling
+Date:   Thu, 14 Apr 2022 02:42:11 -0700
+Message-Id: <20220414094225.4527-6-daniel.starke@siemens.com>
 In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
 References: <20220414094225.4527-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,37 +46,114 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
-convergence layer type 2 can be either one or two bytes. The length is
-encoded in the EA bit. This is set 1 for the last byte in the sequence.
-gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
-fails to set EA to 1. There is no case in which we encode two signal octets
-as there is no case in which we send out a break signal.
-Therefore, always set the EA bit to 1 for the signal octet to fix this.
+The frame checksum (FCS) is currently handled in gsm_queue() after
+reception of a frame. However, this breaks layering. A workaround with
+'received_fcs' was implemented so far.
+Furthermore, frames are handled as such even if no end flag was received.
+Move FCS calculation from gsm_queue() to gsm0_receive() and gsm1_receive().
+Also delay gsm_queue() call there until a full frame was received to fix
+both points.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 53 +++++++++++++++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index de97a3810731..3ba2505908e3 100644
+index 3ba2505908e3..4ce18b42c37a 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -832,7 +832,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 			break;
- 		case 2:	/* Unstructed with modem bits.
- 		Always one byte as we never send inline break data */
--			*dp++ = gsm_encode_modem(dlci);
-+			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
- 			break;
- 		}
- 		WARN_ON(kfifo_out_locked(&dlci->fifo, dp , len, &dlci->lock) != len);
+@@ -219,7 +219,6 @@ struct gsm_mux {
+ 	int encoding;
+ 	u8 control;
+ 	u8 fcs;
+-	u8 received_fcs;
+ 	u8 *txframe;			/* TX framing buffer */
+ 
+ 	/* Method for the receiver side */
+@@ -1794,18 +1793,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 	u8 cr;
+ 	int address;
+ 	int i, j, k, address_tmp;
+-	/* We have to sneak a look at the packet body to do the FCS.
+-	   A somewhat layering violation in the spec */
+ 
+-	if ((gsm->control & ~PF) == UI)
+-		gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf, gsm->len);
+-	if (gsm->encoding == 0) {
+-		/* WARNING: gsm->received_fcs is used for
+-		gsm->encoding = 0 only.
+-		In this case it contain the last piece of data
+-		required to generate final CRC */
+-		gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->received_fcs);
+-	}
+ 	if (gsm->fcs != GOOD_FCS) {
+ 		gsm->bad_fcs++;
+ 		if (debug & 4)
+@@ -1993,19 +1981,25 @@ static void gsm0_receive(struct gsm_mux *gsm, unsigned char c)
+ 		break;
+ 	case GSM_DATA:		/* Data */
+ 		gsm->buf[gsm->count++] = c;
+-		if (gsm->count == gsm->len)
++		if (gsm->count == gsm->len) {
++			/* Calculate final FCS for UI frames over all data */
++			if ((gsm->control & ~PF) != UIH) {
++				gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf,
++							     gsm->count);
++			}
+ 			gsm->state = GSM_FCS;
++		}
+ 		break;
+ 	case GSM_FCS:		/* FCS follows the packet */
+-		gsm->received_fcs = c;
+-		gsm_queue(gsm);
++		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		gsm->state = GSM_SSOF;
+ 		break;
+ 	case GSM_SSOF:
+-		if (c == GSM0_SOF) {
+-			gsm->state = GSM_SEARCH;
+-			break;
+-		}
++		gsm->state = GSM_SEARCH;
++		if (c == GSM0_SOF)
++			gsm_queue(gsm);
++		else
++			gsm->bad_size++;
+ 		break;
+ 	default:
+ 		pr_debug("%s: unhandled state: %d\n", __func__, gsm->state);
+@@ -2024,11 +2018,24 @@ static void gsm0_receive(struct gsm_mux *gsm, unsigned char c)
+ static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
+ {
+ 	if (c == GSM1_SOF) {
+-		/* EOF is only valid in frame if we have got to the data state
+-		   and received at least one byte (the FCS) */
+-		if (gsm->state == GSM_DATA && gsm->count) {
+-			/* Extract the FCS */
++		/* EOF is only valid in frame if we have got to the data state */
++		if (gsm->state == GSM_DATA) {
++			if (gsm->count < 1) {
++				/* Missing FSC */
++				gsm->malformed++;
++				gsm->state = GSM_START;
++				return;
++			}
++			/* Remove the FCS from data */
+ 			gsm->count--;
++			if ((gsm->control & ~PF) != UIH) {
++				/* Calculate final FCS for UI frames over all
++				 * data but FCS
++				 */
++				gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf,
++							     gsm->count);
++			}
++			/* Add the FCS itself to test against GOOD_FCS */
+ 			gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->buf[gsm->count]);
+ 			gsm->len = gsm->count;
+ 			gsm_queue(gsm);
 -- 
 2.25.1
 
