@@ -2,86 +2,194 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57DFC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B1FC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 16:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244423AbiDNOWf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
+        id S239818AbiDNQ7W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346530AbiDNN52 (ORCPT
+        with ESMTP id S1344369AbiDNQ6o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:28 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B68695F8F0;
-        Thu, 14 Apr 2022 06:47:18 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 9933A92009C; Thu, 14 Apr 2022 15:47:17 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 9485992009B;
-        Thu, 14 Apr 2022 14:47:17 +0100 (BST)
-Date:   Thu, 14 Apr 2022 14:47:17 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
- 950 UARTs
-In-Reply-To: <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk> <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk> <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 14 Apr 2022 12:58:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313DC9F6C0;
+        Thu, 14 Apr 2022 09:32:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA54E61FEC;
+        Thu, 14 Apr 2022 16:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D21C385A5;
+        Thu, 14 Apr 2022 16:32:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649953930;
+        bh=hdd96lwHARk1y0gyMqVXzjjCx4Up+g8Yw/n6h7HFY3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IG4XPTR2iiuTGA251zdre+MOrTvjCrVug0OvyEp6FVKof3sR3O3ByMLfvjQQdhjWq
+         bfdrSGZCs2KpTH6uBNSZ/qRYjudyTgtpwUIjrLptb8vsx+3TJ+5ADIZMKq3rFDwNUa
+         yZWfDalboZu1KwfcOMfqbB490COqxZXT5vrJ//n4=
+Date:   Thu, 14 Apr 2022 18:32:07 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] tty: serial: introduce uart_port_tx{,_limit}()
+ helpers
+Message-ID: <YlhMhy9FhK0j3MId@kroah.com>
+References: <20220411105405.9519-1-jslaby@suse.cz>
+ <20220411105405.9519-2-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411105405.9519-2-jslaby@suse.cz>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 14 Apr 2022, Andy Shevchenko wrote:
-
-> > >  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.
-> > > As the change for the default FIFO rx trigger level has been already
-> > > merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels
-> > > for OxSemi 950 devices") only one patch of the original series remains.
-> >
-> >  Ping for:
-> > <https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk/>
+On Mon, Apr 11, 2022 at 12:54:03PM +0200, Jiri Slaby wrote:
+> Many serial drivers do the same thing:
+> * send x_char if set
+> * keep sending from the xmit circular buffer until either
+>   - the loop reaches the end of the xmit buffer
+>   - TX is stopped
+>   - HW fifo is full
+> * check for pending characters and:
+>   - wake up tty writers to fill for more data into xmit buffer
+>   - stop TX if there is nothing in the xmit buffer
 > 
-> I still didn't get the answer why BOTHER can't be used instead of
-> spreading the old hack.
+> The only differences are:
+> * how to write the character to the HW fifo
+> * the check of the end condition:
+>   - is the HW fifo full?
+>   - is limit of the written characters reached?
+> 
+> So unify the above into two helpers:
+> * uart_port_tx_limit() -- the generic one, it performs the above taking
+>   into account the written characters limit
+> * uart_port_tx() -- calls the above with ~0 as the limit. So it only
+>   checks the HW fullness.
+> 
+> We need three more hooks in struct uart_ops for all this to work:
+> * tx_ready() -- returns true if HW can accept more data.
+> * put_char() -- write a character to the device.
+> * tx_done() -- when the write loop is done, perform arbitrary action
+>   before potential invocation of ops->stop_tx() happens.
+> 
+> NOTE1: Maybe the three hooks in uart_ops above are overkill. We can
+> instead pass pointers to the three functions directly to the new helpers
+> as they are not used elsewhere. Similar to uart_console_write() and its
+> putchar().
+> 
+> NOTE2: These two new helper functions call the hooks per every character
+> processed. I was unable to measure any difference, provided most time is
+> spent by readb (or alike) in the hooks themselves.  First, LTO might
+> help to eliminate these explicit calls (we might need NOTE1 to be
+> implemented for this to be true). Second, if this turns out to be a
+> problem, we can introduce a macro to build the helper in the driver's
+> code instead of serial_core. That is, similar to wait_event().
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> ---
+>  Documentation/driver-api/serial/driver.rst | 28 ++++++++++++
+>  drivers/tty/serial/serial_core.c           | 53 ++++++++++++++++++++++
+>  include/linux/serial_core.h                |  9 ++++
+>  3 files changed, 90 insertions(+)
+> 
+> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+> index 06ec04ba086f..7dc3791addeb 100644
+> --- a/Documentation/driver-api/serial/driver.rst
+> +++ b/Documentation/driver-api/serial/driver.rst
+> @@ -80,6 +80,34 @@ hardware.
+>  
+>  	This call must not sleep
+>  
+> +  tx_ready(port)
+> +	The driver returns true if the HW can accept more data to be sent.
+> +
+> +	Locking: port->lock taken.
+> +
+> +	Interrupts: locally disabled.
+> +
+> +	This call must not sleep.
+> +
+> +  put_char(port, ch)
+> +	The driver is asked to write ch to the device.
+> +
+> +	Locking: port->lock taken.
+> +
+> +	Interrupts: locally disabled.
+> +
+> +	This call must not sleep.
+> +
+> +  tx_done(port)
+> +	When the write loop is done, the driver can perform arbitrary action
+> +	here before potential invocation of ops->stop_tx() happens.
+> +
+> +	Locking: port->lock taken.
+> +
+> +	Interrupts: locally disabled.
+> +
+> +	This call must not sleep.
+> +
+>    set_mctrl(port, mctrl)
+>  	This function sets the modem control lines for port described
+>  	by 'port' to the state described by mctrl.  The relevant bits
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 6a8963caf954..1be14e90066c 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -107,6 +107,59 @@ void uart_write_wakeup(struct uart_port *port)
+>  }
+>  EXPORT_SYMBOL(uart_write_wakeup);
+>  
+> +static bool uart_port_tx_always_ready(struct uart_port *port)
+> +{
+> +	return true;
+> +}
+> +
+> +/**
+> + * uart_port_tx_limit -- transmit helper for uart_port
+> + * @port: from which port to transmit
+> + * @count: limit count
+> + *
+> + * uart_port_tx_limit() transmits characters from the xmit buffer to the
+> + * hardware using @uart_port::ops::put_char(). It does so until @count
+> + * characters are sent and while @uart_port::ops::tx_ready() still returns
+> + * non-zero (if non-NULL).
+> + *
+> + * Return: number of characters in the xmit buffer when done.
+> + */
+> +unsigned int uart_port_tx_limit(struct uart_port *port, unsigned int count)
+> +{
+> +	struct circ_buf *xmit = &port->state->xmit;
+> +	bool (*tx_ready)(struct uart_port *) = port->ops->tx_ready ? :
+> +		uart_port_tx_always_ready;
+> +	unsigned int pending;
+> +
+> +	for (; count && tx_ready(port); count--, port->icount.tx++) {
+> +		if (port->x_char) {
+> +			port->ops->put_char(port, port->x_char);
+> +			port->x_char = 0;
+> +			continue;
+> +		}
+> +
+> +		if (uart_circ_empty(xmit) || uart_tx_stopped(port))
+> +			break;
+> +
+> +		port->ops->put_char(port, xmit->buf[xmit->tail]);
 
- I just fail to see any sense in repeating myself over and over.
+That's a lot of redirection and function pointer mess per each character
+sent now.  With the spectre overhead here (and only getting worse), this
+feels like a step backwards.
 
-> You mentioned fractional baud rates and
-> something else, and I asked why do you need them and from where you
-> got the limitation of 16-bit values for dividers when using BOTHER.
+I doubt throughput matters here given cpu speeds now, _but_ the cpu load
+should go up.
 
- Sigh, I have documented it there with the original submission 10 months 
-ago and then repeated with every reiteration:
+Although on smaller cpus with slower Mhz and faster line rates, this
+feels like a lot of extra work happening for no real good reason.
 
->  Finally the 16-bit UART_DIV_MAX limitation of the baud rate requested
-> with `serial8250_get_baud_rate' makes the standard rates of 200bps and
-> lower inaccessible in the regular way with the baud base of 15625000.
-> That could be avoided by tweaking our 8250 driver core appropriately, but
-> I have figured out with modern serial port usage that would not be the
-> best use of my time.  Someone who does have a real need to use an Oxford
-> device at these low rates can step in and make the necessary chances.
+Any benchmarks?
 
- To put it shortly: the `spd_cust' feature is out there and it works, and 
-contrary to what you assert requires no maintenance effort if you just 
-leave it alone, while the alternative has various shortcomings that do 
-require effort if they were to be addressed.  So please just get over it 
-and let users choose what suits them best while letting developers focus 
-on other stuff that keeps waiting.  If someone is happy with what BOTHER 
-offers, then by no means I keep them from using it.
+thanks,
 
- I fail to understand really why a piece of code to correct and improve 
-broken UART baud rate calculation has to be stuck in limbo for almost a 
-year.  There is nothing wrong with this code and it has a proper change 
-description and my observation has been that actually broken code often 
-with half a sentence serving as justification gets accepted with no fuss 
-all the time. :(
-
-  Maciej
+greg k-h
