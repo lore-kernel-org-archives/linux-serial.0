@@ -2,50 +2,206 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A80B7C433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Apr 2022 22:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 437B1C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238242AbiDMW4G (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        id S241907AbiDNJqR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238555AbiDMW4C (ORCPT
+        with ESMTP id S233361AbiDNJqO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:56:02 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0865D59393;
-        Wed, 13 Apr 2022 15:53:38 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 22F1892009D; Thu, 14 Apr 2022 00:53:38 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 1BF8F92009B;
-        Wed, 13 Apr 2022 23:53:38 +0100 (BST)
-Date:   Wed, 13 Apr 2022 23:53:38 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
- 950 UARTs
-In-Reply-To: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Thu, 14 Apr 2022 05:46:14 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:48 PDT
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF18F6E54C
+        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:48 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220414094239e89925ba9f0b9b1927
+        for <linux-serial@vger.kernel.org>;
+        Thu, 14 Apr 2022 11:42:45 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=uTcDp5Nkl0VvZJ5XdRbzpKlEWkQB5/anDN6tDzknOUE=;
+ b=GZ48m/9p85aNxNoD8yNT0TphwgiHWuPTzyWlFKn0+bQNpXOk0i53OMU1Xacxr6dYqjoeuP
+ BoqCvrHxmxUZ6kV1ztyYx6XEs65CSEECdCCejF0R/6u2ujVaUhPRZwG4vro8ZUC9yoVzmXQS
+ BG4Jp6DZc17sRJoOi342GmF13qTb4=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 02/20] tty: n_gsm: fix restart handling via CLD command
+Date:   Thu, 14 Apr 2022 02:42:07 -0700
+Message-Id: <20220414094225.4527-2-daniel.starke@siemens.com>
+In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
+References: <20220414094225.4527-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 31 Mar 2022, Maciej W. Rozycki wrote:
+From: Daniel Starke <daniel.starke@siemens.com>
 
->  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.  
-> As the change for the default FIFO rx trigger level has been already 
-> merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels 
-> for OxSemi 950 devices") only one patch of the original series remains.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.8.2 states that both sides will revert to
+the non-multiplexed mode via a close-down message (CLD). The usual program
+flow is as following:
+- start multiplex mode by sending AT+CMUX to the mobile
+- establish the control channel (DLCI 0)
+- establish user channels (DLCI >0)
+- terminate user channels
+- send close-down message (CLD)
+- revert to AT protocol (i.e. leave multiplexed mode)
 
- Ping for:
-<https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk/>
+The AT protocol is out of scope of the n_gsm driver. However,
+gsm_disconnect() sends CLD if gsm_config() detects that the requested
+parameters require the mux protocol to restart. The next immediate action
+is to start the mux protocol by opening DLCI 0 again. Any responder side
+which handles CLD commands correctly forces us to fail at this point
+because AT+CMUX needs to be sent to the mobile to start the mux again.
+Therefore, remove the CLD command in this phase and keep both sides in
+multiplexed mode.
+Remove the gsm_disconnect() function as it become unnecessary and merge the
+remaining parts into gsm_cleanup_mux() to handle the termination order and
+locking correctly.
 
-  Maciej
+Fixes: 71e077915396 ("tty: n_gsm: do not send/receive in ldisc close path")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 68 +++++++++++++--------------------------------
+ 1 file changed, 20 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 3d28ecebd473..daaffcfadaae 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -2106,49 +2106,35 @@ static void gsm_error(struct gsm_mux *gsm)
+ 	gsm->io_error++;
+ }
+ 
+-static int gsm_disconnect(struct gsm_mux *gsm)
+-{
+-	struct gsm_dlci *dlci = gsm->dlci[0];
+-	struct gsm_control *gc;
+-
+-	if (!dlci)
+-		return 0;
+-
+-	/* In theory disconnecting DLCI 0 is sufficient but for some
+-	   modems this is apparently not the case. */
+-	gc = gsm_control_send(gsm, CMD_CLD, NULL, 0);
+-	if (gc)
+-		gsm_control_wait(gsm, gc);
+-
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-
+-	gsm_dlci_begin_close(dlci);
+-	wait_event_interruptible(gsm->event,
+-				dlci->state == DLCI_CLOSED);
+-
+-	if (signal_pending(current))
+-		return -EINTR;
+-
+-	return 0;
+-}
+-
+ /**
+  *	gsm_cleanup_mux		-	generic GSM protocol cleanup
+  *	@gsm: our mux
++ *	@disc: disconnect link?
+  *
+  *	Clean up the bits of the mux which are the same for all framing
+  *	protocols. Remove the mux from the mux table, stop all the timers
+  *	and then shut down each device hanging up the channels as we go.
+  */
+ 
+-static void gsm_cleanup_mux(struct gsm_mux *gsm)
++static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ {
+ 	int i;
+ 	struct gsm_dlci *dlci = gsm->dlci[0];
+ 	struct gsm_msg *txq, *ntxq;
+ 
+ 	gsm->dead = true;
++	mutex_lock(&gsm->mutex);
++
++	if (dlci) {
++		if (disc && dlci->state != DLCI_CLOSED) {
++			gsm_dlci_begin_close(dlci);
++			wait_event(gsm->event, dlci->state == DLCI_CLOSED);
++		}
++		dlci->dead = true;
++	}
++
++	/* Finish outstanding timers, making sure they are done */
++	del_timer_sync(&gsm->t2_timer);
+ 
+ 	spin_lock(&gsm_mux_lock);
+ 	for (i = 0; i < MAX_MUX; i++) {
+@@ -2162,13 +2148,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm)
+ 	if (i == MAX_MUX)
+ 		return;
+ 
+-	del_timer_sync(&gsm->t2_timer);
+-	/* Now we are sure T2 has stopped */
+-	if (dlci)
+-		dlci->dead = true;
+-
+ 	/* Free up any link layer users */
+-	mutex_lock(&gsm->mutex);
+ 	for (i = 0; i < NUM_DLCI; i++)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+@@ -2370,19 +2350,11 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+ 
+ 	/*
+ 	 * Close down what is needed, restart and initiate the new
+-	 * configuration
++	 * configuration. On the first time there is no DLCI[0]
++	 * and closing or cleaning up is not necessary.
+ 	 */
+-
+-	if (need_close || need_restart) {
+-		int ret;
+-
+-		ret = gsm_disconnect(gsm);
+-
+-		if (ret)
+-			return ret;
+-	}
+-	if (need_restart)
+-		gsm_cleanup_mux(gsm);
++	if (need_close || need_restart)
++		gsm_cleanup_mux(gsm, true);
+ 
+ 	gsm->initiator = c->initiator;
+ 	gsm->mru = c->mru;
+@@ -2494,7 +2466,7 @@ static void gsmld_detach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
+ 		for (i = 1; i < NUM_DLCI; i++)
+ 			tty_unregister_device(gsm_tty_driver, base + i);
+ 	}
+-	gsm_cleanup_mux(gsm);
++	gsm_cleanup_mux(gsm, false);
+ 	tty_kref_put(gsm->tty);
+ 	gsm->tty = NULL;
+ }
+@@ -2597,7 +2569,7 @@ static int gsmld_open(struct tty_struct *tty)
+ 
+ 	ret = gsmld_attach_gsm(tty, gsm);
+ 	if (ret != 0) {
+-		gsm_cleanup_mux(gsm);
++		gsm_cleanup_mux(gsm, false);
+ 		mux_put(gsm);
+ 	}
+ 	return ret;
+-- 
+2.25.1
+
