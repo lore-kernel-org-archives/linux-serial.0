@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9F7C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F51C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 09:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241902AbiDNJqX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
+        id S241933AbiDNJqY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241906AbiDNJqQ (ORCPT
+        with ESMTP id S241377AbiDNJqT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:46:16 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:52 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D8870CFD
-        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:52 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220414094244c15898557eeba214ba
+        Thu, 14 Apr 2022 05:46:19 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:54 PDT
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C928B6E54C
+        for <linux-serial@vger.kernel.org>; Thu, 14 Apr 2022 02:43:54 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202204140942453b89bb4f320f9cceae
         for <linux-serial@vger.kernel.org>;
-        Thu, 14 Apr 2022 11:42:49 +0200
+        Thu, 14 Apr 2022 11:42:51 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=E2kKLS8GAqSiKmByiMNtnOdHF+DKznLVuFly18vV66E=;
- b=Lce7cR9J8iUMbPujFITx6yqHBjcQuhmRgD1nb6f5DEcqcMrrhRrxwRNLaQhcmDCd+mD/Co
- /zhSiKH80FygpTw+DRXT1PEi5myPXyfdxJ2gF+a80ji9q9m5ZdUCeTmOFGcAACiNG8594fHL
- iN3/yQ+LyD89rQILExEF7HV/ZDCqs=;
+ bh=BeY7tUTv0JkVwOPsalB6SRWsraBVI4DRmB8X+cQCD64=;
+ b=RIqpALIXOaqm2jmA2yjsGYAjlJKVXKPN6qha01nU0Jq1C1Thbw2DmOY0DAQydb4izizcFz
+ GHQhu20OHiPGmj2IK2W6QKrE6TKPol4uish36za4iqGEo0+MwDtj85bVQFsaNAgHxjWswMDM
+ jGOD2pyROTbLjZ/0fO8vlnQedfJ10=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 08/20] tty: n_gsm: fix insufficient txframe size
-Date:   Thu, 14 Apr 2022 02:42:13 -0700
-Message-Id: <20220414094225.4527-8-daniel.starke@siemens.com>
+Subject: [PATCH 09/20] tty: n_gsm: fix wrong DLCI release order
+Date:   Thu, 14 Apr 2022 02:42:14 -0700
+Message-Id: <20220414094225.4527-9-daniel.starke@siemens.com>
 In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
 References: <20220414094225.4527-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,49 +46,32 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
-(N1) refers to the length of the information field (i.e. user payload).
-However, 'txframe' stores the whole frame including frame header, checksum
-and start/end flags. We also need to consider the byte stuffing overhead.
-Define constant for the protocol overhead and adjust the 'txframe' size
-calculation accordingly to reserve enough space for a complete mux frame
-including byte stuffing for advanced option mode. Note that no byte
-stuffing is applied to the start and end flag.
-Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
-transmission.
+The current DLCI release order starts with the control channel followed by
+the user channels. Reverse this order to keep the control channel open
+until all user channels have been released.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 2e3da8a4697e..cc90b03ce005 100644
+index cc90b03ce005..6b953dfbb155 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -73,6 +73,8 @@ module_param(debug, int, 0600);
-  */
- #define MAX_MRU 1500
- #define MAX_MTU 1500
-+/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
-+#define PROT_OVERHEAD 7
- #define	GSM_NET_TX_TIMEOUT (HZ*10)
+@@ -2146,8 +2146,8 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 	/* Finish outstanding timers, making sure they are done */
+ 	del_timer_sync(&gsm->t2_timer);
  
- /*
-@@ -2264,7 +2266,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 		kfree(gsm);
- 		return NULL;
- 	}
--	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
-+	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
- 	if (gsm->txframe == NULL) {
- 		kfree(gsm->buf);
- 		kfree(gsm);
+-	/* Free up any link layer users */
+-	for (i = 0; i < NUM_DLCI; i++)
++	/* Free up any link layer users and finally the control channel */
++	for (i = NUM_DLCI - 1; i >= 0; i--)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	mutex_unlock(&gsm->mutex);
 -- 
 2.25.1
 
