@@ -2,77 +2,170 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CB9C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 09:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D057BC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 13:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351792AbiDOJjO (ORCPT
+        id S1354034AbiDONkL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        Fri, 15 Apr 2022 09:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351805AbiDOJjM (ORCPT
+        with ESMTP id S1354114AbiDONkE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:39:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8FAAAB78;
-        Fri, 15 Apr 2022 02:36:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 866A6621CC;
-        Fri, 15 Apr 2022 09:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC7DC385A5;
-        Fri, 15 Apr 2022 09:36:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650015399;
-        bh=oSmQpYrhb+dq4itQcQvqK+Xc4SCsDLqJuOTv2GndBj8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lK9d1J7oJT4dYprURu2gIMYdTkK2CfLMsfvsm/fHIup7X9gsYqqgdpDir+9xi6pRq
-         8+grG97Et+a5bqzMdC02OoH3ctzAUTWPlnTRAF6dtKh6J/u3KZICNieDsZqD9a+sXv
-         9MUUAuhZB7q4245P1nLWyBj5HYEPJtFVfvGfxtnQ=
-Date:   Fri, 15 Apr 2022 11:36:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v5 00/11] serial: 8250: dw: RZN1 DMA support
-Message-ID: <Ylk8pXKgM3LN1rVS@kroah.com>
-References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
+        Fri, 15 Apr 2022 09:40:04 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B41B11C31;
+        Fri, 15 Apr 2022 06:35:52 -0700 (PDT)
+Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Fri, 15 Apr
+ 2022 21:35:45 +0800
+Message-ID: <77c83f45-3782-624d-36c4-dec5c53cdd09@amlogic.com>
+Date:   Fri, 15 Apr 2022 21:35:44 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413075141.72777-1-miquel.raynal@bootlin.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] tty: serial: meson: Added 12Mhz as the clock source
+ for calculating baud rate
+Content-Language: en-US
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220407081355.13602-1-yu.tu@amlogic.com>
+ <20220407081355.13602-3-yu.tu@amlogic.com>
+ <bedff186-8ce4-3cfd-aa67-f0375daf29b4@baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <bedff186-8ce4-3cfd-aa67-f0375daf29b4@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.29.47]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 09:51:30AM +0200, Miquel Raynal wrote:
-> Hello,
-> 
-> Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
-> UART driver with to bring DMA support for this SoC.
-> 
-> This short series applies on top of the series bringing RZN1 DMA
-> support, currently on its v10, see [1]. Technically speaking, only the DT
-> patch needs to be applied after [1]. The other patches can come in at
-> any moment, because if no "dmas" property is provided in the DT, DMA
-> support will simply be ignored.
-> 
-> [1] https://lore.kernel.org/dmaengine/20220412193936.63355-1-miquel.raynal@bootlin.com/T/#t
+Hi Neil,
+	Thank you for your reply.
 
-Can you rebase on my tty-next branch please?  This series does not apply
-anymore.
+On 2022/4/7 22:03, Neil Armstrong wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> On 07/04/2022 10:13, Yu Tu wrote:
+>> Starting with the g12A chip, add a 12Mhz clock to calculate the baud
+>> rate, since the BT module uses 3Mhz baud rate. 8Mhz calculations can
+>> lead to baud rate bias, causing some problems.
+> 
+> The commit message isn't clear enough, 12MHz is a new intermediate clock
+> rate, not a new clock source of the UART module.
+> 
+> Please explain a /2 divider over XTAL was introduced since G12A, and
+> is preferred to be used over the still present /3 divider since it
+> provides much closer frequencies vs the request baudrate.
+> 
+I will prepare the next version of the code as you requested.
+>>
+>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>> ---
+>>   drivers/tty/serial/meson_uart.c | 25 +++++++++++++++++++++++--
+>>   1 file changed, 23 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/meson_uart.c 
+>> b/drivers/tty/serial/meson_uart.c
+>> index 8e59624935af..7e77693a1318 100644
+>> --- a/drivers/tty/serial/meson_uart.c
+>> +++ b/drivers/tty/serial/meson_uart.c
+>> @@ -68,6 +68,7 @@
+>>   #define AML_UART_BAUD_MASK        0x7fffff
+>>   #define AML_UART_BAUD_USE        BIT(23)
+>>   #define AML_UART_BAUD_XTAL        BIT(24)
+>> +#define AML_UART_BAUD_XTAL_DIV2        BIT(27)
+>>   #define AML_UART_PORT_NUM        12
+>>   #define AML_UART_PORT_OFFSET        6
+>> @@ -80,6 +81,10 @@ static struct uart_driver meson_uart_driver;
+>>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
+>> +struct meson_uart_data {
+>> +    bool has_xtal_div2;
+>> +};
+>> +
+>>   static void meson_uart_set_mctrl(struct uart_port *port, unsigned 
+>> int mctrl)
+>>   {
+>>   }
+>> @@ -293,13 +298,20 @@ static int meson_uart_startup(struct uart_port 
+>> *port)
+>>   static void meson_uart_change_speed(struct uart_port *port, unsigned 
+>> long baud)
+>>   {
+>> -    u32 val;
+>> +    struct meson_uart_data *private_data = port->private_data;
+>> +    u32 val = 0;
+>>       while (!meson_uart_tx_empty(port))
+>>           cpu_relax();
+>>       if (port->uartclk == 24000000) {
+>> -        val = DIV_ROUND_CLOSEST(port->uartclk / 3, baud) - 1;
+>> +        unsigned int xtal_div = 3;
+>> +
+>> +        if (private_data->has_xtal_div2) {
+>> +            xtal_div = 2;
+>> +            val |= AML_UART_BAUD_XTAL_DIV2;
+>> +        }
+>> +        val |= DIV_ROUND_CLOSEST(port->uartclk / xtal_div, baud) - 1;
+>>           val |= AML_UART_BAUD_XTAL;
+>>       } else {
+>>           val =  DIV_ROUND_CLOSEST(port->uartclk / 4, baud) - 1;
+>> @@ -691,6 +703,7 @@ static int meson_uart_probe_clocks(struct 
+>> platform_device *pdev,
+>>   static int meson_uart_probe(struct platform_device *pdev)
+>>   {
+>> +    struct meson_uart_data *private_data;
+>>       struct resource *res_mem;
+>>       struct uart_port *port;
+>>       u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+>> @@ -733,6 +746,13 @@ static int meson_uart_probe(struct 
+>> platform_device *pdev)
+>>       if (!port)
+>>           return -ENOMEM;
+>> +    private_data = devm_kzalloc(&pdev->dev, sizeof(struct 
+>> meson_uart_data), GFP_KERNEL);
+>> +    if (!private_data)
+>> +        return -ENOMEM;
+>> +
+>> +    if ((bool)device_get_match_data(&pdev->dev))
+>> +        private_data->has_xtal_div2 = true;
+> 
+> It should be much cleaner to pass meson_uart_data to meson_uart_dt_match 
+> .data,
+> and then you can retrieve device_get_match_data() and put the result into
+> port->private_data.
+> This will avoid a devm_kzalloc().
+> 
+> Then in meson_uart_change_speed() change the test to check for NULL 
+> private_data:
+> if (private_data && private_data->has_xtal_div2)
+> 
+>> +
+>>       ret = meson_uart_probe_clocks(pdev, port);
+>>       if (ret)
+>>           return ret;
+>> @@ -749,6 +769,7 @@ static int meson_uart_probe(struct platform_device 
+>> *pdev)
+>>       port->x_char = 0;
+>>       port->ops = &meson_uart_ops;
+>>       port->fifosize = fifosize;
+>> +    port->private_data = private_data;
+>>       meson_ports[pdev->id] = port;
+>>       platform_set_drvdata(pdev, port);
+> 
+> Neil
+>
+I will prepare the next version of the code as you requested.
 
-thanks,
-
-greg k-h
+> .
