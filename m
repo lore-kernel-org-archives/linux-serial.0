@@ -2,100 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DD1C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 06:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD81C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 06:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350464AbiDOGeD (ORCPT
+        id S1350508AbiDOGgE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        Fri, 15 Apr 2022 02:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350458AbiDOGd4 (ORCPT
+        with ESMTP id S243518AbiDOGgE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:33:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21F45BE52;
-        Thu, 14 Apr 2022 23:31:28 -0700 (PDT)
+        Fri, 15 Apr 2022 02:36:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AC5AAC84;
+        Thu, 14 Apr 2022 23:33:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81CB5B8282C;
-        Fri, 15 Apr 2022 06:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981C2C385A6;
-        Fri, 15 Apr 2022 06:31:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73D9361F1B;
+        Fri, 15 Apr 2022 06:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57619C385A6;
+        Fri, 15 Apr 2022 06:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650004286;
-        bh=vNvTyZfr+G0pyUo1bitL8R5ZCYiZCbBy0L86pD4L9zg=;
+        s=korg; t=1650004415;
+        bh=fOgAfgrKdUuMZkHmUofQmp1biP5AT8t3U9G32nyK0xQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y95mTntUPcQegNJbDJWA4bBSmAn2sSaDxOHc56ExScPJYvpvNbZ571XWuBqUjfcXG
-         mYAl+lcETjSs9XwYcXZ+otSKnKPbP75hNLd+gLZHbQrG3zlJ1Sq4p2vpbocXxfOaiR
-         mPv7EywZ2DvLLoFjVgikn+Lmyg50EFtiOBsVJgUA=
-Date:   Fri, 15 Apr 2022 08:31:23 +0200
+        b=ERCXPrpaVVW32BZP7aoI3Sng4UJy35O7LuK7xhegvTKBdERLeT4PrSQnDfOiPe7Mi
+         a4dtoFLa2TQ6fFOat59dlUragtmaQvo5z7maA3JhjDusKVfBaspWj5NRD6WkOHdvJ7
+         N3SA2VE7wUaoGlDo9QYjUgUp6PC4h2l+b1AF71DU=
+Date:   Fri, 15 Apr 2022 08:33:32 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "D. Starke" <daniel.starke@siemens.com>
 Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 16/20] tty: n_gsm: fix invalid command/response bit check
- for UI/UIH frames
-Message-ID: <YlkRO6fAPCuWyT1Y@kroah.com>
+Subject: Re: [PATCH 18/20] tty: n_gsm: fix implicit CR bit encoding in
+ address field
+Message-ID: <YlkRvMhDfwgNZptV@kroah.com>
 References: <20220414094225.4527-1-daniel.starke@siemens.com>
- <20220414094225.4527-16-daniel.starke@siemens.com>
+ <20220414094225.4527-18-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414094225.4527-16-daniel.starke@siemens.com>
+In-Reply-To: <20220414094225.4527-18-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:42:21AM -0700, D. Starke wrote:
+On Thu, Apr 14, 2022 at 02:42:23AM -0700, D. Starke wrote:
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
 > n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
 > See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 > The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-> the newer 27.010 here. Chapter 5.4.3.1 states the CR bit in UI and UIH
-> frames shall always be set 1 by the initiator and 0 by the responder.
-
-This has nothing to do with the change you made here.
-
-
-> Currently, gsm_queue() has a pre-processor gated (excluded) check which
-> treats all frames that conform to the standard as malformed frames.
-> Remove this optional code to avoid confusion and possible breaking changes
-> in case that someone includes it.
-
-Again, nothing to do with the code change.
-
+> the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
+> address field within the frame header. It is made up of the DLCI address,
+> command/response (CR) bit and EA bit.
+> Use the predefined CR value instead of a plain 2 in alignment to the
+> remaining code and to make the encoding obvious.
 > 
 > Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-
-This "fixes" nothing :(
-
 > Cc: stable@vger.kernel.org
 
-How is commenting out unused code a stable backport requirement?
+This does not change any functionality, so how is this a "fix" or
+relevant for stable backporting?
+
 
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  drivers/tty/n_gsm.c | 4 ----
->  1 file changed, 4 deletions(-)
+>  drivers/tty/n_gsm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index e9a7d9483c1f..f4ec48c0d6d7 100644
+> index 1e135a71860f..ecd2ecc61b14 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -1896,10 +1896,6 @@ static void gsm_queue(struct gsm_mux *gsm)
->  	case UI|PF:
->  	case UIH:
->  	case UIH|PF:
-> -#if 0
-> -		if (cr)
-> -			goto invalid;
-> -#endif
+> @@ -754,7 +754,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
+>  
+>  	*--dp = msg->ctrl;
+>  	if (gsm->initiator)
+> -		*--dp = (msg->addr << 2) | 2 | EA;
+> +		*--dp = (msg->addr << 2) | CR | EA;
 
-All you are doing is cleaning up dead code.  Not a big deal, and not
-worth all the text above to confuse people :(
+This is a nice cleanup only.
 
 thanks,
 
