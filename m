@@ -2,115 +2,206 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136BDC43219
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 21:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE55C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 23:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353213AbiDOVNL (ORCPT
+        id S1356650AbiDOXqL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 17:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        Fri, 15 Apr 2022 19:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352683AbiDOVNJ (ORCPT
+        with ESMTP id S1356649AbiDOXqK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 17:13:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7D95F4C3;
-        Fri, 15 Apr 2022 14:10:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0D5C62062;
-        Fri, 15 Apr 2022 21:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7711BC385A5;
-        Fri, 15 Apr 2022 21:10:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650057031;
-        bh=hTD0B/ky7f7FMFyiSVk17MG8LBketxa+tXJ+WwagC1g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V+FxkMidGJVAMy8I8ZjU6W8unLIAGmCTvYPYwvI+pK4/rM0YNTJW1TKzvt6ORzSWa
-         mQpvM9soZMhCKWU1pOvZ42qHdtKCNBui65twYoY8Ttu9T3j6CTq2iodxZVaCd5fCVD
-         lVD+UL20Kn5WWZznDmjOGrvyFXRUcH+/OzhwB+OrIJHzobJ8ADZuvdNt/b5kW1He2Q
-         LwhYAhGCxk8hXsRxWuCLoSG9IHlgDmdyLVsvZp3NT/GSBtqZHT1LUlGMam5hj8oT0V
-         RNWkLSMYcMn0MvixDbRz92U/EYpvfYTraWaY3UHAVubjOE0Yj8jP6Ek5DP2XbmWHrF
-         NyaLjonPuHaEQ==
-Date:   Fri, 15 Apr 2022 23:10:25 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 8/9] dt-bindings: i2c: qcom,i2c-qup: convert to
- dtschema
-Message-ID: <YlnfQZHLW8WiL6ck@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
- <20220405063451.12011-9-krzysztof.kozlowski@linaro.org>
+        Fri, 15 Apr 2022 19:46:10 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F38B6D3A
+        for <linux-serial@vger.kernel.org>; Fri, 15 Apr 2022 16:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650066220; x=1681602220;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TJaXLluJekCisOXBObBDHOIyGZ3SwGZY59ywH+ZBFoE=;
+  b=W8ZtZWm2E1M6ACcmj+BfFoCZHw66V4pbDHICn2dcnbDUTpyaHztvjmlr
+   w4YfqtzjS9VuLM7dm/+/v75uYXH053IUd6jEWs4GpJbJmstw3VvhiVedb
+   NYeTuiFYBFWQ5hZ/B6+tTQRcwMY4XqwGz0mSRrFREHhdijTcUrHsjQVu/
+   6/C2hKsmp4a+mf6fu3MeBiAkKp1eN02YlY3fTUk+6rkV3ifNp9reLLALy
+   D23vcOYl6lvDwGnsAKBxt6fCFuSO3h6uld2CdoOfoDLPl9yMdqLMV3qxx
+   ueUOljBw7YbzP1PWf0HLUP/jTJiOIMmY/PepaANndDyxXS39NuDam2Ywx
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="349698226"
+X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
+   d="scan'208";a="349698226"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 16:43:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
+   d="scan'208";a="856520428"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 15 Apr 2022 16:43:39 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfVbG-0002Xr-Qh;
+        Fri, 15 Apr 2022 23:43:38 +0000
+Date:   Sat, 16 Apr 2022 07:42:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ cc994bb97587787b8f0c094a9bc6945d82075b1d
+Message-ID: <625a02f5.XvRleWNviKZZduKI%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jS4lqlkeTSJ92k82"
-Content-Disposition: inline
-In-Reply-To: <20220405063451.12011-9-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: cc994bb97587787b8f0c094a9bc6945d82075b1d  serial: 8250: Fix runtime PM for start_tx() for empty buffer
 
---jS4lqlkeTSJ92k82
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+elapsed time: 729m
 
-On Tue, Apr 05, 2022 at 08:34:50AM +0200, Krzysztof Kozlowski wrote:
-> Convert the Qualcomm Universal Peripheral (QUP) I2C controller to DT
-> Schema.
->=20
-> Add missing properties: dma and dma-names, pinctrl states (to indicate
-> support for sleep pinctrl).
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+configs tested: 126
+configs skipped: 4
 
-Applied to for-next, thanks!
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220414
+powerpc                     taishan_defconfig
+arc                           tb10x_defconfig
+m68k                           sun3_defconfig
+arm                         lubbock_defconfig
+arm                           tegra_defconfig
+arc                     haps_hs_smp_defconfig
+ia64                                defconfig
+powerpc                        warp_defconfig
+sparc                       sparc64_defconfig
+i386                                defconfig
+powerpc                       eiger_defconfig
+arm                       multi_v4t_defconfig
+powerpc                     mpc83xx_defconfig
+sh                        sh7757lcr_defconfig
+mips                      maltasmvp_defconfig
+sh                           se7724_defconfig
+sh                                  defconfig
+alpha                            allyesconfig
+mips                            gpr_defconfig
+powerpc64                        alldefconfig
+arm                     eseries_pxa_defconfig
+sh                   sh7724_generic_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                           se7722_defconfig
+i386                             alldefconfig
+powerpc                      ppc6xx_defconfig
+powerpc                   motionpro_defconfig
+powerpc                      cm5200_defconfig
+arm                            mps2_defconfig
+powerpc                     ep8248e_defconfig
+arc                        nsim_700_defconfig
+xtensa                  cadence_csp_defconfig
+xtensa                  nommu_kc705_defconfig
+sh                         microdev_defconfig
+mips                         bigsur_defconfig
+m68k                          atari_defconfig
+sh                           se7712_defconfig
+um                                  defconfig
+x86_64                              defconfig
+powerpc                     tqm8555_defconfig
+s390                                defconfig
+sh                           se7343_defconfig
+sh                          rsk7269_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220414
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                randconfig-r042-20220415
+arc                  randconfig-r043-20220415
+s390                 randconfig-r044-20220415
+arc                  randconfig-r043-20220414
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
---jS4lqlkeTSJ92k82
-Content-Type: application/pgp-signature; name="signature.asc"
+clang tested configs:
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220414
+arm                  randconfig-c002-20220414
+i386                          randconfig-c001
+riscv                randconfig-c006-20220414
+arm                           omap1_defconfig
+arm                            dove_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+riscv                randconfig-r042-20220414
+hexagon              randconfig-r041-20220414
+hexagon              randconfig-r045-20220414
+s390                 randconfig-r044-20220414
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJZ3z0ACgkQFA3kzBSg
-KbYVrxAAonu+vXUa438r37KHxJshUk6l4hKBEmIN1TRXQcNGgQarW4PerP6LTuMy
-m5uxa+qeLb5qC3ZmyKCmnH/Taqwqf/cE/BhVRWj4rIVwD9UcKRu/d3T4RguiaRDb
-x4Kmzh/GlYHVMDois2VTMldHNlbbXyy742Yy+mEC3DxlG0Q6gN1RMmpl6idgXCRy
-QTfS2+RWeqgC1wszBVSESN/sc0lygLP6u4gXwhtgXeoJSlvHkQ+PbcX1FpAPfxQQ
-8NJBbSJ/5m2jv/+2/8oI6yk3FnwzR55z0Gvw5UtyRxKFg1XbVrvTxqWULQgQsW6A
-Qh4aQyfSE2XTAkSrdr/LW5OBkPyIH3E4Cdul0g162oKmq8uzm1c/ULqRCdboW6vS
-NP1MpqZq+Oi5AzecxZCldN0/KpoGHRSQ5tfkaoMyBTxbhYc3xaTRk0HpTVmsTO36
-tESXEBbJ7m/+37KKa3rE36rV1lvKVuEdy0+pq9xlhRORgkeLe5xnYcHGyG+uK81a
-+aoPYdbH0yAfUPfrfnK3XVEnkzz22OnSySf7hiR6Pmx5UBxPaDwLtmUGbLbXti3y
-lG45x3HrVOScvZT9fUmpa7CN8rUSIj/3VazkefX8nqD3t7bwaY+qSFgAbnWlI/iM
-RlaqsxsXhbeD1ddus3rSAQXCGuPwZ2a+5bKmr4EJmz2Mr3Oh7HE=
-=BQnm
------END PGP SIGNATURE-----
-
---jS4lqlkeTSJ92k82--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
