@@ -2,117 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF66C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 06:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A111C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 06:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350548AbiDOGoB (ORCPT
+        id S1350825AbiDOHCA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        Fri, 15 Apr 2022 03:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243518AbiDOGoA (ORCPT
+        with ESMTP id S245147AbiDOHB7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:44:00 -0400
+        Fri, 15 Apr 2022 03:01:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59D8AFADD;
-        Thu, 14 Apr 2022 23:41:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F28C101EA;
+        Thu, 14 Apr 2022 23:59:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8867AB82BF0;
-        Fri, 15 Apr 2022 06:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA977C385A5;
-        Fri, 15 Apr 2022 06:41:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29654B82BF0;
+        Fri, 15 Apr 2022 06:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17957C385A5;
+        Fri, 15 Apr 2022 06:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650004890;
-        bh=+L/HFWzltw7KDYz0FALc3guFX9clLm9cFM07Zin4qws=;
+        s=korg; t=1650005968;
+        bh=gjZUSGDTebqm+7kMg8qn41MG0S0apgk+Sr5BdM0f3BM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U2xoJV98ppVR4dwd0IrPUHQTzHUazzXZ+C+DgBpQQR75KPLW4WYFNd6JDZEL6JCBc
-         w2nWV1/4a5WEGt99YbBCAtfxzoyk6NScThAh/KJNUtF5wp7GUw4Xa/uFGbluJTO1IG
-         Xsxs6pLSdShzdF+FyDC66IJsu1Ft7gBf1C/pPWGo=
-Date:   Fri, 15 Apr 2022 08:41:27 +0200
+        b=s7mlmLOZVL9wubHJz12vp4Q5rhFTSrmrxTAENiUJ/M95LOskQc3ZxTSAJIUEUWINc
+         LXGoGFxiwDj1iuuH2pP0wIehea0dYF1fcMHbCOFCvBIxgUZfneMr33fKPgj8DQjnSW
+         5XGTTB4YEZRNgLg/lEpAyfCHQF24VJEC/kq+dlsM=
+Date:   Fri, 15 Apr 2022 08:59:25 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kartik <kkartik@nvidia.com>
-Cc:     ldewangan@nvidia.com, jirislaby@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] serial: tegra: Correct error handling sequence
-Message-ID: <YlkTl/hyNDr9Nlwj@kroah.com>
-References: <1648112644-16950-1-git-send-email-kkartik@nvidia.com>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_msavaliy@quicinc.com, dianders@chromium.org
+Subject: Re: [V3] drivers/tty/serial/qcom-geni-serial: Do stop_rx in suspend
+ path for console if console_suspend is disabled
+Message-ID: <YlkXzQcqUWoRZCqE@kroah.com>
+References: <1649316351-9220-1-git-send-email-quic_vnivarth@quicinc.com>
+ <1649316351-9220-2-git-send-email-quic_vnivarth@quicinc.com>
+ <0f52c6aa-46be-6971-76df-364150b1c1e1@kernel.org>
+ <e42527f9-fa5e-f03d-3af8-fe2c27f9597b@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1648112644-16950-1-git-send-email-kkartik@nvidia.com>
+In-Reply-To: <e42527f9-fa5e-f03d-3af8-fe2c27f9597b@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 02:34:04PM +0530, Kartik wrote:
-> From: kartik <kkartik@nvidia.com>
+On Fri, Apr 08, 2022 at 11:45:11AM +0530, Vijaya Krishna Nivarthi wrote:
 > 
-> In the current error handling sequence the driver checks for break
-> error at the end.
+> On 4/7/2022 1:21 PM, Jiri Slaby wrote:
+> > On 07. 04. 22, 9:25, Vijaya Krishna Nivarthi wrote:
+> > > For the case of console_suspend disabled, if back to back suspend/resume
+> > > test is executed, at the end of test, sometimes console would appear to
+> > > be frozen not responding to input. This would happen because, for
+> > > console_suspend disabled, suspend/resume routines only turn resources
+> > > off/on but don't do a port close/open.
+> > > As a result, during resume, some rx transactions come in before
+> > > system is
+> > > ready, malfunction of rx happens in turn resulting in console appearing
+> > > to be stuck.
+> > > 
+> > > Do a stop_rx in suspend sequence to prevent this. start_rx is already
+> > > present in resume sequence as part of call to set_termios which does a
+> > > stop_rx/start_rx.
+> > 
+> > So why is it OK for every other driver? Should uart_suspend_port() be
+> > fixed instead?
 > 
-> By handling the break error first, we can avoid a situation where the
-> driver keeps processing the errors which can be caused by an unhandled
-> break error.
+> For qcom driver we know that set_termios() call in uart_suspend_port() will
+> recover with a call to start_rx.
+> However that may not be the case with other drivers.
 > 
-> Signed-off-by: kartik <kkartik@nvidia.com>
+> We can move stop_rx to uart_suspend_port() and additionally have a start_rx
+> in uart_resume_port()
+> Please let know if such a change would be ok.
 
-I need a full, legal name that you use to sign documents with.  Is that
-this name?
-
-> ---
->  drivers/tty/serial/serial-tegra.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-> index b6223fa..ba78a02 100644
-> --- a/drivers/tty/serial/serial-tegra.c
-> +++ b/drivers/tty/serial/serial-tegra.c
-> @@ -440,7 +440,19 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
->  	char flag = TTY_NORMAL;
->  
->  	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
-> -		if (lsr & UART_LSR_OE) {
-> +		if (lsr & UART_LSR_BI) {
-> +			/*
-> +			 * Break error
-> +			 * If FIFO read error without any data, reset Rx FIFO
-> +			 */
-> +			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
-> +				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-> +			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-> +				return TTY_BREAK;
-> +			flag = TTY_BREAK;
-> +			tup->uport.icount.brk++;
-> +			dev_dbg(tup->uport.dev, "Got Break\n");
-> +		} else if (lsr & UART_LSR_OE) {
->  			/* Overrrun error */
->  			flag = TTY_OVERRUN;
->  			tup->uport.icount.overrun++;
-> @@ -454,18 +466,6 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
->  			flag = TTY_FRAME;
->  			tup->uport.icount.frame++;
->  			dev_dbg(tup->uport.dev, "Got frame errors\n");
-> -		} else if (lsr & UART_LSR_BI) {
-> -			/*
-> -			 * Break error
-> -			 * If FIFO read error without any data, reset Rx FIFO
-> -			 */
-> -			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
-> -				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-> -			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-> -				return TTY_BREAK;
-> -			flag = TTY_BREAK;
-> -			tup->uport.icount.brk++;
-> -			dev_dbg(tup->uport.dev, "Got Break\n");
->  		}
->  		uart_insert_char(&tup->uport, lsr, UART_LSR_OE, 0, flag);
->  	}
-
-What commit does this fix?
+This should not be something that each individual driver has to do,
+please fix it for everyone.
 
 thanks,
 
