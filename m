@@ -2,193 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B1FC4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Apr 2022 16:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F3DC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 06:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239818AbiDNQ7W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        id S1350455AbiDOGcn (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Apr 2022 02:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344369AbiDNQ6o (ORCPT
+        with ESMTP id S241005AbiDOGc3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:58:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313DC9F6C0;
-        Thu, 14 Apr 2022 09:32:11 -0700 (PDT)
+        Fri, 15 Apr 2022 02:32:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445A83FD88;
+        Thu, 14 Apr 2022 23:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA54E61FEC;
-        Thu, 14 Apr 2022 16:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D21C385A5;
-        Thu, 14 Apr 2022 16:32:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEC64B82BF0;
+        Fri, 15 Apr 2022 06:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065EAC385A6;
+        Fri, 15 Apr 2022 06:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649953930;
-        bh=hdd96lwHARk1y0gyMqVXzjjCx4Up+g8Yw/n6h7HFY3w=;
+        s=korg; t=1650004199;
+        bh=psflDfKqWvAP0ydCreaP3PvJtpFOl3v8AIMyqapUG2Q=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IG4XPTR2iiuTGA251zdre+MOrTvjCrVug0OvyEp6FVKof3sR3O3ByMLfvjQQdhjWq
-         bfdrSGZCs2KpTH6uBNSZ/qRYjudyTgtpwUIjrLptb8vsx+3TJ+5ADIZMKq3rFDwNUa
-         yZWfDalboZu1KwfcOMfqbB490COqxZXT5vrJ//n4=
-Date:   Thu, 14 Apr 2022 18:32:07 +0200
+        b=YtaTYBIq2FZeUlOqOuoVkkrpzAe7DAZ+feUTWibqx7lujuGLlhs+U36JpzhuVccoJ
+         gN1jWTB+fPbV9VEJsStX6FLuYf+UrBdOT/n6qkUfc5oR1prJGNDCinedGOLWlvzp5y
+         js7f9zzM8NCw1YhJHUnZhNB6w84tIDlf+vsMGvmA=
+Date:   Fri, 15 Apr 2022 08:29:56 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] tty: serial: introduce uart_port_tx{,_limit}()
- helpers
-Message-ID: <YlhMhy9FhK0j3MId@kroah.com>
-References: <20220411105405.9519-1-jslaby@suse.cz>
- <20220411105405.9519-2-jslaby@suse.cz>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 15/20] tty: n_gsm: fix missing update of modem controls
+ after DLCI open
+Message-ID: <YlkQ5Jh8HIm+AJHe@kroah.com>
+References: <20220414094225.4527-1-daniel.starke@siemens.com>
+ <20220414094225.4527-15-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220411105405.9519-2-jslaby@suse.cz>
+In-Reply-To: <20220414094225.4527-15-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 12:54:03PM +0200, Jiri Slaby wrote:
-> Many serial drivers do the same thing:
-> * send x_char if set
-> * keep sending from the xmit circular buffer until either
->   - the loop reaches the end of the xmit buffer
->   - TX is stopped
->   - HW fifo is full
-> * check for pending characters and:
->   - wake up tty writers to fill for more data into xmit buffer
->   - stop TX if there is nothing in the xmit buffer
+On Thu, Apr 14, 2022 at 02:42:20AM -0700, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> The only differences are:
-> * how to write the character to the HW fifo
-> * the check of the end condition:
->   - is the HW fifo full?
->   - is limit of the written characters reached?
+> Currently the peer is not informed about the initial state of the modem
+> control lines after a new DLCI has been opened.
+> Fix this by sending the initial modem control line states after DLCI open.
 > 
-> So unify the above into two helpers:
-> * uart_port_tx_limit() -- the generic one, it performs the above taking
->   into account the written characters limit
-> * uart_port_tx() -- calls the above with ~0 as the limit. So it only
->   checks the HW fullness.
-> 
-> We need three more hooks in struct uart_ops for all this to work:
-> * tx_ready() -- returns true if HW can accept more data.
-> * put_char() -- write a character to the device.
-> * tx_done() -- when the write loop is done, perform arbitrary action
->   before potential invocation of ops->stop_tx() happens.
-> 
-> NOTE1: Maybe the three hooks in uart_ops above are overkill. We can
-> instead pass pointers to the three functions directly to the new helpers
-> as they are not used elsewhere. Similar to uart_console_write() and its
-> putchar().
-> 
-> NOTE2: These two new helper functions call the hooks per every character
-> processed. I was unable to measure any difference, provided most time is
-> spent by readb (or alike) in the hooks themselves.  First, LTO might
-> help to eliminate these explicit calls (we might need NOTE1 to be
-> implemented for this to be true). Second, if this turns out to be a
-> problem, we can introduce a macro to build the helper in the driver's
-> code instead of serial_core. That is, similar to wait_event().
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  Documentation/driver-api/serial/driver.rst | 28 ++++++++++++
->  drivers/tty/serial/serial_core.c           | 53 ++++++++++++++++++++++
->  include/linux/serial_core.h                |  9 ++++
->  3 files changed, 90 insertions(+)
+>  drivers/tty/n_gsm.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-> index 06ec04ba086f..7dc3791addeb 100644
-> --- a/Documentation/driver-api/serial/driver.rst
-> +++ b/Documentation/driver-api/serial/driver.rst
-> @@ -80,6 +80,34 @@ hardware.
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index f3fb66be8513..e9a7d9483c1f 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -369,7 +369,11 @@ static const u8 gsm_fcs8[256] = {
+>  #define INIT_FCS	0xFF
+>  #define GOOD_FCS	0xCF
 >  
->  	This call must not sleep
->  
-> +  tx_ready(port)
-> +	The driver returns true if the HW can accept more data to be sent.
-> +
-> +	Locking: port->lock taken.
-> +
-> +	Interrupts: locally disabled.
-> +
-> +	This call must not sleep.
-> +
-> +  put_char(port, ch)
-> +	The driver is asked to write ch to the device.
-> +
-> +	Locking: port->lock taken.
-> +
-> +	Interrupts: locally disabled.
-> +
-> +	This call must not sleep.
-> +
-> +  tx_done(port)
-> +	When the write loop is done, the driver can perform arbitrary action
-> +	here before potential invocation of ops->stop_tx() happens.
-> +
-> +	Locking: port->lock taken.
-> +
-> +	Interrupts: locally disabled.
-> +
-> +	This call must not sleep.
-> +
->    set_mctrl(port, mctrl)
->  	This function sets the modem control lines for port described
->  	by 'port' to the state described by mctrl.  The relevant bits
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 6a8963caf954..1be14e90066c 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -107,6 +107,59 @@ void uart_write_wakeup(struct uart_port *port)
->  }
->  EXPORT_SYMBOL(uart_write_wakeup);
->  
-> +static bool uart_port_tx_always_ready(struct uart_port *port)
-> +{
-> +	return true;
-> +}
-> +
-> +/**
-> + * uart_port_tx_limit -- transmit helper for uart_port
-> + * @port: from which port to transmit
-> + * @count: limit count
-> + *
-> + * uart_port_tx_limit() transmits characters from the xmit buffer to the
-> + * hardware using @uart_port::ops::put_char(). It does so until @count
-> + * characters are sent and while @uart_port::ops::tx_ready() still returns
-> + * non-zero (if non-NULL).
-> + *
-> + * Return: number of characters in the xmit buffer when done.
+> +/*
+> + * Prototypes
 > + */
-> +unsigned int uart_port_tx_limit(struct uart_port *port, unsigned int count)
-> +{
-> +	struct circ_buf *xmit = &port->state->xmit;
-> +	bool (*tx_ready)(struct uart_port *) = port->ops->tx_ready ? :
-> +		uart_port_tx_always_ready;
-> +	unsigned int pending;
-> +
-> +	for (; count && tx_ready(port); count--, port->icount.tx++) {
-> +		if (port->x_char) {
-> +			port->ops->put_char(port, port->x_char);
-> +			port->x_char = 0;
-> +			continue;
-> +		}
-> +
-> +		if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-> +			break;
-> +
-> +		port->ops->put_char(port, xmit->buf[xmit->tail]);
 
-That's a lot of redirection and function pointer mess per each character
-sent now.  With the spectre overhead here (and only getting worse), this
-feels like a step backwards.
+We know they are prototypes, no need to say it :)
 
-I doubt throughput matters here given cpu speeds now, _but_ the cpu load
-should go up.
+>  static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
+> +static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
+>  
+>  /**
+>   *	gsm_fcs_add	-	update FCS
+> @@ -1479,6 +1483,8 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+>  		pr_debug("DLCI %d goes open.\n", dlci->addr);
+>  	/* Register gsmtty driver,report gsmtty dev add uevent for user */
+>  	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
+> +	if (dlci->addr) /* Send current modem state */
+> +		gsmtty_modem_update(dlci, 0);
 
-Although on smaller cpus with slower Mhz and faster line rates, this
-feels like a lot of extra work happening for no real good reason.
-
-Any benchmarks?
+Please do not put comments at the end of a line like this.
 
 thanks,
 
