@@ -2,69 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD39DC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 09:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CB9C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 09:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351686AbiDOJQN (ORCPT
+        id S1351792AbiDOJjO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        Fri, 15 Apr 2022 05:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243247AbiDOJQM (ORCPT
+        with ESMTP id S1351805AbiDOJjM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:16:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B879820189;
-        Fri, 15 Apr 2022 02:13:44 -0700 (PDT)
+        Fri, 15 Apr 2022 05:39:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8FAAAB78;
+        Fri, 15 Apr 2022 02:36:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68AE3B80DBB;
-        Fri, 15 Apr 2022 09:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87293C385A6;
-        Fri, 15 Apr 2022 09:13:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 866A6621CC;
+        Fri, 15 Apr 2022 09:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC7DC385A5;
+        Fri, 15 Apr 2022 09:36:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650014022;
-        bh=uBpYyIwM53dIE3IhFKR8fMQuSzXuhDcAj8oRvnwaJLY=;
+        s=korg; t=1650015399;
+        bh=oSmQpYrhb+dq4itQcQvqK+Xc4SCsDLqJuOTv2GndBj8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OPVPohiU52YRqilcCuf3Em1wHggX4lla3+mrTyWvskn7nOrYdrLU7AzxhN4830xQK
-         jOCAgLxBu2AB5cR0i2L5rsUluWeifdDjgAyF9IyLfNSjnUhkK3fuEHIo/vU8d1Z/Z1
-         2bO5nMqEJ7DQeC67Ro6djkejq/yRBiSQg0nWT5l4=
-Date:   Fri, 15 Apr 2022 11:13:39 +0200
+        b=lK9d1J7oJT4dYprURu2gIMYdTkK2CfLMsfvsm/fHIup7X9gsYqqgdpDir+9xi6pRq
+         8+grG97Et+a5bqzMdC02OoH3ctzAUTWPlnTRAF6dtKh6J/u3KZICNieDsZqD9a+sXv
+         9MUUAuhZB7q4245P1nLWyBj5HYEPJtFVfvGfxtnQ=
+Date:   Fri, 15 Apr 2022 11:36:37 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND][PATCH v3 1/2] serial: 8250: Fold EndRun device support
- into OxSemi Tornado code
-Message-ID: <Ylk3Q6HyaN/5+97/@kroah.com>
-References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
- <alpine.DEB.2.21.2203310121211.44113@angie.orcam.me.uk>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v5 00/11] serial: 8250: dw: RZN1 DMA support
+Message-ID: <Ylk8pXKgM3LN1rVS@kroah.com>
+References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2203310121211.44113@angie.orcam.me.uk>
+In-Reply-To: <20220413075141.72777-1-miquel.raynal@bootlin.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 08:11:42AM +0100, Maciej W. Rozycki wrote:
-> The EndRun PTP/1588 dual serial port device is based on the Oxford
-> Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-> for EndRun Technologies and uses the same sequence to determine the
-> number of ports available.  Despite that we have duplicate code
-> specific to the EndRun device.
+On Wed, Apr 13, 2022 at 09:51:30AM +0200, Miquel Raynal wrote:
+> Hello,
 > 
-> Remove redundant code then and factor out OxSemi Tornado device
-> detection.  Also correct the baud base like with commit 6cbe45d8ac93
-> ("serial: 8250: Correct the clock for OxSemi PCIe devices") for the
-> value of 3906250 rather than 4000000, obtained by dividing the 62.5MHz
-> clock input by the default oversampling rate of 16.  Finally move the
-> EndRun vendor:device ID to <linux/pci_ids.h>.
+> Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
+> UART driver with to bring DMA support for this SoC.
+> 
+> This short series applies on top of the series bringing RZN1 DMA
+> support, currently on its v10, see [1]. Technically speaking, only the DT
+> patch needs to be applied after [1]. The other patches can come in at
+> any moment, because if no "dmas" property is provided in the DT, DMA
+> support will simply be ignored.
+> 
+> [1] https://lore.kernel.org/dmaengine/20220412193936.63355-1-miquel.raynal@bootlin.com/T/#t
 
-That's a lot of different things happening all the same commit.  Please
-break this out into one-patch-per-logical-change as is required.
+Can you rebase on my tty-next branch please?  This series does not apply
+anymore.
 
 thanks,
 
