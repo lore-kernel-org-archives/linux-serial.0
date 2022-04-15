@@ -2,170 +2,230 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D057BC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 13:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51245C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Apr 2022 20:35:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354034AbiDONkL (ORCPT
+        id S1350169AbiDOUiE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Apr 2022 09:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
+        Fri, 15 Apr 2022 16:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354114AbiDONkE (ORCPT
+        with ESMTP id S232478AbiDOUiD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Apr 2022 09:40:04 -0400
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B41B11C31;
-        Fri, 15 Apr 2022 06:35:52 -0700 (PDT)
-Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Fri, 15 Apr
- 2022 21:35:45 +0800
-Message-ID: <77c83f45-3782-624d-36c4-dec5c53cdd09@amlogic.com>
-Date:   Fri, 15 Apr 2022 21:35:44 +0800
+        Fri, 15 Apr 2022 16:38:03 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA1F716E8
+        for <linux-serial@vger.kernel.org>; Fri, 15 Apr 2022 13:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650054934; x=1681590934;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ApVk9sn7V5ok3Q8R1V1GMFk1GKpRsipay5gSfhg1Kp0=;
+  b=CESTOn48gfc/g1hXLZ5GQrGjvTDoEf/ib+tvCsRcjVRgxn0wYLe3dl3V
+   HaP9sTNX5YpOjzt/DKomyNhUOei4dmbqcLyEBAv1tSIrP2cPn6Cuk94/L
+   Jpie+UiuzT0bXVBUwyZwJH+smHZxI0a6RO/r/QqUtmfeoKSJDYN5pe8IJ
+   OuTiie01TevCR8mbiNeVBt3Rpf1f4p3FLZiuCMmXaieBQLaq6lukg/H3u
+   oU20mR3vGBThL9MxQCTYHXPbIPu8g8aiyLdJFREDqrHBCoekq4mKe7/LA
+   hw86xWDdyvnF+Ye8d26FLuEwj7KDylEUJaFO1jdGJfh5EnuXz48qJuoEO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="250523275"
+X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
+   d="scan'208";a="250523275"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 13:35:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
+   d="scan'208";a="662311381"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 15 Apr 2022 13:35:33 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfSfE-0002OG-AT;
+        Fri, 15 Apr 2022 20:35:32 +0000
+Date:   Sat, 16 Apr 2022 04:35:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD SUCCESS
+ 9c3a431a486d0c494a68941045885333a5bc1975
+Message-ID: <6259d6f7.BZa5vpupetmW8aKp%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] tty: serial: meson: Added 12Mhz as the clock source
- for calculating baud rate
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220407081355.13602-1-yu.tu@amlogic.com>
- <20220407081355.13602-3-yu.tu@amlogic.com>
- <bedff186-8ce4-3cfd-aa67-f0375daf29b4@baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <bedff186-8ce4-3cfd-aa67-f0375daf29b4@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.47]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Neil,
-	Thank you for your reply.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+branch HEAD: 9c3a431a486d0c494a68941045885333a5bc1975  tty: serial: altera: use altera_jtaguart_stop_tx()
 
-On 2022/4/7 22:03, Neil Armstrong wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> On 07/04/2022 10:13, Yu Tu wrote:
->> Starting with the g12A chip, add a 12Mhz clock to calculate the baud
->> rate, since the BT module uses 3Mhz baud rate. 8Mhz calculations can
->> lead to baud rate bias, causing some problems.
-> 
-> The commit message isn't clear enough, 12MHz is a new intermediate clock
-> rate, not a new clock source of the UART module.
-> 
-> Please explain a /2 divider over XTAL was introduced since G12A, and
-> is preferred to be used over the still present /3 divider since it
-> provides much closer frequencies vs the request baudrate.
-> 
-I will prepare the next version of the code as you requested.
->>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   drivers/tty/serial/meson_uart.c | 25 +++++++++++++++++++++++--
->>   1 file changed, 23 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/meson_uart.c 
->> b/drivers/tty/serial/meson_uart.c
->> index 8e59624935af..7e77693a1318 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -68,6 +68,7 @@
->>   #define AML_UART_BAUD_MASK        0x7fffff
->>   #define AML_UART_BAUD_USE        BIT(23)
->>   #define AML_UART_BAUD_XTAL        BIT(24)
->> +#define AML_UART_BAUD_XTAL_DIV2        BIT(27)
->>   #define AML_UART_PORT_NUM        12
->>   #define AML_UART_PORT_OFFSET        6
->> @@ -80,6 +81,10 @@ static struct uart_driver meson_uart_driver;
->>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
->> +struct meson_uart_data {
->> +    bool has_xtal_div2;
->> +};
->> +
->>   static void meson_uart_set_mctrl(struct uart_port *port, unsigned 
->> int mctrl)
->>   {
->>   }
->> @@ -293,13 +298,20 @@ static int meson_uart_startup(struct uart_port 
->> *port)
->>   static void meson_uart_change_speed(struct uart_port *port, unsigned 
->> long baud)
->>   {
->> -    u32 val;
->> +    struct meson_uart_data *private_data = port->private_data;
->> +    u32 val = 0;
->>       while (!meson_uart_tx_empty(port))
->>           cpu_relax();
->>       if (port->uartclk == 24000000) {
->> -        val = DIV_ROUND_CLOSEST(port->uartclk / 3, baud) - 1;
->> +        unsigned int xtal_div = 3;
->> +
->> +        if (private_data->has_xtal_div2) {
->> +            xtal_div = 2;
->> +            val |= AML_UART_BAUD_XTAL_DIV2;
->> +        }
->> +        val |= DIV_ROUND_CLOSEST(port->uartclk / xtal_div, baud) - 1;
->>           val |= AML_UART_BAUD_XTAL;
->>       } else {
->>           val =  DIV_ROUND_CLOSEST(port->uartclk / 4, baud) - 1;
->> @@ -691,6 +703,7 @@ static int meson_uart_probe_clocks(struct 
->> platform_device *pdev,
->>   static int meson_uart_probe(struct platform_device *pdev)
->>   {
->> +    struct meson_uart_data *private_data;
->>       struct resource *res_mem;
->>       struct uart_port *port;
->>       u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->> @@ -733,6 +746,13 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>       if (!port)
->>           return -ENOMEM;
->> +    private_data = devm_kzalloc(&pdev->dev, sizeof(struct 
->> meson_uart_data), GFP_KERNEL);
->> +    if (!private_data)
->> +        return -ENOMEM;
->> +
->> +    if ((bool)device_get_match_data(&pdev->dev))
->> +        private_data->has_xtal_div2 = true;
-> 
-> It should be much cleaner to pass meson_uart_data to meson_uart_dt_match 
-> .data,
-> and then you can retrieve device_get_match_data() and put the result into
-> port->private_data.
-> This will avoid a devm_kzalloc().
-> 
-> Then in meson_uart_change_speed() change the test to check for NULL 
-> private_data:
-> if (private_data && private_data->has_xtal_div2)
-> 
->> +
->>       ret = meson_uart_probe_clocks(pdev, port);
->>       if (ret)
->>           return ret;
->> @@ -749,6 +769,7 @@ static int meson_uart_probe(struct platform_device 
->> *pdev)
->>       port->x_char = 0;
->>       port->ops = &meson_uart_ops;
->>       port->fifosize = fifosize;
->> +    port->private_data = private_data;
->>       meson_ports[pdev->id] = port;
->>       platform_set_drvdata(pdev, port);
-> 
-> Neil
->
-I will prepare the next version of the code as you requested.
+elapsed time: 1591m
 
-> .
+configs tested: 148
+configs skipped: 4
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220414
+sh                   secureedge5410_defconfig
+powerpc                   motionpro_defconfig
+arc                     haps_hs_smp_defconfig
+arc                          axs103_defconfig
+m68k                        stmark2_defconfig
+sparc                       sparc64_defconfig
+sh                          rsk7264_defconfig
+mips                           xway_defconfig
+xtensa                       common_defconfig
+powerpc64                           defconfig
+powerpc                      bamboo_defconfig
+microblaze                          defconfig
+sparc                            allyesconfig
+mips                     loongson1b_defconfig
+arm                          pxa910_defconfig
+arm                         lubbock_defconfig
+arm                           tegra_defconfig
+ia64                                defconfig
+powerpc                         wii_defconfig
+arc                        vdk_hs38_defconfig
+mips                           jazz_defconfig
+sh                           se7724_defconfig
+arm                           imxrt_defconfig
+arm                            mps2_defconfig
+powerpc                        warp_defconfig
+i386                                defconfig
+powerpc                       eiger_defconfig
+arm                       multi_v4t_defconfig
+powerpc                     mpc83xx_defconfig
+sh                        sh7757lcr_defconfig
+mips                      maltasmvp_defconfig
+sh                                  defconfig
+alpha                            allyesconfig
+mips                            gpr_defconfig
+powerpc64                        alldefconfig
+arm                     eseries_pxa_defconfig
+sh                   sh7724_generic_defconfig
+powerpc                 mpc85xx_cds_defconfig
+sh                           se7722_defconfig
+powerpc                     ep8248e_defconfig
+arc                        nsim_700_defconfig
+xtensa                  cadence_csp_defconfig
+xtensa                  nommu_kc705_defconfig
+sh                         microdev_defconfig
+mips                         bigsur_defconfig
+m68k                          atari_defconfig
+sh                           se7712_defconfig
+mips                     decstation_defconfig
+s390                          debug_defconfig
+s390                                defconfig
+sh                           se7343_defconfig
+sh                          rsk7269_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220414
+arm                  randconfig-c002-20220415
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220415
+arc                  randconfig-r043-20220415
+s390                 randconfig-r044-20220415
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220414
+arm                  randconfig-c002-20220414
+i386                          randconfig-c001
+riscv                randconfig-c006-20220414
+x86_64                           allyesconfig
+mips                           ip28_defconfig
+arm                           omap1_defconfig
+arm                            dove_defconfig
+powerpc                 mpc8313_rdb_defconfig
+powerpc                      acadia_defconfig
+powerpc                      obs600_defconfig
+riscv                             allnoconfig
+powerpc                     kmeter1_defconfig
+arm                       mainstone_defconfig
+mips                       rbtx49xx_defconfig
+arm                      tct_hammer_defconfig
+powerpc                     tqm5200_defconfig
+arm                        multi_v5_defconfig
+mips                           mtx1_defconfig
+arm                        spear3xx_defconfig
+arm                        vexpress_defconfig
+arm                          collie_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+riscv                randconfig-r042-20220414
+hexagon              randconfig-r041-20220414
+hexagon              randconfig-r045-20220414
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
