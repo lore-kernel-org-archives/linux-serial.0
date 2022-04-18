@@ -2,108 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A305EC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 12:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7F3C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 12:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236281AbiDRMNG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
+        id S238059AbiDRMRE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235661AbiDRMNF (ORCPT
+        with ESMTP id S231868AbiDRMRD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:13:05 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5B7DE9F;
-        Mon, 18 Apr 2022 05:10:26 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id y10so9082552ejw.8;
-        Mon, 18 Apr 2022 05:10:26 -0700 (PDT)
+        Mon, 18 Apr 2022 08:17:03 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DB61A82E;
+        Mon, 18 Apr 2022 05:14:22 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id c64so17219105edf.11;
+        Mon, 18 Apr 2022 05:14:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JVPSPKy4jcGaphHDpx5hUle8QXu6cx0+LV1j9x5xpfQ=;
-        b=oM3cZjIQfJ349ghEoRQ0l6lMtZe9XojDljdUCtZlm8iGM2LRBO3PaQ1pS2NybUGQDK
-         ZEUEdWTPeXa1MxFSe1r/zn49QJ4OPeHinB2zgwQS/8d6+PNg8UFrfCRuvfQ5NPzyAMdZ
-         WdFK/tjcPgai32HBrmAlUBEaQ1hB5ULWeRr7Z6qeluB4bO1AqBbFTs/YwKqpl9fGjtDn
-         BEGlmWd7yKYIXzqK2sBEcvveVXiZW8JuEBwFj8NkAn8rwUyd75AqXJfivFk8Yn7MK061
-         a2jv262dWtZuu4X776BS0Zi8v2q2b1M1TIICwDrLDJWhAGwWUN6Fi3GAvd82+OPDwKSS
-         XjBw==
+        bh=9Yi3JLK4e1JeX9Duse43qaRJcbvheP09jxiZrAgIDBU=;
+        b=DxLelIcLuvrBmf7L8udOP+AY3bWeeIv36zEOdsZuLI+OadRQs5Tj2cNMLfYjQabwPA
+         YL240QfjEFUTl4D1PGG3Nt7vYLxEZlrvgSl1R3KUVvXsOLzXLweH+1gjr9fPAHAbWV6p
+         X6QPcD5V0fGP1kEuqp8b2pnI4LKKRkTLOjfANG55K0CA33htMblD8hAyzXSxoepuRoWp
+         Oizl9sDGNVU/myD7YD9Ks5QeYeZtiQGQOPMjYDWHHhnA9BfumJMsob+KvM3mVq2VSnER
+         t3QbDq3FMzEQThxSnZKojKFHBo/DrQuRe9lW0xkHoz+xpkuHdI589Vh/HuRxEYdGk6bf
+         BPQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JVPSPKy4jcGaphHDpx5hUle8QXu6cx0+LV1j9x5xpfQ=;
-        b=VmmbwU4n578z+3eV0BUqq/CotDG0hDsUhkHKo9jf6auUZwYF+Ly8egYpgdPCapBjIq
-         ZenaIOeXefQQUUXGCfxQgdEh/n8Salq/d11IHObTqH5siOODb8dHBlGlbiiILd7wgQBl
-         D47Jnp6+6HZnXuOepjQi8JhuNVGTGhgAHz5MdfS6hDnp1BCa2swOBf50Cn9amlbNYklj
-         zpKVhSisUlZASk85XFKz05oJNW8Yqr6EVmLa4E+pp6vtLhJkBmOGfpGAJEQ47E8YfjV4
-         gP3EjrXRhLWksGfwNQIoKNpJ4zC3CLP8myzjEA/lI74nyUH9DZQ3420q+5tgEbPZnVPn
-         KRqA==
-X-Gm-Message-State: AOAM532ZV61jRuEMl2Xtr/Zj8Pwrht0xUQ7CtaqyVwhWMrGGLjX8lPH6
-        +oEsZtRqeGgYkeTzwWfv4b1ZvvS1FljM8tVUZxE=
-X-Google-Smtp-Source: ABdhPJyNNskiSG4Dun0u/29PY0MPfeh8JQN+/nnHN7PsNrhegMi+99MqdnEN+kGgx3gyvXV6NAzYrzmCt56rzAp333Y=
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
- hd14-20020a170907968e00b006dbaed543c8mr8858684ejc.636.1650283825241; Mon, 18
- Apr 2022 05:10:25 -0700 (PDT)
+        bh=9Yi3JLK4e1JeX9Duse43qaRJcbvheP09jxiZrAgIDBU=;
+        b=e8X4Us+/Za9OxNlTw5zadBWh81gmC5p7Jke3wLxJ5IVJrdgNSNLk2cjxnkXGQMH4Gt
+         lIKikSumIWXsQJJX279p3ViUBImQ7Nx6pkM5nW54G/XJWw6qTKVnvYHCgt21W7F8Mlca
+         SiZlAEvAegqP15Lb915Re+oOAd5Oj/fOd2ug2dHb7Tg6mC7btqYETuTrnb7hguQTwBRf
+         /0qloluy4GGkUN0Q67nSmxE+fvtVApMa9BNNHVIVFXM5Upvr7fKZX97tt6RVzHkPyjHP
+         1sIMF/lAvWjNc51NMBiKrnfIc5qe3HKpwWIMoMH32wS6pBaSpzti8/825tTcG2yq/tm3
+         xEbw==
+X-Gm-Message-State: AOAM5303xGnRvCzqvZjF5qapTaY4swEOq++sVaQb0ETUTSL2uG97JXCT
+        rcyIEHoa9hTJC10QjbSs2ywla93almM5fUmhBrMj/GHfqJ9kzw==
+X-Google-Smtp-Source: ABdhPJw9OLFzWqDY5GO1qkj761DGYpTL/KDZbxcg1DmwEBkgenFKvVhRHy5LQTjCOPt3MrdJ9RmgO06nOEDblpXd9HE=
+X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
+ z22-20020a50e696000000b00419998d5febmr12073094edm.122.1650284060716; Mon, 18
+ Apr 2022 05:14:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220418053202.24528-1-yu.tu@amlogic.com> <20220418053202.24528-2-yu.tu@amlogic.com>
-In-Reply-To: <20220418053202.24528-2-yu.tu@amlogic.com>
+References: <alpine.DEB.2.21.2204161848030.9383@angie.orcam.me.uk> <alpine.DEB.2.21.2204162123320.9383@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204162123320.9383@angie.orcam.me.uk>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 18 Apr 2022 15:09:48 +0300
-Message-ID: <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
-Subject: Re: [PATCH V2 1/2] tty: serial: meson: Add a 12MHz internal clock
- rate to calculate baud rate in order to meet the baud rate requirements of
- special BT modules
-To:     Yu Tu <yu.tu@amlogic.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-amlogic <linux-amlogic@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
+Date:   Mon, 18 Apr 2022 15:13:44 +0300
+Message-ID: <CAHp75VdTzd56DzWsjf9GW3zfCtYh4ej3U6KTS7j3aXSVkWOOig@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] serial: 8250: Correct the clock for EndRun
+ PTP/1588 PCIe device
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
+On Mon, Apr 18, 2022 at 2:02 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
 >
-> A /2 divider over XTAL was introduced since G12A, and is preferred
-> to be used over the still present /3 divider since it provides much
-> closer frequencies vs the request baudrate.Especially the BT module
+> The EndRun PTP/1588 dual serial port device is based on the Oxford
+> Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+> for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
+> input derived from the 100MHz PCI Express clock.  The clock rate is
+> divided by the oversampling rate of 16 as it is supplied to the baud
+> rate generator, yielding the baud base of 3906250.
+>
+> Replace the incorrect baud base of 4000000 with the right value of
+> 3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
+> the clock for OxSemi PCIe devices").
 
-'e. E' (mind the space)
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-> uses 3Mhz baud rate. 8Mhz calculations can lead to baud rate bias,
-> causing some problems.
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
+> ---
+> New change in v4, factored out from 2/5.
+> ---
+>  drivers/tty/serial/8250/8250_pci.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> linux-serial-8250-endrun-pcie-clock.diff
+> Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
+> ===================================================================
+> --- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
+> +++ linux-macro/drivers/tty/serial/8250/8250_pci.c
+> @@ -2667,7 +2667,7 @@ enum pci_board_num_t {
+>         pbn_panacom2,
+>         pbn_panacom4,
+>         pbn_plx_romulus,
+> -       pbn_endrun_2_4000000,
+> +       pbn_endrun_2_3906250,
+>         pbn_oxsemi,
+>         pbn_oxsemi_1_3906250,
+>         pbn_oxsemi_2_3906250,
+> @@ -3195,10 +3195,10 @@ static struct pciserial_board pci_boards
+>         * signal now many ports are available
+>         * 2 port 952 Uart support
+>         */
+> -       [pbn_endrun_2_4000000] = {
+> +       [pbn_endrun_2_3906250] = {
+>                 .flags          = FL_BASE0,
+>                 .num_ports      = 2,
+> -               .base_baud      = 4000000,
+> +               .base_baud      = 3906250,
+>                 .uart_offset    = 0x200,
+>                 .first_offset   = 0x1000,
+>         },
+> @@ -4128,7 +4128,7 @@ static const struct pci_device_id serial
+>         */
+>         {       PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+>                 PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+> -               pbn_endrun_2_4000000 },
+> +               pbn_endrun_2_3906250 },
+>         /*
+>          * Quatech cards. These actually have configurable clocks but for
+>          * now we just use the default.
 
-...
-
-> +struct meson_uart_data {
-> +       bool has_xtal_div2;
-
-I would prefer to see this as an unsigned int and with a less
-particular name, e.g. xtal_div would suffice.
-
-> +};
-
-...
-
-> +               unsigned int xtal_div = 3;
-
-> +               if (private_data && private_data->has_xtal_div2) {
-> +                       xtal_div = 2;
-
-Better to define privata data always
-
-
-> +                       val |= AML_UART_BAUD_XTAL_DIV2;
-> +               }
-> +               val |= DIV_ROUND_CLOSEST(port->uartclk / xtal_div, baud) - 1;
 
 
 -- 
