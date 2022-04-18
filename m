@@ -2,33 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79B4C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA43FC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241190AbiDRNb2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        id S244877AbiDRN7f (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244470AbiDRNab (ORCPT
+        with ESMTP id S244996AbiDRN6W (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB4412742;
-        Mon, 18 Apr 2022 05:54:35 -0700 (PDT)
+        Mon, 18 Apr 2022 09:58:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10542273D;
+        Mon, 18 Apr 2022 06:08:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2623B80EBA;
-        Mon, 18 Apr 2022 12:54:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC8C385A1;
-        Mon, 18 Apr 2022 12:54:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C9360F59;
+        Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BD1C385BA;
+        Mon, 18 Apr 2022 13:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286471;
+        s=korg; t=1650287294;
         bh=+GLEJZPMdNnOUodzXhHjndU9yOjabO6mSPPMQ04fUSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IZyBdW363Qe1CsiBn9FwpousON2bfn6DAGexiNUKZr4q225/di2ffGlbPiT6k3tPI
-         CE7xg4bkyKl2GS4XNrKNzAk4UMry9bZQjYY7pNlFC2wpFhcXbEE0tyPTAfnzcsrZBn
-         m3Ig4UlvvrlrVvzuAxGja3Ls8BxTBJIPdXhhpYII=
+        b=y3sMW3ILLoWAq13e0VS4iwkeDkg3eukmK69yUCKr7/qIGD7iiKuyY8PkIeK8WdaLJ
+         Hgo48ttzmNA7Y1UcN5dyzyMdfz5z33613OOADaQjLKG01aLvH6y69HS2AZ27U6N0fj
+         ShjSK5DDBxlXxn1/32745LMOAEgHozMJM6BhfKCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -42,12 +42,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Igor Zhbanov <i.zhbanov@omprussia.ru>,
         Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 145/284] kgdboc: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:12:06 +0200
-Message-Id: <20220418121215.677608345@linuxfoundation.org>
+Subject: [PATCH 4.9 116/218] kgdboc: fix return value of __setup handler
+Date:   Mon, 18 Apr 2022 14:13:02 +0200
+Message-Id: <20220418121202.914576118@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
+In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
+References: <20220418121158.636999985@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
