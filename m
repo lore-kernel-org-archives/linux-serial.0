@@ -2,42 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3599DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 09:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3C4C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Apr 2022 11:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234686AbiDRJqg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Apr 2022 05:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        id S229823AbiDRLJX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Apr 2022 07:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233208AbiDRJqf (ORCPT
+        with ESMTP id S229594AbiDRLJV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Apr 2022 05:46:35 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623B01658F
-        for <linux-serial@vger.kernel.org>; Mon, 18 Apr 2022 02:43:57 -0700 (PDT)
-Received: from localhost.localdomain (unknown [123.112.71.5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id CFE0F3F73C;
-        Mon, 18 Apr 2022 09:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650275034;
-        bh=mnuzZewD1ei3cC6dgyJPWZKZ32AIAIpJQ9wyJZC4Pz4=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=B5bg9XvyIX+uWG1Ytx7R5HVidDijD0y5hbC1PGrrPdQ86RfRdsZ5lxysntXAWDfug
-         DVZ+9O5Aj4DotIOhOJqPxx1HFIqxITJ7AnM0aX7yMoFawxmcY37IHJhtPmtHm9w8Wj
-         kLe9t4e+eOiZTCy6M4ZPsJ8LIeQt+cLYKIJQ4ddBVfR6bp69QP4o+00LFdS1/3qYO2
-         FOHnJbDy1XOnp3YLN5r1p1hi/8dao+lWURdrbvv7/lRXk98BgV77w3h79XHUhOq/hk
-         Q6BpK1WdLHEuPgdWRmmLqUISq8rsUullGoRUY1hr6bXLivxg7a+QjbnvtT/j0LIf0c
-         zzL2/pzeAK+nQ==
-From:   Hui Wang <hui.wang@canonical.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     jringle@gridpoint.com, u.kleine-koenig@pengutronix.de,
-        hui.wang@canonical.com
-Subject: [PATCH] Revert "serial: sc16is7xx: Clear RS485 bits in the shutdown"
-Date:   Mon, 18 Apr 2022 17:43:39 +0800
-Message-Id: <20220418094339.678144-1-hui.wang@canonical.com>
+        Mon, 18 Apr 2022 07:09:21 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D721E167CA;
+        Mon, 18 Apr 2022 04:06:42 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id j9so3460257qkg.1;
+        Mon, 18 Apr 2022 04:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lqJmuDMxHf0+2DSiEcjcAGw9d4Qde4FyLEfuQ+SFSHM=;
+        b=CnglA6xk2NZryMtm33UXdAO03ocKVbgcmV2BauxBuUyRitBKeWS0agJLi5sHze5JNo
+         m6nld8pbSw7H5nbGAWaMHgf+jQXd/9Cdjdm5MyewtKKURfv/DhnyDUcXpUnPRUmTCFb5
+         IePPpRSuVwqipEAgZSA2DhquU+ftdVw2Nle8dDVxuFW7tkavJ3KrmK/e4EqdnNKWx2k7
+         oxhgZykU5H2HpsNnMDg5Y4ip7CnQT6xGQ+dInyYIz4/onA0rE6BiUkAKNX+/p1JPUpmY
+         uM1WmsxXJxtCh3okRyFZrRw00xl5UNyz8eJEl5wxYPchvsABCWCC+YLi6xyWTc6MsF8z
+         tcYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lqJmuDMxHf0+2DSiEcjcAGw9d4Qde4FyLEfuQ+SFSHM=;
+        b=J6nE7A7TEh/3SMYpXvS2QOCgW3yJyKLa3xduQwZY3Lg63SvSHIr0ynVv7DRA+4+Qf7
+         kKi98PNO1tn350UzRfgKfMAk41KXi3ETvLXHbSnmVhXLkmTmMAGm00ewyJrJqyCaRxwY
+         WevPZJI8IwLoEZ/zkALbuOZrZuL49mbP2w72LhdTyFht4/Ex+xBgQUzxe6Fd2z0bqG/f
+         kVl3DUMUzzueg1ou60NXgB2MVdvzkHyi4Emmpp3Ko7vukn9ZYZ81uuy4zgYra7521W3t
+         eznsa5zU9GYhVWnGxz18iLhpb442tKzkUO3FyWg2vkjQkdr9Hh5ahWmAMIhqOUQK8MJA
+         6XDw==
+X-Gm-Message-State: AOAM530jl27cKSNjleTb0muZ9sCd74WzM3G2vVD/csOviIu0aQWjDM5Z
+        L9UMcsuTt729BqktFgr4Y4Y=
+X-Google-Smtp-Source: ABdhPJxNgNMH4f+6bA2msZobJNl4R8938/9xGvUG7VsuEH/doVkNMOxMxEiGkxOGHju6jcrMCIHZlw==
+X-Received: by 2002:a37:697:0:b0:69e:6246:b69a with SMTP id 145-20020a370697000000b0069e6246b69amr6168569qkg.206.1650280002050;
+        Mon, 18 Apr 2022 04:06:42 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id z64-20020a37b043000000b0069c0a57f42fsm6588987qke.24.2022.04.18.04.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 04:06:41 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     robh@kernel.org
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] tty: serdev: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 18 Apr 2022 11:06:35 +0000
+Message-Id: <20220418110635.2559391-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,39 +65,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 927728a34f11b5a27f4610bdb7068317d6fdc72a.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Once the uart_port->rs485->flag is set to SER_RS485_ENABLED, the port
-should always work in RS485 mode. If users want the port to leave
-RS485 mode, they need to call ioctl() to clear SER_RS485_ENABLED.
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-So here we shouldn't clear the RS485 bits in the shutdown().
-
-Fixes: 927728a34f11 ("serial: sc16is7xx: Clear RS485 bits in the shutdown")
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/tty/serial/sc16is7xx.c | 6 ++----
+ drivers/tty/serdev/core.c | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index e857fb61efbf..5fb201c1b563 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1238,12 +1238,10 @@ static void sc16is7xx_shutdown(struct uart_port *port)
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 0180e1e4e75d..e550ad3e7f2b 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -156,11 +156,9 @@ int serdev_device_open(struct serdev_device *serdev)
+ 	if (ret)
+ 		return ret;
  
- 	/* Disable all interrupts */
- 	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, 0);
--	/* Disable TX/RX, clear auto RS485 and RTS invert */
-+	/* Disable TX/RX */
- 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
- 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
--			      SC16IS7XX_EFCR_TXDISABLE_BIT |
--			      SC16IS7XX_EFCR_AUTO_RS485_BIT |
--			      SC16IS7XX_EFCR_RTS_INVERT_BIT,
-+			      SC16IS7XX_EFCR_TXDISABLE_BIT,
- 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
- 			      SC16IS7XX_EFCR_TXDISABLE_BIT);
+-	ret = pm_runtime_get_sync(&ctrl->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(&ctrl->dev);
++	ret = pm_runtime_resume_and_get(&ctrl->dev);
++	if (ret < 0)
+ 		goto err_close;
+-	}
+ 
+ 	return 0;
  
 -- 
 2.25.1
+
 
