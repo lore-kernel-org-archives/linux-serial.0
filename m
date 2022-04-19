@@ -2,97 +2,321 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E26AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 10:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C520C43219
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 13:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242370AbiDSKol (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47066 "EHLO
+        id S1344659AbiDSNk0 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Apr 2022 09:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348250AbiDSKok (ORCPT
+        with ESMTP id S232714AbiDSNkZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:44:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BE023170
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 03:41:58 -0700 (PDT)
+        Tue, 19 Apr 2022 09:40:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9886C37A35;
+        Tue, 19 Apr 2022 06:37:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 012A561257
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 10:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE5F4C385A7;
-        Tue, 19 Apr 2022 10:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650364917;
-        bh=PXdlODeKyEoDq2bnGoxQqk3lsZ1MZxkBcM2urX1Md8k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OqW5XMdk4n99VwVG1MueE+4Z9hZIJAK5PynZbB5ipU7Ve7OoUE1KGleDMRhFOH6qY
-         f20OBPs/NNr9d5fZt8EOXa6XN6A4wxDq5OJGCYxdyOjplvLxD8Yxzgg7qTgrchU5Sn
-         TFoPwERAUx5f0R6Bum7sgcUdSP4uy03NSpv2eMs0=
-Date:   Tue, 19 Apr 2022 12:41:54 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Lukas Wunner <lukas.wunner@intel.com>, kernel@pengutronix.de,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: Re: [PATCH v3 1/3] serial: 8250: Handle UART without interrupt on
- TEMT using em485
-Message-ID: <Yl6R8rG4YmMyMLxh@kroah.com>
-References: <20220330104642.229507-1-u.kleine-koenig@pengutronix.de>
- <20220330104642.229507-2-u.kleine-koenig@pengutronix.de>
- <1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com>
- <20220330142119.ejjlxbsnkp36nwy7@pengutronix.de>
- <174a96fe-8953-6533-34d7-26c15b8f140@linux.intel.com>
- <893fcf29-20da-2a4-5951-d956472f85f@linux.intel.com>
- <Yl6KyWGmB5+KOAKU@kroah.com>
- <de499011-16e2-1ef5-5cb6-ae6dcdc3f2de@linux.intel.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 223BBB8197D;
+        Tue, 19 Apr 2022 13:37:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDFE9C385A7;
+        Tue, 19 Apr 2022 13:37:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650375459;
+        bh=8bW4Iiv+C0bRm2uxN+Ia7IY7tO4k+NC8BqozWsn2sFc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CidbhGJ1xKgASKGTmSslNTEI8J4ayXlBA8hkYmgMUSfxaZ12i9Ewu8aQkN+yHJ0DI
+         4dw7qqWO9j1+2Hu4yInmI43rE2Bb9uRiPYXR5gyb0VouN0pllnbsaABlKiwHFQfJzQ
+         H0TgAvXRr42i27Ifje8SZg6Q0O1pJOgLNQ4bHgv4TVnfehJ0uOeWH2yMp8aRMzPg89
+         plLu+JIfLHyeg3Z9I0Z3styJCRVdQ43KXB5sDL4pCWafkUx+D7nHB6rVRAoyxuN2lG
+         OoSZZE6mcRicxtCBmBrVtpPHSWCpN88GwNtOw7iQTwfS7vvMDx5x8hoeGcFcn6uMcL
+         lzEz0oyBfpTfg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
+        jmkrzyszt@gmail.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH 00/41] OMAP1 full multiplatform conversion
+Date:   Tue, 19 Apr 2022 15:36:42 +0200
+Message-Id: <20220419133723.1394715-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <de499011-16e2-1ef5-5cb6-ae6dcdc3f2de@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 01:36:28PM +0300, Ilpo Järvinen wrote:
-> On Tue, 19 Apr 2022, Greg Kroah-Hartman wrote:
-> 
-> > On Tue, Apr 19, 2022 at 11:09:56AM +0300, Ilpo Järvinen wrote:
-> > > Hi Greg,
-> > > 
-> > > This change now appears in your tty-next tree.
-> > 
-> > What change?  Please never top-post.
-> 
-> f6f586102add59d57bcc6eea06fdeaae11bb17a1 (serial: 8250: Handle UART 
-> without interrupt on TEMT using em485).
-> 
-> > > As you seem to have missed 
-> > > there is an obvious problem with it, I'm asking which direction I should 
-> > > take to fix it.
-> > 
-> > Send a fix!  You don't need my permission to do so.
-> 
-> Yes, I know I don't need permission :-).
-> 
-> What I asked is whether I should provide:
->   a) a minimal fix to the issue in this particular change
-> or
->   b) send patches that replace this notemt approach with the another
->      that I believe is better than this one (*)
-> ?
+From: Arnd Bergmann <arnd@arndb.de>
 
-Or c) a patch to revert this now and then submit a correct series later?
+This is the full series for converting OMAP1 to multiplatform, rebased
+from my 2019 attempt to do the same thing. The soc tree contains simpler
+patches to do the same for iop32x, ixp4xx, ep93xx and s3c24xx, which
+means we are getting closer to completing this for all ARMv5 platforms
+(I have patches for PXA, which is the last one remaining).
 
-I prefer c)
+Janusz already tested the branch separately and did the missing work
+for the common-clk conversion after my previous approach was broken.
 
-thanks,
+The fbdev, mmc and ASoC portion of Janusz' work already went into the
+corresponding maintainer tree, but I include them here for reference.
+Unless there are any objections, I would add the entire series to the
+for-next branch of the soc tree, but only send the first 36 patches early
+in the merge window. After everything else has made it in, I would rebase
+the last two patches and send them separately, which may or may not make
+it in the merge window.
 
-greg k-h
+     Arnd
+
+Arnd Bergmann (30):
+  video: fbdev: omapfb: lcd_ams_delta: fix unused variable warning
+  ARM: omap1: innovator: pass lcd control address as pdata
+  ARM: omap1: move lcd_dma code into omapfb driver
+  ARM: omap1: declare a dummy omap_set_dma_priority
+  fbdev: omap: pass irqs as resource
+  ARM: omap1: ams-delta: remove camera leftovers
+  ARM: omap1: move mach/usb.h to include/linux/soc
+  ARM: omap1: move some headers to include/linux/soc
+  ARM: omap1: move perseus spi pinconf to board file
+  ARM: omap1: move CF chipselect setup to board file
+  fbdev: omap: avoid using mach/*.h files
+  usb: omap: avoid mach/*.h headers
+  clocksource: ti-dmtimer: avoid using mach/hardware.h
+  serial: 8250/omap1: include linux/soc/ti/omap1-soc.h
+  input: omap: void using mach/*.h headers
+  ARM: omap1: innovator: move ohci phy power handling to board file
+  ARM: omap1: move 32k counter from plat-omap to mach-omap1
+  ARM: omap: remove debug-leds driver
+  ARM: omap: dma: make usb support optional
+  dma: omap: hide legacy interface
+  ARM: omap1: dma: remove omap2 specific bits
+  ARM: omap1: move plat/dma.c to mach/omap-dma.c
+  ARM: omap: split up arch/arm/plat-omap/Kconfig
+  ARM: omap: un-merge plat/sram.c
+  ARM: omap: remove empty plat-omap directory
+  ARM: omap1: relocate static I/O mapping
+  ARM: omap1: use pci_remap_iospace() for omap_cf
+  ARM: omap1: move mach/*.h into mach directory
+  ARM: omap1: fix build with no SoC selected
+  [TO BE REBASED] ARM: omap1: enable multiplatform
+
+Janusz Krzysztofik (11):
+  ARM: OMAP1: Prepare for conversion of OMAP1 clocks to CCF
+  ARM: OMAP1: clock: Fix early UART rate issues
+  ARM: OMAP1: clock: Fix UART rate reporting algorithm
+  ARM: OMAP1: clock: Remove unused code
+  ARM: OMAP1: clock: Remove noop code
+  usb: host: ohci-omap: Make it CCF clk API compatible
+  usb: gadget: omap_udc: Make it CCF clk API compatible
+  [MERGED] video: fbdev: omap: Make it CCF clk API compatible
+  [MERGED] mmc: omap: Make it CCF clk API compatible
+  [MERGED] ASoC: ti: osk5912: Make it CCF clk API compatible
+  [TO BE REBASED] ARM: OMAP1: clock: Convert to CCF
+
+ arch/arm/Kconfig                              |  16 -
+ arch/arm/Kconfig.debug                        |   6 +-
+ arch/arm/Makefile                             |   1 -
+ arch/arm/configs/omap1_defconfig              |   3 +
+ arch/arm/mach-omap1/Kconfig                   |  72 ++
+ arch/arm/mach-omap1/Makefile                  |   6 +-
+ arch/arm/mach-omap1/ams-delta-fiq-handler.S   |   3 +-
+ arch/arm/mach-omap1/ams-delta-fiq.c           |   2 +
+ arch/arm/mach-omap1/ams-delta-fiq.h           |   2 +-
+ arch/arm/mach-omap1/board-ams-delta.c         |  18 +-
+ arch/arm/mach-omap1/board-fsample.c           |  10 +-
+ arch/arm/mach-omap1/board-generic.c           |   8 +-
+ arch/arm/mach-omap1/board-h2.c                |  14 +-
+ arch/arm/mach-omap1/board-h3.c                |  16 +-
+ arch/arm/mach-omap1/board-htcherald.c         |  10 +-
+ arch/arm/mach-omap1/board-innovator.c         |  34 +-
+ arch/arm/mach-omap1/board-nokia770.c          |   8 +-
+ arch/arm/mach-omap1/board-osk.c               |  49 +-
+ arch/arm/mach-omap1/board-palmte.c            |  14 +-
+ arch/arm/mach-omap1/board-palmtt.c            |  14 +-
+ arch/arm/mach-omap1/board-palmz71.c           |  14 +-
+ arch/arm/mach-omap1/board-perseus2.c          |  15 +-
+ arch/arm/mach-omap1/board-sx1-mmc.c           |   3 +-
+ arch/arm/mach-omap1/board-sx1.c               |  12 +-
+ arch/arm/mach-omap1/clock.c                   | 797 +++++++-----------
+ arch/arm/mach-omap1/clock.h                   | 191 ++---
+ arch/arm/mach-omap1/clock_data.c              | 508 +++++------
+ arch/arm/mach-omap1/common.h                  |   3 +-
+ arch/arm/mach-omap1/devices.c                 |  12 +-
+ arch/arm/mach-omap1/dma.c                     |   2 +-
+ arch/arm/mach-omap1/fb.c                      |  19 +-
+ arch/arm/mach-omap1/flash.c                   |   5 +-
+ arch/arm/mach-omap1/fpga.c                    |   3 +-
+ arch/arm/mach-omap1/gpio15xx.c                |   3 +-
+ arch/arm/mach-omap1/gpio16xx.c                |   5 +-
+ arch/arm/mach-omap1/gpio7xx.c                 |   3 +-
+ .../mach-omap1/{include/mach => }/hardware.h  | 136 +--
+ arch/arm/mach-omap1/i2c.c                     |   3 +-
+ arch/arm/mach-omap1/id.c                      |   5 +-
+ arch/arm/mach-omap1/include/mach/io.h         |  45 -
+ arch/arm/mach-omap1/include/mach/lcdc.h       |  44 -
+ arch/arm/mach-omap1/include/mach/memory.h     |  12 -
+ arch/arm/mach-omap1/include/mach/uncompress.h | 117 ---
+ arch/arm/mach-omap1/io.c                      |  12 +-
+ arch/arm/mach-omap1/irq.c                     |   4 +-
+ arch/arm/mach-omap1/{include/mach => }/irqs.h |   2 -
+ arch/arm/mach-omap1/mcbsp.c                   |  17 +-
+ .../mach-omap1/{include/mach => }/mtd-xip.h   |   3 +-
+ arch/arm/mach-omap1/mux.c                     |   6 +-
+ arch/arm/mach-omap1/mux.h                     | 144 ++++
+ arch/arm/mach-omap1/ocpi.c                    |   8 +-
+ .../dma.c => mach-omap1/omap-dma.c}           | 259 ++----
+ .../mach-omap1/{include/mach => }/omap1510.h  |   0
+ .../mach-omap1/{include/mach => }/omap16xx.h  |   0
+ .../mach-omap1/{include/mach => }/omap7xx.h   |   0
+ arch/arm/mach-omap1/pm.c                      |   9 +-
+ arch/arm/mach-omap1/pm.h                      |   2 +
+ arch/arm/mach-omap1/reset.c                   |   3 +-
+ arch/arm/mach-omap1/serial.c                  |  10 +-
+ .../mach-omap1/{include/mach => }/serial.h    |   0
+ arch/arm/mach-omap1/sleep.S                   |   2 +-
+ arch/arm/mach-omap1/soc.h                     |   6 +-
+ arch/arm/mach-omap1/sram-init.c               |  91 +-
+ arch/arm/mach-omap1/sram.S                    |   4 +-
+ arch/arm/mach-omap1/sram.h                    |   4 +-
+ arch/arm/mach-omap1/{include/mach => }/tc.h   |   2 -
+ arch/arm/mach-omap1/time.c                    |   7 +-
+ arch/arm/mach-omap1/timer.c                   |   1 +
+ arch/arm/mach-omap1/timer32k.c                | 100 ++-
+ arch/arm/mach-omap1/usb.c                     |   8 +-
+ arch/arm/mach-omap1/usb.h                     |  25 +
+ arch/arm/mach-omap2/Kconfig                   |  49 ++
+ arch/arm/mach-omap2/sram.c                    |  91 +-
+ arch/arm/mach-omap2/sram.h                    |   5 +-
+ arch/arm/plat-omap/Kconfig                    | 119 ---
+ arch/arm/plat-omap/Makefile                   |  13 -
+ arch/arm/plat-omap/counter_32k.c              | 114 ---
+ arch/arm/plat-omap/debug-leds.c               | 171 ----
+ arch/arm/plat-omap/include/plat/counter-32k.h |   1 -
+ arch/arm/plat-omap/include/plat/cpu.h         |  21 -
+ arch/arm/plat-omap/include/plat/sram.h        |   8 -
+ arch/arm/plat-omap/sram.c                     | 129 ---
+ drivers/clocksource/timer-ti-dm.c             |   2 +-
+ drivers/dma/ti/omap-dma.c                     |  19 +-
+ drivers/input/keyboard/omap-keypad.c          |   1 +
+ drivers/mmc/host/omap.c                       |  23 +-
+ drivers/pcmcia/Kconfig                        |   3 +-
+ drivers/pcmcia/omap_cf.c                      |  48 +-
+ drivers/spi/Kconfig                           |   2 +-
+ drivers/spi/spi-omap-uwire.c                  |  15 +-
+ drivers/tty/serial/8250/8250.h                |   1 +
+ drivers/usb/gadget/udc/omap_udc.c             |  19 +-
+ drivers/usb/host/Kconfig                      |   2 +-
+ drivers/usb/host/ohci-omap.c                  |  60 +-
+ drivers/usb/phy/Kconfig                       |   3 +-
+ drivers/usb/phy/phy-isp1301-omap.c            |   6 +-
+ drivers/video/backlight/Kconfig               |   4 +-
+ drivers/video/backlight/omap1_bl.c            |   4 +-
+ drivers/video/fbdev/Makefile                  |   2 +-
+ drivers/video/fbdev/omap/Kconfig              |   4 +-
+ drivers/video/fbdev/omap/Makefile             |   5 +
+ drivers/video/fbdev/omap/hwa742.c             |   6 +-
+ drivers/video/fbdev/omap/lcd_ams_delta.c      |   5 +-
+ .../video/fbdev/omap}/lcd_dma.c               |   7 +-
+ .../video/fbdev/omap}/lcd_dma.h               |   2 -
+ drivers/video/fbdev/omap/lcd_inn1510.c        |   9 +-
+ drivers/video/fbdev/omap/lcd_osk.c            |   4 +-
+ drivers/video/fbdev/omap/lcdc.c               |  16 +-
+ drivers/video/fbdev/omap/lcdc.h               |  35 +
+ drivers/video/fbdev/omap/omapfb.h             |   2 +
+ drivers/video/fbdev/omap/omapfb_main.c        |  19 +-
+ drivers/video/fbdev/omap/sossi.c              |   9 +-
+ include/linux/omap-dma.h                      |  28 +-
+ include/linux/platform_data/usb-omap1.h       |   2 +
+ include/linux/soc/ti/omap1-io.h               | 143 ++++
+ .../mux.h => include/linux/soc/ti/omap1-mux.h | 142 +---
+ .../soc.h => include/linux/soc/ti/omap1-soc.h |  22 -
+ .../usb.h => include/linux/soc/ti/omap1-usb.h |  28 +-
+ sound/soc/ti/osk5912.c                        |   4 +-
+ 119 files changed, 1809 insertions(+), 2610 deletions(-)
+ rename arch/arm/mach-omap1/{include/mach => }/hardware.h (59%)
+ delete mode 100644 arch/arm/mach-omap1/include/mach/io.h
+ delete mode 100644 arch/arm/mach-omap1/include/mach/lcdc.h
+ delete mode 100644 arch/arm/mach-omap1/include/mach/memory.h
+ delete mode 100644 arch/arm/mach-omap1/include/mach/uncompress.h
+ rename arch/arm/mach-omap1/{include/mach => }/irqs.h (99%)
+ rename arch/arm/mach-omap1/{include/mach => }/mtd-xip.h (97%)
+ create mode 100644 arch/arm/mach-omap1/mux.h
+ rename arch/arm/{plat-omap/dma.c => mach-omap1/omap-dma.c} (84%)
+ rename arch/arm/mach-omap1/{include/mach => }/omap1510.h (100%)
+ rename arch/arm/mach-omap1/{include/mach => }/omap16xx.h (100%)
+ rename arch/arm/mach-omap1/{include/mach => }/omap7xx.h (100%)
+ rename arch/arm/mach-omap1/{include/mach => }/serial.h (100%)
+ rename arch/arm/mach-omap1/{include/mach => }/tc.h (98%)
+ create mode 100644 arch/arm/mach-omap1/usb.h
+ delete mode 100644 arch/arm/plat-omap/Kconfig
+ delete mode 100644 arch/arm/plat-omap/Makefile
+ delete mode 100644 arch/arm/plat-omap/counter_32k.c
+ delete mode 100644 arch/arm/plat-omap/debug-leds.c
+ delete mode 100644 arch/arm/plat-omap/include/plat/counter-32k.h
+ delete mode 100644 arch/arm/plat-omap/include/plat/cpu.h
+ delete mode 100644 arch/arm/plat-omap/include/plat/sram.h
+ delete mode 100644 arch/arm/plat-omap/sram.c
+ rename {arch/arm/mach-omap1 => drivers/video/fbdev/omap}/lcd_dma.c (98%)
+ rename {arch/arm/mach-omap1/include/mach => drivers/video/fbdev/omap}/lcd_dma.h (98%)
+ create mode 100644 include/linux/soc/ti/omap1-io.h
+ rename arch/arm/mach-omap1/include/mach/mux.h => include/linux/soc/ti/omap1-mux.h (53%)
+ rename arch/arm/mach-omap1/include/mach/soc.h => include/linux/soc/ti/omap1-soc.h (90%)
+ rename arch/arm/mach-omap1/include/mach/usb.h => include/linux/soc/ti/omap1-usb.h (86%)
+
+-- 
+2.29.2
+
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Paul Walmsley <paul@pwsan.com>
+Cc: Kevin Hilman <khilman@kernel.org>
+Cc: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Felipe Balbi <balbi@kernel.org>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jingoo Han <jingoohan1@gmail.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-omap@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Cc: dmaengine@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: alsa-devel@alsa-project.org
