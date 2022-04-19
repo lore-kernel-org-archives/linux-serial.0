@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A88FC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6840C4167D
 	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 13:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353052AbiDSNsh (ORCPT
+        id S1353058AbiDSNsi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        Tue, 19 Apr 2022 09:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352930AbiDSNri (ORCPT
+        with ESMTP id S1353132AbiDSNr7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:47:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D35396A3;
-        Tue, 19 Apr 2022 06:41:57 -0700 (PDT)
+        Tue, 19 Apr 2022 09:47:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2D139829;
+        Tue, 19 Apr 2022 06:42:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D927B81989;
-        Tue, 19 Apr 2022 13:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BEDAC385A7;
-        Tue, 19 Apr 2022 13:41:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 452BDB81984;
+        Tue, 19 Apr 2022 13:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E3AC385B2;
+        Tue, 19 Apr 2022 13:42:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650375715;
-        bh=G7R/+rDcrqJrNt8dUwADm5Egv0xkIUTxO8ciErqFtk0=;
+        s=k20201202; t=1650375736;
+        bh=ICLjpcLGmyRuFirMful6PPWmOkZPtiGZzfFqAVH/t+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YHGoZlohuS2JgLOhYhCZMFxaUN1Y+HHoJ/YVPLZp7vCduTgmqkayQKXajDhUPyzKd
-         Zw+VuabZI/Z/zUnS9e+NNz9Ez4+ZtPDkOL4OLlhLrloQ+AJvPS0QO1iYDv8tI5bLRf
-         nuSKDdKTYFPVL4xbBFv9TGc44BTfEff9oQ5RrIpvKqT0SOIjiF7Dfl3kq0BalXCprk
-         NWFSU4pjGWpfaAp9OzYmoO11yKu8KADVKnLEUwtNUeAGga8OA9KsCxXCO6pNJmXp3Z
-         cjM+2jNEsAjQu5ecXU/0xHR8UqdU5JPwhpNVuo62gjAo3uWz7YFbqRe7SKVD5IsdtH
-         qbq82O/KVjaWw==
+        b=hvhVwA0NzLazBIGSe0oT0p3Um3CHpAVWQS3Ak93wRIZbI7fSuj4m8N5nOBDcUeqPR
+         gg6oecruNrCF+lKyJ22gDsDgeD4f58TkcrVcOJhpEfQKq0l9fXJUZDysrlPaAYrYdy
+         HM2+bS3l9baDro+/uv1y7gBVl8ayYnO98JhJ4qhRzGc7g0eh0bUu4K1jPLqmuVD72I
+         Tta1ve3oS40cpTyjsSDol1Hce510U2JEw+ghqj9X7GZYYmv/pk7FjMOMYyKc88H2iq
+         raBSAsmMH65yZss3CrvJXSegF1I1GYazdtvupzXRVR7szoVBxpQBB73wWmN7W1YYGv
+         JDzzUYpxD+HAw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
         jmkrzyszt@gmail.com
@@ -59,9 +59,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH 34/41] ARM: OMAP1: clock: Remove noop code
-Date:   Tue, 19 Apr 2022 15:37:16 +0200
-Message-Id: <20220419133723.1394715-35-arnd@kernel.org>
+Subject: [PATCH 37/41] [MERGED] video: fbdev: omap: Make it CCF clk API compatible
+Date:   Tue, 19 Apr 2022 15:37:19 +0200
+Message-Id: <20220419133723.1394715-38-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
 References: <20220419133723.1394715-1-arnd@kernel.org>
@@ -73,135 +73,112 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-There are some OMAP1 clock code bits that have no effect:
-- crystal_type variable is set to 0 but never changed, then
-  crystal_type == 2 condition is never true and ck_ref.rate never set to
-  19200000,
-- clk->ops->allow_idle() is called from omap_clk_enable_autoidle_all() but
-  that op is not configured for any clock, then the function does nothing
-  and the op field is not needed,
-- ENABLE_ON_INIT flag is set for some clocks but is never checked by any
-  code, then not needed.
-Drop that code.
+OMAP1 LCDC drivers now omit clk_prepare/unprepare() steps, not supported
+by OMAP1 custom implementation of clock API.  However, non-CCF stubs of
+those functions exist for use on such platforms until converted to CCF.
+
+Update the drivers to be compatible with CCF implementation of clock API.
 
 Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/arm/mach-omap1/clock.c      | 17 -----------------
- arch/arm/mach-omap1/clock.h      |  3 ---
- arch/arm/mach-omap1/clock_data.c |  8 +-------
- 3 files changed, 1 insertion(+), 27 deletions(-)
+ drivers/video/fbdev/omap/hwa742.c | 6 +++---
+ drivers/video/fbdev/omap/lcdc.c   | 6 +++---
+ drivers/video/fbdev/omap/sossi.c  | 5 +++--
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index 5ea8ec026a85..e5bd4d3b742d 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -798,22 +798,6 @@ void clk_unregister(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_unregister);
+diff --git a/drivers/video/fbdev/omap/hwa742.c b/drivers/video/fbdev/omap/hwa742.c
+index b191bef22d98..9d9fe5c3a7a1 100644
+--- a/drivers/video/fbdev/omap/hwa742.c
++++ b/drivers/video/fbdev/omap/hwa742.c
+@@ -964,7 +964,7 @@ static int hwa742_init(struct omapfb_device *fbdev, int ext_mode,
+ 	if ((r = calc_extif_timings(ext_clk, &extif_mem_div)) < 0)
+ 		goto err3;
+ 	hwa742.extif->set_timings(&hwa742.reg_timings);
+-	clk_enable(hwa742.sys_ck);
++	clk_prepare_enable(hwa742.sys_ck);
  
--int omap_clk_enable_autoidle_all(void)
--{
--	struct clk *c;
--	unsigned long flags;
--
--	spin_lock_irqsave(&clockfw_lock, flags);
--
--	list_for_each_entry(c, &clocks, node)
--		if (c->ops->allow_idle)
--			c->ops->allow_idle(c);
--
--	spin_unlock_irqrestore(&clockfw_lock, flags);
--
--	return 0;
--}
--
- /*
-  * Low level helpers
-  */
-@@ -871,7 +855,6 @@ static int __init clk_disable_unused(void)
+ 	calc_hwa742_clk_rates(ext_clk, &sys_clk, &pix_clk);
+ 	if ((r = calc_extif_timings(sys_clk, &extif_mem_div)) < 0)
+@@ -1023,7 +1023,7 @@ static int hwa742_init(struct omapfb_device *fbdev, int ext_mode,
+ 
  	return 0;
+ err4:
+-	clk_disable(hwa742.sys_ck);
++	clk_disable_unprepare(hwa742.sys_ck);
+ err3:
+ 	hwa742.extif->cleanup();
+ err2:
+@@ -1037,7 +1037,7 @@ static void hwa742_cleanup(void)
+ 	hwa742_set_update_mode(OMAPFB_UPDATE_DISABLED);
+ 	hwa742.extif->cleanup();
+ 	hwa742.int_ctrl->cleanup();
+-	clk_disable(hwa742.sys_ck);
++	clk_disable_unprepare(hwa742.sys_ck);
  }
- late_initcall(clk_disable_unused);
--late_initcall(omap_clk_enable_autoidle_all);
- #endif
  
- #if defined(CONFIG_PM_DEBUG) && defined(CONFIG_DEBUG_FS)
-diff --git a/arch/arm/mach-omap1/clock.h b/arch/arm/mach-omap1/clock.h
-index 7bebd488f1be..8025e4a22469 100644
---- a/arch/arm/mach-omap1/clock.h
-+++ b/arch/arm/mach-omap1/clock.h
-@@ -53,7 +53,6 @@ struct omap_clk {
- struct clkops {
- 	int			(*enable)(struct clk *);
- 	void			(*disable)(struct clk *);
--	void			(*allow_idle)(struct clk *);
- };
+ struct lcd_ctrl hwa742_ctrl = {
+diff --git a/drivers/video/fbdev/omap/lcdc.c b/drivers/video/fbdev/omap/lcdc.c
+index 4c9091bd936d..e7ce783e5215 100644
+--- a/drivers/video/fbdev/omap/lcdc.c
++++ b/drivers/video/fbdev/omap/lcdc.c
+@@ -713,7 +713,7 @@ static int omap_lcdc_init(struct omapfb_device *fbdev, int ext_mode,
+ 		dev_err(fbdev->dev, "failed to adjust LCD rate\n");
+ 		goto fail1;
+ 	}
+-	clk_enable(lcdc.lcd_ck);
++	clk_prepare_enable(lcdc.lcd_ck);
  
- /*
-@@ -64,7 +63,6 @@ struct clkops {
- #define ENABLE_REG_32BIT	(1 << 0)	/* Use 32-bit access */
- #define CLOCK_IDLE_CONTROL	(1 << 1)
- #define CLOCK_NO_IDLE_PARENT	(1 << 2)
--#define ENABLE_ON_INIT		(1 << 3)	/* Enable upon framework init */
+ 	r = request_irq(fbdev->int_irq, lcdc_irq_handler, 0, MODULE_NAME, fbdev);
+ 	if (r) {
+@@ -748,7 +748,7 @@ static int omap_lcdc_init(struct omapfb_device *fbdev, int ext_mode,
+ fail3:
+ 	free_irq(fbdev->int_irq, lcdc.fbdev);
+ fail2:
+-	clk_disable(lcdc.lcd_ck);
++	clk_disable_unprepare(lcdc.lcd_ck);
+ fail1:
+ 	clk_put(lcdc.lcd_ck);
+ fail0:
+@@ -762,7 +762,7 @@ static void omap_lcdc_cleanup(void)
+ 	free_fbmem();
+ 	omap_free_lcd_dma();
+ 	free_irq(lcdc.fbdev->int_irq, lcdc.fbdev);
+-	clk_disable(lcdc.lcd_ck);
++	clk_disable_unprepare(lcdc.lcd_ck);
+ 	clk_put(lcdc.lcd_ck);
+ }
  
- /**
-  * struct clk - OMAP struct clk
-@@ -135,7 +133,6 @@ extern void clk_unregister(struct clk *clk);
- extern void propagate_rate(struct clk *clk);
- extern unsigned long followparent_recalc(struct clk *clk);
- unsigned long omap_fixed_divisor_recalc(struct clk *clk);
--extern int omap_clk_enable_autoidle_all(void);
+diff --git a/drivers/video/fbdev/omap/sossi.c b/drivers/video/fbdev/omap/sossi.c
+index 6b99d89fbe6e..c90eb8ca58af 100644
+--- a/drivers/video/fbdev/omap/sossi.c
++++ b/drivers/video/fbdev/omap/sossi.c
+@@ -600,7 +600,7 @@ static int sossi_init(struct omapfb_device *fbdev)
+ 	l &= ~CONF_SOSSI_RESET_R;
+ 	omap_writel(l, MOD_CONF_CTRL_1);
  
- extern const struct clkops clkops_null;
+-	clk_enable(sossi.fck);
++	clk_prepare_enable(sossi.fck);
+ 	l = omap_readl(ARM_IDLECT2);
+ 	l &= ~(1 << 8);			/* DMACK_REQ */
+ 	omap_writel(l, ARM_IDLECT2);
+@@ -651,7 +651,7 @@ static int sossi_init(struct omapfb_device *fbdev)
+ 	return 0;
  
-diff --git a/arch/arm/mach-omap1/clock_data.c b/arch/arm/mach-omap1/clock_data.c
-index 57d3752babf8..9b9c9fcc61c2 100644
---- a/arch/arm/mach-omap1/clock_data.c
-+++ b/arch/arm/mach-omap1/clock_data.c
-@@ -92,8 +92,7 @@ static struct arm_idlect1_clk ck_dpll1out = {
- 		.name		= "ck_dpll1out",
- 		.ops		= &clkops_generic,
- 		.parent		= &ck_dpll1,
--		.flags		= CLOCK_IDLE_CONTROL | ENABLE_REG_32BIT |
--				  ENABLE_ON_INIT,
-+		.flags		= CLOCK_IDLE_CONTROL | ENABLE_REG_32BIT,
- 		.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
- 		.enable_bit	= EN_CKOUT_ARM,
- 		.recalc		= &followparent_recalc,
-@@ -146,7 +145,6 @@ static struct clk arm_gpio_ck = {
- 	.name		= "ick",
- 	.ops		= &clkops_generic,
- 	.parent		= &ck_dpll1,
--	.flags		= ENABLE_ON_INIT,
- 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT2),
- 	.enable_bit	= EN_GPIOCK,
- 	.recalc		= &followparent_recalc,
-@@ -316,7 +314,6 @@ static struct clk tc2_ck = {
- 	.name		= "tc2_ck",
- 	.ops		= &clkops_generic,
- 	.parent		= &tc_ck.clk,
--	.flags		= ENABLE_ON_INIT,
- 	.enable_reg	= OMAP1_IO_ADDRESS(ARM_IDLECT3),
- 	.enable_bit	= EN_TC2_CK,
- 	.recalc		= &followparent_recalc,
-@@ -762,7 +759,6 @@ u32 cpu_mask;
- int __init omap1_clk_init(void)
+ err:
+-	clk_disable(sossi.fck);
++	clk_disable_unprepare(sossi.fck);
+ 	clk_put(sossi.fck);
+ 	return r;
+ }
+@@ -659,6 +659,7 @@ static int sossi_init(struct omapfb_device *fbdev)
+ static void sossi_cleanup(void)
  {
- 	struct omap_clk *c;
--	int crystal_type = 0; /* Default 12 MHz */
- 	u32 reg;
- 
- #ifdef CONFIG_DEBUG_LL
-@@ -810,8 +806,6 @@ int __init omap1_clk_init(void)
- 
- 	if (cpu_is_omap7xx())
- 		ck_ref.rate = 13000000;
--	if (cpu_is_omap16xx() && crystal_type == 2)
--		ck_ref.rate = 19200000;
- 
- 	pr_info("Clocks: ARM_SYSST: 0x%04x DPLL_CTL: 0x%04x ARM_CKCTL: 0x%04x\n",
- 		omap_readw(ARM_SYSST), omap_readw(DPLL_CTL),
+ 	omap_lcdc_free_dma_callback();
++	clk_unprepare(sossi.fck);
+ 	clk_put(sossi.fck);
+ 	iounmap(sossi.base);
+ }
 -- 
 2.29.2
 
