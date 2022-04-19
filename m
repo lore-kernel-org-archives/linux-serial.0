@@ -2,86 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE75C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 10:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E74C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 10:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348488AbiDSKKB (ORCPT
+        id S1346687AbiDSKKq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
+        Tue, 19 Apr 2022 06:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346687AbiDSKKA (ORCPT
+        with ESMTP id S237608AbiDSKKq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:10:00 -0400
+        Tue, 19 Apr 2022 06:10:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B19024581;
-        Tue, 19 Apr 2022 03:07:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6EB252AF;
+        Tue, 19 Apr 2022 03:08:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26C87B81627;
-        Tue, 19 Apr 2022 10:07:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4927AC385A5;
-        Tue, 19 Apr 2022 10:07:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF3DEB81627;
+        Tue, 19 Apr 2022 10:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D01C385A7;
+        Tue, 19 Apr 2022 10:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650362835;
-        bh=/r4gORQWm8YoLyA3aywioxPUg0TMYbMkmXFkAGe5QpA=;
+        s=korg; t=1650362881;
+        bh=FjxRCysP6yTIk1x7vANf2A1RzUXNvS9mtcdGzeeB6nc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fSCcIgiDRSMAUFo471bG8mMbx/KcRcgrTW1UvecuPr1J8/0e/6PScjKSvgmVbN8xz
-         HMlPLoSKAuYGWHs2Gn2MLwAmfvUu9nr6ZTyDLpdOvAmF/9q0y95Nd4Y9SEDFbiLFId
-         uyP81EXNXBrbSaavck72JUgE6NcbfpBJxqNnLH7c=
-Date:   Tue, 19 Apr 2022 12:07:12 +0200
+        b=QU247mMeSQ23g3HQacDRvoeJkCJgi5V4D1BeJQIPFddG3qc0hupibdpuvDR3cx1du
+         nrS/ZsH5ylFQfhwJRYzMTVSG9/MGkrlSWEPCUN37wXhK0LGfILcllEnF+fN+7iZRFG
+         yxyqEKbLdeoVDYMRbTQkjdKKaOxsJsILq2DxxKTA=
+Date:   Tue, 19 Apr 2022 12:07:58 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "D. Starke" <daniel.starke@siemens.com>
 Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 16/20] tty: n_gsm: clean up dead code in gsm_queue()
-Message-ID: <Yl6J0IJwbbv5SbVc@kroah.com>
-References: <YlkRO6fAPCuWyT1Y@kroah.com>
- <20220419081713.5813-1-daniel.starke@siemens.com>
+Subject: Re: [PATCH v2 15/20] tty: n_gsm: fix missing update of modem
+ controls after DLCI open
+Message-ID: <Yl6J/vUZrIUEZoMg@kroah.com>
+References: <YlkQ5Jh8HIm+AJHe@kroah.com>
+ <20220419080724.5726-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220419081713.5813-1-daniel.starke@siemens.com>
+In-Reply-To: <20220419080724.5726-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 01:17:13AM -0700, D. Starke wrote:
+On Tue, Apr 19, 2022 at 01:07:24AM -0700, D. Starke wrote:
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Remove commented out code as it is never used and if anyone accidentally
-> turned it on, it would be broken.
+> Currently the peer is not informed about the initial state of the modem
+> control lines after a new DLCI has been opened.
+> Fix this by sending the initial modem control line states after DLCI open.
 > 
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->  drivers/tty/n_gsm.c | 4 ----
->  1 file changed, 4 deletions(-)
+>  drivers/tty/n_gsm.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 07d03447cdfd..1b4077006744 100644
+> index f3fb66be8513..07d03447cdfd 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -1894,10 +1894,6 @@ static void gsm_queue(struct gsm_mux *gsm)
->  	case UI|PF:
->  	case UIH:
->  	case UIH|PF:
-> -#if 0
-> -		if (cr)
-> -			goto invalid;
-> -#endif
->  		if (dlci == NULL || dlci->state != DLCI_OPEN) {
->  			gsm_command(gsm, address, DM|PF);
->  			return;
+> @@ -370,6 +370,7 @@ static const u8 gsm_fcs8[256] = {
+>  #define GOOD_FCS	0xCF
+>  
+>  static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
+> +static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
+>  
+>  /**
+>   *	gsm_fcs_add	-	update FCS
+> @@ -1479,6 +1480,9 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+>  		pr_debug("DLCI %d goes open.\n", dlci->addr);
+>  	/* Register gsmtty driver,report gsmtty dev add uevent for user */
+>  	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
+> +	/* Send current modem state */
+> +	if (dlci->addr)
+> +		gsmtty_modem_update(dlci, 0);
+>  	wake_up(&dlci->gsm->event);
+>  }
+>  
 > -- 
 > 2.25.1
 > 
 
-As I have already taken the majority of this series, just send a new
-series with the remaining changes, and properly document what is
-different here from the original version, as the documentation asks you
-to.
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
 thanks,
 
-greg k-h
+greg k-h's patch email bot
