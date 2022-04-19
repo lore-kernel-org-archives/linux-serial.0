@@ -2,78 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0EBC433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB17C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350002AbiDSIXW (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
+        id S239603AbiDSIYx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Apr 2022 04:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349936AbiDSIXV (ORCPT
+        with ESMTP id S237934AbiDSIYw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:23:21 -0400
-X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:20:39 PDT
-Received: from mta-64-227.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BCE2715B
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 01:20:39 -0700 (PDT)
-Received: by mta-64-227.flowmailer.net with ESMTPSA id 202204190819367e253aa9ecf08fd8af
-        for <linux-serial@vger.kernel.org>;
-        Tue, 19 Apr 2022 10:19:36 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=iq3DrAL7P13m16XZiQMLTG/b02/7hkWGyY4ZwOKkH7c=;
- b=LrukbCnh+CYrJLVbjMgFK3T1i4WGo/1CwQEatFtqf3vGFB6akDmXX0/XUgqwZYCIKNwBCL
- gl5fZj7cdfLAqXeWC4j16yzxOleaEI4qvGnwwibDO7W6pq09eRUuLOvG1NlmZONbL+vmevfP
- fsLvDZVlqwPISmqti636BZCZtEGFU=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 18/20] tty: n_gsm: clean up implicit CR bit encoding in address field
-Date:   Tue, 19 Apr 2022 01:19:30 -0700
-Message-Id: <20220419081930.5886-1-daniel.starke@siemens.com>
-In-Reply-To: <YlkRvMhDfwgNZptV@kroah.com>
-References: <YlkRvMhDfwgNZptV@kroah.com>
+        Tue, 19 Apr 2022 04:24:52 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93042CE28;
+        Tue, 19 Apr 2022 01:22:09 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id t11so31259440eju.13;
+        Tue, 19 Apr 2022 01:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aDezyw7oAUdrZNSvtrlYFBOqIqBL/GY7YbeRS6TE8iQ=;
+        b=bPSYUl/EaJ3C6Tecf4Uf0NbSMXV8VtkVBYgVginaVN7zmCBGBRbDERUOE+V52oJstl
+         WrOho5AtwZ2he/XVu+3gjnKmNOoFrnYS50UiBw9/G/SYevyPq0uZ5NeeanfNhQnool/+
+         w3VYKNcHXFx95ZT/iUcUofzDHJN/qF0YllzgwtMx3FsqC3Y8mqJwGVRwGiHYIr4XZ1hW
+         JxpztDCp1KtUIodshiR4OO1t4uC009P9dS1HoiQthzrLSGFvzh8qiiTKC7IQLK8sp/LS
+         0UkJADrf0kaXf261R3h/20dixv5WWZ+Rn+2t2MCyaijIfPdjVdh7xYtkDvJZg6/Q2OCi
+         nmiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aDezyw7oAUdrZNSvtrlYFBOqIqBL/GY7YbeRS6TE8iQ=;
+        b=t3GH6Z96tmQBqV+D8C/uvN6ZO68yJLBPQt/UR2EpZWEXCl3V1vmYCTZuCKlhFySO6u
+         lTK9aASFZClQ5R5dNEjlwDPqBEBkldYBh+EztwhJu98E8461FSk4mMLlhhO1nnNAtqLw
+         hss4/zG9MyI/pgTi610EoP9uFuaQ4NAQdcy3J1QeRp6BoHWNTjoKyYzuHiBXZG/YX6+y
+         N79nvsidB01up6kylGFuTzI/pCuI7uH1+cmKy9WIIqsgzOnqaNq5MHlnK6Vl1Zti2Ohg
+         SzDn14d6+bN/bLemrlfM/hrFcKfjHi+Q0DPGUb3Dz/z+vNmk2pZo0l9HVXTJO78CwYxv
+         +JLw==
+X-Gm-Message-State: AOAM531Y7g2+w+HmHn8rbFa/XtgwFZltnP5NBmHt6KQotQMU+3MUSyBU
+        wGmWLV+BksGHajnyLxn1d+3+YaqS4nklWzIUA6s=
+X-Google-Smtp-Source: ABdhPJy1BI+kV6WyWW37ji+ylkjjIWTBWFf1qwtkGDw3Mxc8DghxigPvlj/PBqptD5608TIHvHb826oYhxBwwZ8+2WI=
+X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
+ s18-20020a170906169200b006e8d24544a9mr12378077ejd.639.1650356528238; Tue, 19
+ Apr 2022 01:22:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+References: <20220418053202.24528-1-yu.tu@amlogic.com> <20220418053202.24528-2-yu.tu@amlogic.com>
+ <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
+ <d10e27ff-e674-87bd-2c98-63c7040baeb1@amlogic.com> <9af92c78-73a7-d524-182c-3ebffa69b08a@kernel.org>
+In-Reply-To: <9af92c78-73a7-d524-182c-3ebffa69b08a@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 19 Apr 2022 11:21:32 +0300
+Message-ID: <CAHp75Vc87oTmJ6zVeY2mGbP8Jx_SSDtp39Uq4YhWerDUX9RdQQ@mail.gmail.com>
+Subject: Re: [PATCH V2 1/2] tty: serial: meson: Add a 12MHz internal clock
+ rate to calculate baud rate in order to meet the baud rate requirements of
+ special BT modules
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Yu Tu <yu.tu@amlogic.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Tue, Apr 19, 2022 at 10:38 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> On 19. 04. 22, 9:29, Yu Tu wrote:
+> > On 2022/4/18 20:09, Andy Shevchenko wrote:
+> >> On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
-address field within the frame header. It is made up of the DLCI address,
-command/response (CR) bit and EA bit.
-Use the predefined CR value instead of a plain 2 in alignment to the
-remaining code and to make the encoding obvious.
+...
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> >>> +struct meson_uart_data {
+> >>> +       bool has_xtal_div2;
+> >>
+> >> I would prefer to see this as an unsigned int and with a less
+> >> particular name, e.g. xtal_div would suffice.
+> > I don't have a problem with your suggestion.Let's see What Neil has to say.
+>
+> Actually why uint provided it's a boolean value? Or do you mean to store
+> the divisor directly in this member, Andy?
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9bf5aa508f0e..1beb4b28cd18 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -751,7 +751,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 
- 	*--dp = msg->ctrl;
- 	if (gsm->initiator)
--		*--dp = (msg->addr << 2) | 2 | EA;
-+		*--dp = (msg->addr << 2) | CR | EA;
- 	else
- 		*--dp = (msg->addr << 2) | EA;
- 	*fcs = gsm_fcs_add_block(INIT_FCS, dp , msg->data - dp);
+Yes I was thinking to provide the value and then always provide the
+private data. In such cases we don't need an additional condition.
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
