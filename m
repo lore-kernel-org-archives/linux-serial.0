@@ -2,279 +2,408 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 297AFC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE4BC4321E
 	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 13:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352745AbiDSNnu (ORCPT
+        id S1352759AbiDSNnv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 09:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
+        Tue, 19 Apr 2022 09:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352769AbiDSNmo (ORCPT
+        with ESMTP id S1352737AbiDSNml (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 09:42:44 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BC355B4
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 06:39:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650375596; x=1681911596;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9NNh+/k9hW4lFgdL/6JMi9Hfw1sZmLJ7/xk2ZcMEs+U=;
-  b=nhZmvJJTNeP2AB0jrAenH6HZYEkEgg1hpBhked6ALjczfFhSA3+cpRPW
-   6N5HkGktGGCrD+aRlW/Sc6qWpydewFy67aXKU1+Mx5fjPF6vFezlLgcf0
-   RBeixT8nbWzf2g+x6cmvC2toA1TFIbG9k9hYSrbGGZcNtRmJ53nbhWwQA
-   2PiyXoM3ejnn4VMobulDQb6tbVTHyY5exSX4udcgKZrM0uStj3Y1o0Pgl
-   qNrrlOBGtd7mwM4jEHC3MtBaRqJP7xs0HIs2XCInfG/mHwLn0EYjmElSF
-   Avd3J8etLhAYEhJtGi1Hmthi4kzhDX9nGvTT8tv3I8ozAR8om7vt2wKf7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262624535"
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="262624535"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:39:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
-   d="scan'208";a="576103899"
-Received: from dbenelli-mobl.ger.corp.intel.com ([10.252.56.57])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 06:39:52 -0700
-Date:   Tue, 19 Apr 2022 16:39:49 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Lukas Wunner <lukas.wunner@intel.com>, kernel@pengutronix.de,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: [PATCH 1/1] serial: 8250: revert UART_CAP_NOTEMT changes
-Message-ID: <db15ba9d-d914-53fa-23b8-870df7bb13@linux.intel.com>
+        Tue, 19 Apr 2022 09:42:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96543914F;
+        Tue, 19 Apr 2022 06:39:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 437EB616A3;
+        Tue, 19 Apr 2022 13:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D9CC385A7;
+        Tue, 19 Apr 2022 13:39:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650375584;
+        bh=x1mvWl2U7fZILb5TbyNkFpMm6/MypG7RO5sXAsxLvRg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PZTxNL5DSXCYDgJG8/+vLbglm3Bhpk5h/Ugh3KUJ531orszQSnNDG73cQlb4bZj0Z
+         HBwfwm3Fn7Q0EsAJCI4GK9LiCXzD1yNHN8VW/FO14KinCNU1FkRN0TGkYURwKC6MQ+
+         DTiCUh0nUOK7+AnvZnl6/cpsoi3FJisdZmBonypOAIOjqDOfu07w90A2ngtcRTl0k/
+         tn3+f7kw7MCBRbxGjZrMN+Jpn0HXe4XH2X02BuHpYN9z5uaKHSEmxpZnVQHVMccNtZ
+         ujjtywF56S80y2RETVswGMcLzlBjDwf5rDrx3BJsgCkT53Z2c14D77ga1UB6uWLFWf
+         6ZqDHxa1AcOJg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
+        jmkrzyszt@gmail.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH 17/41] ARM: omap1: move 32k counter from plat-omap to mach-omap1
+Date:   Tue, 19 Apr 2022 15:36:59 +0200
+Message-Id: <20220419133723.1394715-18-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220419133723.1394715-1-arnd@kernel.org>
+References: <20220419133723.1394715-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-178727296-1650375594=:1610"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Arnd Bergmann <arnd@arndb.de>
 
---8323329-178727296-1650375594=:1610
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+omap2 stopped using this code with commit 8d39ff3d1696 ("ARM: OMAP2+:
+Remove unused legacy code for timer"), so just move it to mach-omap1 now,
+along with the other half of that driver.
 
-
-This reverts UART_CAP_NOTEMT commit and driver changes depending
-on it:
-  f6f586102ad1 (serial: 8250: Handle UART without interrupt on TEMT
-                using em485)
-  296385fe1275 (serial: 8250: Add UART_CAP_NOTEMT on PORT_16550A_FSL64)
-  bec1f1b66a6a (serial: 8250: add compatible for fsl,16550-FIFO64)
-
-The UART_CAP_NOTEMT code added in f6f586102add1 (serial: 8250:
-Handle UART without interrupt on TEMT using em485) containts math
-overflow for 32-bit archs. In addition, the approach used in it
-is unnecessarily complicated requiring a dedicated timer just for
-notemt. A simpler approach for providing UART_CAP_NOTEMT already
-exists (patches 1-2):
-  https://lore.kernel.org/linux-serial/20220411083321.9131-3-ilpo.jarvinen@linux.intel.com/T/#u
-Thus, simply revert the UART_CAP_NOTEMT changes for now.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/tty/serial/8250/8250.h      |  1 -
- drivers/tty/serial/8250/8250_of.c   |  2 -
- drivers/tty/serial/8250/8250_port.c | 78 ++---------------------------
- include/linux/serial_8250.h         |  2 -
- 4 files changed, 3 insertions(+), 80 deletions(-)
+ arch/arm/mach-omap1/Kconfig                   |  16 +++
+ arch/arm/mach-omap1/timer32k.c                |  96 ++++++++++++++-
+ arch/arm/plat-omap/Kconfig                    |  17 ---
+ arch/arm/plat-omap/Makefile                   |   2 +-
+ arch/arm/plat-omap/counter_32k.c              | 114 ------------------
+ arch/arm/plat-omap/include/plat/counter-32k.h |   1 -
+ 6 files changed, 110 insertions(+), 136 deletions(-)
+ delete mode 100644 arch/arm/plat-omap/counter_32k.c
+ delete mode 100644 arch/arm/plat-omap/include/plat/counter-32k.h
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 39ffeb37786f..db784ace25d8 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -83,7 +83,6 @@ struct serial8250_config {
- #define UART_CAP_MINI	BIT(17)	/* Mini UART on BCM283X family lacks:
- 					 * STOP PARITY EPAR SPAR WLEN5 WLEN6
- 					 */
--#define UART_CAP_NOTEMT	BIT(18)	/* UART without interrupt on TEMT available */
+diff --git a/arch/arm/mach-omap1/Kconfig b/arch/arm/mach-omap1/Kconfig
+index 208c700c2455..04155b5ce978 100644
+--- a/arch/arm/mach-omap1/Kconfig
++++ b/arch/arm/mach-omap1/Kconfig
+@@ -53,6 +53,22 @@ config OMAP_MUX_WARNINGS
+ 	  to change the pin multiplexing setup.	 When there are no warnings
+ 	  printed, it's safe to deselect OMAP_MUX for your product.
  
- #define UART_BUG_QUOT	BIT(0)	/* UART has buggy quot LSB */
- #define UART_BUG_TXEN	BIT(1)	/* UART has buggy TX IIR status */
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 5a699a1aa79c..be8626234627 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -326,8 +326,6 @@ static const struct of_device_id of_platform_serial_table[] = {
- 		.data = (void *)PORT_ALTR_16550_F64, },
- 	{ .compatible = "altr,16550-FIFO128",
- 		.data = (void *)PORT_ALTR_16550_F128, },
--	{ .compatible = "fsl,16550-FIFO64",
--		.data = (void *)PORT_16550A_FSL64, },
- 	{ .compatible = "mediatek,mtk-btif",
- 		.data = (void *)PORT_MTK_BTIF, },
- 	{ .compatible = "mrvl,mmp-uart",
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index c1f24e88ef09..318af6f13605 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -263,7 +263,7 @@ static const struct serial8250_config uart_config[] = {
- 		.tx_loadsz	= 63,
- 		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10 |
- 				  UART_FCR7_64BYTE,
--		.flags		= UART_CAP_FIFO | UART_CAP_NOTEMT,
-+		.flags		= UART_CAP_FIFO,
- 	},
- 	[PORT_RT2880] = {
- 		.name		= "Palmchip BK-3103",
-@@ -571,21 +571,8 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
- 	}
++config OMAP_32K_TIMER
++	bool "Use 32KHz timer"
++	depends on ARCH_OMAP16XX
++	default ARCH_OMAP16XX
++	help
++	  Select this option if you want to enable the OMAP 32KHz timer.
++	  This timer saves power compared to the OMAP_MPU_TIMER, and has
++	  support for no tick during idle. The 32KHz timer provides less
++	  intra-tick resolution than OMAP_MPU_TIMER. The 32KHz timer is
++	  currently only available for OMAP16XX, 24XX, 34XX, OMAP4/5 and DRA7XX.
++
++	  On OMAP2PLUS this value is only used for CONFIG_HZ and
++	  CLOCK_TICK_RATE compile time calculation.
++	  The actual timer selection is done in the board file
++	  through the (DT_)MACHINE_START structure.
++
+ comment "OMAP Board Type"
+ 
+ config MACH_OMAP_INNOVATOR
+diff --git a/arch/arm/mach-omap1/timer32k.c b/arch/arm/mach-omap1/timer32k.c
+index 780fdf03c3ce..11958ccd894d 100644
+--- a/arch/arm/mach-omap1/timer32k.c
++++ b/arch/arm/mach-omap1/timer32k.c
+@@ -45,15 +45,13 @@
+ #include <linux/clocksource.h>
+ #include <linux/clockchips.h>
+ #include <linux/io.h>
++#include <linux/sched_clock.h>
+ 
+ #include <asm/irq.h>
+ #include <asm/mach/irq.h>
+ #include <asm/mach/time.h>
+ 
+-#include <plat/counter-32k.h>
+-
+ #include <mach/hardware.h>
+-
+ #include "common.h"
+ 
+ /*
+@@ -159,6 +157,98 @@ static __init void omap_init_32k_timer(void)
+ 					OMAP_32K_TICKS_PER_SEC, 1, 0xfffffffe);
  }
  
--static inline void serial8250_em485_update_temt_delay(struct uart_8250_port *p,
--			unsigned int cflag, unsigned int baud)
++/* OMAP2_32KSYNCNT_CR_OFF: offset of 32ksync counter register */
++#define OMAP2_32KSYNCNT_REV_OFF		0x0
++#define OMAP2_32KSYNCNT_REV_SCHEME	(0x3 << 30)
++#define OMAP2_32KSYNCNT_CR_OFF_LOW	0x10
++#define OMAP2_32KSYNCNT_CR_OFF_HIGH	0x30
++
++/*
++ * 32KHz clocksource ... always available, on pretty most chips except
++ * OMAP 730 and 1510.  Other timers could be used as clocksources, with
++ * higher resolution in free-running counter modes (e.g. 12 MHz xtal),
++ * but systems won't necessarily want to spend resources that way.
++ */
++static void __iomem *sync32k_cnt_reg;
++
++static u64 notrace omap_32k_read_sched_clock(void)
++{
++	return sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
++}
++
++/**
++ * omap_read_persistent_clock64 -  Return time from a persistent clock.
++ *
++ * Reads the time from a source which isn't disabled during PM, the
++ * 32k sync timer.  Convert the cycles elapsed since last read into
++ * nsecs and adds to a monotonically increasing timespec64.
++ */
++static struct timespec64 persistent_ts;
++static cycles_t cycles;
++static unsigned int persistent_mult, persistent_shift;
++
++static void omap_read_persistent_clock64(struct timespec64 *ts)
++{
++	unsigned long long nsecs;
++	cycles_t last_cycles;
++
++	last_cycles = cycles;
++	cycles = sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
++
++	nsecs = clocksource_cyc2ns(cycles - last_cycles,
++					persistent_mult, persistent_shift);
++
++	timespec64_add_ns(&persistent_ts, nsecs);
++
++	*ts = persistent_ts;
++}
++
++/**
++ * omap_init_clocksource_32k - setup and register counter 32k as a
++ * kernel clocksource
++ * @pbase: base addr of counter_32k module
++ * @size: size of counter_32k to map
++ *
++ * Returns 0 upon success or negative error code upon failure.
++ *
++ */
++int __init omap_init_clocksource_32k(void __iomem *vbase)
++{
++	int ret;
++
++	/*
++	 * 32k sync Counter IP register offsets vary between the
++	 * highlander version and the legacy ones.
++	 * The 'SCHEME' bits(30-31) of the revision register is used
++	 * to identify the version.
++	 */
++	if (readl_relaxed(vbase + OMAP2_32KSYNCNT_REV_OFF) &
++						OMAP2_32KSYNCNT_REV_SCHEME)
++		sync32k_cnt_reg = vbase + OMAP2_32KSYNCNT_CR_OFF_HIGH;
++	else
++		sync32k_cnt_reg = vbase + OMAP2_32KSYNCNT_CR_OFF_LOW;
++
++	/*
++	 * 120000 rough estimate from the calculations in
++	 * __clocksource_update_freq_scale.
++	 */
++	clocks_calc_mult_shift(&persistent_mult, &persistent_shift,
++			32768, NSEC_PER_SEC, 120000);
++
++	ret = clocksource_mmio_init(sync32k_cnt_reg, "32k_counter", 32768,
++				250, 32, clocksource_mmio_readl_up);
++	if (ret) {
++		pr_err("32k_counter: can't register clocksource\n");
++		return ret;
++	}
++
++	sched_clock_register(omap_32k_read_sched_clock, 32, 32768);
++	register_persistent_clock(omap_read_persistent_clock64);
++	pr_info("OMAP clocksource: 32k_counter at 32768 Hz\n");
++
++	return 0;
++}
++
+ /*
+  * ---------------------------------------------------------------------------
+  * Timer initialization
+diff --git a/arch/arm/plat-omap/Kconfig b/arch/arm/plat-omap/Kconfig
+index 272670ef1e92..dfa19d5030e3 100644
+--- a/arch/arm/plat-omap/Kconfig
++++ b/arch/arm/plat-omap/Kconfig
+@@ -72,23 +72,6 @@ config OMAP_MPU_TIMER
+ 	  timer provides more intra-tick resolution than the 32KHz timer,
+ 	  but consumes more power.
+ 
+-config OMAP_32K_TIMER
+-	bool "Use 32KHz timer"
+-	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS
+-	default y if (ARCH_OMAP16XX || ARCH_OMAP2PLUS)
+-	help
+-	  Select this option if you want to enable the OMAP 32KHz timer.
+-	  This timer saves power compared to the OMAP_MPU_TIMER, and has
+-	  support for no tick during idle. The 32KHz timer provides less
+-	  intra-tick resolution than OMAP_MPU_TIMER. The 32KHz timer is
+-	  currently only available for OMAP16XX, 24XX, 34XX, OMAP4/5 and DRA7XX.
+-
+-	  On OMAP2PLUS this value is only used for CONFIG_HZ and
+-	  CLOCK_TICK_RATE compile time calculation.
+-	  The actual timer selection is done in the board file
+-	  through the (DT_)MACHINE_START structure.
+-
+-
+ config OMAP3_L2_AUX_SECURE_SAVE_RESTORE
+ 	bool "OMAP3 HS/EMU save and restore for L2 AUX control register"
+ 	depends on ARCH_OMAP3 && PM
+diff --git a/arch/arm/plat-omap/Makefile b/arch/arm/plat-omap/Makefile
+index 371f2ed00eda..98a7b607873a 100644
+--- a/arch/arm/plat-omap/Makefile
++++ b/arch/arm/plat-omap/Makefile
+@@ -6,7 +6,7 @@
+ ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-omap/include
+ 
+ # Common support
+-obj-y := sram.o dma.o counter_32k.o
++obj-y := sram.o dma.o
+ 
+ # omap_device support (OMAP2+ only at the moment)
+ 
+diff --git a/arch/arm/plat-omap/counter_32k.c b/arch/arm/plat-omap/counter_32k.c
+deleted file mode 100644
+index 7a729ade2105..000000000000
+--- a/arch/arm/plat-omap/counter_32k.c
++++ /dev/null
+@@ -1,114 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * OMAP 32ksynctimer/counter_32k-related code
+- *
+- * Copyright (C) 2009 Texas Instruments
+- * Copyright (C) 2010 Nokia Corporation
+- * Tony Lindgren <tony@atomide.com>
+- * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
+- *
+- * NOTE: This timer is not the same timer as the old OMAP1 MPU timer.
+- */
+-#include <linux/kernel.h>
+-#include <linux/init.h>
+-#include <linux/clk.h>
+-#include <linux/err.h>
+-#include <linux/io.h>
+-#include <linux/clocksource.h>
+-#include <linux/sched_clock.h>
+-
+-#include <asm/mach/time.h>
+-
+-#include <plat/counter-32k.h>
+-
+-/* OMAP2_32KSYNCNT_CR_OFF: offset of 32ksync counter register */
+-#define OMAP2_32KSYNCNT_REV_OFF		0x0
+-#define OMAP2_32KSYNCNT_REV_SCHEME	(0x3 << 30)
+-#define OMAP2_32KSYNCNT_CR_OFF_LOW	0x10
+-#define OMAP2_32KSYNCNT_CR_OFF_HIGH	0x30
+-
+-/*
+- * 32KHz clocksource ... always available, on pretty most chips except
+- * OMAP 730 and 1510.  Other timers could be used as clocksources, with
+- * higher resolution in free-running counter modes (e.g. 12 MHz xtal),
+- * but systems won't necessarily want to spend resources that way.
+- */
+-static void __iomem *sync32k_cnt_reg;
+-
+-static u64 notrace omap_32k_read_sched_clock(void)
 -{
--	unsigned int bits;
--
--	if (!p->em485)
--		return;
--
--	bits = tty_get_frame_size(cflag);
--	p->em485->no_temt_delay = DIV_ROUND_UP(bits * NSEC_PER_SEC, baud);
+-	return sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
 -}
 -
- static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t);
- static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t);
--static enum hrtimer_restart serial8250_em485_handle_no_temt(struct hrtimer *t);
- 
- void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p)
- {
-@@ -644,16 +631,6 @@ static int serial8250_em485_init(struct uart_8250_port *p)
- 		     HRTIMER_MODE_REL);
- 	hrtimer_init(&p->em485->start_tx_timer, CLOCK_MONOTONIC,
- 		     HRTIMER_MODE_REL);
+-/**
+- * omap_read_persistent_clock64 -  Return time from a persistent clock.
+- *
+- * Reads the time from a source which isn't disabled during PM, the
+- * 32k sync timer.  Convert the cycles elapsed since last read into
+- * nsecs and adds to a monotonically increasing timespec64.
+- */
+-static struct timespec64 persistent_ts;
+-static cycles_t cycles;
+-static unsigned int persistent_mult, persistent_shift;
 -
--	if (p->capabilities & UART_CAP_NOTEMT) {
--		struct tty_struct *tty = p->port.state->port.tty;
+-static void omap_read_persistent_clock64(struct timespec64 *ts)
+-{
+-	unsigned long long nsecs;
+-	cycles_t last_cycles;
 -
--		serial8250_em485_update_temt_delay(p, tty->termios.c_cflag,
--						   tty_get_baud_rate(tty));
--		hrtimer_init(&p->em485->no_temt_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
--		p->em485->no_temt_timer.function = &serial8250_em485_handle_no_temt;
+-	last_cycles = cycles;
+-	cycles = sync32k_cnt_reg ? readl_relaxed(sync32k_cnt_reg) : 0;
+-
+-	nsecs = clocksource_cyc2ns(cycles - last_cycles,
+-					persistent_mult, persistent_shift);
+-
+-	timespec64_add_ns(&persistent_ts, nsecs);
+-
+-	*ts = persistent_ts;
+-}
+-
+-/**
+- * omap_init_clocksource_32k - setup and register counter 32k as a
+- * kernel clocksource
+- * @pbase: base addr of counter_32k module
+- * @size: size of counter_32k to map
+- *
+- * Returns 0 upon success or negative error code upon failure.
+- *
+- */
+-int __init omap_init_clocksource_32k(void __iomem *vbase)
+-{
+-	int ret;
+-
+-	/*
+-	 * 32k sync Counter IP register offsets vary between the
+-	 * highlander version and the legacy ones.
+-	 * The 'SCHEME' bits(30-31) of the revision register is used
+-	 * to identify the version.
+-	 */
+-	if (readl_relaxed(vbase + OMAP2_32KSYNCNT_REV_OFF) &
+-						OMAP2_32KSYNCNT_REV_SCHEME)
+-		sync32k_cnt_reg = vbase + OMAP2_32KSYNCNT_CR_OFF_HIGH;
+-	else
+-		sync32k_cnt_reg = vbase + OMAP2_32KSYNCNT_CR_OFF_LOW;
+-
+-	/*
+-	 * 120000 rough estimate from the calculations in
+-	 * __clocksource_update_freq_scale.
+-	 */
+-	clocks_calc_mult_shift(&persistent_mult, &persistent_shift,
+-			32768, NSEC_PER_SEC, 120000);
+-
+-	ret = clocksource_mmio_init(sync32k_cnt_reg, "32k_counter", 32768,
+-				250, 32, clocksource_mmio_readl_up);
+-	if (ret) {
+-		pr_err("32k_counter: can't register clocksource\n");
+-		return ret;
 -	}
 -
- 	p->em485->stop_tx_timer.function = &serial8250_em485_handle_stop_tx;
- 	p->em485->start_tx_timer.function = &serial8250_em485_handle_start_tx;
- 	p->em485->port = p;
-@@ -685,7 +662,6 @@ void serial8250_em485_destroy(struct uart_8250_port *p)
- 
- 	hrtimer_cancel(&p->em485->start_tx_timer);
- 	hrtimer_cancel(&p->em485->stop_tx_timer);
--	hrtimer_cancel(&p->em485->no_temt_timer);
- 
- 	kfree(p->em485);
- 	p->em485 = NULL;
-@@ -1528,11 +1504,6 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
- 	hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
- }
- 
--static void start_hrtimer_ns(struct hrtimer *hrt, unsigned long nsec)
--{
--	hrtimer_start(hrt, ns_to_ktime(nsec), HRTIMER_MODE_REL);
+-	sched_clock_register(omap_32k_read_sched_clock, 32, 32768);
+-	register_persistent_clock(omap_read_persistent_clock64);
+-	pr_info("OMAP clocksource: 32k_counter at 32768 Hz\n");
+-
+-	return 0;
 -}
--
- static void __stop_tx_rs485(struct uart_8250_port *p)
- {
- 	struct uart_8250_em485 *em485 = p->em485;
-@@ -1564,33 +1535,14 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 
- 	if (em485) {
- 		unsigned char lsr = serial_in(p, UART_LSR);
--
--		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--
- 		/*
--		 * To provide required timing and allow FIFO transfer,
-+		 * To provide required timeing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
- 		 * shift register are empty. It is for device driver to enable
- 		 * interrupt on TEMT.
- 		 */
--		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
--			if (!(p->capabilities & UART_CAP_NOTEMT))
--				/* __stop_tx will be called again once TEMT triggers */
--				return;
--
--			if (!(lsr & UART_LSR_THRE))
--				/* __stop_tx will be called again once THRE triggers */
--				return;
--
--			/*
--			 * On devices with no TEMT interrupt available, start
--			 * a timer for a byte time. The timer will recall
--			 * __stop_tx().
--			 */
--			em485->active_timer = &em485->no_temt_timer;
--			start_hrtimer_ns(&em485->no_temt_timer, em485->no_temt_delay);
-+		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
- 			return;
--		}
- 
- 		__stop_tx_rs485(p);
- 	}
-@@ -1701,27 +1653,6 @@ static inline void start_tx_rs485(struct uart_port *port)
- 	__start_tx(port);
- }
- 
--static enum hrtimer_restart serial8250_em485_handle_no_temt(struct hrtimer *t)
--{
--	struct uart_8250_em485 *em485;
--	struct uart_8250_port *p;
--	unsigned long flags;
--
--	em485 = container_of(t, struct uart_8250_em485, no_temt_timer);
--	p = em485->port;
--
--	serial8250_rpm_get(p);
--	spin_lock_irqsave(&p->port.lock, flags);
--	if (em485->active_timer == &em485->no_temt_timer) {
--		em485->active_timer = NULL;
--		__stop_tx(p);
--	}
--
--	spin_unlock_irqrestore(&p->port.lock, flags);
--	serial8250_rpm_put(p);
--	return HRTIMER_NORESTART;
--}
--
- static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t)
- {
- 	struct uart_8250_em485 *em485 = container_of(t, struct uart_8250_em485,
-@@ -2927,9 +2858,6 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	serial8250_set_divisor(port, baud, quot, frac);
- 
--	if (up->capabilities & UART_CAP_NOTEMT)
--		serial8250_em485_update_temt_delay(up, termios->c_cflag, baud);
--
- 	/*
- 	 * LCR DLAB must be set to enable 64-byte FIFO mode. If the FCR
- 	 * is written without DLAB set, this mode will be disabled.
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index de135852107c..ff84a3ed10ea 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -79,9 +79,7 @@ struct uart_8250_ops {
- struct uart_8250_em485 {
- 	struct hrtimer		start_tx_timer; /* "rs485 start tx" timer */
- 	struct hrtimer		stop_tx_timer;  /* "rs485 stop tx" timer */
--	struct hrtimer		no_temt_timer;  /* "rs485 no TEMT interrupt" timer */
- 	struct hrtimer		*active_timer;  /* pointer to active timer */
--	unsigned long		no_temt_delay;  /* Delay for no_temt_timer */
- 	struct uart_8250_port	*port;          /* for hrtimer callbacks */
- 	unsigned int		tx_stopped:1;	/* tx is currently stopped */
- };
+diff --git a/arch/arm/plat-omap/include/plat/counter-32k.h b/arch/arm/plat-omap/include/plat/counter-32k.h
+deleted file mode 100644
+index da000d482ff2..000000000000
+--- a/arch/arm/plat-omap/include/plat/counter-32k.h
++++ /dev/null
+@@ -1 +0,0 @@
+-int omap_init_clocksource_32k(void __iomem *vbase);
 -- 
-2.30.2
+2.29.2
 
---8323329-178727296-1650375594=:1610--
