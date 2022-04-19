@@ -2,74 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80920C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 10:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4B3C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 10:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbiDSKOK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 06:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        id S1346540AbiDSKge (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Apr 2022 06:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiDSKOJ (ORCPT
+        with ESMTP id S238239AbiDSKgc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 06:14:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9261BE85
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 03:11:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8E20B81603
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 10:11:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EFCC385A7;
-        Tue, 19 Apr 2022 10:11:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650363084;
-        bh=XqqslBq9xcjVIQennfQ7HTbh7vDBFtV+G9xhPhE9Bs8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ulJWwJVnUnmcRMI6oh9CYzHQyraSa8d9OKEazPCyqhXSEBGVg0TtAeiJ9VNq3XZ9S
-         hzSCOe1Jpq+YpxNccOsLCEr//K3zhhiqL1b7oVcbhUOB+Qm7Yfo10tt9mgpotkisuk
-         FmqvUC/jjrqvewtw352xbr/uQ8FKl3/GpuPHQgWw=
-Date:   Tue, 19 Apr 2022 12:11:21 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Eric Tremblay <etremblay@distech-controls.com>,
-        Lukas Wunner <lukas.wunner@intel.com>, kernel@pengutronix.de,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>
-Subject: Re: [PATCH v3 1/3] serial: 8250: Handle UART without interrupt on
- TEMT using em485
-Message-ID: <Yl6KyWGmB5+KOAKU@kroah.com>
-References: <20220330104642.229507-1-u.kleine-koenig@pengutronix.de>
- <20220330104642.229507-2-u.kleine-koenig@pengutronix.de>
- <1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com>
- <20220330142119.ejjlxbsnkp36nwy7@pengutronix.de>
- <174a96fe-8953-6533-34d7-26c15b8f140@linux.intel.com>
- <893fcf29-20da-2a4-5951-d956472f85f@linux.intel.com>
+        Tue, 19 Apr 2022 06:36:32 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019C829CBE;
+        Tue, 19 Apr 2022 03:33:49 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23J7fDmK031408;
+        Tue, 19 Apr 2022 12:33:35 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=/0f8BK/00om3y8sdVovlGdI6C+1xGoO5boVdTyUCN+I=;
+ b=V9/TLbBSjUecSD3V5L03FnZNkfHdQH+bnk3tN/YrY9SKITLEiVEfbZyUUa1hni4mQg4+
+ 9uEv7dSUXEuEonS/cWuF6yUC5UYS3KxIlQqDB/JY9Gam6AnDa5yynod06mUz7hzhBppO
+ VEKE/x8oxQGSIKmyzqFTsGTuykSgrZNQWPEy5lqAbIc+Euw1QIatOw8AZBkVl/NkBYma
+ OmTMoKJlvDRSylbwxG56FbZnJ5tvQlSLnqdiO4mInI1nBy09II8Fn1n1cIEP47Yc2ISG
+ 6u46RxBO4SNPf4ckMiDCMH8Ck6Jggrb0P2nfamTzPcM5gOWfCcStwD04cxhwZUbekNOm Zw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fh09rf2qv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Apr 2022 12:33:35 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EEE34100034;
+        Tue, 19 Apr 2022 12:33:34 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E5FB320B860;
+        Tue, 19 Apr 2022 12:33:34 +0200 (CEST)
+Received: from [10.201.20.168] (10.75.127.51) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 19 Apr
+ 2022 12:33:34 +0200
+Message-ID: <1a3bbcf1-bc03-f3e0-a70b-1e7c47d38b59@foss.st.com>
+Date:   Tue, 19 Apr 2022 12:33:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <893fcf29-20da-2a4-5951-d956472f85f@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V3 1/3] serial: stm32: remove infinite loop possibility in
+ putchar function
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220419085330.1178925-1-valentin.caron@foss.st.com>
+ <20220419085330.1178925-2-valentin.caron@foss.st.com>
+ <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+From:   Valentin CARON <valentin.caron@foss.st.com>
+In-Reply-To: <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-19_04,2022-04-15_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 11:09:56AM +0300, Ilpo Järvinen wrote:
-> Hi Greg,
-> 
-> This change now appears in your tty-next tree.
+On 4/19/22 10:59, Geert Uytterhoeven wrote:
+> Hi Valentin,
+>
+> On Tue, Apr 19, 2022 at 10:54 AM Valentin Caron
+> <valentin.caron@foss.st.com> wrote:
+>> Rework stm32_usart_console_putchar() function in order to anticipate
+>> the case where the character can never be sent.
+>>
+>> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+> Thanks for your patch!
+>
+>> --- a/drivers/tty/serial/stm32-usart.c
+>> +++ b/drivers/tty/serial/stm32-usart.c
+>> @@ -1640,10 +1640,16 @@ static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch
+>>   {
+>>          struct stm32_port *stm32_port = to_stm32_port(port);
+>>          const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+>> +       u32 isr;
+>> +       int ret;
+>>
+>> -       while (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
+>> -               cpu_relax();
+>> -
+>> +       ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr, isr,
+>> +                                               (isr & USART_SR_TXE), 100,
+>> +                                               STM32_USART_TIMEOUT_USEC);
+>> +       if (ret != 0) {
+>> +               dev_err(port->dev, "Error while sending data in UART TX : %d\n", ret);
+> Does it make sense to print this message, i.e. will the user ever see it?
+> Or is the failure above temporary?
+> I assume that you have seen this trigger?
+>
+>> +               return;
+>> +       }
+>>          writel_relaxed(ch, port->membase + ofs->tdr);
+>>   }
+> Gr{oetje,eeting}s,
+>
+>                          Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
+Hi Geert,
 
-What change?  Please never top-post.
+The failure is temporary. It can appears when the uart is too slow to 
+send data.
 
-> As you seem to have missed 
-> there is an obvious problem with it, I'm asking which direction I should 
-> take to fix it.
+I never tested the case, but I prefer to show a message to know if the 
+console loses a character.
 
-Send a fix!  You don't need my permission to do so.
+Thanks,
+Valentin
 
-greg k-h
+
