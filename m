@@ -2,100 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673A7C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 07:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6523C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344865AbiDSIBu (ORCPT
+        id S1349721AbiDSILX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
+        Tue, 19 Apr 2022 04:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349687AbiDSIBt (ORCPT
+        with ESMTP id S235921AbiDSILW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:01:49 -0400
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC2D2459F;
-        Tue, 19 Apr 2022 00:59:06 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id z99so20189603ede.5;
-        Tue, 19 Apr 2022 00:59:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gT3sY/sJ5AwFaw0rh4FR4+pzY6MGkVY982EJNWqX/aU=;
-        b=hXdNbQETCGUiWUFbZdJ1e/NII6VYDMLT/QHoioq0afBjTLOH5tCbXSo1PoldC3jizK
-         5SebXQCGyCFCowVZdux6oub0vHI7XhgwLQEW91OXNEXIOyOOAirDS5YifWj1wkELqhRf
-         z/3XmX4XypuW7sG0TsadonpfAAHGPglfbfTia4EQMaNWiIR7r15f/7C23P8WjVefwM2w
-         r05ZGfHAt+2r+d+66HvhsjFQOHboUsKjX7x2GbSHCEdoQclFPrGmnzI+CZ0+5KXDbKkl
-         21A2GjfhBni9et5kHbamsHnT2TEXg6GJOeYRZMTBwAQ5vXEagyMVAHSu+j0TlFXRbpn8
-         McJA==
-X-Gm-Message-State: AOAM533MHaiQRKIdKyMTDu9D72Jd95nUm9L87O1Buw/T31rLy2J/77Ne
-        xnF6S3me89OydjnLlcb+18A=
-X-Google-Smtp-Source: ABdhPJyZacKv5Ha8d6XbpAoK7HZJX9Bu9gzntK/TY+nXUveQpUuvrSXYJ9WJ+dvD4rVS65YXY0Iyyw==
-X-Received: by 2002:a05:6402:1e88:b0:419:746e:fb05 with SMTP id f8-20020a0564021e8800b00419746efb05mr15909112edf.307.1650355145376;
-        Tue, 19 Apr 2022 00:59:05 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id qb10-20020a1709077e8a00b006e892cf471asm5312049ejc.84.2022.04.19.00.59.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Apr 2022 00:59:04 -0700 (PDT)
-Message-ID: <30de7cc8-c75e-8a97-b1da-1ee8198bebcd@kernel.org>
-Date:   Tue, 19 Apr 2022 09:59:03 +0200
+        Tue, 19 Apr 2022 04:11:22 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:08:37 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F74C27B0A
+        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 01:08:37 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220419080732ae27d63fb36f36459c
+        for <linux-serial@vger.kernel.org>;
+        Tue, 19 Apr 2022 10:07:33 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=wpl+486sr7a22vbdMzfanbhjqUxRTVD+M5ueXoQSE64=;
+ b=BseYIEuS0itiYBiNIdvmZiwlpWrkKtzGGm4b3nPxSGViZzGaoOG6pCxtlTau3xJWdRiK1U
+ ZmFGtHGnBytmWRYc3oHiHqzlf9oA739zQfuvCprEzdcGCZ5fwobFEUQpvDTjeuXl38+eMv0M
+ J7ac0F8Tffvr0ilth/63Zc407otvg=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 15/20] tty: n_gsm: fix missing update of modem controls after DLCI open
+Date:   Tue, 19 Apr 2022 01:07:24 -0700
+Message-Id: <20220419080724.5726-1-daniel.starke@siemens.com>
+In-Reply-To: <YlkQ5Jh8HIm+AJHe@kroah.com>
+References: <YlkQ5Jh8HIm+AJHe@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] tty: serdev: using pm_runtime_resume_and_get instead of
- pm_runtime_get_sync
-Content-Language: en-US
-To:     cgel.zte@gmail.com, robh@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220418110635.2559391-1-chi.minghao@zte.com.cn>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220418110635.2559391-1-chi.minghao@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 04. 22, 13:06, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
+From: Daniel Starke <daniel.starke@siemens.com>
 
-... because it's helper doing exactly the same thing.
+Currently the peer is not informed about the initial state of the modem
+control lines after a new DLCI has been opened.
+Fix this by sending the initial modem control line states after DLCI open.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->   drivers/tty/serdev/core.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 0180e1e4e75d..e550ad3e7f2b 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -156,11 +156,9 @@ int serdev_device_open(struct serdev_device *serdev)
->   	if (ret)
->   		return ret;
->   
-> -	ret = pm_runtime_get_sync(&ctrl->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(&ctrl->dev);
-> +	ret = pm_runtime_resume_and_get(&ctrl->dev);
-> +	if (ret < 0)
->   		goto err_close;
-> -	}
->   
->   	return 0;
->   
-
-
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index f3fb66be8513..07d03447cdfd 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -370,6 +370,7 @@ static const u8 gsm_fcs8[256] = {
+ #define GOOD_FCS	0xCF
+ 
+ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
++static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
+ 
+ /**
+  *	gsm_fcs_add	-	update FCS
+@@ -1479,6 +1480,9 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Register gsmtty driver,report gsmtty dev add uevent for user */
+ 	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
++	/* Send current modem state */
++	if (dlci->addr)
++		gsmtty_modem_update(dlci, 0);
+ 	wake_up(&dlci->gsm->event);
+ }
+ 
 -- 
-js
-suse labs
+2.25.1
+
