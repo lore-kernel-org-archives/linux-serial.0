@@ -2,122 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA69C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 07:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF60C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 07:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236271AbiDSH3g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 03:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50928 "EHLO
+        id S1349375AbiDSHcK (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Apr 2022 03:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347430AbiDSH3e (ORCPT
+        with ESMTP id S236225AbiDSHcJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 03:29:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFD02E6AE;
-        Tue, 19 Apr 2022 00:26:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2AB9DCE12D4;
-        Tue, 19 Apr 2022 07:26:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5CEEC385AA;
-        Tue, 19 Apr 2022 07:26:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650353208;
-        bh=hRA97lDn/TuztS0QWmFlWK3AkqN/hp+z501lhGXN5Ho=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zhWSPXcbATyY17FmrIe2/UkdrOCSIbRMdfhyOhHsbGJqWBLZ42U9zk8bRA0DU97qY
-         hibXOLimtXlAqsdWbHD+20bHCk5QQn0gbcAFMe/oMQal2P1OG2C0XwhnAh8zIn18La
-         43jbMtpOKm++SEYp6qma01dPi/mK6SZb1qENNUTM=
-Date:   Tue, 19 Apr 2022 09:26:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 16/20] tty: n_gsm: fix invalid command/response bit check
- for UI/UIH frames
-Message-ID: <Yl5kNLyJTPGdO/tY@kroah.com>
-References: <AM4PR1001MB1378879B82FF126255EFB099E0F29@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
+        Tue, 19 Apr 2022 03:32:09 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7A332990;
+        Tue, 19 Apr 2022 00:29:27 -0700 (PDT)
+Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Tue, 19 Apr
+ 2022 15:29:20 +0800
+Message-ID: <d10e27ff-e674-87bd-2c98-63c7040baeb1@amlogic.com>
+Date:   Tue, 19 Apr 2022 15:29:19 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM4PR1001MB1378879B82FF126255EFB099E0F29@AM4PR1001MB1378.EURPRD10.PROD.OUTLOOK.COM>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2 1/2] tty: serial: meson: Add a 12MHz internal clock
+ rate to calculate baud rate in order to meet the baud rate requirements of
+ special BT modules
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220418053202.24528-1-yu.tu@amlogic.com>
+ <20220418053202.24528-2-yu.tu@amlogic.com>
+ <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.47]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 07:10:43AM +0000, Starke, Daniel wrote:
-> > 42:21AM -0700, D. Starke wrote:
-> > > From: Daniel Starke <daniel.starke@siemens.com>
-> > > 
-> > > n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-> > > See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> > > The changes from 07.010 to 27.010 are non-functional. Therefore, I 
-> > > refer to the newer 27.010 here. Chapter 5.4.3.1 states the CR bit in 
-> > > UI and UIH frames shall always be set 1 by the initiator and 0 by the responder.
-> > 
-> > This has nothing to do with the change you made here.
-> > 
-> > 
-> > > Currently, gsm_queue() has a pre-processor gated (excluded) check 
-> > > which treats all frames that conform to the standard as malformed frames.
-> > > Remove this optional code to avoid confusion and possible breaking 
-> > > changes in case that someone includes it.
-> > 
-> > Again, nothing to do with the code change.
-> 
-> Including this code (i.e. with #if 1) will treat every correct UI/UIH frame
-> as invalid, because the cr flag is always set to 1 for those frames
-> (as mentioned in chapter 5.4.3.1 of the standard). This is obviously wrong.
-> 
-> > > 
-> > > Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-> > 
-> > This "fixes" nothing :(
-> 
-> What is the correct way to handle the removal of such dead and obviously
-> wrong code?
-> 
-> > > Cc: stable@vger.kernel.org
-> > 
-> > How is commenting out unused code a stable backport requirement?
-> 
-> True, it does not change the behavior but it fixes a commit which is also
-> present in the current stable release. I was unsure how to handle this
-> case. I will remove the backport remark.
-> 
-> > > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> > > ---
-> > >  drivers/tty/n_gsm.c | 4 ----
-> > >  1 file changed, 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c index 
-> > > e9a7d9483c1f..f4ec48c0d6d7 100644
-> > > --- a/drivers/tty/n_gsm.c
-> > > +++ b/drivers/tty/n_gsm.c
-> > > @@ -1896,10 +1896,6 @@ static void gsm_queue(struct gsm_mux *gsm)
-> > >  	case UI|PF:
-> > >  	case UIH:
-> > >  	case UIH|PF:
-> > > -#if 0
-> > > -		if (cr)
-> > > -			goto invalid;
-> > > -#endif
-> > 
-> > All you are doing is cleaning up dead code.  Not a big deal, and not
-> > worth all the text above to confuse people :(
-> 
-> As mentioned above, this is not only dead but also wrong code. I tried to
-> elaborate the reason for it being wrong code in the text above.
+Hi Andy,
+	Thank you for your advice.
 
-That's fine, then just submit a patch that says:
-	Remove commented out code as it is never used and if anyone
-	accidentally turned it on, it would be broken.
-
-We remove dead code like this all the time, it's not a "fix" as nothing
-is broken as-is.
-
-thanks,
-
-greg k-h
+On 2022/4/18 20:09, Andy Shevchenko wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>>
+>> A /2 divider over XTAL was introduced since G12A, and is preferred
+>> to be used over the still present /3 divider since it provides much
+>> closer frequencies vs the request baudrate.Especially the BT module
+> 
+> 'e. E' (mind the space)
+My statement is a whole. There should be no spaces.
+> 
+>> uses 3Mhz baud rate. 8Mhz calculations can lead to baud rate bias,
+>> causing some problems.
+> 
+> ...
+> 
+>> +struct meson_uart_data {
+>> +       bool has_xtal_div2;
+> 
+> I would prefer to see this as an unsigned int and with a less
+> particular name, e.g. xtal_div would suffice.
+I don't have a problem with your suggestion.Let's see What Neil has to say.
+> 
+>> +};
+> 
+> ...
+> 
+>> +               unsigned int xtal_div = 3;
+> 
+>> +               if (private_data && private_data->has_xtal_div2) {
+>> +                       xtal_div = 2;
+> 
+> Better to define privata data always
+> 
+> 
+>> +                       val |= AML_UART_BAUD_XTAL_DIV2;
+>> +               }
+>> +               val |= DIV_ROUND_CLOSEST(port->uartclk / xtal_div, baud) - 1;
+> 
+> 
