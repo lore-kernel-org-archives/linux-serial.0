@@ -2,158 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2D6C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1EDC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 09:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350199AbiDSI47 (ORCPT
+        id S1347219AbiDSJCq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        Tue, 19 Apr 2022 05:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350187AbiDSI44 (ORCPT
+        with ESMTP id S1350267AbiDSJCe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:56:56 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E9422B19;
-        Tue, 19 Apr 2022 01:54:14 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23J7qMxT019642;
-        Tue, 19 Apr 2022 10:53:50 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=PmNWK/G60m8uo7lwEsmyR6Xq46F+sObo1bwuEDT0XE8=;
- b=SxJeaShrIX/myy4DuDAbnnV6ji+0iFymXGHJxhAQ2JoZSELXBHCdM54eGtGKBtvFmhfb
- J3gxQESWWzMDKrqJ9W92ohgucGCQhV6h+yt2ZM0yihqLGx6zRG3k2pfiJ9qrlt0z10TB
- bkQBjKBIVm5T8af4SQfz4kvivI3bHcP3pbNTageSo/OkTTextNYrToX/Zf6rivG1BC7m
- KEEPipPenmd5nrq0iMnTRn0KGlIzeWC2nhpRh1wTF8Ozf69UAowOeVij2Mn3po08feaA
- atqVnhQpPFEdG/droQ0FOc82rNwhFD2iO/EeGGW+RxBZ4Od1Y3uKORmFfkvtgVwNjfrp ug== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fh09kpfpx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:53:50 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 60EFE100039;
-        Tue, 19 Apr 2022 10:53:48 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5B7CE2053D3;
-        Tue, 19 Apr 2022 10:53:48 +0200 (CEST)
-Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 19 Apr 2022 10:53:47
- +0200
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Tue, 19 Apr 2022 05:02:34 -0400
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10416B876;
+        Tue, 19 Apr 2022 01:59:51 -0700 (PDT)
+Received: by mail-qk1-f179.google.com with SMTP id q75so4289800qke.6;
+        Tue, 19 Apr 2022 01:59:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2tS14D5PGmg/JLCqgQ04J95Jt9tqRjNAbrf1/kgwkng=;
+        b=duf6Gf8DnFDySzprLxJRPqjJacUoAkFKBAEiMVRMfLgDvkr1RZnUbp2X9jGfo0pbBw
+         3lihBbqPdKGoOYozgCT0GalQ8nd9HIXrcl6DYl0Rw3Pv73+HZPkg5920toXhs0bcF1Fp
+         onFBA3RvUp7ubUwF2R/gJaRah4tjA4edNZy0cNQj0f6TYflvvQ5gnbyuchhgdfvkjfRb
+         nJ5Z9iO0EfVH+v9XkUDk4CYq2fj/+DpYEDG8/G2/g/hI9+o0n0yCy64PioDhRqMEckyj
+         s6+MIQl0FIjc7CPUcT6NFULrGum97VFjMFfljQ8HQn7D7kMyuSWTGaGsmjLVgWvU4tvT
+         HObA==
+X-Gm-Message-State: AOAM531tdmIoQkhOOha/QfJEgKqsi178+qNNShY4RrQVwwV60HYTIQWR
+        cgcSldTX0gD21xnVzMmCF1mji4D1U/TiUA==
+X-Google-Smtp-Source: ABdhPJxEozh2DMFXsMVnUH8FLob95bDsBhAJJ4tjh+6WGam56QaPC4JWhorlliMEDC9t9b6Isb6JHA==
+X-Received: by 2002:a05:620a:2441:b0:69c:3451:2a60 with SMTP id h1-20020a05620a244100b0069c34512a60mr8674837qkn.181.1650358789985;
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id n22-20020ac85b56000000b002f1d7a2867dsm8945619qtw.67.2022.04.19.01.59.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ebf4b91212so164793507b3.8;
+        Tue, 19 Apr 2022 01:59:49 -0700 (PDT)
+X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
+ g16-20020a815210000000b002ef21e354ddmr14521561ywb.438.1650358789297; Tue, 19
+ Apr 2022 01:59:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220419085330.1178925-1-valentin.caron@foss.st.com> <20220419085330.1178925-2-valentin.caron@foss.st.com>
+In-Reply-To: <20220419085330.1178925-2-valentin.caron@foss.st.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 19 Apr 2022 10:59:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+Message-ID: <CAMuHMdVCeuC5qStugnssWKUeOVWxd_3XyYtS0mrZpqQVaXAP2w@mail.gmail.com>
+Subject: Re: [PATCH V3 1/3] serial: stm32: remove infinite loop possibility in
+ putchar function
+To:     Valentin Caron <valentin.caron@foss.st.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Valentin Caron <valentin.caron@foss.st.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH V3 3/3] serial: stm32: add earlycon support
-Date:   Tue, 19 Apr 2022 10:53:30 +0200
-Message-ID: <20220419085330.1178925-4-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220419085330.1178925-1-valentin.caron@foss.st.com>
-References: <20220419085330.1178925-1-valentin.caron@foss.st.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-19_03,2022-04-15_01,2022-02-23_01
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add early console support in stm32 uart driver.
+Hi Valentin,
 
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
----
- drivers/tty/serial/Kconfig       |  1 +
- drivers/tty/serial/stm32-usart.c | 51 ++++++++++++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
+On Tue, Apr 19, 2022 at 10:54 AM Valentin Caron
+<valentin.caron@foss.st.com> wrote:
+> Rework stm32_usart_console_putchar() function in order to anticipate
+> the case where the character can never be sent.
+>
+> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 6949e883ffab..ed59de8d2e11 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1443,6 +1443,7 @@ config SERIAL_STM32_CONSOLE
- 	bool "Support for console on STM32"
- 	depends on SERIAL_STM32=y
- 	select SERIAL_CORE_CONSOLE
-+	select SERIAL_EARLYCON
- 
- config SERIAL_MVEBU_UART
- 	bool "Marvell EBU serial port support"
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 8aefb286bd88..f75691e72729 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1761,6 +1761,57 @@ static struct console stm32_console = {
- #define STM32_SERIAL_CONSOLE NULL
- #endif /* CONFIG_SERIAL_STM32_CONSOLE */
- 
-+#ifdef CONFIG_SERIAL_EARLYCON
-+static void early_stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
-+{
-+	struct stm32_usart_info *info = port->private_data;
-+
-+	while (!(readl_relaxed(port->membase + info->ofs.isr) & USART_SR_TXE))
-+		cpu_relax();
-+
-+	writel_relaxed(ch, port->membase + info->ofs.tdr);
-+}
-+
-+static void early_stm32_serial_write(struct console *console, const char *s, unsigned int count)
-+{
-+	struct earlycon_device *device = console->data;
-+	struct uart_port *port = &device->port;
-+
-+	uart_console_write(port, s, count, early_stm32_usart_console_putchar);
-+}
-+
-+static int __init early_stm32_h7_serial_setup(struct earlycon_device *device, const char *options)
-+{
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+	device->port.private_data = &stm32h7_info;
-+	device->con->write = early_stm32_serial_write;
-+	return 0;
-+}
-+
-+static int __init early_stm32_f7_serial_setup(struct earlycon_device *device, const char *options)
-+{
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+	device->port.private_data = &stm32f7_info;
-+	device->con->write = early_stm32_serial_write;
-+	return 0;
-+}
-+
-+static int __init early_stm32_f4_serial_setup(struct earlycon_device *device, const char *options)
-+{
-+	if (!(device->port.membase || device->port.iobase))
-+		return -ENODEV;
-+	device->port.private_data = &stm32f4_info;
-+	device->con->write = early_stm32_serial_write;
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(stm32, "st,stm32h7-uart", early_stm32_h7_serial_setup);
-+OF_EARLYCON_DECLARE(stm32, "st,stm32f7-uart", early_stm32_f7_serial_setup);
-+OF_EARLYCON_DECLARE(stm32, "st,stm32-uart", early_stm32_f4_serial_setup);
-+#endif /* CONFIG_SERIAL_EARLYCON */
-+
- static struct uart_driver stm32_usart_driver = {
- 	.driver_name	= DRIVER_NAME,
- 	.dev_name	= STM32_SERIAL_NAME,
--- 
-2.25.1
+Thanks for your patch!
 
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -1640,10 +1640,16 @@ static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch
+>  {
+>         struct stm32_port *stm32_port = to_stm32_port(port);
+>         const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+> +       u32 isr;
+> +       int ret;
+>
+> -       while (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
+> -               cpu_relax();
+> -
+> +       ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr, isr,
+> +                                               (isr & USART_SR_TXE), 100,
+> +                                               STM32_USART_TIMEOUT_USEC);
+> +       if (ret != 0) {
+> +               dev_err(port->dev, "Error while sending data in UART TX : %d\n", ret);
+
+Does it make sense to print this message, i.e. will the user ever see it?
+Or is the failure above temporary?
+I assume that you have seen this trigger?
+
+> +               return;
+> +       }
+>         writel_relaxed(ch, port->membase + ofs->tdr);
+>  }
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
