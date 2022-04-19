@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5760C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0EBC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Apr 2022 08:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349855AbiDSIVL (ORCPT
+        id S1350002AbiDSIXW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Apr 2022 04:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
+        Tue, 19 Apr 2022 04:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347046AbiDSIVL (ORCPT
+        with ESMTP id S1349936AbiDSIXV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Apr 2022 04:21:11 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:18:24 PDT
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29CC22B28
-        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 01:18:24 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2022041908172038cf06a992ee55007d
+        Tue, 19 Apr 2022 04:23:21 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 01:20:39 PDT
+Received: from mta-64-227.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BCE2715B
+        for <linux-serial@vger.kernel.org>; Tue, 19 Apr 2022 01:20:39 -0700 (PDT)
+Received: by mta-64-227.flowmailer.net with ESMTPSA id 202204190819367e253aa9ecf08fd8af
         for <linux-serial@vger.kernel.org>;
-        Tue, 19 Apr 2022 10:17:20 +0200
+        Tue, 19 Apr 2022 10:19:36 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=WEBaAnLNU2+Mj++ZJXNOKrBfTV4ItKWCiZtMh+pt86A=;
- b=VAmhMTHeikbWPhYF/T2fJmdlwfV7lIcfC/9mIxB+fTGd9PjMD7enVVfAa4X4jMIFYSrb9+
- H5Bu93fLMJO6TDiXGFeZMSdSh9t3dHpq9y9184Q+h8XAPTKIznMcH3wXLzOUENYm1Vdd34hu
- lbWqXUbxO1W9ESizQPilNZiDOZMZo=;
+ bh=iq3DrAL7P13m16XZiQMLTG/b02/7hkWGyY4ZwOKkH7c=;
+ b=LrukbCnh+CYrJLVbjMgFK3T1i4WGo/1CwQEatFtqf3vGFB6akDmXX0/XUgqwZYCIKNwBCL
+ gl5fZj7cdfLAqXeWC4j16yzxOleaEI4qvGnwwibDO7W6pq09eRUuLOvG1NlmZONbL+vmevfP
+ fsLvDZVlqwPISmqti636BZCZtEGFU=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 16/20] tty: n_gsm: clean up dead code in gsm_queue()
-Date:   Tue, 19 Apr 2022 01:17:13 -0700
-Message-Id: <20220419081713.5813-1-daniel.starke@siemens.com>
-In-Reply-To: <YlkRO6fAPCuWyT1Y@kroah.com>
-References: <YlkRO6fAPCuWyT1Y@kroah.com>
+Subject: [PATCH v2 18/20] tty: n_gsm: clean up implicit CR bit encoding in address field
+Date:   Tue, 19 Apr 2022 01:19:30 -0700
+Message-Id: <20220419081930.5886-1-daniel.starke@siemens.com>
+In-Reply-To: <YlkRvMhDfwgNZptV@kroah.com>
+References: <YlkRvMhDfwgNZptV@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -47,29 +47,33 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Remove commented out code as it is never used and if anyone accidentally
-turned it on, it would be broken.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
+address field within the frame header. It is made up of the DLCI address,
+command/response (CR) bit and EA bit.
+Use the predefined CR value instead of a plain 2 in alignment to the
+remaining code and to make the encoding obvious.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 07d03447cdfd..1b4077006744 100644
+index 9bf5aa508f0e..1beb4b28cd18 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1894,10 +1894,6 @@ static void gsm_queue(struct gsm_mux *gsm)
- 	case UI|PF:
- 	case UIH:
- 	case UIH|PF:
--#if 0
--		if (cr)
--			goto invalid;
--#endif
- 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
- 			gsm_command(gsm, address, DM|PF);
- 			return;
+@@ -751,7 +751,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
+ 
+ 	*--dp = msg->ctrl;
+ 	if (gsm->initiator)
+-		*--dp = (msg->addr << 2) | 2 | EA;
++		*--dp = (msg->addr << 2) | CR | EA;
+ 	else
+ 		*--dp = (msg->addr << 2) | EA;
+ 	*fcs = gsm_fcs_add_block(INIT_FCS, dp , msg->data - dp);
 -- 
 2.25.1
 
