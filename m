@@ -2,122 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A045C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 20:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 341B7C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 21:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382234AbiDTUrr (ORCPT
+        id S1354600AbiDTV31 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 16:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
+        Wed, 20 Apr 2022 17:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382203AbiDTUrc (ORCPT
+        with ESMTP id S1345541AbiDTV31 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 16:47:32 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4CD42ED0;
-        Wed, 20 Apr 2022 13:44:45 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id b7so2892694plh.2;
-        Wed, 20 Apr 2022 13:44:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xImE356a59BZUnW4Cic4JbWC5DVqpMAKjv6nwKPx9DI=;
-        b=OL+QXVJEpjV7Z4HuC//q37HqEuUht5h1CcpKGCCRPAuSYfx2YaqLCPrvEiiO6kkGQk
-         ggnMOq4NmaIE9B/cPhZqsf2wZexOSYOkZPiDlrJdAHQqubU8MJXkS448ovjQVaRnX2e5
-         LgEycZiGsVjUMCg/zKHNyTA3QJf2e1fWo5sPcrVoK5ceeKR5+XlHe/v27vaSfj2kNKZm
-         Lme5O2auyyEXGSeMUH5F9xazkNNEa6Oq/msiVIUxgriDElUFLOTt3BxB9fFZuOIoJPDR
-         AGZh/1BBFqOc7WG1aCYUXuhGLOOD5R0CwNE7wt0mGMLXgsVtmHrbHmdtHto+xpq+O7Qx
-         +r5g==
+        Wed, 20 Apr 2022 17:29:27 -0400
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BF54091F;
+        Wed, 20 Apr 2022 14:26:39 -0700 (PDT)
+Received: by mail-qk1-f182.google.com with SMTP id d19so2261481qko.3;
+        Wed, 20 Apr 2022 14:26:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xImE356a59BZUnW4Cic4JbWC5DVqpMAKjv6nwKPx9DI=;
-        b=7oTS/NFWLqgwlxt+NIUgSjYOxGC1+Iu641FBCkRZGj6s8U7/NFFW5Usz++cDxCl/nm
-         nWHn1CfAnUx9YXTcLXUaL/197bdUasS/JWDSNtyiDvmR/213RtApqGAMBYDIbgdynOfy
-         O1mNmga4nX28c75x4rsQfcKC9T68gpkGxje51+gJwPMD7+ZBJPfzhYS66bUl9E0P3938
-         lS0bUw8XqOc8aQkxob/28PEcoTfEKQhu4sXYj4nRLPK9tJKRpl1Gvm0v65bOO/HoVlat
-         qUvvVQvQbvjCS9/Gj2Qcr2sobe2XQxwMPB/ZoLqwitA7iv9Pr+NQFrO6AgVvVpA0S7Ug
-         rCQg==
-X-Gm-Message-State: AOAM533tiOVRRfHxHStVccgU9/sW6sa9awwCaDegtXontXcQOm4hmT6T
-        JEYmEDytcwiSMBAKVdLTa5o=
-X-Google-Smtp-Source: ABdhPJyBl+Q5YR9vFVRt1kP8/H8gZas/M80UgmaibWxL0BJyPvZZ1qF4/ahkBpyves1PD3Tl2tbTiQ==
-X-Received: by 2002:a17:902:b48a:b0:158:e38d:ca23 with SMTP id y10-20020a170902b48a00b00158e38dca23mr21918715plr.115.1650487484960;
-        Wed, 20 Apr 2022 13:44:44 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:fe4b:9301:599b:d734])
-        by smtp.gmail.com with ESMTPSA id l25-20020a635719000000b0039da6cdf82dsm20914985pgb.83.2022.04.20.13.44.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 13:44:43 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 13:44:40 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
-        jmkrzyszt@gmail.com, Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 15/41] input: omap: void using mach/*.h headers
-Message-ID: <YmBwuBc9UVH6MK+M@google.com>
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-16-arnd@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=67nV4gYgeYp7zHEQCPKbVLqOBEjZ5hlguO4lzvnVvxk=;
+        b=00E6DmLYkUVqer3UxAKtwNNJZE/p+azhWuZx3oO92KHY+DdbNKK5xvKsee5CUoKW4z
+         zs7MrXIjPPRpF6FnhD0sMN2D0yBlQ8L5FXyH6ty7HkaILSSR3jPKrXQCtJQ0Jh86QL4H
+         9lwDqc9PySA0X3R4i0xSJ0L5oGYSI2lsHV+lmkTxp+ZqAkMZ6LLwyyrQda5NDYPZdKLi
+         bum4CiPYZQRV9a5UYEMnHtpOFCcRtw7RmQ+26/ceWzDnNLs/5A1uuZdPUq7v4uinMWEu
+         BwG7eimM/owP69IK19ZrA79VC6j+289+UAaOCfjzASgXTtBtWODqHIFYRiBtshCFSCRr
+         Dyog==
+X-Gm-Message-State: AOAM530jVqsbz1Z7kBtolvrQ7JogUAojVDYaPKUikt2+cJv1IWofmh9F
+        8syDO5ZyL/UqgrzLwlqOqmZpOkUBhb9qnAvN
+X-Google-Smtp-Source: ABdhPJyFLYC9SL2qTm+vkq2sxvNCaPUeNiDvnzIF1KHE1cT/RMma1DFX3Wz7apceWWGHgZGMhyDY8g==
+X-Received: by 2002:a37:de03:0:b0:67e:4c75:9a07 with SMTP id h3-20020a37de03000000b0067e4c759a07mr14270680qkj.121.1650489998639;
+        Wed, 20 Apr 2022 14:26:38 -0700 (PDT)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id y85-20020a376458000000b0069e64801b7dsm2044393qkb.62.2022.04.20.14.26.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 14:26:38 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2eba37104a2so32987507b3.0;
+        Wed, 20 Apr 2022 14:26:37 -0700 (PDT)
+X-Received: by 2002:a81:c703:0:b0:2d0:cc6b:3092 with SMTP id
+ m3-20020a81c703000000b002d0cc6b3092mr22892623ywi.449.1650489997556; Wed, 20
+ Apr 2022 14:26:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220419133723.1394715-16-arnd@kernel.org>
+References: <20220330154024.112270-1-phil.edworthy@renesas.com> <20220330154024.112270-3-phil.edworthy@renesas.com>
+In-Reply-To: <20220330154024.112270-3-phil.edworthy@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 20 Apr 2022 23:26:26 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWaiAZNWmU5itJWJy3fEMmR1hQc7QRWpe6mi3AYkSewgw@mail.gmail.com>
+Message-ID: <CAMuHMdWaiAZNWmU5itJWJy3fEMmR1hQc7QRWpe6mi3AYkSewgw@mail.gmail.com>
+Subject: Re: [PATCH v2 02/13] dt-bindings: serial: renesas,em-uart: Document
+ r9a09g011 bindings
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 03:36:57PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The omap-keypad driver currently relies on including mach/memory.h
-> implicitly, but that won't happen once omap1 is converted to
-> CONFIG_ARCH_MULTIPLATFORM. Include the required header
-> explicitly.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi Phil,
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
+On Wed, Mar 30, 2022 at 5:41 PM Phil Edworthy <phil.edworthy@renesas.com> wrote:
+> The Renesas RZ/V2M (r9a09g011) SoC uses a uart that is compatible with the
+> EMMA Mobile SoC.
+>
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
->  drivers/input/keyboard/omap-keypad.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/input/keyboard/omap-keypad.c b/drivers/input/keyboard/omap-keypad.c
-> index eb3a687796e7..57447d6c9007 100644
-> --- a/drivers/input/keyboard/omap-keypad.c
-> +++ b/drivers/input/keyboard/omap-keypad.c
-> @@ -24,6 +24,7 @@
->  #include <linux/gpio.h>
->  #include <linux/platform_data/gpio-omap.h>
->  #include <linux/platform_data/keypad-omap.h>
-> +#include <linux/soc/ti/omap1-io.h>
->  
->  #undef NEW_BOARD_LEARNING_MODE
->  
-> -- 
-> 2.29.2
-> 
+> v2: Fix dtbs_check by adding missing alternative binding
 
--- 
-Dmitry
+Thanks for your patch, which is now commit 7bb301812b628099
+("dt-bindings: serial: renesas,em-uart: Document r9a09g011
+bindings") in tty/tty-next.
+
+> --- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> @@ -14,7 +14,14 @@ allOf:
+>
+>  properties:
+>    compatible:
+> -    const: renesas,em-uart
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - renesas,r9a09g011-uart    # RZ/V2M
+> +          - const: renesas,em-uart        # generic EMMA Mobile compatible UART
+> +
+> +      - items:
+> +          - const: renesas,em-uart        # generic EMMA Mobile compatible UART
+
+The above looks good to me.
+
+>
+>    reg:
+>      maxItems: 1
+
+However, unlike EMEV2, RZ/V2M defines two clocks: pclk and sclk.
+Hence please update the clocks section to reflect that.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
