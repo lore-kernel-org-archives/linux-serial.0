@@ -2,119 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03D4C4321E
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 20:00:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B01C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 20:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381996AbiDTUDX (ORCPT
+        id S1359237AbiDTUOi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 16:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
+        Wed, 20 Apr 2022 16:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381982AbiDTUDW (ORCPT
+        with ESMTP id S1351344AbiDTUOh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 16:03:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEF73DDEC;
-        Wed, 20 Apr 2022 13:00:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47C1EB82171;
-        Wed, 20 Apr 2022 20:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BCB3C385A0;
-        Wed, 20 Apr 2022 20:00:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650484831;
-        bh=6LaU3F/jCQfZw6zxuK9X0ySvN6qUfHqEJ6lGydnop44=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tTTSInI8F99rxgu1B0qJWLeIul55SHmcfk2XoOQ90GefTf3tYCCewlSGv0XDMfDh7
-         Z0gfO8BUWwpRe7vFNr0stA2fvpU+veeqGj8X4dtAAMP+71o6mJUg/sPSqUxlu+ULuo
-         oT0S6xjq4cbwogY8eYCb+x8No/lm+/RcuSLbCGjk19uugO+JINpbLTFeEWyaEopW/x
-         lweTuMOOUBVuFVg4/k2kXIP8mpZn+WouT6CWBwWGzqmjZqAjIfMK2WcT4xN9+P5OGu
-         53fTbKDiRNLPpY+ZJg9cT17Ibl1y8hQ/1xJAqK44EW7UAoTFJbIP4klfgcYI29A7th
-         eAbyB39usRP9w==
-Received: by mail-wr1-f51.google.com with SMTP id b19so3690567wrh.11;
-        Wed, 20 Apr 2022 13:00:30 -0700 (PDT)
-X-Gm-Message-State: AOAM5317GF9EwsnxWtm6HV5fMbJTWScVhoabz9V7AIKLLwMfVJLU/Wrj
-        o60vR0Z1yucWuBWUQOyIfDbtVdkGrmXb4+/wQmc=
-X-Google-Smtp-Source: ABdhPJwLyvz/ceR9rvvT4XHyqR02gbMMBhrAsRpzGtmhlle4bD/ec4+YXpGg4bc2rqdxlPo8PGopdbH+2zzsbpztAUk=
-X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id
- u5-20020a5d6da5000000b0020a88056988mr15481338wrs.317.1650484829308; Wed, 20
- Apr 2022 13:00:29 -0700 (PDT)
+        Wed, 20 Apr 2022 16:14:37 -0400
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B1A4615B;
+        Wed, 20 Apr 2022 13:11:49 -0700 (PDT)
+Received: by mail-lj1-f179.google.com with SMTP id r18so3271117ljp.0;
+        Wed, 20 Apr 2022 13:11:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kituK6OBdqTi+kxAeHHv4yFs1BiJnSRSgcn1u3Ell74=;
+        b=iiBTwI/x1GL+h0uosviF8NDkpNvDIKwbQie12nqQrfFob9vxSGJzNHzl5YJPCpif4U
+         dTamnNBzcBFi9MQKZ+DCzrBc904Dmw80scj2s2rr5pQ8ruwuOgnWesEgtbH2FUVSPnTO
+         5wcvIljHDLeU2EL7nmqffRp2wyhaKSDpCBUof3qqWYxcakoXttCQAjfwO4Ali58vckyd
+         HAbyaHzQGnNJZQSGNhlRAp5I9aYHNoqSH8vRKOQGw1yflzI77+3xUm4kqdX3iPeovKhF
+         grC6ch6eT93zFGfEVCILGIra51bVqeALCnZpB+vKU17YjeSCR9o+Fr/YhB0tG5ixqTP9
+         BvIg==
+X-Gm-Message-State: AOAM531ZYrJNKUBNArre6MjJynQczBj/t7uE5q869GE93hRYdDplL9Y2
+        O0lkJSW+SsmhvQ2f9mPRmIVHWwY6eylzZKpfgLY=
+X-Google-Smtp-Source: ABdhPJybRBIjDP+5BAIib8bSg9t516qHkD6xvIc7IexyqYv45hzQlZwIieiIhem1fSD/qEfR01uOTg==
+X-Received: by 2002:a2e:9ecb:0:b0:24b:4e2a:a555 with SMTP id h11-20020a2e9ecb000000b0024b4e2aa555mr14496285ljk.149.1650485506839;
+        Wed, 20 Apr 2022 13:11:46 -0700 (PDT)
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
+        by smtp.gmail.com with ESMTPSA id k10-20020a19560a000000b0046d1707fcbdsm1927162lfb.215.2022.04.20.13.11.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 13:11:43 -0700 (PDT)
+Received: by mail-lf1-f51.google.com with SMTP id b21so4963738lfb.5;
+        Wed, 20 Apr 2022 13:11:39 -0700 (PDT)
+X-Received: by 2002:a05:6512:b0e:b0:44a:a5a0:f60e with SMTP id
+ w14-20020a0565120b0e00b0044aa5a0f60emr15727328lfu.669.1650485498400; Wed, 20
+ Apr 2022 13:11:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220419133723.1394715-1-arnd@kernel.org> <20220420170836.GB1947@darkstar.musicnaut.iki.fi>
-In-Reply-To: <20220420170836.GB1947@darkstar.musicnaut.iki.fi>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 20 Apr 2022 22:00:13 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com>
-Message-ID: <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com>
-Subject: Re: [PATCH 00/41] OMAP1 full multiplatform conversion
-To:     Aaro Koskinen <aaro.koskinen@iki.fi>
-Cc:     linux-omap <linux-omap@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        dmaengine@vger.kernel.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
+References: <20220330154024.112270-1-phil.edworthy@renesas.com>
+In-Reply-To: <20220330154024.112270-1-phil.edworthy@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 20 Apr 2022 22:11:24 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
+Message-ID: <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
+Subject: Re: [PATCH v2 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M
+ EVK support
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 7:08 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
-> On Tue, Apr 19, 2022 at 03:36:42PM +0200, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > This is the full series for converting OMAP1 to multiplatform, rebased
-> > from my 2019 attempt to do the same thing. The soc tree contains simpler
-> > patches to do the same for iop32x, ixp4xx, ep93xx and s3c24xx, which
-> > means we are getting closer to completing this for all ARMv5 platforms
-> > (I have patches for PXA, which is the last one remaining).
-> >
-> > Janusz already tested the branch separately and did the missing work
-> > for the common-clk conversion after my previous approach was broken.
+Hi Phil,
+
+On Wed, Mar 30, 2022 at 5:40 PM Phil Edworthy <phil.edworthy@renesas.com> wrote:
+> RZ/V2M has a dual-core Cortex-A53 (1.0 GHz) CPU and built-in AI
+> accelerator "DRP-AI" for vision, which is Renesas' original technology.
+> It also has a 32-bit LPDDR4 interface and video codec (H.264).
 >
-> I tested the full series on the following OMAP1 boards: ams-delta,
-> nokia770, osk, palmte and sx1 (QEMU only).
+> The RZ/V2M is used with ISP firmware that runs on one of the Cortex-A53
+> cores. The firmware is an integral part of the SoC such that the HW
+> User's Manual documents which of the peripheral modules are used by the
+> firmware.
 >
-> Apart from the earlyprintk breakage, everything seemed to work OK.
+> Initial patches enables minimal peripherals on Renesas RZ/V2M EVK board
+> and booted via nfs. Ethernet is broadly compatible with the
+> etheravb-rcar-gen3 driver, but interrupts need some work so it's not
+> been included in this patch set.
+>
+> Below blocks are enabled on Renesas RZ/V2M EVK board:
+> - memory
+> - External input clock
+> - CPG
+> - UART
 
-Nice, thanks a lot for testing!
+Thanks for your series!
 
-> A minor note, zImage grows about 50 KB with a minimal kernel config. This
-> is not yet critical, there's still about 7% headroom on 770 to the 2 MB
-> bootloader limit on my setup. Also the decompression time is approaching
-> the hardcoded watchdog timeout...
+> v2:
+>  * Removed SYS dt-bindings patch and corresponding SoC identification
+>    as we only used the LSI version register. This can be dealt with
+>    later on.
 
-I suspect that most of this is for the added devicetree code, and some
-more for the common-clk layer. For the omap1_defconfig, there is some
-hope to get part of the overhead back eventually by replacing board files
-with dts descriptions that are not part of the zImage itself, but it's unlikely
-to ever get smaller than it was.
+That patch[1] also introduced the ARCH_R9A09G011 config symbol,
+without which none of the new code in this series is built.
 
-       Arnd
+[1] [PATCH 07/14] soc: renesas: Identify RZ/V2M SoC
+    https://lore.kernel.org/all/20220321154232.56315-8-phil.edworthy@renesas.com/
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
