@@ -2,88 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE0DC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 08:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009C2C43217
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 09:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347487AbiDTI7X (ORCPT
+        id S1377175AbiDTJ1H (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
+        Wed, 20 Apr 2022 05:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245207AbiDTI7X (ORCPT
+        with ESMTP id S1377174AbiDTJ06 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:59:23 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF42275DA;
-        Wed, 20 Apr 2022 01:56:36 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B290DFF804;
-        Wed, 20 Apr 2022 08:56:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650444995;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=A1ZpvVc669OINgmzFOMlVE6ZA5AVyFUQk0My2ZDMmao=;
-        b=EeJ8/SAi7ylcGglnORja3R9O5D99b4qs+V4Piv/rIdbpwsgGKZw6SjuJwsdkL4DJTEvOwB
-        2Xt5yh3K2ePGHqdPc8hch1HfvlNqlnH05ld+CKdeiFBGFZRtmu1EurhyPffO8Qvb4EYE9j
-        XsS5wWd+BBYT4du38gJBRIkSJgwqgPfpLWq4K1AwcZ9qH8F1hOawj8kDuU8ji6bELaEvUX
-        MYtWdSDdmbZnXjGsXJ7hOfW3ebNswmYbjpgd9Bwh7DwJ3OE9wK/GDWZO0Xc+VMDRh3nD0e
-        tNqO9y/2dopKHkjxfKfaIwUBzgPGX0QJ3SM/cUHYhaCqVwQYY9m3UYovu9rVZg==
-Date:   Wed, 20 Apr 2022 10:56:31 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v5 00/11] serial: 8250: dw: RZN1 DMA support
-Message-ID: <20220420105631.2bff51c6@xps13>
-In-Reply-To: <Ylk8pXKgM3LN1rVS@kroah.com>
-References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
-        <Ylk8pXKgM3LN1rVS@kroah.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 20 Apr 2022 05:26:58 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD283B039;
+        Wed, 20 Apr 2022 02:24:12 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id w1so1749960lfa.4;
+        Wed, 20 Apr 2022 02:24:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=u55Ek4ovTu93jGC6owGr6QZtrHl98TBOqnvlwoTCUt0=;
+        b=VCx/HeNdAIrVvK22LWtPVkq9Bv1IKELkDsHc9ZDCJpEzPZXiUk1L12Dy+mMZouB4Kb
+         Sm5gqeWiHiAo7O1rqL4fR/FRWrLwV1sxcNCEE/ser/ng6KnPEXuXeI6mJT4hEuhbpkyR
+         CnEwq7dF8XjnevURjfPXlQSPsthUbrMgXmTx0ftPiqNOdHSrKFkOiwbXMIgL4L8pif1x
+         S2OC7crPo4slcyULVJrhskiIc37n3wR0KWOXQ2sj5i0hsb8hGWYGa7c9kFuF9uQx1Lrd
+         PnwrnrwZvh2dBVEvqkQHhB/xuL6v+vJ4eVgGVRgIh8ublrifvFa02qV7bdCp+CMifVZv
+         cETg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=u55Ek4ovTu93jGC6owGr6QZtrHl98TBOqnvlwoTCUt0=;
+        b=55Zz5VXfyuyO9tEV2yEjN8Ldm9TK+io3F/MI5EJqGc/HQ3mH8rXju020y4VXUolXIW
+         bwOoTjeDuH2JlairDwziZgu+vYQvmRPH/kEwoqdiZnNazOyuxEOfph2YCBCvU6+6nzP8
+         3Eq4c6ZMMe7x1040quAHf2M7bz++V5VU+YO8ZycDlz0NIQJfidDzQiWYmxlmQMu7JFhH
+         LISM9zxiezlh5A/wYrjslqwk/J94zCB9qSYkeKsIAAus+7Z80wdpk71wbd6ZviFTUbd3
+         QtVf2T9AYjbwz2QNTW29xs+RR72sBgXZxr5xrEnD/zDw3AyTe0scJ4ODCLTSypD3wFoe
+         ZMXQ==
+X-Gm-Message-State: AOAM533CBkLY+YR3ZKlRpB/NBnnDAvN9wpGQyeRXL0Kuyo1BrncCldyr
+        B24iMJH+xrswkBbCL9WgEF8=
+X-Google-Smtp-Source: ABdhPJwBIjGhPQR/MG3suNBpw+sG1uqlbM+4wIOJy5ZknDOvMCYopGuZbVrLmdXv8OTjIhB4lEs0Kw==
+X-Received: by 2002:a05:6512:168d:b0:471:6cb9:c20f with SMTP id bu13-20020a056512168d00b004716cb9c20fmr11611107lfb.229.1650446651069;
+        Wed, 20 Apr 2022 02:24:11 -0700 (PDT)
+Received: from [192.168.1.103] ([178.176.74.70])
+        by smtp.gmail.com with ESMTPSA id d11-20020a19384b000000b0046bbd144dfesm1760268lfj.125.2022.04.20.02.24.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 02:24:10 -0700 (PDT)
+Subject: Re: [PATCH 01/41] video: fbdev: omapfb: lcd_ams_delta: fix unused
+ variable warning
+To:     Arnd Bergmann <arnd@kernel.org>, linux-omap@vger.kernel.org,
+        tony@atomide.com, aaro.koskinen@iki.fi, jmkrzyszt@gmail.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+References: <20220419133723.1394715-1-arnd@kernel.org>
+ <20220419133723.1394715-2-arnd@kernel.org>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
+Date:   Wed, 20 Apr 2022 12:24:08 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220419133723.1394715-2-arnd@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+Hello!
 
-gregkh@linuxfoundation.org wrote on Fri, 15 Apr 2022 11:36:37 +0200:
+On 4/19/22 4:36 PM, Arnd Bergmann wrote:
 
-> On Wed, Apr 13, 2022 at 09:51:30AM +0200, Miquel Raynal wrote:
-> > Hello,
-> >=20
-> > Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
-> > UART driver with to bring DMA support for this SoC.
-> >=20
-> > This short series applies on top of the series bringing RZN1 DMA
-> > support, currently on its v10, see [1]. Technically speaking, only the =
-DT
-> > patch needs to be applied after [1]. The other patches can come in at
-> > any moment, because if no "dmas" property is provided in the DT, DMA
-> > support will simply be ignored.
-> >=20
-> > [1] https://lore.kernel.org/dmaengine/20220412193936.63355-1-miquel.ray=
-nal@bootlin.com/T/#t =20
->=20
-> Can you rebase on my tty-next branch please?  This series does not apply
-> anymore.
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> A recent cleanup patch removed the only reference to a local variable
+> in some configurations.
+> 
+> Move the variable into the one block it is still used in, inside
+> of an #ifdef, to avoid this warning.
+> 
+> Fixes: 9d773f103b89 ("video: fbdev: omapfb: lcd_ams_delta: Make use of the helper function dev_err_probe()")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/video/fbdev/omap/lcd_ams_delta.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/video/fbdev/omap/lcd_ams_delta.c b/drivers/video/fbdev/omap/lcd_ams_delta.c
+> index bbf871f9d862..01944ce46aa1 100644
+> --- a/drivers/video/fbdev/omap/lcd_ams_delta.c
+> +++ b/drivers/video/fbdev/omap/lcd_ams_delta.c
+[...]
+> @@ -145,7 +144,7 @@ static int ams_delta_panel_probe(struct platform_device *pdev)
+>  						&ams_delta_lcd_ops);
+>  
+>  	if (IS_ERR(lcd_device)) {
+> -		ret = PTR_ERR(lcd_device);
+> +		int ret = PTR_ERR(lcd_device);
 
-Yes of course.
+   How about inserting an empty line after declaration?
 
-Thanks,
-Miqu=C3=A8l
+>  		dev_err(&pdev->dev, "failed to register device\n");
+>  		return ret;
+>  	}
+
+MBR, Sergey
