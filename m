@@ -2,196 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E735BC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 20:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A045C4332F
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 20:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382109AbiDTUbe (ORCPT
+        id S1382234AbiDTUrr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 16:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
+        Wed, 20 Apr 2022 16:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353413AbiDTUbd (ORCPT
+        with ESMTP id S1382203AbiDTUrc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 16:31:33 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2116.outbound.protection.outlook.com [40.107.113.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8423B28C;
-        Wed, 20 Apr 2022 13:28:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a2ZZdKMhDu4ghBURY9nYWFI6hRu0qvS38FK6+oPaROLMKtJj6mEp6KrC6uTGb+WhHbmF86clzkg+xeU3/KuxSpBRucnwgAO2SgKVh1gwbudLMRByD14POu9mMmRZpTsOf3qGqiKYmSenbT0FWKVCRGbINWxSP1sjxsjnYLsgDnKP7roM4Anvt6dd0BzSN2gNUZJoktCuvLeZ0JINi8ogd9SLaCHbk3OfVqkwvlmZV/NmKdxyCeYv4nnVamPAnHNethFmulhdWXZ0dd9XsZ8heuLBapxjZlyPnjHgNpOKE+j/m9ozb2m/yze4thqXnmBCF0ySbQhNz155IHTyKm72jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cXyQo7GyVuVo5GkVjtumelgHfr7tlmu/0WqgA0y1nz4=;
- b=kYTVBd8TEaIvDs9fTmJOndwHiR9sDeixb++CGC6k35K6sp9lgboVVGxD1i8LyGrb6JGpVTISnnUyT/y/LdRZav03bARqljc58e8LujaZvtt1BJCSdV86sPDl02BRUQGgudpxtRVTM4dUs/OyHh0YfV/gzVmSB4b8T1YPuxxzdV8w2XOLdl5VICVbxjiqs8wZL9S3krRDawb1cCypeIatM81TsZ5x1j5NxCwxlYYG23FjtQU/xwgDyYE9QRP09mISm3p3IRNwAZwiVg1a+ifB6UYwNkESkOfXMCKv7yin6q6CWQUfA/mxH9HksXDBitHr6j/cFVUMMoiQ74IjShzJcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cXyQo7GyVuVo5GkVjtumelgHfr7tlmu/0WqgA0y1nz4=;
- b=UwmoFKsJ2jX8IZ/+K1XSmQYknCm6PtBPff4bNzjnDrZef9LrVD/fPymdZo/1NXfXNCHLDxQ/0z6dbM1fxfKImIvQdJUOm92siQQVZmR6gwYnd0IwrW0hKFWS2+1zOLwM120SyVsqT6yeOe0PwiXpNOtBRQTR0yf61ruxt5VG6Ok=
-Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com (2603:1096:400:de::11)
- by TYCPR01MB6640.jpnprd01.prod.outlook.com (2603:1096:400:9d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
- 2022 20:28:42 +0000
-Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com
- ([fe80::7120:d44f:518:6daa]) by TYYPR01MB7086.jpnprd01.prod.outlook.com
- ([fe80::7120:d44f:518:6daa%8]) with mapi id 15.20.5164.025; Wed, 20 Apr 2022
- 20:28:41 +0000
-From:   Phil Edworthy <phil.edworthy@renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M
- EVK support
-Thread-Topic: [PATCH v2 00/14] Add new Renesas RZ/V2M SoC and Renesas RZ/V2M
- EVK support
-Thread-Index: AQHYREx+KCdmySc6EUmO5txhFJSXa6z5XQUAgAACc9A=
-Date:   Wed, 20 Apr 2022 20:28:41 +0000
-Message-ID: <TYYPR01MB70863D0C83AA776A2E48C58FF5F59@TYYPR01MB7086.jpnprd01.prod.outlook.com>
-References: <20220330154024.112270-1-phil.edworthy@renesas.com>
- <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
-In-Reply-To: <CAMuHMdVV=PBfboHUk-wi1coAy7rcpDngKGSTqDWh-5vnSc91pg@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a9aeb63f-5247-4337-4f96-08da230c5bb8
-x-ms-traffictypediagnostic: TYCPR01MB6640:EE_
-x-microsoft-antispam-prvs: <TYCPR01MB66404C861C820578FB177D10F5F59@TYCPR01MB6640.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: C4VhqE8CPZid1V5BBPwrU5dFYIrALBdgoDW7Z3LYSMzbOJM+Owr175sbZjJkds+WQIuHURMc3v4WeK4Ng8FAXkXW6rBxVtfJNCPUwAXm04D6utURUr0Z+ITStAlxpeGPWEOdW8L4iaAhy3RYqg6bfQFO65i1jgs+Ht2TWH8xc+Pr6hdtEl8akGEI39tFj7Wq+nXiI+UUsXE/u51R0Hfqn1m0axdZvO9SYl9O2ETzsMgSWWPtJtpspdwcNesH9ElQ4erf94s7M0Mh4V9jHf6nR5Z6wtCXSx6kJEjGEzK9e0ivKC8kcDX9jJYH2yze6v6ZiXzsBvBGFVM275eTkMgUvJR0Gdz+fdTrQMGUL1PNI9RvkFw2W49VgsNqrlfBTLX2S0KuywdyISIz5ri/VWmUSKpaqZMu6Oz7Tthd41Zd+BtYmdqguU+ifhjEOpmK7zD/FOPsEc2tAFqbz19UWKabxrDEezpfb4tYiXj2ZePx1KeVTrErMMqMu5HYSJ658njWG+sPv5yzmfMO+0REesBhVUKH6vqdibIdfuCe7Fv/Yrc0jMFvY8stham+QjTUIzCJ3Kr6efFpVSxSSHDzIU+Iwx3gbLHJ/C7u56di7iLpXwxyC1RcZJ9cAWrCzml9mFkrbJ89vbYr9wwHcqniHjXm+5WGG+K43qt9QOjX96apMlIQ1B0nLshJg6j4p1nAgM/uHVEW4YOP+4Zix1G3CI6LwE/zKjSeR/ZsHgXJzitLroNT1v/FhFgmGh/FD317v7lpkSNONqjdClj9ek0C6RR1FZ0yG8jkdU6dFpsBsYGx+PQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB7086.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52536014)(6506007)(53546011)(8936002)(9686003)(5660300002)(66946007)(7416002)(64756008)(76116006)(8676002)(54906003)(186003)(66556008)(66476007)(55016003)(26005)(86362001)(4326008)(66446008)(316002)(6916009)(33656002)(508600001)(71200400001)(2906002)(44832011)(38070700005)(966005)(38100700002)(7696005)(122000001)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?agtsnkUy0NBTVgAZWxG4mk2B/oGNm/bqpd0HeMJ2ilOBajHC3OxU7kQcx/t4?=
- =?us-ascii?Q?RKYtUzap9KXEMDg37TltnnIHzMqc0XKvi95WFaBK32hjfHpjtquF+JganEjx?=
- =?us-ascii?Q?xv0wclRahaQ1TuGQelQ4tNjxNACB+OAv47YW1n7SbQkobhb9e6gPGQVIpZ1Y?=
- =?us-ascii?Q?keeUfNU4gQcJITLkKn3/OPIGiNWdg4FOJUR4bzwtWoCkebUjTD5ZRC6Ylm0v?=
- =?us-ascii?Q?6oZFxY4rAQ/HUzaT9gRxS8gf14rw/A80VVFLFlebJEGAydRmI7ckkh/sE0NF?=
- =?us-ascii?Q?N/650vey1GgpBs4KEZ00B0DLmSrhlZBlsXosUxry8EBRYSU6SdSpwnBXX3rF?=
- =?us-ascii?Q?41fDx2UIgxEJ0wUWS2xC/AkRuuCP1rRcuCs+rbFx76iRLkuJ+G10pFUFJOnD?=
- =?us-ascii?Q?Nx0QpQKbx/iwDlGXYpuJZBGgl+ZykInzT853mJncRX8Q1EKlwHM2sr5UkBoo?=
- =?us-ascii?Q?clsiVRn8qzFSmdG0fBl4eFq+w7iWDLNI8cN1AxZzO7waJsGxfK3eu5ymFmMo?=
- =?us-ascii?Q?ugJuaWHvaUdNPb26dFRkEH9YPi4NYNRRNk1xHFhWgwYzz96c1RNCFvh91Gc7?=
- =?us-ascii?Q?jukDwHohIH+E3KnD/FcnTyQF9IOt444SZV4vWu2fX64+8bnPk6F1br+E8cDN?=
- =?us-ascii?Q?2ecro+xjd6JoxtOoov6HVQ5mFU6LOQzg40KYjuOX7zFDO/Smsw5zgQESrNi8?=
- =?us-ascii?Q?6JNcZUBTuTHvJ80aFSMyfDcHznCTh0g0GMGBZ/CplOOse6R+tL+hqi4/8UQm?=
- =?us-ascii?Q?FwfOSxR2c4/fEYY+bOhzciFUIqInudHxW3yGBmESXXmCIhS0duAbrbAtk9AD?=
- =?us-ascii?Q?XX0csScoMYCmxSJrDp/pi93WD/j5qWEvj4ehkqMGyUxSdtVgAHe7z7cjuCsf?=
- =?us-ascii?Q?5fCZA0/uFTketu8j8NOIQC/ubHDVt/mCB6JMew9zatVuEn6PCl7xglx4Xnqb?=
- =?us-ascii?Q?XhVuO/TRdXmgSRG7OFmcvBJXROEeAD51wmjrB4mMH09cnrB7MLRwNAZjdd+l?=
- =?us-ascii?Q?nb3MTH4oCWsvlt0YnuuHOxGtjRwHPCXhIhv5W/Sm4+uoJnz/bNALiznP71mo?=
- =?us-ascii?Q?UDSRGekrCHTz+QxWmWXB7vudMnZ1liXVL4sUrC41LlmG1kiufwKmY1tquY7Y?=
- =?us-ascii?Q?KyFADKjK+31jQYoqlMzz2NVxKTh0UVIo7UaAUuf/UUnoDxeSOKJLwy1w+Tyf?=
- =?us-ascii?Q?4rA0+rzApZtmIZF8175xSjI3mruo54jXY5KDey8AY5laI8I9nZ+YHAXePSPY?=
- =?us-ascii?Q?D7oASrCp6Grc0K6EEM3EPx1pO/BzME4Reanr1UgAhhH05tzXnRZuBIfMKjG/?=
- =?us-ascii?Q?W2yt/QGDNjlbKeBezDUGn2TnsylvpIYvrftIhiPM6WPzXuHcR2bWOZ+VNqW7?=
- =?us-ascii?Q?d78n2Ib819TCxHqLjQHZT8xdQ2WTstfYPjJ5bCdyGSgKzKOR/w31T24pwrIs?=
- =?us-ascii?Q?Y3DN0SVn8G3sXj1b9NWCjxRtDOvE1MpeoScqxdnMEnJUKoK2EV+56HzIdrzd?=
- =?us-ascii?Q?SBXrPnw+k4mOal9i109e5lIhu4MX30dpkHlqxDF2GMBEYe3oODgCkhPf6aNS?=
- =?us-ascii?Q?jzQf24a8WRQVXGmHP5SkkVL3tCE/xAwpUNeoQgc0U74x9g5UxgCAL4PkFrrU?=
- =?us-ascii?Q?hUnSYqLIYbmNciWAtr/1Lgp56jdE+kEndemvK4nmYuMmhl28cXJszhvXvFOh?=
- =?us-ascii?Q?vFcloK36quwsMbmLNtDuzpD59nI+GrQCVG9eTjVM9PdzVCiroBeKqQmZsdXw?=
- =?us-ascii?Q?uUirV0fmdyS5d+C2DcYTkGK3JB+zbzM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 20 Apr 2022 16:47:32 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4CD42ED0;
+        Wed, 20 Apr 2022 13:44:45 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id b7so2892694plh.2;
+        Wed, 20 Apr 2022 13:44:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xImE356a59BZUnW4Cic4JbWC5DVqpMAKjv6nwKPx9DI=;
+        b=OL+QXVJEpjV7Z4HuC//q37HqEuUht5h1CcpKGCCRPAuSYfx2YaqLCPrvEiiO6kkGQk
+         ggnMOq4NmaIE9B/cPhZqsf2wZexOSYOkZPiDlrJdAHQqubU8MJXkS448ovjQVaRnX2e5
+         LgEycZiGsVjUMCg/zKHNyTA3QJf2e1fWo5sPcrVoK5ceeKR5+XlHe/v27vaSfj2kNKZm
+         Lme5O2auyyEXGSeMUH5F9xazkNNEa6Oq/msiVIUxgriDElUFLOTt3BxB9fFZuOIoJPDR
+         AGZh/1BBFqOc7WG1aCYUXuhGLOOD5R0CwNE7wt0mGMLXgsVtmHrbHmdtHto+xpq+O7Qx
+         +r5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xImE356a59BZUnW4Cic4JbWC5DVqpMAKjv6nwKPx9DI=;
+        b=7oTS/NFWLqgwlxt+NIUgSjYOxGC1+Iu641FBCkRZGj6s8U7/NFFW5Usz++cDxCl/nm
+         nWHn1CfAnUx9YXTcLXUaL/197bdUasS/JWDSNtyiDvmR/213RtApqGAMBYDIbgdynOfy
+         O1mNmga4nX28c75x4rsQfcKC9T68gpkGxje51+gJwPMD7+ZBJPfzhYS66bUl9E0P3938
+         lS0bUw8XqOc8aQkxob/28PEcoTfEKQhu4sXYj4nRLPK9tJKRpl1Gvm0v65bOO/HoVlat
+         qUvvVQvQbvjCS9/Gj2Qcr2sobe2XQxwMPB/ZoLqwitA7iv9Pr+NQFrO6AgVvVpA0S7Ug
+         rCQg==
+X-Gm-Message-State: AOAM533tiOVRRfHxHStVccgU9/sW6sa9awwCaDegtXontXcQOm4hmT6T
+        JEYmEDytcwiSMBAKVdLTa5o=
+X-Google-Smtp-Source: ABdhPJyBl+Q5YR9vFVRt1kP8/H8gZas/M80UgmaibWxL0BJyPvZZ1qF4/ahkBpyves1PD3Tl2tbTiQ==
+X-Received: by 2002:a17:902:b48a:b0:158:e38d:ca23 with SMTP id y10-20020a170902b48a00b00158e38dca23mr21918715plr.115.1650487484960;
+        Wed, 20 Apr 2022 13:44:44 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:fe4b:9301:599b:d734])
+        by smtp.gmail.com with ESMTPSA id l25-20020a635719000000b0039da6cdf82dsm20914985pgb.83.2022.04.20.13.44.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 13:44:43 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 13:44:40 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-omap@vger.kernel.org, tony@atomide.com, aaro.koskinen@iki.fi,
+        jmkrzyszt@gmail.com, Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 15/41] input: omap: void using mach/*.h headers
+Message-ID: <YmBwuBc9UVH6MK+M@google.com>
+References: <20220419133723.1394715-1-arnd@kernel.org>
+ <20220419133723.1394715-16-arnd@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB7086.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9aeb63f-5247-4337-4f96-08da230c5bb8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2022 20:28:41.0950
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rsmt+w0IQ0OatMlg1/9RCbgN/P5k1LTKsQSgRdddCTTwgd+VU3orwbqd3HKjKSthd2bzxZwOx76im/EusANu3hFJ/SqRib7zaMvkve4/H2s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6640
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220419133723.1394715-16-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+On Tue, Apr 19, 2022 at 03:36:57PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The omap-keypad driver currently relies on including mach/memory.h
+> implicitly, but that won't happen once omap1 is converted to
+> CONFIG_ARCH_MULTIPLATFORM. Include the required header
+> explicitly.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-On 20 April 2022 21:11 Geert Uytterhoeven wrote:
-> Hi Phil,
->=20
-> On Wed, Mar 30, 2022 at 5:40 PM Phil Edworthy <phil.edworthy@renesas.com>
-> wrote:
-> > RZ/V2M has a dual-core Cortex-A53 (1.0 GHz) CPU and built-in AI
-> > accelerator "DRP-AI" for vision, which is Renesas' original technology.
-> > It also has a 32-bit LPDDR4 interface and video codec (H.264).
-> >
-> > The RZ/V2M is used with ISP firmware that runs on one of the Cortex-A53
-> > cores. The firmware is an integral part of the SoC such that the HW
-> > User's Manual documents which of the peripheral modules are used by the
-> > firmware.
-> >
-> > Initial patches enables minimal peripherals on Renesas RZ/V2M EVK board
-> > and booted via nfs. Ethernet is broadly compatible with the
-> > etheravb-rcar-gen3 driver, but interrupts need some work so it's not
-> > been included in this patch set.
-> >
-> > Below blocks are enabled on Renesas RZ/V2M EVK board:
-> > - memory
-> > - External input clock
-> > - CPG
-> > - UART
->=20
-> Thanks for your series!
->=20
-> > v2:
-> >  * Removed SYS dt-bindings patch and corresponding SoC identification
-> >    as we only used the LSI version register. This can be dealt with
-> >    later on.
->=20
-> That patch[1] also introduced the ARCH_R9A09G011 config symbol,
-> without which none of the new code in this series is built.
->=20
-> [1] [PATCH 07/14] soc: renesas: Identify RZ/V2M SoC
->=20
-> https://lore.kernel.org/all/20220321154232.56315-8-phil.edworthy@renesas.=
-com/
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Ah, right. I should have said that I replaced that patch with
-"[PATCH v2 06/13] soc: renesas: Add RZ/V2M (R9A09G011) config option".
-However, looking back I managed to send that patch only to myself.
-Doh!
+> ---
+>  drivers/input/keyboard/omap-keypad.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/input/keyboard/omap-keypad.c b/drivers/input/keyboard/omap-keypad.c
+> index eb3a687796e7..57447d6c9007 100644
+> --- a/drivers/input/keyboard/omap-keypad.c
+> +++ b/drivers/input/keyboard/omap-keypad.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/gpio.h>
+>  #include <linux/platform_data/gpio-omap.h>
+>  #include <linux/platform_data/keypad-omap.h>
+> +#include <linux/soc/ti/omap1-io.h>
+>  
+>  #undef NEW_BOARD_LEARNING_MODE
+>  
+> -- 
+> 2.29.2
+> 
 
-Thanks
-Phil
-
-
-> Gr{oetje,eeting}s,
->=20
->                         Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-
-> m68k.org
->=20
-> In personal conversations with technical people, I call myself a hacker.
-> But
-> when I'm talking to journalists I just say "programmer" or something like
-> that.
->                                 -- Linus Torvalds
+-- 
+Dmitry
