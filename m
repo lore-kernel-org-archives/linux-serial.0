@@ -2,94 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E8EC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 08:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B95EC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 08:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376677AbiDTIYK (ORCPT
+        id S1376861AbiDTIpq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46042 "EHLO
+        Wed, 20 Apr 2022 04:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376663AbiDTIYJ (ORCPT
+        with ESMTP id S1376845AbiDTIpo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:24:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9247C13F05;
-        Wed, 20 Apr 2022 01:21:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58359B81CB4;
-        Wed, 20 Apr 2022 08:21:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E14EAC385A1;
-        Wed, 20 Apr 2022 08:21:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650442881;
-        bh=u8SZ/a+B7UJguE8WBusnwHUdTmjx9uZdPU3aWgqI+Ss=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NFy2wCBYmcXIdYstgzEqEKvJ3ppygRUCT6qJdKv4A+wZ7MKPFzBALai/DyMKCQ/OW
-         VnYpxacJEKEeFwyNGsoQijwtd5iRL9pg6ekH/VhMBTDnLoMUgAfWgEi4yKlbsumhTV
-         E1nIWiIeKNdH1Z4EupA9NzeNvyIS5CC2eWXjwyXN9gdtj2VN0aUrrITP9XOAQFE62H
-         ufxshvDB9p0JzsLhbtihWNYvJEsqNNRa+JFwJa3kD7Ikt4Orf5k1EXunTzhtCIFmgt
-         U+KnlFrwu56SEHXH8r5dyYB6K9GN+zO8+2lSxr9kYmyb0KlqXJowMusYApMwKcufoQ
-         jBvZug+PoNq0A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nh5aM-0006no-7R; Wed, 20 Apr 2022 10:21:14 +0200
-Date:   Wed, 20 Apr 2022 10:21:14 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     robh@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] tty: serdev: using pm_runtime_resume_and_get instead of
- pm_runtime_get_sync
-Message-ID: <Yl/CenHPSSXZVWbJ@hovoldconsulting.com>
-References: <20220418110635.2559391-1-chi.minghao@zte.com.cn>
+        Wed, 20 Apr 2022 04:45:44 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 810E43B2A7;
+        Wed, 20 Apr 2022 01:42:58 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,275,1643641200"; 
+   d="scan'208";a="118557982"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 20 Apr 2022 17:42:57 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id B120840062B6;
+        Wed, 20 Apr 2022 17:42:57 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org
+Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH 00/15] treewide: Initial support for R-Car V4H
+Date:   Wed, 20 Apr 2022 17:42:40 +0900
+Message-Id: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418110635.2559391-1-chi.minghao@zte.com.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 11:06:35AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  drivers/tty/serdev/core.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 0180e1e4e75d..e550ad3e7f2b 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -156,11 +156,9 @@ int serdev_device_open(struct serdev_device *serdev)
->  	if (ret)
->  		return ret;
->  
-> -	ret = pm_runtime_get_sync(&ctrl->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(&ctrl->dev);
-> +	ret = pm_runtime_resume_and_get(&ctrl->dev);
-> +	if (ret < 0)
->  		goto err_close;
-> -	}
+This patch series adds initial support for the Renesas R-Car V4H
+(r8a779g0) SoC.
 
-As the author of this piece of the code, I prefer using the traditional
-API consistently rather than mixing in the new helper that uses a
-different naming scheme.
+Yoshihiro Shimoda (15):
+  dt-bindings: arm: renesas: Document R-Car V4H SoC DT bindings
+  dt-bindings: arm: renesas: Document Renesas White Hawk boards
+  dt-bindings: reset: renesas,rst: Document r8a779g0 reset module
+  dt-bindings: power: renesas,rcar-sysc: Document r8a779g0 SYSC bindings
+  dt-bindings: power: Add r8a779g0 SYSC power domain definitions
+  dt-bindings: clock: renesas,cpg-mssr: Document r8a779g0
+  dt-bindings: clock: Add r8a779g0 CPG Core Clock Definitions
+  dt-bindings: serial: renesas,hscif: Document r8a779g0 bindings
+  soc: renesas: r8a779g0-sysc: Add r8a779g0 support
+  soc: renesas: Identify R-Car V4H
+  soc: renesas: rcar-rst: Add support for R-Car V4H
+  clk: renesas: rcar-gen4: Add CLK_TYPE_GEN4_PLL4
+  clk: renesas: cpg-mssr: Add support for R-Car V4H
+  arm64: dts: renesas: Add Renesas R8A779G0 SoC support
+  arm64: dts: renesas: Add Renesas White Hawk boards support
 
-No need to change this.
+ .../devicetree/bindings/arm/renesas.yaml      |  12 +
+ .../bindings/clock/renesas,cpg-mssr.yaml      |   1 +
+ .../bindings/power/renesas,rcar-sysc.yaml     |   1 +
+ .../bindings/reset/renesas,rst.yaml           |   1 +
+ .../bindings/serial/renesas,hscif.yaml        |   6 +
+ arch/arm64/boot/dts/renesas/Makefile          |   2 +
+ .../dts/renesas/r8a779g0-white-hawk-cpu.dtsi  |  45 ++++
+ .../boot/dts/renesas/r8a779g0-white-hawk.dts  |  22 ++
+ arch/arm64/boot/dts/renesas/r8a779g0.dtsi     | 122 ++++++++++
+ drivers/clk/renesas/Kconfig                   |   5 +
+ drivers/clk/renesas/Makefile                  |   1 +
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c       |  18 +-
+ drivers/clk/renesas/r8a779g0-cpg-mssr.c       | 215 ++++++++++++++++++
+ drivers/clk/renesas/rcar-gen4-cpg.c           |   5 +
+ drivers/clk/renesas/rcar-gen4-cpg.h           |   3 +
+ drivers/clk/renesas/renesas-cpg-mssr.c        |   6 +
+ drivers/clk/renesas/renesas-cpg-mssr.h        |   1 +
+ drivers/soc/renesas/Kconfig                   |  11 +
+ drivers/soc/renesas/Makefile                  |   1 +
+ drivers/soc/renesas/r8a779g0-sysc.c           |  62 +++++
+ drivers/soc/renesas/rcar-gen4-sysc.c          |   3 +
+ drivers/soc/renesas/rcar-gen4-sysc.h          |   1 +
+ drivers/soc/renesas/rcar-rst.c                |   1 +
+ drivers/soc/renesas/renesas-soc.c             |   8 +
+ include/dt-bindings/clock/r8a779g0-cpg-mssr.h |  87 +++++++
+ include/dt-bindings/power/r8a779g0-sysc.h     |  45 ++++
+ 26 files changed, 676 insertions(+), 9 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/r8a779g0-white-hawk-cpu.dtsi
+ create mode 100644 arch/arm64/boot/dts/renesas/r8a779g0-white-hawk.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/r8a779g0.dtsi
+ create mode 100644 drivers/clk/renesas/r8a779g0-cpg-mssr.c
+ create mode 100644 drivers/soc/renesas/r8a779g0-sysc.c
+ create mode 100644 include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+ create mode 100644 include/dt-bindings/power/r8a779g0-sysc.h
 
->  
->  	return 0;
+-- 
+2.25.1
 
-Johan
