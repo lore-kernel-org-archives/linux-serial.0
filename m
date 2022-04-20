@@ -2,86 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F03AC433FE
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 10:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054EBC4167B
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 11:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377536AbiDTKR6 (ORCPT
+        id S1378164AbiDTLfW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 06:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        Wed, 20 Apr 2022 07:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377538AbiDTKR5 (ORCPT
+        with ESMTP id S1378151AbiDTLfU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 06:17:57 -0400
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 20 Apr 2022 03:15:09 PDT
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC999640A
-        for <linux-serial@vger.kernel.org>; Wed, 20 Apr 2022 03:15:06 -0700 (PDT)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202204201014012feddb9c30d5f6d413
-        for <linux-serial@vger.kernel.org>;
-        Wed, 20 Apr 2022 12:14:02 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=ieRvSfzJc1NYOPDOUJRBMLhqaqAbjJNtd7H/SPVP6kA=;
- b=b36bfNTEUoDGWRCe8XvZHCKF3BmqBw4CWRSROYtGu6t/wgOSNn2tuLlgoF8rCNwwPiGKhW
- ckWXh+DPSRN0N6BMX74XspxmbVWv8vtQ/uWqdywlsx3HyafsUza/MRaGeIoTq48xmvMjnPxG
- e70bXuT4Y51dttt0mJvUwIGW/Za9Y=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 3/3] tty: n_gsm: clean up implicit CR bit encoding in address field
-Date:   Wed, 20 Apr 2022 03:13:46 -0700
-Message-Id: <20220420101346.3315-3-daniel.starke@siemens.com>
-In-Reply-To: <20220420101346.3315-1-daniel.starke@siemens.com>
-References: <20220420101346.3315-1-daniel.starke@siemens.com>
+        Wed, 20 Apr 2022 07:35:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA4F419A3;
+        Wed, 20 Apr 2022 04:32:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D8E4FCE1D78;
+        Wed, 20 Apr 2022 11:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EAF9C385AC;
+        Wed, 20 Apr 2022 11:32:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650454351;
+        bh=SVJ1k2v3tWdUGg+iydyQsi4Bq8zjjEYtWiKbWgwFaLw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=sQ6L9Sz7HsTeFplAqNVVqZ6QvDLXO7taCfdy4bCI083iKPBu4Tu1W3tAjRXjBMJP+
+         vEnLCGH51YORxEsFGOcZi/zoMsoYQoogO656Bx3dJCN3iokeUHMcZ/sRdJXG/FEfPy
+         OVbCsNPPUvMBA4ygYO3ABwIPljbcDkM69w6wy8bq4hi0dZRIAMv8YMoKSdGB49RoPV
+         7T06gmGwLx2hqcDTbF36X1GFj0Gux2+ukzAt7yv7JaGdNy5Qv43jNDhgQacW6a+5lC
+         7ziU5CwWVIqq9dL54xJaRWmMjZZOJMF8J98DaHAPKZKsUB+PqhqrA4wPmQhlfKvBIW
+         qSWfkWYIEhJww==
+Received: by mail-wr1-f42.google.com with SMTP id x18so1882237wrc.0;
+        Wed, 20 Apr 2022 04:32:31 -0700 (PDT)
+X-Gm-Message-State: AOAM530NWB0Xph9prkK8MhpzZZvtjev6lzNibywcjlBDFqkXONBxzEmC
+        BAB2nVGC+z7kHjbSFQYnKjVNHwqTkjcmslDX/Zg=
+X-Google-Smtp-Source: ABdhPJyiDPtmjdTUE7gVl98mXVlPUP43tSlAHIUMCCxTRsYmEILlWV1BOcaVw3t9k0Uq80bvmC166gAUNNWM192dlCo=
+X-Received: by 2002:a5d:64a3:0:b0:20a:7931:5b84 with SMTP id
+ m3-20020a5d64a3000000b0020a79315b84mr15873027wrp.407.1650454349319; Wed, 20
+ Apr 2022 04:32:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+References: <20220419133723.1394715-1-arnd@kernel.org> <20220419133723.1394715-2-arnd@kernel.org>
+ <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
+In-Reply-To: <ddaf112d-f997-84b7-2c57-bab3d0cca382@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 20 Apr 2022 13:32:13 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3+5p5i2Nxy6AxH5qDsVqqxwSR_5ufjoYCALProSLNspg@mail.gmail.com>
+Message-ID: <CAK8P3a3+5p5i2Nxy6AxH5qDsVqqxwSR_5ufjoYCALProSLNspg@mail.gmail.com>
+Subject: Re: [PATCH 01/41] video: fbdev: omapfb: lcd_ams_delta: fix unused
+ variable warning
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     linux-omap <linux-omap@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        dmaengine@vger.kernel.org,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Wed, Apr 20, 2022 at 11:24 AM Sergei Shtylyov
+<sergei.shtylyov@gmail.com> wrote:
+> On 4/19/22 4:36 PM, Arnd Bergmann wrote:
+>
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > A recent cleanup patch removed the only reference to a local variable
+> > in some configurations.
+> >
+> > Move the variable into the one block it is still used in, inside
+> > of an #ifdef, to avoid this warning.
+> >
+> > Fixes: 9d773f103b89 ("video: fbdev: omapfb: lcd_ams_delta: Make use of the helper function dev_err_probe()")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > ---
+> >  drivers/video/fbdev/omap/lcd_ams_delta.c | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/video/fbdev/omap/lcd_ams_delta.c b/drivers/video/fbdev/omap/lcd_ams_delta.c
+> > index bbf871f9d862..01944ce46aa1 100644
+> > --- a/drivers/video/fbdev/omap/lcd_ams_delta.c
+> > +++ b/drivers/video/fbdev/omap/lcd_ams_delta.c
+> [...]
+> > @@ -145,7 +144,7 @@ static int ams_delta_panel_probe(struct platform_device *pdev)
+> >                                               &ams_delta_lcd_ops);
+> >
+> >       if (IS_ERR(lcd_device)) {
+> > -             ret = PTR_ERR(lcd_device);
+> > +             int ret = PTR_ERR(lcd_device);
+>
+>    How about inserting an empty line after declaration?
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
-address field within the frame header. It is made up of the DLCI address,
-command/response (CR) bit and EA bit.
-Use the predefined CR value instead of a plain 2 in alignment to the
-remaining code and to make the encoding obvious.
+Ok, done.
 
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-All remarks have been incorporated. The commit title was changed from fix
-to clean up and the fix and backporting remarks have been removed. The
-remaining commit message body and the code changes remain untouched.
-This is version 3 of the patch because the second version was missing the
-change remarks.
-
-Link: https://lore.kernel.org/all/YlkRvMhDfwgNZptV@kroah.com/
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9bf5aa508f0e..1beb4b28cd18 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -751,7 +751,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 
- 	*--dp = msg->ctrl;
- 	if (gsm->initiator)
--		*--dp = (msg->addr << 2) | 2 | EA;
-+		*--dp = (msg->addr << 2) | CR | EA;
- 	else
- 		*--dp = (msg->addr << 2) | EA;
- 	*fcs = gsm_fcs_add_block(INIT_FCS, dp , msg->data - dp);
--- 
-2.25.1
-
+        Arnd
