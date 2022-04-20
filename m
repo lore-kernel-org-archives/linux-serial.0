@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 536F2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC245C4167D
 	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 08:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376886AbiDTIqG (ORCPT
+        id S1376902AbiDTIqI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Apr 2022 04:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        Wed, 20 Apr 2022 04:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376874AbiDTIpv (ORCPT
+        with ESMTP id S1376857AbiDTIqB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:45:51 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FFF43B2B3;
-        Wed, 20 Apr 2022 01:43:01 -0700 (PDT)
+        Wed, 20 Apr 2022 04:46:01 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6293E3B3FD;
+        Wed, 20 Apr 2022 01:43:02 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.90,275,1643641200"; 
-   d="scan'208";a="118557996"
+   d="scan'208";a="117435993"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 20 Apr 2022 17:42:58 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 20 Apr 2022 17:42:59 +0900
 Received: from localhost.localdomain (unknown [10.166.15.32])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 9815F40062B6;
-        Wed, 20 Apr 2022 17:42:58 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6531A401073A;
+        Wed, 20 Apr 2022 17:42:59 +0900 (JST)
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org
 Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH 07/15] dt-bindings: clock: Add r8a779g0 CPG Core Clock Definitions
-Date:   Wed, 20 Apr 2022 17:42:47 +0900
-Message-Id: <20220420084255.375700-8-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH 14/15] arm64: dts: renesas: Add Renesas R8A779G0 SoC support
+Date:   Wed, 20 Apr 2022 17:42:54 +0900
+Message-Id: <20220420084255.375700-15-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
 References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
@@ -41,108 +41,142 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add all Clock Pulse Generator Core Clock Outputs for the Renesas
-R-Car V4H (R8A779G0) SoC.
+Add initial support for the Renesas R8A779G0 (R-Car V4H) SoC.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- include/dt-bindings/clock/r8a779g0-cpg-mssr.h | 87 +++++++++++++++++++
- 1 file changed, 87 insertions(+)
- create mode 100644 include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+ arch/arm64/boot/dts/renesas/r8a779g0.dtsi | 122 ++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/renesas/r8a779g0.dtsi
 
-diff --git a/include/dt-bindings/clock/r8a779g0-cpg-mssr.h b/include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+diff --git a/arch/arm64/boot/dts/renesas/r8a779g0.dtsi b/arch/arm64/boot/dts/renesas/r8a779g0.dtsi
 new file mode 100644
-index 000000000000..07a94cf45581
+index 000000000000..eb5a9ca837c7
 --- /dev/null
-+++ b/include/dt-bindings/clock/r8a779g0-cpg-mssr.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: (GPL-2.0 or MIT) */
++++ b/arch/arm64/boot/dts/renesas/r8a779g0.dtsi
+@@ -0,0 +1,122 @@
++// SPDX-License-Identifier: (GPL-2.0 or MIT)
 +/*
++ * Device Tree Source for the R-Car V4H (R8A779G0) SoC
++ *
 + * Copyright (C) 2022 Renesas Electronics Corp.
 + */
-+#ifndef __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
-+#define __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
 +
-+#include <dt-bindings/clock/renesas-cpg-mssr.h>
++#include <dt-bindings/clock/r8a779g0-cpg-mssr.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/power/r8a779g0-sysc.h>
 +
-+/* r8a779g0 CPG Core Clocks */
++/ {
++	compatible = "renesas,r8a779g0";
++	#address-cells = <2>;
++	#size-cells = <2>;
 +
-+#define R8A779G0_CLK_ZX			0
-+#define R8A779G0_CLK_ZS			1
-+#define R8A779G0_CLK_ZT			2
-+#define R8A779G0_CLK_ZTR		3
-+#define R8A779G0_CLK_S0D2		4
-+#define R8A779G0_CLK_S0D3		5
-+#define R8A779G0_CLK_S0D4		6
-+#define R8A779G0_CLK_S0D1_VIO		7
-+#define R8A779G0_CLK_S0D2_VIO		8
-+#define R8A779G0_CLK_S0D4_VIO		9
-+#define R8A779G0_CLK_S0D8_VIO		10
-+#define R8A779G0_CLK_S0D1_VC		11
-+#define R8A779G0_CLK_S0D2_VC		12
-+#define R8A779G0_CLK_S0D4_VC		13
-+#define R8A779G0_CLK_S0D2_MM		14
-+#define R8A779G0_CLK_S0D4_MM		15
-+#define R8A779G0_CLK_S0D2_U3DG		16
-+#define R8A779G0_CLK_S0D4_U3DG		17
-+#define R8A779G0_CLK_S0D2_RT		18
-+#define R8A779G0_CLK_S0D3_RT		19
-+#define R8A779G0_CLK_S0D4_RT		20
-+#define R8A779G0_CLK_S0D6_RT		21
-+#define R8A779G0_CLK_S0D24_RT		22
-+#define R8A779G0_CLK_S0D2_PER		23
-+#define R8A779G0_CLK_S0D3_PER		24
-+#define R8A779G0_CLK_S0D6_PER		25
-+#define R8A779G0_CLK_S0D12_PER		26
-+#define R8A779G0_CLK_S0D24_PER		27
-+#define R8A779G0_CLK_S0D1_HSC		28
-+#define R8A779G0_CLK_S0D2_HSC		29
-+#define R8A779G0_CLK_S0D4_HSC		30
-+#define R8A779G0_CLK_S0D2_CC		31
-+#define R8A779G0_CLK_SVD1_IR		32
-+#define R8A779G0_CLK_SVD2_IR		33
-+#define R8A779G0_CLK_SVD1_VIP		34
-+#define R8A779G0_CLK_SVD2_VIP		35
-+#define R8A779G0_CLK_CL			36
-+#define R8A779G0_CLK_CL16M		37
-+#define R8A779G0_CLK_CL16M_MM		38
-+#define R8A779G0_CLK_CL16M_RT		39
-+#define R8A779G0_CLK_CL16M_PER		40
-+#define R8A779G0_CLK_CL16M_HSC		41
-+#define R8A779G0_CLK_Z0			42
-+#define R8A779G0_CLK_ZB3		43
-+#define R8A779G0_CLK_ZB3D2		44
-+#define R8A779G0_CLK_ZB3D4		45
-+#define R8A779G0_CLK_ZG			46
-+#define R8A779G0_CLK_SD0H		47
-+#define R8A779G0_CLK_SD0		48
-+#define R8A779G0_CLK_RPC		49
-+#define R8A779G0_CLK_RPCD2		50
-+#define R8A779G0_CLK_MSO		51
-+#define R8A779G0_CLK_CANFD		52
-+#define R8A779G0_CLK_CSI		53
-+#define R8A779G0_CLK_FRAY		54
-+#define R8A779G0_CLK_IPC		55
-+#define R8A779G0_CLK_SASYNCRT		56
-+#define R8A779G0_CLK_SASYNCPERD1	57
-+#define R8A779G0_CLK_SASYNCPERD2	58
-+#define R8A779G0_CLK_SASYNCPERD4	59
-+#define R8A779G0_CLK_VIOBUSD2		60
-+#define R8A779G0_CLK_VCBUSD2		61
-+#define R8A779G0_CLK_IMPA1		62
-+#define R8A779G0_CLK_DSIEXT		63
-+#define R8A779G0_CLK_DSIREF		64
-+#define R8A779G0_CLK_ADGH		65
-+#define R8A779G0_CLK_OSC		66
-+#define R8A779G0_CLK_ZR0		67
-+#define R8A779G0_CLK_ZR1		68
-+#define R8A779G0_CLK_ZR2		69
-+#define R8A779G0_CLK_IMPAD4		70
-+#define R8A779G0_CLK_CPEX		71
-+#define R8A779G0_CLK_CBFUSA		72
-+#define R8A779G0_CLK_R			73
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+#endif /* __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__ */
++		a76_0: cpu@0 {
++			compatible = "arm,cortex-a76";
++			reg = <0>;
++			device_type = "cpu";
++			power-domains = <&sysc R8A779G0_PD_A1E0D0C0>;
++		};
++	};
++
++	extal_clk: extal {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		/* This value must be overridden by the board */
++		clock-frequency = <0>;
++	};
++
++	extalr_clk: extalr {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		/* This value must be overridden by the board */
++		clock-frequency = <0>;
++	};
++
++	pmu_a76 {
++		compatible = "arm,cortex-a76-pmu";
++		interrupts-extended = <&gic GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
++	};
++
++	/* External SCIF clock - to be overridden by boards that provide it */
++	scif_clk: scif {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <0>;
++	};
++
++	soc: soc {
++		compatible = "simple-bus";
++		interrupt-parent = <&gic>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		cpg: clock-controller@e6150000 {
++			compatible = "renesas,r8a779g0-cpg-mssr";
++			reg = <0 0xe6150000 0 0x4000>;
++			clocks = <&extal_clk>, <&extalr_clk>;
++			clock-names = "extal", "extalr";
++			#clock-cells = <2>;
++			#power-domain-cells = <0>;
++			#reset-cells = <1>;
++		};
++
++		rst: reset-controller@e6160000 {
++			compatible = "renesas,r8a779g0-rst";
++			reg = <0 0xe6160000 0 0x4000>;
++		};
++
++		sysc: system-controller@e6180000 {
++			compatible = "renesas,r8a779g0-sysc";
++			reg = <0 0xe6180000 0 0x4000>;
++			#power-domain-cells = <1>;
++		};
++
++		hscif0: serial@e6540000 {
++			compatible = "renesas,hscif-r8a779g0",
++				     "renesas,rcar-gen4-hscif",
++				     "renesas,hscif";
++			reg = <0 0xe6540000 0 96>;
++			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&cpg CPG_MOD 514>,
++				 <&cpg CPG_CORE R8A779G0_CLK_S0D3_PER>,
++				 <&scif_clk>;
++			clock-names = "fck", "brg_int", "scif_clk";
++			power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
++			resets = <&cpg 514>;
++			status = "disabled";
++		};
++
++		gic: interrupt-controller@f1000000 {
++			compatible = "arm,gic-v3";
++			#interrupt-cells = <3>;
++			#address-cells = <0>;
++			interrupt-controller;
++			reg = <0x0 0xf1000000 0 0x20000>,
++			      <0x0 0xf1060000 0 0x110000>;
++			interrupts = <GIC_PPI 9
++				      (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_HIGH)>;
++		};
++
++		prr: chipid@fff00044 {
++			compatible = "renesas,prr";
++			reg = <0 0xfff00044 0 4>;
++		};
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts-extended = <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++				      <&gic GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++				      <&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
++				      <&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++};
 -- 
 2.25.1
 
