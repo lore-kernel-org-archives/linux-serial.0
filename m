@@ -2,36 +2,36 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7FFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C39C41535
 	for <linux-serial@archiver.kernel.org>; Wed, 20 Apr 2022 08:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376884AbiDTIqD (ORCPT
+        id S1376882AbiDTIqD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 20 Apr 2022 04:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40868 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376872AbiDTIpv (ORCPT
+        with ESMTP id S239358AbiDTIqB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Apr 2022 04:45:51 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E64C03B2A7;
-        Wed, 20 Apr 2022 01:43:00 -0700 (PDT)
+        Wed, 20 Apr 2022 04:46:01 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F0623B3F4;
+        Wed, 20 Apr 2022 01:43:02 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.90,275,1643641200"; 
-   d="scan'208";a="118557993"
+   d="scan'208";a="117435990"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 20 Apr 2022 17:42:58 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 20 Apr 2022 17:42:59 +0900
 Received: from localhost.localdomain (unknown [10.166.15.32])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 5D05B401073A;
-        Wed, 20 Apr 2022 17:42:58 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 328B1401073D;
+        Wed, 20 Apr 2022 17:42:59 +0900 (JST)
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To:     geert+renesas@glider.be, magnus.damm@gmail.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org
 Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH 05/15] dt-bindings: power: Add r8a779g0 SYSC power domain definitions
-Date:   Wed, 20 Apr 2022 17:42:45 +0900
-Message-Id: <20220420084255.375700-6-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH 12/15] clk: renesas: rcar-gen4: Add CLK_TYPE_GEN4_PLL4
+Date:   Wed, 20 Apr 2022 17:42:52 +0900
+Message-Id: <20220420084255.375700-13-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
 References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
@@ -41,65 +41,89 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add power domain indices for R-Car V4H (r8a779g0).
+R-Car V4H (r8a779g0) has PLL4 so that add CLK_TYPE_GEN4_PLL4.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- include/dt-bindings/power/r8a779g0-sysc.h | 45 +++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
- create mode 100644 include/dt-bindings/power/r8a779g0-sysc.h
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c | 18 +++++++++---------
+ drivers/clk/renesas/rcar-gen4-cpg.c     |  5 +++++
+ drivers/clk/renesas/rcar-gen4-cpg.h     |  3 +++
+ 3 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/include/dt-bindings/power/r8a779g0-sysc.h b/include/dt-bindings/power/r8a779g0-sysc.h
-new file mode 100644
-index 000000000000..da79c4b39556
---- /dev/null
-+++ b/include/dt-bindings/power/r8a779g0-sysc.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: (GPL-2.0 or MIT) */
-+/*
-+ * Copyright (C) 2022 Renesas Electronics Corp.
-+ */
-+#ifndef __DT_BINDINGS_POWER_R8A779G0_SYSC_H__
-+#define __DT_BINDINGS_POWER_R8A779G0_SYSC_H__
+diff --git a/drivers/clk/renesas/r8a779f0-cpg-mssr.c b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+index 08e8d95ce5e7..be9dcc00d3ab 100644
+--- a/drivers/clk/renesas/r8a779f0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+@@ -142,23 +142,23 @@ static const unsigned int r8a779f0_crit_mod_clks[] __initconst = {
+  * CPG Clock Data
+  */
+ /*
+- *   MD	 EXTAL		PLL1	PLL2	PLL3	PLL5	PLL6	OSC
++ *   MD	 EXTAL		PLL1	PLL2	PLL3	PLL4	PLL5	PLL6	OSC
+  * 14 13 (MHz)
+  * ----------------------------------------------------------------
+- * 0  0	 16    / 1	x200	x150	x200	x200	x134	/15
+- * 0  1	 20    / 1	x160	x120	x160	x160	x106	/19
++ * 0  0	 16    / 1	x200	x150	x200	n/a	x200	x134	/15
++ * 0  1	 20    / 1	x160	x120	x160	n/a	x160	x106	/19
+  * 1  0	 Prohibited setting
+- * 1  1	 40    / 2	x160	x120	x160	x160	x106	/38
++ * 1  1	 40    / 2	x160	x120	x160	n/a	x160	x106	/38
+  */
+ #define CPG_PLL_CONFIG_INDEX(md)	((((md) & BIT(14)) >> 13) | \
+ 					 (((md) & BIT(13)) >> 13))
+ 
+ static const struct rcar_gen4_cpg_pll_config cpg_pll_configs[4] = {
+-	/* EXTAL div	PLL1 mult/div	PLL2 mult/div	PLL3 mult/div	PLL5 mult/div	PLL6 mult/div	OSC prediv */
+-	{ 1,		200,	1,	150,	1,	200,	1,	200,	1,	134,	1,	15,	},
+-	{ 1,		160,	1,	120,	1,	160,	1,	160,	1,	106,	1,	19,	},
+-	{ 0,		0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	},
+-	{ 2,		160,	1,	120,	1,	160,	1,	160,	1,	106,	1,	38,	},
++	/* EXTAL div	PLL1 mult/div	PLL2 mult/div	PLL3 mult/div	PLL4 mult/div	PLL5 mult/div	PLL6 mult/div	OSC prediv */
++	{ 1,		200,	1,	150,	1,	200,	1,	0,	0,	200,	1,	134,	1,	15,	},
++	{ 1,		160,	1,	120,	1,	160,	1,	0,	0,	160,	1,	106,	1,	19,	},
++	{ 0,		0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	},
++	{ 2,		160,	1,	120,	1,	160,	1,	0,	0,	160,	1,	106,	1,	38,	},
+ };
+ 
+ static int __init r8a779f0_cpg_mssr_init(struct device *dev)
+diff --git a/drivers/clk/renesas/rcar-gen4-cpg.c b/drivers/clk/renesas/rcar-gen4-cpg.c
+index 54ebf4b3c128..c7ed43d6aa67 100644
+--- a/drivers/clk/renesas/rcar-gen4-cpg.c
++++ b/drivers/clk/renesas/rcar-gen4-cpg.c
+@@ -215,6 +215,11 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
+ 		div = cpg_pll_config->pll3_div;
+ 		break;
+ 
++	case CLK_TYPE_GEN4_PLL4:
++		mult = cpg_pll_config->pll4_mult;
++		div = cpg_pll_config->pll4_div;
++		break;
 +
-+/*
-+ * These power domain indices match the Power Domain Register Numbers (PDR)
-+ */
-+
-+#define R8A779G0_PD_A1E0D0C0		0
-+#define R8A779G0_PD_A1E0D0C1		1
-+#define R8A779G0_PD_A1E0D1C0		2
-+#define R8A779G0_PD_A1E0D1C1		3
-+#define R8A779G0_PD_A2E0D0		16
-+#define R8A779G0_PD_A2E0D1		17
-+#define R8A779G0_PD_A3E0		20
-+#define R8A779G0_PD_A33DGA		24
-+#define R8A779G0_PD_A23DGB		25
-+#define R8A779G0_PD_A1DSP0		33
-+#define R8A779G0_PD_A2IMP01		34
-+#define R8A779G0_PD_A2PSC		35
-+#define R8A779G0_PD_A2CV0		36
-+#define R8A779G0_PD_A2CV1		37
-+#define R8A779G0_PD_A1CNN0		41
-+#define R8A779G0_PD_A2CN0		42
-+#define R8A779G0_PD_A3IR		43
-+#define R8A779G0_PD_A1DSP1		45
-+#define R8A779G0_PD_A2IMP23		46
-+#define R8A779G0_PD_A2DMA		47
-+#define R8A779G0_PD_A2CV2		48
-+#define R8A779G0_PD_A2CV3		49
-+#define R8A779G0_PD_A1DSP2		53
-+#define R8A779G0_PD_A1DSP3		54
-+#define R8A779G0_PD_A3VIP0		56
-+#define R8A779G0_PD_A3VIP1		57
-+#define R8A779G0_PD_A3VIP2		58
-+#define R8A779G0_PD_A3ISP0		60
-+#define R8A779G0_PD_A3ISP1		61
-+
-+/* Always-on power area */
-+#define R8A779G0_PD_ALWAYS_ON		64
-+
-+#endif /* __DT_BINDINGS_POWER_R8A779G0_SYSC_H__*/
+ 	case CLK_TYPE_GEN4_PLL5:
+ 		mult = cpg_pll_config->pll5_mult;
+ 		div = cpg_pll_config->pll5_div;
+diff --git a/drivers/clk/renesas/rcar-gen4-cpg.h b/drivers/clk/renesas/rcar-gen4-cpg.h
+index afc8c024d538..0b15dcfdca7b 100644
+--- a/drivers/clk/renesas/rcar-gen4-cpg.h
++++ b/drivers/clk/renesas/rcar-gen4-cpg.h
+@@ -16,6 +16,7 @@ enum rcar_gen4_clk_types {
+ 	CLK_TYPE_GEN4_PLL2X_3X,	/* r8a779a0 only */
+ 	CLK_TYPE_GEN4_PLL3,
+ 	CLK_TYPE_GEN4_PLL5,
++	CLK_TYPE_GEN4_PLL4,
+ 	CLK_TYPE_GEN4_PLL6,
+ 	CLK_TYPE_GEN4_SDSRC,
+ 	CLK_TYPE_GEN4_SDH,
+@@ -56,6 +57,8 @@ struct rcar_gen4_cpg_pll_config {
+ 	u8 pll2_div;
+ 	u8 pll3_mult;
+ 	u8 pll3_div;
++	u8 pll4_mult;
++	u8 pll4_div;
+ 	u8 pll5_mult;
+ 	u8 pll5_div;
+ 	u8 pll6_mult;
 -- 
 2.25.1
 
