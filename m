@@ -2,85 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D85C4332F
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 13:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CA9C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 14:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384563AbiDUNwy (ORCPT
+        id S1389279AbiDUOtj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
+        Thu, 21 Apr 2022 10:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387757AbiDUNwr (ORCPT
+        with ESMTP id S1350611AbiDUOth (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:52:47 -0400
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAE325C3;
-        Thu, 21 Apr 2022 06:49:57 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id q75so3552997qke.6;
-        Thu, 21 Apr 2022 06:49:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+RTM2g9K+NfcBARExv9XGKoPWLbGoVIG1b/e3dPaYl0=;
-        b=simpCtpQ1XEXU1Zr3AyGrmaNfbBrRO5BHzmvjGs7/uXMXu1EjyvaNg39OFaKbiTGBw
-         AiBr19SPw26Ff+X487ZPhTui8ZMlBZArKTBaOyNUOXrFP4QnCtVDnJvSz6pALDCRxGOa
-         Z9kN4vxd+Mxmz9JIivjEx4CSUYNYw1hXw7trtjsleE7w5WC4PmsYtqe8FdjoKye+9jmn
-         3hvTyR4OVrsj4CBUEWKyj0MSezNIfMWO0k4nK043yKxrZWRxD3ETEWlE+Rw8F7SvKQzf
-         tP9lc/BTFUoDxtvs4QCCKZi2r0otS+NSHCmov+7+RC83+8oh7dX+myAOEgji+pu+QZ8W
-         GjjQ==
-X-Gm-Message-State: AOAM530gtXQ6H7OOJg7LD2SmJiXe2v2dA2BdU0vTJ25+q2XH6mc7xARh
-        Ux8eUoUd2uE93imQfV8Qmzn24ATcxDBbuUaq
-X-Google-Smtp-Source: ABdhPJzbCgP8OHSyksaotVwS3s8Wga9jGm9hwAWHZf68WduNptfwUtaXrRR2cGw8QRBnpKmhuOG04Q==
-X-Received: by 2002:a05:620a:139a:b0:69e:d0c4:38ee with SMTP id k26-20020a05620a139a00b0069ed0c438eemr6530602qki.380.1650548996161;
-        Thu, 21 Apr 2022 06:49:56 -0700 (PDT)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id o10-20020ac85a4a000000b002f23c9f8cf0sm3811190qta.10.2022.04.21.06.49.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 06:49:55 -0700 (PDT)
-Received: by mail-yb1-f182.google.com with SMTP id t67so8863740ybi.2;
-        Thu, 21 Apr 2022 06:49:55 -0700 (PDT)
-X-Received: by 2002:a05:6902:724:b0:644:c37b:4e21 with SMTP id
- l4-20020a056902072400b00644c37b4e21mr25002822ybt.6.1650548995512; Thu, 21 Apr
- 2022 06:49:55 -0700 (PDT)
+        Thu, 21 Apr 2022 10:49:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141B6427D7;
+        Thu, 21 Apr 2022 07:46:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A049B61A36;
+        Thu, 21 Apr 2022 14:46:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08F2FC385A5;
+        Thu, 21 Apr 2022 14:46:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650552395;
+        bh=i0HMWq1JRa0F0CeO2hnG9SF3TuKwCFJPlYUxv+11vSY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KYNnxH1/6h4JHSpiitspdSKkTEwWa1tJBCwmto9ZMzu31V+JKmKgI743LDv+s34bq
+         QmSRKC+hHoCyn8rQMCoQYbCY9I4u1HRgIOm+Pz2OmA5gNIE7rXJyrAZQqUv9oA3TUQ
+         CVuRa/VFqB7epVLHtpWWZFuEw4IysfFmBo/cCYj+4wtcdzx74jW2LjnvsN+imBPGkx
+         NUHT9J1SbF8LbbqYNTV0fbd7NyddYgpQP9JQyBAmIQiZB0mHJDNoZgZMT3gNF6FO91
+         4nSd3Odf/kHuZoRH+pZi1kgbPYDKmWC6TMUEyESfHfKmh/QjbWYzrE2aZ/dN2sYGsU
+         NUgA5p8ikcvFQ==
+Received: by mail-wr1-f53.google.com with SMTP id p18so7030851wru.5;
+        Thu, 21 Apr 2022 07:46:34 -0700 (PDT)
+X-Gm-Message-State: AOAM532BY6WQ1dd6NyA20bzG0oGGSF6u3tYHeSPdcCHhlRa2PoQP/9tt
+        ZPLKxgM81JEfLwIb76smpKGFlV78Vct8FjsHnuI=
+X-Google-Smtp-Source: ABdhPJwYkraliZNB9aswBiexBZv/yC4YtGe2R9rvi1KW9m/P8YE/IbH0HzS9xhCUm+8mp8SN41/aSdFZNG1cTJqd71I=
+X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id
+ u5-20020a5d6da5000000b0020a88056988mr48774wrs.317.1650552393282; Thu, 21 Apr
+ 2022 07:46:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com> <20220420084255.375700-12-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20220420084255.375700-12-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 21 Apr 2022 15:49:43 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUu40FwqF=xu5Pk6QpcXHa4qVHhEZMarx9PfYMv1z2Kpw@mail.gmail.com>
-Message-ID: <CAMuHMdUu40FwqF=xu5Pk6QpcXHa4qVHhEZMarx9PfYMv1z2Kpw@mail.gmail.com>
-Subject: Re: [PATCH 11/15] soc: renesas: rcar-rst: Add support for R-Car V4H
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+References: <20220419133723.1394715-1-arnd@kernel.org> <20220420170836.GB1947@darkstar.musicnaut.iki.fi>
+ <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com> <20220421133431.GE1947@darkstar.musicnaut.iki.fi>
+In-Reply-To: <20220421133431.GE1947@darkstar.musicnaut.iki.fi>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 21 Apr 2022 16:46:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0LkJ5EvJ13xtAhWzCKnnvYhYgKpPsphr1T-FGg6bzDuw@mail.gmail.com>
+Message-ID: <CAK8P3a0LkJ5EvJ13xtAhWzCKnnvYhYgKpPsphr1T-FGg6bzDuw@mail.gmail.com>
+Subject: Re: [PATCH 00/41] OMAP1 full multiplatform conversion
+To:     Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc:     linux-omap <linux-omap@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        dmaengine@vger.kernel.org,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 10:43 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add support for R-Car V4H (R8A779G0) to the R-Car RST driver.
+On Thu, Apr 21, 2022 at 3:34 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
 >
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Hi,
+>
+> On Wed, Apr 20, 2022 at 10:00:13PM +0200, Arnd Bergmann wrote:
+> > On Wed, Apr 20, 2022 at 7:08 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
+> > > On Tue, Apr 19, 2022 at 03:36:42PM +0200, Arnd Bergmann wrote:
+> > > > From: Arnd Bergmann <arnd@arndb.de>
+> > > >
+> > > > This is the full series for converting OMAP1 to multiplatform, rebased
+> > > > from my 2019 attempt to do the same thing. The soc tree contains simpler
+> > > > patches to do the same for iop32x, ixp4xx, ep93xx and s3c24xx, which
+> > > > means we are getting closer to completing this for all ARMv5 platforms
+> > > > (I have patches for PXA, which is the last one remaining).
+> > > >
+> > > > Janusz already tested the branch separately and did the missing work
+> > > > for the common-clk conversion after my previous approach was broken.
+> > >
+> > > I tested the full series on the following OMAP1 boards: ams-delta,
+> > > nokia770, osk, palmte and sx1 (QEMU only).
+> > >
+> > > Apart from the earlyprintk breakage, everything seemed to work OK.
+> >
+> > Nice, thanks a lot for testing!
+>
+> With the updated patch 26 also earlyprintk now works, so if you still
+> update the patches, feel free to add for the whole series:
+>
+> Tested-by: Aaro Koskinen <aaro.koskinen@iki.fi>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.19.
+I was just doing the merge, so I added the tag to the commit now.
 
-Gr{oetje,eeting}s,
+There is now an "omap1/multiplatform-prep" branch that is part of
+arm/multiplatform, and I hope to not have to rebase that. I also
+have an arm/multiplatform-late branch with the remaining contents.
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+       Arnd
