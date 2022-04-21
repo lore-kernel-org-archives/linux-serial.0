@@ -2,57 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43DCC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 08:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E89F8C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 08:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386799AbiDUIrg (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 04:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
+        id S242134AbiDUItm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Apr 2022 04:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386807AbiDUIrW (ORCPT
+        with ESMTP id S1386851AbiDUItl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 04:47:22 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47931EAF5
-        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 01:44:32 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id q20so2741014wmq.1
-        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 01:44:32 -0700 (PDT)
+        Thu, 21 Apr 2022 04:49:41 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B93D2186
+        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 01:46:52 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id g18so5621480wrb.10
+        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 01:46:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=7NcpkA7Pw9hAO8IT6wBMBlDV/T3SO7ggWZNFOJPPHDU=;
-        b=MQECcGKVohiNS5vFHXZHfPei6sjTLX7AbRBc5gb+1cz+EJcMoDkCvHLLucoHdQZeE7
-         Ax4gPbC9KBzX74VcvQfmswh3+AnC3rVzH04Ay1JuVVMj6I57yZbAT2HZJhCbl7i9Ul92
-         QUpzdofWN0LsAMMiLXa1JfDaA7YRCPqyoMIsiCDf95O9FMlGMSAkWYoeOwwxHuHXYZya
-         53i/uSGduoAvI8Y/JQ/IyAdSAgrm4/hOteE5AdtrMG+srHvdp6SD16TpTVL3xsTNpQuv
-         qbojfgiloucpsxE5up5cj0ehLMZQlqMfgbLu8oPRYbPVV4mvOIVc2TvHCeY/B+hYB3LU
-         rMzg==
+        bh=Z1R8XAgRO1RY9ptbheHK+UH29R2eRMz8Ro595MvYVes=;
+        b=aOom/33qqLb3Lfu2zcsAjrk7UdXHJJVRy0kJNKJDjgPslzoTYHMMljkC085jJpJYR4
+         EegA7KKwIkF+/1WfHa3PQDt8NPu1ipsKPgiV9Avgu/YlXoYfX3R3pVRdtMLK0PAE95+G
+         UHsar2YSfO7sL93bYGnai0RpaCTbEzQAbufLW2NgH5woKN7/5vWtjkeIg6qBaVFU9VPh
+         Er2VeFX0ErcmUSIvBehlMeYXwv74Smim+58XkpaLUxJJBJDykvoLxNjR1g9kU7+ERwWU
+         wOq/Kfa6Rk9IbqfWUUDvnYA5BPRNIkFSag2Qr75UmCf3pYTGplwMsiLgofgIOxNEtMbH
+         LLww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=7NcpkA7Pw9hAO8IT6wBMBlDV/T3SO7ggWZNFOJPPHDU=;
-        b=mQAx2KT6wtdQcWVKxo9VB8mDQLUYpUDlTc4JLy9DbEivzfdmIauUlnJ8hp9iVB5Fsy
-         OO0yLbxxYIeaJebmTm3X/mgF3t/FgwFJ4cakDXuc6Am5JNT1R8oQN7yz2eQVguDmZXW2
-         SBemhbBvXR3Jh3uUDCIqrHdSCV5BMJGLAEVLs5BwA5DiyscxhRBP5o2+kOXoMCi33d5w
-         KOdiqi6eYM100ip4gYgrUlgqQjMQDvQdvh5bGAQBEYq12Yd7Z/K0+eYN61ebgUQAammp
-         Aneig8t7xTgBqf2Boc4EMw9KFQNbve7HG3lfZPcBM6dBW+zB1JwVWl7W+8wPXSjLs8X2
-         NY/A==
-X-Gm-Message-State: AOAM5326mwDr69UU1KFISX6eEQG7hu5zoFLeYg1JjDvC96DALGxLnFCQ
-        Gv+rpLD0zHoacxwffMBk3UOxdA==
-X-Google-Smtp-Source: ABdhPJxo2qSVLuSHhc7uKb9o+3uAOxw4dje5NJIJLKDy6nHZr8RDh9WuhE9wiKBRYMmykUWgl7k3XQ==
-X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id s25-20020a1cf219000000b0038c782c03bbmr7353742wmc.94.1650530671247;
-        Thu, 21 Apr 2022 01:44:31 -0700 (PDT)
+        bh=Z1R8XAgRO1RY9ptbheHK+UH29R2eRMz8Ro595MvYVes=;
+        b=7/66v/64mWd9MmaFiR9Fvs1qDHYXez1Zuf1NrpH7N/R5TfS2t+dK1SxxQ8kE+peEr4
+         L4o4tg8zc9MvZthCJaYpmvo+qyCZY/RXeO4grw2fYpxL0YIcEuHbL07B9wUau0q/GmO3
+         nSadlBlqYbF96+IodEwNG+g40+alzCwoXyu/yWPw/NHZB1gqu04VieQUveedw5KzKMch
+         1T+g+loAQtrMM62HaYRwx0Zh717w76uBVoZGNuZ5kLbAlZVf8IaUoY97AHh2Mv4qx29Q
+         6y6sQi2u/Vc6mV5XBR1/VEyB2SXDljXbXxdCHLeFk5E8wZD6zDph1mrQ6jIXXFIxhzKj
+         5hvg==
+X-Gm-Message-State: AOAM533EgCn4WMFCg1A4wHKVySO7h6BspH8Li5oz4YK8haORv9mgiIOx
+        h/laEzVLbTaOnk9y/s2j+nwYFQ==
+X-Google-Smtp-Source: ABdhPJzkRWJgbzkZ114xvkXhqIqlkVxz401XfIJZslOH3Cuuu/rWZ1ncxnciYetQhmsi7vVlYYPT2w==
+X-Received: by 2002:a05:6000:c4:b0:20a:bfeb:68dc with SMTP id q4-20020a05600000c400b0020abfeb68dcmr1261741wrx.488.1650530810597;
+        Thu, 21 Apr 2022 01:46:50 -0700 (PDT)
 Received: from ?IPV6:2001:861:44c0:66c0:35ba:2677:956:980d? ([2001:861:44c0:66c0:35ba:2677:956:980d])
-        by smtp.gmail.com with ESMTPSA id i74-20020adf90d0000000b0020373ba7beesm2150548wri.0.2022.04.21.01.44.30
+        by smtp.gmail.com with ESMTPSA id b14-20020a7bc24e000000b003899c8053e1sm1675671wmj.41.2022.04.21.01.46.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 01:44:30 -0700 (PDT)
-Message-ID: <0d76ba66-9e2c-510d-780e-26fe9626c1a5@baylibre.com>
-Date:   Thu, 21 Apr 2022 10:44:38 +0200
+        Thu, 21 Apr 2022 01:46:50 -0700 (PDT)
+Message-ID: <ea86eee0-409c-2d19-3669-35a8eaded53e@baylibre.com>
+Date:   Thu, 21 Apr 2022 10:46:57 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
@@ -61,25 +60,22 @@ Subject: Re: [PATCH V2 1/2] tty: serial: meson: Add a 12MHz internal clock
  special BT modules
 Content-Language: en-US
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Yu Tu <yu.tu@amlogic.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Yu Tu <yu.tu@amlogic.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         linux-amlogic <linux-amlogic@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 References: <20220418053202.24528-1-yu.tu@amlogic.com>
  <20220418053202.24528-2-yu.tu@amlogic.com>
  <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
- <d10e27ff-e674-87bd-2c98-63c7040baeb1@amlogic.com>
- <9af92c78-73a7-d524-182c-3ebffa69b08a@kernel.org>
- <CAHp75Vc87oTmJ6zVeY2mGbP8Jx_SSDtp39Uq4YhWerDUX9RdQQ@mail.gmail.com>
 From:   Neil Armstrong <narmstrong@baylibre.com>
 Organization: Baylibre
-In-Reply-To: <CAHp75Vc87oTmJ6zVeY2mGbP8Jx_SSDtp39Uq4YhWerDUX9RdQQ@mail.gmail.com>
+In-Reply-To: <CAHp75VeW65dV9jJu8-yUWME+XKnaxZBu5Zv8iEJxP2dizA=HUg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -88,36 +84,47 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Andy,
 
-On 19/04/2022 10:21, Andy Shevchenko wrote:
-> On Tue, Apr 19, 2022 at 10:38 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->> On 19. 04. 22, 9:29, Yu Tu wrote:
->>> On 2022/4/18 20:09, Andy Shevchenko wrote:
->>>> On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
+On 18/04/2022 14:09, Andy Shevchenko wrote:
+> On Mon, Apr 18, 2022 at 8:50 AM Yu Tu <yu.tu@amlogic.com> wrote:
+>>
+>> A /2 divider over XTAL was introduced since G12A, and is preferred
+>> to be used over the still present /3 divider since it provides much
+>> closer frequencies vs the request baudrate.Especially the BT module
+> 
+> 'e. E' (mind the space)
+> 
+>> uses 3Mhz baud rate. 8Mhz calculations can lead to baud rate bias,
+>> causing some problems.
 > 
 > ...
 > 
->>>>> +struct meson_uart_data {
->>>>> +       bool has_xtal_div2;
->>>>
->>>> I would prefer to see this as an unsigned int and with a less
->>>> particular name, e.g. xtal_div would suffice.
->>> I don't have a problem with your suggestion.Let's see What Neil has to say.
->>
->> Actually why uint provided it's a boolean value? Or do you mean to store
->> the divisor directly in this member, Andy?
+>> +struct meson_uart_data {
+>> +       bool has_xtal_div2;
 > 
-> Yes I was thinking to provide the value and then always provide the
-> private data. In such cases we don't need an additional condition.
+> I would prefer to see this as an unsigned int and with a less
+> particular name, e.g. xtal_div would suffice.
+> 
+>> +};
+> 
+> ...
+> 
+>> +               unsigned int xtal_div = 3;
+> 
+>> +               if (private_data && private_data->has_xtal_div2) {
+>> +                       xtal_div = 2;
+> 
+> Better to define privata data always
+
+While I'm in favor of defining private data, here 3 and 2 are actually the values
+2 and 3 used to divide.
+
+The code is easy to read and we quickly understand this value is the clock divider.
+
+> 
+> 
+>> +                       val |= AML_UART_BAUD_XTAL_DIV2;
+>> +               }
+>> +               val |= DIV_ROUND_CLOSEST(port->uartclk / xtal_div, baud) - 1;
+> 
 > 
 
-Actually, the original boolean "has_xtal_div2" is right because it encodes
-if the HW has an internal /2 divider for the XTAL clock input path.
-
-The HW historically has a /3 divider on the same path, and new HW now has both.
-
-So the boolean indicates if the /2 divider is present so it can be used.
-
-So I'm in favour of keeping the boolean type.
-For the naming, it seems appropriate for me.
-
-Neil
