@@ -2,140 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF33C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 08:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED081C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 09:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387089AbiDUJBJ (ORCPT
+        id S1386167AbiDUJd5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        Thu, 21 Apr 2022 05:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387064AbiDUJBD (ORCPT
+        with ESMTP id S1387075AbiDUJd4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:01:03 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C6221248;
-        Thu, 21 Apr 2022 01:58:13 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 39E38212CA;
-        Thu, 21 Apr 2022 08:58:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650531492; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
+        Thu, 21 Apr 2022 05:33:56 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FDA1572E;
+        Thu, 21 Apr 2022 02:31:01 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 53F1B10000B;
+        Thu, 21 Apr 2022 09:30:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650533460;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aCVuSWmdJcT0qsHrLl/HQ/xnZ+4OVTDDHOXy1yDRIyw=;
-        b=eGuZm4DngR1Y6cKZRBDMMR4iSQm29zB1KC9VE65ajS+H1IVCdPmIVCAaRau77clJ0i3VR/
-        kySKBiqhB65x92DcqSbKm8QTJ0XA2RVxH+TIwJ/splOo7BnQa45tlRwZVAJedzzOhgRFS/
-        wM66pZhDcIDFm8H0EqrjZ/KuwPm5jfk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650531492;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aCVuSWmdJcT0qsHrLl/HQ/xnZ+4OVTDDHOXy1yDRIyw=;
-        b=wtqWh50xiFPYH77mfVbJvf0zfVIyeNs+iB2pjNANjyLngg/CxnxNNQQup6165JnBlfsG5B
-        +GM35fjb3Bok+rBw==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 11D892C141;
-        Thu, 21 Apr 2022 08:58:12 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 10/10] serial: icom: remove unused struct icom_port members
-Date:   Thu, 21 Apr 2022 10:58:08 +0200
-Message-Id: <20220421085808.24152-11-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220421085808.24152-1-jslaby@suse.cz>
-References: <20220421085808.24152-1-jslaby@suse.cz>
+        bh=jOpmszXJ3iMBh6cFK7wZsIpou04C1QcGJL7xJN3BljE=;
+        b=pBQaEf5T44X6oAlSN9VWd08NlLGZoVeMs0LuD/aOQwRt736+GTxU5N4eRjaUzbN2tMybeu
+        H0ZrtaiHB63tZW5e/vl7KUgyOV3NRYQJmxxlG1UUL7wWf2CR7BsIEZ4/4h8vV/U/SZKued
+        eLUWFbiLSZiij6NW2711pXdGHdqv0ETXgDu1Gqa1OGR2yMbL3FQKqLJVrDd88CBQaqDM2e
+        AwlzMQAIRleIpexHM/2RboV5rNbnLYnJoGdSiWSQjGdr3vOSUXH18K8eFreDkHT9Rc6JKN
+        pKHEtta3pYo+pr/r5WjiLx0IRqkEjCSyTOYiwXtdGM9TDF95ueU9B0Qq9d50Fg==
+Date:   Thu, 21 Apr 2022 11:30:57 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v5 00/11] serial: 8250: dw: RZN1 DMA support
+Message-ID: <20220421113057.7a8ea5d1@xps13>
+In-Reply-To: <20220420105631.2bff51c6@xps13>
+References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
+        <Ylk8pXKgM3LN1rVS@kroah.com>
+        <20220420105631.2bff51c6@xps13>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some members of struct icom_port are completely unused or only set and
-never read. Remove all those.
+Hello,
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/icom.c | 19 -------------------
- 1 file changed, 19 deletions(-)
+miquel.raynal@bootlin.com wrote on Wed, 20 Apr 2022 10:56:31 +0200:
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index e22f37a41764..45df29947fe8 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -252,10 +252,6 @@ struct icom_adapter;
- 
- struct icom_port {
- 	struct uart_port uart_port;
--	u8 imbed_modem;
--#define ICOM_UNKNOWN		1
--#define ICOM_RVX		2
--#define ICOM_IMBED_MODEM	3
- 	unsigned char cable_id;
- 	unsigned char read_status_mask;
- 	unsigned char ignore_status_mask;
-@@ -272,11 +268,9 @@ struct icom_port {
- 	unsigned char *recv_buf;
- 	dma_addr_t recv_buf_pci;
- 	int next_rcv;
--	int put_length;
- 	int status;
- #define ICOM_PORT_ACTIVE	1	/* Port exists. */
- #define ICOM_PORT_OFF		0	/* Port does not exist. */
--	int load_in_progress;
- 	struct icom_adapter *adapter;
- };
- 
-@@ -1517,7 +1511,6 @@ static void icom_set_termios(struct uart_port *port,
- 	writel(icom_port->statStg_pci + offset,
- 	       &icom_port->dram->RcvStatusAddr);
- 	icom_port->next_rcv = 0;
--	icom_port->put_length = 0;
- 	*icom_port->xmitRestart = 0;
- 	writel(icom_port->xmitRestart_pci,
- 	       &icom_port->dram->XmitStatusAddr);
-@@ -1578,7 +1571,6 @@ static int icom_init_ports(struct icom_adapter *icom_adapter)
- 			icom_port = &icom_adapter->port_info[i];
- 			icom_port->port = i;
- 			icom_port->status = ICOM_PORT_ACTIVE;
--			icom_port->imbed_modem = ICOM_UNKNOWN;
- 		}
- 	} else {
- 		if (subsystem_id == PCI_DEVICE_ID_IBM_ICOM_FOUR_PORT_MODEL) {
-@@ -1589,26 +1581,15 @@ static int icom_init_ports(struct icom_adapter *icom_adapter)
- 
- 				icom_port->port = i;
- 				icom_port->status = ICOM_PORT_ACTIVE;
--				icom_port->imbed_modem = ICOM_IMBED_MODEM;
- 			}
- 		} else {
- 			icom_adapter->numb_ports = 4;
- 
- 			icom_adapter->port_info[0].port = 0;
- 			icom_adapter->port_info[0].status = ICOM_PORT_ACTIVE;
--
--			if (subsystem_id ==
--			    PCI_DEVICE_ID_IBM_ICOM_V2_ONE_PORT_RVX_ONE_PORT_MDM) {
--				icom_adapter->port_info[0].imbed_modem = ICOM_IMBED_MODEM;
--			} else {
--				icom_adapter->port_info[0].imbed_modem = ICOM_RVX;
--			}
--
- 			icom_adapter->port_info[1].status = ICOM_PORT_OFF;
--
- 			icom_adapter->port_info[2].port = 2;
- 			icom_adapter->port_info[2].status = ICOM_PORT_ACTIVE;
--			icom_adapter->port_info[2].imbed_modem = ICOM_RVX;
- 			icom_adapter->port_info[3].status = ICOM_PORT_OFF;
- 		}
- 	}
--- 
-2.36.0
+> Hi Greg,
+>=20
+> gregkh@linuxfoundation.org wrote on Fri, 15 Apr 2022 11:36:37 +0200:
+>=20
+> > On Wed, Apr 13, 2022 at 09:51:30AM +0200, Miquel Raynal wrote: =20
+> > > Hello,
+> > >=20
+> > > Support for the RZN1 DMA engine allows us adapt a little bit the 8250=
+ DW
+> > > UART driver with to bring DMA support for this SoC.
+> > >=20
+> > > This short series applies on top of the series bringing RZN1 DMA
+> > > support, currently on its v10, see [1]. Technically speaking, only th=
+e DT
+> > > patch needs to be applied after [1]. The other patches can come in at
+> > > any moment, because if no "dmas" property is provided in the DT, DMA
+> > > support will simply be ignored.
+> > >=20
+> > > [1] https://lore.kernel.org/dmaengine/20220412193936.63355-1-miquel.r=
+aynal@bootlin.com/T/#t   =20
+> >=20
+> > Can you rebase on my tty-next branch please?  This series does not apply
+> > anymore. =20
+>=20
+> Yes of course.
 
+Actually the conflict comes from the fact that I was asked to
+rebase this series on top of a couple of changes for supporting a
+Starfive controller (jh7100-hsuart) which impacted the same area as I
+was touching.
+
+It turns out this series was not merged during the last merge cycle as
+expected. It seems to be because it received comments that were raised
+when reviewing my own series and which I actually fixed.
+
+Anyway, I've dropped the commit adding jh7100 support but squashed the
+patch bringing platform data to 8250_dw.c so that this series can now
+stand alone (see v6). It will be very easy to rebase the series from
+Emil on top of this one.
+
+Thanks,
+Miqu=C3=A8l
