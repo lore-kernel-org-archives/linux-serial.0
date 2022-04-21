@@ -2,123 +2,196 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB2AC433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40BBC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:19:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388280AbiDUKUJ (ORCPT
+        id S1388260AbiDUKWP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
+        Thu, 21 Apr 2022 06:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388252AbiDUKUE (ORCPT
+        with ESMTP id S1388318AbiDUKWB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:20:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4365728E27;
-        Thu, 21 Apr 2022 03:17:13 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 25BCC21600;
-        Thu, 21 Apr 2022 10:17:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650536231; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uJilQ8bhQzcKnYlu51Jw3ZNoqJWqrcIlFOvokPNs7P4=;
-        b=0LFDeKlXLqK7riuToQsDBZwBw1UHI1ZSa/PONl16yS69ANd3Vp3DMlN00L5Wi5eA5jRImw
-        yjPQDxx7VC3iYY90sye+4oWBtp5PU/yWPH6j0slFsh2dXjNZVr2hgVp1KKECsZcnqxBdIP
-        RurrsQMVOI7RLEDOlEZzcmJb2mjxu8Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650536231;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uJilQ8bhQzcKnYlu51Jw3ZNoqJWqrcIlFOvokPNs7P4=;
-        b=n/AFf/lVGOsWq6bgMByjw29zU+c47oh6LCyXIIhkBnHj/At25vmmvGtZ0LB8wHKgsN4FeF
-        etPdJEtqWQEzwrDA==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F18332C141;
-        Thu, 21 Apr 2022 10:17:10 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 7/7] serial: allow COMPILE_TEST for some drivers
-Date:   Thu, 21 Apr 2022 12:17:08 +0200
-Message-Id: <20220421101708.5640-8-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220421101708.5640-1-jslaby@suse.cz>
-References: <20220421101708.5640-1-jslaby@suse.cz>
+        Thu, 21 Apr 2022 06:22:01 -0400
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035012E9D4;
+        Thu, 21 Apr 2022 03:19:05 -0700 (PDT)
+Received: by mail-qt1-f171.google.com with SMTP id x24so2878252qtq.11;
+        Thu, 21 Apr 2022 03:19:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IG3fgmM/VMoT7o6u2GHK+iHe3wI3I4YzluD8rX0me+Y=;
+        b=QFa99HG+EiNYJdMF30JM9r2OFzd3dgBvvsgLeA7+gLZGzscXSj/N2oeFamre+aX6hJ
+         ZQhPNoyXHXscN32xsXImk7D5Uf+Ab5bBbYCK4t0rOLilJf+KA2qdyKrPnj9RkXMu879l
+         CfNASGeuJ1SjKCQP3sQem6s69EebrDmnjDnBWtL5Hp+nScrzBlnSwDkeqiu7UF0VGPo/
+         sZTF4MxhK5pacTzNToF0XDssXpHWO2HnQ7SLQHL9aj8VPYKlD72E95qX8XG+CsrNv2yh
+         VkG+gbSx9kHXcFOnpZ/fjbL7Ic70eDWTxToIygO9AH8rHUZc/VPpnlk4TbEM51LlOyzv
+         JMiA==
+X-Gm-Message-State: AOAM530s/G6P5vJ1Dp24q3Tqxs4HkTWAPvyO+Eh790Ok9bhsSnWdQb8W
+        HodiFjOkTIpvw9awEOybI1EYpdwhddkc8qB3
+X-Google-Smtp-Source: ABdhPJx81BpuNTWNKM7QQ6xP7INo7piCiPQlk50/YsjUhWoxV4EjyIgOaLz7WlRy3j4UEqHeU3maEw==
+X-Received: by 2002:ac8:7f52:0:b0:2f3:3815:83e6 with SMTP id g18-20020ac87f52000000b002f3381583e6mr7885395qtk.15.1650536343874;
+        Thu, 21 Apr 2022 03:19:03 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id c17-20020ac85a91000000b002e1dd8ae44bsm3307639qtc.29.2022.04.21.03.19.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 03:19:03 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id j2so7949111ybu.0;
+        Thu, 21 Apr 2022 03:19:03 -0700 (PDT)
+X-Received: by 2002:a5b:24e:0:b0:63d:cba0:3d55 with SMTP id
+ g14-20020a5b024e000000b0063dcba03d55mr23540651ybp.613.1650536343099; Thu, 21
+ Apr 2022 03:19:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com> <20220420084255.375700-8-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20220420084255.375700-8-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Apr 2022 12:18:51 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVkcG-edq=v_onOc66y3UpJgr74R1c9t7kfYhnOnqZdZQ@mail.gmail.com>
+Message-ID: <CAMuHMdVkcG-edq=v_onOc66y3UpJgr74R1c9t7kfYhnOnqZdZQ@mail.gmail.com>
+Subject: Re: [PATCH 07/15] dt-bindings: clock: Add r8a779g0 CPG Core Clock Definitions
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some more serial drivers can be compile-tested under certain
-circumstances (when building a specific architecture). So allow for
-that.
+Hi Shimoda-san,
 
-This reduces the need of zillion mach/subarch-specific configs. And
-since the 0day bot has only allmodconfig's for some archs, this
-increases build coverage there too.
+On Wed, Apr 20, 2022 at 10:43 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add all Clock Pulse Generator Core Clock Outputs for the Renesas
+> R-Car V4H (R8A779G0) SoC.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Note that cpm needs a minor update in the header, so that it drags in
-at least some defines (CPM2 ones).
+Thanks for your patch!
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/Kconfig             | 6 +++---
- drivers/tty/serial/cpm_uart/cpm_uart.h | 2 ++
- 2 files changed, 5 insertions(+), 3 deletions(-)
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+> @@ -0,0 +1,87 @@
+> +/* SPDX-License-Identifier: (GPL-2.0 or MIT) */
+> +/*
+> + * Copyright (C) 2022 Renesas Electronics Corp.
+> + */
+> +#ifndef __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
+> +#define __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
+> +
+> +#include <dt-bindings/clock/renesas-cpg-mssr.h>
+> +
+> +/* r8a779g0 CPG Core Clocks */
+> +
+> +#define R8A779G0_CLK_ZX                        0
+> +#define R8A779G0_CLK_ZS                        1
+> +#define R8A779G0_CLK_ZT                        2
+> +#define R8A779G0_CLK_ZTR               3
+> +#define R8A779G0_CLK_S0D2              4
+> +#define R8A779G0_CLK_S0D3              5
+> +#define R8A779G0_CLK_S0D4              6
+> +#define R8A779G0_CLK_S0D1_VIO          7
+> +#define R8A779G0_CLK_S0D2_VIO          8
+> +#define R8A779G0_CLK_S0D4_VIO          9
+> +#define R8A779G0_CLK_S0D8_VIO          10
+> +#define R8A779G0_CLK_S0D1_VC           11
+> +#define R8A779G0_CLK_S0D2_VC           12
+> +#define R8A779G0_CLK_S0D4_VC           13
+> +#define R8A779G0_CLK_S0D2_MM           14
+> +#define R8A779G0_CLK_S0D4_MM           15
+> +#define R8A779G0_CLK_S0D2_U3DG         16
+> +#define R8A779G0_CLK_S0D4_U3DG         17
+> +#define R8A779G0_CLK_S0D2_RT           18
+> +#define R8A779G0_CLK_S0D3_RT           19
+> +#define R8A779G0_CLK_S0D4_RT           20
+> +#define R8A779G0_CLK_S0D6_RT           21
+> +#define R8A779G0_CLK_S0D24_RT          22
+> +#define R8A779G0_CLK_S0D2_PER          23
+> +#define R8A779G0_CLK_S0D3_PER          24
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 20cb103972fa..2d3eed53b43e 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -782,7 +782,7 @@ config SERIAL_PMACZILOG_CONSOLE
- 
- config SERIAL_CPM
- 	tristate "CPM SCC/SMC serial port support"
--	depends on CPM2 || CPM1
-+	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
- 	select SERIAL_CORE
- 	help
- 	  This driver supports the SCC and SMC serial ports on Motorola 
-@@ -806,7 +806,7 @@ config SERIAL_CPM_CONSOLE
- 
- config SERIAL_PIC32
- 	tristate "Microchip PIC32 serial support"
--	depends on MACH_PIC32
-+	depends on MACH_PIC32 || (MIPS && COMPILE_TEST)
- 	select SERIAL_CORE
- 	help
- 	  If you have a PIC32, this driver supports the serial ports.
-@@ -1246,7 +1246,7 @@ config SERIAL_XILINX_PS_UART_CONSOLE
- 
- config SERIAL_AR933X
- 	tristate "AR933X serial port support"
--	depends on HAVE_CLK && ATH79
-+	depends on (HAVE_CLK && ATH79) || (MIPS && COMPILE_TEST)
- 	select SERIAL_CORE
- 	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	help
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
-index 6113b953ce25..8c582779cf22 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart.h
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
-@@ -19,6 +19,8 @@ struct gpio_desc;
- #include "cpm_uart_cpm2.h"
- #elif defined(CONFIG_CPM1)
- #include "cpm_uart_cpm1.h"
-+#elif defined(CONFIG_COMPILE_TEST)
-+#include "cpm_uart_cpm2.h"
- #endif
- 
- #define SERIAL_CPM_MAJOR	204
--- 
-2.36.0
+Missing S0D4_PER?
 
+> +#define R8A779G0_CLK_S0D6_PER          25
+> +#define R8A779G0_CLK_S0D12_PER         26
+> +#define R8A779G0_CLK_S0D24_PER         27
+> +#define R8A779G0_CLK_S0D1_HSC          28
+> +#define R8A779G0_CLK_S0D2_HSC          29
+> +#define R8A779G0_CLK_S0D4_HSC          30
+> +#define R8A779G0_CLK_S0D2_CC           31
+> +#define R8A779G0_CLK_SVD1_IR           32
+> +#define R8A779G0_CLK_SVD2_IR           33
+
+Missing IMPA0?
+Or is it internal-only? Perhaps the same for IMPA1 below?
+
+> +#define R8A779G0_CLK_SVD1_VIP          34
+> +#define R8A779G0_CLK_SVD2_VIP          35
+> +#define R8A779G0_CLK_CL                        36
+> +#define R8A779G0_CLK_CL16M             37
+> +#define R8A779G0_CLK_CL16M_MM          38
+> +#define R8A779G0_CLK_CL16M_RT          39
+> +#define R8A779G0_CLK_CL16M_PER         40
+> +#define R8A779G0_CLK_CL16M_HSC         41
+> +#define R8A779G0_CLK_Z0                        42
+> +#define R8A779G0_CLK_ZB3               43
+> +#define R8A779G0_CLK_ZB3D2             44
+> +#define R8A779G0_CLK_ZB3D4             45
+> +#define R8A779G0_CLK_ZG                        46
+> +#define R8A779G0_CLK_SD0H              47
+> +#define R8A779G0_CLK_SD0               48
+> +#define R8A779G0_CLK_RPC               49
+> +#define R8A779G0_CLK_RPCD2             50
+> +#define R8A779G0_CLK_MSO               51
+> +#define R8A779G0_CLK_CANFD             52
+> +#define R8A779G0_CLK_CSI               53
+> +#define R8A779G0_CLK_FRAY              54
+> +#define R8A779G0_CLK_IPC               55
+> +#define R8A779G0_CLK_SASYNCRT          56
+> +#define R8A779G0_CLK_SASYNCPERD1       57
+> +#define R8A779G0_CLK_SASYNCPERD2       58
+> +#define R8A779G0_CLK_SASYNCPERD4       59
+
+Missing VIOBUS? You do have it as an internal core clock.
+
+> +#define R8A779G0_CLK_VIOBUSD2          60
+
+Missing VCBUS? You do have it as an internal core clock.
+
+> +#define R8A779G0_CLK_VCBUSD2           61
+> +#define R8A779G0_CLK_IMPA1             62
+> +#define R8A779G0_CLK_DSIEXT            63
+> +#define R8A779G0_CLK_DSIREF            64
+> +#define R8A779G0_CLK_ADGH              65
+> +#define R8A779G0_CLK_OSC               66
+> +#define R8A779G0_CLK_ZR0               67
+> +#define R8A779G0_CLK_ZR1               68
+> +#define R8A779G0_CLK_ZR2               69
+
+Missing IMPA?
+Figure 8.1.1 (Block Diagram of CPG) indicates it's a direct
+input to the IMP block, hence not an internal core clock.
+
+> +#define R8A779G0_CLK_IMPAD4            70
+> +#define R8A779G0_CLK_CPEX              71
+> +#define R8A779G0_CLK_CBFUSA            72
+> +#define R8A779G0_CLK_R                 73
+> +
+> +#endif /* __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__ */
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
