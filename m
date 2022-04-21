@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4822C43217
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB2AC433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388277AbiDUKUI (ORCPT
+        id S1388280AbiDUKUJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
+        Thu, 21 Apr 2022 06:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379764AbiDUKUD (ORCPT
+        with ESMTP id S1388252AbiDUKUE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:20:03 -0400
+        Thu, 21 Apr 2022 06:20:04 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A925C40;
-        Thu, 21 Apr 2022 03:17:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4365728E27;
+        Thu, 21 Apr 2022 03:17:13 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A201921110;
-        Thu, 21 Apr 2022 10:17:10 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 25BCC21600;
+        Thu, 21 Apr 2022 10:17:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650536230; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1650536231; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/Nre80yG3dX3kSQn05Ue/XY8zsmy/wEbfiIp5CM7yac=;
-        b=TJ/aeHQEIzst0dMgWVyDEvZKl/9sw9YXVuYCt8QqePeQOp9t3zw4y+ZemPqnfHX0JeSwLo
-        qG0p04wrGwFk9y6F0HzAdxVKzgVA2fwLJ+m7SzJ/H83v1FB01BWFvMQjpNxERG0dPHv6BU
-        hLUBPEGbD0sA/xuXErAwnV1c3LZlQzs=
+        bh=uJilQ8bhQzcKnYlu51Jw3ZNoqJWqrcIlFOvokPNs7P4=;
+        b=0LFDeKlXLqK7riuToQsDBZwBw1UHI1ZSa/PONl16yS69ANd3Vp3DMlN00L5Wi5eA5jRImw
+        yjPQDxx7VC3iYY90sye+4oWBtp5PU/yWPH6j0slFsh2dXjNZVr2hgVp1KKECsZcnqxBdIP
+        RurrsQMVOI7RLEDOlEZzcmJb2mjxu8Y=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650536230;
+        s=susede2_ed25519; t=1650536231;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/Nre80yG3dX3kSQn05Ue/XY8zsmy/wEbfiIp5CM7yac=;
-        b=3eN1T6Khp94LhXBTUA9ggDKKjg5/dPqrHN0XPr5EiyCaynzS9pjA1tywpAY8AcGd/oTjLm
-        BEoFnS8Af8dY+HBg==
+        bh=uJilQ8bhQzcKnYlu51Jw3ZNoqJWqrcIlFOvokPNs7P4=;
+        b=n/AFf/lVGOsWq6bgMByjw29zU+c47oh6LCyXIIhkBnHj/At25vmmvGtZ0LB8wHKgsN4FeF
+        etPdJEtqWQEzwrDA==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 602062C141;
+        by relay2.suse.de (Postfix) with ESMTPS id F18332C141;
         Thu, 21 Apr 2022 10:17:10 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5/7] serial: qcom: use check for empty instead of pending
-Date:   Thu, 21 Apr 2022 12:17:06 +0200
-Message-Id: <20220421101708.5640-6-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 7/7] serial: allow COMPILE_TEST for some drivers
+Date:   Thu, 21 Apr 2022 12:17:08 +0200
+Message-Id: <20220421101708.5640-8-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220421101708.5640-1-jslaby@suse.cz>
 References: <20220421101708.5640-1-jslaby@suse.cz>
@@ -59,32 +58,67 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The code wants to know if the circ buffer is empty, so use the proper
-macro.
+Some more serial drivers can be compile-tested under certain
+circumstances (when building a specific architecture). So allow for
+that.
 
-No functional change intended, just saner function name used for that
-use case.
+This reduces the need of zillion mach/subarch-specific configs. And
+since the 0day bot has only allmodconfig's for some archs, this
+increases build coverage there too.
 
-Cc: Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Note that cpm needs a minor update in the header, so that it drags in
+at least some defines (CPM2 ones).
+
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/Kconfig             | 6 +++---
+ drivers/tty/serial/cpm_uart/cpm_uart.h | 2 ++
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 1543a6028856..f4961022d7d0 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -507,7 +507,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 		 */
- 		qcom_geni_serial_poll_tx_done(uport);
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 20cb103972fa..2d3eed53b43e 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -782,7 +782,7 @@ config SERIAL_PMACZILOG_CONSOLE
  
--		if (uart_circ_chars_pending(&uport->state->xmit)) {
-+		if (!uart_circ_empty(&uport->state->xmit)) {
- 			irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
- 			writel(irq_en | M_TX_FIFO_WATERMARK_EN,
- 					uport->membase + SE_GENI_M_IRQ_EN);
+ config SERIAL_CPM
+ 	tristate "CPM SCC/SMC serial port support"
+-	depends on CPM2 || CPM1
++	depends on CPM2 || CPM1 || (PPC32 && COMPILE_TEST)
+ 	select SERIAL_CORE
+ 	help
+ 	  This driver supports the SCC and SMC serial ports on Motorola 
+@@ -806,7 +806,7 @@ config SERIAL_CPM_CONSOLE
+ 
+ config SERIAL_PIC32
+ 	tristate "Microchip PIC32 serial support"
+-	depends on MACH_PIC32
++	depends on MACH_PIC32 || (MIPS && COMPILE_TEST)
+ 	select SERIAL_CORE
+ 	help
+ 	  If you have a PIC32, this driver supports the serial ports.
+@@ -1246,7 +1246,7 @@ config SERIAL_XILINX_PS_UART_CONSOLE
+ 
+ config SERIAL_AR933X
+ 	tristate "AR933X serial port support"
+-	depends on HAVE_CLK && ATH79
++	depends on (HAVE_CLK && ATH79) || (MIPS && COMPILE_TEST)
+ 	select SERIAL_CORE
+ 	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
+index 6113b953ce25..8c582779cf22 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart.h
++++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
+@@ -19,6 +19,8 @@ struct gpio_desc;
+ #include "cpm_uart_cpm2.h"
+ #elif defined(CONFIG_CPM1)
+ #include "cpm_uart_cpm1.h"
++#elif defined(CONFIG_COMPILE_TEST)
++#include "cpm_uart_cpm2.h"
+ #endif
+ 
+ #define SERIAL_CPM_MAJOR	204
 -- 
 2.36.0
 
