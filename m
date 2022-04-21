@@ -2,109 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5CCC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 13:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57371C4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 13:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbiDUNTt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 09:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        id S1386875AbiDUNhn (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Apr 2022 09:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbiDUNTt (ORCPT
+        with ESMTP id S230271AbiDUNhb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 09:19:49 -0400
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BD3AE68;
-        Thu, 21 Apr 2022 06:16:59 -0700 (PDT)
-Received: by mail-qv1-f54.google.com with SMTP id x20so3615342qvl.10;
-        Thu, 21 Apr 2022 06:16:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LdrpbIr4ixaOqxSs9jtnnn2sf4I8o4aZzI3XC684CAw=;
-        b=COlR8byjH39Q5LSt6OMrvwPtq5olSRAXChEHh6kb+ItFjKi9QDHbnveKxu+aIZvhcM
-         0kA/3wcrK3gd0z45G7lseCR/borcduys0bYiar7jXTkVhWFYsqir2xQdSGJ7/S2hy1/P
-         WfbCDBgpkpin6Piirrh92aMrOtdWxAKEyfiZiZw8RlwBp4b0HjC3BoHSFf5rIWQNUlC+
-         tr9Yvj763eGSPqQpyQAzyQqqfYmIQ+veOi4zoh24DZt360F8bdpGgOJaKlndgZi7dZ6o
-         5eMA3mvSyZwscJFXRX+n+4TBKK0cqUDsCtMouc8XdNbJgEh3XoRXp9u05B//nYmK+LGg
-         EDhQ==
-X-Gm-Message-State: AOAM532H00MnW8c++N4JOBbmMnh23rJWFeZQK/h8UNHPKx6xzJpgP0+b
-        BzaTfTTGKOgdfKuCpC7rgTYwx/ibd6Tk2KAI
-X-Google-Smtp-Source: ABdhPJySxaTlVvMAOi0y5iiVOGnOfFkrGAKbIE1V8EpPDSyW9joZkmn7viRyTlY9G1UIc1hkFUYkUA==
-X-Received: by 2002:ad4:5aa2:0:b0:446:4a8a:3fd9 with SMTP id u2-20020ad45aa2000000b004464a8a3fd9mr17903895qvg.97.1650547018479;
-        Thu, 21 Apr 2022 06:16:58 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id 9-20020a370909000000b0069ea2d5bfc2sm2834774qkj.134.2022.04.21.06.16.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 06:16:58 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2f18982c255so51754617b3.1;
-        Thu, 21 Apr 2022 06:16:58 -0700 (PDT)
-X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
- g16-20020a815210000000b002ef21e354ddmr26153395ywb.438.1650547017921; Thu, 21
- Apr 2022 06:16:57 -0700 (PDT)
+        Thu, 21 Apr 2022 09:37:31 -0400
+Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [IPv6:2a0b:5c81:1c1::37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFD12ED69;
+        Thu, 21 Apr 2022 06:34:41 -0700 (PDT)
+Received: from darkstar.musicnaut.iki.fi (85-76-47-192-nat.elisa-mobile.fi [85.76.47.192])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: aaro.koskinen)
+        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id 047811B00252;
+        Thu, 21 Apr 2022 16:34:32 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
+        t=1650548074;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oVFIWam2OH5Kq5QzsfblzUEMIMiatzAi7D5irCcCglk=;
+        b=Xk3qyrppSMBB4y+4boXcQF3oQ0tJICSyEousvelDBkd8/PVx55tQbJieAi/Q0KQa0aNG+G
+        Gh88Z+pM8E36JmzxlWSVvjXm3PFhBwLXYL2LZOWOsctt2/ybfngzEzXevKqVRqqsk+dHOX
+        5L1WRR3RN0Tc57TLDGaoxQzs/vTRLS73kqV8NQ7Pr+rYaKPhEVw6YpbHAi1CUcgHmT/iJb
+        sSsFTNRKlLJoxWjnYPJUSCoDtMuNfYAqp6Y4933cAcgTAbeGBst/0aU+ZHi8x118KnYG/L
+        TTEMpWSI21eBdlKccjScwxNSRB5ywON2ldVT1bI/+m9vyrFPnxxWxtiiOfNC6w==
+Date:   Thu, 21 Apr 2022 16:34:31 +0300
+From:   Aaro Koskinen <aaro.koskinen@iki.fi>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-omap <linux-omap@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        dmaengine@vger.kernel.org,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH 00/41] OMAP1 full multiplatform conversion
+Message-ID: <20220421133431.GE1947@darkstar.musicnaut.iki.fi>
+References: <20220419133723.1394715-1-arnd@kernel.org>
+ <20220420170836.GB1947@darkstar.musicnaut.iki.fi>
+ <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com> <20220420084255.375700-11-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20220420084255.375700-11-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 21 Apr 2022 15:16:46 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUsO_UPPBumad2-=F7fdPSfCFirE8nNePfXahYAHL83rg@mail.gmail.com>
-Message-ID: <CAMuHMdUsO_UPPBumad2-=F7fdPSfCFirE8nNePfXahYAHL83rg@mail.gmail.com>
-Subject: Re: [PATCH 10/15] soc: renesas: Identify R-Car V4H
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com>
+ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1650548074; a=rsa-sha256;
+        cv=none;
+        b=ENXGTtwbaVogGy0K8rD23cjHmjO1KDBpZYPSWyAXiJ0/g3DluUJMMqXizYyXV1sh/1O56S
+        hChw4SwQwbKFg4HYlY2SOiU8koj4G0UA6uGgTWSMxSwgySv+tbXfSR2Tt70pNgc6FN/vqj
+        fDExRVdSPenGd/ZTQhfjmyvSX3P7pooRbwh0WQDjEhItMOJyG5yZgN9teFQT3NBHXEEZkO
+        lTJHNaVgxdVFvqiak5FfjdiYOvwW5qr/IFspdks2sOUviaT7JpvKaacUapRAwuXFYtOguN
+        JXEZ3bM5xviSbbt9Tw3xErBDkB9cnwUXXzqGZHNp79d0+eb+sY0cVMOQI8ss7A==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=aaro.koskinen smtp.mailfrom=aaro.koskinen@iki.fi
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=lahtoruutu; t=1650548074;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oVFIWam2OH5Kq5QzsfblzUEMIMiatzAi7D5irCcCglk=;
+        b=Eu1uUO0EKvbhrdQZfCpIhRELzJA5jQZA+tye8R+aaTvgG9DkVEsXKYWX2Sby3kmhYmBCFx
+        570Cbs63dCqUFZqQdnWOK5t2vzZfwXPpwZynEikAKA3hi3QfuIi/BoBmae0xNSLey+fMmB
+        6AN1xF39YRJln008whjTgBohIBALbd/JXyh+rxwe1mx9rmT55Z+64rbOepQpAj7WZ0ttFr
+        jnTgxti7i7/9Pg4jNgskYWOOvKpXwrgTWzEQwA6H3TD1Jh0kJTMK2AunGS+FmvtC90A9Rp
+        r/9gYERVC+5BvSqEpSaGtYy+3htyiKaREqUWXaB7dxpxJqJYBA33p4txWzgVSw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Shimoda-san,
+Hi,
 
-On Wed, Apr 20, 2022 at 10:43 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add support for identifying the R-Car V4H (R8A779G0) SoC.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+On Wed, Apr 20, 2022 at 10:00:13PM +0200, Arnd Bergmann wrote:
+> On Wed, Apr 20, 2022 at 7:08 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
+> > On Tue, Apr 19, 2022 at 03:36:42PM +0200, Arnd Bergmann wrote:
+> > > From: Arnd Bergmann <arnd@arndb.de>
+> > >
+> > > This is the full series for converting OMAP1 to multiplatform, rebased
+> > > from my 2019 attempt to do the same thing. The soc tree contains simpler
+> > > patches to do the same for iop32x, ixp4xx, ep93xx and s3c24xx, which
+> > > means we are getting closer to completing this for all ARMv5 platforms
+> > > (I have patches for PXA, which is the last one remaining).
+> > >
+> > > Janusz already tested the branch separately and did the missing work
+> > > for the common-clk conversion after my previous approach was broken.
+> >
+> > I tested the full series on the following OMAP1 boards: ams-delta,
+> > nokia770, osk, palmte and sx1 (QEMU only).
+> >
+> > Apart from the earlyprintk breakage, everything seemed to work OK.
+> 
+> Nice, thanks a lot for testing!
 
-Thanks for your patch!
+With the updated patch 26 also earlyprintk now works, so if you still
+update the patches, feel free to add for the whole series:
 
-> --- a/drivers/soc/renesas/Kconfig
-> +++ b/drivers/soc/renesas/Kconfig
-> @@ -247,6 +247,13 @@ config ARCH_R8A779F0
->         help
->           This enables support for the Renesas R-Car S4-8 SoC.
->
-> +config ARCH_R8A779G0
-> +       bool "ARM64 Platform support for R-Car V4H"
-> +       select ARCH_RCAR_GEN3
-> +       select SYSC_R8A779G0
-> +       help
-> +         This enables support for the Renesas R-Car V4H SoC.
-> +
+Tested-by: Aaro Koskinen <aaro.koskinen@iki.fi>
 
-Please insert below ARCH_R8A779A0, to preserve alphabetical
-order (by description).
+Thanks,
 
->  config ARCH_R8A77980
->         bool "ARM64 Platform support for R-Car V3H"
->         select ARCH_RCAR_GEN3
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.19, with the above fixed.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+A.
