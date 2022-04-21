@@ -2,108 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED081C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 09:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A195C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 09:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386167AbiDUJd5 (ORCPT
+        id S1387713AbiDUJkO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        Thu, 21 Apr 2022 05:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387075AbiDUJd4 (ORCPT
+        with ESMTP id S1384833AbiDUJkM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:33:56 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FDA1572E;
-        Thu, 21 Apr 2022 02:31:01 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 53F1B10000B;
-        Thu, 21 Apr 2022 09:30:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650533460;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jOpmszXJ3iMBh6cFK7wZsIpou04C1QcGJL7xJN3BljE=;
-        b=pBQaEf5T44X6oAlSN9VWd08NlLGZoVeMs0LuD/aOQwRt736+GTxU5N4eRjaUzbN2tMybeu
-        H0ZrtaiHB63tZW5e/vl7KUgyOV3NRYQJmxxlG1UUL7wWf2CR7BsIEZ4/4h8vV/U/SZKued
-        eLUWFbiLSZiij6NW2711pXdGHdqv0ETXgDu1Gqa1OGR2yMbL3FQKqLJVrDd88CBQaqDM2e
-        AwlzMQAIRleIpexHM/2RboV5rNbnLYnJoGdSiWSQjGdr3vOSUXH18K8eFreDkHT9Rc6JKN
-        pKHEtta3pYo+pr/r5WjiLx0IRqkEjCSyTOYiwXtdGM9TDF95ueU9B0Qq9d50Fg==
-Date:   Thu, 21 Apr 2022 11:30:57 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v5 00/11] serial: 8250: dw: RZN1 DMA support
-Message-ID: <20220421113057.7a8ea5d1@xps13>
-In-Reply-To: <20220420105631.2bff51c6@xps13>
-References: <20220413075141.72777-1-miquel.raynal@bootlin.com>
-        <Ylk8pXKgM3LN1rVS@kroah.com>
-        <20220420105631.2bff51c6@xps13>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Thu, 21 Apr 2022 05:40:12 -0400
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81EB11A1A;
+        Thu, 21 Apr 2022 02:37:22 -0700 (PDT)
+Received: by mail-qt1-f174.google.com with SMTP id hf18so2858025qtb.0;
+        Thu, 21 Apr 2022 02:37:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9L340xJdiQzYg/eB8Jbz28dOkpWgxBK5SkWFK1V58bU=;
+        b=wAiQUes9/Ym8I9MmbrZ5toHOIUtl2Fawjq3EXrVrMK4KK6bhq/TmRXqXOQZTMWyvP4
+         nFV0JT9kZ+gjAl2LBYq7SoTdlLc44BD4mTRa/Xsrf2nAtwW1tKfhORjfPGVDl3JRtFEl
+         yhhpqpgdG6+WqYsTwJgjy3RiRmoP2KXSoUoFCaNiRz6YQJhVhuFv1UOcPm9kkIvj4azu
+         V+Dsi43uZg4b/AgctKPmagxB/e8BI0YrYEpcoaaSmJbiSmRdGA+RjwF0UqksOpk+NXFo
+         oqwNBn6MtlwpE+ToRQyYf3XGW3dGSuHx6D25lACq1lPmCPVwmUobnZLnSrLrlAB2/LOW
+         y8ag==
+X-Gm-Message-State: AOAM532E5coCoc/AkImBZxsuBrgJwy72Hv8sX3Jc6EXDeXbYA6SErHvQ
+        lg+qen5w/roohm/V/plwywhJ/wdTNuhL61oG
+X-Google-Smtp-Source: ABdhPJy4G6MXJejY8GPLYT7DPpLOz6oixHc37922JQ7sFVmZfb4A7TXN2KEfI36+xv4YcPlWd84HAQ==
+X-Received: by 2002:ac8:5f11:0:b0:2f3:5333:40fb with SMTP id x17-20020ac85f11000000b002f3533340fbmr165210qta.96.1650533841771;
+        Thu, 21 Apr 2022 02:37:21 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id i18-20020a05620a27d200b0069ecf023d1asm2647243qkp.129.2022.04.21.02.37.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 02:37:21 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id w20so1528323ybi.8;
+        Thu, 21 Apr 2022 02:37:20 -0700 (PDT)
+X-Received: by 2002:a5b:984:0:b0:63f:8c38:676c with SMTP id
+ c4-20020a5b0984000000b0063f8c38676cmr24405019ybq.393.1650533840601; Thu, 21
+ Apr 2022 02:37:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com> <20220420084255.375700-2-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20220420084255.375700-2-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Apr 2022 11:37:09 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXvkNa3LXPD4t45HLaVxpqOhAzYpft=o0CrB89NzvG-5Q@mail.gmail.com>
+Message-ID: <CAMuHMdXvkNa3LXPD4t45HLaVxpqOhAzYpft=o0CrB89NzvG-5Q@mail.gmail.com>
+Subject: Re: [PATCH 01/15] dt-bindings: arm: renesas: Document R-Car V4H SoC
+ DT bindings
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Wed, Apr 20, 2022 at 10:43 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add device tree bindings documentation for Renesas R-Car V4H
+> (r8a779f0).
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-miquel.raynal@bootlin.com wrote on Wed, 20 Apr 2022 10:56:31 +0200:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.19.
 
-> Hi Greg,
->=20
-> gregkh@linuxfoundation.org wrote on Fri, 15 Apr 2022 11:36:37 +0200:
->=20
-> > On Wed, Apr 13, 2022 at 09:51:30AM +0200, Miquel Raynal wrote: =20
-> > > Hello,
-> > >=20
-> > > Support for the RZN1 DMA engine allows us adapt a little bit the 8250=
- DW
-> > > UART driver with to bring DMA support for this SoC.
-> > >=20
-> > > This short series applies on top of the series bringing RZN1 DMA
-> > > support, currently on its v10, see [1]. Technically speaking, only th=
-e DT
-> > > patch needs to be applied after [1]. The other patches can come in at
-> > > any moment, because if no "dmas" property is provided in the DT, DMA
-> > > support will simply be ignored.
-> > >=20
-> > > [1] https://lore.kernel.org/dmaengine/20220412193936.63355-1-miquel.r=
-aynal@bootlin.com/T/#t   =20
-> >=20
-> > Can you rebase on my tty-next branch please?  This series does not apply
-> > anymore. =20
->=20
-> Yes of course.
+Gr{oetje,eeting}s,
 
-Actually the conflict comes from the fact that I was asked to
-rebase this series on top of a couple of changes for supporting a
-Starfive controller (jh7100-hsuart) which impacted the same area as I
-was touching.
+                        Geert
 
-It turns out this series was not merged during the last merge cycle as
-expected. It seems to be because it received comments that were raised
-when reviewing my own series and which I actually fixed.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Anyway, I've dropped the commit adding jh7100 support but squashed the
-patch bringing platform data to 8250_dw.c so that this series can now
-stand alone (see v6). It will be very easy to rebase the series from
-Emil on top of this one.
-
-Thanks,
-Miqu=C3=A8l
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
