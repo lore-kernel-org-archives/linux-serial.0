@@ -2,119 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F17C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 20:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DD0C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 21:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356615AbiDUUow (ORCPT
+        id S1442162AbiDUVlF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 16:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54574 "EHLO
+        Thu, 21 Apr 2022 17:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245040AbiDUUow (ORCPT
+        with ESMTP id S1442141AbiDUVlD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 16:44:52 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C49D4D269;
-        Thu, 21 Apr 2022 13:42:01 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2edbd522c21so64782267b3.13;
-        Thu, 21 Apr 2022 13:42:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EYKJhmRFx1F8adLuAIcMpQnLKlvX9Z1XUl3E7aLlV8E=;
-        b=YvQuJrE/4vqkSe9O2kKAiCMaNp9m5twmUooW4PqgiKdFsIpGTgVukIBgAB5FFLE96q
-         7JE2dAtETwyMCu6F65v4G1Ne6yz64d7o32174mr1EPoi6s8w16WWa4Lwsyf32Wuhpx1F
-         U4Y+kGkQ2C98EbvdUcAtYdP8ND5tUwT/6o597nJttWkQnr6JGTVX6EWdilbbpdcwAhA3
-         51eycRzhyjcv3F8TpDB+xkL1dRPnwDSYcJjiXepAbM7gAx8cEou71E7n/ZPnyhItIepo
-         ZZ0Txw8CUdWN0x3v03IP16owr2txUq0r1Yk+qYiYYnnodsiIaW5GqWGMCPxfZUZPUmds
-         WEUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EYKJhmRFx1F8adLuAIcMpQnLKlvX9Z1XUl3E7aLlV8E=;
-        b=okm6d9+WQ2Gl/Drukwcq76UDfpY6ex++68u/9PPI4ad3wasT3DGAqd9hAoHJJc50pO
-         pm/PqUtLOQ3Tkv1b+4ZfMybtVB//yMihkxek7oA9z0fh77PhPtJSLnKE1VJWD6e62joP
-         uApz7FFM+VLUwKk2RFU6Cn7dKUmUR6yBAe+zd4zHPQWIqYoWBck1NezteMS2JNllHAG8
-         UXTFo0+t88ZR0EvdB8sY5ot2wpnQPnL/yDNv66JSdHyQ7kLQmhAY/guP94NRYAGR14Y7
-         MG06iHR56tNFOGAAcXLcHhioFspDkWX3RnrTMguNXVnX0h/5xZ7p1XZs2XCdy5YzXqYW
-         /MQA==
-X-Gm-Message-State: AOAM530raNy1EIuo8rnE8bd2ahVk8A1wU6q3qoUjXmUVOI5ypTg0gtDx
-        8KPuIi0DFhU1valOnp9OcvWKCK4b+cas5FJjTHA=
-X-Google-Smtp-Source: ABdhPJzyzFCsO/dqhqRgWPbjXueuWNVd9afSrie9vi9NYSiBgbJNQgOJCWJXSk55V74rC+c7ZK6UiKVMEpzxSxlFGqU=
-X-Received: by 2002:a81:fcf:0:b0:2f4:d321:2dbf with SMTP id
- 198-20020a810fcf000000b002f4d3212dbfmr1701415ywp.116.1650573720633; Thu, 21
- Apr 2022 13:42:00 -0700 (PDT)
+        Thu, 21 Apr 2022 17:41:03 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D3414BFE0;
+        Thu, 21 Apr 2022 14:38:12 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 1C5F992009C; Thu, 21 Apr 2022 23:38:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 1626E92009B;
+        Thu, 21 Apr 2022 22:38:11 +0100 (BST)
+Date:   Thu, 21 Apr 2022 22:38:10 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND][PATCH v3 1/2] serial: 8250: Fold EndRun device support
+ into OxSemi Tornado code
+In-Reply-To: <YmAdTDkZzdiQNKab@kroah.com>
+Message-ID: <alpine.DEB.2.21.2204212234350.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk> <alpine.DEB.2.21.2203310121211.44113@angie.orcam.me.uk> <Ylk3HNZqnBLMMQCm@kroah.com> <alpine.DEB.2.21.2204172339300.9383@angie.orcam.me.uk> <YmAdTDkZzdiQNKab@kroah.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
- <20220421153626.120494-1-vicencb@gmail.com> <20220421193851.GA12186@wunner.de>
-In-Reply-To: <20220421193851.GA12186@wunner.de>
-From:   Vicente Bergas <vicencb@gmail.com>
-Date:   Thu, 21 Apr 2022 22:41:49 +0200
-Message-ID: <CAAMcf8AQLmtHTEevY3i3fo7uWOmVo5PLoq1oScjt0rXdk4yX6Q@mail.gmail.com>
-Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     ilpo.jarvinen@linux.intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        giulio.benetti@micronovasrl.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        heikki.krogerus@linux.intel.com,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        jirislaby@kernel.org, johan@kernel.org, linux-api@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Lukas,
+On Wed, 20 Apr 2022, Greg Kroah-Hartman wrote:
 
-On Thu, Apr 21, 2022 at 9:38 PM Lukas Wunner <lukas@wunner.de> wrote:
->
-> On Thu, Apr 21, 2022 at 05:36:26PM +0200, Vicente Bergas wrote:
-> > 2.- Although "linux,rs485-enabled-at-boot-time" is set in the DTS,
-> > the RTS/DriverEnable line is asserted all the time the /dev/ttyS1
-> > device file is closed.
-> > As soon as the device file is openned, the RTS line is deasserted.
-> > Then it works as expected: it is asserted only during transmissions.
-> > When the device file is closed again, the RTS line goes back to the
-> > asserted level and stays there.
-> > When the rs485 mode is enabled, it is expected that the RTS line be
-> > deasserted by default.
->
-> That's probably the same issue as reported here:
->
-> https://lore.kernel.org/linux-serial/20220329085050.311408-1-matthias.schiffer@ew.tq-group.com/
->
-> Basically, some drivers have historically used inverse RTS polarity
-> and others haven't.  I'm still busy sorting out which drivers use
-> which.  Sorry, this is quite complex and takes some time.
->
-> Have you configured "rs485-rts-active-low" in the device tree?
+> > > As per the top of this file, this should not be needed here as you are
+> > > only using it in one file.  Please leave it as-is.
+> > 
+> >  I find this requirement silly, but here it's not the place to discuss it, 
+> 
+> You have not had to deal with merge issues in this file before.  Think
+> about every single PCI driver author updating this single file.  That
+> just does not work at the scale we run at, sorry.  I put this rule into
+> place 15+ years ago for that reason.
 
-The UART configuration is the default from rk3328.dtsi plus:
-&uart1 {
-  linux,rs485-enabled-at-boot-time;
-  pinctrl-0 = <&uart1_xfer &uart1_cts &uart1_rts_pin>;
-  rs485-rts-delay = <0 52>;
-  rs485-rx-during-tx;
-  rts-gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
-  status = "okay";
-};
+ Fair enough, I missed this practical aspect.  Thanks for straightening me 
+out.
 
-So, it is asserted high and deasserted low.
-
-> Which kernel version are you using exactly?
-
-5.17.3 and 5.17.4
-Also, i am about to test 5.18-rc3
-
-> Thanks,
->
-> Lukas
-
-Regards,
-  Vicente.
+  Maciej
