@@ -2,127 +2,200 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0EBC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 15:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873FEC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 19:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390195AbiDUPja (ORCPT
+        id S1385325AbiDUTV1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 11:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
+        Thu, 21 Apr 2022 15:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390181AbiDUPj1 (ORCPT
+        with ESMTP id S230062AbiDUTV0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 11:39:27 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9262847066;
-        Thu, 21 Apr 2022 08:36:37 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k22so7259736wrd.2;
-        Thu, 21 Apr 2022 08:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VvKv13ZK3iFa+2L/yU8R/npHJfHQ8PQo4T/Wi4XzLzI=;
-        b=ihHXZKvLqJCw831yeo6ujJoTlq4JGDUMT/hg1HDQQZ2bNiIIsCB2OCJPtXDasltQ5E
-         vxtlebMh5qnPqQQphqFb9hjWwahipK3b8bsW5JHXuqekYBVXeRUuYEEZJ0waZ345Uowr
-         mhGe1+HZYi/OMYxV2JAgam2pLDQilgiMyiwrHZDB711FFnW6y7awM0SXsfaC/6SwTFGL
-         kylyGAyc5XwLkw5au63A9+hayKno9omVNp5/OuHVv4nlRl/Nf/ysJY4BhKlOHzy0iNe8
-         m9q+tEUWVG6MZy6YI2iuSgjXekfj2KzMACa7MNCKBC3tuudI9D8B25HcxrbbofqFL15x
-         NcWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VvKv13ZK3iFa+2L/yU8R/npHJfHQ8PQo4T/Wi4XzLzI=;
-        b=FHu63npKWANPzHfQleC/8oSzeCa1fV5LpqTe7ZWe6kxZRX6RP9z5TzSbRNF0Y8nNDC
-         jZM52lQcwchmyVIBu4gKoO3kuPr9GMBYelkdNKqFPblIhXUPesfF3tugCmsrQ+6lkgCo
-         iN/4EUEignDDnixyDOAXFnuHeRsjaFoaYx6SJq7NansdMaQBB3mnGWb+Nv7s2IJlEBe8
-         MwV3FyKg/lRHGB7mW9sEeVXQ3XKR3oKzaFWUfV+HrIVR0lKvJUgZltqu/JAQ3jPH4jTN
-         uWV/xx6XrykFvGdBpS5ASJdTE31qSKuyX9a/GSje7ePHoHWMtIL22U/002qCQWDcR8Rv
-         rXTg==
-X-Gm-Message-State: AOAM5338RHretoiFNKaBc8pcQxV9fOkPYR9vtU6CXnVH0yEtrY2mopkr
-        XX1dTIpu4FGvernk1OdjRFY=
-X-Google-Smtp-Source: ABdhPJztLbxi1p6Vq0IAkoh6pzN37oVEH4QuhuyDAMFC4R1nwZ2ZF5CZi6DbA7oSLOWednr9ZxIqog==
-X-Received: by 2002:a5d:490a:0:b0:207:b3d0:18d6 with SMTP id x10-20020a5d490a000000b00207b3d018d6mr221037wrq.503.1650555395952;
-        Thu, 21 Apr 2022 08:36:35 -0700 (PDT)
-Received: from alfredos.. ([2a0c:5a84:3610:e200:8a88:88ff:fe88:8788])
-        by smtp.gmail.com with ESMTPSA id l8-20020a5d6d88000000b0020a8d0d0076sm2792248wrs.68.2022.04.21.08.36.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 08:36:35 -0700 (PDT)
-From:   Vicente Bergas <vicencb@gmail.com>
-To:     ilpo.jarvinen@linux.intel.com
-Cc:     andriy.shevchenko@linux.intel.com, giulio.benetti@micronovasrl.com,
-        gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
-        heiko@sntech.de, jirislaby@kernel.org, johan@kernel.org,
-        linux-api@vger.kernel.org, linux-serial@vger.kernel.org,
-        lukas@wunner.de, u.kleine-koenig@pengutronix.de
-Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
-Date:   Thu, 21 Apr 2022 17:36:26 +0200
-Message-Id: <20220421153626.120494-1-vicencb@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com>
+        Thu, 21 Apr 2022 15:21:26 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BAE4B415
+        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 12:18:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650568716; x=1682104716;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=X+8PplsrVapAiahgfSUoma/E/mylwWhvocand0r/DlM=;
+  b=X49zZlnl9G3we/83fvwEDb2G0rnVGFE+LjRhic4svdujvHjmi8JHVb19
+   KLY03PbvAzDduKEtQlBjFZfkVOG/cOyMPOX7qMFT3KWTDPNAUgja5S91R
+   bk/VgWJkVCSagln2cFRa7g1eUS4ovqaL3N9uIDPhEoy5R2mcAPuu6GvY6
+   uhw/Nu8lcHTP/a7/dX0cP5NLvfyZu1sraJboR4ziuiy8CalSTbvmy7wGr
+   ApBMYqLcX/nRK9E5bYEY0IBNvvt8pQa0GNMIhFohEcg0xN9wWnJNtHDxX
+   SRaxE+7cuknVzFy/ejxtm433Z8npdpiP/nxvH0aTWnio+CgRAcP9jJD7H
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="263304074"
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="263304074"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 12:18:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
+   d="scan'208";a="671189494"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 21 Apr 2022 12:18:34 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhcK2-0008hd-8T;
+        Thu, 21 Apr 2022 19:18:34 +0000
+Date:   Fri, 22 Apr 2022 03:17:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 05fe70dd2efd13de700c2dfe5169d3a7a5050bc2
+Message-ID: <6261ade3.Onf7y43r0r5RmCd+%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 05fe70dd2efd13de700c2dfe5169d3a7a5050bc2  MAINTAINERS: fix location of moxa-smartio.rst
 
-Hello Ilpo,
+elapsed time: 731m
 
-i have tested your v3 patch on v3 hardware, that is, using the
-emulated em485 because of lack of HW support. It is not working
-due to three issues.
+configs tested: 121
+configs skipped: 4
 
-1.- rs485_stop_tx is never called because there are no interrupts.
-I worked around this by disabling DMA:
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -577,3 +577,3 @@ static int dw8250_probe(struct platform_device *pdev)
- 		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
- 		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
-- 		up->dma = &data->data.dma;
-+		up->dma = 0; // Proof of concept, not to be merged!
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+sh                   secureedge5410_defconfig
+arm                             ezx_defconfig
+sh                          r7780mp_defconfig
+powerpc                      makalu_defconfig
+arm                        mvebu_v7_defconfig
+sparc                            allyesconfig
+parisc64                            defconfig
+arm                        cerfcube_defconfig
+mips                           ip32_defconfig
+sh                         ecovec24_defconfig
+arm                        mini2440_defconfig
+parisc                generic-32bit_defconfig
+m68k                        mvme16x_defconfig
+mips                         cobalt_defconfig
+m68k                          amiga_defconfig
+alpha                            alldefconfig
+powerpc                 canyonlands_defconfig
+arm                     eseries_pxa_defconfig
+arm                           sunxi_defconfig
+powerpc                    sam440ep_defconfig
+powerpc                 mpc834x_mds_defconfig
+sh                        edosk7705_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220421
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a015
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220420
+arc                  randconfig-r043-20220421
+s390                 randconfig-r044-20220421
+riscv                randconfig-r042-20220421
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
-2.- Although "linux,rs485-enabled-at-boot-time" is set in the DTS,
-the RTS/DriverEnable line is asserted all the time the /dev/ttyS1
-device file is closed.
-As soon as the device file is openned, the RTS line is deasserted.
-Then it works as expected: it is asserted only during transmissions.
-When the device file is closed again, the RTS line goes back to the
-asserted level and stays there.
-When the rs485 mode is enabled, it is expected that the RTS line be
-deasserted by default.
+clang tested configs:
+riscv                randconfig-c006-20220421
+mips                 randconfig-c004-20220421
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+arm                  randconfig-c002-20220421
+powerpc              randconfig-c003-20220421
+arm                       spear13xx_defconfig
+mips                     cu1830-neo_defconfig
+arm                          pxa168_defconfig
+powerpc                 xes_mpc85xx_defconfig
+s390                       zfcpdump_defconfig
+arm                           omap1_defconfig
+arm                          pxa910_defconfig
+powerpc                    gamecube_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a014
+x86_64                        randconfig-a012
+x86_64                        randconfig-a016
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220420
+hexagon              randconfig-r041-20220420
+s390                 randconfig-r044-20220420
+riscv                randconfig-r042-20220420
 
-3.- The RTS line is asserted a few microseconds earlier than the
-start bit, that is acceptable, but then it deasserts one whole bit
-time before the last stop bit.
-So, the last stop bit of the last byte of a message is not sent
-because the driver is disabled.
-This has been tested with the port configured at 19200e1, that is,
-the bit time is 52 us.
-I worked around this by adding "rs485-rts-delay = <0 52>;" in the
-DTS. This leads to the following feature (not an issue):
-
-On Mon, 11 Apr 2022 11:33:12 +0300, Ilpo Järvinen wrote:
-> Set delay_rts_before_send and delay_rts_after_send to zero for now.
-> The granularity of that ABI is too coarse to be useful.
-
-Indeed the time unit of this parameter is milliseconds, as stated in
-Documentation/devicetree/bindings/serial/rs485.yaml
-Which in the general case is more than ten bit times.
-
-But it is being interpreted as microseconds here:
-
-On Mon, 11 Apr 2022 11:33:11 +0300, Ilpo Järvinen wrote:
-> [PATCH v3 02/12] serial: 8250: Handle UART without interrupt on TEMT
->+	stop_delay += (u64)p->port.rs485.delay_rts_after_send * NSEC_PER_USEC;
-
-So, this way it has a useful granularity to be used in
-"rs485-rts-delay = <0 52>;" but is not compliant with the spec.
-
-Regards,
-  Vicente.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
