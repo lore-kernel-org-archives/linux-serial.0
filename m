@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF975C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 08:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 461D6C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 08:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387048AbiDUJBA (ORCPT
+        id S1387054AbiDUJBB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
+        Thu, 21 Apr 2022 05:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343846AbiDUJA7 (ORCPT
+        with ESMTP id S1387044AbiDUJBA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:00:59 -0400
+        Thu, 21 Apr 2022 05:01:00 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1584820F74;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB620F75;
         Thu, 21 Apr 2022 01:58:11 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id BE77F1F753;
-        Thu, 21 Apr 2022 08:58:09 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 531A51F756;
+        Thu, 21 Apr 2022 08:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1650531489; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1650531490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+wzZUTuBtyPsQ+iclIg/UNt2jl8gZkTXcVgn1Y308ks=;
-        b=3A3ZCOPCDr74vNou9vHHYNcqZGH62bqcXd1iPFqFqcsirSMRzElsxN3Ekra1vnKBuTG6zZ
-        R3cNr4zBo4s8ycmTp4YRtNUOLxpSY91SKyqX2z72e5NXFaq++eLbOg094SfcBdnFXd5jgf
-        WitM4Jznzca3I/ge2u0E2iUdA0Ik0LI=
+        bh=VFxqjeU4CQ4uodGfjKZsgd+CH+jRLDKSG+EoVC8vwu0=;
+        b=zCw/LQSI7nDAbRxTq3+Vlb9iIKEaWzDzk4vMdVrmRJCbOFN7UliYEhznxCFuaj9gVBjMYE
+        Ln73FqhEqQ2Ht01cp88rchsXc0jfeq0kN7sL8CiN4d2fvX5B8eUF1iYSmhDabqNzR18RwK
+        uGQVnx/hktbViMgzP2os7xxfmZIDUSY=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1650531489;
+        s=susede2_ed25519; t=1650531490;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+wzZUTuBtyPsQ+iclIg/UNt2jl8gZkTXcVgn1Y308ks=;
-        b=QzGP14PUO9QGpwpgeESvqJCUEGXMekIuGmgoMjyE0EgRrC+M391ZpmOPCjlnWOqDETGes7
-        5ehuLeq8S9zbv7Dg==
+        bh=VFxqjeU4CQ4uodGfjKZsgd+CH+jRLDKSG+EoVC8vwu0=;
+        b=nVp7WomM9liDQ+S0ZfPyz26U7FbwsF3ULDI3d7lZO1jmyEAsyaP/4r+1V2rriOuXkCkpCa
+        /aqS1+xtRJbkP1AA==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 8B9582C145;
-        Thu, 21 Apr 2022 08:58:09 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 2ACA92C145;
+        Thu, 21 Apr 2022 08:58:10 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 01/10] serial: icom: remove ICOM_VERSION_STR macro
-Date:   Thu, 21 Apr 2022 10:57:59 +0200
-Message-Id: <20220421085808.24152-2-jslaby@suse.cz>
+Subject: [PATCH 03/10] serial: icom: remove to_icom_adapter() and icom_kref_release()
+Date:   Thu, 21 Apr 2022 10:58:01 +0200
+Message-Id: <20220421085808.24152-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220421085808.24152-1-jslaby@suse.cz>
 References: <20220421085808.24152-1-jslaby@suse.cz>
@@ -58,25 +58,56 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It's unused, so remove the macro.
+Integrate both the to_icom_adapter() macro and icom_kref_release()
+wrapper into icom_remove_adapter(). (And keep it icom_kref_release()
+name.)
+
+It makes the code easier to follow without complex indirections.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/icom.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/icom.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 02b375ba2f07..142257809e37 100644
+index 42ba953c697e..fa284f9cbdb0 100644
 --- a/drivers/tty/serial/icom.c
 +++ b/drivers/tty/serial/icom.c
-@@ -46,7 +46,6 @@
- /*#define ICOM_TRACE		 enable port trace capabilities */
+@@ -47,7 +47,6 @@
  
  #define ICOM_DRIVER_NAME "icom"
--#define ICOM_VERSION_STR "1.3.1"
  #define NR_PORTS	       128
- #define ICOM_PORT ((struct icom_port *)port)
- #define to_icom_adapter(d) container_of(d, struct icom_adapter, kref)
+-#define to_icom_adapter(d) container_of(d, struct icom_adapter, kref)
+ 
+ static inline struct icom_port *to_icom_port(struct uart_port *port)
+ {
+@@ -1447,8 +1446,10 @@ static void icom_free_adapter(struct icom_adapter *icom_adapter)
+ 	kfree(icom_adapter);
+ }
+ 
+-static void icom_remove_adapter(struct icom_adapter *icom_adapter)
++static void icom_kref_release(struct kref *kref)
+ {
++	struct icom_adapter *icom_adapter = container_of(kref,
++			struct icom_adapter, kref);
+ 	struct icom_port *icom_port;
+ 	int index;
+ 
+@@ -1481,14 +1482,6 @@ static void icom_remove_adapter(struct icom_adapter *icom_adapter)
+ 	icom_free_adapter(icom_adapter);
+ }
+ 
+-static void icom_kref_release(struct kref *kref)
+-{
+-	struct icom_adapter *icom_adapter;
+-
+-	icom_adapter = to_icom_adapter(kref);
+-	icom_remove_adapter(icom_adapter);
+-}
+-
+ static int icom_probe(struct pci_dev *dev,
+ 				const struct pci_device_id *ent)
+ {
 -- 
 2.36.0
 
