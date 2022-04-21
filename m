@@ -2,125 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CA9C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 14:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4827BC433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 15:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389279AbiDUOtj (ORCPT
+        id S1390042AbiDUP2G (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        Thu, 21 Apr 2022 11:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350611AbiDUOth (ORCPT
+        with ESMTP id S1390035AbiDUP2F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 10:49:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141B6427D7;
-        Thu, 21 Apr 2022 07:46:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A049B61A36;
-        Thu, 21 Apr 2022 14:46:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08F2FC385A5;
-        Thu, 21 Apr 2022 14:46:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650552395;
-        bh=i0HMWq1JRa0F0CeO2hnG9SF3TuKwCFJPlYUxv+11vSY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=KYNnxH1/6h4JHSpiitspdSKkTEwWa1tJBCwmto9ZMzu31V+JKmKgI743LDv+s34bq
-         QmSRKC+hHoCyn8rQMCoQYbCY9I4u1HRgIOm+Pz2OmA5gNIE7rXJyrAZQqUv9oA3TUQ
-         CVuRa/VFqB7epVLHtpWWZFuEw4IysfFmBo/cCYj+4wtcdzx74jW2LjnvsN+imBPGkx
-         NUHT9J1SbF8LbbqYNTV0fbd7NyddYgpQP9JQyBAmIQiZB0mHJDNoZgZMT3gNF6FO91
-         4nSd3Odf/kHuZoRH+pZi1kgbPYDKmWC6TMUEyESfHfKmh/QjbWYzrE2aZ/dN2sYGsU
-         NUgA5p8ikcvFQ==
-Received: by mail-wr1-f53.google.com with SMTP id p18so7030851wru.5;
-        Thu, 21 Apr 2022 07:46:34 -0700 (PDT)
-X-Gm-Message-State: AOAM532BY6WQ1dd6NyA20bzG0oGGSF6u3tYHeSPdcCHhlRa2PoQP/9tt
-        ZPLKxgM81JEfLwIb76smpKGFlV78Vct8FjsHnuI=
-X-Google-Smtp-Source: ABdhPJwYkraliZNB9aswBiexBZv/yC4YtGe2R9rvi1KW9m/P8YE/IbH0HzS9xhCUm+8mp8SN41/aSdFZNG1cTJqd71I=
-X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id
- u5-20020a5d6da5000000b0020a88056988mr48774wrs.317.1650552393282; Thu, 21 Apr
- 2022 07:46:33 -0700 (PDT)
+        Thu, 21 Apr 2022 11:28:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0755C15FC2
+        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 08:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650554713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6ttMoGFApcsmXuI/gPwewnQASmEx+6ID1JuIYA9uETo=;
+        b=NaRhRLAhJXD99MNm9C/2l7hse2AMsCa311Fq4RcxUaItIQa68nqxUHue7eF4Wn1ErS800w
+        LTTnsMBINrcejebEhGVU3X52tea4zHtMksAL58ripIsvk297DvlHuPZmcclsvvQxLL+0qy
+        5dNNX3ao2R6GSTK4TAEWKbaVZWfdplA=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-127-gXI5YgybNB6oXiC_hw4GXQ-1; Thu, 21 Apr 2022 11:25:12 -0400
+X-MC-Unique: gXI5YgybNB6oXiC_hw4GXQ-1
+Received: by mail-qv1-f70.google.com with SMTP id 33-20020a0c8024000000b0043d17ffb0bdso4178992qva.18
+        for <linux-serial@vger.kernel.org>; Thu, 21 Apr 2022 08:25:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6ttMoGFApcsmXuI/gPwewnQASmEx+6ID1JuIYA9uETo=;
+        b=uqkAC9DQqGidyAbzJLuJg53g0CoQ61C9VMyz6h+bt2AmL3BY1wgd0f0P6hIZln9HmQ
+         sonk4X670C8qc8W320QGKTIpuehKoKUp3vW4Cwxg7bmZktZsnFqnDVpiwUtQDXKQ897c
+         +AMcLkoOc0u+hfiKng0o0StRlsgPiU/TqE+A+EvUlUs0JPvIfr2PdoXJUZQaxEmCb/iT
+         Zix19fvRNYJbn/bk4JaUWmfQJbMzVEmatvMSdxUgo9uwOs/wnCuUO5umU5ruWuDa4+fE
+         asm3xjOOQXwtxDHrQ/uU3eTsN+RF0X/tUDDD3nXIa0YIRmNV+rpggVlW5wcaHo6hE+ML
+         V2lw==
+X-Gm-Message-State: AOAM531jmhOW59yUkSDba6FvfJUJXD+duel1wZbtddtDu02Zlo1RosxU
+        e1InF9L9RFT8GgM5ChYBq031/IPpcSZrrDr2EOkQ6Ms/0NgeuOyFN5bPv6bLPt0/kgIu1juSVgE
+        k5/5XjbUjb3+Gz34P/FsMDKjr
+X-Received: by 2002:ac8:5e54:0:b0:2f1:f60d:2b3c with SMTP id i20-20020ac85e54000000b002f1f60d2b3cmr16625085qtx.667.1650554711416;
+        Thu, 21 Apr 2022 08:25:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz+P77pjFBwONc0Em0QpWeGubtnUdjANuIPyYLPcq0pQgRQocDp9HsSHlVtQWkAJm4cqwGVrA==
+X-Received: by 2002:ac8:5e54:0:b0:2f1:f60d:2b3c with SMTP id i20-20020ac85e54000000b002f1f60d2b3cmr16625068qtx.667.1650554711225;
+        Thu, 21 Apr 2022 08:25:11 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 135-20020a37078d000000b0069ea3c7513bsm3109620qkh.121.2022.04.21.08.25.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 08:25:10 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     hammerh0314@gmail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] serial: sunplus-uart: change sunplus_console_ports from global to static
+Date:   Thu, 21 Apr 2022 11:25:05 -0400
+Message-Id: <20220421152505.1531507-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220419133723.1394715-1-arnd@kernel.org> <20220420170836.GB1947@darkstar.musicnaut.iki.fi>
- <CAK8P3a1+sOrn8BWPVc7f+QFZ5=7fE6=MLsMYV9t+HJcG2aRCXA@mail.gmail.com> <20220421133431.GE1947@darkstar.musicnaut.iki.fi>
-In-Reply-To: <20220421133431.GE1947@darkstar.musicnaut.iki.fi>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 21 Apr 2022 16:46:17 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0LkJ5EvJ13xtAhWzCKnnvYhYgKpPsphr1T-FGg6bzDuw@mail.gmail.com>
-Message-ID: <CAK8P3a0LkJ5EvJ13xtAhWzCKnnvYhYgKpPsphr1T-FGg6bzDuw@mail.gmail.com>
-Subject: Re: [PATCH 00/41] OMAP1 full multiplatform conversion
-To:     Aaro Koskinen <aaro.koskinen@iki.fi>
-Cc:     linux-omap <linux-omap@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        dmaengine@vger.kernel.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=trix@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 3:34 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
->
-> Hi,
->
-> On Wed, Apr 20, 2022 at 10:00:13PM +0200, Arnd Bergmann wrote:
-> > On Wed, Apr 20, 2022 at 7:08 PM Aaro Koskinen <aaro.koskinen@iki.fi> wrote:
-> > > On Tue, Apr 19, 2022 at 03:36:42PM +0200, Arnd Bergmann wrote:
-> > > > From: Arnd Bergmann <arnd@arndb.de>
-> > > >
-> > > > This is the full series for converting OMAP1 to multiplatform, rebased
-> > > > from my 2019 attempt to do the same thing. The soc tree contains simpler
-> > > > patches to do the same for iop32x, ixp4xx, ep93xx and s3c24xx, which
-> > > > means we are getting closer to completing this for all ARMv5 platforms
-> > > > (I have patches for PXA, which is the last one remaining).
-> > > >
-> > > > Janusz already tested the branch separately and did the missing work
-> > > > for the common-clk conversion after my previous approach was broken.
-> > >
-> > > I tested the full series on the following OMAP1 boards: ams-delta,
-> > > nokia770, osk, palmte and sx1 (QEMU only).
-> > >
-> > > Apart from the earlyprintk breakage, everything seemed to work OK.
-> >
-> > Nice, thanks a lot for testing!
->
-> With the updated patch 26 also earlyprintk now works, so if you still
-> update the patches, feel free to add for the whole series:
->
-> Tested-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+Smatch reports this issue
+sunplus-uart.c:501:26: warning: symbol 'sunplus_console_ports' was not declared. Should it be static?
 
-I was just doing the merge, so I added the tag to the commit now.
+sunplus_console_ports is only used in sunplus-uart.c so change
+its storage-class specifier to static
 
-There is now an "omap1/multiplatform-prep" branch that is part of
-arm/multiplatform, and I hope to not have to rebase that. I also
-have an arm/multiplatform-late branch with the remaining contents.
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/tty/serial/sunplus-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-       Arnd
+diff --git a/drivers/tty/serial/sunplus-uart.c b/drivers/tty/serial/sunplus-uart.c
+index 9f15922e681b..60c73662f955 100644
+--- a/drivers/tty/serial/sunplus-uart.c
++++ b/drivers/tty/serial/sunplus-uart.c
+@@ -498,7 +498,7 @@ static const struct uart_ops sunplus_uart_ops = {
+ };
+ 
+ #ifdef CONFIG_SERIAL_SUNPLUS_CONSOLE
+-struct sunplus_uart_port *sunplus_console_ports[SUP_UART_NR];
++static struct sunplus_uart_port *sunplus_console_ports[SUP_UART_NR];
+ 
+ static void sunplus_uart_console_putchar(struct uart_port *port,
+ 					 unsigned char ch)
+-- 
+2.27.0
+
