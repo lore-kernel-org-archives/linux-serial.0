@@ -2,126 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E973EC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 09:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94594C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:17:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387960AbiDUJ4r (ORCPT
+        id S1388250AbiDUKUD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 05:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        Thu, 21 Apr 2022 06:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387943AbiDUJ4h (ORCPT
+        with ESMTP id S1382272AbiDUKT7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 05:56:37 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD7025581;
-        Thu, 21 Apr 2022 02:53:47 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3E0FD1BF210;
-        Thu, 21 Apr 2022 09:53:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650534826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OkvzJztRthVaGIL1bz3XTVaBBeEF3F6WAHdml+C/P4M=;
-        b=CeuMlaXHaxnLLUOSPSMnw1pelWNWBfKMNPABDz13we9vGFEx9jhhsv6OTeawoddlCGkxx3
-        GSXsvWW/gzPdSUDZpbMK51z1IH0zZCbMxLoku5NYNy0IvR7SucgbCAMZqo1xqrDMOaUizF
-        PG1S4K2wdNhcS50rD8yzhZgaIbMjtpArRh5VNPZXjKZqyCbHrhAkQen2AvznPH+YCxr63u
-        lsFszQ84MPuGfXixzp1bBhp8gPGBM+M/rbeTm0/TCcKchl8bR1kAXBDERqoOpy5H/VOlrA
-        iY1DhrU8dc44MQ/azRU2xkOuAVioHBdx06Y3S5uNTB7UexBdX6iqWCf0PR4gJg==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v6 11/12] bestla: Enable DMA, UART3 and UART4
-Date:   Thu, 21 Apr 2022 11:53:22 +0200
-Message-Id: <20220421095323.101811-12-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220421095323.101811-1-miquel.raynal@bootlin.com>
-References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
+        Thu, 21 Apr 2022 06:19:59 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD1A22525;
+        Thu, 21 Apr 2022 03:17:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3A8A1215FC;
+        Thu, 21 Apr 2022 10:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1650536229; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=3O6/BdDKv6pQlJqixzof36IiCZINQ7EleO0KCxDYz08=;
+        b=Gwxs6xPNUG8N4mol49RlvyysByoXuj/4BkAmKh9CYflIQGSSlcVbekd8xvly3WOCk6KYW2
+        48cyDeZqZczl09WaDcwqFyEwpvR6a1tszxs3ssCCLH0dEut90wuxG9ZY+2rxJvZEBoYFNg
+        LjXfJVyaDoIZ6icbL+83D5sqssgY9KU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1650536229;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=3O6/BdDKv6pQlJqixzof36IiCZINQ7EleO0KCxDYz08=;
+        b=Un44p/32CI+/Gg3yw9FzYxTSWF43suEDiPCeFUmzZNq/LV2rZLdpBsPpiG8fMdTZpZcY23
+        OUwe2Blot0PL0+Bg==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 090082C142;
+        Thu, 21 Apr 2022 10:17:09 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 0/7] serial: various cleanups
+Date:   Thu, 21 Apr 2022 12:17:01 +0200
+Message-Id: <20220421101708.5640-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- .../boot/dts/r9a06g032-rzn1d400-bestla.dts    | 35 +++++++++++++++++++
- 1 file changed, 35 insertions(+)
+This is a set of simple cleanups for various drivers. All should be
+straightforward.
 
-diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-bestla.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-bestla.dts
-index f42a3ba70541..70aa026bd292 100644
---- a/arch/arm/boot/dts/r9a06g032-rzn1d400-bestla.dts
-+++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-bestla.dts
-@@ -22,6 +22,8 @@ chosen {
- 
- 	aliases {
- 		serial0 = &uart0;
-+		serial3 = &uart3;
-+
- 	};
- };
- 
-@@ -31,6 +33,22 @@ &uart0 {
- 	status = "okay";
- };
- 
-+&uart3 {
-+	pinctrl-0 = <&pins_uart3>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&uart4 {
-+	pinctrl-0 = <&pins_uart4>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&dma0 {
-+	status = "okay";
-+};
-+
- &nand_controller {
- 	pinctrl-0 = <&pins_nand>;
- 	pinctrl-names = "default";
-@@ -82,4 +100,21 @@ RZN1_PINMUX(104, RZN1_FUNC_UART0_I)	/* UART0_RXD */
- 		>;
- 		bias-disable;
- 	};
-+
-+	pins_uart3: pins_uart3 {
-+		pinmux = <
-+			RZN1_PINMUX(123, RZN1_FUNC_UART3)       /* UART3_TXD */
-+			RZN1_PINMUX(124, RZN1_FUNC_UART3)       /* UART3_RXD */
-+			RZN1_PINMUX(125, RZN1_FUNC_UART3)       /* UART3_RTS_N */
-+                >;
-+		bias-disable;
-+	};
-+
-+	pins_uart4: pins_uart4 {
-+		pinmux = <
-+			RZN1_PINMUX(109, RZN1_FUNC_UART4)       /* UART4_TXD */
-+			RZN1_PINMUX(110, RZN1_FUNC_UART4)       /* UART4_RXD */
-+                >;
-+		bias-disable;
-+	};
- };
+The last two patches enable compilation on 0-day bot also for three more
+drivers. So we should have a better coverage. Actually the last but one
+is the result of the last one -- 0-day bot already complained to me.
+
+Jiri Slaby (7):
+  serial: sunplus-uart: mark sunplus_console_ports[] static
+  serial: xilinx_uartps: return early in cdns_uart_handle_tx()
+  serial: xilinx_uartps: cache xmit in cdns_uart_handle_tx()
+  serial: zs: use NULL as a pointer, not 0
+  serial: qcom: use check for empty instead of pending
+  serial: pic32: make SERIAL_PIC32_CONSOLE depend on SERIAL_PIC32=y
+  serial: allow COMPILE_TEST for some drivers
+
+ drivers/tty/serial/Kconfig             |  8 ++---
+ drivers/tty/serial/cpm_uart/cpm_uart.h |  2 ++
+ drivers/tty/serial/qcom_geni_serial.c  |  2 +-
+ drivers/tty/serial/sunplus-uart.c      |  2 +-
+ drivers/tty/serial/xilinx_uartps.c     | 46 +++++++++-----------------
+ drivers/tty/serial/zs.c                |  2 +-
+ 6 files changed, 25 insertions(+), 37 deletions(-)
+
 -- 
-2.27.0
+2.36.0
 
