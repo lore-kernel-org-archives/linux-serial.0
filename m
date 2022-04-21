@@ -2,76 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FF5C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 10:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 744F6C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Apr 2022 12:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388274AbiDUKYh (ORCPT
+        id S1386210AbiDUM4p (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Apr 2022 06:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50366 "EHLO
+        Thu, 21 Apr 2022 08:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230060AbiDUKYh (ORCPT
+        with ESMTP id S1386066AbiDUM4n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Apr 2022 06:24:37 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF2215710;
-        Thu, 21 Apr 2022 03:21:47 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 345C41BF208;
-        Thu, 21 Apr 2022 10:21:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650536505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=antY8mJyNO4wQBqR3uhtpfl8UVLsbiKHfwQvj/nrXBE=;
-        b=MizrVC0d3AH9cTYec4CMizEnMZBfdshC1OT5apx/5Rh858NfSbxvjpTLm5caHiYV+Gf984
-        ubKrF0mhnBF4dxqMItBUVT8AR2MUB42fPekEbcw3E3NGtg3nWFg/JllBS9xkmKe8rcKQ+H
-        /2m0lPVQBBmJ6IiYgjl/CQt59HZ4jKdWeq91gmFi3doqeDjEhV6sWa4elpzN1ZcGUSdaL9
-        ESDNSUZhXTNgOXfrkOohwpf5oWHQgRz5UK6z1bKHG9e9sQEg/onvZhXgONczp/qBxHFu4M
-        h/vCgrPxaQC2iVpwOiCu4/6CfX+EjRiLyaskZv/a7HAHq3LKDWSKVBavhV2cqQ==
-Date:   Thu, 21 Apr 2022 12:21:43 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v6 11/12] bestla: Enable DMA, UART3 and UART4
-Message-ID: <20220421122143.7526d676@xps13>
-In-Reply-To: <20220421095323.101811-12-miquel.raynal@bootlin.com>
-References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
-        <20220421095323.101811-12-miquel.raynal@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Thu, 21 Apr 2022 08:56:43 -0400
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA4932ED2;
+        Thu, 21 Apr 2022 05:53:54 -0700 (PDT)
+Received: by mail-qt1-f172.google.com with SMTP id fu34so3126140qtb.8;
+        Thu, 21 Apr 2022 05:53:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i+yvTJ4csWlC/K3VvJbfynfftzlHBRUT5FFzoCH9vrA=;
+        b=cZJzBnWGnQbZ9W/EVFkjnrF0Pxm3FVeeGxV6tkySoPIZmDAJiCm4PFnIMKODcKd1Bt
+         80OFvm6AN/kNBg0F0zr2moW3IhWs/2ewAUkRwtLtaLoArv7th/08CKd+uY5izMi7Vcpz
+         aSpAYjMLHuEhqqTdejVFLcU7cmnGVARgJ1FQC0dTaaGvysGacIdEAZ6wJ5o9Zv4VxvxZ
+         Pgz8x4JpujT9ODDq88SvZBODuvqM3e8T/T+SsBHJjxdeWdXEXM6gANzcwiuc6kaZy+uL
+         ZrZyUN+nrnTAHG0IOkCQJ2LH9sfOewrdHiiOuKAaRGsnb2Rj5nDnRhOkOwEi4hwFvo2s
+         nLeQ==
+X-Gm-Message-State: AOAM5331jzXghLmFIjsVMtUEucYu59AcfJiqZgAiYdHaWUf/owG+zFOC
+        FHqYuoPeKvE5/sMS66ZNRHB0PNCY7YGIURcW
+X-Google-Smtp-Source: ABdhPJwU9l6HWy1Cx+Kg1K9P8OWvrBQpu2CabNurh3cWKaWbCS22BeWsb21WPBAtDiFQQvIOUnAEQg==
+X-Received: by 2002:ac8:7f07:0:b0:2f1:f0e0:27b with SMTP id f7-20020ac87f07000000b002f1f0e0027bmr17380992qtk.464.1650545633113;
+        Thu, 21 Apr 2022 05:53:53 -0700 (PDT)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id f19-20020a05620a409300b00680c933fb1csm3362458qko.20.2022.04.21.05.53.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 05:53:52 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2ec42eae76bso50814547b3.10;
+        Thu, 21 Apr 2022 05:53:52 -0700 (PDT)
+X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
+ g16-20020a815210000000b002ef21e354ddmr26035446ywb.438.1650545632216; Thu, 21
+ Apr 2022 05:53:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com> <20220420084255.375700-10-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20220420084255.375700-10-yoshihiro.shimoda.uh@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 21 Apr 2022 14:53:40 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWRs6LSYo2Yh1ZfkkicYic8TUmXVN5eeL0chBn18qqvdA@mail.gmail.com>
+Message-ID: <CAMuHMdWRs6LSYo2Yh1ZfkkicYic8TUmXVN5eeL0chBn18qqvdA@mail.gmail.com>
+Subject: Re: [PATCH 09/15] soc: renesas: r8a779g0-sysc: Add r8a779g0 support
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+Hi Shimoda-san,
 
-miquel.raynal@bootlin.com wrote on Thu, 21 Apr 2022 11:53:22 +0200:
+On Wed, Apr 20, 2022 at 10:43 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add support for R-Car V4H (R8A779G0) SoC power areas and register
+> access.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Thanks for your patch!
 
-Please ignore these two dts patches, they were meant for testing
-purposes only, sorry for the noise.
+> --- a/drivers/soc/renesas/Kconfig
+> +++ b/drivers/soc/renesas/Kconfig
+> @@ -369,6 +369,10 @@ config SYSC_R8A779F0
+>         bool "System Controller support for R-Car S4-8" if COMPILE_TEST
+>         select SYSC_RCAR_GEN4
+>
+> +config SYSC_R8A779G0
+> +       bool "System Controller support for R-Car V4H" if COMPILE_TEST
+> +       select SYSC_RCAR_GEN4
 
-Thanks,
-Miqu=C3=A8l
+Please insert below SYSC_R8A779A0, to preserve alphabetical
+order (by description).
 
-> ---
->  .../boot/dts/r9a06g032-rzn1d400-bestla.dts    | 35 +++++++++++++++++++
->  1 file changed, 35 insertions(+)
+> +
+>  config SYSC_R8A7792
+>         bool "System Controller support for R-Car V2H" if COMPILE_TEST
+>         select SYSC_RCAR
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.19, with the above fixed.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
