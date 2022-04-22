@@ -2,164 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585B0C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 13:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EDCC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 14:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447734AbiDVNKT (ORCPT
+        id S1448374AbiDVOH4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 09:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        Fri, 22 Apr 2022 10:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiDVNKS (ORCPT
+        with ESMTP id S1448336AbiDVOHg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 09:10:18 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BB722B3E;
-        Fri, 22 Apr 2022 06:07:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650632845; x=1682168845;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=SFvPy9du95xQnOhvhD2l1NkJ/MBIRyt1xPXB/F8fRrc=;
-  b=ky0MRk5Xu/+Xt8REf8KPW31uP73A4/n/v2Km4TNTtwF6Lois2V27jqQO
-   BhHV3X3EyzFelstXcPwkbUG1TpdYYHMNGKJ5qvcEJlbVztmghbrl5BNPk
-   8j71R0LVssKFhKts2vN1YeE+kkWFuHelLUGqx9wCc0p4UmXwY7bEV3opf
-   ms6INoJ9bVQuKMBTABW/YekGd/236vWujsfYQpgaD7ZtK9ubO3r9CfzSJ
-   W+WiLrCnmw8XX71GHPmwpgcVvo0R01w0Pe9sELb0LMQ/NIoVyFFhQY/Wx
-   Uampz00s9nX6NmpUTw/UCPU71TWg46WjvUshXFPek95VaO8AiI8/yOteo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="325123974"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="325123974"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:07:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="534279957"
-Received: from dongaris-mobl.gar.corp.intel.com ([10.252.56.39])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 06:07:21 -0700
-Date:   Fri, 22 Apr 2022 16:07:18 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-cc:     Vicente Bergas <vicencb@gmail.com>,
+        Fri, 22 Apr 2022 10:07:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E4A5A164;
+        Fri, 22 Apr 2022 07:04:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62719B82DEB;
+        Fri, 22 Apr 2022 14:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81815C385A4;
+        Fri, 22 Apr 2022 14:04:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650636279;
+        bh=iNiTjY8tqQiZjM+4jn/Umkb2svH+aw2wxOSfsL3npZA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v+FgCT66ActzZVXxId/XfSe4ug8qTpyHSO6GsG3K7+Gw7rvzn78j13R7EDEpiWlRU
+         k/FNgfY3mgJKNImDdKcU+sJnJg1MWP2HFHpg24jWIIrAWMKrz5u6XkriiVgQfQ3u5t
+         cNj21t/oR6SfrlF65NdnP679W7GQgAHkdLq81cw0=
+Date:   Fri, 22 Apr 2022 16:04:36 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        giulio.benetti@micronovasrl.com, gregkh@linuxfoundation.org,
-        heikki.krogerus@linux.intel.com, heiko@sntech.de,
-        jirislaby@kernel.org, johan@kernel.org, linux-api@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>, lukas@wunner.de,
-        u.kleine-koenig@pengutronix.de
-Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
-In-Reply-To: <388d773-5c21-dfc9-40b1-7f2a060154d@linux.intel.com>
-Message-ID: <184ccf6c-e1db-8a64-24e0-f045a9d88751@linux.intel.com>
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com> <20220421153626.120494-1-vicencb@gmail.com> <388d773-5c21-dfc9-40b1-7f2a060154d@linux.intel.com>
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v6 11/12] bestla: Enable DMA, UART3 and UART4
+Message-ID: <YmK19DPzjJxBZHHm@kroah.com>
+References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
+ <20220421095323.101811-12-miquel.raynal@bootlin.com>
+ <20220421122143.7526d676@xps13>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1750312257-1650632844=:1779"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421122143.7526d676@xps13>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1750312257-1650632844=:1779
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Fri, 22 Apr 2022, Ilpo Järvinen wrote:
-
-> On Thu, 21 Apr 2022, Vicente Bergas wrote:
+On Thu, Apr 21, 2022 at 12:21:43PM +0200, Miquel Raynal wrote:
+> Hello,
 > 
-> > i have tested your v3 patch on v3 hardware, that is, using the
-> > emulated em485 because of lack of HW support. It is not working
-> > due to three issues.
+> miquel.raynal@bootlin.com wrote on Thu, 21 Apr 2022 11:53:22 +0200:
 > 
-> Thanks for testing!
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > 
-> > 1.- rs485_stop_tx is never called because there are no interrupts.
-> > I worked around this by disabling DMA:
-> > 
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -577,3 +577,3 @@ static int dw8250_probe(struct platform_device *pdev)
-> >  		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
-> >  		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
-> > - 		up->dma = &data->data.dma;
-> > +		up->dma = 0; // Proof of concept, not to be merged!
-> 
-> I'll need to look into this.
+> Please ignore these two dts patches, they were meant for testing
+> purposes only, sorry for the noise.
 
-8250 DMA tx complete path lacks calls to normal 8250 stop handling and
-I think it probably also assumes too much from dmaengine's completion 
-callback. ...It also seems bit early to call serial8250_rpm_put_tx from 
-there(?).
+I can't do that, please resend a new version of the series as our tools
+take all of the patches in a series.
 
-This patch allowed em485_start/stop_tx to be called in my tests:
+thanks,
 
-
-[PATCH 1/1] serial: 8250: use THRE & __stop_tx also with DMA
-
-Currently, DMA complete handling in 8250 driver does not use THRE
-to detect true completion of the tx and also doesn't call __stop_tx.
-This leads to problems with em485 that needs to handle RTS timing.
-
-Instead of handling tx stop within 8250 dma code, enable THRE when
-tx data runs out and tweak serial8250_handle_irq to call
-__stop_tx when uart is using DMA.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dma.c  | 4 ++--
- drivers/tty/serial/8250/8250_port.c | 9 ++++++---
- 2 files changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 890fa7ddaa7f..e84db0abf365 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -29,12 +29,13 @@ static void __dma_tx_complete(void *param)
- 	xmit->tail += dma->tx_size;
- 	xmit->tail &= UART_XMIT_SIZE - 1;
- 	p->port.icount.tx += dma->tx_size;
-+	dma->tx_size = 0;
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&p->port);
- 
- 	ret = serial8250_tx_dma(p);
--	if (ret)
-+	if (ret || !dma->tx_size)
- 		serial8250_set_THRI(p);
- 
- 	spin_unlock_irqrestore(&p->port.lock, flags);
-@@ -71,7 +72,6 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 
- 	if (uart_tx_stopped(&p->port) || uart_circ_empty(xmit)) {
- 		/* We have been called from __dma_tx_complete() */
--		serial8250_rpm_put_tx(p);
- 		return 0;
- 	}
- 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b3289ef117d1..72f144449ee1 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1960,9 +1960,12 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- 			status = serial8250_rx_chars(up, status);
- 	}
- 	serial8250_modem_status(up);
--	if ((!up->dma || up->dma->tx_err) && (status & UART_LSR_THRE) &&
--		(up->ier & UART_IER_THRI))
--		serial8250_tx_chars(up);
-+	if ((status & UART_LSR_THRE) && (up->ier & UART_IER_THRI)) {
-+		if (!up->dma || up->dma->tx_err)
-+			serial8250_tx_chars(up);
-+		else
-+			__stop_tx(up);
-+	}
- 
- 	uart_unlock_and_check_sysrq_irqrestore(port, flags);
- 
--- 
-2.35.1
-
---8323329-1750312257-1650632844=:1779--
+greg k-h
