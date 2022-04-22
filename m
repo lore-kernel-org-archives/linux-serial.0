@@ -2,259 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A928C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 07:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 348D0C433FE
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 07:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444679AbiDVHOh (ORCPT
+        id S1386732AbiDVHT4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 03:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
+        Fri, 22 Apr 2022 03:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352948AbiDVHOf (ORCPT
+        with ESMTP id S1444657AbiDVHTy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 03:14:35 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 00:11:42 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133AA5131C
-        for <linux-serial@vger.kernel.org>; Fri, 22 Apr 2022 00:11:41 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220422071036c4c10135346166c1a8
-        for <linux-serial@vger.kernel.org>;
-        Fri, 22 Apr 2022 09:10:36 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=N+qgC+uSMHsyklwVh7o4vM2DFt2Is5fDal+efTqi/0g=;
- b=JWv/SILhzSdJ3lIzagC04ZWXR5Hmsq0RH+2Ge1LJL9QKBLmRXqx3+qi/NvyrU8O50bH+mZ
- IUbKXhWkJ5dhs1UElflSYEAZsKF/Jwzw3qLH4+32QNCi9j7UISu1GMAPDM8TT3wF1FnttvBd
- gnEmZLiplUs0xBWHZ2zAvKKIujviI=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 1/3] tty: n_gsm: fix broken virtual tty handling
-Date:   Fri, 22 Apr 2022 00:10:23 -0700
-Message-Id: <20220422071025.5490-1-daniel.starke@siemens.com>
+        Fri, 22 Apr 2022 03:19:54 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342F350E34
+        for <linux-serial@vger.kernel.org>; Fri, 22 Apr 2022 00:17:01 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id l7so14636522ejn.2
+        for <linux-serial@vger.kernel.org>; Fri, 22 Apr 2022 00:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kKzqFYULcaKbgHWS4pm8RBaixFS7n+6/vYUvELbma6o=;
+        b=X5T5yN3xfhW0CQder3imIIGFrrjcK3Y6Es7wJHGpMRRQGT64qmbLdN+s473tScuOYX
+         fVPPQk5NgCUd/BXhYOPXohHkApEDuDbazZopyQDl/kxEQkf0U9uQi+wa0O9GUBSeait5
+         XOMSJtS3nprM5punmsUKhNqVprhZ0ucMAEwBFHzOJPEeT/6MrjmP2eegOfYEVjXIwlnf
+         r/QoOA8HZk8NDayqV06u5zphUw2ycosjHFRYFDbjPgjetXJAbLE1S1q/LHJpUhzUqrzA
+         Zxos7gpgYeibbTZrsYi1/yVwdgdlhNO8JHiN3FwqYF2+uo2vLjwDUPHFfYhTipkwwCJM
+         IJaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kKzqFYULcaKbgHWS4pm8RBaixFS7n+6/vYUvELbma6o=;
+        b=XcdQgg/JNb1bGr6jo4Mc0m2nNqh6utNFA3sBahrIOF2X5qDTe5K0kpREqb1eZNpmFe
+         VhVo1lbp0BmSdEbKCa7xY8d0QXP2G/miJwzLoxrPRBLiVl3qwPRlLslAxIE5vkHLTzYv
+         zFHuzC5QzKOEtKxO6kLMXcnYeqhdFY2D5tAfHd+vw/wCaIaPu3g085kHpEwg5wNMgLDm
+         icH4UlX6M9dkzzpolksImIWonRO3LrWtVU6evagPvUbom7jWv7KBFKcC195zSPbUtgUg
+         rQL7F3JvsLvWZkrRqXdLXB3lN6naX0NJ0z4SFPO0ciddc23GcYogBbNzi2vJldOkb8AK
+         B9YQ==
+X-Gm-Message-State: AOAM532x3TusZ1l6BMgKiKuWWqFIiZ0IvczAeVLk7JAGf9hYq1DOjCZc
+        1WE4qcY0r3WVv3HbhS8AkzaKWg==
+X-Google-Smtp-Source: ABdhPJyaQK+LejRxdXC/EaYZE+04lv8g6ZxZaowwRLuHiGG3jXNYNdbPSmsEhAr8bx6Sdg9uV5VEPA==
+X-Received: by 2002:a17:906:a08b:b0:6cf:65bc:e7de with SMTP id q11-20020a170906a08b00b006cf65bce7demr2978338ejy.220.1650611819709;
+        Fri, 22 Apr 2022 00:16:59 -0700 (PDT)
+Received: from [192.168.0.230] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id x12-20020a170906710c00b006ef8f9ee226sm456452ejj.115.2022.04.22.00.16.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 00:16:59 -0700 (PDT)
+Message-ID: <d953b4e8-4e0a-8a6d-16cf-1ea4e4bd0190@linaro.org>
+Date:   Fri, 22 Apr 2022 09:16:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 07/15] dt-bindings: clock: Add r8a779g0 CPG Core Clock
+ Definitions
+Content-Language: en-US
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "geert+renesas@glider.be" <geert+renesas@glider.be>,
+        "magnus.damm@gmail.com" <magnus.damm@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+References: <20220420084255.375700-1-yoshihiro.shimoda.uh@renesas.com>
+ <20220420084255.375700-8-yoshihiro.shimoda.uh@renesas.com>
+ <c86f78ac-ccf5-30ad-5de4-33211ca8b351@linaro.org>
+ <TYBPR01MB5341D2CAB8DD77E95C14AF8CD8F79@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <TYBPR01MB5341D2CAB8DD77E95C14AF8CD8F79@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 22/04/2022 07:32, Yoshihiro Shimoda wrote:
+> Hello Krzysztof,
+> 
+>> From: Krzysztof Kozlowski, Sent: Thursday, April 21, 2022 4:49 PM
+>>
+>> On 20/04/2022 10:42, Yoshihiro Shimoda wrote:
+>>> Add all Clock Pulse Generator Core Clock Outputs for the Renesas
+>>> R-Car V4H (R8A779G0) SoC.
+>>>
+>>> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+>>> ---
+>>>  include/dt-bindings/clock/r8a779g0-cpg-mssr.h | 87 +++++++++++++++++++
+>>>  1 file changed, 87 insertions(+)
+>>>  create mode 100644 include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+>>>
+>>> diff --git a/include/dt-bindings/clock/r8a779g0-cpg-mssr.h b/include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+>>> new file mode 100644
+>>> index 000000000000..07a94cf45581
+>>> --- /dev/null
+>>> +++ b/include/dt-bindings/clock/r8a779g0-cpg-mssr.h
+>>> @@ -0,0 +1,87 @@
+>>> +/* SPDX-License-Identifier: (GPL-2.0 or MIT) */
+>>
+>> Any reason why not licensing it the same as bindings document
+>> (GPL-2.0-only OR BSD-2-Clause)? The same applies to patch 5.
+>>
+>> MIT and BSD-2-clause are almost the same, AFAIR, so let's stick to one
+>> (BSD-2-clause) for consistency?
+> 
+> Since r8a779g0.dtsi (which uses this) is under (GPL-2.0 or MIT), I use it here.
+> Also, r8a779g0.dtsi includes dt-bindings/interrupt-controller/arm-gic.h and
+> the arm-gic.h is under (GPL-2.0 or MIT). So, using it is better, IIUC.
 
-Dynamic virtual tty registration was introduced to allow the user to handle
-these cases with uevent rules. The following commits relate to this:
-Commit 5b87686e3203 ("tty: n_gsm: Modify gsmtty driver register method when config requester")
-Commit 0b91b5332368 ("tty: n_gsm: Save dlci address open status when config requester")
-Commit 46292622ad73 ("tty: n_gsm: clean up indenting in gsm_queue()")
+This would mean we want to license the bindings the same as we license
+the DTS. It's not the case. For the bindings we have the strong
+preference - GPL-2.0 or BSD-2-clause. For the DTS - not that much, just
+recommendation, I think.
 
-However, the following behavior can be seen with this implementation:
-- n_gsm ldisc is activated via ioctl
-- all configuration parameters are set to their default value (initiator=0)
-- the mux gets activated and attached and gsmtty0 is being registered in
-  in gsm_dlci_open() after DLCI 0 was established (DLCI 0 is the control
-  channel)
-- the user configures n_gsm via ioctl GSMIOC_SETCONF as initiator
-- this re-attaches the n_gsm mux
-- no new gsmtty devices are registered in gsmld_attach_gsm() because the
-  mux is already active
-- the initiator side registered only the control channel as gsmtty0
-  (which should never happen) and no user channel tty
+> In other words, r8a779g0.dtsi doesn't include any the bindings document
+> so that there is not needed to use the same license, I think.
+> # I'm not a lawyer though...
 
-The commits above make it impossible to operate the initiator side as no
-user channel tty is or will be available.
-On the other hand, this behavior will make it also impossible to allow DLCI
-parameter negotiation on responder side in the future. The responder side
-first needs to provide a device for the application before the application
-can set its parameters of the associated DLCI via ioctl.
-Note that the user application is still able to detect a link establishment
-without relaying to uevent by waiting for DTR open on responder side. This
-is the same behavior as on a physical serial interface. And on initiator
-side a tty hangup can be detected if a link establishment request failed.
+If you would like to follow your recommendation, you should license also
+schema as MIT, because your DTS uses it as well (as a derivative work).
 
-Revert the commits above completely to always register all user channels
-and no control channel after mux attachment. No other changes are made.
+Anyway MIT and BSD-2-c are very similar, so there is no much difference
+here.
 
-Fixes: 5b87686e3203 ("tty: n_gsm: Modify gsmtty driver register method when config requester")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 87 ++++++++-------------------------------------
- 1 file changed, 15 insertions(+), 72 deletions(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 979dc9151383..99fe54247a87 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -272,10 +272,6 @@ static DEFINE_SPINLOCK(gsm_mux_lock);
- 
- static struct tty_driver *gsm_tty_driver;
- 
--/* Save dlci open address */
--static int addr_open[256] = { 0 };
--/* Save dlci open count */
--static int addr_cnt;
- /*
-  *	This section of the driver logic implements the GSM encodings
-  *	both the basic and the 'advanced'. Reliable transport is not
-@@ -1185,7 +1181,6 @@ static void gsm_control_rls(struct gsm_mux *gsm, const u8 *data, int clen)
- }
- 
- static void gsm_dlci_begin_close(struct gsm_dlci *dlci);
--static void gsm_dlci_close(struct gsm_dlci *dlci);
- 
- /**
-  *	gsm_control_message	-	DLCI 0 control processing
-@@ -1204,28 +1199,15 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- {
- 	u8 buf[1];
- 	unsigned long flags;
--	struct gsm_dlci *dlci;
--	int i;
--	int address;
- 
- 	switch (command) {
- 	case CMD_CLD: {
--		if (addr_cnt > 0) {
--			for (i = 0; i < addr_cnt; i++) {
--				address = addr_open[i];
--				dlci = gsm->dlci[address];
--				gsm_dlci_close(dlci);
--				addr_open[i] = 0;
--			}
--		}
-+		struct gsm_dlci *dlci = gsm->dlci[0];
- 		/* Modem wishes to close down */
--		dlci = gsm->dlci[0];
- 		if (dlci) {
- 			dlci->dead = true;
- 			gsm->dead = true;
--			gsm_dlci_close(dlci);
--			addr_cnt = 0;
--			gsm_response(gsm, 0, UA|PF);
-+			gsm_dlci_begin_close(dlci);
- 		}
- 		}
- 		break;
-@@ -1459,8 +1441,6 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 		wake_up_interruptible(&dlci->port.open_wait);
- 	} else
- 		dlci->gsm->dead = true;
--	/* Unregister gsmtty driver,report gsmtty dev remove uevent for user */
--	tty_unregister_device(gsm_tty_driver, dlci->addr);
- 	wake_up(&dlci->gsm->event);
- 	/* A DLCI 0 close is a MUX termination so we need to kick that
- 	   back to userspace somehow */
-@@ -1482,8 +1462,6 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 	dlci->state = DLCI_OPEN;
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
--	/* Register gsmtty driver,report gsmtty dev add uevent for user */
--	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
- 	/* Send current modem state */
- 	if (dlci->addr)
- 		gsmtty_modem_update(dlci, 0);
-@@ -1794,7 +1772,6 @@ static void gsm_queue(struct gsm_mux *gsm)
- 	struct gsm_dlci *dlci;
- 	u8 cr;
- 	int address;
--	int i, j, k, address_tmp;
- 
- 	if (gsm->fcs != GOOD_FCS) {
- 		gsm->bad_fcs++;
-@@ -1826,11 +1803,6 @@ static void gsm_queue(struct gsm_mux *gsm)
- 		else {
- 			gsm_response(gsm, address, UA|PF);
- 			gsm_dlci_open(dlci);
--			/* Save dlci open address */
--			if (address) {
--				addr_open[addr_cnt] = address;
--				addr_cnt++;
--			}
- 		}
- 		break;
- 	case DISC|PF:
-@@ -1841,33 +1813,8 @@ static void gsm_queue(struct gsm_mux *gsm)
- 			return;
- 		}
- 		/* Real close complete */
--		if (!address) {
--			if (addr_cnt > 0) {
--				for (i = 0; i < addr_cnt; i++) {
--					address = addr_open[i];
--					dlci = gsm->dlci[address];
--					gsm_dlci_close(dlci);
--					addr_open[i] = 0;
--				}
--			}
--			dlci = gsm->dlci[0];
--			gsm_dlci_close(dlci);
--			addr_cnt = 0;
--			gsm_response(gsm, 0, UA|PF);
--		} else {
--			gsm_response(gsm, address, UA|PF);
--			gsm_dlci_close(dlci);
--			/* clear dlci address */
--			for (j = 0; j < addr_cnt; j++) {
--				address_tmp = addr_open[j];
--				if (address_tmp == address) {
--					for (k = j; k < addr_cnt; k++)
--						addr_open[k] = addr_open[k+1];
--					addr_cnt--;
--					break;
--				}
--			}
--		}
-+		gsm_response(gsm, address, UA|PF);
-+		gsm_dlci_close(dlci);
- 		break;
- 	case UA|PF:
- 		if (cr == 0 || dlci == NULL)
-@@ -2451,19 +2398,17 @@ static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- 	else {
- 		/* Don't register device 0 - this is the control channel and not
- 		   a usable tty interface */
--		if (gsm->initiator) {
--			base = mux_num_to_base(gsm); /* Base for this MUX */
--			for (i = 1; i < NUM_DLCI; i++) {
--				struct device *dev;
-+		base = mux_num_to_base(gsm); /* Base for this MUX */
-+		for (i = 1; i < NUM_DLCI; i++) {
-+			struct device *dev;
- 
--				dev = tty_register_device(gsm_tty_driver,
-+			dev = tty_register_device(gsm_tty_driver,
- 							base + i, NULL);
--				if (IS_ERR(dev)) {
--					for (i--; i >= 1; i--)
--						tty_unregister_device(gsm_tty_driver,
--									base + i);
--					return PTR_ERR(dev);
--				}
-+			if (IS_ERR(dev)) {
-+				for (i--; i >= 1; i--)
-+					tty_unregister_device(gsm_tty_driver,
-+								base + i);
-+				return PTR_ERR(dev);
- 			}
- 		}
- 	}
-@@ -2485,10 +2430,8 @@ static void gsmld_detach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
- 	int i;
- 
- 	WARN_ON(tty != gsm->tty);
--	if (gsm->initiator) {
--		for (i = 1; i < NUM_DLCI; i++)
--			tty_unregister_device(gsm_tty_driver, base + i);
--	}
-+	for (i = 1; i < NUM_DLCI; i++)
-+		tty_unregister_device(gsm_tty_driver, base + i);
- 	tty_kref_put(gsm->tty);
- 	gsm->tty = NULL;
- }
--- 
-2.25.1
-
+Best regards,
+Krzysztof
