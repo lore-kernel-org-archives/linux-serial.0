@@ -2,156 +2,197 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB36C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 09:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616AFC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 09:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445959AbiDVJ2k (ORCPT
+        id S1446049AbiDVJef (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 05:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
+        Fri, 22 Apr 2022 05:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiDVJ2i (ORCPT
+        with ESMTP id S1445903AbiDVJeV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 05:28:38 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABD25FC6;
-        Fri, 22 Apr 2022 02:25:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650619546; x=1682155546;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=1Fnolbueqw1c8NP/rVjhAwcm4M/bqVF9+bKIZ0KD2GA=;
-  b=EWXkM4Ma0ApUI/Ypy5Vc9jIopdXFebC4TAH6zLhC7BpiVsjtd2lk3O8n
-   R1mbTBhLxjT2ayKUkDqinwjgUgcV74UyoEuxICm03+UBUxz6nhluvDa9p
-   ni+qwiJhXuiG/ZDlYnQ2way80rIGmAkRYYCnHVtN8pb0HrKb3szGbjond
-   iU92+mt4kQw09gDR0QiTic0TEDtEG1gw0O88vO6iq7oXsfAkgF76t6ko6
-   S+NnD9/ShF4UZvFcc5RO99i+SRJ61GXFViLDTybktwpUYNdghq5uEYDJD
-   KJ8WhdFgAePhG9Fc66yYGnjCP/ANj/tV+ASG4hp3Z8p2AQ0jPygOvU6jE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262227831"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="262227831"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:25:45 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
-   d="scan'208";a="556273544"
-Received: from dongaris-mobl.gar.corp.intel.com ([10.252.56.39])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:25:41 -0700
-Date:   Fri, 22 Apr 2022 12:25:36 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Vicente Bergas <vicencb@gmail.com>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        giulio.benetti@micronovasrl.com, gregkh@linuxfoundation.org,
-        heikki.krogerus@linux.intel.com, heiko@sntech.de,
-        jirislaby@kernel.org, johan@kernel.org, linux-api@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>, lukas@wunner.de,
-        u.kleine-koenig@pengutronix.de
-Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
-In-Reply-To: <20220421153626.120494-1-vicencb@gmail.com>
-Message-ID: <388d773-5c21-dfc9-40b1-7f2a060154d@linux.intel.com>
-References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com> <20220421153626.120494-1-vicencb@gmail.com>
+        Fri, 22 Apr 2022 05:34:21 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2120.outbound.protection.outlook.com [40.107.114.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3654BD4;
+        Fri, 22 Apr 2022 02:31:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gg1AZAusZ1C8pUmorQN0tNLwK3bpJjQrDMwWDRND5/jk6OcO1NgT6KNml1gOPvt4a+iEpPKizUT5KB/6P4RKkwC1zF7cERMsAuZ0RqohlurxrBIB6Kf6m2416dNLshVtPABmRpTCFLaCGwHa4m6KSAs44ag7KW9i7cyX6+uh1dKvlyQm1w6Mp6A3IH3yFGv6hmwMAbQH6IU3sq7/xwCqsOyX96fsnBDp5iPapSsL7dj0YQomKLNcADId3IyxW2JG2gx6Pyxvc9r5mOzz7jNSryDB7X1XYXk8d3Oe0RVZ6LdH0+m3pvg97YcyDlYaGLYs+/F4ExZpUtsl3MicIe/F3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dDHt21G+eTCk7pZHvP2jJmYm59Am9RD7hIXWg55KA3o=;
+ b=KT8sWo/Rxukm8b7dtHFZuelJdFDsZmijr0k/80tK5QLkVBFVuN7FFrIEaExyu6gIDBOA3yf7FrZkwVkheCPcJGc48dhjsJcJ3Fm8X7BWkYoOYQBdrPvu1mrBsKA7OwOAdSRdA5CL4cTwhB9BuDlfz91K+WNq8Nval36ADbS5yPs0+M/VyU6XKjsktQCJm9I6XKgRjK/n3R1y9AUbu/LWWCiwSPAt2EarOcsnfe3nG7HNmvJy4CsECUMAO/uVgeK9Yq1HcmvmxJyvlsp8vfa786zbkggOQDZJQX7pLiasSdpizepT5m6Mf0DfwkmS0URFIb8xB7qEYWDaIordqwnBQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dDHt21G+eTCk7pZHvP2jJmYm59Am9RD7hIXWg55KA3o=;
+ b=Mm5sDfAssLiY/oSt7XV9KZhyx9PqOvYZqXeytmV3IAambgQ6xSWkqZqd0HeFtWzNZ43/1UVwhusx32g+s1CU6kCkBtK9fSTfavKcerGRRmubxWMeZBM+z65wJDB7ru4CwO5cmJr7lZxNjFhXOGsPeR7GOMDU7lTBZhCNHyzmm4w=
+Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com (2603:1096:400:de::11)
+ by TYCPR01MB10180.jpnprd01.prod.outlook.com (2603:1096:400:1ec::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Fri, 22 Apr
+ 2022 09:31:17 +0000
+Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com
+ ([fe80::e180:5c8b:8ddf:7244]) by TYYPR01MB7086.jpnprd01.prod.outlook.com
+ ([fe80::e180:5c8b:8ddf:7244%6]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
+ 09:31:17 +0000
+From:   Phil Edworthy <phil.edworthy@renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>
+Subject: RE: [PATCH v2 02/13] dt-bindings: serial: renesas,em-uart: Document
+ r9a09g011 bindings
+Thread-Topic: [PATCH v2 02/13] dt-bindings: serial: renesas,em-uart: Document
+ r9a09g011 bindings
+Thread-Index: AQHYREyO+qhJgDbUCEGZVAv5++WRHqz5cfsAgAI33ICAABgdgIAACVbg
+Date:   Fri, 22 Apr 2022 09:31:17 +0000
+Message-ID: <TYYPR01MB708615E7E58B7833184B5CDFF5F79@TYYPR01MB7086.jpnprd01.prod.outlook.com>
+References: <20220330154024.112270-1-phil.edworthy@renesas.com>
+ <20220330154024.112270-3-phil.edworthy@renesas.com>
+ <CAMuHMdWaiAZNWmU5itJWJy3fEMmR1hQc7QRWpe6mi3AYkSewgw@mail.gmail.com>
+ <TYYPR01MB7086BD705F91E855F0D3FD45F5F79@TYYPR01MB7086.jpnprd01.prod.outlook.com>
+ <CAMuHMdWtLxdXztfLxSvb57WOO46qTW6c+fD=P0O5qicop=b+3g@mail.gmail.com>
+In-Reply-To: <CAMuHMdWtLxdXztfLxSvb57WOO46qTW6c+fD=P0O5qicop=b+3g@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 97dbe151-de3a-40ad-cd62-08da2442da07
+x-ms-traffictypediagnostic: TYCPR01MB10180:EE_
+x-microsoft-antispam-prvs: <TYCPR01MB10180019DE1013B6DF697CF7EF5F79@TYCPR01MB10180.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3vZKUwS6Qq5b1N9TcWq/n6iFGKTYUfWqg9zyykYNkf5ewrDtD6a6o1TeHY7i7Dgaliq29DcpspGOaUFzDnsAGnZ6ts2r4ah9UGWGJv2Izcv0EaVWaszchAVGL3fJ/AmHdGXbRtpU54fOpFPLKyli+GwID51WRYc5oe6iKxJd4ehLTZ2lYvAl7cEnAQfYgtD3AvLGamYYWR5drEV5VWdtdtr6hZ38XItKAmhrg8y23XSc5n3p35+gNfxO+x2CXsf2QwFTBBRgHPU5TBEAE2l0Z18L2Vi9GyIxKv9J9pI7lgrWr2QhiG+vbUWGRuXDwSkoOS6K7Y+YL2iZcJN9v+eNxDULHxR+664DwJ+vAxlSxD8goiZX4GDa2UhgpaGGUOhoQgCrvJlOD6L17dt7fBfbAOGNocsF/i3zQ4qIvk0GnRrMzqWi+xVvOJ0N4Ud4mMfIMn24jt5O1O/72KUwfuMUi7quDt42Bllq/jczObPY6aoM9kGRaKOzk90BbROFbz2hGCEL5xQkp8Sc4FB+WMo4uikcaQ6BffKCJPWJciEIPvIE+70LUQP0UyOgbAG4rpjUljo2nACgyyKh+BAjGtxdm7TnKGU2/B7LcN+7tQDiGwzwJXL/iCM8pk+wrMC3F36VsxATu6ezwWx9Wz0tN1fqnh0jLVe4iCbfG9yjQ0/vUQTGKzV/PVjBymKYymw9jkZDdRgk4EDV6KQA2nBH+KOFNQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB7086.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(44832011)(55016003)(33656002)(186003)(8676002)(26005)(66446008)(66946007)(8936002)(9686003)(5660300002)(2906002)(83380400001)(86362001)(76116006)(66556008)(53546011)(66476007)(54906003)(316002)(38070700005)(508600001)(38100700002)(122000001)(6506007)(4326008)(107886003)(52536014)(64756008)(6916009)(71200400001)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZHhxMW0wa1hONHpydUFvZmFBS1d2OXErdndlUUhGU25USXU0aDgydFhnMmV1?=
+ =?utf-8?B?SUIxTWJ1aFNmejhPV1BOc2oyV25COFVrVjA0NEZFVDB5NmRNWWtJMW11R1pk?=
+ =?utf-8?B?bmxpOHRydUFNbXJDQk1kbC9FWjduMTZYcnFWbTFGdmVwZko5RU56YUxkYTEv?=
+ =?utf-8?B?VnI1bUJRdEtjWksrMEtBM3ZmZ3pxb0NlWUYrTCt5UE1MbzdtanhtY2V6bktj?=
+ =?utf-8?B?TitpN1o2cVg3MWdZcndQMnJVdXZQS2VweVU3aGEyUFY3cWl2M3hDQm9DUk9q?=
+ =?utf-8?B?M1N5aDBQRU1uNjlEK051RUM0TnVKQm9tK0dhVGN3NW9iY0M3cG96OXhRelFM?=
+ =?utf-8?B?OXFvSzBNVWVxZExXbkg1QVprZFJLUWdpdmtGMmxsZ0JtMVAxaVFhcUJZQmRM?=
+ =?utf-8?B?dVVBeUQ0Wm1TZEJ4YVJSbjFKZzR1ejVoaWUzeE5LU0xsekZwM3ZKcjZrSGQw?=
+ =?utf-8?B?K1Z5aWFMSmNIcmM1YWYzV2tJbTJwbXdWY2RTYUh5cFM1TS9mejFyZk5hU0pw?=
+ =?utf-8?B?bTIyM0l2alZrSmxhQzdDWVdSWjg0WHIwSjBxbFgzanAwU3BTMkR2N0x6bTVI?=
+ =?utf-8?B?eDFBMThnenVScVVtWDNYWU5lVDNOS3pGcityZCtHSU5LRWpseVNqYXdwNU9z?=
+ =?utf-8?B?RjVaUVlTMERYSlB1MFVxcWNiMklwOHkvdGVxakZoWXBRTEdoYWE2RFFYVUxW?=
+ =?utf-8?B?RmgvT05xSXNLMkFyMVN5R1E3bnh1YTdwaDBqUnh5aTBNSTNDTFpsbEs5TC9O?=
+ =?utf-8?B?UHh3MXVKbkVVdGpMeTJVc1pOcGduSG5SOTFFZndOei9GNFZhTnV1NkY0enov?=
+ =?utf-8?B?V0tKbkdrS1oyNWlIeHRYSFNqc2dIY2Z3ZFJrMU5rWWs4ck9yZ0hnZEpGZ1kx?=
+ =?utf-8?B?WkZMM0N5MEdML3ZjelZ5NHRwZFZjayt6SEM1aUVySDdVU2NPdE5KQWh5UHlj?=
+ =?utf-8?B?Z2ZPUGNXQ2g0a1VHS0RzbXNSY1dWZXo2cUl4eHR4R2t6b3dMMGtwSmJKQkVr?=
+ =?utf-8?B?OXVuZTZ4b0lPaGxVRitiS29Vd1dWalQ1NmFxWTVmc2ZoSVR2bVhBZEdtV3p2?=
+ =?utf-8?B?T3dOQUI4bFBrSXF2L1JCVHVXeTY1d0pEdVBsYzFhZUFUQ0x4cmJVRnAweTZj?=
+ =?utf-8?B?QjgwUnNVUEVHWFdDbmhFV2wyU3dnWTZUMXkyTGVlSUw3QjR0azVtbWgrVjJI?=
+ =?utf-8?B?VEpFcHNUUVlObUxGWi9YTHhLbEVDRHQ2QUhFbVY3emNHaEpIbVhteURlcUc2?=
+ =?utf-8?B?Q21FeUJJR29BSVB4Q0xqYjhPc05wbE5HWUV4ZWh2TDNlZ1B2bkJrOWI4RWdN?=
+ =?utf-8?B?Y1BMRnpaaGJqdWUzY25hM00yS1NSWDVpQWVkTnNUd21lRG91QTd2dVgyZUJs?=
+ =?utf-8?B?K2NtMmRJeDNpZUJVUCtDUGNQOTd0VTJicDVqRmoza1E3UEVIWXFONDlWQlBm?=
+ =?utf-8?B?Mmo4anUzOUZlVWpTbHlrZDE3RXoxU293MDlTZkQxZmV6aDNaMDVOR1UzK1Qx?=
+ =?utf-8?B?Y1E5aHJSN0xwbEw5YkxyQ3JyT0xXTnR4UDltNU9qNDRuNDZHS0pWZklqRmd0?=
+ =?utf-8?B?TS9RYnJ2RWgrUXNZeDNxaEhZTFl2SEkzWno1Q0ZQZGFCbU8rQjU5V1NvNHpR?=
+ =?utf-8?B?SDlNOHNEd2JHSzUwVHB4bENWS05xYXp3WEpjd2ozeXQ1Ni9yNmFaQ3A0bVVq?=
+ =?utf-8?B?WVVyQU5iOEw0YkpHdW14bFg2WTduUStGV283b1VOZHI5azRLTERtdndCL3FN?=
+ =?utf-8?B?bFMvV1pDaG1rWDdBTGhqdFRVMnZ6cUtZSEZUcnN6T2RMMjVrNVdkNjNyTWxj?=
+ =?utf-8?B?V1p6T1haaEVwMFFmL1FnV3lzUUtiWlFGNHNoeUFKZDNMaFo2S2VaaDhyYTZo?=
+ =?utf-8?B?STg3ZmN3eXg2cDRPMm1LUVpseS9ZTFRtTHFmVkMxQlB4WmdLUTN3c0ZsV3d4?=
+ =?utf-8?B?U1poNXVYaEozYUxiMDlFSS9ndTV1UWtBUi90NndoU3lGVysxSUxwcGd3VEh3?=
+ =?utf-8?B?ZWFpampZN1BsUmhnQzV3amtRSEJlVkptcW5vaE1LRmMxT1ZYcWhxQjdqRThh?=
+ =?utf-8?B?NmRxakJSMGNvMG5kcTJrR2ZxWGlCMGlXT3F4bDR2RnRpZGR2WlVQa01Sc0g1?=
+ =?utf-8?B?VFZycmt0RGh3NjFQQVNmRk83YVVrZW5ROUVlWkRuS0tPRzZEY0Q5T1l5ZXIy?=
+ =?utf-8?B?NE1haEI1dTJlMXdZTDNWNTAvOVByU21uRkRiWXZ4cGl1OG1MZ1JseXkvNkVz?=
+ =?utf-8?B?MkluSlI1RW1Idnh2UWY3Zlk5UWtZRmlFSGdWWWlSYXdzQU1xMXJPTU1QVkZW?=
+ =?utf-8?B?VHFEZ1JDbXVWZlBVL0paUlI2a2hCUzdGM2VTeVZEWE5QdnIveXFNR2hoeUJL?=
+ =?utf-8?Q?wgzg+wBT/fSCdEkQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-414335990-1650619544=:1779"
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB7086.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97dbe151-de3a-40ad-cd62-08da2442da07
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2022 09:31:17.0576
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2i/O1LA6heKt1MOlom3vEqqukDns9KkFRwA7JsOOz2XgWmApW0IyzBLXaFHeP0AmrZ24J5P4l4q5PNtTZmmFn1HLqL31YkG9UY15jJyPoTs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB10180
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-414335990-1650619544=:1779
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Thu, 21 Apr 2022, Vicente Bergas wrote:
-
-> i have tested your v3 patch on v3 hardware, that is, using the
-> emulated em485 because of lack of HW support. It is not working
-> due to three issues.
-
-Thanks for testing!
-
-> 1.- rs485_stop_tx is never called because there are no interrupts.
-> I worked around this by disabling DMA:
-> 
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -577,3 +577,3 @@ static int dw8250_probe(struct platform_device *pdev)
->  		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
->  		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
-> - 		up->dma = &data->data.dma;
-> +		up->dma = 0; // Proof of concept, not to be merged!
-
-I'll need to look into this.
-
-> 2.- Although "linux,rs485-enabled-at-boot-time" is set in the DTS,
-> the RTS/DriverEnable line is asserted all the time the /dev/ttyS1
-> device file is closed.
-> As soon as the device file is openned, the RTS line is deasserted.
-> Then it works as expected: it is asserted only during transmissions.
-> When the device file is closed again, the RTS line goes back to the
-> asserted level and stays there.
-> When the rs485 mode is enabled, it is expected that the RTS line be
-> deasserted by default.
-
-Managing RTS is a mess in 8250 driver as has recently being noted. It will 
-hopefully get sorted out eventually.
-
-> 3.- The RTS line is asserted a few microseconds earlier than the
-> start bit, that is acceptable, but then it deasserts one whole bit
-> time before the last stop bit.
-> So, the last stop bit of the last byte of a message is not sent
-> because the driver is disabled.
-> This has been tested with the port configured at 19200e1, that is,
-> the bit time is 52 us.
-> I worked around this by adding "rs485-rts-delay = <0 52>;" in the
-> DTS. This leads to the following feature (not an issue):
-> 
-> On Mon, 11 Apr 2022 11:33:12 +0300, Ilpo Järvinen wrote:
-> > Set delay_rts_before_send and delay_rts_after_send to zero for now.
-> > The granularity of that ABI is too coarse to be useful.
-> 
-> Indeed the time unit of this parameter is milliseconds, as stated in
-> Documentation/devicetree/bindings/serial/rs485.yaml
-> Which in the general case is more than ten bit times.
-> 
-> But it is being interpreted as microseconds here:
-> 
-> On Mon, 11 Apr 2022 11:33:11 +0300, Ilpo Järvinen wrote:
-> > [PATCH v3 02/12] serial: 8250: Handle UART without interrupt on TEMT
-> >+	stop_delay += (u64)p->port.rs485.delay_rts_after_send * NSEC_PER_USEC;
-> 
-> So, this way it has a useful granularity to be used in
-> "rs485-rts-delay = <0 52>;" but is not compliant with the spec.
-
-It seems I just got confused here with all these different time units. My 
-intention was to use NSEC_PER_MSEC here to match the spec although it's 
-not that useful granularity. I'll change that for the next version.
-Lukas was planning of making it much finer granularity with nsecs (leaving 
-the small values for msecs for compat purposes) which would hopefully 
-resolve this granularity challenge.
-
-About the actual issue of too early deassert. It kind of sounds like the 
-stop tx timer was not waiting long enough. It could be that THRE is 
-asserted sooner than I expected (maybe HW does FIFO->shift register
-during the transmission of the stop bit of the prev char asserting THRE
-approx one bit too early).
-
-Perhaps this patch would help to combat the problem (roughly estimating
-worst-case one bit time here with that /7):
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 35fbaa53bc2f..f944c639db82 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1551,7 +1551,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 		if (!(lsr & UART_LSR_TEMT)) {
- 			if (!(p->capabilities & UART_CAP_NOTEMT))
- 				return;
--			stop_delay = p->port.frame_time;
-+			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
- 		}
- 
- 		__stop_tx_rs485(p, stop_delay);
---8323329-414335990-1650619544=:1779--
+SGkgR2VlcnQsDQoNCk9uIDIyIEFwcmlsIDIwMjIgMDk6NDUgR2VlcnQgVXl0dGVyaG9ldmVuIHdy
+b3RlOg0KPiBPbiBGcmksIEFwciAyMiwgMjAyMiBhdCAxMDoyOCBBTSBQaGlsIEVkd29ydGh5IHdy
+b3RlOg0KPiA+IE9uIDIwIEFwcmlsIDIwMjIgMjI6MjYgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3Rl
+Og0KPiA+ID4gT24gV2VkLCBNYXIgMzAsIDIwMjIgYXQgNTo0MSBQTSBQaGlsIEVkd29ydGh5IHdy
+b3RlOg0KPiA+ID4gPiBUaGUgUmVuZXNhcyBSWi9WMk0gKHI5YTA5ZzAxMSkgU29DIHVzZXMgYSB1
+YXJ0IHRoYXQgaXMgY29tcGF0aWJsZQ0KPiB3aXRoDQo+ID4gPiB0aGUNCj4gPiA+ID4gRU1NQSBN
+b2JpbGUgU29DLg0KPiA+ID4gPg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBQaGlsIEVkd29ydGh5
+IDxwaGlsLmVkd29ydGh5QHJlbmVzYXMuY29tPg0KPiA+ID4gPiBSZXZpZXdlZC1ieTogQmlqdSBE
+YXMgPGJpanUuZGFzLmp6QGJwLnJlbmVzYXMuY29tPg0KPiA+ID4gPiAtLS0NCj4gPiA+ID4gdjI6
+IEZpeCBkdGJzX2NoZWNrIGJ5IGFkZGluZyBtaXNzaW5nIGFsdGVybmF0aXZlIGJpbmRpbmcNCj4g
+PiA+DQo+ID4gPiBUaGFua3MgZm9yIHlvdXIgcGF0Y2gsIHdoaWNoIGlzIG5vdyBjb21taXQgN2Ji
+MzAxODEyYjYyODA5OQ0KPiA+ID4gKCJkdC1iaW5kaW5nczogc2VyaWFsOiByZW5lc2FzLGVtLXVh
+cnQ6IERvY3VtZW50IHI5YTA5ZzAxMQ0KPiA+ID4gYmluZGluZ3MiKSBpbiB0dHkvdHR5LW5leHQu
+DQo+ID4gPg0KPiA+ID4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
+c2VyaWFsL3JlbmVzYXMsZW0tdWFydC55YW1sDQo+ID4gPiA+ICsrKyBiL0RvY3VtZW50YXRpb24v
+ZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvcmVuZXNhcyxlbS11YXJ0LnlhbWwNCj4gPiA+ID4g
+QEAgLTE0LDcgKzE0LDE0IEBAIGFsbE9mOg0KPiA+ID4gPg0KPiA+ID4gPiAgcHJvcGVydGllczoN
+Cj4gPiA+ID4gICAgY29tcGF0aWJsZToNCj4gPiA+ID4gLSAgICBjb25zdDogcmVuZXNhcyxlbS11
+YXJ0DQo+ID4gPiA+ICsgICAgb25lT2Y6DQo+ID4gPiA+ICsgICAgICAtIGl0ZW1zOg0KPiA+ID4g
+PiArICAgICAgICAgIC0gZW51bToNCj4gPiA+ID4gKyAgICAgICAgICAgICAgLSByZW5lc2FzLHI5
+YTA5ZzAxMS11YXJ0ICAgICMgUlovVjJNDQo+ID4gPiA+ICsgICAgICAgICAgLSBjb25zdDogcmVu
+ZXNhcyxlbS11YXJ0ICAgICAgICAjIGdlbmVyaWMgRU1NQSBNb2JpbGUNCj4gPiA+IGNvbXBhdGli
+bGUgVUFSVA0KPiA+ID4gPiArDQo+ID4gPiA+ICsgICAgICAtIGl0ZW1zOg0KPiA+ID4gPiArICAg
+ICAgICAgIC0gY29uc3Q6IHJlbmVzYXMsZW0tdWFydCAgICAgICAgIyBnZW5lcmljIEVNTUEgTW9i
+aWxlDQo+ID4gPiBjb21wYXRpYmxlIFVBUlQNCj4gPiA+DQo+ID4gPiBUaGUgYWJvdmUgbG9va3Mg
+Z29vZCB0byBtZS4NCj4gPiA+DQo+ID4gPiA+DQo+ID4gPiA+ICAgIHJlZzoNCj4gPiA+ID4gICAg
+ICBtYXhJdGVtczogMQ0KPiA+ID4NCj4gPiA+IEhvd2V2ZXIsIHVubGlrZSBFTUVWMiwgUlovVjJN
+IGRlZmluZXMgdHdvIGNsb2NrczogcGNsayBhbmQgc2Nsay4NCj4gPiA+IEhlbmNlIHBsZWFzZSB1
+cGRhdGUgdGhlIGNsb2NrcyBzZWN0aW9uIHRvIHJlZmxlY3QgdGhhdC4NCj4gPiBZb3UgYXJlIHJp
+Z2h0IHRoYXQgdGhlIHVhcnQgaGFzIHR3byBjbG9ja3MuDQo+ID4NCj4gPiBOb3RlIHRob3VnaCB0
+aGF0IHBjbGsgaXMgc2hhcmVkIGJ5IGJvdGggdWFydHMuIFRoZSBIVyBtYW51YWwgc2F5czoNCj4g
+PiAiY2guIDEgaXMgZm9yIHVzZSB3aXRoIHRoZSBJU1Agc3VwcG9ydCBwYWNrYWdlLCBzbyBkbyBu
+b3QNCj4gPiB1c2UgcmVnaXN0ZXJzIHJlbGF0ZWQgdG8gdGhpcyBjaGFubmVsLiIuIER1ZSB0byB0
+aGlzLCBzZWN0aW9uDQo+ID4gNDguNS4yLjUwIENsb2NrIE9OL09GRiBDb250cm9sIFJlZ2lzdGVy
+IDE1IChDUEdfQ0xLX09OMTUpIHNheXMNCj4gPiB0aGF0IGJpdCAyMCwgQ0xLNF9PTldFTiAoZW5h
+YmxlIGZvciBVUlRfUENMSykgc2hvdWxkIGJlIHdyaXR0ZW4NCj4gPiBhcyAwLg0KPiA+DQo+ID4g
+SSB0b29rIHRoaXMgdG8gbWVhbiB0aGF0IHRoZSBVUlRfUENMSyBpcyBlbmFibGVkIGJ5IHRoZSBJ
+U1AgZmlybXdhcmUNCj4gPiBhbmQgc29mdHdhcmUgbXVzdCBub3QgdG91Y2ggaXQuIEkgYW0gbm90
+IHN1cmUgaWYgdGhlIERUIGJpbmRpbmdzDQo+ID4gc2hvdWxkIGRvY3VtZW50IGEgY2xvY2sgdGhh
+dCBpcyBzcGVjaWZpZWQgYXMgZG8gbm90IHRvdWNoIGluIHRoZQ0KPiA+IEhXIG1hbnVhbC4gVGhp
+cyBpcyBhIGJpdCBvZiBhIGdyZXkgYXJlYS4NCj4gDQo+ICJEVCBkZXNjcmliZXMgaGFyZHdhcmUs
+IG5vdCBzb2Z0d2FyZSBwb2xpY3kiLg0KPiANCj4gQnV0IEkgYWdyZWUgdGhpcyBpcyBhIGdyZXkg
+YXJlYS4NCkkgd2lzaCB0aGUgSFcgbWFudWFsIGVpdGhlciBkaWRu4oCZdCBtZW50aW9uIHRoaXMg
+Y2xvY2sgdGhhdCB5b3Ugc2hvdWxkDQpub3QgdG91Y2gsIG9yIGRpZG7igJl0IHNwZWNpZnkgYW55
+dGhpbmcgYXMgInVzZWQgYnkgdGhlIElTUCBmaXJtd2FyZSIgOikNCg0KPiBPbmUgb3B0aW9uIHdv
+dWxkIGJlIHRvIG1hcmsgVVJUX1BDTEsgY3JpdGljYWwsIHNvIGl0IHdvbid0IGJlIGRpc2FibGVk
+Lg0KPiBCdXQgdGhhdCB3b3VsZCBzdGlsbCBtZWFuIGl0J3MgZW5hYmxlZCBieSBMaW51eCwgaS5l
+LiBMaW51eCB3b3VsZCBzZXQNCj4gQ0xLNF9PTldFTiB0byAxIHdoaWxlIGVuYWJsaW5nIHRoZSBj
+bG9jay4NCj4gDQo+IEFub3RoZXIgb3B0aW9uIHdvdWxkIGJlIHRvIGNyZWF0ZSBVUlRfUENMSyBh
+cyBhIG5vbi1nYXRlYWJsZSBjbG9jaywNCj4gc28gTGludXggd29uJ3QgZXZlciB0b3VjaCB0aGUg
+cmVnaXN0ZXIgYml0cy4NCj4gDQo+IE9yIGp1c3QgaWdub3JlIFVSVF9QQ0xLIGFuZCBkbyBub3Ro
+aW5nLCBsaWtlIHlvdSBkaWQgOy0pDQo+IFdvdWxkIGl0IGJlIHBvc3NpYmxlIGZvciBhIHVzZXIg
+dG8gbm90IHVzZSB0aGUgSVNQIGZpcm13YXJlIGF0IGFsbCwNCj4gYW5kIGdvIGZ1bGwgTGludXgs
+IGhlbmNlIHVzaW5nIGJvdGggVUFSVCBjaGFubmVscyBhbmQgVVJUX1BDTEs/DQpJdCBpcyBwb3Nz
+aWJsZSB0byBub3QgdXNlIHRoZSBJU1AgZmlybXdhcmUsIGJ1dCB0aGVtIHdoYXQgZG8gd2UgZG8/
+DQpJZ25vcmUgZXZlcnl0aGluZyBpbiB0aGUgSFcgbWFudWFsIHRoYXQgc2F5cyAiSVNQIGZpcm13
+YXJlIj8NCg0KSWRlYWxseSwgd2Ugd2FudCB0byBvbmx5IGVuYWJsZSBhIGNsb2NrIGlmIGl0J3Mg
+bm90IGFscmVhZHkgZW5hYmxlZCwNCmJ1dCBub3QgdHVybiBpdCBvZmYgaWYgaXQgaXMgZW5hYmxl
+ZC4gSXNuJ3QgdGhhdCBhIGNyaXRpY2FsIGNsaz8NCg0KVGhhbmtzDQpQaGlsDQo=
