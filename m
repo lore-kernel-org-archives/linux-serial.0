@@ -2,164 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58984C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 18:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A58EC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 21:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233306AbiDVSNn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 14:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
+        id S230355AbiDVV5E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Apr 2022 17:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238386AbiDVSJO (ORCPT
+        with ESMTP id S230422AbiDVV4j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 14:09:14 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113C512010E;
-        Fri, 22 Apr 2022 11:06:19 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2DF95100002;
-        Fri, 22 Apr 2022 18:06:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650650778;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=XLCUUuK371ZisXNLd3kPgQFu8+USFQsrBHBO1DtBmRg=;
-        b=oLr6cSBgUALO/vcVv68xVF8AgeNh5H6F6nAjN7adN/4YMCmirx2w6YKH1z83UR9QhZ3RfN
-        cJmp9WQGfMkMqKDfwg4j6oc8kyOb6PH6AwJcsDcN4OpVB86BsqLLUtnbl9tt2X7JJwf659
-        f4CJ2O6VsVh/3OCnlgHTtfRBRGORgqCtD48OsYUtCKsjKr9/yh31opRMeHGPQOwvX00/eU
-        FSSDD5mLVa9Jp+5SHzgozUSRdCzqd004KV7GGRuT+MFSvDEVpkZw/CoolO3+o4ElLRkw8C
-        yZhlJxks9b5YQETiatXmsgnhWHcncbmeOoyqJiRapMSj1aw51LGhfRMES/cEbw==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Fri, 22 Apr 2022 17:56:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7351D2A4CB4;
+        Fri, 22 Apr 2022 13:39:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650659956; x=1682195956;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=itPL4SDhaJNbtUUlmV3x5Gcrnw+9kVzEXPvSZciorvU=;
+  b=I74K3tUGWZeqJjHA0axRe+ueDzJX78bVscWLOHcAiRPdZiM+QLk5DxNJ
+   3fEKdLX6V1/AIrF2FtXb5bX1C6Oxp+nrEML781rix6jDQMYOtJ/T0/1Ib
+   F0e/fyDcclhoKX3aXh6jcfUIYgbRx1BkWwAU4WVte64fV8bcVsXzwbmhs
+   v1l8vh5JFUa619PNZX2kRm4DEnI4GcPKTH71zBphEilGmsu5NhjchRlna
+   ayl7mHPxgJrDWzoVIPxsgPH4tRLTzjwl5N9F+963xkwDwcDLnqDYkIflx
+   TWVe8FgR7xwfubVnWn3zAXqiR5FDdMRjG1EqjDHWF9Efrlib/ROhN+LeI
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244699982"
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="244699982"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:09:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
+   d="scan'208";a="578075082"
+Received: from assenmac-mobl.ger.corp.intel.com ([10.251.216.136])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 13:09:10 -0700
+Date:   Fri, 22 Apr 2022 23:09:07 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v7 0/9] serial: 8250: dw: RZN1 DMA support
-Date:   Fri, 22 Apr 2022 20:06:06 +0200
-Message-Id: <20220422180615.9098-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
+        LKML <linux-kernel@vger.kernel.org>,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v3 3/5] tty: Add lookahead param to receive_buf
+In-Reply-To: <YmK83NfVqEvGg8DW@kroah.com>
+Message-ID: <d496d544-fe59-5fa7-5d21-ab6ad025fa75@linux.intel.com>
+References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com> <20220411094859.10894-4-ilpo.jarvinen@linux.intel.com> <YmK83NfVqEvGg8DW@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Fri, 22 Apr 2022, Greg KH wrote:
 
-Support for the RZN1 DMA engine allows us adapt a little bit the 8250 DW
-UART driver with to bring DMA support for this SoC.
+> > diff --git a/drivers/accessibility/speakup/spk_ttyio.c b/drivers/accessibility/speakup/spk_ttyio.c
+> > index 08cf8a17754b..b33536eea1d3 100644
+> > --- a/drivers/accessibility/speakup/spk_ttyio.c
+> > +++ b/drivers/accessibility/speakup/spk_ttyio.c
+> > @@ -73,7 +73,7 @@ static void spk_ttyio_ldisc_close(struct tty_struct *tty)
+> >  
+> >  static int spk_ttyio_receive_buf2(struct tty_struct *tty,
+> >  				  const unsigned char *cp,
+> > -				  const char *fp, int count)
+> > +				  const char *fp, int count, unsigned int lookahead_count)
+> 
+> Ick, adding yet-another-parameter to a function is a mess as it's hard
+> to know what to do with this and what it means just by looking at when
+> it is called.
 
-This short series applies on top of the series bringing RZN1 DMA
-support, currently on its v11, see [1]. Technically speaking, only the DT
-patch needs to be applied after [1]. The other patches can come in at
-any moment, because if no "dmas" property is provided in the DT, DMA
-support will simply be ignored.
+To be honest, I didn't like it either but just couldn't find another 
+way... That is, not until now that you pushed.
 
-[1] https://lore.kernel.org/dmaengine/20220421085112.78858-1-miquel.raynal@bootlin.com/T/#t
+I think I can add lookahead_count into n_tty_data, then both layers 
+(n_tty and tty_buffer) that depend on it will indepedently keep track of 
+it rather than passing it through the whole callchain.
 
-Thanks,
-Miquèl
+> >  /* Returns true if c is consumed as flow-control character */
+> > -static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c)
+> > +static bool n_tty_receive_char_flow_ctrl(struct tty_struct *tty, unsigned char c,
+> > +					 bool lookahead_done)
+> >  {
+> >  	if (!n_tty_is_char_flow_ctrl(tty, c))
+> >  		return false;
+> >  
+> > +	if (lookahead_done)
+> > +		return true;
+> 
+> Why would this function be called if this option was true?
 
-Changes in v7:
-* Dropped the two personal patches at the end of the series sent by
-  accident.
-* Also dropped the DT patch as requested be Geert.
-* Only serial patches remain.
+Agreed, it makes sense to move the check before call (and then I also 
+don't need to reorganize this function anymore).
 
-Changes in v6:
-* Collected more tags.
-* Moved some RZN1 definitions below to respect the increasing order of
-  the register offsets.
-* Renamed the cpr platdata entry to cpr_val.
-* Moved the cpr/cpr_val platdata entry closer to usr_reg.
-* Dropped the patch from Emil Renner Berthing adding jh7100 support from
-  my tree. Squashed the other patch from this external series with the
-  fixes which applied on top of it and were supposed to bring platform
-  data support.
-* Rebased on top of tty-next.
+> the overall idea is good, this implementation isn't quite there yet.
 
-Changes in v5:
-* Collected the various tags.
-* Updated the style to fit Andy's requests.
-* Moved the usr register offset to pdata as advised by Andy.
-* Moved the addition of the property.h header to the right patch.
-* Return earlier from the IRQ handler whenever possible.
-* Moved the dw8250_readl/writel_ext() helpers to dwlib.h so that they
-  could be reused by the patch adding rzn1 support.
+Thanks for taking a look.
 
-Changes in v4:
-* Squashed the patch changing the quirks type with the patch introducing
-  the pdata structure. This way I don't need to go through the uintptr_t
-  step. 
-* Added a pdata stub to the DW compatible. This way "if (pdata)" checks
-  are no longer needed and we can avoid ternary operators disliked by
-  Greg.
-* Saved the pdata structure pointer inside the per-device structure to
-  avoid calling the same device property heplper over and over again. 
-* Changed the style a bit to fit Andy's requirements.
-
-Changes in v3:
-* Added Geert's Reviewed-by's.
-* Used forward declaration in dwlib.h when relevant.
-* Reordered the headers when necessary.
-* Added a patch changing the quirks type from unsigned long to unsigned
-  int as advised by Andy.
-* s/up->port.dev/p->dev/ when relevant.
-* Added a debug message in dwlib when no CPR is available.
-* Dropped the CPR_DMA_EXTRA bit addition: we assume DMA is there.
-* Changed the prefix of certain definitions.
-
-Changes in v2:
-* Rebased on top of Emil's patches. Added platform data structures
-  instead of raw quirk integers in order to provide a CPR value.
-* Added includes in dwlib.h even though it's not particularly useful, it
-  may help preventing a build error later on if we ever decide to include
-  this file from another location.
-* Dropped the call to ->tx_dma and instead implemented a callback that
-  can be called from serial8250_tx/rx_dma.
-* Used the device API instead of the of API.
-* Changed the logic about DMA capabilities to avoid breaking existing
-  designs.
-* Introduced a new quirk related to the flow-control feature of the
-  RZ/N1 version of the UART controller when used with DMA.
-* Re-arranged the entire series as advised by Andy and Geert.
-* Added several preparation patches to ease the review of various
-  functional changes.
-
-Emil Renner Berthing (1):
-  serial: 8250: dw: Create a generic platform data structure
-
-Miquel Raynal (5):
-  serial: 8250: dw: Move the USR register to pdata
-  serial: 8250: dw: Allow to use a fallback CPR value if not synthesized
-  serial: 8250: dma: Allow driver operations before starting DMA
-    transfers
-  serial: 8250: dw: Introduce an rx_timeout variable in the IRQ path
-  serial: 8250: dw: Move the IO accessors to 8250_dwlib.h
-
-Phil Edworthy (3):
-  serial: 8250: dw: Move definitions to the shared header
-  serial: 8250: dw: Add support for DMA flow controlling devices
-  serial: 8250: dw: Improve RZN1 support
-
- drivers/tty/serial/8250/8250.h       |  18 ++++
- drivers/tty/serial/8250/8250_dma.c   |   4 +
- drivers/tty/serial/8250/8250_dw.c    | 139 +++++++++++++++++++++------
- drivers/tty/serial/8250/8250_dwlib.c |  26 ++---
- drivers/tty/serial/8250/8250_dwlib.h |  48 +++++++++
- 5 files changed, 185 insertions(+), 50 deletions(-)
 
 -- 
-2.27.0
+ i.
 
