@@ -2,44 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A04DC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 15:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FC9C4332F
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 18:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449561AbiDVPzT (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 11:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
+        id S229962AbiDVSN1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Apr 2022 14:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449529AbiDVPzS (ORCPT
+        with ESMTP id S233898AbiDVSJw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 11:55:18 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31D11B786;
-        Fri, 22 Apr 2022 08:52:23 -0700 (PDT)
+        Fri, 22 Apr 2022 14:09:52 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FD61597A5;
+        Fri, 22 Apr 2022 11:06:56 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3497C1C0008;
-        Fri, 22 Apr 2022 15:52:19 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6774A100003;
+        Fri, 22 Apr 2022 18:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650642741;
+        t=1650650788;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BNm/kV5lP/NqXyJ/4Wl3+B1GvvJqQJP0zcwUcw3hNyI=;
-        b=nXDDU4Fwr+B1qGnRRbP9QHP1Y3mOXTVwR9xh4Un2TtnlqUs5B5dFXdF1bOul/p8Vw8Gt9d
-        8heXy2fOrsttfQ+C0TDHzrnFfHZZuBS7D4c0HFxFc/kwcRvM6m8AK5C4ol1REyXRBfw4ja
-        UYDp3WR05CgpsRYJTpICpUPzFCyJvk5jpK1/7F00dv1kv/qMNqESxokmbLPMvfmYiBLNe+
-        DdLVwGyZj80a1lD6gYSveHoiG3XS6eAg8iMF7TusnWtU3gvOorcofDAhJ8Ca5TFSN+QybE
-        uV5LOWGLKhEOp+JRpM78+xfY0Jpxh5uaxwBHOQsWLNlTrAalowsyzYOo5w3jFQ==
-Date:   Fri, 22 Apr 2022 17:52:18 +0200
+        bh=rh1mhKL3IupsKIdYvrmsC8AoyceKcBqCY/2ew65HEPI=;
+        b=U1U3QA1nkQT+UI0wtcA4/ffw5gOSbY0C5B5wNQXGfNn3PIP5h1vmWVuKHyQ6ChjNpySqIs
+        Di3GTHJff1gD7wMV+dhJzIpqk5sxmH0n2/+rej/DI2eCM5W5CRVey86qm5Y9w6PSe56wzW
+        SH7+8fAH37QWoxf/LRhcKnufM7piIUtl9duVjs3lZ0fE5UITwxlJvWEEu6yWQUQdXPtrX5
+        +rSY8JlGIVUk/nO4LaP6P8zZjfXIRWgad83C4d2bFwPAFdlLXwxBwSSZUmxaFc4DlQ6lQ1
+        kZO56a2UrTUoHtK8EvND8o0q5VYxY6hVFVO9h8IjJDrp97jZ/BPQw9iOakjXSw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         Milan Stevanovic <milan.stevanovic@se.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
@@ -47,46 +45,91 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Herve Codina <herve.codina@bootlin.com>,
         Clement Leger <clement.leger@bootlin.com>,
         Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v6 11/12] bestla: Enable DMA, UART3 and UART4
-Message-ID: <20220422175218.281f83ee@xps13>
-In-Reply-To: <CAMuHMdVZ+X2y8sid736nwOoSshJXp7C3Oc5AuObyhHdnU7uGFg@mail.gmail.com>
-References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
-        <20220421095323.101811-12-miquel.raynal@bootlin.com>
-        <20220421122143.7526d676@xps13>
-        <YmK19DPzjJxBZHHm@kroah.com>
-        <CAMuHMdVZ+X2y8sid736nwOoSshJXp7C3Oc5AuObyhHdnU7uGFg@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Subject: [PATCH v7 5/9] serial: 8250: dma: Allow driver operations before starting DMA transfers
+Date:   Fri, 22 Apr 2022 20:06:11 +0200
+Message-Id: <20220422180615.9098-6-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220422180615.9098-1-miquel.raynal@bootlin.com>
+References: <20220422180615.9098-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg & Geert,
+One situation where this could be used is when configuring the UART
+controller to be the DMA flow controller. This is a typical case where
+the driver might need to program a few more registers before starting a
+DMA transfer. Provide the necessary infrastructure to support this
+case.
 
-geert@linux-m68k.org wrote on Fri, 22 Apr 2022 16:26:05 +0200:
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250.h     | 18 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_dma.c |  4 ++++
+ 2 files changed, 22 insertions(+)
 
-> Hi Miquel,
->=20
-> On Fri, Apr 22, 2022 at 4:04 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Apr 21, 2022 at 12:21:43PM +0200, Miquel Raynal wrote: =20
-> > > miquel.raynal@bootlin.com wrote on Thu, 21 Apr 2022 11:53:22 +0200: =
-=20
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com> =20
-> > >
-> > > Please ignore these two dts patches, they were meant for testing
-> > > purposes only, sorry for the noise. =20
-> >
-> > I can't do that, please resend a new version of the series as our tools
-> > take all of the patches in a series. =20
->=20
-> While at it, please drop patch 10/12 from the reposted series, too,
-> as it should go in through the renesas-arm-dt and soc trees.
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 39ffeb37786f..5a4e05c0e552 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -17,6 +17,8 @@
+ struct uart_8250_dma {
+ 	int (*tx_dma)(struct uart_8250_port *p);
+ 	int (*rx_dma)(struct uart_8250_port *p);
++	void (*prepare_tx_dma)(struct uart_8250_port *p);
++	void (*prepare_rx_dma)(struct uart_8250_port *p);
+ 
+ 	/* Filter function */
+ 	dma_filter_fn		fn;
+@@ -302,6 +304,22 @@ extern int serial8250_rx_dma(struct uart_8250_port *);
+ extern void serial8250_rx_dma_flush(struct uart_8250_port *);
+ extern int serial8250_request_dma(struct uart_8250_port *);
+ extern void serial8250_release_dma(struct uart_8250_port *);
++
++static inline void serial8250_do_prepare_tx_dma(struct uart_8250_port *p)
++{
++	struct uart_8250_dma *dma = p->dma;
++
++	if (dma->prepare_tx_dma)
++		dma->prepare_tx_dma(p);
++}
++
++static inline void serial8250_do_prepare_rx_dma(struct uart_8250_port *p)
++{
++	struct uart_8250_dma *dma = p->dma;
++
++	if (dma->prepare_rx_dma)
++		dma->prepare_rx_dma(p);
++}
+ #else
+ static inline int serial8250_tx_dma(struct uart_8250_port *p)
+ {
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index b3c3f7e5851a..1bdc8d6432fe 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -86,6 +86,8 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 
+ 	dma->tx_size = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+ 
++	serial8250_do_prepare_tx_dma(p);
++
+ 	desc = dmaengine_prep_slave_single(dma->txchan,
+ 					   dma->tx_addr + xmit->tail,
+ 					   dma->tx_size, DMA_MEM_TO_DEV,
+@@ -123,6 +125,8 @@ int serial8250_rx_dma(struct uart_8250_port *p)
+ 	if (dma->rx_running)
+ 		return 0;
+ 
++	serial8250_do_prepare_rx_dma(p);
++
+ 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+ 					   dma->rx_size, DMA_DEV_TO_MEM,
+ 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+-- 
+2.27.0
 
-Sure, no problem.
-
-Thanks,
-Miqu=C3=A8l
