@@ -2,154 +2,156 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3AEC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 08:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB36C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 09:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445590AbiDVIsS (ORCPT
+        id S1445959AbiDVJ2k (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 04:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        Fri, 22 Apr 2022 05:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445586AbiDVIsR (ORCPT
+        with ESMTP id S233320AbiDVJ2i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 04:48:17 -0400
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A4D532E3;
-        Fri, 22 Apr 2022 01:45:25 -0700 (PDT)
-Received: by mail-qt1-f179.google.com with SMTP id ay11so5051298qtb.4;
-        Fri, 22 Apr 2022 01:45:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HS3rglQn5IUB1o9Kb2rduCxfFmwJ/BkBcO6WgXZcAzk=;
-        b=zIYOT2c0GJt9q1O5ZvwioeL1FNlxaCbrwjLcB44k3CqB2hx8w5MBD9r51ZtPS7X7WG
-         rsIwfeIPA10GfLNIvc/F5FtD4JSQ3bju8I47Y3a3r6b0dxt8NE+2Y0F/qpS1rtvCMrg9
-         vrk7qm0stF3hxUNRLOajBkysjZN+HwUh72fPQuc0keL3z9xdNKEJJVRqOHoqtqu9WAsy
-         RFEMgtPy5+JTTEKf7L0mcr4ntiTJkivCkgwwm8zeYot+ExGacUziNKH2txutCEocstoQ
-         oybAxvoQx2p7Aqmgq89qhYPx5g+n086T2KLD7W1BPG4CJyIhGcxk4ITMoMm7PVJbkztJ
-         +SRw==
-X-Gm-Message-State: AOAM531KKiA57Rm68fDjz+wirmwyaHSZ+Fk+kqee0cv5Kc8zVaF8yv6f
-        uGUi+6C6mJVuDhEdUdlzHWmOMnLEs5Qt/Q==
-X-Google-Smtp-Source: ABdhPJwY8Yt49jW7ACtLx5t+9GX7exeQM4X0n67Sy5EAKjQHu8RDAreH32I01LmJIhQMkNz3X85T/A==
-X-Received: by 2002:ac8:5e54:0:b0:2f1:f60d:2b3c with SMTP id i20-20020ac85e54000000b002f1f60d2b3cmr2318002qtx.667.1650617123746;
-        Fri, 22 Apr 2022 01:45:23 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id q27-20020a05620a039b00b0069c8307d9c4sm643172qkm.18.2022.04.22.01.45.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 01:45:23 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id r189so13263597ybr.6;
-        Fri, 22 Apr 2022 01:45:23 -0700 (PDT)
-X-Received: by 2002:a25:8087:0:b0:641:dd06:577d with SMTP id
- n7-20020a258087000000b00641dd06577dmr3290291ybk.207.1650617123088; Fri, 22
- Apr 2022 01:45:23 -0700 (PDT)
+        Fri, 22 Apr 2022 05:28:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABD25FC6;
+        Fri, 22 Apr 2022 02:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650619546; x=1682155546;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=1Fnolbueqw1c8NP/rVjhAwcm4M/bqVF9+bKIZ0KD2GA=;
+  b=EWXkM4Ma0ApUI/Ypy5Vc9jIopdXFebC4TAH6zLhC7BpiVsjtd2lk3O8n
+   R1mbTBhLxjT2ayKUkDqinwjgUgcV74UyoEuxICm03+UBUxz6nhluvDa9p
+   ni+qwiJhXuiG/ZDlYnQ2way80rIGmAkRYYCnHVtN8pb0HrKb3szGbjond
+   iU92+mt4kQw09gDR0QiTic0TEDtEG1gw0O88vO6iq7oXsfAkgF76t6ko6
+   S+NnD9/ShF4UZvFcc5RO99i+SRJ61GXFViLDTybktwpUYNdghq5uEYDJD
+   KJ8WhdFgAePhG9Fc66yYGnjCP/ANj/tV+ASG4hp3Z8p2AQ0jPygOvU6jE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="262227831"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="262227831"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:25:45 -0700
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; 
+   d="scan'208";a="556273544"
+Received: from dongaris-mobl.gar.corp.intel.com ([10.252.56.39])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 02:25:41 -0700
+Date:   Fri, 22 Apr 2022 12:25:36 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Vicente Bergas <vicencb@gmail.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        giulio.benetti@micronovasrl.com, gregkh@linuxfoundation.org,
+        heikki.krogerus@linux.intel.com, heiko@sntech.de,
+        jirislaby@kernel.org, johan@kernel.org, linux-api@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>, lukas@wunner.de,
+        u.kleine-koenig@pengutronix.de
+Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
+In-Reply-To: <20220421153626.120494-1-vicencb@gmail.com>
+Message-ID: <388d773-5c21-dfc9-40b1-7f2a060154d@linux.intel.com>
+References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com> <20220421153626.120494-1-vicencb@gmail.com>
 MIME-Version: 1.0
-References: <20220330154024.112270-1-phil.edworthy@renesas.com>
- <20220330154024.112270-3-phil.edworthy@renesas.com> <CAMuHMdWaiAZNWmU5itJWJy3fEMmR1hQc7QRWpe6mi3AYkSewgw@mail.gmail.com>
- <TYYPR01MB7086BD705F91E855F0D3FD45F5F79@TYYPR01MB7086.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYYPR01MB7086BD705F91E855F0D3FD45F5F79@TYYPR01MB7086.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 22 Apr 2022 10:45:11 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWtLxdXztfLxSvb57WOO46qTW6c+fD=P0O5qicop=b+3g@mail.gmail.com>
-Message-ID: <CAMuHMdWtLxdXztfLxSvb57WOO46qTW6c+fD=P0O5qicop=b+3g@mail.gmail.com>
-Subject: Re: [PATCH v2 02/13] dt-bindings: serial: renesas,em-uart: Document
- r9a09g011 bindings
-To:     Phil Edworthy <phil.edworthy@renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="8323329-414335990-1650619544=:1779"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Phil,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Fri, Apr 22, 2022 at 10:28 AM Phil Edworthy
-<phil.edworthy@renesas.com> wrote:
-> On 20 April 2022 22:26 Geert Uytterhoeven wrote:
-> > On Wed, Mar 30, 2022 at 5:41 PM Phil Edworthy <phil.edworthy@renesas.com>
-> > wrote:
-> > > The Renesas RZ/V2M (r9a09g011) SoC uses a uart that is compatible with
-> > the
-> > > EMMA Mobile SoC.
-> > >
-> > > Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-> > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > ---
-> > > v2: Fix dtbs_check by adding missing alternative binding
-> >
-> > Thanks for your patch, which is now commit 7bb301812b628099
-> > ("dt-bindings: serial: renesas,em-uart: Document r9a09g011
-> > bindings") in tty/tty-next.
-> >
-> > > --- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-> > > +++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-> > > @@ -14,7 +14,14 @@ allOf:
-> > >
-> > >  properties:
-> > >    compatible:
-> > > -    const: renesas,em-uart
-> > > +    oneOf:
-> > > +      - items:
-> > > +          - enum:
-> > > +              - renesas,r9a09g011-uart    # RZ/V2M
-> > > +          - const: renesas,em-uart        # generic EMMA Mobile
-> > compatible UART
-> > > +
-> > > +      - items:
-> > > +          - const: renesas,em-uart        # generic EMMA Mobile
-> > compatible UART
-> >
-> > The above looks good to me.
-> >
-> > >
-> > >    reg:
-> > >      maxItems: 1
-> >
-> > However, unlike EMEV2, RZ/V2M defines two clocks: pclk and sclk.
-> > Hence please update the clocks section to reflect that.
-> You are right that the uart has two clocks.
->
-> Note though that pclk is shared by both uarts. The HW manual says:
-> "ch. 1 is for use with the ISP support package, so do not
-> use registers related to this channel.". Due to this, section
-> 48.5.2.50 Clock ON/OFF Control Register 15 (CPG_CLK_ON15) says
-> that bit 20, CLK4_ONWEN (enable for URT_PCLK) should be written
-> as 0.
->
-> I took this to mean that the URT_PCLK is enabled by the ISP firmware
-> and software must not touch it. I am not sure if the DT bindings
-> should document a clock that is specified as do not touch in the
-> HW manual. This is a bit of a grey area.
+--8323329-414335990-1650619544=:1779
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-"DT describes hardware, not software policy".
+On Thu, 21 Apr 2022, Vicente Bergas wrote:
 
-But I agree this is a grey area.
+> i have tested your v3 patch on v3 hardware, that is, using the
+> emulated em485 because of lack of HW support. It is not working
+> due to three issues.
 
-One option would be to mark URT_PCLK critical, so it won't be disabled.
-But that would still mean it's enabled by Linux, i.e. Linux would set
-CLK4_ONWEN to 1 while enabling the clock.
+Thanks for testing!
 
-Another option would be to create URT_PCLK as a non-gateable clock,
-so Linux won't ever touch the register bits.
+> 1.- rs485_stop_tx is never called because there are no interrupts.
+> I worked around this by disabling DMA:
+> 
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -577,3 +577,3 @@ static int dw8250_probe(struct platform_device *pdev)
+>  		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
+>  		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
+> - 		up->dma = &data->data.dma;
+> +		up->dma = 0; // Proof of concept, not to be merged!
 
-Or just ignore URT_PCLK and do nothing, like you did ;-)
-Would it be possible for a user to not use the ISP firmware at all,
-and go full Linux, hence using both UART channels and URT_PCLK?
+I'll need to look into this.
 
-Gr{oetje,eeting}s,
+> 2.- Although "linux,rs485-enabled-at-boot-time" is set in the DTS,
+> the RTS/DriverEnable line is asserted all the time the /dev/ttyS1
+> device file is closed.
+> As soon as the device file is openned, the RTS line is deasserted.
+> Then it works as expected: it is asserted only during transmissions.
+> When the device file is closed again, the RTS line goes back to the
+> asserted level and stays there.
+> When the rs485 mode is enabled, it is expected that the RTS line be
+> deasserted by default.
 
-                        Geert
+Managing RTS is a mess in 8250 driver as has recently being noted. It will 
+hopefully get sorted out eventually.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 3.- The RTS line is asserted a few microseconds earlier than the
+> start bit, that is acceptable, but then it deasserts one whole bit
+> time before the last stop bit.
+> So, the last stop bit of the last byte of a message is not sent
+> because the driver is disabled.
+> This has been tested with the port configured at 19200e1, that is,
+> the bit time is 52 us.
+> I worked around this by adding "rs485-rts-delay = <0 52>;" in the
+> DTS. This leads to the following feature (not an issue):
+> 
+> On Mon, 11 Apr 2022 11:33:12 +0300, Ilpo Järvinen wrote:
+> > Set delay_rts_before_send and delay_rts_after_send to zero for now.
+> > The granularity of that ABI is too coarse to be useful.
+> 
+> Indeed the time unit of this parameter is milliseconds, as stated in
+> Documentation/devicetree/bindings/serial/rs485.yaml
+> Which in the general case is more than ten bit times.
+> 
+> But it is being interpreted as microseconds here:
+> 
+> On Mon, 11 Apr 2022 11:33:11 +0300, Ilpo Järvinen wrote:
+> > [PATCH v3 02/12] serial: 8250: Handle UART without interrupt on TEMT
+> >+	stop_delay += (u64)p->port.rs485.delay_rts_after_send * NSEC_PER_USEC;
+> 
+> So, this way it has a useful granularity to be used in
+> "rs485-rts-delay = <0 52>;" but is not compliant with the spec.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+It seems I just got confused here with all these different time units. My 
+intention was to use NSEC_PER_MSEC here to match the spec although it's 
+not that useful granularity. I'll change that for the next version.
+Lukas was planning of making it much finer granularity with nsecs (leaving 
+the small values for msecs for compat purposes) which would hopefully 
+resolve this granularity challenge.
+
+About the actual issue of too early deassert. It kind of sounds like the 
+stop tx timer was not waiting long enough. It could be that THRE is 
+asserted sooner than I expected (maybe HW does FIFO->shift register
+during the transmission of the stop bit of the prev char asserting THRE
+approx one bit too early).
+
+Perhaps this patch would help to combat the problem (roughly estimating
+worst-case one bit time here with that /7):
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 35fbaa53bc2f..f944c639db82 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1551,7 +1551,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 		if (!(lsr & UART_LSR_TEMT)) {
+ 			if (!(p->capabilities & UART_CAP_NOTEMT))
+ 				return;
+-			stop_delay = p->port.frame_time;
++			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
+ 		}
+ 
+ 		__stop_tx_rs485(p, stop_delay);
+--8323329-414335990-1650619544=:1779--
