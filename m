@@ -2,100 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13710C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 14:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78567C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Apr 2022 14:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448654AbiDVO3O (ORCPT
+        id S1388277AbiDVObN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Apr 2022 10:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        Fri, 22 Apr 2022 10:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiDVO3N (ORCPT
+        with ESMTP id S1379955AbiDVObL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Apr 2022 10:29:13 -0400
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DB35BD08;
-        Fri, 22 Apr 2022 07:26:18 -0700 (PDT)
-Received: by mail-qv1-f41.google.com with SMTP id c1so6139555qvl.3;
-        Fri, 22 Apr 2022 07:26:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=McKo/Deytjy605uVjMsyIih6yGv8qgj4o5wz0FFbkTU=;
-        b=0/Dtb/3cyzTmAzCsy7iQmFt7+xJd0ecjwlJLO606wMGtYfAHXTQiknINVoKUTy7H0S
-         /JhuQAbRaO7bCl/JRCwUh9IqkoGbTUCxe9zit2FCXP1BZliBjUmZTFvzyKFmhGjn063S
-         mosimSOwiYgK7cWxGscaF61oQ4fknuNDPtikEieIyyRe+oFdMBd59bV20U//7KNoRmoA
-         xPYMk9tF+t601ANsP/+Ts7DeHm0lTn+EapG72PIWM9wgewlOqGp8IYZY3s4eQevzUZwX
-         M1MzQwK5/nLn2EyeQ2H2hpT9WGmYFqvP5GHc0/LkbAZcn6+zexeKFk/6GzZA09EBND7F
-         PSAg==
-X-Gm-Message-State: AOAM532nUt2YxGNjtBGGHrdnfZbn09ODoFqMSKxvLSW3sCe17NOc6VGA
-        riD76PVgGGFKiv/J9aa6T5zGjxDvOY5pDg==
-X-Google-Smtp-Source: ABdhPJxyKIkbDFeGUKY4NSuJjmUCqNrtFaekEDOyVIHtRFiHWzzOwdgdaalAUw+AgboNe/7cpaOoag==
-X-Received: by 2002:ad4:5de6:0:b0:446:3e43:a226 with SMTP id jn6-20020ad45de6000000b004463e43a226mr3640750qvb.78.1650637577393;
-        Fri, 22 Apr 2022 07:26:17 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id c131-20020a379a89000000b0069c903625absm984426qke.102.2022.04.22.07.26.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 07:26:17 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2f7b90e8b37so9503377b3.6;
-        Fri, 22 Apr 2022 07:26:16 -0700 (PDT)
-X-Received: by 2002:a81:4782:0:b0:2eb:1cb1:5441 with SMTP id
- u124-20020a814782000000b002eb1cb15441mr4692153ywa.479.1650637576717; Fri, 22
- Apr 2022 07:26:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
- <20220421095323.101811-12-miquel.raynal@bootlin.com> <20220421122143.7526d676@xps13>
- <YmK19DPzjJxBZHHm@kroah.com>
-In-Reply-To: <YmK19DPzjJxBZHHm@kroah.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 22 Apr 2022 16:26:05 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVZ+X2y8sid736nwOoSshJXp7C3Oc5AuObyhHdnU7uGFg@mail.gmail.com>
-Message-ID: <CAMuHMdVZ+X2y8sid736nwOoSshJXp7C3Oc5AuObyhHdnU7uGFg@mail.gmail.com>
-Subject: Re: [PATCH v6 11/12] bestla: Enable DMA, UART3 and UART4
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
+        Fri, 22 Apr 2022 10:31:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6251F5BD1F;
+        Fri, 22 Apr 2022 07:28:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A64F1CE2ADF;
+        Fri, 22 Apr 2022 14:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D131C385A8;
+        Fri, 22 Apr 2022 14:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650637689;
+        bh=9uMz4H+bO5n8agDgpMHCaPvaOtDr0Sv9Q8n3QusL5FI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qR/JXTzc5joPwWhEQXuC3kCpRIJ/3TRBAn/sabum32P4tl6KbtSBoxG45aQGAj5fh
+         ycrd/mAuAfboYJpX0pwjnqGaEG3b57/QHecGi5L1TecMBR3QjbvLIualaXhFL8QSuT
+         MhtaGf8wFYPvZCtn95oGtERNhp/fkoF5afLScHGo=
+Date:   Fri, 22 Apr 2022 16:28:06 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+Message-ID: <YmK7drS0XgnTQcaf@kroah.com>
+References: <20220321163055.4058-1-pali@kernel.org>
+ <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Miquel,
-
-On Fri, Apr 22, 2022 at 4:04 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Thu, Apr 21, 2022 at 12:21:43PM +0200, Miquel Raynal wrote:
-> > miquel.raynal@bootlin.com wrote on Thu, 21 Apr 2022 11:53:22 +0200:
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+On Tue, Mar 22, 2022 at 04:29:08PM +0200, Andy Shevchenko wrote:
+> On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
 > >
-> > Please ignore these two dts patches, they were meant for testing
-> > purposes only, sorry for the noise.
->
-> I can't do that, please resend a new version of the series as our tools
-> take all of the patches in a series.
+> > Support for UPF_SPD_* flags is currently broken in more drivers for two
+> > reasons. First one is that uart_update_timeout() function does not
+> 
+> the uart_update_timeout()
+> 
+> > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
+> > userspace termios structre is modified by most drivers after each
+> 
+> structure
+> 
+> ...
+> 
+> > (error handling was ommited for simplification)
+> 
+> omitted
+> 
+> > After calling set_active_spd_cust_baud() function SPD custom divisor
+> > should be active and therefore is_spd_cust_active() should return true.
+> >
+> > But it is not active (cfgetospeed does not return B38400) and this patch
+> > series should fix it. I have tested it with 8250 driver.
+> 
+> drivers
+> 
+> > Originally Johan Hovold reported that there may be issue with these
+> > ASYNC_SPD_FLAGS in email:
+> > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
+> >
+> >
+> > Johan, Greg, could you please test these patches if there is not any
+> > regression?
+> 
+> I'm wondering why we are still supporting this ugly hack?
+> Doesn't BOTHER work for you?
 
-While at it, please drop patch 10/12 from the reposted series, too,
-as it should go in through the renesas-arm-dt and soc trees.
+Yes, I too do not want to add more support for these old flags.  If they
+have not been working, let's not add support for them as obviously no
+one is using them.  Let's try to remove them if at all possible.
 
-Gr{oetje,eeting}s,
+thanks,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+greg k-h
