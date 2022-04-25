@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4FAC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C311C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 14:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242186AbiDYOiA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Apr 2022 10:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
+        id S242459AbiDYOiO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Apr 2022 10:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiDYOh6 (ORCPT
+        with ESMTP id S231672AbiDYOiN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Apr 2022 10:37:58 -0400
+        Mon, 25 Apr 2022 10:38:13 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AF0119EC2
-        for <linux-serial@vger.kernel.org>; Mon, 25 Apr 2022 07:34:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EE117E0A
+        for <linux-serial@vger.kernel.org>; Mon, 25 Apr 2022 07:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650897294; x=1682433294;
+  t=1650897305; x=1682433305;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tXbTqRELZAeyhHo9dP/WkW4MMsShDVptDNpHd/BBQKc=;
-  b=gUP1/XqC56D7sNdMAuijOC0HrGwsroLS5QR5+0kHXWz9+0HRkw0w+/UC
-   GzuI4Z5zQTtJpN5cN1bRSU82Aecmg2AZyA+4nSQg+GwdChU2eLI8MFr5J
-   B3ROPfE7yN1pXtvxmCDRIZhr++PXSJDGRY0Gc04CPiVoaa+Q7hxmqGuVy
-   d9TbVk6OpNFLBtYn2xWBrub7iDT4WVFw8bAYzsr7hygtiioc1iV9Je8l1
-   Np/BT6mUCQAtXvHhk5tV28oc7ifaMZUMLlYp8Ci/8A+OwqmXxo6TRfx1T
-   yziF2V0JO3YRip5x91LiYWx8s0sGoR/KWTwZwbdlvOo/NX1epf5YNlt8d
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264112909"
+  bh=79Spbl34OTWiY6baAgBLvV5Tu7rV4agzGe2iDZ/myxM=;
+  b=RY3HET1X92fgGLoFupqCQb/QaulvzxRGvOQih61sKk+J1IH1YvCb9+G3
+   EJQ4WFr3OPYXcqOe7D31oA/RO6cq/iHjJRJ5MpVuT0lVWkl2NrdTZBs1M
+   yqYtVhnI0e3pAjDaGXpDBNXzr2zCo1sgL3PqZE0NzT5Bn4nPY4EpXmi7w
+   YyxUczQlvLUbUbXKX4MdH51BoYXXGD+5VF0kYHm1ej4/91BU+e5r1u53r
+   +wQJqvE/5OXVzjBXj/OHD+WIjijQYKwSkewY274801cj8JT3NOmlz4MSO
+   84DsE69lzocB4FHqz5yDYHrvRtmIzO4qxakNF82gs1ym1NeiTouyNieK9
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="264112959"
 X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="264112909"
+   d="scan'208";a="264112959"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:34:54 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:35:04 -0700
 X-IronPort-AV: E=Sophos;i="5.90,288,1643702400"; 
-   d="scan'208";a="579315682"
+   d="scan'208";a="579315788"
 Received: from lpuglia-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.217.93])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:34:49 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 07:34:59 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -49,10 +49,10 @@ Cc:     Johan Hovold <johan@kernel.org>, heiko@sntech.de,
         giulio.benetti@micronovasrl.com,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Eric Tremblay <etremblay@distech-controls.com>
-Subject: [PATCH v4 03/13] serial: 8250: Handle UART without interrupt on TEMT
-Date:   Mon, 25 Apr 2022 17:34:00 +0300
-Message-Id: <20220425143410.12703-4-ilpo.jarvinen@linux.intel.com>
+        Raymond Tan <raymond.tan@intel.com>
+Subject: [PATCH v4 04/13] serial: 8250_dwlib: RS485 HW half & full duplex support
+Date:   Mon, 25 Apr 2022 17:34:01 +0300
+Message-Id: <20220425143410.12703-5-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220425143410.12703-1-ilpo.jarvinen@linux.intel.com>
 References: <20220425143410.12703-1-ilpo.jarvinen@linux.intel.com>
@@ -63,101 +63,173 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add UART_CAP_NOTEMT for UARTs that lack interrupt on TEMT but want to
-use em485. Em485 framework needs to ensure not only FIFO is empty but
-also that tx shift register is empty.
+The Synopsys DesignWare UART can be configured to have HW support for
+the RS485 protocol from IP version 4.0 onward. Add support for
+hardware-controlled half duplex and full duplex modes.
 
-This approach uses Uwe Kleine-König's suggestion on simply
-using/incrementing stop_tx timer rather than adding another timer. When
-UART_CAP_NOTEMT is set and THRE is present w/o TEMT, stop tx timer is
-reused to wait for the emptying of the shift register.
+HW will take care of managing DE and RE, the driver just gives it
+permission to use either by setting both to 1.
 
-This change does not add the UART_CAP_NOTEMT define as it already exist
-but is currently no-op. See 7a107b2c6b81 (Revert "serial: 8250: Handle
-UART without interrupt on TEMT using em485") for further details.
+To ask for full duplex mode, userspace sets SER_RS485_RX_DURING_TX flag
+and HW will take care of the rest.
 
-Vicente Bergas reported that RTS is deasserted roughly one bit too
-early losing stop bit tx. To address this problem, stop_delay now
-accounts for one extra bit using rough formula /7 (assumes worst-case
-of 2+5 bits). I suspect this glitch had to do with when THRE is getting
-asserted. If FIFO is emptied already during the tx of the stop bit,
-perhaps it leads to HW asserting THRE early for the normal frame time
-formula to work accurately.
+Set delay_rts_before_send and delay_rts_after_send to zero for now. The
+granularity of that ABI is too coarse to be useful.
 
-Suggested-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: Eric Tremblay <etremblay@distech-controls.com>
-Tested-by: Vicente Bergas <vicencb@gmail.com>
+Co-developed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Co-developed-by: Raymond Tan <raymond.tan@intel.com>
+Signed-off-by: Raymond Tan <raymond.tan@intel.com>
+Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 35 +++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 9 deletions(-)
+ drivers/tty/serial/8250/8250_dwlib.c | 85 +++++++++++++++++++++++++++-
+ drivers/tty/serial/8250/8250_dwlib.h |  3 +
+ 2 files changed, 86 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 40b62126c1ca..da78a7fa763f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1504,18 +1504,19 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
- 	hrtimer_start(hrt, ms_to_ktime(msec), HRTIMER_MODE_REL);
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 622d3b0d89e7..08432e2fe511 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -2,19 +2,33 @@
+ /* Synopsys DesignWare 8250 library. */
+ 
+ #include <linux/bitops.h>
++#include <linux/bitfield.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
++#include <linux/property.h>
+ #include <linux/serial_8250.h>
+ #include <linux/serial_core.h>
+ 
+ #include "8250_dwlib.h"
+ 
+ /* Offsets for the DesignWare specific registers */
++#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
++#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
++#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
+ #define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
+ #define DW_UART_CPR	0xf4 /* Component Parameter Register */
+ #define DW_UART_UCV	0xf8 /* UART Component Version */
+ 
++/* Transceiver Control Register bits */
++#define DW_UART_TCR_RS485_EN		BIT(0)
++#define DW_UART_TCR_RE_POL		BIT(1)
++#define DW_UART_TCR_DE_POL		BIT(2)
++#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
++#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
++#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
++#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
++
+ /* Component Parameter Register bits */
+ #define DW_UART_CPR_ABP_DATA_WIDTH	(3 << 0)
+ #define DW_UART_CPR_AFCE_MODE		(1 << 4)
+@@ -87,11 +101,80 @@ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct
  }
+ EXPORT_SYMBOL_GPL(dw8250_do_set_termios);
  
--static void __stop_tx_rs485(struct uart_8250_port *p)
-+static void __stop_tx_rs485(struct uart_8250_port *p, u64 stop_delay)
++static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
++{
++	u32 tcr;
++
++	tcr = dw8250_readl_ext(p, DW_UART_TCR);
++	tcr &= ~DW_UART_TCR_XFER_MODE;
++
++	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Clear unsupported flags. */
++		rs485->flags &= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX |
++				SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND;
++		tcr |= DW_UART_TCR_RS485_EN;
++
++		if (rs485->flags & SER_RS485_RX_DURING_TX) {
++			tcr |= DW_UART_TCR_XFER_MODE_DE_DURING_RE;
++		} else {
++			/* HW does not support same DE level for tx and rx */
++			if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
++			    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
++				return -EINVAL;
++
++			tcr |= DW_UART_TCR_XFER_MODE_DE_OR_RE;
++		}
++		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
++		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
++	} else {
++		rs485->flags = 0;
++
++		tcr &= ~DW_UART_TCR_RS485_EN;
++	}
++
++	/* Reset to default polarity */
++	tcr |= DW_UART_TCR_DE_POL;
++	tcr &= ~DW_UART_TCR_RE_POL;
++
++	if (!(rs485->flags & SER_RS485_RTS_ON_SEND))
++		tcr &= ~DW_UART_TCR_DE_POL;
++	if (device_property_read_bool(p->dev, "rs485-rx-active-high"))
++		tcr |= DW_UART_TCR_RE_POL;
++
++	dw8250_writel_ext(p, DW_UART_TCR, tcr);
++
++	rs485->delay_rts_before_send = 0;
++	rs485->delay_rts_after_send = 0;
++
++	p->rs485 = *rs485;
++
++	return 0;
++}
++
++/*
++ * Tests if RE_EN register can have non-zero value to see if RS-485 HW support
++ * is present.
++ */
++static bool dw8250_detect_rs485_hw(struct uart_port *p)
++{
++	u32 reg;
++
++	dw8250_writel_ext(p, DW_UART_RE_EN, 1);
++	reg = dw8250_readl_ext(p, DW_UART_RE_EN);
++	dw8250_writel_ext(p, DW_UART_RE_EN, 0);
++	return reg;
++}
++
+ void dw8250_setup_port(struct uart_port *p)
  {
- 	struct uart_8250_em485 *em485 = p->em485;
++	struct dw8250_port_data *d = p->private_data;
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	u32 reg;
  
-+	stop_delay += (u64)p->port.rs485.delay_rts_after_send * NSEC_PER_MSEC;
++	d->hw_rs485_support = dw8250_detect_rs485_hw(p);
++	if (d->hw_rs485_support)
++		p->rs485_config = dw8250_rs485_config;
 +
  	/*
- 	 * rs485_stop_tx() is going to set RTS according to config
- 	 * AND flush RX FIFO if required.
- 	 */
--	if (p->port.rs485.delay_rts_after_send > 0) {
-+	if (stop_delay > 0) {
- 		em485->active_timer = &em485->stop_tx_timer;
--		start_hrtimer_ms(&em485->stop_tx_timer,
--				   p->port.rs485.delay_rts_after_send);
-+		hrtimer_start(&em485->stop_tx_timer, ns_to_ktime(stop_delay), HRTIMER_MODE_REL);
- 	} else {
- 		p->rs485_stop_tx(p);
- 		em485->active_timer = NULL;
-@@ -1535,16 +1536,32 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 	 * If the Component Version Register returns zero, we know that
+ 	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
+@@ -108,8 +191,6 @@ void dw8250_setup_port(struct uart_port *p)
+ 	dw8250_writel_ext(p, DW_UART_DLF, 0);
  
- 	if (em485) {
- 		unsigned char lsr = serial_in(p, UART_LSR);
-+		u64 stop_delay = 0;
+ 	if (reg) {
+-		struct dw8250_port_data *d = p->private_data;
+-
+ 		d->dlf_size = fls(reg);
+ 		p->get_divisor = dw8250_get_divisor;
+ 		p->set_divisor = dw8250_set_divisor;
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 83d528e5cc21..a8fa020ca544 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -14,6 +14,9 @@ struct dw8250_port_data {
+ 
+ 	/* Hardware configuration */
+ 	u8			dlf_size;
 +
-+		if (!(lsr & UART_LSR_THRE))
-+			return;
- 		/*
- 		 * To provide required timeing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
--		 * shift register are empty. It is for device driver to enable
--		 * interrupt on TEMT.
-+		 * shift register are empty. The device driver should either
-+		 * enable interrupt on TEMT or set UART_CAP_NOTEMT that will
-+		 * enlarge stop_tx_timer by the tx time of one frame to cover
-+		 * for emptying of the shift register.
- 		 */
--		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
--			return;
-+		if (!(lsr & UART_LSR_TEMT)) {
-+			if (!(p->capabilities & UART_CAP_NOTEMT))
-+				return;
-+			/*
-+			 * RTS might get deasserted too early with the normal
-+			 * frame timing formula. It seems to suggest THRE might
-+			 * get asserted already during tx of the stop bit
-+			 * rather than after it is fully sent.
-+			 * Roughly estimate 1 extra bit here with / 7.
-+			 */
-+			stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
-+		}
++	/* RS485 variables */
++	bool			hw_rs485_support;
+ };
  
--		__stop_tx_rs485(p);
-+		__stop_tx_rs485(p, stop_delay);
- 	}
- 	__do_stop_tx(p);
- }
+ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct ktermios *old);
 -- 
 2.30.2
 
