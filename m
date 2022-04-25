@@ -2,85 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41961C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 08:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5612BC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 10:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiDYIak (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Apr 2022 04:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
+        id S234794AbiDYKuw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Apr 2022 06:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236632AbiDYIa0 (ORCPT
+        with ESMTP id S240926AbiDYKuo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Apr 2022 04:30:26 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975CF1FA56;
-        Mon, 25 Apr 2022 01:26:16 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id hf18so9835646qtb.0;
-        Mon, 25 Apr 2022 01:26:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mw4/qeOxZMM6jmVeg1j9kXzpp/Z9Zm8EXt27iZCZExQ=;
-        b=apegmHRls/HBEYd8Lnx4qRSvXHf9jlxdyMUfjqVhiscl0ZUagmkLktLiTo1E2ne1QW
-         ngSfYTAMOSUaGHR4n/PpN6N4gBmFrcLW6yCPaDuBbV98xaF+owrVqIQ2ZdBnRIiPdqoR
-         O3y0nBT1QGAT6bZIdGMqXRH5lgb525NdzM1FncFu89D3NNSVEtnIzDs8dmEP1xBqzfV8
-         7XNCAreMLAmG9cs7YMaQDuMbOPiS6Q+QhoBU4R4iaOYJhPAAZyq5v08cXauEUocSIaEH
-         eQ+PiXXr2EaRW/Vov3we+7LysFT9Rkk5BZvtp4EXb2wpsRs8vU418XEH2+dOxF3NJa62
-         Z5Jw==
-X-Gm-Message-State: AOAM531kzI0jD7DKQt1M7wq3RuiBOKPNUXRArvV23+bH8XSV7dHAe5l/
-        kJWRr06KU6KzdJzn80KNwAUQnx4zGI0jBQ==
-X-Google-Smtp-Source: ABdhPJzodM3AwnhFiN9SE+W4ejCCunBwrPYXLtl8iFx6fhpZuHJ0QtRlVIG91h1UDNHi9bvaiUSdyg==
-X-Received: by 2002:a05:622a:64f:b0:2e0:6a11:7b0d with SMTP id a15-20020a05622a064f00b002e06a117b0dmr11283659qtb.9.1650875175469;
-        Mon, 25 Apr 2022 01:26:15 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id a28-20020a05620a02fc00b0069e8e766a0csm4749850qko.94.2022.04.25.01.26.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Apr 2022 01:26:15 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2f7b90e8b37so62489247b3.6;
-        Mon, 25 Apr 2022 01:26:15 -0700 (PDT)
-X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
- g16-20020a815210000000b002ef21e354ddmr15569251ywb.438.1650875174882; Mon, 25
- Apr 2022 01:26:14 -0700 (PDT)
+        Mon, 25 Apr 2022 06:50:44 -0400
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C476A076
+        for <linux-serial@vger.kernel.org>; Mon, 25 Apr 2022 03:47:36 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220425104733b1f112e4da303070a1
+        for <linux-serial@vger.kernel.org>;
+        Mon, 25 Apr 2022 12:47:33 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=ibveypy2TT2i4YuSJ92muBFUBKsW8Al9oyDzThK4kpU=;
+ b=GGDFW8jUESh9CAa2Qw8xzLTbXEizho7aK/UrtUKNjeFNF7EAUDMsWThmC5UvVBz5wrD287
+ hg0Hxt4dF6mTBffFhnoZc1NFP/bUDtzKYNMciuhn7pRHLcJ/ymWDWckgUmdHOp8n9CJV1GMl
+ dWoqMP0OFeJrZByN2WdphYPd6CnoI=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 1/1] tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
+Date:   Mon, 25 Apr 2022 03:47:26 -0700
+Message-Id: <20220425104726.7986-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-References: <20220425064201.459633-1-yoshihiro.shimoda.uh@renesas.com> <20220425064201.459633-3-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <20220425064201.459633-3-yoshihiro.shimoda.uh@renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 25 Apr 2022 10:26:01 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXN2i6qsavUW8FSB29OpL=k3yrDMp9u_2OKaQmeA5Q5mA@mail.gmail.com>
-Message-ID: <CAMuHMdXN2i6qsavUW8FSB29OpL=k3yrDMp9u_2OKaQmeA5Q5mA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] dt-bindings: clock: Add r8a779g0 CPG Core Clock Definitions
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 8:42 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add all Clock Pulse Generator Core Clock Outputs for the Renesas
-> R-Car V4H (R8A779G0) SoC.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue for v5.19 a branch shared by driver and DT.
+'size' may be used uninitialized in gsm_dlci_modem_output() if called with
+an adaption that is neither 1 nor 2. The function is currently only called
+by gsm_modem_upd_via_data() and only for adaption 2.
+Properly handle every invalid case by returning -EINVAL to silence the
+compiler warning and avoid future regressions.
 
-Gr{oetje,eeting}s,
+Fixes: c19ffe00fed6 ("tty: n_gsm: fix invalid use of MSC in advanced option")
+Cc: stable@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-                        Geert
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 8652308c187f..a38b922bcbc1 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -932,18 +932,21 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
+ {
+ 	u8 *dp = NULL;
+ 	struct gsm_msg *msg;
+-	int size;
++	int size = 0;
+ 
+ 	/* for modem bits without break data */
+-	if (dlci->adaption == 1) {
+-		size = 0;
+-	} else if (dlci->adaption == 2) {
+-		size = 1;
++	switch (dlci->adaption) {
++	case 1: /* Unstructured */
++		break;
++	case 2: /* Unstructured with modem bits. */
++		size++;
+ 		if (brk > 0)
+ 			size++;
+-	} else {
++		break;
++	default:
+ 		pr_err("%s: unsupported adaption %d\n", __func__,
+ 		       dlci->adaption);
++		return -EINVAL;
+ 	}
+ 
+ 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+-- 
+2.25.1
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
