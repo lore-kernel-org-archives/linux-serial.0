@@ -2,94 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5612BC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 10:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDFBC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Apr 2022 11:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234794AbiDYKuw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Apr 2022 06:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
+        id S241467AbiDYLT2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Apr 2022 07:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240926AbiDYKuo (ORCPT
+        with ESMTP id S241656AbiDYLTT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Apr 2022 06:50:44 -0400
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C476A076
-        for <linux-serial@vger.kernel.org>; Mon, 25 Apr 2022 03:47:36 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220425104733b1f112e4da303070a1
-        for <linux-serial@vger.kernel.org>;
-        Mon, 25 Apr 2022 12:47:33 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=ibveypy2TT2i4YuSJ92muBFUBKsW8Al9oyDzThK4kpU=;
- b=GGDFW8jUESh9CAa2Qw8xzLTbXEizho7aK/UrtUKNjeFNF7EAUDMsWThmC5UvVBz5wrD287
- hg0Hxt4dF6mTBffFhnoZc1NFP/bUDtzKYNMciuhn7pRHLcJ/ymWDWckgUmdHOp8n9CJV1GMl
- dWoqMP0OFeJrZByN2WdphYPd6CnoI=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 1/1] tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
-Date:   Mon, 25 Apr 2022 03:47:26 -0700
-Message-Id: <20220425104726.7986-1-daniel.starke@siemens.com>
+        Mon, 25 Apr 2022 07:19:19 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60C83C73B;
+        Mon, 25 Apr 2022 04:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650885375; x=1682421375;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=sJR1mNOe8X7WozLkgEphU67J123KZXsLcL2Bkf/+MWk=;
+  b=M/7xH+RlfHD5b1id0Y5ZZaLKMdoULHJAhdfKDZREO7Uvxs2iyP6Yy7Aw
+   MeG/jSOe+c/2T0MDUBHlGYSqy5c4zKuiwmA/w8Q4uET/ViyR87MlLICzo
+   23HPvlYGuAquhZHw8M9eN8BipM30otbQXUXKISMpbNJC1MHm5HUYONJy2
+   qJUbUJI/rEule6txZoDifCQX4BLufzSRbgqcAT/3UTo7QVAWs1QBX37QI
+   JD3Tsdty6jYdL3WVQ7keJVKPBj1o8AKjfr9HZ/Zz4fgjFVo4ER0bJR1gB
+   g32RwN71jWx3y8ICB5j+9l7SrArYedPN2JxaWiLEbm0hI6Zta1YkDQPml
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10327"; a="351666298"
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="351666298"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:16:15 -0700
+X-IronPort-AV: E=Sophos;i="5.90,287,1643702400"; 
+   d="scan'208";a="579233422"
+Received: from yfriedgu-mobl.ger.corp.intel.com ([10.251.216.185])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 04:16:11 -0700
+Date:   Mon, 25 Apr 2022 14:16:06 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Vicente Bergas <vicencb@gmail.com>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        giulio.benetti@micronovasrl.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        heikki.krogerus@linux.intel.com,
+        =?ISO-8859-15?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
+        jirislaby@kernel.org, johan@kernel.org, linux-api@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 00/12] Add RS485 support to DW UART
+In-Reply-To: <CAAMcf8DQcArMRqL-uYUt-aUT-LaETn4a7+wjqeet15cFQuy3uQ@mail.gmail.com>
+Message-ID: <12b796f6-faf4-dec8-772f-6eda784af493@linux.intel.com>
+References: <20220411083321.9131-1-ilpo.jarvinen@linux.intel.com> <20220421153626.120494-1-vicencb@gmail.com> <388d773-5c21-dfc9-40b1-7f2a060154d@linux.intel.com> <184ccf6c-e1db-8a64-24e0-f045a9d88751@linux.intel.com>
+ <CAAMcf8DQcArMRqL-uYUt-aUT-LaETn4a7+wjqeet15cFQuy3uQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: multipart/mixed; boundary="8323329-69205849-1650885375=:1634"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-'size' may be used uninitialized in gsm_dlci_modem_output() if called with
-an adaption that is neither 1 nor 2. The function is currently only called
-by gsm_modem_upd_via_data() and only for adaption 2.
-Properly handle every invalid case by returning -EINVAL to silence the
-compiler warning and avoid future regressions.
+--8323329-69205849-1650885375=:1634
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Fixes: c19ffe00fed6 ("tty: n_gsm: fix invalid use of MSC in advanced option")
-Cc: stable@vger.kernel.org
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+On Sun, 24 Apr 2022, Vicente Bergas wrote:
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 8652308c187f..a38b922bcbc1 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -932,18 +932,21 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
- {
- 	u8 *dp = NULL;
- 	struct gsm_msg *msg;
--	int size;
-+	int size = 0;
- 
- 	/* for modem bits without break data */
--	if (dlci->adaption == 1) {
--		size = 0;
--	} else if (dlci->adaption == 2) {
--		size = 1;
-+	switch (dlci->adaption) {
-+	case 1: /* Unstructured */
-+		break;
-+	case 2: /* Unstructured with modem bits. */
-+		size++;
- 		if (brk > 0)
- 			size++;
--	} else {
-+		break;
-+	default:
- 		pr_err("%s: unsupported adaption %d\n", __func__,
- 		       dlci->adaption);
-+		return -EINVAL;
- 	}
- 
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+> Hi Ilpo, thank you for your quick reply with a solution!
+> 
+> On Fri, Apr 22, 2022 at 3:07 PM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> >
+> > On Fri, 22 Apr 2022, Ilpo Järvinen wrote:
+> >
+> > > On Thu, 21 Apr 2022, Vicente Bergas wrote:
+> > >
+> > > > 1.- rs485_stop_tx is never called because there are no interrupts.
+> > > > I worked around this by disabling DMA:
+> > >
+> > > I'll need to look into this.
+> >
+> > 8250 DMA tx complete path lacks calls to normal 8250 stop handling and
+> > I think it probably also assumes too much from dmaengine's completion
+> > callback. ...It also seems bit early to call serial8250_rpm_put_tx from
+> > there(?).
+> >
+> > This patch allowed em485_start/stop_tx to be called in my tests:
+> > [PATCH 1/1] serial: 8250: use THRE & __stop_tx also with DMA
+> 
+> I confirm that this patch fixes the issue when DMA is enabled.
+> 
+> I also confirm that your other patch
+> > +                       stop_delay = p->port.frame_time + DIV_ROUND_UP(p->port.frame_time, 7);
+> fixes the issue with RTS/DriverEnable deassertion time.
+> I've tested it again at 19200e1 and now RTS is deasserted
+> approximately at the same time as the end of the stop bit.
+> Please, note the "e" for even parity bit, that extra bit after the
+> data byte might have an impact on this timings.
+
+Great, thanks again for testing.
+
+I don't think that parity "e" makes the calculations incorrect as parity 
+bit should be taken into account in tty_get_frame_size(). My guess is it's 
+more about whether THRE might get asserted already during the stop bit or 
+only after the stop bit has been fully sent.
+
+
 -- 
-2.25.1
+ i.
 
+--8323329-69205849-1650885375=:1634--
