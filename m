@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAEBC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Apr 2022 12:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FBBC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Apr 2022 12:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236064AbiDZMaM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Apr 2022 08:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
+        id S245376AbiDZMaQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 26 Apr 2022 08:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245376AbiDZMaL (ORCPT
+        with ESMTP id S1346208AbiDZMaO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Apr 2022 08:30:11 -0400
+        Tue, 26 Apr 2022 08:30:14 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC83020BFE
-        for <linux-serial@vger.kernel.org>; Tue, 26 Apr 2022 05:27:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6353167D06
+        for <linux-serial@vger.kernel.org>; Tue, 26 Apr 2022 05:27:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650976022; x=1682512022;
+  t=1650976027; x=1682512027;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=e21dnt3tjPVLXzdso0t2hHrRueBwn5Omiupf61ZYZ3Y=;
-  b=TOS+YokQnkzEJhhdgO4GHV6vpW3dT4yGQEyxyU29mAFc7Vpog8i+3hDr
-   LSabm/sGoGmutw7z8ddFjc7qwAGHVtjsWudb0QLLXYBtqUeY2aVSjhlUl
-   VqgLN69S+iH3osUcj3tBbwmk99U85ISYc7GiH3YRmztlTZ/XzwckKC9Ic
-   WsgiUausHbgQMAXZyucHUwzz6kuS5YWQuv9tf2LMo4lVoAhK/2HMAC2AK
-   YahwZoBtQhODmyXRkyLbbd9PDXi7eQ7f+ibEd+nv4KU2Rkubrc5Od3X4q
-   tlVXpg7E9q19GWgmQAZjxYC0DGjegSX9SG/rt7oFxYV23CXJLOPOkOi9q
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265724693"
+  bh=SC57HaLJluMMzHu7BqtA8pvAKc4U6/gEYKXnBFWAGXA=;
+  b=DhJ1fWiSKUGTVLpjkEIU9gLgwFoFo67BkJaQG5RVJTScOXnX+reGVye0
+   d+JKjxiSIu+Vas+lCp5uUCtqEEYaKD0iwD3VuEkDlvvu83gTVXopjg+qu
+   NlmI8azYHxX2OSIiVcLxuNgvPnD5aL9UcCgOkHIDrU5cO9Zk3AkwOv3GW
+   K+dwQr+M1wTYaGtXKcZjmOSLzFWaU3LTnWfmOR0k/SexuY5ees5VmUCK0
+   8OLFRLRGTSbLnEs3z6GplCnqgj+PV8+ievbov9g0Ls/rL52G2QDooYpsP
+   ooYeoMN2k1upTo6jJbY+12lCxEwm4bmxFblJhol1zjjcoYb3n7cX1K8e0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265724712"
 X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="265724693"
+   d="scan'208";a="265724712"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 05:27:02 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 05:27:07 -0700
 X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="579864839"
+   d="scan'208";a="579864843"
 Received: from mmilkovx-mobl.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.47.245])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 05:26:58 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 05:27:03 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
 Cc:     Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>,
@@ -48,10 +48,10 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>,
         giulio.benetti@micronovasrl.com,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>
-Subject: [PATCH v5 01/10] serial: 8250_dwlib: RS485 HW half & full duplex support
-Date:   Tue, 26 Apr 2022 15:24:39 +0300
-Message-Id: <20220426122448.38997-2-ilpo.jarvinen@linux.intel.com>
+        Eric Tremblay <etremblay@distech-controls.com>
+Subject: [PATCH v5 02/10] serial: 8250_dwlib: Implement SW half duplex support
+Date:   Tue, 26 Apr 2022 15:24:40 +0300
+Message-Id: <20220426122448.38997-3-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220426122448.38997-1-ilpo.jarvinen@linux.intel.com>
 References: <20220426122448.38997-1-ilpo.jarvinen@linux.intel.com>
@@ -62,164 +62,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Synopsys DesignWare UART can be configured to have HW support for
-the RS485 protocol from IP version 4.0 onward. Add support for
-hardware-controlled half duplex and full duplex modes.
+This patch enables support for SW half-duplex mode using em485.
 
-HW will take care of managing DE and RE, the driver just gives it
-permission to use either by setting both to 1.
-
-To ask for full duplex mode, userspace sets SER_RS485_RX_DURING_TX flag
-and HW will take care of the rest.
-
-Set delay_rts_before_send and delay_rts_after_send to zero for now. The
-granularity of that ABI is too coarse to be useful.
-
-Co-developed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Co-developed-by: Raymond Tan <raymond.tan@intel.com>
-Signed-off-by: Raymond Tan <raymond.tan@intel.com>
-Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Eric Tremblay <etremblay@distech-controls.com>
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Tested-by: Vicente Bergas <vicencb@gmail.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dwlib.c | 82 ++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_dwlib.h |  3 +
- 2 files changed, 85 insertions(+)
+ drivers/tty/serial/8250/8250_dwlib.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-index b3df6dee9ceb..05b73c8e75bc 100644
+index 05b73c8e75bc..fbabfdd8c7b8 100644
 --- a/drivers/tty/serial/8250/8250_dwlib.c
 +++ b/drivers/tty/serial/8250/8250_dwlib.c
-@@ -2,18 +2,32 @@
- /* Synopsys DesignWare 8250 library. */
- 
- #include <linux/bitops.h>
-+#include <linux/bitfield.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
-+#include <linux/property.h>
- #include <linux/serial_8250.h>
- #include <linux/serial_core.h>
- 
- #include "8250_dwlib.h"
- 
- /* Offsets for the DesignWare specific registers */
-+#define DW_UART_TCR	0xac /* Transceiver Control Register (RS485) */
-+#define DW_UART_DE_EN	0xb0 /* Driver Output Enable Register */
-+#define DW_UART_RE_EN	0xb4 /* Receiver Output Enable Register */
- #define DW_UART_DLF	0xc0 /* Divisor Latch Fraction Register */
- #define DW_UART_CPR	0xf4 /* Component Parameter Register */
- #define DW_UART_UCV	0xf8 /* UART Component Version */
- 
-+/* Transceiver Control Register bits */
-+#define DW_UART_TCR_RS485_EN		BIT(0)
-+#define DW_UART_TCR_RE_POL		BIT(1)
-+#define DW_UART_TCR_DE_POL		BIT(2)
-+#define DW_UART_TCR_XFER_MODE		GENMASK(4, 3)
-+#define DW_UART_TCR_XFER_MODE_DE_DURING_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 0)
-+#define DW_UART_TCR_XFER_MODE_SW_DE_OR_RE	FIELD_PREP(DW_UART_TCR_XFER_MODE, 1)
-+#define DW_UART_TCR_XFER_MODE_DE_OR_RE		FIELD_PREP(DW_UART_TCR_XFER_MODE, 2)
-+
- /* Component Parameter Register bits */
- #define DW_UART_CPR_ABP_DATA_WIDTH	(3 << 0)
- #define DW_UART_CPR_AFCE_MODE		(1 << 4)
-@@ -71,6 +85,70 @@ void dw8250_do_set_termios(struct uart_port *p, struct ktermios *termios, struct
- }
- EXPORT_SYMBOL_GPL(dw8250_do_set_termios);
- 
-+static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
-+{
-+	u32 tcr;
-+
-+	tcr = dw8250_readl_ext(p, DW_UART_TCR);
-+	tcr &= ~DW_UART_TCR_XFER_MODE;
-+
-+	if (rs485->flags & SER_RS485_ENABLED) {
-+		/* Clear unsupported flags. */
-+		rs485->flags &= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX |
-+				SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND;
-+		tcr |= DW_UART_TCR_RS485_EN;
-+
-+		if (rs485->flags & SER_RS485_RX_DURING_TX) {
-+			tcr |= DW_UART_TCR_XFER_MODE_DE_DURING_RE;
-+		} else {
-+			/* HW does not support same DE level for tx and rx */
-+			if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-+			    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-+				return -EINVAL;
-+
-+			tcr |= DW_UART_TCR_XFER_MODE_DE_OR_RE;
-+		}
-+		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
-+		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
-+	} else {
-+		rs485->flags = 0;
-+
-+		tcr &= ~DW_UART_TCR_RS485_EN;
-+	}
-+
-+	/* Reset to default polarity */
-+	tcr |= DW_UART_TCR_DE_POL;
-+	tcr &= ~DW_UART_TCR_RE_POL;
-+
-+	if (!(rs485->flags & SER_RS485_RTS_ON_SEND))
-+		tcr &= ~DW_UART_TCR_DE_POL;
-+	if (device_property_read_bool(p->dev, "rs485-rx-active-high"))
-+		tcr |= DW_UART_TCR_RE_POL;
-+
-+	dw8250_writel_ext(p, DW_UART_TCR, tcr);
-+
-+	rs485->delay_rts_before_send = 0;
-+	rs485->delay_rts_after_send = 0;
-+
-+	p->rs485 = *rs485;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Tests if RE_EN register can have non-zero value to see if RS-485 HW support
-+ * is present.
-+ */
-+static bool dw8250_detect_rs485_hw(struct uart_port *p)
-+{
-+	u32 reg;
-+
-+	dw8250_writel_ext(p, DW_UART_RE_EN, 1);
-+	reg = dw8250_readl_ext(p, DW_UART_RE_EN);
-+	dw8250_writel_ext(p, DW_UART_RE_EN, 0);
-+	return reg;
-+}
-+
- void dw8250_setup_port(struct uart_port *p)
- {
- 	struct dw8250_port_data *pd = p->private_data;
-@@ -78,6 +156,10 @@ void dw8250_setup_port(struct uart_port *p)
- 	struct uart_8250_port *up = up_to_u8250p(p);
+@@ -157,8 +157,14 @@ void dw8250_setup_port(struct uart_port *p)
  	u32 reg;
  
-+	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
-+	if (pd->hw_rs485_support)
-+		p->rs485_config = dw8250_rs485_config;
-+
+ 	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
+-	if (pd->hw_rs485_support)
++	if (pd->hw_rs485_support) {
+ 		p->rs485_config = dw8250_rs485_config;
++	} else {
++		p->rs485_config = serial8250_em485_config;
++		up->rs485_start_tx = serial8250_em485_start_tx;
++		up->rs485_stop_tx = serial8250_em485_stop_tx;
++	}
++	up->capabilities |= UART_CAP_NOTEMT;
+ 
  	/*
  	 * If the Component Version Register returns zero, we know that
- 	 * ADDITIONAL_FEATURES are not enabled. No need to go any further.
-diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
-index b10e60a5d16a..055bfdc87985 100644
---- a/drivers/tty/serial/8250/8250_dwlib.h
-+++ b/drivers/tty/serial/8250/8250_dwlib.h
-@@ -20,6 +20,9 @@ struct dw8250_port_data {
+@@ -194,7 +200,7 @@ void dw8250_setup_port(struct uart_port *p)
+ 		p->type = PORT_16550A;
+ 		p->flags |= UPF_FIXED_TYPE;
+ 		p->fifosize = DW_UART_CPR_FIFO_SIZE(reg);
+-		up->capabilities = UART_CAP_FIFO;
++		up->capabilities = UART_CAP_FIFO | UART_CAP_NOTEMT;
+ 	}
  
- 	/* Hardware configuration */
- 	u8			dlf_size;
-+
-+	/* RS485 variables */
-+	bool			hw_rs485_support;
- };
- 
- struct dw8250_platform_data {
+ 	if (reg & DW_UART_CPR_AFCE_MODE)
 -- 
 2.30.2
 
