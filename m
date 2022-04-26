@@ -2,159 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34045C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Apr 2022 14:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCE5C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Apr 2022 14:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351465AbiDZONn (ORCPT
+        id S1351581AbiDZO03 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Apr 2022 10:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        Tue, 26 Apr 2022 10:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351452AbiDZONj (ORCPT
+        with ESMTP id S1351590AbiDZO02 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Apr 2022 10:13:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291196256;
-        Tue, 26 Apr 2022 07:10:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B025D61760;
-        Tue, 26 Apr 2022 14:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E92C385AA;
-        Tue, 26 Apr 2022 14:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650982231;
-        bh=ZPeje/e98HoyDemHXaKoIfAh2yfEIqi6kqltvCUz+ww=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=crfo0u+PB5SA5RNj0pQLJWatVk5+qE7b+uBd61uRcRaJxczzYs9rk/aVzPXrKyYwc
-         griwOklNbGPxwfqD9bWrszcneMdtK+CgXXW2ayV/CSuFqtcqOY4sb8e6wUBk3O37MM
-         NeZ4qAp8hltXLoSrkQ0y3zsY+oM+cY/t8FoJi6YM=
-Date:   Tue, 26 Apr 2022 16:10:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Vicente Bergas <vicencb@gmail.com>,
-        Johan Hovold <johan@kernel.org>, heiko@sntech.de,
-        giulio.benetti@micronovasrl.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-api@vger.kernel.org,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        "David S. Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v5 05/10] serial: termbits: ADDRB to indicate 9th bit
- addressing mode
-Message-ID: <Ymf9UhyXj7o8cNhq@kroah.com>
-References: <20220426122448.38997-1-ilpo.jarvinen@linux.intel.com>
- <20220426122448.38997-6-ilpo.jarvinen@linux.intel.com>
- <Ymfq+jUXfZcNM/P/@kroah.com>
- <b667479-fb27-8712-cec8-938eed179240@linux.intel.com>
- <17547658-4737-7ec1-9ef9-c61c6287b8b@linux.intel.com>
+        Tue, 26 Apr 2022 10:26:28 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA847AFC;
+        Tue, 26 Apr 2022 07:23:18 -0700 (PDT)
+Received: by mail-qk1-f178.google.com with SMTP id z126so1619945qkb.2;
+        Tue, 26 Apr 2022 07:23:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jokkVbF1ezms1mHbakQHJk8L69eckMvAJzizq9MqELw=;
+        b=35nNsdDobxbALX628NAUMsIp7RoCyoNKj4UtgxC1eKaOe2R4efVqTq1Um/QGzagKFA
+         C/UX+0/h0oJn3sYBlkC4u7hz7fDwTPtVDDJbp9HJH6rSwsvaTV0oZv4rQUsp/rVe9tba
+         VtDNpgzCc+/qkgekbdq0LkI+rHZA6QnvJgRd1Y1vERKzon1zVE7IRrrp1tK6WjoHA+XX
+         tFVsVjSAJg658I/lNfk3vohZ1LZXEe/KrvPScNrzcz8yjO0egWmLX/LiKDUC2j2cmnqT
+         whr7PL1kpnPxTs+/cQbfqFly6rAFiKxJER3Okb0BzzfPKVFhf4OJlLpffA18W6wu2R3f
+         eKyw==
+X-Gm-Message-State: AOAM532Ctio59lY727wgZbwpXLNr0sv9RWalEbdoJDUeJSGXNqed8wX7
+        mt8M3W2v+bL4x69GmTe5dEtS8HFK56/w3A==
+X-Google-Smtp-Source: ABdhPJzeUKDHWAuE68MMJzTkbC6tHbtbc/HrCYthvHRReslckiez9cDwhG6r5EPv+nCTW3ZHMUR9Kg==
+X-Received: by 2002:a37:54c4:0:b0:67e:9cbf:a984 with SMTP id i187-20020a3754c4000000b0067e9cbfa984mr13652836qkb.215.1650982996950;
+        Tue, 26 Apr 2022 07:23:16 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id n22-20020ac85b56000000b002f1d7a2867dsm7986808qtw.67.2022.04.26.07.23.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Apr 2022 07:23:16 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2f7c57ee6feso89258387b3.2;
+        Tue, 26 Apr 2022 07:23:16 -0700 (PDT)
+X-Received: by 2002:a81:c703:0:b0:2d0:cc6b:3092 with SMTP id
+ m3-20020a81c703000000b002d0cc6b3092mr21856171ywi.449.1650982996110; Tue, 26
+ Apr 2022 07:23:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <17547658-4737-7ec1-9ef9-c61c6287b8b@linux.intel.com>
+References: <20220330154024.112270-1-phil.edworthy@renesas.com> <20220330154024.112270-6-phil.edworthy@renesas.com>
+In-Reply-To: <20220330154024.112270-6-phil.edworthy@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 26 Apr 2022 16:23:05 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX=ugyPDLGBcYXhXFOSJRKC90MCS4DsxYo6rzsWMCr5sg@mail.gmail.com>
+Message-ID: <CAMuHMdX=ugyPDLGBcYXhXFOSJRKC90MCS4DsxYo6rzsWMCr5sg@mail.gmail.com>
+Subject: Re: [PATCH v2 05/13] serial: 8250: Make SERIAL_8250_EM available for
+ arm64 systems
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Al Cooper <alcooperx@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 05:01:31PM +0300, Ilpo Järvinen wrote:
-> One additional thing below I missed on the first read.
-> 
-> On Tue, 26 Apr 2022, Ilpo Järvinen wrote:
-> > On Tue, 26 Apr 2022, Greg KH wrote:
-> > 
-> > > On Tue, Apr 26, 2022 at 03:24:43PM +0300, Ilpo Järvinen wrote:
-> > > > Add ADDRB to termbits to indicate 9th bit addressing mode. This change
-> > > > is necessary for supporting devices with RS485 multipoint addressing
-> > > > [*]. A later patch in the patch series adds support for Synopsys
-> > > > Designware UART capable for 9th bit addressing mode. In this mode, 9th
-> > > > bit is used to indicate an address (byte) within the communication
-> > > > line. The 9th bit addressing mode is selected using ADDRB introduced by
-> > > > an earlier patch.
-> > > > 
-> > > > [*] Technically, RS485 is just an electronic spec and does not itself
-> > > > specify the 9th bit addressing mode but 9th bit seems at least
-> > > > "semi-standard" way to do addressing with RS485.
-> > > > 
-> > > > Cc: linux-api@vger.kernel.org
-> > > > Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> > > > Cc: Matt Turner <mattst88@gmail.com>
-> > > > Cc: linux-alpha@vger.kernel.org
-> > > > Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> > > > Cc: linux-mips@vger.kernel.org
-> > > > Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-> > > > Cc: Helge Deller <deller@gmx.de>
-> > > > Cc: linux-parisc@vger.kernel.org
-> > > > Cc: Michael Ellerman <mpe@ellerman.id.au>
-> > > > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> > > > Cc: Paul Mackerras <paulus@samba.org>
-> > > > Cc: linuxppc-dev@lists.ozlabs.org
-> > > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > > Cc: sparclinux@vger.kernel.org
-> > > > Cc: Arnd Bergmann <arnd@arndb.de>
-> > > > Cc: linux-arch@vger.kernel.org
-> > > > Cc: linux-usb@vger.kernel.org
-> > > > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > > > ---
-> 
-> > > >  #define CMSPAR    010000000000          /* mark or space (stick) parity */
-> > > >  #define CRTSCTS   020000000000          /* flow control */
-> > > >  
-> > > > diff --git a/arch/powerpc/include/uapi/asm/termbits.h b/arch/powerpc/include/uapi/asm/termbits.h
-> > > > index ed18bc61f63d..c6a033732f39 100644
-> > > > --- a/arch/powerpc/include/uapi/asm/termbits.h
-> > > > +++ b/arch/powerpc/include/uapi/asm/termbits.h
-> > > > @@ -171,6 +171,7 @@ struct ktermios {
-> > > >  #define HUPCL	00040000
-> > > >  
-> > > >  #define CLOCAL	00100000
-> > > > +#define ADDRB	004000000000		/* address bit */
-> > > >  #define CMSPAR	  010000000000		/* mark or space (stick) parity */
-> > > >  #define CRTSCTS	  020000000000		/* flow control */
-> > > >  
-> > > > diff --git a/arch/sparc/include/uapi/asm/termbits.h b/arch/sparc/include/uapi/asm/termbits.h
-> > > > index ce5ad5d0f105..5eb1d547b5c4 100644
-> > > > --- a/arch/sparc/include/uapi/asm/termbits.h
-> > > > +++ b/arch/sparc/include/uapi/asm/termbits.h
-> > > > @@ -201,6 +201,7 @@ struct ktermios {
-> > > >  #define B3500000  0x00001012
-> > > >  #define B4000000  0x00001013  */
-> > > >  #define CIBAUD	  0x100f0000  /* input baud rate (not used) */
-> > > > +#define ADDRB	  0x20000000  /* address bit */
-> > > >  #define CMSPAR	  0x40000000  /* mark or space (stick) parity */
-> > > >  #define CRTSCTS	  0x80000000  /* flow control */
-> > > 
-> > > Why all the different values?  Can't we pick one and use it for all
-> > > arches?  Having these be different in different arches and userspace
-> > > should not be a thing for new fields, right?
-> 
-> ADDRB value is the same for all archs (it's just this octal vs hex 
-> notation I've followed as per the nearby defines within the same file
-> which makes them look different).
-> 
-> Should I perhaps add to my cleanup list conversion of all those octal ones 
-> to hex?
+On Wed, Mar 30, 2022 at 5:41 PM Phil Edworthy <phil.edworthy@renesas.com> wrote:
+> This is needed for the Renesas RZ/V2M (r9a09g011) SoC.
+>
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Argh, yes, please, let's do that now, I totally missed that.  Will let
-us see how to unify them as well.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-thanks,
+Gr{oetje,eeting}s,
 
-greg k-h
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
