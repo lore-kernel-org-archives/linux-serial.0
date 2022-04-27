@@ -2,57 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F7BC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 27 Apr 2022 07:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A245CC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Apr 2022 13:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358771AbiD0Hbw (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 Apr 2022 03:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        id S235449AbiD0N0s (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 27 Apr 2022 09:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237934AbiD0Hbw (ORCPT
+        with ESMTP id S233385AbiD0N0r (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 Apr 2022 03:31:52 -0400
-Received: from mail.fixingbiz.pl (mail.fixingbiz.pl [217.61.22.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CD672E10
-        for <linux-serial@vger.kernel.org>; Wed, 27 Apr 2022 00:28:42 -0700 (PDT)
-Received: by mail.fixingbiz.pl (Postfix, from userid 1001)
-        id 1B191A4F21; Wed, 27 Apr 2022 08:28:21 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fixingbiz.pl; s=mail;
-        t=1651044520; bh=FDuFY3XQoq0gMX1b2gxgT7Py2p4Sxl0PJZYZ4NVaPho=;
-        h=Date:From:To:Subject:From;
-        b=w0G5sLpx8CCDO+7OBL2bcHNOhWZCVll8k2qpJY/rd8FZPqNLE6/a8cDXwg8AOjB6+
-         Npj8SYydVc2jxszXJ4F+OrVLgwNv2EA71lCAb2NrF0Gybs71bNGCiez24g3zzUZ0cb
-         3qTxPumx7X+7If9tefR1PNdh5tIgEGnlXZNdsbC3kfY1ODSpEXN8NaT/RsIzzm6jFM
-         WCcvSgHX0ccmYnYz8QlWdA0UsayQvWCFgEV6cBXQhM9xntlPATFHIm6D9yyy1VxFm7
-         0CaB3HAgYu6uu6OK33ohVlDaszjKotnXrLQEXlkUYmtu0y8bpnr/gTnahfbKD4Five
-         mQUft4Z2VC1Iw==
-Received: by mail.fixingbiz.pl for <linux-serial@vger.kernel.org>; Wed, 27 Apr 2022 07:28:09 GMT
-Message-ID: <20220427073002-0.1.22.ai2k.0.prk3r52pph@fixingbiz.pl>
-Date:   Wed, 27 Apr 2022 07:28:09 GMT
-From:   =?UTF-8?Q? "Przemys=C5=82aw_Wr=C3=B3blewski" ?= 
-        <przemyslaw.wroblewski@fixingbiz.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Wycena paneli fotowoltaicznych
-X-Mailer: mail.fixingbiz.pl
+        Wed, 27 Apr 2022 09:26:47 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AF7286E0;
+        Wed, 27 Apr 2022 06:23:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 7CFA81F4470F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651065815;
+        bh=EqjX82GXjqOFhq0gUXw4CciC7Vh5NdYSqj0fE42uX6o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bSxZLmiNzzvmXvS/G0LxIU/onl0isc+fFq4malUf2KNMqo23k4kNwVDTtuflJ/w4J
+         HarckUhk1BL8we8qLtMgp3haKnf/itziBU9PrNASD+/GJXpm6aLc3D57RJhXzb9Riy
+         l37/ujoD9a9pdwCCC0APr4XvDovBW8AS2b5t4H+Fxv7sEZou6YXG+oX7qPTrAMKnA4
+         3aWqVdivsu4IRy/5xbiGPti8eMVdRII8HAUoCjwfOWrVCQV4keFlrXQBnxJcEObmne
+         Xft18vwjFIOwH3yjSNJ8DUvD1zgCney2xR9Msf+rhkaBmnlRcciKHFsLVAtaackZHb
+         VJryDVrVaoGxg==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, zhiyong.tao@mediatek.com,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] MediaTek 8250 UART: fixes and improvements
+Date:   Wed, 27 Apr 2022 15:23:25 +0200
+Message-Id: <20220427132328.228297-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Even though the UART IP on MTK platforms is 16550A compatible, some
+registers are not at a "standard" offset. In order to allow full
+functionality of the flow control features and to make Linux able
+to fully and properly reconfigure the UART IP, eventually allowing
+communication at high speed after a full IP reset, some register
+offset fixes have been done.
+While at it, even though this bit is always set, also paranoidly
+make sure that the "new register map" feature is enabled, as that's
+done with just one writel() at probe time, introducing no overhead.
 
-dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
-irm=C4=85.
+This has been tested on multiple Chromebooks featuring different
+SoCs, and a MT6795 Xperia M5 smartphone.
 
-=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
-ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej nawet o 90%.
+AngeloGioacchino Del Regno (3):
+  serial: 8250_mtk: Fix UART_EFR register address
+  serial: 8250_mtk: Make sure to select the right FEATURE_SEL
+  serial: 8250_mtk: Fix register address for XON/XOFF character
 
-Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
-ropozycji?
+ drivers/tty/serial/8250/8250_mtk.c | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
+-- 
+2.35.1
 
-Pozdrawiam,
-Przemys=C5=82aw Wr=C3=B3blewski
