@@ -2,27 +2,27 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A77CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81901C433FE
 	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 08:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355456AbiD2IR4 (ORCPT
+        id S1355460AbiD2IR5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Apr 2022 04:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
+        Fri, 29 Apr 2022 04:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355455AbiD2IRx (ORCPT
+        with ESMTP id S239059AbiD2IRz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Apr 2022 04:17:53 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2049.outbound.protection.outlook.com [40.107.244.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90AAC12D6;
-        Fri, 29 Apr 2022 01:14:35 -0700 (PDT)
+        Fri, 29 Apr 2022 04:17:55 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2089.outbound.protection.outlook.com [40.107.244.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764ACC12F2;
+        Fri, 29 Apr 2022 01:14:38 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LKvz4OKnNZK1d8nOe/XvVxSoIaA/D0qCUQoroUOJojwt4w0d9/JZr6Sqe0+kg91FBhX4ryAg7ELbKjl0Fav9O3SfVp/VjSSoD2HWzLHWpSUSmzwcdyexBUbK2DHDjPz6kJzAaRty1LjpRCtELtHlYQN72d1Kvpou0nXGEVQZ7qwWTMKfdHW4FiLzUho0xJC8/9aD8evfXW4TqUpRAYdC0g/c4NeMiicLnM4gDYHAty4501MGOb6Syx6LNyGTkwC+cTGUJjx6dBz5q69G2gjvYKwch53KxP+XQKb9QdgWmPXUoNcDm4m7gE9i32PDDHg+m0gCqi2wRx5DBpUo1q+wuA==
+ b=awntGVtucMdHkBKHQzVtmjCJAPJv743iN43cQVwWn+uki/5CSW75vTE2xVkzm8fczNnLeCaPyJ6Mth3lT4w3yHIbw4sjhrnVmo0p2KHbFjs4ZAvbLSNgXgtGD1O7BytEjyXxRx+TDpHAtkkZyz2qlfGMzwD8SuIKc/z1TjdZvL4Gg4n6Sob6b+l12AleFmwsGnjze3uVYQwsVacuSHVkbJjJPkO+k161PJ4nrF7pJsNvFL8Mt4/IiBTaj1xM1GzrAvwe6jAQNAo26I+nKMP9v93G4vNgWQzO99toQaITFupIlzT3JnZo+ECl/wczAjn1awS52gNaxuFPHMwex7rBuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XQbeBOVIVK1PgYBlxHFsFLukyM/k7bxqNaQoFvP9Ggk=;
- b=GGV7+UORsz6tRPgvW1Cm7oxC7CPkRIOzKG9kKSv1hxcysSndwcY6cVioCrxNTpYtAgHeZ6xfoYHUjOXZ15w+QH1L/BXvOGjStYHlUkCSSX9whUoIO29ml/jB+ZPVmYv4f/rv0jnMKgIGJcof8zCfDsDDMtPnaFshq0SyA7SI1RF+tOSLFtOpsxq4Jg7VbPPKRk2/fjI52jKHBmfuaMDTG8IpJKeqAs5nK07j48enix4gzljAwtlox+iA+HnTT/ppkgCHAHxWnrvMt0Y5BWIWWTQ7yNElceK+AWrH2SrrZanEXRI9egvYY0hswR/QcM6moGZ45+c9RGNA2zdtxztmcQ==
+ bh=VRcFkUezuEC4bQO7oaUQEFHFjhfH8x9QOrJR7mq/2SM=;
+ b=CoujQXMa5BkR4iPPuMUHxhrIADMF+B5Q2uDD93dcmyCzu48gJmeppyeQNVbWpjst40taCwYh2t2oeFqCUky64OIOnBi+vcVTg6MAuVhJyGZ17NTMkxLHrwef0wUcGTQyAxul1t5785n1eWTUxYLoTQ7c6Vbh6ruwAt8FyKPSg77J1n0XKLNEd12x9k5qd99b3pGuxwuG9Y85YxsFplnsgEVhOUU8/9sNbZLwUu0RWeHSzpYv2DkumgUrz1oPGeX1uM5DGgu2mXAa9Kbnq1Wv7eNgh5bCLsYsfnayHLbMQ/lXEYpnQ1NttKz7p0Qg3VuaSbLbG7DpEAZjZLNjf5X6CA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -30,18 +30,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XQbeBOVIVK1PgYBlxHFsFLukyM/k7bxqNaQoFvP9Ggk=;
- b=FyhaDIQGBkIJMpFFpHBcOTuutY9tBjUsyHjjJaAvtaOZs6DYGE4eFl/BA/ggFv+CBELlFQmkaxjscTZxTYjoaWMRrgZdT/zxLl3NEz+iK6Sl/H8jiVE6EyaAOcS5lhrvnUbkRAojm0lvrMh4/eEMHo39ZReTCVJTNATwk58IdUc=
-Received: from DS7PR03CA0299.namprd03.prod.outlook.com (2603:10b6:5:3ad::34)
- by BYAPR02MB4392.namprd02.prod.outlook.com (2603:10b6:a03:57::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Fri, 29 Apr
- 2022 08:14:32 +0000
-Received: from DM3NAM02FT011.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:3ad:cafe::77) by DS7PR03CA0299.outlook.office365.com
- (2603:10b6:5:3ad::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15 via Frontend
- Transport; Fri, 29 Apr 2022 08:14:32 +0000
+ bh=VRcFkUezuEC4bQO7oaUQEFHFjhfH8x9QOrJR7mq/2SM=;
+ b=AgdQ3wZgf8L8X8qLSC1u6eCVZ5rxKmksY5ymn8UDAuLQ6aB5M8TafKQ+1OKzm33SbiQaMN3jd8lLIybKIQu+9sLNEUp9BPA68s04wkYi5VDdu0XJYpJ9ZGU7FGtANu9pqzIs9rbxkLAd2NJk5FvZ3wIPCSC7311DuBm0CERyekQ=
+Received: from DS7PR05CA0092.namprd05.prod.outlook.com (2603:10b6:8:56::10) by
+ BN6PR02MB2820.namprd02.prod.outlook.com (2603:10b6:404:fa::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5186.15; Fri, 29 Apr 2022 08:14:37 +0000
+Received: from DM3NAM02FT030.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:8:56:cafe::7d) by DS7PR05CA0092.outlook.office365.com
+ (2603:10b6:8:56::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.6 via Frontend
+ Transport; Fri, 29 Apr 2022 08:14:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
@@ -49,16 +48,16 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
  client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
 Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT011.mail.protection.outlook.com (10.13.5.26) with Microsoft SMTP
+ DM3NAM02FT030.mail.protection.outlook.com (10.13.4.160) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5206.12 via Frontend Transport; Fri, 29 Apr 2022 08:14:32 +0000
+ 15.20.5206.12 via Frontend Transport; Fri, 29 Apr 2022 08:14:36 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 29 Apr 2022 01:14:30 -0700
+ 15.1.2176.14; Fri, 29 Apr 2022 01:14:35 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 29 Apr 2022 01:14:30 -0700
+ 15.1.2176.14 via Frontend Transport; Fri, 29 Apr 2022 01:14:35 -0700
 Envelope-to: git@xilinx.com,
  linux-serial@vger.kernel.org,
  jirislaby@kernel.org,
@@ -67,16 +66,16 @@ Envelope-to: git@xilinx.com,
 Received: from [10.140.6.39] (port=57162 helo=xhdsgoud40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <shubhrajyoti.datta@xilinx.com>)
-        id 1nkLll-0002va-RR; Fri, 29 Apr 2022 01:14:30 -0700
+        id 1nkLlr-0002va-8O; Fri, 29 Apr 2022 01:14:35 -0700
 From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 To:     <linux-serial@vger.kernel.org>
 CC:     <michal.simek@xilinx.com>, <jirislaby@kernel.org>,
         <gregkh@linuxfoundation.org>, <git@xilinx.com>,
         <linux-kernel@vger.kernel.org>,
         Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: [PATCH 1/7] xilinx: Update copyright text to correct format
-Date:   Fri, 29 Apr 2022 13:44:16 +0530
-Message-ID: <20220429081422.3630070-2-shubhrajyoti.datta@xilinx.com>
+Subject: [PATCH 3/7] tty: xilinx_uartps: Add check for runtime_get_sync calls
+Date:   Fri, 29 Apr 2022 13:44:18 +0530
+Message-ID: <20220429081422.3630070-4-shubhrajyoti.datta@xilinx.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
 References: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
@@ -85,54 +84,60 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb4243f8-caa2-43a1-782c-08da29b84a44
-X-MS-TrafficTypeDiagnostic: BYAPR02MB4392:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR02MB439219DC6720E0F8023227BDAAFC9@BYAPR02MB4392.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: d66cefd8-777f-402d-5057-08da29b84d04
+X-MS-TrafficTypeDiagnostic: BN6PR02MB2820:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR02MB28202816CD19CD3BC36D61A3AAFC9@BN6PR02MB2820.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OtgDgrhpJs3tGdu+TnG5E7c40fSIeze4QnxIvMaC9c+AmIo9amBI8on/C88eFbvMqPEDXHHron6DahEwHk6a3/ZDDbFweWAXjidutPatIevnj0wEqaaGfGrLvEDBvIHtdNy+e1jv+beveB8dMmzJEFelAFpcud0/XvlV26Q2qX+ByDcBVAZYX+yznSkAerjo2GMjyWaAMCe4t2IvGCnOqAOSyLVWDiYOX4Vr/BZzBUoYNuxL+CF4AZPbJOr6BdCXi2CLBkdKnBxO92Nom+mXXlnwMVJJk5LTOZm+7GnUwCFwFiopEawg8ooFk5Vsa1DdYqNZ9HoB+7tq9jzaUc6hv72g/91j9C4v7okF+/ShCsb2MAb2ox66huK7qrTDGziZx8XRJVWC7iAFf6paYH+CM8ySrvprinwYvIBa4ew63ib+Ci9ZIkWdTmPbG7ChjyhobfsYW1exAE8KUXzHLmn2PBsIjEL6CHwG2zcLkMq+rpexANXTCCuDzLAc6pvAkzmx81DOZPfThRyiOv75BZGCFJ2PtHnlS1jDyRqYcUqvS0XTcXgj9S55LOP/feokuSE5vsdjuU8w7dPOI63gF0NpGPXfGRx55wQPkUhKDGObLzW6DrywEDPm3RxBTP8B2SblLpRh/3MZFDRpoBV/xiacMJl4/8EbJ+cPJNzofOOV86YT8lQVFlt8bpPFiIm14uXa+AsB9x0Fj7gUM6CMUjpcOA==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(82310400005)(186003)(83380400001)(36860700001)(7696005)(6666004)(47076005)(426003)(2906002)(107886003)(336012)(1076003)(2616005)(6916009)(316002)(54906003)(36756003)(40460700003)(508600001)(44832011)(5660300002)(356005)(7636003)(4326008)(26005)(70206006)(70586007)(8936002)(9786002)(8676002)(4744005)(102446001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: j3AK1gWLoWQVtOVGmEqLzEUTs9BrwwsKaWgalwcZ2cYu9IRWVVHTlq1Ru+tCfv1aMRWi5AZluLl5UF2yWL0d5IT+YC1k0qbUDSfuYEq9FzHmLoGPjImuGFlMak62Srhuv7SIA0cDIS6SWzP4lQYt6BwLavwQjddRC8EVRkl0s0re+KMGLX49fufqMVVbNsJ2JzJm9KC0BkUfVvA8NyLQpJcnZuKkd0vIVrwMPtVnPBOYvU1uHkKozPur+fd0JqZeIvJABOhKwZ4CP6OE7pg/pYMsSJOh7i2LR54tl4I42FtximF6tvKNrtKOFaMTiTemoahnur5Lo9u6Im86z7dVEmSB7g78cg5/RHuRvN8TPwUIWBvNZl7pyg0yX7Vkc/ECgu7Nex9O/7tucCAx5fzvr6v29TDd4+X15gwUHYtf0kYMSkhCI2L7RQoVvco+rvuMDkPY3eROJ7uidldrTxFwFxraGGVtSGr+VE1c7eZ8/pGSBjqaq0j+iRMZV30IRlSaK2+SD6aO2likJJ9Gfv4HRtrlUchGU8tGVBas1A38iupSWSOpheCpv3Y6WWhNIE22Vut+6qTzWnZq58F7LJUmXyfJsCjU0Abb75j5oG2IxpSYB1ipvGRRz9ESehBDNVufAIv25hWbN5qmTj82Q+w+8EwDlvdUVmuNgk6OVqovg2NBElieA1tY9vdCtRl3cUkyXQ+3AomjWG7k2bNV8cL0yw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4744005)(44832011)(54906003)(6916009)(5660300002)(9786002)(36756003)(2906002)(8936002)(356005)(508600001)(316002)(40460700003)(8676002)(70206006)(70586007)(4326008)(7636003)(6666004)(82310400005)(7696005)(83380400001)(36860700001)(26005)(186003)(2616005)(107886003)(1076003)(336012)(47076005)(426003)(102446001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 08:14:32.2131
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 08:14:36.8258
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb4243f8-caa2-43a1-782c-08da29b84a44
+X-MS-Exchange-CrossTenant-Network-Message-Id: d66cefd8-777f-402d-5057-08da29b84d04
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT011.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT030.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4392
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB2820
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Michal Simek <michal.simek@xilinx.com>
+Add a check for the return value of runtime get_sync calls.
 
-Based on recommended guidance Copyright term should be also present in
-front of (c). That's why aligned drivers to match this pattern.
-It helps automated tools with source code scanning.
-
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Addresses-Coverity: Event check_return.
 Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 ---
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 250a1d888eeb..fa82f88844a1 100644
+index 8f15fe24a0eb..868f4e587263 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -2,7 +2,7 @@
- /*
-  * Cadence UART driver (found in Xilinx Zynq)
-  *
-- * 2011 - 2014 (C) Xilinx Inc.
-+ * Copyright (c) 2011 - 2014 Xilinx, Inc.
-  *
-  * This driver has originally been pushed by Xilinx using a Zynq-branding. This
-  * still shows in the naming of this file, the kconfig symbols and some symbols
+@@ -1100,13 +1100,17 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ static void cdns_uart_pm(struct uart_port *port, unsigned int state,
+ 		   unsigned int oldstate)
+ {
++	int ret;
++
+ 	switch (state) {
+ 	case UART_PM_STATE_OFF:
+ 		pm_runtime_mark_last_busy(port->dev);
+ 		pm_runtime_put_autosuspend(port->dev);
+ 		break;
+ 	default:
+-		pm_runtime_get_sync(port->dev);
++		ret = pm_runtime_get_sync(port->dev);
++		if (ret < 0)
++			dev_err(port->dev, "Failed to enable clocks\n");
+ 		break;
+ 	}
+ }
 -- 
 2.25.1
 
