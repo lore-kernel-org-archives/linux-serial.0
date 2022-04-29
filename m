@@ -2,98 +2,258 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5ADC433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 14:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41537C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 19:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359165AbiD2Ouz (ORCPT
+        id S1380232AbiD2TVD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Apr 2022 10:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        Fri, 29 Apr 2022 15:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377830AbiD2Oux (ORCPT
+        with ESMTP id S237522AbiD2TVA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Apr 2022 10:50:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26A895485;
-        Fri, 29 Apr 2022 07:47:35 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TDrmRK015081;
-        Fri, 29 Apr 2022 14:47:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=+Pd3boeYYOqUdToIy6lpJJ2YBcwWkKSMUxL2UvbDusM=;
- b=i3nGoLOMTzfgw9I0vvDZsLCLcDmWznTR4zivX44PrXD3NEUbd/zxRB7LjEUPQFvaQWCa
- XYD24nSAgaCKPt3Yv0ZanjOuw40somnDChXDkqQAL8Ych3QmCOLYBbCNCIy1bkeoVizm
- Mf3MwT3/TE40FdwJ4s0bNicVya1mYedfOE7x6oWFh5QauWKsqkjGtJHtXM/tl/bnEFK9
- HrViPM+6PeFAjsHODnOFA1huF9J1st7Ro7sorcD5hPSnMT+BOwU2rFOc2SAeMYqdGZj4
- xF8bZrQTSYk3lLTAUmOdbx1VFPx022Kt4vOQ0kJH8w/x8YXYZMUDgXFpxtxoMDI+D6BK oQ== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqv5rkuqf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:47:31 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEgtig020616;
-        Fri, 29 Apr 2022 14:47:29 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fm939193a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:47:29 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TElQJK34144764
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 14:47:27 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D66B411C050;
-        Fri, 29 Apr 2022 14:47:26 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 697C611C04A;
-        Fri, 29 Apr 2022 14:47:26 +0000 (GMT)
-Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 14:47:26 +0000 (GMT)
-Message-ID: <f07edb3b13fe8ebb6a10d3074699b1b9c390ecb6.camel@linux.ibm.com>
-Subject: Re: [PATCH 29/37] tty: serial: add HAS_IOPORT dependencies
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Date:   Fri, 29 Apr 2022 16:47:25 +0200
-In-Reply-To: <20220429135108.2781579-53-schnelle@linux.ibm.com>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-         <20220429135108.2781579-53-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: fGus4Qtn2o1reJAV-wGpNC6dkbsWKuvG
-X-Proofpoint-ORIG-GUID: fGus4Qtn2o1reJAV-wGpNC6dkbsWKuvG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- clxscore=1015 malwarescore=0 impostorscore=0 bulkscore=0
- lowpriorityscore=0 priorityscore=1501 mlxscore=0 adultscore=0 spamscore=0
- mlxlogscore=524 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290080
+        Fri, 29 Apr 2022 15:21:00 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A1041FAD;
+        Fri, 29 Apr 2022 12:17:40 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id x33so15747634lfu.1;
+        Fri, 29 Apr 2022 12:17:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=XcJewk131Nd463Vs+g3KY8Ye0plJDqJlnu99DciXENY=;
+        b=Ao2DTWWgNWhqlZ5g4JZt6z6nIIV3nwRQDJjtKCvXqMM8brGdFiOnzbuG6DE6HD9Q3R
+         shmLGN6pJINTqvRGZnSTBbLCvUvUSCu+GogJKA5IzH4AYL/DmJzETpzz6lRrlfbgBWI0
+         9JWz3rtqLWQnRDzYg1VXv3ZC67dZqiqL+wMh75I+/Jgg5MiL65p5246FtnBi5RaS5TaJ
+         sp+KGmysK11HzTw3dNTD/PCzqtCO6XgltKvqdQq0JKnIT2BvSOo4uYyj0cHNE5CUxlN8
+         7qbQKWw+1Us9xaaDm+yiCqT8AGc8rzCkMIgXzttzdmMmHxvPIoeFe4e6iAdNgbqWGST7
+         qDyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=XcJewk131Nd463Vs+g3KY8Ye0plJDqJlnu99DciXENY=;
+        b=i70jc/5lIg2Xmq1avdMDNLKp5DBNyq5fBXKQwh6r/Y9Z5IO/GOO2oUio08feap3c7F
+         FfjpTZB7MxioUppFS9YTim0Rn3QaS1/tbVTViDN2o6fmsujEGzZwC2YFrHAp+QraLKMk
+         MtAQYhfzVAKX78TEsc1hGBvkSOLeFICjkVyQLWyCSCUZo30KsW/e8L52bp2n+N6NFniJ
+         u6N6Rr0C74k7S6RzGdT1iTmD0dmb/SV4YCI4vu4SY6F36q8bvfe/dMwjvwtUnxk9qbkx
+         dRhxYcj8u6n51wpj2VHNy00CSbKbE2Tp2d8Y46AWmBJql6yhyy1Kdd1iXCzWq33ykOSH
+         gZSQ==
+X-Gm-Message-State: AOAM532/7fyVeozQPwEC/1k5V14bBY1kLQBBl2LSd3NLmx2+ausuAVZW
+        tbT9DJqTbRdMJZGiqm8OwBw=
+X-Google-Smtp-Source: ABdhPJx5mQ7kmdRwb7GYfpJwo6MNK5CFZ8EHsuzhivBmvovVjmxexQacSX4WEvZ23WKGMMkDpd1bxw==
+X-Received: by 2002:a05:6512:1109:b0:472:25d9:d262 with SMTP id l9-20020a056512110900b0047225d9d262mr538829lfg.128.1651259858641;
+        Fri, 29 Apr 2022 12:17:38 -0700 (PDT)
+Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
+        by smtp.gmail.com with ESMTPSA id s3-20020ac25fe3000000b0047255d2111esm3178lfg.77.2022.04.29.12.17.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 12:17:38 -0700 (PDT)
+Message-ID: <a9e1b5ce-861f-021b-b41f-62e5298c11e5@gmail.com>
+Date:   Fri, 29 Apr 2022 22:24:19 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>, linux-omap@vger.kernel.org,
+        tony@atomide.com, aaro.koskinen@iki.fi, jmkrzyszt@gmail.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Paul Walmsley <paul@pwsan.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Mark Brown <broonie@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
+References: <20220419133723.1394715-1-arnd@kernel.org>
+ <20220419133723.1394715-20-arnd@kernel.org>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+Subject: Re: [PATCH 19/41] ARM: omap: dma: make usb support optional
+In-Reply-To: <20220419133723.1394715-20-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them.
+
+
+On 4/19/22 16:37, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Most of the plat-omap/dma.c code is specific to the USB
+> driver.
+
+The reason is simple: the omap_udc is the only driver which has not been
+ported to DMAengine.
+I had a patch if I recall to convert it, but I don't have a way to test
+it and the omap_udc sets some funky bits for DMA which we can not figure
+out on how to handle.
+
+> Hide that code when it is not in use, to make it
+> clearer which parts are actually still required.
+
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
+>  arch/arm/plat-omap/dma.c       | 45 +++++++++++++++++-----------------
+>  drivers/usb/gadget/udc/Kconfig |  2 +-
+>  include/linux/omap-dma.h       |  5 +++-
+>  3 files changed, 27 insertions(+), 25 deletions(-)
+> 
+> diff --git a/arch/arm/plat-omap/dma.c b/arch/arm/plat-omap/dma.c
+> index 700ba9b600e7..b7757864d0aa 100644
+> --- a/arch/arm/plat-omap/dma.c
+> +++ b/arch/arm/plat-omap/dma.c
+> @@ -66,7 +66,6 @@ enum { DMA_CHAIN_STARTED, DMA_CHAIN_NOTSTARTED };
+>  
+>  static struct omap_system_dma_plat_info *p;
+>  static struct omap_dma_dev_attr *d;
+> -static void omap_clear_dma(int lch);
+>  static int enable_1510_mode;
+>  static u32 errata;
+>  
+> @@ -90,19 +89,16 @@ static int omap_dma_reserve_channels;
+>  static DEFINE_SPINLOCK(dma_chan_lock);
+>  static struct omap_dma_lch *dma_chan;
+>  
+> -static inline void disable_lnk(int lch);
+> -static void omap_disable_channel_irq(int lch);
+> -static inline void omap_enable_channel_irq(int lch);
+> -
+> -#ifdef CONFIG_ARCH_OMAP15XX
+> -/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
+> -static int omap_dma_in_1510_mode(void)
+> +static inline void omap_disable_channel_irq(int lch)
+>  {
+> -	return enable_1510_mode;
+> +	/* disable channel interrupts */
+> +	p->dma_write(0, CICR, lch);
+> +	/* Clear CSR */
+> +	if (dma_omap1())
+> +		p->dma_read(CSR, lch);
+> +	else
+> +		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
+>  }
+> -#else
+> -#define omap_dma_in_1510_mode()		0
+> -#endif
+>  
+>  #ifdef CONFIG_ARCH_OMAP1
+>  static inline void set_gdma_dev(int req, int dev)
+> @@ -169,6 +165,17 @@ void omap_set_dma_priority(int lch, int dst_port, int priority)
+>  #endif
+>  EXPORT_SYMBOL(omap_set_dma_priority);
+>  
+> +#if IS_ENABLED(CONFIG_USB_OMAP)
+> +#ifdef CONFIG_ARCH_OMAP15XX
+> +/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
+> +static int omap_dma_in_1510_mode(void)
+> +{
+> +	return enable_1510_mode;
+> +}
+> +#else
+> +#define omap_dma_in_1510_mode()		0
+> +#endif
+> +
+>  void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
+>  				  int frame_count, int sync_mode,
+>  				  int dma_trigger, int src_or_dst_synch)
+> @@ -418,17 +425,6 @@ static inline void omap_enable_channel_irq(int lch)
+>  	p->dma_write(dma_chan[lch].enabled_irqs, CICR, lch);
+>  }
+>  
+> -static inline void omap_disable_channel_irq(int lch)
+> -{
+> -	/* disable channel interrupts */
+> -	p->dma_write(0, CICR, lch);
+> -	/* Clear CSR */
+> -	if (dma_omap1())
+> -		p->dma_read(CSR, lch);
+> -	else
+> -		p->dma_write(OMAP2_DMA_CSR_CLEAR_MASK, CSR, lch);
+> -}
+> -
+>  void omap_disable_dma_irq(int lch, u16 bits)
+>  {
+>  	dma_chan[lch].enabled_irqs &= ~bits;
+> @@ -473,6 +469,7 @@ static inline void disable_lnk(int lch)
+>  	p->dma_write(l, CLNK_CTRL, lch);
+>  	dma_chan[lch].flags &= ~OMAP_DMA_ACTIVE;
+>  }
+> +#endif
+>  
+>  int omap_request_dma(int dev_id, const char *dev_name,
+>  		     void (*callback)(int lch, u16 ch_status, void *data),
+> @@ -572,6 +569,7 @@ static void omap_clear_dma(int lch)
+>  	local_irq_restore(flags);
+>  }
+>  
+> +#if IS_ENABLED(CONFIG_USB_OMAP)
+>  void omap_start_dma(int lch)
+>  {
+>  	u32 l;
+> @@ -792,6 +790,7 @@ int omap_get_dma_active_status(int lch)
+>  	return (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN) != 0;
+>  }
+>  EXPORT_SYMBOL(omap_get_dma_active_status);
+> +#endif
+>  
+>  int omap_dma_running(void)
+>  {
+> diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
+> index cee934dce4f0..69394dc1cdfb 100644
+> --- a/drivers/usb/gadget/udc/Kconfig
+> +++ b/drivers/usb/gadget/udc/Kconfig
+> @@ -128,7 +128,7 @@ config USB_GR_UDC
+>  
+>  config USB_OMAP
+>  	tristate "OMAP USB Device Controller"
+> -	depends on ARCH_OMAP1 || (ARCH_OMAP && COMPILE_TEST)
+> +	depends on ARCH_OMAP1
+>  	depends on ISP1301_OMAP || !(MACH_OMAP_H2 || MACH_OMAP_H3)
+>  	help
+>  	   Many Texas Instruments OMAP processors have flexible full
+> diff --git a/include/linux/omap-dma.h b/include/linux/omap-dma.h
+> index 5e228428fda1..07fa58ae9902 100644
+> --- a/include/linux/omap-dma.h
+> +++ b/include/linux/omap-dma.h
+> @@ -299,8 +299,9 @@ extern void omap_set_dma_priority(int lch, int dst_port, int priority);
+>  extern int omap_request_dma(int dev_id, const char *dev_name,
+>  			void (*callback)(int lch, u16 ch_status, void *data),
+>  			void *data, int *dma_ch);
+> -extern void omap_disable_dma_irq(int ch, u16 irq_bits);
+>  extern void omap_free_dma(int ch);
+> +#if IS_ENABLED(CONFIG_USB_OMAP)
+> +extern void omap_disable_dma_irq(int ch, u16 irq_bits);
+>  extern void omap_start_dma(int lch);
+>  extern void omap_stop_dma(int lch);
+>  extern void omap_set_dma_transfer_params(int lch, int data_type,
+> @@ -326,6 +327,8 @@ extern void omap_set_dma_dest_burst_mode(int lch,
+>  extern dma_addr_t omap_get_dma_src_pos(int lch);
+>  extern dma_addr_t omap_get_dma_dst_pos(int lch);
+>  extern int omap_get_dma_active_status(int lch);
+> +#endif
+> +
+>  extern int omap_dma_running(void);
+>  
+>  #if IS_ENABLED(CONFIG_FB_OMAP)
 
-Sorry everyone. I sent this as PATCH in error while preparing to sent
-the same series as RFC. Since e-mail has no remote delete and I lack a
-time machine let's just all pretend you only got the RFC.
-
+-- 
+Péter
