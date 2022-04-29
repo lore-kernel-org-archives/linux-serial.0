@@ -2,144 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92561C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 19:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A58C6C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 20:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380183AbiD2Tdg (ORCPT
+        id S1348919AbiD2Unh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Apr 2022 15:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
+        Fri, 29 Apr 2022 16:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357195AbiD2Tde (ORCPT
+        with ESMTP id S241759AbiD2Ung (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Apr 2022 15:33:34 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529B613D03;
-        Fri, 29 Apr 2022 12:30:14 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id c15so11650350ljr.9;
-        Fri, 29 Apr 2022 12:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EpAcbnx+U/L1NwXa16pvqhPXcqBubVwUeHlDIja2sKs=;
-        b=fVBaXJcaF9JmA9kT3gJGJ1d182xVAxExs/K2C2cpg9fOUq9K4LgvkN5/2cWKEV8XX1
-         vdk0G98yxS2sLJ8zWaB7rhdyyJXKLgvzNqBV6A8afXlXuOH91elyLLmUDaTqdKe4V69x
-         AAvZ50gl//UGXVXDm7KrqMLY7C8sZcSZWv2FS0leIXeR83qD9QrBN8p2fl+Pq8HASr1G
-         TKXvllgu1hI2pYC43JwELnhiq4v7YL5/ugckF8nanpl/WTJIHkmE7zH4QJz9h7FqOUVT
-         0Jz3z+e4DkBb7K3Koshx7MxQKB7Q04DFmhKx0W84Bksadz0n4fPxx9SVm6StU8NgbLlo
-         18pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EpAcbnx+U/L1NwXa16pvqhPXcqBubVwUeHlDIja2sKs=;
-        b=YWQMMlhm+0W5xptY+8dn4YRDAhByKq9NNVHmlyPkCq+u7EXiYpMOKFYEXe5TZDPfDU
-         eUMwTSyOtHmO/b0CYvKRiqtB2fA8c3L8R3D9HOosOBQMyI4HDF/QsTZ5s8JZfyHF1vTx
-         9/CTZUlsPs/zCsSw2vTPlsiZElWEl+awl3H/A+zmbE4vrtP+flpwoL5b2YMyiG1Co7JV
-         yEG8HlDI4N0pc4Em/PMfBvQT8x2+6+VsVxnZP9DcLqyv2Lvcnxu1o+ox+XsPLUmpjpeu
-         vGJdkXdUL/tQ7KDSAO2NIEAwU1RvSmeltOAenwdMYkAYCUJGxy4Bs4qoZ+1yBXsfwRRN
-         JXJg==
-X-Gm-Message-State: AOAM533USA4eG1AgtFaw+rBqJuEFEXmjN+teG8FKBlqJ9+lm+EQjKIr8
-        tpGBLjIeP6fR2ybgroJzqm4=
-X-Google-Smtp-Source: ABdhPJyG5g1UMJHbAE7oQdPUIBwsTGD8b2GZt4x0YMEODqQnagM+tQa4NgqWxwqwNFjLTVjBd5ZQlA==
-X-Received: by 2002:a2e:8502:0:b0:24f:1036:b405 with SMTP id j2-20020a2e8502000000b0024f1036b405mr465514lji.220.1651260612572;
-        Fri, 29 Apr 2022 12:30:12 -0700 (PDT)
-Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id d3-20020ac24c83000000b0047255d2115dsm5721lfl.140.2022.04.29.12.30.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Apr 2022 12:30:12 -0700 (PDT)
-Message-ID: <7e47c5fa-4cff-b12f-20ce-2e62b62ec538@gmail.com>
-Date:   Fri, 29 Apr 2022 22:36:53 +0300
+        Fri, 29 Apr 2022 16:43:36 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDFB811A39;
+        Fri, 29 Apr 2022 13:40:15 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 4C33192009C; Fri, 29 Apr 2022 22:40:13 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 44D6692009B;
+        Fri, 29 Apr 2022 21:40:13 +0100 (BST)
+Date:   Fri, 29 Apr 2022 21:40:13 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] serial: sifive: Correct/improve baud base handling
+Message-ID: <alpine.DEB.2.21.2204281344190.9383@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 22/41] ARM: omap1: move plat/dma.c to mach/omap-dma.c
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>, linux-omap@vger.kernel.org,
-        tony@atomide.com, aaro.koskinen@iki.fi, jmkrzyszt@gmail.com
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Paul Walmsley <paul@pwsan.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Mark Brown <broonie@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20220419133723.1394715-1-arnd@kernel.org>
- <20220419133723.1394715-23-arnd@kernel.org>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220419133723.1394715-23-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi,
 
+ While fiddling with other serial port devices with the use of my HiFive
+Unmatched board I have noticed we do not correctly report the baud base 
+value for the SiFive FU740-C000 SOC's on-chip UARTs.  This small patch 
+set fixes the initialisation of the baud base value and then simplifies 
+handling by removing now redundant duplicate port parameter.
 
-On 4/19/22 16:37, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Most of the interface functions in plat/dma.c are only used from the
-> USB driver, which is practically OMAP1 specific, except for compile
-> testing.
-> 
-> The omap_get_plat_info(), omap_request_dma() and omap_free_dma()
-> functions are never called on omap2 because of runtime checks.
+ See individual change descriptions for details.  This patch set has been 
+verified with the HiFive Unmatched board.  Please apply.
 
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/mach-omap1/Makefile                        | 2 +-
->  arch/arm/{plat-omap/dma.c => mach-omap1/omap-dma.c} | 0
->  arch/arm/plat-omap/Makefile                         | 2 +-
->  3 files changed, 2 insertions(+), 2 deletions(-)
->  rename arch/arm/{plat-omap/dma.c => mach-omap1/omap-dma.c} (100%)
-> 
-> diff --git a/arch/arm/mach-omap1/Makefile b/arch/arm/mach-omap1/Makefile
-> index 450bbf552b57..0615cb0ba580 100644
-> --- a/arch/arm/mach-omap1/Makefile
-> +++ b/arch/arm/mach-omap1/Makefile
-> @@ -5,7 +5,7 @@
->  
->  # Common support
->  obj-y := io.o id.o sram-init.o sram.o time.o irq.o mux.o flash.o \
-> -	 serial.o devices.o dma.o fb.o
-> +	 serial.o devices.o dma.o omap-dma.o fb.o
->  obj-y += clock.o clock_data.o opp_data.o reset.o pm_bus.o timer.o
->  
->  ifneq ($(CONFIG_SND_SOC_OMAP_MCBSP),)
-> diff --git a/arch/arm/plat-omap/dma.c b/arch/arm/mach-omap1/omap-dma.c
-> similarity index 100%
-> rename from arch/arm/plat-omap/dma.c
-> rename to arch/arm/mach-omap1/omap-dma.c
-> diff --git a/arch/arm/plat-omap/Makefile b/arch/arm/plat-omap/Makefile
-> index 68ccec9de106..5d55295a14ee 100644
-> --- a/arch/arm/plat-omap/Makefile
-> +++ b/arch/arm/plat-omap/Makefile
-> @@ -6,4 +6,4 @@
->  ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-omap/include
->  
->  # Common support
-> -obj-y := sram.o dma.o
-> +obj-y := sram.o
-
--- 
-Péter
+  Maciej
