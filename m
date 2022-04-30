@@ -2,113 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48126C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Apr 2022 20:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC1FC433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 30 Apr 2022 15:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381001AbiD2UoB (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Apr 2022 16:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34642 "EHLO
+        id S242970AbiD3P4j (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 30 Apr 2022 11:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380993AbiD2Uns (ORCPT
+        with ESMTP id S1358945AbiD3P4j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Apr 2022 16:43:48 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE11065404;
-        Fri, 29 Apr 2022 13:40:26 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 1D9FD92009C; Fri, 29 Apr 2022 22:40:26 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 169AD92009B;
-        Fri, 29 Apr 2022 21:40:26 +0100 (BST)
-Date:   Fri, 29 Apr 2022 21:40:26 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] serial: sifive: Remove duplicate `clkin_rate' setting
-In-Reply-To: <alpine.DEB.2.21.2204281344190.9383@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2204291656150.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2204281344190.9383@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Sat, 30 Apr 2022 11:56:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A597C527ED;
+        Sat, 30 Apr 2022 08:53:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5799FB803F7;
+        Sat, 30 Apr 2022 15:53:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD042C385AA;
+        Sat, 30 Apr 2022 15:53:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651333989;
+        bh=h/T/UY34Ovs/LcnMrzIJ46hd3lr/K5vQaUAvXYDDAMo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cozFTpUZLzmZyeyH8hEdGID1hhBBK/wyT+/gi+VTDkxT90ayYXB4nV5JDxhEuoefD
+         +59jywqqPBmITKPCyGHZ3c+8y9IqkBh4G15sJQza/SV1yco42s9r0XYy+wh138vb2X
+         ARL2FqA+CHSVZVX0Hw1ZMrS7Y6vnPoPxNYABIZSI=
+Date:   Sat, 30 Apr 2022 17:53:06 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.18-rc5
+Message-ID: <Ym1bYgkmZYmrF6x5@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The `clkin_rate' member of `struct sifive_serial_port' now duplicates 
-`uartclk' from nested `struct uart_port', so use `uartclk' throughout 
-and remove `clkin_rate'.
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
----
- drivers/tty/serial/sifive.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-linux-serial-sifive-uartclk.diff
-Index: linux-macro/drivers/tty/serial/sifive.c
-===================================================================
---- linux-macro.orig/drivers/tty/serial/sifive.c
-+++ linux-macro/drivers/tty/serial/sifive.c
-@@ -148,7 +148,6 @@
-  * @port: struct uart_port embedded in this struct
-  * @dev: struct device *
-  * @ier: shadowed copy of the interrupt enable register
-- * @clkin_rate: input clock to the UART IP block.
-  * @baud_rate: UART serial line rate (e.g., 115200 baud)
-  * @clk: reference to this device's clock
-  * @clk_notifier: clock rate change notifier for upstream clock changes
-@@ -159,7 +158,6 @@ struct sifive_serial_port {
- 	struct uart_port	port;
- 	struct device		*dev;
- 	unsigned char		ier;
--	unsigned long		clkin_rate;
- 	unsigned long		baud_rate;
- 	struct clk		*clk;
- 	struct notifier_block	clk_notifier;
-@@ -463,7 +461,7 @@ static void __ssp_update_div(struct sifi
- {
- 	u16 div;
- 
--	div = DIV_ROUND_UP(ssp->clkin_rate, ssp->baud_rate) - 1;
-+	div = DIV_ROUND_UP(ssp->port.uartclk, ssp->baud_rate) - 1;
- 
- 	__ssp_writel(div, SIFIVE_SERIAL_DIV_OFFS, ssp);
- }
-@@ -648,8 +646,8 @@ static int sifive_serial_clk_notifier(st
- 		udelay(DIV_ROUND_UP(12 * 1000 * 1000, ssp->baud_rate));
- 	}
- 
--	if (event == POST_RATE_CHANGE && ssp->clkin_rate != cnd->new_rate) {
--		ssp->clkin_rate = cnd->new_rate;
-+	if (event == POST_RATE_CHANGE && ssp->port.uartclk != cnd->new_rate) {
-+		ssp->port.uartclk = cnd->new_rate;
- 		__ssp_update_div(ssp);
- 	}
- 
-@@ -678,7 +676,8 @@ static void sifive_serial_set_termios(st
- 	__ssp_set_stop_bits(ssp, nstop);
- 
- 	/* Set line rate */
--	rate = uart_get_baud_rate(port, termios, old, 0, ssp->clkin_rate / 16);
-+	rate = uart_get_baud_rate(port, termios, old, 0,
-+				  ssp->port.uartclk / 16);
- 	__ssp_update_baud_rate(ssp, rate);
- 
- 	spin_lock_irqsave(&ssp->port.lock, flags);
-@@ -996,9 +995,8 @@ static int sifive_serial_probe(struct pl
- 	}
- 
- 	/* Set up clock divider */
--	ssp->clkin_rate = clk_get_rate(ssp->clk);
-+	ssp->port.uartclk = clk_get_rate(ssp->clk);
- 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
--	ssp->port.uartclk = ssp->clkin_rate;
- 	__ssp_update_div(ssp);
- 
- 	platform_set_drvdata(pdev, ssp);
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc5
+
+for you to fetch changes up to 19317433057dc1f2ca9a975e4e6b547282c2a5ef:
+
+  tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output() (2022-04-26 08:09:46 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.18-rc5
+
+Here are some small serial driver fixes, and a larger number of GSM line
+discipline fixes for 5.18-rc5.
+
+These include:
+	- lots of tiny n_gsm fixes for issues to resolve a number of
+	  reported problems.  Seems that people are starting to actually
+	  use this code again.
+	- 8250 driver fixes for some devices
+	- imx serial driver fix
+	- amba-pl011 driver fix
+
+All of these have been in linux-next for a while with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Daniel Starke (21):
+      tty: n_gsm: fix missing mux reset on config change at responder
+      tty: n_gsm: fix restart handling via CLD command
+      tty: n_gsm: fix decoupled mux resource
+      tty: n_gsm: fix mux cleanup after unregister tty device
+      tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
+      tty: n_gsm: fix frame reception handling
+      tty: n_gsm: fix malformed counter for out of frame data
+      tty: n_gsm: fix insufficient txframe size
+      tty: n_gsm: fix wrong DLCI release order
+      tty: n_gsm: fix missing explicit ldisc flush
+      tty: n_gsm: fix wrong command retry handling
+      tty: n_gsm: fix wrong command frame length field encoding
+      tty: n_gsm: fix wrong signal octets encoding in MSC
+      tty: n_gsm: fix missing tty wakeup in convergence layer type 2
+      tty: n_gsm: fix reset fifo race condition
+      tty: n_gsm: fix incorrect UA handling
+      tty: n_gsm: fix missing update of modem controls after DLCI open
+      tty: n_gsm: fix broken virtual tty handling
+      tty: n_gsm: fix invalid use of MSC in advanced option
+      tty: n_gsm: fix software flow control handling
+      tty: n_gsm: fix sometimes uninitialized warning in gsm_dlci_modem_output()
+
+Hui Wang (1):
+      Revert "serial: sc16is7xx: Clear RS485 bits in the shutdown"
+
+Johan Hovold (1):
+      serial: imx: fix overrun interrupts in DMA mode
+
+Lino Sanfilippo (1):
+      serial: amba-pl011: do not time out prematurely when draining tx fifo
+
+Maciej W. Rozycki (2):
+      serial: 8250: Also set sticky MCR bits in console restoration
+      serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
+
+Tony Lindgren (1):
+      serial: 8250: Fix runtime PM for start_tx() for empty buffer
+
+ drivers/tty/n_gsm.c                 | 477 +++++++++++++++++++++---------------
+ drivers/tty/serial/8250/8250_pci.c  |   8 +-
+ drivers/tty/serial/8250/8250_port.c |   6 +-
+ drivers/tty/serial/amba-pl011.c     |   9 +-
+ drivers/tty/serial/imx.c            |   2 +-
+ drivers/tty/serial/sc16is7xx.c      |   6 +-
+ 6 files changed, 293 insertions(+), 215 deletions(-)
