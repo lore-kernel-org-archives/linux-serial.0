@@ -2,82 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4EFC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 09:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DCDC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 09:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384175AbiEBJ3V (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 May 2022 05:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        id S244336AbiEBJvp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 2 May 2022 05:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384222AbiEBJ3L (ORCPT
+        with ESMTP id S1384415AbiEBJvA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 May 2022 05:29:11 -0400
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61773DEF0;
-        Mon,  2 May 2022 02:25:42 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 1BF76419BC;
-        Mon,  2 May 2022 09:25:37 +0000 (UTC)
-From:   Hector Martin <marcan@marcan.st>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [PATCH] tty: serial: samsung_tty: Fix suspend/resume on S5L
-Date:   Mon,  2 May 2022 18:25:05 +0900
-Message-Id: <20220502092505.30934-1-marcan@marcan.st>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 2 May 2022 05:51:00 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3B113E83;
+        Mon,  2 May 2022 02:47:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651484851; x=1683020851;
+  h=from:to:cc:subject:date:message-id;
+  bh=lJvh+GysjJsgQmdPaDpyMJYF+wTQQxzW4XnXPVDg9Vw=;
+  b=JgunQ+LjvysXcudWrN8L9OdTMlZwsS1lTDvOUBbNFzqej58ZLyndwRd0
+   dOyz0pu6EkZFHxEaJkmLhZA3nUuiQUKicP2Tu4YYxpPVd1ipZvVSDkLbV
+   6bofWbjG01dDAgMTuj2CLUoTphnO7Y/KX/e39AQcUSN8JxdjM+VssDTFz
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 02 May 2022 02:47:30 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 02 May 2022 02:47:29 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 02 May 2022 15:17:18 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id F34363CB4; Mon,  2 May 2022 15:17:17 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH] serial: core: Do stop_rx in suspend path for console if console_suspend is disabled
+Date:   Mon,  2 May 2022 15:17:15 +0530
+Message-Id: <1651484835-25189-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We were restoring the IRQ masks then clearing them again, because
-ucon_mask wasn't set properly. Adding that makes suspend/resume
-work as intended.
+For the case of console_suspend disabled, if back to back suspend/resume
+test is executed, at the end of test, sometimes console would appear to
+be frozen not responding to input. This would happen because, during
+resume, rx transactions can come in before system is ready, malfunction
+of rx happens in turn resulting in console appearing to be stuck.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
+Do a stop_rx in suspend sequence to prevent this.
+
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
- drivers/tty/serial/samsung_tty.c | 1 +
- include/linux/serial_s3c.h       | 3 +++
- 2 files changed, 4 insertions(+)
+ drivers/tty/serial/serial_core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 12bf6b18847f..88a0b01ee9ab 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2840,6 +2840,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
- 		.num_clks	= 1,
- 		.clksel_mask	= 0,
- 		.clksel_shift	= 0,
-+		.ucon_mask	= APPLE_S5L_UCON_MASK,
- 	},
- 	.def_cfg = {
- 		.ucon		= APPLE_S5L_UCON_DEFAULT,
-diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
-index f6c3323fc4c5..dec15f5b3dec 100644
---- a/include/linux/serial_s3c.h
-+++ b/include/linux/serial_s3c.h
-@@ -256,6 +256,9 @@
- #define APPLE_S5L_UCON_DEFAULT		(S3C2410_UCON_TXIRQMODE | \
- 					 S3C2410_UCON_RXIRQMODE | \
- 					 S3C2410_UCON_RXFIFO_TOI)
-+#define APPLE_S5L_UCON_MASK		(APPLE_S5L_UCON_RXTO_ENA_MSK | \
-+					 APPLE_S5L_UCON_RXTHRESH_ENA_MSK | \
-+					 APPLE_S5L_UCON_TXTHRESH_ENA_MSK)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 82a1770..e8c6875 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	}
+ 	put_device(tty_dev);
  
- #define APPLE_S5L_UTRSTAT_RXTHRESH	(1<<4)
- #define APPLE_S5L_UTRSTAT_TXTHRESH	(1<<5)
+-	/* Nothing to do if the console is not suspending */
+-	if (!console_suspend_enabled && uart_console(uport))
++	/*
++	 * Nothing to do if the console is not suspending
++	 * except stop_rx to prevent any asynchronous data
++	 * over RX line. Re start_rx, when required, is
++	 * done by set_termios in resume sequence
++	 */
++	if (!console_suspend_enabled && uart_console(uport)) {
++		uport->ops->stop_rx(uport);
+ 		goto unlock;
++	}
+ 
+ 	uport->suspended = 1;
+ 
 -- 
-2.35.1
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
