@@ -2,70 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8239EC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 11:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5D0C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 11:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384763AbiEBLrd (ORCPT
+        id S1384806AbiEBL7y (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 May 2022 07:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
+        Mon, 2 May 2022 07:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355474AbiEBLrc (ORCPT
+        with ESMTP id S233089AbiEBL7v (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 May 2022 07:47:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B935B7D1;
-        Mon,  2 May 2022 04:44:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A5B5B8167C;
-        Mon,  2 May 2022 11:44:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8066C385AC;
-        Mon,  2 May 2022 11:44:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651491841;
-        bh=oqdtyd9avy7ZtJQj+1RRxZjZ3hJSVX+nXxcXiTILq2w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XCGDjWs/gOH4rtObicyVK5bBYA27MmBVVkw7Rzo0Icy4igGxXwXSguT/NTopoD51V
-         wMDfUWzNOWtcDDAh+WMDtebNq/+knKmZThw6OI6N9jWtL490nszOTrjS++4sGhX2wR
-         hjCJoQdno3t6/4Dx29Ybn8SsihJD8gobBrJkjOAE=
-Date:   Mon, 2 May 2022 13:44:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: samsung_tty: Fix suspend/resume on S5L
-Message-ID: <Ym/EAGq3IzW5rYwr@kroah.com>
-References: <20220502092505.30934-1-marcan@marcan.st>
+        Mon, 2 May 2022 07:59:51 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C501B796;
+        Mon,  2 May 2022 04:56:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651492583; x=1683028583;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LU/yq2s1oiKyRxaX8QPYQK3cW92BG0hvyB55dS1zvnY=;
+  b=bGR0VMGNJiB0kh6bqN3kxw3bFix7H9IWfbmn9pY2Q3aaE6cc7WPr7ViT
+   G7bqSLJB9O8CDj5MXPHRlqxKeBnKVGw1ku5HCCgNWOqYtYvN76LxRSXcr
+   OQkO+w+jNyDfjEJuXbOJsC3bpD26+V+/a2OnfLKQMA4kw9G2EYy7kfWYM
+   RRLmK9sYUW08xeUqH7xSWaWG3CzioR0weqs1cAw+jqlQKv6CCc2097Vb9
+   eNjYw5+dmPTjnCn83q0aFkSLo0Q9s2BOaK2CO41Zl454Gi/xv+zBWm2yC
+   nktYWs+VR0nCfq5fUil8KulDOKlhXwqtEUVnUU9K41MWmPmaPXD9agpCn
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="247100462"
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="247100462"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 04:56:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
+   d="scan'208";a="707576070"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 02 May 2022 04:56:20 -0700
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250: dw: Fix NULL pointer dereference
+Date:   Mon,  2 May 2022 14:56:21 +0300
+Message-Id: <20220502115621.77985-1-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220502092505.30934-1-marcan@marcan.st>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 02, 2022 at 06:25:05PM +0900, Hector Martin wrote:
-> We were restoring the IRQ masks then clearing them again, because
-> ucon_mask wasn't set properly. Adding that makes suspend/resume
-> work as intended.
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  drivers/tty/serial/samsung_tty.c | 1 +
->  include/linux/serial_s3c.h       | 3 +++
->  2 files changed, 4 insertions(+)
+dw8250_platform_data is only used on DT platforms for now.
 
-Does this fix a specific older commit?
+Fixes: 4a218b277fdb ("serial: 8250: dw: Create a generic platform data structure")
+Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+Hi,
 
-And should it be backported to older stable kernels?
+I'm sorry, I have to resend this (to you guys).
+I left out the mailing lists.
 
-thanks,
+Br,
+---
+ drivers/tty/serial/8250/8250_dw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 0cf1a99dc1244..31422e44c64ff 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -433,9 +433,9 @@ static void dw8250_prepare_rx_dma(struct uart_8250_port *p)
+ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ {
+ 	struct device_node *np = p->dev->of_node;
+-	unsigned int quirks = data->pdata->quirks;
+ 
+ 	if (np) {
++		unsigned int quirks = data->pdata->quirks;
+ 		int id;
+ 
+ 		/* get index of serial line, if found in DT aliases */
+-- 
+2.35.1
+
