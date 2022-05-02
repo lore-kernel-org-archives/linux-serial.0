@@ -2,31 +2,31 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D549DC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 13:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F343FC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 13:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385357AbiEBNjE (ORCPT
+        id S1385424AbiEBNi4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 May 2022 09:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        Mon, 2 May 2022 09:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385395AbiEBNix (ORCPT
+        with ESMTP id S1385347AbiEBNiu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 May 2022 09:38:53 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3987B1F6
+        Mon, 2 May 2022 09:38:50 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F73765CC
         for <linux-serial@vger.kernel.org>; Mon,  2 May 2022 06:35:20 -0700 (PDT)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:194e:5782:c420:7f87])
-        by laurent.telenet-ops.be with bizsmtp
-        id Rpb52700B28fWK501pb5ZH; Mon, 02 May 2022 15:35:18 +0200
+        by albert.telenet-ops.be with bizsmtp
+        id Rpb52700828fWK506pb5V8; Mon, 02 May 2022 15:35:18 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nlWCe-002mrj-MR; Mon, 02 May 2022 15:35:04 +0200
+        id 1nlWCe-002mri-Lv; Mon, 02 May 2022 15:35:04 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nlWCe-002vAf-3z; Mon, 02 May 2022 15:35:04 +0200
+        id 1nlWCe-002vAY-2e; Mon, 02 May 2022 15:35:04 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -45,9 +45,9 @@ Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
         linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 6/7] dt-bindings: serial: renesas,scif: R-Car V3U is R-Car Gen4
-Date:   Mon,  2 May 2022 15:34:58 +0200
-Message-Id: <c57ed00e85778380776330be6183c6861d843c22.1651497024.git.geert+renesas@glider.be>
+Subject: [PATCH 5/7] dt-bindings: serial: renesas,hscif: R-Car V3U is R-Car Gen4
+Date:   Mon,  2 May 2022 15:34:57 +0200
+Message-Id: <dd734aaa4e5e0b32864b038b79eafe72907fb99f.1651497024.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651497024.git.geert+renesas@glider.be>
 References: <cover.1651497024.git.geert+renesas@glider.be>
@@ -62,27 +62,27 @@ family.  Hence move its compatible value to the R-Car Gen4 section.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/devicetree/bindings/serial/renesas,scif.yaml | 2 +-
+ Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index 5d37f8f189fbe1d1..90fe45265fbc64cc 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -60,12 +60,12 @@ properties:
-               - renesas,scif-r8a77980     # R-Car V3H
-               - renesas,scif-r8a77990     # R-Car E3
-               - renesas,scif-r8a77995     # R-Car D3
--              - renesas,scif-r8a779a0     # R-Car V3U
-           - const: renesas,rcar-gen3-scif # R-Car Gen3 and RZ/G2
-           - const: renesas,scif           # generic SCIF compatible UART
+diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+index d688a07a0e2970cd..87180d95cd4c5d14 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+@@ -51,12 +51,12 @@ properties:
+               - renesas,hscif-r8a77980     # R-Car V3H
+               - renesas,hscif-r8a77990     # R-Car E3
+               - renesas,hscif-r8a77995     # R-Car D3
+-              - renesas,hscif-r8a779a0     # R-Car V3U
+           - const: renesas,rcar-gen3-hscif # R-Car Gen3 and RZ/G2
+           - const: renesas,hscif           # generic HSCIF compatible UART
  
        - items:
            - enum:
-+              - renesas,scif-r8a779a0     # R-Car V3U
-               - renesas,scif-r8a779f0     # R-Car S4-8
-           - const: renesas,rcar-gen4-scif # R-Car Gen4
-           - const: renesas,scif           # generic SCIF compatible UART
++              - renesas,hscif-r8a779a0     # R-Car V3U
+               - renesas,hscif-r8a779g0     # R-Car V4H
+           - const: renesas,rcar-gen4-hscif # R-Car Gen4
+           - const: renesas,hscif           # generic HSCIF compatible UART
 -- 
 2.25.1
 
