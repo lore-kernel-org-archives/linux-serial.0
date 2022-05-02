@@ -2,76 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F15FC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 09:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4EFC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  2 May 2022 09:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384116AbiEBJSb (ORCPT
+        id S1384175AbiEBJ3V (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 May 2022 05:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        Mon, 2 May 2022 05:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234028AbiEBJSa (ORCPT
+        with ESMTP id S1384222AbiEBJ3L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 May 2022 05:18:30 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50E8036B50;
-        Mon,  2 May 2022 02:15:01 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 776CE92009C; Mon,  2 May 2022 11:15:00 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 712B392009B;
-        Mon,  2 May 2022 10:15:00 +0100 (BST)
-Date:   Mon, 2 May 2022 10:15:00 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [RFC v2 34/39] tty: serial: add HAS_IOPORT dependencies
-In-Reply-To: <20220429135108.2781579-63-schnelle@linux.ibm.com>
-Message-ID: <alpine.DEB.2.21.2205020341140.64520@angie.orcam.me.uk>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com> <20220429135108.2781579-63-schnelle@linux.ibm.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Mon, 2 May 2022 05:29:11 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61773DEF0;
+        Mon,  2 May 2022 02:25:42 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 1BF76419BC;
+        Mon,  2 May 2022 09:25:37 +0000 (UTC)
+From:   Hector Martin <marcan@marcan.st>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [PATCH] tty: serial: samsung_tty: Fix suspend/resume on S5L
+Date:   Mon,  2 May 2022 18:25:05 +0900
+Message-Id: <20220502092505.30934-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 29 Apr 2022, Niklas Schnelle wrote:
+We were restoring the IRQ masks then clearing them again, because
+ucon_mask wasn't set properly. Adding that makes suspend/resume
+work as intended.
 
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them.
-[...]
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index cd93ea6eed65..e216bf745e78 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -6,7 +6,7 @@
->  
->  config SERIAL_8250
->  	tristate "8250/16550 and compatible serial support"
-> -	depends on !S390
-> +	depends on HAS_IOPORT
->  	select SERIAL_CORE
->  	select SERIAL_MCTRL_GPIO if GPIOLIB
->  	help
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/tty/serial/samsung_tty.c | 1 +
+ include/linux/serial_s3c.h       | 3 +++
+ 2 files changed, 4 insertions(+)
 
- Similarly here some 8250-compatible platform or PCI/e serial port devices 
-use MMIO, e.g.:
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 12bf6b18847f..88a0b01ee9ab 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2840,6 +2840,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
+ 		.num_clks	= 1,
+ 		.clksel_mask	= 0,
+ 		.clksel_shift	= 0,
++		.ucon_mask	= APPLE_S5L_UCON_MASK,
+ 	},
+ 	.def_cfg = {
+ 		.ucon		= APPLE_S5L_UCON_DEFAULT,
+diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+index f6c3323fc4c5..dec15f5b3dec 100644
+--- a/include/linux/serial_s3c.h
++++ b/include/linux/serial_s3c.h
+@@ -256,6 +256,9 @@
+ #define APPLE_S5L_UCON_DEFAULT		(S3C2410_UCON_TXIRQMODE | \
+ 					 S3C2410_UCON_RXIRQMODE | \
+ 					 S3C2410_UCON_RXFIFO_TOI)
++#define APPLE_S5L_UCON_MASK		(APPLE_S5L_UCON_RXTO_ENA_MSK | \
++					 APPLE_S5L_UCON_RXTHRESH_ENA_MSK | \
++					 APPLE_S5L_UCON_TXTHRESH_ENA_MSK)
+ 
+ #define APPLE_S5L_UTRSTAT_RXTHRESH	(1<<4)
+ #define APPLE_S5L_UTRSTAT_TXTHRESH	(1<<5)
+-- 
+2.35.1
 
-serial8250.0: ttyS2 at MMIO 0x1f000900 (irq = 20, base_baud = 230400) is a 16550A
-
-or:
-
-0001:01:00.0: ttyS0 at MMIO 0x600c080401000 (irq = 40, base_baud = 15625000) is a 16C950/954
-
-so this has to be sorted out within the driver rather than by disabling it 
-altogether.  Possibly with a suitable conditional wired to HAS_IOPORT in 
-`set_io_from_upio' in drivers/tty/serial/8250/8250_port.c.
-
-  Maciej
