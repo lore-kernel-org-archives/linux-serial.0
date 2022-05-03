@@ -2,103 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF4CC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 08:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EA2C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 09:25:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbiECIkp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 May 2022 04:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        id S233356AbiECJ3E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 May 2022 05:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbiECIkn (ORCPT
+        with ESMTP id S232938AbiECJ3D (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 May 2022 04:40:43 -0400
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1419340ED;
-        Tue,  3 May 2022 01:37:11 -0700 (PDT)
-Received: by mail-qv1-f48.google.com with SMTP id ke5so11753486qvb.5;
-        Tue, 03 May 2022 01:37:11 -0700 (PDT)
+        Tue, 3 May 2022 05:29:03 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2605A220C0;
+        Tue,  3 May 2022 02:25:31 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id i27so32278503ejd.9;
+        Tue, 03 May 2022 02:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=soFnJ41OKBvmqjI8v9ZOzkK4Vn/5GzMNo6xdgyGAsMk=;
+        b=o16dMaBBGcP4ajFdeIc4YtDD431tG9UWQgnozHcChAjvt8RBRtHU8BnLOmEknxo6G0
+         Q9gbNg7ANq7+BnGKYZf0siuSctCicT302Hrn/G2ZCeiCkvCDPqnmEV5Lvxfb55pXRhg8
+         rld0SzvAdBMtfkNyFnfB/N9cBYkrdkgwDFJ2C8+wFhu6TmtgSUVowdOjPytJajfxxwxm
+         DBCcdC0RopnL4uHIP4TjZKa76cwSMnsp4VfP4pNZ68UdbCAP3RtO2+h/DwLaoax6HQP6
+         1K/VNsIEM8BQ52sGkr4r0mqIoVtklaJzJEQ+rdkU9TQ+Ot+GKJQ0zsnOPEUYJRpjhhYp
+         potQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=alwXS08dphdQsmDJaH0F4/NYOvmO5ktHnBJ79OKPYuU=;
-        b=jWfHpm6RBWlx0jYNy/wI2SLp1UBUhyKLddASpSnMZ3T38GcnMgii+o1Svfs4f00BtG
-         Al7QiCYyEJX4+rjLf3amz+fmFk/vnK2JNhOytP52cg5/SMlaB+Ar4z13GBQUhkyi3XbJ
-         ZSnWNjkqLNvpsAuEHat7ThjQhEml4eDsRU9HQfAL1ABKTzRySouEAxvCpY8UU4HZn3vu
-         7KRjsC3RlDDybEfwLNqqWSRwtlwSXG6T573IVL5cLtv46/S257rY+m+ZUWKGd0i3etSf
-         K/T9mNoXasXHDSDbbkc9CKbTVhPrcYsUhfaxBQvB4zhXxYNwtDDXkAooOOPTENbAk5DV
-         j+mA==
-X-Gm-Message-State: AOAM531ZZoNz8sYTgRnBOwRx/7X3WXDTRDIDkKc8ZnmPJyLIVGVQq1/g
-        JTNCJ5EdK8bFtcF2y7UUuhOiy525sREZ2A==
-X-Google-Smtp-Source: ABdhPJyMGB1rIBWaFXvIx1ERWg/JsVcFJCMUEZOf9jcQjdhZEy4Ev31ZseUaQjstBcvi3zFkVVYxOA==
-X-Received: by 2002:a05:6214:4101:b0:441:47e5:c718 with SMTP id kc1-20020a056214410100b0044147e5c718mr12752889qvb.12.1651567030897;
-        Tue, 03 May 2022 01:37:10 -0700 (PDT)
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
-        by smtp.gmail.com with ESMTPSA id o26-20020a05620a111a00b0069fc13ce242sm5597473qkk.115.2022.05.03.01.37.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 01:37:10 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2f7b815ac06so172471177b3.3;
-        Tue, 03 May 2022 01:37:10 -0700 (PDT)
-X-Received: by 2002:a81:6588:0:b0:2f8:b75e:1e1a with SMTP id
- z130-20020a816588000000b002f8b75e1e1amr14685393ywb.358.1651567030030; Tue, 03
- May 2022 01:37:10 -0700 (PDT)
+        bh=soFnJ41OKBvmqjI8v9ZOzkK4Vn/5GzMNo6xdgyGAsMk=;
+        b=ZgpcC90dFK7i0A8uEGQAOqbP5b2ksNGi5b78dZTsZsQttNmYVwnZYiQK9VtmY9ROTe
+         wIF6fZpgJt053lR/l2jSEuxpq7vGS/ofysIaib+jndy5iaEUkCFDhKDrXt52h8tu6qA/
+         ydMAQPM/u8bKoqBptos5RUjPeunRZIBTd6Bjt/Y6/qHzhrVUyTHsRR6nM7kyO6RAv4nY
+         /SWbj18U4pLzoqX4doobmHyMFFJC0uZr/pQAmmuwFtccGzEspH5N4w2cHVcgqUfevSQq
+         3eJELsfxrVJJBL4cRhE9JRoy0ArnUCt25591+HC/zAzlMXhxS19TfvA864XRrrNvHD8S
+         aXbA==
+X-Gm-Message-State: AOAM5334xiudVraM/uXROrbf09LVJpS5Fxe2sgOyvsK/e2FDr/qG10So
+        eOrUkkQ+winU+ktOHivAeSGU8LQQTXnY8Ou3paQ=
+X-Google-Smtp-Source: ABdhPJxAZtRQdRTR2mVaCYLHKzLeXAneNCOKyhgEZDPmcSKRYED8zMHxs8Q53/lzrisDk/Exxo47f/kwYbJ5LCX627Q=
+X-Received: by 2002:a17:907:3e8c:b0:6f4:4fdb:6f24 with SMTP id
+ hs12-20020a1709073e8c00b006f44fdb6f24mr8218039ejc.44.1651569929536; Tue, 03
+ May 2022 02:25:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
- <20220421095323.101811-11-miquel.raynal@bootlin.com> <CAMuHMdW_oqwbDR4HMm-Kz7jmg8FyJg-Dzi-xyBekZEdcdzBZDg@mail.gmail.com>
-In-Reply-To: <CAMuHMdW_oqwbDR4HMm-Kz7jmg8FyJg-Dzi-xyBekZEdcdzBZDg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 3 May 2022 10:36:58 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXUnkDoQdYdoAwcjAOyvJ_zM5308o6K6Spx0+Ohuzf__w@mail.gmail.com>
-Message-ID: <CAMuHMdXUnkDoQdYdoAwcjAOyvJ_zM5308o6K6Spx0+Ohuzf__w@mail.gmail.com>
-Subject: Re: [PATCH v6 10/12] ARM: dts: r9a06g032: Fill the UART DMA properties
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+References: <20220503080613.27601-1-jslaby@suse.cz> <20220503080613.27601-2-jslaby@suse.cz>
+In-Reply-To: <20220503080613.27601-2-jslaby@suse.cz>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 3 May 2022 11:24:53 +0200
+Message-ID: <CAHp75VfLw2pYMvaEoF+JuqN+H0wyo7ZfbkpefwtebCkOGVT0QQ@mail.gmail.com>
+Subject: Re: [PATCH 1/7] serial: pch: move size check from pop_tx one level up
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 11:09 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> On Thu, Apr 21, 2022 at 11:53 AM Miquel Raynal
-> <miquel.raynal@bootlin.com> wrote:
-> > UART 0 to 2 do not have DMA support, while UART 3 to 7 do.
-> >
-> > Fill the "dmas" and "dma-names" properties for each of these nodes.
-> >
-> > Please mind that these nodes go through the dmamux node which will
-> > redirect the requests to the right DMA controller. The first 4 cells of
-> > the "dmas" properties will be transferred as-is to the DMA
-> > controllers. The last 2 cells are consumed by the dmamux. Which means
-> > cell 0 and 4 are almost redundant, one giving the controller request ID
-> > and the other the dmamux channel which is a 1:1 translation of the
-> > request IDs, shifted by 16 when pointing to the second DMA controller.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+On Tue, May 3, 2022 at 10:12 AM Jiri Slaby <jslaby@suse.cz> wrote:
 >
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 'count' is zero in the pop_tx()'s comparison against 'size'. So the 'if'
+> tries to find out if 'size' is negative or zero and returns in that
+> case. But it cannot be negative, due to previous (size < 0) check in the
+> caller: handle_tx().
+>
+> So simply move this check from pop_tx() to handle_tx(). Now it's clear
+> that pop_tx() is called only if fifo_size is non-zero.
 
-Queuing in renesas-devel for v5.19.
+I'm in favour of the series, but ideally this driver should be
+converted to be a part of the 8250 family.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+With Best Regards,
+Andy Shevchenko
