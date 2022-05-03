@@ -2,91 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE71BC433F5
-	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 12:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A30C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 13:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235211AbiECM2F (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 May 2022 08:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        id S235675AbiECNFL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 May 2022 09:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235230AbiECM2E (ORCPT
+        with ESMTP id S235663AbiECNFK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 May 2022 08:28:04 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C83A344EC;
-        Tue,  3 May 2022 05:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651580672; x=1683116672;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ezDP8VhxvFVapCaHLcnpQwxSE8jZ53x6V8Z6T9fWMdc=;
-  b=RI3YRcIAE6o8G9PIPKa+pIAiZr3ZSl4L/IGdqL/ANr+RSgBL+h0wJZUD
-   ZM4HkPOSSSrdqen3cjCFvI8W/c8Sv+QVTJdCm4PAj7OT7UATzmSl9BV4P
-   P88PVdJqwW0W+RPcqIg//Rf3Ybb22picmjLR8RQdLFoWXypukeau34FuA
-   GyfHqcfYeRenL0reR4/2VhfRG9A8+OhGeK9d+u7NZ/LcqBjmnAMgTg/kZ
-   9Jds+oMgajnvAnr2r2RafTORUU5ADMJtj7PoV0tFDQ0AbzV8tBny692ja
-   nEXeJvIDmnrduo/ODoJNQ8l/9IYQp7awzzrMqkyNFcdSRl7Uwovy+uzYd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="328004739"
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="328004739"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
-   d="scan'208";a="584176810"
-Received: from oelagadx-mobl2.ger.corp.intel.com ([10.252.60.48])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:29 -0700
-Date:   Tue, 3 May 2022 15:24:23 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] serial: 8250: core: Remove unneeded
- <linux/pm_runtime.h>
-In-Reply-To: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
-Message-ID: <c0144ed6-811e-bc2d-7bff-91e7c4ba855@linux.intel.com>
-References: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
+        Tue, 3 May 2022 09:05:10 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCF918B1D
+        for <linux-serial@vger.kernel.org>; Tue,  3 May 2022 06:01:37 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id d6so19754160ede.8
+        for <linux-serial@vger.kernel.org>; Tue, 03 May 2022 06:01:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gG0dwpdZEvdDBuvEs96CRkJ96qnrRXLRezy0ryDW5k4=;
+        b=ALFTAYUx97uyNKW+lAnYdzjZir2++CoTgHbyUjF7Tyu8FB355br9ymFrLHz0yjDrvH
+         DrBwdFc3LklD9yrRb89qLlvZA45swTSbmHuxKgldKlCxDB9G9Bd/rTJMgy2E5BhuXpNG
+         yb3uDyAd0RZWZOAzkIzno8BwG1U9FqEA2iDDfvFQdY1zAtE4mcYmqd0IK3E8B6WW5z6O
+         Il7T85auivSNN1fPpuxtB8GmcDN5yYpug0AHyoO9xlmN/aBKvPJd2Lo3lmc7T3UxTryT
+         aSyIBP9yrCWMYKMi9FYlBuxD7LnSgPuAOlxYmPFIuuY5zYNOFH/jYeetXY4nPgZt1+cp
+         4lTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gG0dwpdZEvdDBuvEs96CRkJ96qnrRXLRezy0ryDW5k4=;
+        b=gruaUMneXsWnEGvFTZSc2+TXC2YDTmWhQrWo+GdljSQfIw3jMOj4I2DIJBvLG0X0kX
+         sMNlZFWkJ6raeK7fTf63hEnsgx7x5K6c7/gy1gPz/g/DMvbP99v01UulHoSVt1aCvHuo
+         1nDlO8FEW9c5KEAqez3Me/DjXR5byPAZ6HY1wu8xJwF7idiZ1ym29UUHcEUnm8DUhBOi
+         iSpLB2dWd557mu6CMyJiEgRRgm+BL0W1PzTD/vWh5LO/RLPmG72j0AIlpgjD8u2iZ9TT
+         PMTUizHCDFWr+hyzXOM3kXQ/i26V9WY5wyRshNqk7Wivuoaro8pZ09kYEsEkV9SiF9xR
+         G5iw==
+X-Gm-Message-State: AOAM531ElGjeqHRjVg9uKE65hVabQxFrQ2XU8+DBEFuF++HMicJMuofy
+        Pxnxtm7T91goZq9VqQGRHlq85w==
+X-Google-Smtp-Source: ABdhPJx2Srwjeq9nawpv4x1JuljzsyhT5QkLcbjVFz2bgafQYS+1B1AShuziH+AsAOVKPNcC8AG0zA==
+X-Received: by 2002:aa7:c0c4:0:b0:425:c776:6f17 with SMTP id j4-20020aa7c0c4000000b00425c7766f17mr17610108edp.131.1651582895443;
+        Tue, 03 May 2022 06:01:35 -0700 (PDT)
+Received: from [192.168.0.203] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id hy10-20020a1709068a6a00b006f3ef214dd4sm4687649ejc.58.2022.05.03.06.01.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 06:01:34 -0700 (PDT)
+Message-ID: <9d7514fd-511e-6596-5eb0-6001ead5a081@linaro.org>
+Date:   Tue, 3 May 2022 15:01:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/7] dt-bindings: gpio: renesas,rcar-gpio: R-Car V3U is
+ R-Car Gen4
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <cover.1651497024.git.geert+renesas@glider.be>
+ <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 2 May 2022, Geert Uytterhoeven wrote:
-
-> The last calls into Runtime PM were moved to 8250_port.c a long time
-> ago.
+On 02/05/2022 15:34, Geert Uytterhoeven wrote:
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
 > 
-> Fixes: b6830f6df8914faa ("serial: 8250: Split base port operations from universal driver")
-
-Does this really "fix" something or is it just a useful cleanup? To me it 
-looks the latter.
-
--- 
- i.
-
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/8250/8250_core.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 01d30f6ed8fb5931..cfbd2de0ca6e4bcd 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -32,7 +32,6 @@
->  #include <linux/mutex.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> -#include <linux/pm_runtime.h>
->  #include <linux/io.h>
->  #ifdef CONFIG_SPARC
->  #include <linux/sunserialcore.h>
-> 
+
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
