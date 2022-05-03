@@ -2,122 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B697C4332F
-	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 08:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF4CC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 08:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbiECIL4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 May 2022 04:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
+        id S231777AbiECIkp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 May 2022 04:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiECILq (ORCPT
+        with ESMTP id S231452AbiECIkn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 May 2022 04:11:46 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6629920F7E;
-        Tue,  3 May 2022 01:08:12 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1FEED1F750;
-        Tue,  3 May 2022 08:08:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651565291; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UO147EkrcD8s2C3iZ2gPdiFE1wRQPBc2PLaQ9zYEfvk=;
-        b=t8xKe070RT0yUWutZROHx4pSUEU/hc9BhQwVFTlJOd1Qe1LYjpNJ5h0bdMmLDAoosBBfOn
-        tvOakU2dXn9CO4PVCmiWGy0LZs88Q/de5ZRRXpD39pu4GBW2yl9OjpPqhdFI9OaHR4NyLy
-        iyXnTa0CWKyMPD72TIoP40zSU7aBrls=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651565291;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UO147EkrcD8s2C3iZ2gPdiFE1wRQPBc2PLaQ9zYEfvk=;
-        b=fFg8s/ilMSS0Z5/iwZcHCMoZH11+EduYu11v5iaOCvs9Xxi7JjvaTF5UFTZgh+b4WTma8u
-        P/+rQlUdY5odrjBg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EB3612C149;
-        Tue,  3 May 2022 08:08:10 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 7/7] serial: pch: inline pop_tx() into handle_tx()
-Date:   Tue,  3 May 2022 10:08:08 +0200
-Message-Id: <20220503080808.28332-6-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220503080808.28332-1-jslaby@suse.cz>
-References: <20220503080613.27601-1-jslaby@suse.cz>
- <20220503080808.28332-1-jslaby@suse.cz>
+        Tue, 3 May 2022 04:40:43 -0400
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1419340ED;
+        Tue,  3 May 2022 01:37:11 -0700 (PDT)
+Received: by mail-qv1-f48.google.com with SMTP id ke5so11753486qvb.5;
+        Tue, 03 May 2022 01:37:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=alwXS08dphdQsmDJaH0F4/NYOvmO5ktHnBJ79OKPYuU=;
+        b=jWfHpm6RBWlx0jYNy/wI2SLp1UBUhyKLddASpSnMZ3T38GcnMgii+o1Svfs4f00BtG
+         Al7QiCYyEJX4+rjLf3amz+fmFk/vnK2JNhOytP52cg5/SMlaB+Ar4z13GBQUhkyi3XbJ
+         ZSnWNjkqLNvpsAuEHat7ThjQhEml4eDsRU9HQfAL1ABKTzRySouEAxvCpY8UU4HZn3vu
+         7KRjsC3RlDDybEfwLNqqWSRwtlwSXG6T573IVL5cLtv46/S257rY+m+ZUWKGd0i3etSf
+         K/T9mNoXasXHDSDbbkc9CKbTVhPrcYsUhfaxBQvB4zhXxYNwtDDXkAooOOPTENbAk5DV
+         j+mA==
+X-Gm-Message-State: AOAM531ZZoNz8sYTgRnBOwRx/7X3WXDTRDIDkKc8ZnmPJyLIVGVQq1/g
+        JTNCJ5EdK8bFtcF2y7UUuhOiy525sREZ2A==
+X-Google-Smtp-Source: ABdhPJyMGB1rIBWaFXvIx1ERWg/JsVcFJCMUEZOf9jcQjdhZEy4Ev31ZseUaQjstBcvi3zFkVVYxOA==
+X-Received: by 2002:a05:6214:4101:b0:441:47e5:c718 with SMTP id kc1-20020a056214410100b0044147e5c718mr12752889qvb.12.1651567030897;
+        Tue, 03 May 2022 01:37:10 -0700 (PDT)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id o26-20020a05620a111a00b0069fc13ce242sm5597473qkk.115.2022.05.03.01.37.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 01:37:10 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2f7b815ac06so172471177b3.3;
+        Tue, 03 May 2022 01:37:10 -0700 (PDT)
+X-Received: by 2002:a81:6588:0:b0:2f8:b75e:1e1a with SMTP id
+ z130-20020a816588000000b002f8b75e1e1amr14685393ywb.358.1651567030030; Tue, 03
+ May 2022 01:37:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220421095323.101811-1-miquel.raynal@bootlin.com>
+ <20220421095323.101811-11-miquel.raynal@bootlin.com> <CAMuHMdW_oqwbDR4HMm-Kz7jmg8FyJg-Dzi-xyBekZEdcdzBZDg@mail.gmail.com>
+In-Reply-To: <CAMuHMdW_oqwbDR4HMm-Kz7jmg8FyJg-Dzi-xyBekZEdcdzBZDg@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 3 May 2022 10:36:58 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXUnkDoQdYdoAwcjAOyvJ_zM5308o6K6Spx0+Ohuzf__w@mail.gmail.com>
+Message-ID: <CAMuHMdXUnkDoQdYdoAwcjAOyvJ_zM5308o6K6Spx0+Ohuzf__w@mail.gmail.com>
+Subject: Re: [PATCH v6 10/12] ARM: dts: r9a06g032: Fill the UART DMA properties
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Given pop_tx() is a simple loop, inline it directly into handle_tx().
+On Thu, Apr 28, 2022 at 11:09 AM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+> On Thu, Apr 21, 2022 at 11:53 AM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> > UART 0 to 2 do not have DMA support, while UART 3 to 7 do.
+> >
+> > Fill the "dmas" and "dma-names" properties for each of these nodes.
+> >
+> > Please mind that these nodes go through the dmamux node which will
+> > redirect the requests to the right DMA controller. The first 4 cells of
+> > the "dmas" properties will be transferred as-is to the DMA
+> > controllers. The last 2 cells are consumed by the dmamux. Which means
+> > cell 0 and 4 are almost redundant, one giving the controller request ID
+> > and the other the dmamux channel which is a 1:1 translation of the
+> > request IDs, shifted by 16 when pointing to the second DMA controller.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-The code in handle_tx() looks much saner and straightforward now.
+Queuing in renesas-devel for v5.19.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/pch_uart.c | 25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+Gr{oetje,eeting}s,
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index e1eadf519089..3b26524d48e3 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -757,23 +757,6 @@ static void pch_dma_tx_complete(void *arg)
- 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
- }
- 
--static bool pop_tx(struct eg20t_port *priv, unsigned int size)
--{
--	struct uart_port *port = &priv->port;
--	struct circ_buf *xmit = &port->state->xmit;
--	bool ret = false;
--
--	while (!uart_tx_stopped(port) && !uart_circ_empty(xmit) && size) {
--		iowrite8(xmit->buf[xmit->tail], priv->membase + PCH_UART_THR);
--		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
--		port->icount.tx++;
--		size--;
--		ret = true;
--	}
--
--	return ret;
--}
--
- static int handle_rx_to(struct eg20t_port *priv)
- {
- 	struct pch_uart_buffer *buf;
-@@ -837,6 +820,7 @@ static int dma_handle_rx(struct eg20t_port *priv)
- static unsigned int handle_tx(struct eg20t_port *priv)
- {
- 	struct uart_port *port = &priv->port;
-+	struct circ_buf *xmit = &port->state->xmit;
- 	int fifo_size;
- 	int tx_empty;
- 
-@@ -858,8 +842,13 @@ static unsigned int handle_tx(struct eg20t_port *priv)
- 		fifo_size--;
- 	}
- 
--	if (fifo_size && pop_tx(priv, fifo_size))
-+	while (!uart_tx_stopped(port) && !uart_circ_empty(xmit) && fifo_size) {
-+		iowrite8(xmit->buf[xmit->tail], priv->membase + PCH_UART_THR);
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		port->icount.tx++;
-+		fifo_size--;
- 		tx_empty = 0;
-+	}
- 
- 	priv->tx_empty = tx_empty;
- 
--- 
-2.36.0
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
