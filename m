@@ -2,111 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E111DC433FE
-	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 12:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE71BC433F5
+	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 12:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235017AbiECMEd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 May 2022 08:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
+        id S235211AbiECM2F (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 May 2022 08:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiECMEd (ORCPT
+        with ESMTP id S235230AbiECM2E (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 May 2022 08:04:33 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 381C530F5A;
-        Tue,  3 May 2022 05:01:00 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,195,1647270000"; 
-   d="scan'208";a="118643083"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 03 May 2022 21:00:59 +0900
-Received: from localhost.localdomain (unknown [10.226.92.6])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2F21142268E6;
-        Tue,  3 May 2022 21:00:55 +0900 (JST)
-From:   Phil Edworthy <phil.edworthy@renesas.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v3 01/12] dt-bindings: serial: renesas,em-uart: Add RZ/V2M clock to access the registers
-Date:   Tue,  3 May 2022 12:55:46 +0100
-Message-Id: <20220503115557.53370-2-phil.edworthy@renesas.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220503115557.53370-1-phil.edworthy@renesas.com>
-References: <20220503115557.53370-1-phil.edworthy@renesas.com>
+        Tue, 3 May 2022 08:28:04 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C83A344EC;
+        Tue,  3 May 2022 05:24:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651580672; x=1683116672;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=ezDP8VhxvFVapCaHLcnpQwxSE8jZ53x6V8Z6T9fWMdc=;
+  b=RI3YRcIAE6o8G9PIPKa+pIAiZr3ZSl4L/IGdqL/ANr+RSgBL+h0wJZUD
+   ZM4HkPOSSSrdqen3cjCFvI8W/c8Sv+QVTJdCm4PAj7OT7UATzmSl9BV4P
+   P88PVdJqwW0W+RPcqIg//Rf3Ybb22picmjLR8RQdLFoWXypukeau34FuA
+   GyfHqcfYeRenL0reR4/2VhfRG9A8+OhGeK9d+u7NZ/LcqBjmnAMgTg/kZ
+   9Jds+oMgajnvAnr2r2RafTORUU5ADMJtj7PoV0tFDQ0AbzV8tBny692ja
+   nEXeJvIDmnrduo/ODoJNQ8l/9IYQp7awzzrMqkyNFcdSRl7Uwovy+uzYd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="328004739"
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="328004739"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:32 -0700
+X-IronPort-AV: E=Sophos;i="5.91,195,1647327600"; 
+   d="scan'208";a="584176810"
+Received: from oelagadx-mobl2.ger.corp.intel.com ([10.252.60.48])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 05:24:29 -0700
+Date:   Tue, 3 May 2022 15:24:23 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] serial: 8250: core: Remove unneeded
+ <linux/pm_runtime.h>
+In-Reply-To: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
+Message-ID: <c0144ed6-811e-bc2d-7bff-91e7c4ba855@linux.intel.com>
+References: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The RZ/V2M SoC has an additional clock to access the registers. The HW
-manual says this clock should not be touched as it is used by the
-"ISP Firmware".
+On Mon, 2 May 2022, Geert Uytterhoeven wrote:
 
-Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
----
-v3:
- - New patch added
----
- .../bindings/serial/renesas,em-uart.yaml      | 32 +++++++++++++++----
- 1 file changed, 25 insertions(+), 7 deletions(-)
+> The last calls into Runtime PM were moved to 8250_port.c a long time
+> ago.
+> 
+> Fixes: b6830f6df8914faa ("serial: 8250: Split base port operations from universal driver")
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-index 332c385618e1..8d0e779d7d77 100644
---- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
-@@ -9,9 +9,6 @@ title: Renesas EMMA Mobile UART Interface
- maintainers:
-   - Magnus Damm <magnus.damm@gmail.com>
- 
--allOf:
--  - $ref: serial.yaml#
--
- properties:
-   compatible:
-     oneOf:
-@@ -29,11 +26,32 @@ properties:
-   interrupts:
-     maxItems: 1
- 
--  clocks:
--    maxItems: 1
-+allOf:
-+  - $ref: serial.yaml#
- 
--  clock-names:
--    const: sclk
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,r9a09g011-uart
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: UART functional clock
-+            - description: Optional internal clock to access the registers
-+        clock-names:
-+          items:
-+            - const: sclk
-+            - const: pclk
-+    else:
-+      properties:
-+        clocks:
-+          items:
-+            - description: UART functional clock
-+        clock-names:
-+          items:
-+            - const: sclk
- 
- required:
-   - compatible
+Does this really "fix" something or is it just a useful cleanup? To me it 
+looks the latter.
+
 -- 
-2.32.0
+ i.
 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 01d30f6ed8fb5931..cfbd2de0ca6e4bcd 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -32,7 +32,6 @@
+>  #include <linux/mutex.h>
+>  #include <linux/slab.h>
+>  #include <linux/uaccess.h>
+> -#include <linux/pm_runtime.h>
+>  #include <linux/io.h>
+>  #ifdef CONFIG_SPARC
+>  #include <linux/sunserialcore.h>
+> 
