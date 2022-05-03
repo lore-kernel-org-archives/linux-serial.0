@@ -2,78 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EA2C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 09:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB446C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  3 May 2022 09:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233356AbiECJ3E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 May 2022 05:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S233688AbiECKAX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 3 May 2022 06:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232938AbiECJ3D (ORCPT
+        with ESMTP id S233856AbiECKAW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 May 2022 05:29:03 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2605A220C0;
-        Tue,  3 May 2022 02:25:31 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id i27so32278503ejd.9;
-        Tue, 03 May 2022 02:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=soFnJ41OKBvmqjI8v9ZOzkK4Vn/5GzMNo6xdgyGAsMk=;
-        b=o16dMaBBGcP4ajFdeIc4YtDD431tG9UWQgnozHcChAjvt8RBRtHU8BnLOmEknxo6G0
-         Q9gbNg7ANq7+BnGKYZf0siuSctCicT302Hrn/G2ZCeiCkvCDPqnmEV5Lvxfb55pXRhg8
-         rld0SzvAdBMtfkNyFnfB/N9cBYkrdkgwDFJ2C8+wFhu6TmtgSUVowdOjPytJajfxxwxm
-         DBCcdC0RopnL4uHIP4TjZKa76cwSMnsp4VfP4pNZ68UdbCAP3RtO2+h/DwLaoax6HQP6
-         1K/VNsIEM8BQ52sGkr4r0mqIoVtklaJzJEQ+rdkU9TQ+Ot+GKJQ0zsnOPEUYJRpjhhYp
-         potQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=soFnJ41OKBvmqjI8v9ZOzkK4Vn/5GzMNo6xdgyGAsMk=;
-        b=ZgpcC90dFK7i0A8uEGQAOqbP5b2ksNGi5b78dZTsZsQttNmYVwnZYiQK9VtmY9ROTe
-         wIF6fZpgJt053lR/l2jSEuxpq7vGS/ofysIaib+jndy5iaEUkCFDhKDrXt52h8tu6qA/
-         ydMAQPM/u8bKoqBptos5RUjPeunRZIBTd6Bjt/Y6/qHzhrVUyTHsRR6nM7kyO6RAv4nY
-         /SWbj18U4pLzoqX4doobmHyMFFJC0uZr/pQAmmuwFtccGzEspH5N4w2cHVcgqUfevSQq
-         3eJELsfxrVJJBL4cRhE9JRoy0ArnUCt25591+HC/zAzlMXhxS19TfvA864XRrrNvHD8S
-         aXbA==
-X-Gm-Message-State: AOAM5334xiudVraM/uXROrbf09LVJpS5Fxe2sgOyvsK/e2FDr/qG10So
-        eOrUkkQ+winU+ktOHivAeSGU8LQQTXnY8Ou3paQ=
-X-Google-Smtp-Source: ABdhPJxAZtRQdRTR2mVaCYLHKzLeXAneNCOKyhgEZDPmcSKRYED8zMHxs8Q53/lzrisDk/Exxo47f/kwYbJ5LCX627Q=
-X-Received: by 2002:a17:907:3e8c:b0:6f4:4fdb:6f24 with SMTP id
- hs12-20020a1709073e8c00b006f44fdb6f24mr8218039ejc.44.1651569929536; Tue, 03
- May 2022 02:25:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220503080613.27601-1-jslaby@suse.cz> <20220503080613.27601-2-jslaby@suse.cz>
-In-Reply-To: <20220503080613.27601-2-jslaby@suse.cz>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 3 May 2022 11:24:53 +0200
-Message-ID: <CAHp75VfLw2pYMvaEoF+JuqN+H0wyo7ZfbkpefwtebCkOGVT0QQ@mail.gmail.com>
-Subject: Re: [PATCH 1/7] serial: pch: move size check from pop_tx one level up
-To:     Jiri Slaby <jslaby@suse.cz>
+        Tue, 3 May 2022 06:00:22 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A96377CA;
+        Tue,  3 May 2022 02:56:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651571810; x=1683107810;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PUacBmRLtoeErgelcVZt5P+I5fws4ubK0fCTyWDi7Wg=;
+  b=hV2thJmRw6jiwtjgl0frdLfSTP/kLQYyHSIjvytOLaGEAH3t7zxCgDMq
+   VaLV/H5b9G4UYtzLpZeh4LIAa1R0BSIjyMHNX/0z466txzp/DpRVeW6jS
+   gqCnpT0pZU8SuZX7GVfvI6cuzcv+X+rCK3+HUl/eCGzfy3IVh76G0rCBr
+   nVczz9k0g1wc2cNB28lQf7Mjx24yy1IEL2OFT3dgegvkLmoD8Cinhqur3
+   Z/3z1bsHxYiPfISuRKyjQAj4H3PkgyooHBdZwtb6HOIFQA0kelr7ZcU7u
+   stCOb6N8oK3Q5zYU4fauyPqfKBaaiRS0BZN+vBvH+IsI1aQC8uiVamXNo
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="330430289"
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="330430289"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 02:56:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,194,1647327600"; 
+   d="scan'208";a="653202205"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 02:56:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nlpGu-00BOXO-F8;
+        Tue, 03 May 2022 12:56:44 +0300
+Date:   Tue, 3 May 2022 12:56:44 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] serial: 8250: core: Remove unneeded
+ <linux/pm_runtime.h>
+Message-ID: <YnD8XDP4bjzFvMBM@smile.fi.intel.com>
+References: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2545eaa7fc552013a5d04c4df027255204e64834.1651494971.git.geert+renesas@glider.be>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 3, 2022 at 10:12 AM Jiri Slaby <jslaby@suse.cz> wrote:
->
-> 'count' is zero in the pop_tx()'s comparison against 'size'. So the 'if'
-> tries to find out if 'size' is negative or zero and returns in that
-> case. But it cannot be negative, due to previous (size < 0) check in the
-> caller: handle_tx().
->
-> So simply move this check from pop_tx() to handle_tx(). Now it's clear
-> that pop_tx() is called only if fifo_size is non-zero.
+On Mon, May 02, 2022 at 02:37:05PM +0200, Geert Uytterhoeven wrote:
+> The last calls into Runtime PM were moved to 8250_port.c a long time
+> ago.
 
-I'm in favour of the series, but ideally this driver should be
-converted to be a part of the 8250 family.
+Both
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Fixes: b6830f6df8914faa ("serial: 8250: Split base port operations from universal driver")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/8250/8250_core.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index 01d30f6ed8fb5931..cfbd2de0ca6e4bcd 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -32,7 +32,6 @@
+>  #include <linux/mutex.h>
+>  #include <linux/slab.h>
+>  #include <linux/uaccess.h>
+> -#include <linux/pm_runtime.h>
+>  #include <linux/io.h>
+>  #ifdef CONFIG_SPARC
+>  #include <linux/sunserialcore.h>
+> -- 
+> 2.25.1
+> 
 
 -- 
 With Best Regards,
 Andy Shevchenko
+
+
