@@ -2,123 +2,146 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0BFC4332F
-	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 07:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EEEC433FE
+	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 08:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345624AbiEDHqF convert rfc822-to-8bit (ORCPT
+        id S1346046AbiEDIKo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 May 2022 03:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
+        Wed, 4 May 2022 04:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235940AbiEDHqD (ORCPT
+        with ESMTP id S1346067AbiEDIKm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 May 2022 03:46:03 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689A712A85;
-        Wed,  4 May 2022 00:42:25 -0700 (PDT)
-Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MeCYx-1oMJHU2MkR-00bLF8; Wed, 04 May 2022 09:42:23 +0200
-Received: by mail-wr1-f47.google.com with SMTP id v12so792859wrv.10;
-        Wed, 04 May 2022 00:42:23 -0700 (PDT)
-X-Gm-Message-State: AOAM5339KfyBx4t9zIEWu6GpNvC5Kq4f2HRyC4Tk5CcliBYhcaWTLVq8
-        x0oyGzNpmyt9AhDj6g+iTS5yi6pLDUbaqRvUJ1A=
-X-Google-Smtp-Source: ABdhPJyAtaHJAu4B6FvTyywy89EOYjaADkD1ii+djh63zQRkEMld6M+vJFv/YubU9ANwgQaTox0QURVrOWQbFXWyNvQ=
-X-Received: by 2002:a5d:5986:0:b0:20c:5844:820d with SMTP id
- n6-20020a5d5986000000b0020c5844820dmr13214984wri.192.1651650143027; Wed, 04
- May 2022 00:42:23 -0700 (PDT)
+        Wed, 4 May 2022 04:10:42 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D7622530;
+        Wed,  4 May 2022 01:07:04 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id kj8so395663qvb.6;
+        Wed, 04 May 2022 01:07:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qr8Gita3qZhZBTod6oSOJkjQHSZMAcLB8WWXhsphx9A=;
+        b=c86yVxfiA5ro1aLiRQPya71bWL7ryBvX//lLNWWr6EjOINJgUWJ5Du9Oop7aNVJArq
+         Z/dcKMmNTrwDIA7WKdWG4Fqk1jzAYonVcbu/MK6d+wTCcVHPDXpe00G+AA9dRY+2Fpoa
+         PDLB87K650eUo/2UoceGAuJp6gjxpSv82RjU1x8MDriaHw33Gtv+9EfB6+07G96a2sDz
+         J/5jGNeqkfgyLiykKumomNCTm8jeWV0CMw5fdWruGDpFATyM+7z+us52rRztHfyvXGMU
+         UaYA5PCAdlr26YK9Nda3BLObwy+mh4qKB8LCSKxo6OUoldP1NHu14YlPf2PzLvJodvDu
+         tZYw==
+X-Gm-Message-State: AOAM532d2R8De8IM4furCqLtC1sU13UZ8muUqguThB2uh3/6AN4SX/I5
+        q7orgy+SpE9kcrN4GDHXB+s15woWUpcMTg==
+X-Google-Smtp-Source: ABdhPJwfVjQnZcOeF6u1QOjb+7FIYWHHTBz23ex5y71Pa5KCDVVez83onjp2s3vu+kkDH8sPEraRYA==
+X-Received: by 2002:a05:6214:c44:b0:446:7a14:c301 with SMTP id r4-20020a0562140c4400b004467a14c301mr16347339qvj.35.1651651623651;
+        Wed, 04 May 2022 01:07:03 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id 3-20020a05620a040300b0069fd232296fsm5788544qkp.135.2022.05.04.01.07.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 01:07:03 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id j2so1156358ybu.0;
+        Wed, 04 May 2022 01:07:02 -0700 (PDT)
+X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
+ s14-20020a056902120e00b006346f296b84mr17155385ybu.604.1651651622524; Wed, 04
+ May 2022 01:07:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
-In-Reply-To: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 4 May 2022 09:42:07 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com>
-Message-ID: <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] termbits: Convert octal defines to hex
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220503115557.53370-1-phil.edworthy@renesas.com> <20220503115557.53370-2-phil.edworthy@renesas.com>
+In-Reply-To: <20220503115557.53370-2-phil.edworthy@renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 4 May 2022 10:06:51 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXjdoY3qrQhHxCdc=W7-MrX7FVeWqZ8Vma2-1Sc5_=hEQ@mail.gmail.com>
+Message-ID: <CAMuHMdXjdoY3qrQhHxCdc=W7-MrX7FVeWqZ8Vma2-1Sc5_=hEQ@mail.gmail.com>
+Subject: Re: [PATCH v3 01/12] dt-bindings: serial: renesas,em-uart: Add RZ/V2M
+ clock to access the registers
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:RUODNSZHrrUAzTMxf4k7aiybT4dr2MHfFmLT9NAVtR9I9Meah9W
- KgobfqjPp3il3rzPHqzh6Xfw1USWESqATgFbx5a8mQaPbWAKxwaL1ev4IsA9m9kzrG7F61N
- nT7pKhNMsqFdRtqW3WRSZywQCCSrzImcjkfMrTibFt/bx+147KtoPttgQvG0o+52O6rvHC+
- KiyVWJUoSxnhB6h4mCJWg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+6Wy9FRq2Rk=:3ojCH1Jx7PmR6QwIGfJM7p
- QhuVj7F/KPYQsqtACXudQJAjMJw28ft3/HM3tyLUawxR/f8tpIp2s/tSgPvwiCbxkB/W10zh7
- 5wSQy9HReui+hOkGZ7LugSBeKMlhOpYVNATypOvkHNcPJmfGSa+MkkC97IIShysk2lZl9Sw1I
- SH/MXG8GOLiFK68BJ9WjCZewgVRZi/b6SL4q3jEg+0UZwjQEjGUUl1d8gYzDxUrjAuYBO76mJ
- LC7RHf1b839/Swx487j89kkwUA6Op57odd3tTp1164Dz6kqCkxGEGtcxVfKzUU9442KWQ7wAW
- d2MChU+zwy2W6rJQXOT6/7vYYiX7980x73tcDTimKwg6S0zA7tiGOG1p5FXSlA84E9rsrncJt
- 7IrSIzPkuroXUZvCtxsTpDuoYbj81H21sfA3VpV3jUnlEDKXZo7h3F+nGTDmIg1yZ4eTZYO1l
- LEIL6W3U+auwhCGLcidOdJJhzVa6V6xgXiXVRuOGqfVFEp495b1PVEVQqoS7kHnxJm2aSrgfl
- YnncrXoG09e6EodGnu8Iq7e7nSX4TA6om90jHCr5gZXwRZRoyqT5WJCEc9td9Ck6jrwvfr4TT
- LSGGALZQIQ0RiQofujHfo+MuZtAybvioKukKoD329uuSBaoPR8fgnqN0ksVjcYTO1/OrC9Rur
- +NGiC6sYhiCJaiU7+MbEPdIcGi1zAw+1Yh2Mn2ZM5f2qLwpa2zrzIyIeua04BdkD4HDk=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 4, 2022 at 9:20 AM Ilpo Järvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
+Hi Phil,
+
+On Tue, May 3, 2022 at 2:01 PM Phil Edworthy <phil.edworthy@renesas.com> wrote:
+> The RZ/V2M SoC has an additional clock to access the registers. The HW
+> manual says this clock should not be touched as it is used by the
+> "ISP Firmware".
 >
-> Many archs have termbits.h as octal numbers. It makes hard for humans
-> to parse the magnitude of large numbers correctly and to compare with
-> hex ones of the same define.
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+
+Thanks for your patch!
+
+> --- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> @@ -9,9 +9,6 @@ title: Renesas EMMA Mobile UART Interface
+>  maintainers:
+>    - Magnus Damm <magnus.damm@gmail.com>
 >
-> Convert octal values to hex.
+> -allOf:
+> -  - $ref: serial.yaml#
+> -
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -29,11 +26,32 @@ properties:
+>    interrupts:
+>      maxItems: 1
 >
-> First step is an automated conversion with:
+> -  clocks:
+> -    maxItems: 1
+> +allOf:
+> +  - $ref: serial.yaml#
 >
-> for i in $(git ls-files | grep 'termbits\.h'); do
->         awk --non-decimal-data '/^#define\s+[A-Z][A-Z0-9]*\s+0[0-9]/ {
->                 l=int(((length($3) - 1) * 3 + 3) / 4);
->                 repl = sprintf("0x%0" l "x", $3);
->                 print gensub(/[^[:blank:]]+/, repl, 3);
->                 next} {print}' $i > $i~;
->         mv $i~ $i;
-> done
+> -  clock-names:
+> -    const: sclk
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: renesas,r9a09g011-uart
+> +    then:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: UART functional clock
+> +            - description: Optional internal clock to access the registers
+
+It's not optional on r9a09g011, right?
+
+> +        clock-names:
+> +          items:
+> +            - const: sclk
+> +            - const: pclk
+> +    else:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: UART functional clock
+> +        clock-names:
+> +          items:
+> +            - const: sclk
 >
-> On top of that, some manual processing on alignment and number of zeros.
-> In addition, small tweaks to formatting of a few comments on the same
-> lines.
->
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+>  required:
+>    - compatible
 
-Good idea!
+The rest LGTM, so with the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I assume you already checked if additional file contents can be shared across
-architectures? I think I've tried in the past but didn't really get
-anywhere with
-that.
+Gr{oetje,eeting}s,
 
-After applying the patch locally, I still see a bunch of whitespace
-differences in the
-changed lines if I run
+                        Geert
 
-vimdiff arch/*/include/uapi/asm/termbits.h include/uapi/asm-generic/termbits.h
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-I think this mostly because you left the sparc version alone (it already
-uses hex constants), but it may be nice to edit this a little more to
-make the actual differences stick out more.
-
-> I prefer this to go in though Greg's tty tree.
-
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
