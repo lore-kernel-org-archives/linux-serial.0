@@ -2,88 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B319AC433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 07:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0BFC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 07:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345466AbiEDHcn (ORCPT
+        id S1345624AbiEDHqF convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 May 2022 03:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        Wed, 4 May 2022 03:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236884AbiEDHcm (ORCPT
+        with ESMTP id S235940AbiEDHqD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 May 2022 03:32:42 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE92B237CA
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 00:28:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651649335; x=1683185335;
-  h=date:from:to:subject:message-id:mime-version:content-id;
-  bh=RYiibE949eX+HzYcvgANsPtKHTCf9sjeyAFNdy9Ti3E=;
-  b=RYbEJCx7rX8gZOx0/TVSscUE9VDMMjpL5b4lYVtcH7vdLzpGjCqCS3Zx
-   H9sicSeJ0mpj/bbEnoTnII3Gf/J+XPM4VgwHC9jyU9wsd6o1mqHqeZUiY
-   xBbn1wMEFYuFqXi5ggfvrPfZjYM3UQle3j1F80xhfpqJBYiX8zoEsfGvI
-   RucBVt15q6yL9tW4ZJA+MbaucFdYFWIWLeB3koJwXqWbWYvpQ8Qv4OcmO
-   lzuVsJ5+BZjpQI7Tk4LhmKBj05savdAgjywACtPcCLWY0P1IgCnwMls5Y
-   ukVX1Va4EWYLh6EooiU20pqGFDH6+KvJXWv5k4NbIQ6KpYme7ppTmV3PI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="328231239"
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="328231239"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 00:28:55 -0700
-X-IronPort-AV: E=Sophos;i="5.91,197,1647327600"; 
-   d="scan'208";a="584598324"
-Received: from unknown (HELO ijarvine-MOBL2) ([10.251.218.195])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 00:28:53 -0700
-Date:   Wed, 4 May 2022 10:28:51 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: [PATCH RESEND] serial: men_z135_uart: Drop duplicated iotype
- assignment
-Message-ID: <14b71e1-2396-3d83-3a97-9582765d453@linux.intel.com>
+        Wed, 4 May 2022 03:46:03 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689A712A85;
+        Wed,  4 May 2022 00:42:25 -0700 (PDT)
+Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MeCYx-1oMJHU2MkR-00bLF8; Wed, 04 May 2022 09:42:23 +0200
+Received: by mail-wr1-f47.google.com with SMTP id v12so792859wrv.10;
+        Wed, 04 May 2022 00:42:23 -0700 (PDT)
+X-Gm-Message-State: AOAM5339KfyBx4t9zIEWu6GpNvC5Kq4f2HRyC4Tk5CcliBYhcaWTLVq8
+        x0oyGzNpmyt9AhDj6g+iTS5yi6pLDUbaqRvUJ1A=
+X-Google-Smtp-Source: ABdhPJyAtaHJAu4B6FvTyywy89EOYjaADkD1ii+djh63zQRkEMld6M+vJFv/YubU9ANwgQaTox0QURVrOWQbFXWyNvQ=
+X-Received: by 2002:a5d:5986:0:b0:20c:5844:820d with SMTP id
+ n6-20020a5d5986000000b0020c5844820dmr13214984wri.192.1651650143027; Wed, 04
+ May 2022 00:42:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-2007442200-1651649275=:1623"
-Content-ID: <10a3dd25-5ade-67e-7443-1aeda973150@linux.intel.com>
+References: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+In-Reply-To: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 4 May 2022 09:42:07 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com>
+Message-ID: <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] termbits: Convert octal defines to hex
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:RUODNSZHrrUAzTMxf4k7aiybT4dr2MHfFmLT9NAVtR9I9Meah9W
+ KgobfqjPp3il3rzPHqzh6Xfw1USWESqATgFbx5a8mQaPbWAKxwaL1ev4IsA9m9kzrG7F61N
+ nT7pKhNMsqFdRtqW3WRSZywQCCSrzImcjkfMrTibFt/bx+147KtoPttgQvG0o+52O6rvHC+
+ KiyVWJUoSxnhB6h4mCJWg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+6Wy9FRq2Rk=:3ojCH1Jx7PmR6QwIGfJM7p
+ QhuVj7F/KPYQsqtACXudQJAjMJw28ft3/HM3tyLUawxR/f8tpIp2s/tSgPvwiCbxkB/W10zh7
+ 5wSQy9HReui+hOkGZ7LugSBeKMlhOpYVNATypOvkHNcPJmfGSa+MkkC97IIShysk2lZl9Sw1I
+ SH/MXG8GOLiFK68BJ9WjCZewgVRZi/b6SL4q3jEg+0UZwjQEjGUUl1d8gYzDxUrjAuYBO76mJ
+ LC7RHf1b839/Swx487j89kkwUA6Op57odd3tTp1164Dz6kqCkxGEGtcxVfKzUU9442KWQ7wAW
+ d2MChU+zwy2W6rJQXOT6/7vYYiX7980x73tcDTimKwg6S0zA7tiGOG1p5FXSlA84E9rsrncJt
+ 7IrSIzPkuroXUZvCtxsTpDuoYbj81H21sfA3VpV3jUnlEDKXZo7h3F+nGTDmIg1yZ4eTZYO1l
+ LEIL6W3U+auwhCGLcidOdJJhzVa6V6xgXiXVRuOGqfVFEp495b1PVEVQqoS7kHnxJm2aSrgfl
+ YnncrXoG09e6EodGnu8Iq7e7nSX4TA6om90jHCr5gZXwRZRoyqT5WJCEc9td9Ck6jrwvfr4TT
+ LSGGALZQIQ0RiQofujHfo+MuZtAybvioKukKoD329uuSBaoPR8fgnqN0ksVjcYTO1/OrC9Rur
+ +NGiC6sYhiCJaiU7+MbEPdIcGi1zAw+1Yh2Mn2ZM5f2qLwpa2zrzIyIeua04BdkD4HDk=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, May 4, 2022 at 9:20 AM Ilpo Järvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> Many archs have termbits.h as octal numbers. It makes hard for humans
+> to parse the magnitude of large numbers correctly and to compare with
+> hex ones of the same define.
+>
+> Convert octal values to hex.
+>
+> First step is an automated conversion with:
+>
+> for i in $(git ls-files | grep 'termbits\.h'); do
+>         awk --non-decimal-data '/^#define\s+[A-Z][A-Z0-9]*\s+0[0-9]/ {
+>                 l=int(((length($3) - 1) * 3 + 3) / 4);
+>                 repl = sprintf("0x%0" l "x", $3);
+>                 print gensub(/[^[:blank:]]+/, repl, 3);
+>                 next} {print}' $i > $i~;
+>         mv $i~ $i;
+> done
+>
+> On top of that, some manual processing on alignment and number of zeros.
+> In addition, small tweaks to formatting of a few comments on the same
+> lines.
+>
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
---8323329-2007442200-1651649275=:1623
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <f476544d-f233-66a3-46ba-a1868fbfbca0@linux.intel.com>
+Good idea!
 
-The driver assigns same iotype twice. Drop one of them.
+I assume you already checked if additional file contents can be shared across
+architectures? I think I've tried in the past but didn't really get
+anywhere with
+that.
 
-Signed-off-by: Ilpo J�rvinen <ilpo.jarvinen@linux.intel.com>
+After applying the patch locally, I still see a bunch of whitespace
+differences in the
+changed lines if I run
 
----
+vimdiff arch/*/include/uapi/asm/termbits.h include/uapi/asm-generic/termbits.h
 
-Resending with correct linux-serial address.
+I think this mostly because you left the sparc version alone (it already
+uses hex constants), but it may be nice to edit this a little more to
+make the actual differences stick out more.
 
- drivers/tty/serial/men_z135_uart.c | 1 -
- 1 file changed, 1 deletion(-)
+> I prefer this to go in though Greg's tty tree.
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index 9acae5f8fc32..12117b596e73 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -833,7 +833,6 @@ static int men_z135_probe(struct mcb_device *mdev,
- 	uart->port.iotype = UPIO_MEM;
- 	uart->port.ops = &men_z135_ops;
- 	uart->port.irq = mcb_get_irq(mdev);
--	uart->port.iotype = UPIO_MEM;
- 	uart->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP;
- 	uart->port.line = line++;
- 	uart->port.dev = dev;
-
--- 
-tg: (672c0c517342..) cleanup/dbl_iotype_assign (depends on: master)
---8323329-2007442200-1651649275=:1623--
+Acked-by: Arnd Bergmann <arnd@arndb.de>
