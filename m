@@ -2,114 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D5BC43217
-	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 19:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F0AC4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 20:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240233AbiEDTzU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 May 2022 15:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
+        id S236128AbiEDUN1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 May 2022 16:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356222AbiEDTzT (ORCPT
+        with ESMTP id S233682AbiEDUN0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 May 2022 15:55:19 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360CF4DF78
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 12:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=roOe+AeBY7DP+Q6uo/3NlHB6bacD
-        iF8cZtCOKwDNtfY=; b=AVvmqY7D3UH/BWMnn7wIorUCqnrJ/+VLUtw394q8E+Om
-        FcZj38Meag68aRXJMZqBMV/ykDiAbYkJb7JobePTVSDwsJScwk5GU/y4NLU/d2X/
-        TtjYV05OBt+x37dH92tXFElqcjQbmeUxdL9XANm472CsC+dHuhk7AahZPz9ANQE=
-Received: (qmail 1533983 invoked from network); 4 May 2022 21:51:39 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 4 May 2022 21:51:39 +0200
-X-UD-Smtp-Session: l3s3148p1@aBgC9DTeXJwgAwDtxwyXAP9dq+3qRUcy
-Date:   Wed, 4 May 2022 21:51:36 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Wed, 4 May 2022 16:13:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36964D251;
+        Wed,  4 May 2022 13:09:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C4A3B82834;
+        Wed,  4 May 2022 20:09:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83578C385A5;
+        Wed,  4 May 2022 20:09:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651694987;
+        bh=iStJpBX3VysI3BJkMa+4eOTaEzUvXsP2MKiLXZmdm98=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a6do+IeWTo7YZXY9hCFP+MnNkgjGWY50ZpS0AWhM6oAsu9I+c4wxET54Hq+Q0TeXP
+         uHVy8+rL81TQDqXIjaD1in0PJQ2582iQsXCsfwxQMb33/OjiaBRBZToxiBJOClLi6Z
+         JzPiN0tndFSVfFlybc3GFh0KM9Sm+Pauy87H2f3NRlls0LWJOsEkwSwCal183C5noh
+         8CzCWVRhrb6d8NXC8BNZMUmxW+Nav2cknc8FCTIJM3nE6lgksnMPaW6u7H77gIZxEu
+         BGsuDwlLiw0byBpE9B+54XIHrP+2rhihmHfZwFIFlee4uocSs1kGTP3a2JTgjVxNK2
+         JRJELIn3oVNlw==
+Date:   Wed, 4 May 2022 22:09:43 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 2/7] dt-bindings: i2c: renesas,rcar-i2c: R-Car V3U is
- R-Car Gen4
-Message-ID: <YnLZSNJh7rdH77Lp@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v1 1/4] powerpc/52xx: Remove dead code, i.e.
+ mpc52xx_get_xtal_freq()
+Message-ID: <YnLdh96Z6S6IcaL2@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <cover.1651497024.git.geert+renesas@glider.be>
- <a0402ff46027196953fe9c13f60576d40c5aea4c.1651497024.git.geert+renesas@glider.be>
+        Jiri Slaby <jirislaby@kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="j/bfMYaLl7xWqyb8"
+        protocol="application/pgp-signature"; boundary="++MSw5fknTzpn73A"
 Content-Disposition: inline
-In-Reply-To: <a0402ff46027196953fe9c13f60576d40c5aea4c.1651497024.git.geert+renesas@glider.be>
+In-Reply-To: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
---j/bfMYaLl7xWqyb8
+--++MSw5fknTzpn73A
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, May 02, 2022 at 03:34:54PM +0200, Geert Uytterhoeven wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  I2C on R-Car V3U also supports some extra features (e.g. Slave
-> Clock Stretch Select), which are supported by other R-Car Gen4 SoCs, but
-> not by any other R-Car Gen3 SoC.
->=20
-> Hence move its compatible value to the R-Car Gen4 section.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Applied to for-next, thanks!
 
 
---j/bfMYaLl7xWqyb8
+Wow, MPC5200, that was a long time ago for me...
+
+> It seems mpc52xx_get_xtal_freq() is not used anywhere. Remove dead code.
+
+Looks like it.
+
+Reviewed-by: Wolfram Sang <wsa@kernel.org>
+
+
+--++MSw5fknTzpn73A
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy2UgACgkQFA3kzBSg
-KbbbBQ//bHWIRu7MnsRqfYi9eFC5lxec3M3uiwvykedIMxXDdWQCC2qXlAn6efuH
-qv9GS22D0TLykN9cUMh/mwkF8j4CpK1hxncdTz7//FyzfDcEhuABgks83Z1Z1Vib
-X8oYEjRjx5kRJD+TC6OXer3OVwKfFX8V+6FpRruFVW/LWVEZa/LTKFqlSLw1sO3A
-fy4Mw5pcBbKlDiXWmyTiAjk+Rv+apo2VXaO9nV7UxAJSICixTe0GmOPZzXHCem/z
-GvqpFKcaXWXtQ1FHt1zwxuscEhTf8YD4XDB3S1iCvkh1BXwN7xK0BW5vLQYtwxKJ
-c/F9Zwwg7dz5VHAy8Sf+AFIi3Q5Iv9gBJ7kjt6G4hpYG4itHOpCopBjmfxQu0YcD
-J5bOb/F1jKOVjPHfnE2IFzyH4Alsy+z7hAMk3R90WM/AumDfVB1d1msG/1V3rnFe
-IRRaP3yu9mmcPkG7rRWs3oi/HH3SWzeDCywaqJgIMwJWE0oFHuw5LA8KzKvk5rbD
-lVm+yJTMx0GyyhqV/dl+fyPdLTHj+5O1grgopDg6xjKDiN+2EmbstKJdGKtocA6N
-tHNzcp80bFOHV6eO3j89GhutyTdL0ma8z892LN/+Lk7dQDpyoTKLmC51fvE7BHBK
-+yqozekqkqbqe/qUVYEV0UCB/VkIEgSIoJJP39lRITx/rY2F404=
-=hJCI
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy3XEACgkQFA3kzBSg
+KbbTjRAApraHeAflyhzKaB4HdS0SS02AfYrsPj4tQGg+OdY7fGIgt0ZNCwI8CTsE
+A+PYJ4XvUcIsL5q2RFeWnsiXSeGRLiui2WLVBILJoiVfILFsR01R6QTy6OOlwIzO
+Nx5QSUgwHQB7ODDVbjOvp8pQ8FSFvqa+TM3lOJ6zWnG4d1sSSUoQnb8iXWnQFBM1
+L6wpf1VRjbKYkLyO8/omDQDGJQd2BAn9rG1jF3pEmVEmMGY57wzaRmpyU49KnPRP
+VuKtBXNrUbZXyvk4h7IEOhvI6tSD15uOrqJ/eeSfYcDLk3amS2TTvqwHaiuZCe1E
+9PJB8ch296Sr+/LCdw3nMsLZY0v5NmrthY6K7AMZCN3eFkebsSnxkbcK1BXnuKKQ
+YHKw8BafHhoQUrYxcWanNuOp2qjVodSurENsIE4s5wjpVP9EKp562+nWsrWtHns0
+poXhMlPDYldvRG/IciRnG5p/XiMeKdX2ud4OdXgTVHulLxa8AMQEap0nVwwXFjTL
+IcP3m7MEo8L5OhGsHAaw9G/VLVutLoBnyWk3oLXdSqpRPBov9r+oyZnVV5q7z8Gz
+gjejj4ciQRm08iHn9eqJ1hvHHk2erpc1aP6takxN+owEbVSAqJpypk4B3EcAhdGp
+P3VVm1YqMbiPpzP2LhWYS8ajAwFUEuyRrJSsPTzjA34uSVu4jHI=
+=2zt3
 -----END PGP SIGNATURE-----
 
---j/bfMYaLl7xWqyb8--
+--++MSw5fknTzpn73A--
