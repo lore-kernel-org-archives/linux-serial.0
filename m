@@ -2,38 +2,39 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259ECC433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 08:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D91C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 08:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237546AbiEDIWv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S1346115AbiEDIWv (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 4 May 2022 04:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346335AbiEDIWp (ORCPT
+        with ESMTP id S1346337AbiEDIWp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 4 May 2022 04:22:45 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 01:19:09 PDT
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 01:19:09 PDT
 Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A86822BDF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B70237C8
         for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 01:19:08 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220504081804d615049973c62165b4
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220504081804535c6c24c65f3ea3ac
         for <linux-serial@vger.kernel.org>;
         Wed, 04 May 2022 10:18:04 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=givcKcPjIx5sD2l4pl+6VjcrPMHyRzWU5ISndNhsXmE=;
- b=Uqv1JdNruTqnKaiNdczbMn3KY9J758mW2IfxbjXsfdMN/5m/YyE++8YhwrUKW9D2lATKea
- cLlWRTCHypejgHj3MuZat3Dn8lvFwzVvn4Sy+vNSjV1Phq28DqVECqq5ZMBLu79OmHmFVQqK
- grPpItO5O8IO5FpKlqwvqa9PUNA/o=;
+ bh=pAhSICUghL2Tdq7gJgyrM0AnGc3NFl9PMHLsjpLV0lg=;
+ b=F3dffOSVez5dYK+lSZgubH5uaAJwwDy0kuPiCOJJ9/fzIxVXeR6pDvVYJdzwSYmVRRf4C/
+ 38bTz0xrAnfV80m6NBW22MfpjnOgdMoNq3+MD+e/Yet5byonFiKQBHDRGwm7V/mzPYldmOMR
+ ZjVBAiqkeyXt5K9nC2PfxCKIISC7w=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 2/3] tty: n_gsm: fix mux activation issues in gsm_config()
-Date:   Wed,  4 May 2022 10:17:32 +0200
-Message-Id: <20220504081733.3494-2-daniel.starke@siemens.com>
+Subject: [PATCH 3/3] tty: n_gsm: fix invalid gsmtty_write_room() result
+Date:   Wed,  4 May 2022 10:17:33 +0200
+Message-Id: <20220504081733.3494-3-daniel.starke@siemens.com>
 In-Reply-To: <20220504081733.3494-1-daniel.starke@siemens.com>
 References: <20220504081733.3494-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,57 +47,61 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The current implementation activates the mux if it was restarted and opens
-the control channel if the mux was previously closed and we are now acting
-as initiator instead of responder, which is the default setting.
-This has two issues.
-1) No mux is activated if we keep all default values and only switch to
-initiator. The control channel is not allocated but will be opened next
-which results in a NULL pointer dereference.
-2) Switching the configuration after it was once configured while keeping
-the initiator value the same will not reopen the control channel if it was
-closed due to parameter incompatibilities. The mux remains dead.
-
-Fix 1) by always activating the mux if it is dead after configuration.
-Fix 2) by always opening the control channel after mux activation.
+gsmtty_write() does not prevent the user to use the full fifo size of 4096
+bytes as allocated in gsm_dlci_alloc(). However, gsmtty_write_room() tries
+to limit the return value by 'TX_SIZE' and returns a negative value if the
+fifo has more than 'TX_SIZE' bytes stored. This is obviously wrong as
+'TX_SIZE' is defined as 512.
+Define 'TX_SIZE' to the fifo size and use it accordingly for allocation to
+keep the current behavior. Return the correct remaining size of the fifo in
+gsmtty_write_room() via kfifo_avail().
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9b0b435cf26e..bcb714031d69 100644
+index bcb714031d69..fd8b86dde525 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+@@ -137,6 +137,7 @@ struct gsm_dlci {
+ 	int retries;
+ 	/* Uplink tty if active */
+ 	struct tty_port port;	/* The tty bound to this DLCI if there is one */
++#define TX_SIZE		4096    /* Must be power of 2. */
+ 	struct kfifo fifo;	/* Queue fifo for the DLCI */
+ 	int adaption;		/* Adaption layer in use */
+ 	int prev_adaption;
+@@ -1731,7 +1732,7 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
+ 		return NULL;
+ 	spin_lock_init(&dlci->lock);
+ 	mutex_init(&dlci->mutex);
+-	if (kfifo_alloc(&dlci->fifo, 4096, GFP_KERNEL) < 0) {
++	if (kfifo_alloc(&dlci->fifo, TX_SIZE, GFP_KERNEL) < 0) {
+ 		kfree(dlci);
+ 		return NULL;
+ 	}
+@@ -2976,8 +2977,6 @@ static struct tty_ldisc_ops tty_ldisc_packet = {
+  *	Virtual tty side
+  */
  
- static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- {
-+	int ret = 0;
- 	int need_close = 0;
- 	int need_restart = 0;
- 
-@@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
- 	 * FIXME: We need to separate activation/deactivation from adding
- 	 * and removing from the mux array
- 	 */
--	if (need_restart)
--		gsm_activate_mux(gsm);
--	if (gsm->initiator && need_close)
--		gsm_dlci_begin_open(gsm->dlci[0]);
-+	if (gsm->dead) {
-+		ret = gsm_activate_mux(gsm);
-+		if (ret)
-+			return ret;
-+		if (gsm->initiator)
-+			gsm_dlci_begin_open(gsm->dlci[0]);
-+	}
- 	return 0;
+-#define TX_SIZE		512
+-
+ /**
+  *	gsm_modem_upd_via_data	-	send modem bits via convergence layer
+  *	@dlci: channel
+@@ -3217,7 +3216,7 @@ static unsigned int gsmtty_write_room(struct tty_struct *tty)
+ 	struct gsm_dlci *dlci = tty->driver_data;
+ 	if (dlci->state == DLCI_CLOSED)
+ 		return 0;
+-	return TX_SIZE - kfifo_len(&dlci->fifo);
++	return kfifo_avail(&dlci->fifo);
  }
  
+ static unsigned int gsmtty_chars_in_buffer(struct tty_struct *tty)
 -- 
 2.34.1
 
