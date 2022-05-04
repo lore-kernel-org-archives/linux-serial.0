@@ -2,90 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECC1C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 16:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E58C43219
+	for <linux-serial@archiver.kernel.org>; Wed,  4 May 2022 19:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345429AbiEDQuY convert rfc822-to-8bit (ORCPT
+        id S1355471AbiEDTlk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 May 2022 12:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50248 "EHLO
+        Wed, 4 May 2022 15:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353480AbiEDQuU (ORCPT
+        with ESMTP id S232578AbiEDTlk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 May 2022 12:50:20 -0400
-X-Greylist: delayed 1560 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 09:46:43 PDT
-Received: from mail.megasoftsol.com (mail.megasoftsol.com [43.231.250.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DC618E35
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 09:46:43 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.megasoftsol.com (Postfix) with ESMTP id D91C690744A
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 21:38:54 +0530 (IST)
-Received: from mail.megasoftsol.com ([127.0.0.1])
-        by localhost (mail.megasoftsol.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id P4kNXfuKQVXz for <linux-serial@vger.kernel.org>;
-        Wed,  4 May 2022 21:38:54 +0530 (IST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.megasoftsol.com (Postfix) with ESMTP id 26365907444
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 21:38:54 +0530 (IST)
-X-Virus-Scanned: amavisd-new at megasoftsol.com
-Received: from mail.megasoftsol.com ([127.0.0.1])
-        by localhost (mail.megasoftsol.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id BzQd1cOmzbXw for <linux-serial@vger.kernel.org>;
-        Wed,  4 May 2022 21:38:53 +0530 (IST)
-Received: from johnlewis.com (unknown [20.97.211.134])
-        (Authenticated sender: admin)
-        by mail.megasoftsol.com (Postfix) with ESMTPSA id 3BF3290742D
-        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 21:38:52 +0530 (IST)
-Reply-To: robert_turner@johnlewis-trades.com
-From:   John Lewis & Partnersip <robert.turner44@johnlewis.com>
-To:     linux-serial@vger.kernel.org
-Subject: 5/04/2022 Product Inquiry (JL)
-Date:   04 May 2022 16:11:21 +0000
-Message-ID: <20220504123943.8A6DB64BB05A7BFC@johnlewis.com>
+        Wed, 4 May 2022 15:41:40 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4B64D256
+        for <linux-serial@vger.kernel.org>; Wed,  4 May 2022 12:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=T0SMZXN87mfbGYdslVIzxN731a69
+        yFRI35AcyNOGoKA=; b=cJ05izlUVZhs3a/OGCJhfaEPDq8PXcukKlu8Il9yxvUk
+        yBZmk8Rqb+YW7lWH/akUJAQbXT/au+b1AV3NRXOp9KEdeMM+HxUsj7/PQqiQeXoo
+        gGmCVFhDMdmBFzurUEl0hzInZw8baa9qFG4wqyLb5xlTiZYy8VuOoO3J3wJO6PM=
+Received: (qmail 1529521 invoked from network); 4 May 2022 21:37:56 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 4 May 2022 21:37:56 +0200
+X-UD-Smtp-Session: l3s3148p1@fBecwjTeCpwgAwDtxwyXAP9dq+3qRUcy
+Date:   Wed, 4 May 2022 21:37:47 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH 1/7] dt-bindings: gpio: renesas,rcar-gpio: R-Car V3U is
+ R-Car Gen4
+Message-ID: <YnLWCzLESZ3NwNg7@kunai>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <cover.1651497024.git.geert+renesas@glider.be>
+ <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="YNJ34uo+OPtBXoDU"
+Content-Disposition: inline
+In-Reply-To: <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear linux-serial
- 
- 
-The famous brand John Lewis & Partners, is UK's largest multi-
-channel retailer with over 126 shops and multiple expansion in 
-Africa furnished by European/Asian/American products. We are 
-sourcing new products to attract new customers and also retain 
-our existing ones, create new partnerships with companies dealing 
-with different kinds of goods globally.
- 
-Your company's products are of interest to our market as we have 
-an amazing market for your products.
- 
-Provide us your current catalog through email to review more. We 
-hope to be able to order with you and start a long-term friendly, 
-respectable and solid business partnership. Please we would 
-appreciate it if you could send us your stock availability via 
-email if any.
- 
- 
-Our payment terms are 15 days net in Europe, 30 days Net in UK 
-and 30 days net in Asia/USA as we have operated with over 5297 
-suppliers around the globe for the past 50 years now. For 
-immediate response Send your reply to "robert_turner@johnlewis-
-trades.com" for us to be able to treat with care and urgency.
- 
- 
- 
-Best Regards
- 
- 
-Rob Turner
-Head Of Procurement Operations
-John Lewis & Partners.
-robert_turner@johnlewis-trades.com
-Tel: +44-7451-274090
-WhatsApp: +447497483925
-www.johnlewis.com
-REGISTERED OFFICE: 171 VICTORIA STREET, LONDON SW1E 5NN
+
+--YNJ34uo+OPtBXoDU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, May 02, 2022 at 03:34:53PM +0200, Geert Uytterhoeven wrote:
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+
+--YNJ34uo+OPtBXoDU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy1gUACgkQFA3kzBSg
+Kbacvg/+M5weBbp8eucQzeQfhiSXmoUq8Y085EPJPVnSs9VIxmDp6QiVP3OYgeZb
+mRyvi3cG+gfUGSnZZs+0VDmQBPHCz2V7d731JxT0LVhv/uJz/ItLPzrlIWO50KcD
+Qdeo2KKaVnm99fZLzjh+NLUEz3miB20m16D61q7tdMyJ4RoVPHV4vhks0XO8PBTU
+c/reVsCjoxzwHbhNaRKmDbhzwtvOdLG4HyWDJU98ZD3p//Pakjb3E0ke//Ka6Jwu
+CRVqd4iih7pq/VXCJRQfFihTRcWN6WQFu7CqtJI0zZijuKMRHrFbzB6jmao8D6Oy
+GRiRFwjfgoc+emlOKRGUy8C3puUnn4zBJlSHdnHYjXyMdsHS2W0aCtrT4U1cXBuR
+geyysQdp07zxfSVLA/4c7Ct+wF98JJXFlJ0ccFTRRwtRUrRpcvq0PuWEF0VaWoSM
+t9OvT5PWv3wQAOTcP1En5UP0wZUXOJznRcGOOinvCVVYAlcjP9oDQqDTkdRFwYdz
+HJXj7xpF290VMZh0uC0zleU632ngk5UA8N4mnEKLGRo6jppkZWRrxKt/CU0T4upC
+MGnS/oywZKz2PKoQeO+6QX75pRe8DdVjYNiNHYyiFYMsc/gw1mJ1tKgplWZvdmZU
+Ooarfwc9vDJQX5C4HeXnNLdsIKtmxzspIs2+nAM/tpIcVi3AZz8=
+=k7OO
+-----END PGP SIGNATURE-----
+
+--YNJ34uo+OPtBXoDU--
