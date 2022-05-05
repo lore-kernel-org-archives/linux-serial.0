@@ -2,93 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81912C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 14:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FA0C43219
+	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 17:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233311AbiEEOlg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 May 2022 10:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        id S1379405AbiEERFl (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 May 2022 13:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiEEOlf (ORCPT
+        with ESMTP id S1344870AbiEERFd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 May 2022 10:41:35 -0400
-Received: from mail.tkos.co.il (golan.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC19853A43;
-        Thu,  5 May 2022 07:37:55 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id 4E558440F39;
-        Thu,  5 May 2022 17:36:58 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1651761418;
-        bh=YKpQePxu2a+ZeS7IXYXOK7QZI9aPzC1QorvRu4TfF58=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=nPsokUTenIiWaJ4S8OJO9pB/xvlgAdOVqNlCq5iThlZqza+uc/Ra2IUiG8gdjC0Sa
-         I9BDG250OJq5Lauf8STOlphUvMZ15ZIsU/hR7H3FoLufpOFeaTtK+ZbSqcO8YEWdg7
-         DaF0tVIaihHhnL9YAYJl41CdakzPctGTYM/19F9BF4YQqyQSbNuGdw/JaGR2EubwDh
-         KsEAiDnSLaJL75WaVxcsxMb8QR+452URXbM/+eE3MbhjFHiagxrsg6pVQw8lzn5zQg
-         rgQ/BV2IxzCjoON5Ohvx3odPBAU6bLP/ed5DO41bMyin7kbEM29ymK0trVxCo5k/iv
-         RA1Of6ec9AmuQ==
-References: <20220505124621.1592697-1-yangyingliang@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Subject: Re: [PATCH] tty/serial: digicolor: fix possible null-ptr-deref in
- digicolor_uart_probe()
-Date:   Thu, 05 May 2022 17:36:36 +0300
-In-reply-to: <20220505124621.1592697-1-yangyingliang@huawei.com>
-Message-ID: <87h764hwow.fsf@tarshish>
+        Thu, 5 May 2022 13:05:33 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BD35B3DC;
+        Thu,  5 May 2022 10:01:52 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so3006973wme.3;
+        Thu, 05 May 2022 10:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:date:content-transfer-encoding
+         :user-agent:mime-version;
+        bh=WdAvXMilkjeXGxCjt4xSahrQ1dbVlNr+hNx2Eah+WlM=;
+        b=hTNmdPYIZqmJ813s+jCFPFG2FxNmfsZ1OymxifcGYmreRrJs6FAySX+Z8IlZ5qxpcX
+         V3QWT2s8/IsLlbXcnNM8SL9NsLo1XKhBgS9UZuyXYk7cPVrwMWQyJJB/L+yfRepwM8e9
+         KHl4uL7I/3cyXenNxV6FWEryxat4r1bg6E46kkj0vtEvDBBJm4E/B6ux8ak9MlOq9biI
+         4mYzdf1WfB4+iVRc8jVtaNyY68o/m8gfFsZ87CW3q+Q1Z2MI+6Ms2bXDjLu8Po24hPc8
+         aXKIpYyxq+kQuDokdWomLpkAl6/bU+GLb2ZExxsHJQTg6TDWcjKpmpCVpf3QVE3SGOgO
+         sZ8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=WdAvXMilkjeXGxCjt4xSahrQ1dbVlNr+hNx2Eah+WlM=;
+        b=AqO330shtCkFNr4P/yXzQxQekrB8dFO679MPsfvD7ToVbbVC8GMA5UzQB1U9mspBhW
+         DU5+EgqSmDXqcKIa7FCEXMTX1pUx/Gdm1P8N/RkX2j8Q9gqhP0rwp3BxHyxQKUgHo1Zw
+         SMEbjMb1fsyR1quU/3j5E2/qOc0y/g4LDJOJaWvT6q5ylwgwxwVCJyAoPpS7KVueeCMe
+         knREJ5HGT66iDAlH520QyINk+3UE5VZPpsRpZcZehhwF3y8C2+GSDOrI04hSfTGaOouz
+         QMbQq3NGO+k4cDRL++2m3Kcm45MKY+AG15N+uLL7U6zGmIsUvyPm7dAGZYRtm4RVJ3L/
+         JZsw==
+X-Gm-Message-State: AOAM532RDh3pf/iHvMsbQp8w/TdguWw+ZOBG1u9gQXPlnUF2gHXy4OMg
+        RogiUJcFPrEzJB8jRydZHIuJjphISeU=
+X-Google-Smtp-Source: ABdhPJwGhkNOC7bMhu95RxFbVVMEfYOF2frj3xLBCZmE2FFo4w9Rz+9PZHPCh0N0pN22TBVrX7RUyw==
+X-Received: by 2002:a05:600c:4fc6:b0:393:fb29:1f3f with SMTP id o6-20020a05600c4fc600b00393fb291f3fmr5964866wmq.60.1651770110800;
+        Thu, 05 May 2022 10:01:50 -0700 (PDT)
+Received: from [192.168.11.155] (94-21-221-167.pool.digikabel.hu. [94.21.221.167])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056000118600b0020c5253d8d6sm1644791wrx.34.2022.05.05.10.01.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 10:01:50 -0700 (PDT)
+Message-ID: <052a814001aaa46eab844f1d9693ddd9d731c164.camel@gmail.com>
+Subject: 9 bit serial / non-blocking TCSADRAIN
+From:   =?ISO-8859-1?Q?Baltaz=E1r?= Radics <baltazar.radics@gmail.com>
+To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 05 May 2022 19:01:48 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Yang,
+Hello!
 
-On Thu, May 05 2022, Yang Yingliang wrote:
-> It will cause null-ptr-deref when using 'res', if platform_get_resource()
-> returns NULL, so move using 'res' after devm_ioremap_resource() that
-> will check it to avoid null-ptr-deref.
-> And use devm_platform_get_and_ioremap_resource() to simplify code.
->
-> Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+I want to use a raspberry pi's serial to communicate over a protocol
+that uses 9-bit characters, so currently I'm using the stick parity
+mode (CMSPAR) and toggling between odd and even parity, then using
+tcsetattr with TCSADRAIN as the second argument, which blocks until all
+bytes are transmitted. Is there a non-blocking api to do the same
+thing, so I can use it from poll / select? (If there's a better way to
+do 9 bit character size, that'd be even better. For my protocol, the
+9th bit is only used to tell address bytes from data bytes, so I don't
+have to change it often, so I guess my current method isn't too
+horrible.)
 
-Reviewed-by: Baruch Siach <baruch@tkos.co.il>
-
-Thanks,
-baruch
-
-> ---
->  drivers/tty/serial/digicolor-usart.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-> index 6d70fea76bb3..e37a917b9dbb 100644
-> --- a/drivers/tty/serial/digicolor-usart.c
-> +++ b/drivers/tty/serial/digicolor-usart.c
-> @@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct platform_device *pdev)
->  	if (IS_ERR(uart_clk))
->  		return PTR_ERR(uart_clk);
->  
-> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	dp->port.mapbase = res->start;
-> -	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
-> +	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->  	if (IS_ERR(dp->port.membase))
->  		return PTR_ERR(dp->port.membase);
-> +	dp->port.mapbase = res->start;
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0)
-
-
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Thanks!
