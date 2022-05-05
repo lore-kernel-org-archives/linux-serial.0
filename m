@@ -2,94 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5AAC433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 22:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FE8C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 22:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386333AbiEEWhb (ORCPT
+        id S1343675AbiEEWiK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 May 2022 18:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        Thu, 5 May 2022 18:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiEEWha (ORCPT
+        with ESMTP id S1386356AbiEEWiI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 May 2022 18:37:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43CF15EDEF
-        for <linux-serial@vger.kernel.org>; Thu,  5 May 2022 15:33:50 -0700 (PDT)
+        Thu, 5 May 2022 18:38:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECCD6004D;
+        Thu,  5 May 2022 15:34:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D38C661F38
-        for <linux-serial@vger.kernel.org>; Thu,  5 May 2022 22:33:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29517C385A8;
-        Thu,  5 May 2022 22:33:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10B5E61E53;
+        Thu,  5 May 2022 22:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5974AC385A4;
+        Thu,  5 May 2022 22:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651790029;
-        bh=ylZNJ+UfWm/WIDhKmnOARmjJgtAKo1B2N9/vlDdYJ0k=;
+        s=korg; t=1651790066;
+        bh=Fjpze9p+LviKLUP0aU8SZtUfet1POQ58RsbqdrFG4aU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iKiM85DLsyi4s1Hnx9a+ZaTo7lfIQXG+X1okg/BaXK74RUksh/i3rYlTRBN/PFNQL
-         tQKECCyul+RHitPDSiQDMBQLblCWbfE9KrpB71DRXcX+5IbrAAFdxK81bLmNSkzxkv
-         vlyr90JZzwaDu35WA19fFpRnNjMI1bRimBtKgOj8=
-Date:   Thu, 5 May 2022 22:24:48 +0200
+        b=XwneceNDSaXq0hOFu7m5dCZ1neE5qHMCBgJzH3zC53YNIaSFbDNDny3OnGfu2GNJg
+         XQanp2o4W4s0eA6VsGWPNCgBGEmW9HZo1YKXAoWwYvsJL2lfK441u05n2CtAU30dMk
+         nVi/vU5qjS8pFdXl687zzS49PRYxHKyxY4WJA8EE=
+Date:   Thu, 5 May 2022 22:48:54 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Nuno =?iso-8859-1?Q?Gon=E7alves?= <nunojpg@gmail.com>,
-        Tomasz Mon <tomasz.mon@camlingroup.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: pl011: UPSTAT_AUTORTS requires
- .throttle/unthrottle
-Message-ID: <YnQykEbvqICyDWQq@kroah.com>
-References: <d4f254ec-b73-786c-dc47-629aab8a49df@linux.intel.com>
- <YmvWFQultpccovgb@kroah.com>
- <3f44e8d-3d2d-db4e-6cfc-67ec5824c289@linux.intel.com>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc:     linux-serial@vger.kernel.org, michal.simek@xilinx.com,
+        jirislaby@kernel.org, git@xilinx.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] tty: xilinx_uartps: fixes and improvements
+Message-ID: <YnQ4Ngu8xt7DBi5C@kroah.com>
+References: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3f44e8d-3d2d-db4e-6cfc-67ec5824c289@linux.intel.com>
+In-Reply-To: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 03:33:00PM +0300, Ilpo Järvinen wrote:
-> On Fri, 29 Apr 2022, Greg KH wrote:
+On Fri, Apr 29, 2022 at 01:44:15PM +0530, Shubhrajyoti Datta wrote:
+> Many of the stuff is reported by static analysis
+> changes are 
 > 
-> > On Fri, Apr 29, 2022 at 02:57:16PM +0300, Ilpo Järvinen wrote:
-> > > The driver must provide throttle and unthrottle in uart_ops when it
-> > > sets UPSTAT_AUTORTS. Add them using existing stop_rx &
-> > > enable_interrupts functions.
-> > > 
-> > > Compile tested (w/o linking).
-> > 
-> > That shouldn't be here at all, put it below the --- line if its needed.
-> > 
-> > 
-> > > 
-> > > Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
-> > > Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto
-> > > 		     RTS status)
-> > 
-> > Nit, this should be all in one line.
-> >
-> > > Cc: Lukas Wunner <lukas@wunner.de>
-> > > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > 
-> > Any reason why you are not cc:ing all the needed people as per
-> > scripts/get_maintainer.pl?
+> - Update the copyright text
+> - Check the return valuesof runtime and clock enable calls
+> - Check the ignore_status in the isr 
+> - Prevent writing to the fifo when controller is disabled.
 > 
-> Yes there is ;-). Around here I'm being told that I should generally
-> avoid as much as possible bugging you unnecessarily. ...Or sending garbage
-> to you which I feel a compile tested patch for hw I'm not particularly 
-> familiar with surely could be. After all this should be tested first and 
-> then I'd be resending another version with Tested-by: xx Cc'ing you
-> and you would avoid all those intermediate garbage versions :-).
+> Michal Simek (1):
+>   xilinx: Update copyright text to correct format
+> 
+> Shubhrajyoti Datta (6):
+>   tty: xilinx_uartps: Check the clk_enable return value
+>   tty: xilinx_uartps: Add check for runtime_get_sync calls
+>   tty: xilinx_uartps: Check clk_enable return type
+>   tty: xilinx_uartps: Make the timeout unsigned
+>   serial: uartps: Fix the ignore_status
+>   serial: uartps: Prevent writes when the controller is disabled
 
-As you can tell, I do see these patches and get concerned when you don't
-want the subsystem maintainers to review them.
+Nit, why is the subject line prefix not unified here?  Shouldn't they
+all be "tty: xilinx_uartps:" like 4 of them are?
 
-And our tools can pick up the tested-by lines just fine.  If you don't
-want us to apply them, then use RFC and I will gladly ignore it.
+Can you fix up and resend?
 
 thanks,
 
