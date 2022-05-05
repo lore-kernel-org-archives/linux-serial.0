@@ -2,112 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77EBDC433F5
-	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 13:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81912C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378888AbiEENJq (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 May 2022 09:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
+        id S233311AbiEEOlg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 5 May 2022 10:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378730AbiEENIr (ORCPT
+        with ESMTP id S232677AbiEEOlf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 May 2022 09:08:47 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3900F5674E
-        for <linux-serial@vger.kernel.org>; Thu,  5 May 2022 06:05:07 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id i19so8587890eja.11
-        for <linux-serial@vger.kernel.org>; Thu, 05 May 2022 06:05:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sxVJoGvxoT/BfORhwUe0lF83tKeGUQ56jY7vzgfAHU4=;
-        b=Y0K2T7eDDIErEPqMy8O6G47SIMuNV/FV2iBabtCwdZYCRksLJj+E+c7fbrSt9ZBBXD
-         DaXJNvwCp8O95B7G3qBBBXd/ZY5LglYP8OcOlRsRkLkFbnOz5YGjf1+Kq+Cej6sf1PKz
-         8jox3zcMMsB69mnVMtXKZEg+/RyB0rS4FojXfONdqL7k9Dw/I4yA/G/3RFFnSgWC8agR
-         bsZsTNdQJo4ur+mN0mOVzXqc/pW10pVTqbvQpkdO4R2oawKCjQrPZ/LhQquGSb8INoG5
-         zUIcx6Usp3yJ11Kt8LC8bG4AgtPbYUl5xx+MqNZTXX94AuUxIh18hRHgvcWzdek9DC0O
-         2i3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sxVJoGvxoT/BfORhwUe0lF83tKeGUQ56jY7vzgfAHU4=;
-        b=YUXLMNP+iwfZgASf/F2V/audBHMJ6fWeKTihs9PFkYate5ieDNS4aXrbNL2TgW58L6
-         F3yquikZ+3Kd3L9vsgGt7yrAK6Tr8h63A+u+Ey/pt7+WL+PB1t1KicOGqIVAQ9WVWrTP
-         64ORwzDk+98H+brrblh+h/g11Vz2inRpEQgzCqxRuG2ugD2PUyJEU3aX7DseEoCLDPAo
-         fRq979Q2r+V9MfMsz8v6w7HbY8l+bqhSnKbN9waeYNBlsXOu5uugZNOK0nnnj+XQbkSK
-         E9KdoIVOaHCL5uJdqYxoGi24/ZTGwIp2hX8T1m7Ep4u/5cS3DqydKuYPWwHs9733tuZV
-         Zn5Q==
-X-Gm-Message-State: AOAM531aWmTUOTNvkvUmlfKl47JQcl/HrzDvRTH8IzHr6fFeo8UnBQTJ
-        oAby9dWRBqcn6Shh6orLMG5pSQNBaogdyrwhsSZdFg==
-X-Google-Smtp-Source: ABdhPJxyNkSLwouP3OR63NyFLRxUlmDS+dFIZZqJlV9mcUABNttg9TsG8+o4n8l4yoY3YgwsQa8BiV83N6jWTpdMxkc=
-X-Received: by 2002:a17:907:3e28:b0:6f4:3900:78f8 with SMTP id
- hp40-20020a1709073e2800b006f4390078f8mr21714935ejc.736.1651755905797; Thu, 05
- May 2022 06:05:05 -0700 (PDT)
+        Thu, 5 May 2022 10:41:35 -0400
+Received: from mail.tkos.co.il (golan.tkos.co.il [84.110.109.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC19853A43;
+        Thu,  5 May 2022 07:37:55 -0700 (PDT)
+Received: from tarshish (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.tkos.co.il (Postfix) with ESMTPS id 4E558440F39;
+        Thu,  5 May 2022 17:36:58 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+        s=default; t=1651761418;
+        bh=YKpQePxu2a+ZeS7IXYXOK7QZI9aPzC1QorvRu4TfF58=;
+        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
+        b=nPsokUTenIiWaJ4S8OJO9pB/xvlgAdOVqNlCq5iThlZqza+uc/Ra2IUiG8gdjC0Sa
+         I9BDG250OJq5Lauf8STOlphUvMZ15ZIsU/hR7H3FoLufpOFeaTtK+ZbSqcO8YEWdg7
+         DaF0tVIaihHhnL9YAYJl41CdakzPctGTYM/19F9BF4YQqyQSbNuGdw/JaGR2EubwDh
+         KsEAiDnSLaJL75WaVxcsxMb8QR+452URXbM/+eE3MbhjFHiagxrsg6pVQw8lzn5zQg
+         rgQ/BV2IxzCjoON5Ohvx3odPBAU6bLP/ed5DO41bMyin7kbEM29ymK0trVxCo5k/iv
+         RA1Of6ec9AmuQ==
+References: <20220505124621.1592697-1-yangyingliang@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Subject: Re: [PATCH] tty/serial: digicolor: fix possible null-ptr-deref in
+ digicolor_uart_probe()
+Date:   Thu, 05 May 2022 17:36:36 +0300
+In-reply-to: <20220505124621.1592697-1-yangyingliang@huawei.com>
+Message-ID: <87h764hwow.fsf@tarshish>
 MIME-Version: 1.0
-References: <cover.1651497024.git.geert+renesas@glider.be> <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
-In-Reply-To: <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 5 May 2022 15:04:55 +0200
-Message-ID: <CAMRc=MeQZ_T_AoHUO3qx7oW68UMC6HH9CaC041vYr7wQisqjHA@mail.gmail.com>
-Subject: Re: [PATCH 1/7] dt-bindings: gpio: renesas,rcar-gpio: R-Car V3U is
- R-Car Gen4
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        dmaengine@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        iommu@lists.linux-foundation.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 2, 2022 at 3:35 PM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  Hence move its compatible value to the R-Car Gen4 section.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
-> index 0681a4790cd62e23..75e5da6a7cc04bbd 100644
-> --- a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
-> @@ -48,11 +48,9 @@ properties:
->                - renesas,gpio-r8a77995     # R-Car D3
->            - const: renesas,rcar-gen3-gpio # R-Car Gen3 or RZ/G2
->
-> -      - items:
-> -          - const: renesas,gpio-r8a779a0  # R-Car V3U
-> -
->        - items:
->            - enum:
-> +              - renesas,gpio-r8a779a0     # R-Car V3U
->                - renesas,gpio-r8a779f0     # R-Car S4-8
->            - const: renesas,rcar-gen4-gpio # R-Car Gen4
->
-> --
-> 2.25.1
->
+Hi Yang,
 
-Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+On Thu, May 05 2022, Yang Yingliang wrote:
+> It will cause null-ptr-deref when using 'res', if platform_get_resource()
+> returns NULL, so move using 'res' after devm_ioremap_resource() that
+> will check it to avoid null-ptr-deref.
+> And use devm_platform_get_and_ioremap_resource() to simplify code.
+>
+> Fixes: 5930cb3511df ("serial: driver for Conexant Digicolor USART")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+
+Reviewed-by: Baruch Siach <baruch@tkos.co.il>
+
+Thanks,
+baruch
+
+> ---
+>  drivers/tty/serial/digicolor-usart.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+> index 6d70fea76bb3..e37a917b9dbb 100644
+> --- a/drivers/tty/serial/digicolor-usart.c
+> +++ b/drivers/tty/serial/digicolor-usart.c
+> @@ -471,11 +471,10 @@ static int digicolor_uart_probe(struct platform_device *pdev)
+>  	if (IS_ERR(uart_clk))
+>  		return PTR_ERR(uart_clk);
+>  
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	dp->port.mapbase = res->start;
+> -	dp->port.membase = devm_ioremap_resource(&pdev->dev, res);
+> +	dp->port.membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+>  	if (IS_ERR(dp->port.membase))
+>  		return PTR_ERR(dp->port.membase);
+> +	dp->port.mapbase = res->start;
+>  
+>  	irq = platform_get_irq(pdev, 0);
+>  	if (irq < 0)
+
+
+-- 
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
