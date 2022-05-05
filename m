@@ -2,175 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A809C433FE
-	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 01:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D34FC433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  5 May 2022 03:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234224AbiEEBH1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 May 2022 21:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S240927AbiEEDXW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 4 May 2022 23:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbiEEBHV (ORCPT
+        with ESMTP id S231352AbiEEDXV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 May 2022 21:07:21 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A24348306;
-        Wed,  4 May 2022 18:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651712623; x=1683248623;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HOTvegPQV0wBWkw4gry8ln/1sFHr7kpC/Ihf5d3BMQE=;
-  b=PM8Y7veyYW9GteiOKFpf9TiUD8wMGx898oh4ljHlvTR8im01f7VsKrlJ
-   xo13rM41y93VTahO5/MGB133kvkgVUzpBDZgVK3zHRJwwfhyLv+3ffz6Y
-   Np/GszEqSyl0pCyXuqDDX9INiaQrOVXP9CH2PyatvAJo1vAad2x04iV31
-   L+RhsiqJrQgb5P8JwkRo+ZjFxoSqFjhMUroXY+UqL0u84dvnBhBDifRRj
-   dvLb2OpwymCojG8NQv2AJjRl4A4aGLdQbSpp9QPbNvZRKBclRMED4kuui
-   kla2o4M+WERlU9YpvWU284YR5vu9mu8uWkdI/Vy9iy3WDDTlF/swQ4U+L
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="249930897"
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="249930897"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 18:03:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="621059599"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 04 May 2022 18:03:36 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmPu4-000Bws-2c;
-        Thu, 05 May 2022 01:03:36 +0000
-Date:   Thu, 5 May 2022 09:03:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Wolfram Sang <wsa-dev@sang-engineering.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
- mpc5xxx_get_bus_frequency() to use fwnode
-Message-ID: <202205050858.278Tyg5Q-lkp@intel.com>
-References: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+        Wed, 4 May 2022 23:23:21 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4964A914;
+        Wed,  4 May 2022 20:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1651720784; x=1683256784;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EjKATgGynEAXwguJ/QTN/z+daoE6vOAcRSvMpeZK+tM=;
+  b=tY+ocKKdIsKuzpS5L/sNJAVTom2Cl2STml8zxzkqnMBTzdynjmE4+Oih
+   JhaL9HTLe9MccgzW+VLmxfwXiVkgiIt3voJtDc4TwbHiSYP45tNe4b6Xc
+   07crhdBlWRDqx/VlqCTz4b3Y37kVJC9vu29v+ShvIu4tC6RpVDoInxGbj
+   Q=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 04 May 2022 20:19:43 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 20:19:43 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 4 May 2022 20:19:42 -0700
+Received: from [10.50.60.188] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 4 May 2022
+ 20:19:38 -0700
+Message-ID: <3ea26a88-bdff-f7bc-0887-8678939912b1@quicinc.com>
+Date:   Thu, 5 May 2022 08:49:33 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 0/2] Disable MMIO tracing from QUP wrapper and serial
+ driver
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <jirislaby@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <quic_msavaliy@quicinc.com>, <quic_vtanuku@quicinc.com>
+References: <1651488314-19382-1-git-send-email-quic_vnivarth@quicinc.com>
+ <Ym/JYr3ltaKWqHQn@kroah.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <Ym/JYr3ltaKWqHQn@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+On 5/2/2022 5:36 PM, Greg KH wrote:
+> On Mon, May 02, 2022 at 04:15:12PM +0530, Vijaya Krishna Nivarthi wrote:
+>> Register read/write tracing is causing excessive
+>> logging and filling the rtb buffer and effecting
+>> performance.
+>>
+>> Disabled MMIO tracing from QUP wrapper and serial
+>> driver to disable register read/write tracing.
+>>
+>> Vijaya Krishna Nivarthi (2):
+>>    soc: qcom: geni: Disable MMIO tracing
+>>    tty: serial: qcom_geni_serial: Disable MMIO tracing
+>>
+>>   drivers/soc/qcom/qcom-geni-se.c       | 8 +++++++-
+>>   drivers/tty/serial/qcom_geni_serial.c | 8 +++++++-
+>>   2 files changed, 14 insertions(+), 2 deletions(-)
+>>
+>> -- 
+>>
+> Doesn't this series depend on the MMIO tracing series?  Why not just
+> make it part of that one?
+>
+> confused,
+>
+> greg k-h
+>
+>
 
-I love your patch! Yet something to improve:
+It is already a part of MMIO tracing series - https://lore.kernel.org/lkml/cover.1651663123.git.quic_saipraka@quicinc.com/
+There was some disconnect before but they have been informed. Now this series will be dropped and
+will be taken as part of MMIO tracing series.
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on wsa/i2c/for-next mkl-can-next/testing broonie-spi/for-next tty/tty-testing linus/master v5.18-rc5 next-20220504]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/powerpc-52xx-Remove-dead-code-i-e-mpc52xx_get_xtal_freq/20220504-215701
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: powerpc-pcm030_defconfig (https://download.01.org/0day-ci/archive/20220505/202205050858.278Tyg5Q-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7bff10cee4f441153a56de337715dd4f40c55521
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/powerpc-52xx-Remove-dead-code-i-e-mpc52xx_get_xtal_freq/20220504-215701
-        git checkout 7bff10cee4f441153a56de337715dd4f40c55521
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/i2c/busses/i2c-mpc.c: In function 'mpc_i2c_get_fdr_52xx':
->> drivers/i2c/busses/i2c-mpc.c:242:30: error: expected identifier or '(' before '=' token
-     242 |         struct fwnode_handle = of_fwnode_handle(node);
-         |                              ^
-   In file included from include/linux/of_address.h:6,
-                    from drivers/i2c/busses/i2c-mpc.c:14:
->> include/linux/of.h:176:10: error: expected statement before ')' token
-     176 |         })
-         |          ^
-   drivers/i2c/busses/i2c-mpc.c:242:32: note: in expansion of macro 'of_fwnode_handle'
-     242 |         struct fwnode_handle = of_fwnode_handle(node);
-         |                                ^~~~~~~~~~~~~~~~
-   drivers/i2c/busses/i2c-mpc.c:243:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     243 |         const struct mpc_i2c_divider *div = NULL;
-         |         ^~~~~
->> drivers/i2c/busses/i2c-mpc.c:250:62: error: 'fwnode' undeclared (first use in this function); did you mean 'node'?
-     250 |                 *real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / 2048;
-         |                                                              ^~~~~~
-         |                                                              node
-   drivers/i2c/busses/i2c-mpc.c:250:62: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +242 drivers/i2c/busses/i2c-mpc.c
-
-   238	
-   239	static int mpc_i2c_get_fdr_52xx(struct device_node *node, u32 clock,
-   240						  u32 *real_clk)
-   241	{
- > 242		struct fwnode_handle = of_fwnode_handle(node);
-   243		const struct mpc_i2c_divider *div = NULL;
-   244		unsigned int pvr = mfspr(SPRN_PVR);
-   245		u32 divider;
-   246		int i;
-   247	
-   248		if (clock == MPC_I2C_CLOCK_LEGACY) {
-   249			/* see below - default fdr = 0x3f -> div = 2048 */
- > 250			*real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / 2048;
-   251			return -EINVAL;
-   252		}
-   253	
-   254		/* Determine divider value */
-   255		divider = mpc5xxx_fwnode_get_bus_frequency(fwnode) / clock;
-   256	
-   257		/*
-   258		 * We want to choose an FDR/DFSR that generates an I2C bus speed that
-   259		 * is equal to or lower than the requested speed.
-   260		 */
-   261		for (i = 0; i < ARRAY_SIZE(mpc_i2c_dividers_52xx); i++) {
-   262			div = &mpc_i2c_dividers_52xx[i];
-   263			/* Old MPC5200 rev A CPUs do not support the high bits */
-   264			if (div->fdr & 0xc0 && pvr == 0x80822011)
-   265				continue;
-   266			if (div->divider >= divider)
-   267				break;
-   268		}
-   269	
-   270		*real_clk = mpc5xxx_fwnode_get_bus_frequency(fwnode) / div->divider;
-   271		return (int)div->fdr;
-   272	}
-   273	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Sai
