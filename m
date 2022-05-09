@@ -2,97 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C334CC433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65373C4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiEIKvQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 06:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S231166AbiEIKye (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 06:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiEIKu6 (ORCPT
+        with ESMTP id S229580AbiEIKyb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 06:50:58 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3CF2D2E0B;
-        Mon,  9 May 2022 03:46:36 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so8011117wme.3;
-        Mon, 09 May 2022 03:46:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T3V/lJ4KUDk6qXJayPf/9nDf9cdeXl1HqcM89tsaVpI=;
-        b=c3u+pHWHX+KRBICJluZBGRYy4OlWzlKvluuGrCdgoXGH0a69jGDaP0k5BX/dgB7oYw
-         rfmI/FphL878Amre2FtUZy7e0fOUddHib2whV4Cx8oS2gwvzDLnAmID7U01ziYkBBV8y
-         jBS9h9uqboJuFR3YJ4hVnruqamNMgQ3HUe3HyqcefpqL+uyWDpcEsFYDJkB1+bSFU2cY
-         yRggGixlIfKFY1K5dMk3Dm2nkwcj2zfbFqgnUtA2h6FR5Zrt7Hs1NYmxYjz/Iftc6ufy
-         47w+DIwUXTmb33sPMopKtAdWVqkobUSXvPO943aWqirbgPk0CljZto413gVvu8zfl7mi
-         k81w==
-X-Gm-Message-State: AOAM5302biJV4KkdAKV+pF8hSnToMCN4xXxqnT67krE7SyKI/iH4tGF1
-        Lkg4yUzv7o7ylgFi7XWZ/lpTFo8556Efug==
-X-Google-Smtp-Source: ABdhPJyhgE0jqM93Q9glBx5zr2oitPx34fTQ646NYNBCLlHFa9uKBazTrFpDIlIgdcOjOZ0WNnIALg==
-X-Received: by 2002:a05:600c:4f49:b0:394:8125:8b6 with SMTP id m9-20020a05600c4f4900b00394812508b6mr10898849wmq.80.1652092879195;
-        Mon, 09 May 2022 03:41:19 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id m37-20020a05600c3b2500b003942a244ec5sm12731163wms.10.2022.05.09.03.41.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 03:41:18 -0700 (PDT)
-Message-ID: <b17dde9a-6519-15be-07c6-218b1a1ef416@kernel.org>
-Date:   Mon, 9 May 2022 12:41:17 +0200
+        Mon, 9 May 2022 06:54:31 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB865235171;
+        Mon,  9 May 2022 03:50:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652093410;
+        bh=ZNg4QfBLznxYxqjKAVqw9swhZEDJfkMbCiNoVYmHisU=;
+        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
+        b=N4MLLZWGCb5JNtyC7H95egCjPz1yjApQOartbRPLCvWBD4GanTBMTVZ/KKygDC3hm
+         FMg7NWuPppvbmIUuTVH5u5V3HSitKPu6xbE0fhzhoYC3vcDqq4e+0NCewfaVZg5h52
+         EInpwNfWxYEEtP9d/4bagku/JusC767uarxkzMss=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.155.173]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MvsIv-1o7Kw12pjb-00stra; Mon, 09
+ May 2022 12:50:10 +0200
+Message-ID: <97b0e932-1309-edfd-3886-fee1498bff7d@gmx.de>
+Date:   Mon, 9 May 2022 12:50:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/3] tty: n_gsm: fix buffer over-read in gsm_dlci_data()
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/3] termbits.h: create termbits-common.h for identical
+ bits
 Content-Language: en-US
-To:     "D. Starke" <daniel.starke@siemens.com>,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220504081733.3494-1-daniel.starke@siemens.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220504081733.3494-1-daniel.starke@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
+References: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
+ <20220509093446.6677-2-ilpo.jarvinen@linux.intel.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220509093446.6677-2-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:zN2+kufeFCrksKVn8ZLSi+Syp9bvVf6OWsAjAyYEa1Ib3x5+K/9
+ yqA1aCrRiPgP9b9DJlUpyIZcigck+TrE9epdqVuA3ojwlRLQMadGPx3r1bC7Btb/zStxbrF
+ NoC0V3l8L+7ScAKi58Ip1EWrF5H6mWyzVnib/hP8wrxkdreDiQbXHvGQ2iT7Q8fCfKxVwbq
+ r5ybGN+aaUIS5yRhGnU1A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:94PDWJkNMMU=:BwsTolgvnknC3y15LtPdYZ
+ q77U5FGg4DFDbNGdo2GKziDKKE5hz8WLBxdbyGuVG/2zDwRXzfU4L7BtIwmDyDZ9Necz9Z+jV
+ MUDRmdXZKagx6cHLi1j79oQnXypgaf9m5/FMm088ClB2ez9ornpNx5W73k5NuhvQ6tXNOryql
+ nIyGGtpE1IbWRjr9NfSxGZaIMP7+IggpSLnWOCcRkmDOGjJLoQAY7B2p960/CdL5dcQUN9Ljk
+ qff2/DF5edvh04Bv1kGfIntWyQkDV18fkliopxSigXuBTe+Du/Ab7HCAa9/rcU6SAi2RaiLUE
+ /nf7MK5AoonznCEk1CpE7NcPZAxN4reG9g52INHH7d4erIMNkY5JIc5b7ZnWhwtR/lfRy5HN2
+ dNI6teExhpT63mpQnzSxWoL6S2/81/vTqeKGtbDJIoR69vBzMjHpJceDVrUjRSrg2f+ytGfGu
+ H2d1UdIVZ4dX04qYpZ07WuPC1YS6Mm/lYKLLGMMfS5VwM0FbVLnQd7o9mIvc9+dYReqbRuiTb
+ snCbGkpSPip9EefktG6wD84sV5sJgJxrBQXSzR4GTj4jUZ8uenlkD0TQE9veRbMVcz4HYmOsg
+ Yd/hV66kNyekONn5+S5q1sgNK7j7Om5oqly9mQc0nBvos6+IXaXsZDD+yNJb9+PAOMO5+xc5j
+ 0xO87NcU7tvQudG29HUKSkhUNn0t+XFR6xcuZ9WCeLe8GMk3U7LRp+iLC6WTjqxsPSn/9v1Fz
+ t4EVdHwf6O9+Y/iQ6lIwtoQOxffwQ6JH/Cshp+3evWIp7bn6UqGQaFs6awPYkVVazRhqSOvB+
+ 5jV9iXh54Jm4v123P4trcF0QrdSuch4TtGpf8M4lovhgncZgMTyziL+NJq784H2TOJ4WbBWZq
+ pRG5e8D98p3lMkZAp7nAF+K/YrxZfxRcj3XY1NwGS+fbkhRn4I57Xtn4tyDxuAcoQBzA+WhIh
+ Y5CeRlwCeTeUCmprVlG3YwFjaCgWer7ndGh7Ghm/wkLhqmQ6CCy+CETCD5/hyoVEXXol5htSJ
+ NCMPp2WlzrQXl6ICzAkT8hjEkoccKicc1eiPz8+Hn+eyHBWs2usF8iQUkv2xtSuNxLNLR1PUF
+ 6Pxei0sM8iDQyU=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 05. 22, 10:17, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> 'len' is decreased after each octet that has its EA bit set to 0, which
-> means that the value is encoded with additional octets. However, the final
-> octet does not decreases 'len' which results in 'len' being one byte too
-> long. A buffer over-read may occur in tty_insert_flip_string() as it tries
-> to read one byte more than the passed content size of 'data'.
-> Decrease 'len' also for the final octet which has the EA bit set to 1 to
-> write the correct number of bytes from the internal receive buffer to the
-> virtual tty.
-> 
-> Fixes: 2e124b4a390c ("TTY: switch tty_flip_buffer_push")
+Hello Ilpo,
 
-That commit barely introduced the problem.
+On 5/9/22 11:34, Ilpo J=C3=A4rvinen wrote:
+> Some defines are the same across all archs. Move the most obvious
+> intersection to termbits-common.h.
 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->   drivers/tty/n_gsm.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index a38b922bcbc1..9b0b435cf26e 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -1658,6 +1658,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
->   			if (len == 0)
->   				return;
->   		}
-> +		len--;
->   		slen++;
->   		tty = tty_port_tty_get(port);
->   		if (tty) {
+I like your cleanup patches, but in this specific one, does it makes sense
+to split up together-belonging constants, e.g.
 
+> diff --git a/arch/parisc/include/uapi/asm/termbits.h b/arch/parisc/inclu=
+de/uapi/asm/termbits.h
+> index 6017ee08f099..7f74a822b7ea 100644
+> --- a/arch/parisc/include/uapi/asm/termbits.h
+> +++ b/arch/parisc/include/uapi/asm/termbits.h
+> @@ -61,31 +61,15 @@ struct ktermios {
+>
+>
+>  /* c_iflag bits */
+> -#define IGNBRK	0x00001
+> -#define BRKINT	0x00002
+> -#define IGNPAR	0x00004
+> -#define PARMRK	0x00008
+> -#define INPCK	0x00010
+> -#define ISTRIP	0x00020
+> -#define INLCR	0x00040
+> -#define IGNCR	0x00080
+> -#define ICRNL	0x00100
+>  #define IUCLC	0x00200
+>  #define IXON	0x00400
+> -#define IXANY	0x00800
+>  #define IXOFF	0x01000
+>  #define IMAXBEL	0x04000
+>  #define IUTF8	0x08000
 
--- 
-js
-suse labs
+In the hunk above you leave IUCLC, IXON, IXOFF... because they seem unique=
+ to parisc.
+The other defines are then taken from generic header.
+Although this is correct, it leaves single values alone, which make it har=
+d to verify
+because you don't see the full list of values in one place.
+
+> @@ -112,24 +96,6 @@ struct ktermios {
+>
+>  /* c_cflag bit meaning */
+>  #define CBAUD		0x0000100f
+> -#define  B0		0x00000000	/* hang up */
+> -#define  B50		0x00000001
+> -#define  B75		0x00000002
+> -#define  B110		0x00000003
+> -#define  B134		0x00000004
+> -#define  B150		0x00000005
+> -#define  B200		0x00000006
+> -#define  B300		0x00000007
+> -#define  B600		0x00000008
+> -#define  B1200		0x00000009
+> -#define  B1800		0x0000000a
+> -#define  B2400		0x0000000b
+> -#define  B4800		0x0000000c
+> -#define  B9600		0x0000000d
+> -#define  B19200		0x0000000e
+> -#define  B38400		0x0000000f
+> -#define EXTA B19200
+> -#define EXTB B38400
+
+Here all baud values are dropped and will be taken from generic header, wh=
+ich is good.
+
+That said, I think it's good to move away the second hunk,
+but maybe we should keep the first as is?
+
+It's just a thought. Either way, I'm fine your patch if that's the
+way which is decided to go for all platforms.
+
+Helge
