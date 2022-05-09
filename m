@@ -2,154 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65373C4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D14BC433F5
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiEIKye (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 06:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        id S229863AbiEIK7Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 06:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiEIKyb (ORCPT
+        with ESMTP id S229833AbiEIK7X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 06:54:31 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB865235171;
-        Mon,  9 May 2022 03:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1652093410;
-        bh=ZNg4QfBLznxYxqjKAVqw9swhZEDJfkMbCiNoVYmHisU=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=N4MLLZWGCb5JNtyC7H95egCjPz1yjApQOartbRPLCvWBD4GanTBMTVZ/KKygDC3hm
-         FMg7NWuPppvbmIUuTVH5u5V3HSitKPu6xbE0fhzhoYC3vcDqq4e+0NCewfaVZg5h52
-         EInpwNfWxYEEtP9d/4bagku/JusC767uarxkzMss=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.155.173]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MvsIv-1o7Kw12pjb-00stra; Mon, 09
- May 2022 12:50:10 +0200
-Message-ID: <97b0e932-1309-edfd-3886-fee1498bff7d@gmx.de>
-Date:   Mon, 9 May 2022 12:50:06 +0200
+        Mon, 9 May 2022 06:59:23 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140080.outbound.protection.outlook.com [40.107.14.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630AB197F7F;
+        Mon,  9 May 2022 03:55:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ciPaIgcRtrIJo7S8C2/l/xtf94beVGfxt05yGtqX+G2WdGZ2JaI4KYF6FyTVifrost8avA8JLOkW4G+1r3M4UI1jEK7rZShxOIxpUtUXgDcL22tcTFMmDzn7DjLBeUNrxq5L6gGhPUk7Gqnkl9u4SUzu2uHPJ7jkxh8ox9piibQLxCTsjMeof/BJp6ca/HCw559hzYmRjNYOFKLThFJEU5PtzapdhXb/ydsA50fdjYlRh8aAeTGhMrhtY4dDXwacxPFRscuWMeXnCadV8VrJoJpVDYN9F8XaRbJ8tug2UG593a/wZ4Y/hygGYppR5VcQ+FLM1YmWJR8uVsf/0DrbKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AjMpURF4hbOmIZmfEGvYSt5p7SYCrwRFMkeahY8GxwY=;
+ b=NB/wdCHaQ0qlwP+kxjWGwynJFeYgnFkrGCs9xweg/66954u3vmNR53bC8afnEgmPCcl9DRXGH/6JNNJGbD7tXkKW2iqpuqcu5ejtX4NdXtMiBpQRKSYTt5Ozdu8sz0fe+yam27z1PJY5D2z4R8piURO+lXfqWA6wdaWniuI8VnZ3NBhFHybCvt/JKyWFGnyacFF1128MsPjnPlr4X+/c5U+zsiINNUeu/KNwCYCekCUkmzGouNrr4tl0RQIF57BwpP5nV6JJy8mmdV0oEHwfkYv58u8fU93jYQAuAWuoQaRhtxJ83ej23Je0P41m4iOIJOmodqP835xb4ZN69jZ4Ng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AjMpURF4hbOmIZmfEGvYSt5p7SYCrwRFMkeahY8GxwY=;
+ b=tOQp/Qa9c38VY1ad0ion5h4Cp8+hwB17lEN6ccP0inXaq/Z6DtPpfYzSIvOSnhdwWOQo9fpaj29Io1tIzOX0XWFBIHU8aH2a2TjzCtFzEbJJ2MFKzOBtqjQtRieT3h7t/SmURStCLSLmsmDj5BZWvlHayuoK4CD82ZCKPOOwB8vU8uUr6nF5iqoskbSqfSAYMIZ3eDhK6wa7GfyHz+ehRzDhmsRxZrN4RCsiqF0Me24TJ0BffzMzWfX5z4E6lB071AJ19Y0Zk9vMyOnE3Zi98195C5paO52LgFbs4FTiEl0bBAA/97D8i3bcobHAAXJDuWefyFbn5EneH8gqsPBX5w==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by VI1PR10MB2622.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:e6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Mon, 9 May
+ 2022 10:55:27 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::99a1:b485:c2b1:7ee0]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::99a1:b485:c2b1:7ee0%3]) with mapi id 15.20.5227.023; Mon, 9 May 2022
+ 10:55:26 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/3] tty: n_gsm: fix buffer over-read in gsm_dlci_data()
+Thread-Topic: [PATCH 1/3] tty: n_gsm: fix buffer over-read in gsm_dlci_data()
+Thread-Index: Adhjkzv52f69hDsVRdyr3WU2S61DFA==
+Date:   Mon, 9 May 2022 10:55:26 +0000
+Message-ID: <DB9PR10MB58811C7FBE7EB0600151A6D8E0C69@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Enabled=true;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_SetDate=2022-05-09T10:55:24Z;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Method=Privileged;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Name=restricted-default;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_ActionId=7c1e7dfa-a841-44ee-9b9c-7d7c36eb76e7;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 686c5ed0-512e-4ece-c89c-08da31aa6ce8
+x-ms-traffictypediagnostic: VI1PR10MB2622:EE_
+x-microsoft-antispam-prvs: <VI1PR10MB26227342C88ED27EAEF62189E0C69@VI1PR10MB2622.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1mm0MFRvrrepuxTX3m40Q3QMsWP8zBaCbdPf2thnwzjcmFkswQGGx+JvlS6ToRA0L8fDWoj0KJCmNf2ZvrwpQk7lD/kdh8G0oCLOkpswX49Kboriw8wGzMRr8PI7e4DyV2lfZLeiCJDuQTIgy7fO96SWKNYPxE5+TYCyIWQ1qic52yXgIemJ62GzH/7Y7JqkU0BKzWBdAR0Ge4tQsMhrzEEyLTWyPGKwHlz6r86hucIDFiyfgpxW/mLpK2IVIDTQNVw3Z3Na4uyoqRVw9we/E+zjasBMYLKMSV9shpmF3Kaflpr4FMOMo+BwVI3tytUVpg8fI0M3pihiaAZ263vVxCnpbNH7GgQ8aO659fbZqpAamQrWjbokK+OEjW+9p3MoUR6V9Ud/cyidPyhBYjUREV/SrjhbO+zRYxjMh+2KTLR/HsHCNxy88VdbwGAZlpAk/sxWORcORDKdzw84r9aLD51sVT2p/N7K8Uc65P9PehGH5gHfNR2ax6cRMPF6yzSSISXhQZRfkF0eyLnlH9hnwLM5iK3lq8x538eIW5RUOaaZH02bG6zIiTz2xe6GB5TOvORoNZERQDd2+Wu4eIIQMlY0G6sUxCinqgzYb2LfMCCm1JqAWbv+H7WDVIHHM99a7oX25a44F48EFJxFa2NOkIbgdpn2Et67BTB/s6qNs3iJ06RNUXLOkV87FT/JuUs6irq2r+UT0xnFAJiIlQP2MQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(8936002)(66556008)(64756008)(66446008)(8676002)(4326008)(55016003)(110136005)(4744005)(2906002)(66476007)(6506007)(5660300002)(52536014)(76116006)(66946007)(55236004)(7696005)(71200400001)(26005)(33656002)(9686003)(186003)(508600001)(86362001)(82960400001)(38100700002)(38070700005)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WWlGcFJGSzNwUDFtek4zNEFPVkdsZHlrZUM4M0NwSGx1TjBuVGl4WGx4VDRy?=
+ =?utf-8?B?TjY0R2k3RlA5RDlrR1N6OFlSYlhjMWFSZjdwVDlCeisyeHZCckxaT1pmVjc3?=
+ =?utf-8?B?WkNJSDNDd0ZzSkpBZGFaVFVvdGxpUm1DRC92RlA4N2dNTlZyNFdGa0FCYTQw?=
+ =?utf-8?B?OXBiUDRLY3Z0NnVlNkpQMWFSWkRieWlzQ3JnUVFYaXBRWmdVM2FFSVdUUjBs?=
+ =?utf-8?B?SU1UVVBCRWJId0cwNmthc2Jmc0l3ZXdWQ00xc29iTGMvNEdDNWczT213TUFu?=
+ =?utf-8?B?aHNqWkNFY0pJVEdLRUZXaENReFo4WXVUU0d0TG52dTlCaU90MjRhTnl4L3Mv?=
+ =?utf-8?B?Mmp5dWUyRmd2MHp0YnFabEdPUlBheFprNEJIdVE0S0NkSVhQR0NLTHJkb29X?=
+ =?utf-8?B?QjM0SUhIVEt3cXJFZGppMGc2T0s1bmtHcWpaVnZpeml5U2xFSks4N0IyaVhO?=
+ =?utf-8?B?L3Y0SjArZ25IdmpwS1RGTDZLTnVNRDhGUitiUm5EVVJYa2k0b1NqZVgwZmZr?=
+ =?utf-8?B?R0lJN1pQd0dWWFFyUFlQQ3V6TVZZK010QVpHYVYzOTRRcEh5MnV3RmQzT2dl?=
+ =?utf-8?B?Mk5NOEZ5YTcyREovQmhSMGQwZ3NLVUdWVDZCMnJRT3RVWXBzOTVqTWtTZncw?=
+ =?utf-8?B?ZG9OZjVqYzVud25scWo5Njdnd0tvS2E4b2pDd2NaWFJkWTlLL0JBVHBxVUJ5?=
+ =?utf-8?B?UngvNjNRS2JzQzYrblNnenlTUldmVzI4SW5lc3IyNWZ4VCtaM2F1TkhabmpM?=
+ =?utf-8?B?ZjBwZVU1K2Vta1JMdTB3eXVKU2JQdGtWcTRDeEVJeFN4eEFQMiszVkYyL2hq?=
+ =?utf-8?B?TUVQb05sRFF0cGFTTTJ2RjZILzNaSTB4NUhXRjNZbGVBazhjcDAxc283T3dj?=
+ =?utf-8?B?dEhRUXhCbzhIeWtlZ0ZwZVRQNERHQnBkRTZENDV1NTMrRkFmaE5sRmRldnhq?=
+ =?utf-8?B?a2x0bGNYUjlEQXE2anJEK2NJMmMyTmhnNzh3R2xoNWxjWEx1R0pBd1Z2bjls?=
+ =?utf-8?B?djRCZHo2U3IyUFA0UTRTY01KanhPdU82UFNLc3V5UlVoeHhtbDF2Q2NhNW4y?=
+ =?utf-8?B?dkV4Z3F4SThack8xSFo0bTdrcWhkNTdiM0M3OXlmenVoWjA5Q3VjMllZTVJa?=
+ =?utf-8?B?VCtmbDQxQnlxRHliaFgyL2pjWEJOQWwyNzkrSGZNU0phbTd6aytaWFFQRzNZ?=
+ =?utf-8?B?cWpYUmR2aU10ZlpzdW5oOHZTRldNODhnTnRmdTJVTzZjNFpIdDhnbHB5cGJX?=
+ =?utf-8?B?T3VoM055ei9LYUd2d1NyT05EVjZjVDc3QzBibHAvNGY0SnhhUmNsOHVmTkFQ?=
+ =?utf-8?B?eEJSbDhHVkpveGJZY1pSYUo2T3VxdWlHcWRiOHpiL1NxM3IxZmh0Y3dtb1po?=
+ =?utf-8?B?ZHVTT0ZqcTNMUXZmbzdFVXVDRGNJVTlQTG9XOXpiN2lsaDFPNk9mNnQvaStU?=
+ =?utf-8?B?czFVM3RIT3B0b3J2Tk1RVkxVaDhZRGFiT2sxTU54OUY0bUlzY1hOY3hOMU9h?=
+ =?utf-8?B?K2hGcWVtOVJJSmtPemIya2svdlVYVDFkM1hvT1drVkkyOURIMDM3M0pQV1Vj?=
+ =?utf-8?B?NEt5TUoxb0Q4UTkrYTFSdkEvUVVEZE9RZ21LSnRZcE1oSkxyYmE1ZCtMTTJm?=
+ =?utf-8?B?Y1dYVGFVam5ybmk0Q0ZBT3NUUzlidEdvd1FSTzVscENnWjVqZzBickhZaWxq?=
+ =?utf-8?B?MEdJdjJuWVVDK2JIVFZXMEk4RGpkUWpqV3pDa216aWpuOUl3a2tGSEtPeDZO?=
+ =?utf-8?B?czBUQy9RbGh6eElvbzhLUjJheExqUlE2em11Qk9YRlF1RWZlRlV3YlYyV1Fa?=
+ =?utf-8?B?YWp6b1djNnA2NUVSUy94bnc0amRneU40STNoaDMxMG96THBPdGRIaUM0UDdE?=
+ =?utf-8?B?UzRBYWFBUGNZWFVQNmJad3ByM09GWDVmT2drU3FXVERneWNZbzhlODJSSE8x?=
+ =?utf-8?B?VTBvbGpLTVBxMGcwK0xhcDRxVlZEOVhrTEtaMm5GUVhPY0g1cDBIRG0yQmk0?=
+ =?utf-8?B?ckhrcTNNOU92eWZEKzF1OW9ubld4amJ2RnB4R3MwT1dUSmRLbDVlU0RlbHRE?=
+ =?utf-8?B?cTRYVUFsdlRkTDRkeUhDU3lCQUc0UFJ6ekw3NGVrVHUyRDdhMWR5NkZJU1l4?=
+ =?utf-8?B?MzVZS1NpeEJLOFZvTXVKYmsvWDNhN1hiTmVYMlBEWFd1TUg0MzBUd2tCQmE3?=
+ =?utf-8?B?Ujh5Y0pEVE5pT3hxeURZSE9ockZrbk9RS1liZUhBTmlQa3RzMjdyUG9rR2JZ?=
+ =?utf-8?B?bXlpcWpzNnJ3dk1CczYrYmpDcURaT2NNaE5HNFk3elBNTnppdCtidDBFOS8v?=
+ =?utf-8?B?V3VEN1Z2cVpyRHpncmIycWozVW51a1pUWC9MUXgva29obVFYa05DTTRDc3dU?=
+ =?utf-8?Q?8AkimlrIa7phazv8=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/3] termbits.h: create termbits-common.h for identical
- bits
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
-References: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
- <20220509093446.6677-2-ilpo.jarvinen@linux.intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220509093446.6677-2-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:zN2+kufeFCrksKVn8ZLSi+Syp9bvVf6OWsAjAyYEa1Ib3x5+K/9
- yqA1aCrRiPgP9b9DJlUpyIZcigck+TrE9epdqVuA3ojwlRLQMadGPx3r1bC7Btb/zStxbrF
- NoC0V3l8L+7ScAKi58Ip1EWrF5H6mWyzVnib/hP8wrxkdreDiQbXHvGQ2iT7Q8fCfKxVwbq
- r5ybGN+aaUIS5yRhGnU1A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:94PDWJkNMMU=:BwsTolgvnknC3y15LtPdYZ
- q77U5FGg4DFDbNGdo2GKziDKKE5hz8WLBxdbyGuVG/2zDwRXzfU4L7BtIwmDyDZ9Necz9Z+jV
- MUDRmdXZKagx6cHLi1j79oQnXypgaf9m5/FMm088ClB2ez9ornpNx5W73k5NuhvQ6tXNOryql
- nIyGGtpE1IbWRjr9NfSxGZaIMP7+IggpSLnWOCcRkmDOGjJLoQAY7B2p960/CdL5dcQUN9Ljk
- qff2/DF5edvh04Bv1kGfIntWyQkDV18fkliopxSigXuBTe+Du/Ab7HCAa9/rcU6SAi2RaiLUE
- /nf7MK5AoonznCEk1CpE7NcPZAxN4reG9g52INHH7d4erIMNkY5JIc5b7ZnWhwtR/lfRy5HN2
- dNI6teExhpT63mpQnzSxWoL6S2/81/vTqeKGtbDJIoR69vBzMjHpJceDVrUjRSrg2f+ytGfGu
- H2d1UdIVZ4dX04qYpZ07WuPC1YS6Mm/lYKLLGMMfS5VwM0FbVLnQd7o9mIvc9+dYReqbRuiTb
- snCbGkpSPip9EefktG6wD84sV5sJgJxrBQXSzR4GTj4jUZ8uenlkD0TQE9veRbMVcz4HYmOsg
- Yd/hV66kNyekONn5+S5q1sgNK7j7Om5oqly9mQc0nBvos6+IXaXsZDD+yNJb9+PAOMO5+xc5j
- 0xO87NcU7tvQudG29HUKSkhUNn0t+XFR6xcuZ9WCeLe8GMk3U7LRp+iLC6WTjqxsPSn/9v1Fz
- t4EVdHwf6O9+Y/iQ6lIwtoQOxffwQ6JH/Cshp+3evWIp7bn6UqGQaFs6awPYkVVazRhqSOvB+
- 5jV9iXh54Jm4v123P4trcF0QrdSuch4TtGpf8M4lovhgncZgMTyziL+NJq784H2TOJ4WbBWZq
- pRG5e8D98p3lMkZAp7nAF+K/YrxZfxRcj3XY1NwGS+fbkhRn4I57Xtn4tyDxuAcoQBzA+WhIh
- Y5CeRlwCeTeUCmprVlG3YwFjaCgWer7ndGh7Ghm/wkLhqmQ6CCy+CETCD5/hyoVEXXol5htSJ
- NCMPp2WlzrQXl6ICzAkT8hjEkoccKicc1eiPz8+Hn+eyHBWs2usF8iQUkv2xtSuNxLNLR1PUF
- 6Pxei0sM8iDQyU=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 686c5ed0-512e-4ece-c89c-08da31aa6ce8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2022 10:55:26.7274
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: J4UPR6gja/5IYQbUDcjcPsge/kiofVM73UesmMeMGo2BDnCPKCUbCQMx1GPFHxoKk+xWoaU6lZXktbn/ZjnP/f3mMnZ1W6Xc+OFvKzHyCTc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2622
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Ilpo,
-
-On 5/9/22 11:34, Ilpo J=C3=A4rvinen wrote:
-> Some defines are the same across all archs. Move the most obvious
-> intersection to termbits-common.h.
-
-I like your cleanup patches, but in this specific one, does it makes sense
-to split up together-belonging constants, e.g.
-
-> diff --git a/arch/parisc/include/uapi/asm/termbits.h b/arch/parisc/inclu=
-de/uapi/asm/termbits.h
-> index 6017ee08f099..7f74a822b7ea 100644
-> --- a/arch/parisc/include/uapi/asm/termbits.h
-> +++ b/arch/parisc/include/uapi/asm/termbits.h
-> @@ -61,31 +61,15 @@ struct ktermios {
->
->
->  /* c_iflag bits */
-> -#define IGNBRK	0x00001
-> -#define BRKINT	0x00002
-> -#define IGNPAR	0x00004
-> -#define PARMRK	0x00008
-> -#define INPCK	0x00010
-> -#define ISTRIP	0x00020
-> -#define INLCR	0x00040
-> -#define IGNCR	0x00080
-> -#define ICRNL	0x00100
->  #define IUCLC	0x00200
->  #define IXON	0x00400
-> -#define IXANY	0x00800
->  #define IXOFF	0x01000
->  #define IMAXBEL	0x04000
->  #define IUTF8	0x08000
-
-In the hunk above you leave IUCLC, IXON, IXOFF... because they seem unique=
- to parisc.
-The other defines are then taken from generic header.
-Although this is correct, it leaves single values alone, which make it har=
-d to verify
-because you don't see the full list of values in one place.
-
-> @@ -112,24 +96,6 @@ struct ktermios {
->
->  /* c_cflag bit meaning */
->  #define CBAUD		0x0000100f
-> -#define  B0		0x00000000	/* hang up */
-> -#define  B50		0x00000001
-> -#define  B75		0x00000002
-> -#define  B110		0x00000003
-> -#define  B134		0x00000004
-> -#define  B150		0x00000005
-> -#define  B200		0x00000006
-> -#define  B300		0x00000007
-> -#define  B600		0x00000008
-> -#define  B1200		0x00000009
-> -#define  B1800		0x0000000a
-> -#define  B2400		0x0000000b
-> -#define  B4800		0x0000000c
-> -#define  B9600		0x0000000d
-> -#define  B19200		0x0000000e
-> -#define  B38400		0x0000000f
-> -#define EXTA B19200
-> -#define EXTB B38400
-
-Here all baud values are dropped and will be taken from generic header, wh=
-ich is good.
-
-That said, I think it's good to move away the second hunk,
-but maybe we should keep the first as is?
-
-It's just a thought. Either way, I'm fine your patch if that's the
-way which is decided to go for all platforms.
-
-Helge
+PiBPbiAwNC4gMDUuIDIyLCAxMDoxNywgRC4gU3RhcmtlIHdyb3RlOg0KPiA+IEZyb206IERhbmll
+bCBTdGFya2UgPGRhbmllbC5zdGFya2VAc2llbWVucy5jb20+DQo+ID4gDQo+ID4gJ2xlbicgaXMg
+ZGVjcmVhc2VkIGFmdGVyIGVhY2ggb2N0ZXQgdGhhdCBoYXMgaXRzIEVBIGJpdCBzZXQgdG8gMCwg
+DQo+ID4gd2hpY2ggbWVhbnMgdGhhdCB0aGUgdmFsdWUgaXMgZW5jb2RlZCB3aXRoIGFkZGl0aW9u
+YWwgb2N0ZXRzLiBIb3dldmVyLCANCj4gPiB0aGUgZmluYWwgb2N0ZXQgZG9lcyBub3QgZGVjcmVh
+c2VzICdsZW4nIHdoaWNoIHJlc3VsdHMgaW4gJ2xlbicgYmVpbmcgDQo+ID4gb25lIGJ5dGUgdG9v
+IGxvbmcuIEEgYnVmZmVyIG92ZXItcmVhZCBtYXkgb2NjdXIgaW4gDQo+ID4gdHR5X2luc2VydF9m
+bGlwX3N0cmluZygpIGFzIGl0IHRyaWVzIHRvIHJlYWQgb25lIGJ5dGUgbW9yZSB0aGFuIHRoZSBw
+YXNzZWQgY29udGVudCBzaXplIG9mICdkYXRhJy4NCj4gPiBEZWNyZWFzZSAnbGVuJyBhbHNvIGZv
+ciB0aGUgZmluYWwgb2N0ZXQgd2hpY2ggaGFzIHRoZSBFQSBiaXQgc2V0IHRvIDEgDQo+ID4gdG8g
+d3JpdGUgdGhlIGNvcnJlY3QgbnVtYmVyIG9mIGJ5dGVzIGZyb20gdGhlIGludGVybmFsIHJlY2Vp
+dmUgYnVmZmVyIA0KPiA+IHRvIHRoZSB2aXJ0dWFsIHR0eS4NCj4gPiANCj4gPiBGaXhlczogMmUx
+MjRiNGEzOTBjICgiVFRZOiBzd2l0Y2ggdHR5X2ZsaXBfYnVmZmVyX3B1c2giKQ0KPg0KPiBUaGF0
+IGNvbW1pdCBiYXJlbHkgaW50cm9kdWNlZCB0aGUgcHJvYmxlbS4NCg0KWW91IGFyZSByaWdodC4g
+SXQgd2FzIGludHJvZHVjZWQgaW4NCmNvbW1pdCBlMWVhZWE0NmJiNDAgKCJ0dHk6IG5fZ3NtIGxp
+bmUgZGlzY2lwbGluZSIpDQoNClRoaXMgcGF0Y2ggd2FzIGFscmVhZHkgaW5jbHVkZWQgaW4gdGhl
+IHR0eS1saW51cyBicmFuY2guIFNoYWxsIEkgcmVzdWJtaXQgaXQgbmV2ZXJ0aGVsZXNzPw0KDQpC
+ZXN0IHJlZ2FyZHMsDQpEYW5pZWwgU3RhcmtlDQo=
