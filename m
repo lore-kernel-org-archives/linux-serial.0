@@ -2,93 +2,194 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4800BC4332F
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D13C4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:08:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239917AbiEISEH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 14:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
+        id S240005AbiEISMa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 14:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239891AbiEISEH (ORCPT
+        with ESMTP id S240001AbiEISMa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 14:04:07 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E35923109D;
-        Mon,  9 May 2022 11:00:11 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p18so17202892edr.7;
-        Mon, 09 May 2022 11:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
-        b=RNexsFbRx1gQtdbWYE5hw4OJCI3HtPhqPUD5BUFamEViXuYg5ZmePtst0py1FQddKo
-         JChc+QzblTpxWVJOpOS38IPJ1kKZc2Uf8lJuvh2Wvk8tsJVPJSIijstdRvFLjm30B8kN
-         JRYRTWHjrXWXjVAK3Y6PmVuZcLB1+XuJntTCdHMqPNJ9eW5HKmz74TmtfA2mEDM/be7d
-         vdBDKUE1bAH2yugKRz6iNCqdlTc/J/DkabnHJ+S9DczdhEVf5VeIbG9zwIa/HCeyECz3
-         xUeTSVWL29mSNK6Y5Yw4h/SLWYRJrxxOy7FMZN9cDEEtRCNG2ft4/nfx5fHqdgyzlorW
-         oDag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
-        b=L2s0/sotDe/Zus3qc24u1FpHd9Quk+HsrnZMEes7NetUoWXj0q3wqpPTavNbQpmuDV
-         FS7mqP1GLBRZlAPWSFIToZPpUqzt20B6PW6XIb9HJQBMcmIqSbGyFiCuFnUaI2VJryuV
-         wxlkbhu7QpYTiBlwQKSEjagB2eO0D2jl2TlIQpuHTf0x9TtzNQ5g/M/XCA0aN0FrB1lm
-         EA2A8u+/wGcHsVzr7dL8XMmMWmOIJHIaeD63zuQjpj3MZLoL0RBU1htVthBALkS6wf/v
-         9mew/7H86AjX9vDw/eTptjP3rOayp8ZplKngwQ1+d/Q8PRf9frT82AzN47EiqYUegeiX
-         wHeA==
-X-Gm-Message-State: AOAM533pRa1LkYlChnW8bLCTBXwkhRIexKejzpzVzxgSrP3UW5P+Iph/
-        a3FQTGyRqvPc9tJZzl68Q1/9KjkS5FZ+1PwDWj4yYRNYDZN4ckJfkso=
-X-Google-Smtp-Source: ABdhPJwTVcHGdp+naHV+dUtWIr1b/VP6pyxUqV4WzQ+FWdmKeMBYD9rAUysZKVyHEV9Cb99QhXlNT+9auh6Atk7H9k0=
-X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
- m16-20020aa7d350000000b00425e029da56mr18665027edr.296.1652119209687; Mon, 09
- May 2022 11:00:09 -0700 (PDT)
+        Mon, 9 May 2022 14:12:30 -0400
+Received: from out28-220.mail.aliyun.com (out28-220.mail.aliyun.com [115.124.28.220])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4711C2AACD8;
+        Mon,  9 May 2022 11:08:33 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07437433|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00800986-0.000615016-0.991375;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047212;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.Ngpb1vc_1652119708;
+Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.Ngpb1vc_1652119708)
+          by smtp.aliyun-inc.com(33.37.67.126);
+          Tue, 10 May 2022 02:08:29 +0800
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+To:     jringle@gridpoint.com, shc_work@mail.ru,
+        Rob Herring <robh@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Paul Boddie <paul@boddie.org.uk>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-serial@vger.kernel.org,
+        linux-mips <linux-mips@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Question about SC16IS752 device tree.
+Message-ID: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
+Date:   Tue, 10 May 2022 02:08:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com> <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
-In-Reply-To: <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 9 May 2022 19:59:33 +0200
-Message-ID: <CAHp75Vca60m+mkPDzh022B4pU2sng8-ZLoEK0POLQON3EWjBKg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] serial: 8250_dw: Use devm_add_action_or_reset()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 9, 2022 at 7:49 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
-> Le 09/05/2022 =C3=A0 19:21, Andy Shevchenko a =C3=A9crit :
+Hi folks,
 
-...
+I encountered a problem when using the SC16IS752 to expand the serial port.
+I connected two Bluetooth modules to the two serial ports extended by the
+SC16IS752. The device tree is as follows:
 
-> > +static void dw8250_clk_disable_unprepare(void *data)
-> > +{
-> > +     clk_disable_unprepare(data);
-> > +}
+&ssi0 {
+     status = "okay";
 
-> we already have several time this function in different drivers.
-> Maybe, it would be nice to have something standart for it.
->
-> A devm_clk_prepare_enable() or something devm-helpers.h ([1])
+     num-cs = <2>;
 
-Seems you missed the full story. We tried to add that several times
-[1] and CCF maintainers refused all the time. You may work with them
-to convince them.
+     pinctrl-names = "default";
+     pinctrl-0 = <&pins_ssi0>;
 
-[1]: https://lore.kernel.org/linux-clk/20210304221247.488173-2-linux@rasmus=
-villemoes.dk/
-(the latest one AFAIK)
+     sc16is752: expander@0 {
+         compatible = "nxp,sc16is752";
+         reg = <0>; /* CE0 */
 
---=20
-With Best Regards,
-Andy Shevchenko
+         spi-rx-bus-width = <1>;
+         spi-tx-bus-width = <1>;
+         spi-max-frequency = <6000000>;
+
+         clocks = <&exclk_sc16is752>;
+
+         interrupt-parent = <&gpb>;
+         interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
+
+         gpio-controller;
+         #gpio-cells = <2>;
+
+         bluetooth@0 {
+             compatible = "brcm,bcm43438-bt";
+             max-speed = <1000000>;
+
+             device-wakeup-gpios = <&gpc 26 GPIO_ACTIVE_HIGH>;
+             reset-gpios = <&gpb 17 GPIO_ACTIVE_LOW>;
+         };
+
+         bluetooth@1 {
+             compatible = "brcm,bcm43438-bt";
+
+             device-wakeup-gpios = <&gpc 28 GPIO_ACTIVE_HIGH>;
+             reset-gpios = <&gpb 19 GPIO_ACTIVE_LOW>;
+         };
+     };
+};
+
+
+
+There are the following error messages after startup:
+
+[    0.548417] serial serial0-0: controller busy
+[    0.553572] serial serial0-0: failure adding device. status -EBUSY
+[    0.559764] serial serial0: tty port ttySC0 registered
+[    0.565545] spi0.0: ttySC1 at I/O 0x1 (irq = 18, base_baud = 3000000) 
+is a SC16IS752
+[    0.573987] serial serial1-0: controller busy
+[    0.578351] serial serial1-0: failure adding device. status -EBUSY
+[    0.585003] serial serial1: tty port ttySC1 registered
+
+And only the module connected to the first serial port (ttySC0) can work 
+normally.
+
+
+
+If I change the device tree to:
+
+&ssi0 {
+     status = "okay";
+
+     num-cs = <2>;
+
+     pinctrl-names = "default";
+     pinctrl-0 = <&pins_ssi0>;
+
+     sc16is752: expander@0 {
+         compatible = "nxp,sc16is752";
+         reg = <0>; /* CE0 */
+
+         spi-rx-bus-width = <1>;
+         spi-tx-bus-width = <1>;
+         spi-max-frequency = <6000000>;
+
+         clocks = <&exclk_sc16is752>;
+
+         interrupt-parent = <&gpb>;
+         interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
+
+         gpio-controller;
+         #gpio-cells = <2>;
+
+         bluetooth@0 {
+             compatible = "brcm,bcm43438-bt";
+             max-speed = <1000000>;
+
+             device-wakeup-gpios = <&gpc 26 GPIO_ACTIVE_HIGH>;
+             reset-gpios = <&gpb 17 GPIO_ACTIVE_LOW>;
+         };
+     };
+};
+
+Then there will be no error message, and the module connected to the first
+serial port (ttySC0) can also work normally.
+
+
+
+After tracing, the problem seems to be in "serdev_device_add()" (line 
+111) of
+"drivers/tty/serdev/core.c":
+
+int serdev_device_add(struct serdev_device *serdev)
+{
+     struct serdev_controller *ctrl = serdev->ctrl;
+     struct device *parent = serdev->dev.parent;
+     int err;
+
+     dev_set_name(&serdev->dev, "%s-%d", dev_name(parent), serdev->nr);
+
+     /* Only a single slave device is currently supported. */
+     if (ctrl->serdev) {
+         dev_err(&serdev->dev, "controller busy\n");
+         return -EBUSY;
+     }
+     ctrl->serdev = serdev;
+
+     err = device_add(&serdev->dev);
+     if (err < 0) {
+         dev_err(&serdev->dev, "Can't add %s, status %pe\n",
+             dev_name(&serdev->dev), ERR_PTR(err));
+         goto err_clear_serdev;
+     }
+
+     dev_dbg(&serdev->dev, "device %s registered\n", 
+dev_name(&serdev->dev));
+
+     return 0;
+
+err_clear_serdev:
+     ctrl->serdev = NULL;
+     return err;
+}
+EXPORT_SYMBOL_GPL(serdev_device_add);
+
+
+
+Is there any way to correctly describe the device mounted on the second
+serial port (ttySC1) in the device tree? Or how do I need to modify the
+"drivers/tty/serdev/core.c" to make the SC16IS752 still work properly
+with two child nodes mounted?
+
+Thanks and beset regards!
