@@ -2,89 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC68C433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C334CC433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbiEIKtQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 06:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
+        id S229595AbiEIKvQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 06:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiEIKsf (ORCPT
+        with ESMTP id S231358AbiEIKu6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 06:48:35 -0400
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14C72D571B
-        for <linux-serial@vger.kernel.org>; Mon,  9 May 2022 03:42:36 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id v12so18785712wrv.10
-        for <linux-serial@vger.kernel.org>; Mon, 09 May 2022 03:42:36 -0700 (PDT)
+        Mon, 9 May 2022 06:50:58 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3CF2D2E0B;
+        Mon,  9 May 2022 03:46:36 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so8011117wme.3;
+        Mon, 09 May 2022 03:46:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=8KhRVPiyyzmtYvvR6LQQ/69Rt4J42pVkG553wbRLSPk=;
-        b=y+KU5GTvdv6g7W72iqbXdzAH5R6U0l2bJclS0Vxw1fH+UolJ8gXsx4TOXTB/DsXlE0
-         qh0+JhWnzGv33gkbqVdyHrWW5kXR2QC7AwLlyLxKxgPvobsdsmdMWjhewYseI4V4mn97
-         N+hACwhw5Dv6t0ANiboho64PgPKqdoWbN55fTBCphVnIAnL8DtTkUiJDqtPuwcX8Ylu4
-         X6+ZE//tj3oaS19evfpyyb3KOfoUhDVx/xlMHPYxjEUmLSPbqbHpq1ASw34/UNLshQUN
-         g66myic9eVsNNm+PpXZzQr68IGtMdrnKljA+BQPFY97IBWF8PBeHKZn+s7BOzS2hAtm5
-         T5zQ==
-X-Gm-Message-State: AOAM530JIybsf99ENtXI/33ddTpiRQwzJVfCJ046HVn+VZwAWxtbxEG3
-        4/nXex/lNvcP14RUchPnJN7wj/glS6pn3g==
-X-Google-Smtp-Source: ABdhPJxNyPh08WG1JsCJXDG7vbbMiQsXv4fzTiNcAaBqHbXf0QPgwBGKs00HSwZLUgfwK9F6ROcENA==
-X-Received: by 2002:a5d:4dd1:0:b0:20a:d74d:e33b with SMTP id f17-20020a5d4dd1000000b0020ad74de33bmr13183553wru.222.1652092926968;
-        Mon, 09 May 2022 03:42:06 -0700 (PDT)
+        bh=T3V/lJ4KUDk6qXJayPf/9nDf9cdeXl1HqcM89tsaVpI=;
+        b=c3u+pHWHX+KRBICJluZBGRYy4OlWzlKvluuGrCdgoXGH0a69jGDaP0k5BX/dgB7oYw
+         rfmI/FphL878Amre2FtUZy7e0fOUddHib2whV4Cx8oS2gwvzDLnAmID7U01ziYkBBV8y
+         jBS9h9uqboJuFR3YJ4hVnruqamNMgQ3HUe3HyqcefpqL+uyWDpcEsFYDJkB1+bSFU2cY
+         yRggGixlIfKFY1K5dMk3Dm2nkwcj2zfbFqgnUtA2h6FR5Zrt7Hs1NYmxYjz/Iftc6ufy
+         47w+DIwUXTmb33sPMopKtAdWVqkobUSXvPO943aWqirbgPk0CljZto413gVvu8zfl7mi
+         k81w==
+X-Gm-Message-State: AOAM5302biJV4KkdAKV+pF8hSnToMCN4xXxqnT67krE7SyKI/iH4tGF1
+        Lkg4yUzv7o7ylgFi7XWZ/lpTFo8556Efug==
+X-Google-Smtp-Source: ABdhPJyhgE0jqM93Q9glBx5zr2oitPx34fTQ646NYNBCLlHFa9uKBazTrFpDIlIgdcOjOZ0WNnIALg==
+X-Received: by 2002:a05:600c:4f49:b0:394:8125:8b6 with SMTP id m9-20020a05600c4f4900b00394812508b6mr10898849wmq.80.1652092879195;
+        Mon, 09 May 2022 03:41:19 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id a18-20020a05600c069200b003942a244f3bsm15961819wmn.20.2022.05.09.03.42.06
+        by smtp.gmail.com with ESMTPSA id m37-20020a05600c3b2500b003942a244ec5sm12731163wms.10.2022.05.09.03.41.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 03:42:06 -0700 (PDT)
-Message-ID: <907f41dd-aa3b-1456-6fac-b7014c791641@kernel.org>
-Date:   Mon, 9 May 2022 12:42:05 +0200
+        Mon, 09 May 2022 03:41:18 -0700 (PDT)
+Message-ID: <b17dde9a-6519-15be-07c6-218b1a1ef416@kernel.org>
+Date:   Mon, 9 May 2022 12:41:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH RESEND] serial: men_z135_uart: Drop duplicated iotype
- assignment
+Subject: Re: [PATCH 1/3] tty: n_gsm: fix buffer over-read in gsm_dlci_data()
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-References: <14b71e1-2396-3d83-3a97-9582765d453@linux.intel.com>
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220504081733.3494-1-daniel.starke@siemens.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <14b71e1-2396-3d83-3a97-9582765d453@linux.intel.com>
+In-Reply-To: <20220504081733.3494-1-daniel.starke@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 05. 22, 9:28, Ilpo Järvinen wrote:
-> The driver assigns same iotype twice. Drop one of them.
+On 04. 05. 22, 10:17, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 'len' is decreased after each octet that has its EA bit set to 0, which
+> means that the value is encoded with additional octets. However, the final
+> octet does not decreases 'len' which results in 'len' being one byte too
+> long. A buffer over-read may occur in tty_insert_flip_string() as it tries
+> to read one byte more than the passed content size of 'data'.
+> Decrease 'len' also for the final octet which has the EA bit set to 1 to
+> write the correct number of bytes from the internal receive buffer to the
+> virtual tty.
+> 
+> Fixes: 2e124b4a390c ("TTY: switch tty_flip_buffer_push")
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+That commit barely introduced the problem.
 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
+>   drivers/tty/n_gsm.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> Resending with correct linux-serial address.
-> 
->   drivers/tty/serial/men_z135_uart.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-> index 9acae5f8fc32..12117b596e73 100644
-> --- a/drivers/tty/serial/men_z135_uart.c
-> +++ b/drivers/tty/serial/men_z135_uart.c
-> @@ -833,7 +833,6 @@ static int men_z135_probe(struct mcb_device *mdev,
->   	uart->port.iotype = UPIO_MEM;
->   	uart->port.ops = &men_z135_ops;
->   	uart->port.irq = mcb_get_irq(mdev);
-> -	uart->port.iotype = UPIO_MEM;
->   	uart->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP;
->   	uart->port.line = line++;
->   	uart->port.dev = dev;
-> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index a38b922bcbc1..9b0b435cf26e 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -1658,6 +1658,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+>   			if (len == 0)
+>   				return;
+>   		}
+> +		len--;
+>   		slen++;
+>   		tty = tty_port_tty_get(port);
+>   		if (tty) {
 
 
 -- 
