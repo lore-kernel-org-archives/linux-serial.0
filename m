@@ -2,189 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C63EC433F5
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 17:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4800BC4332F
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239769AbiEIRsC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 13:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
+        id S239917AbiEISEH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 14:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239877AbiEIRrJ (ORCPT
+        with ESMTP id S239891AbiEISEH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 13:47:09 -0400
-Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE1B2725D1
-        for <linux-serial@vger.kernel.org>; Mon,  9 May 2022 10:43:13 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id o7PanVLJYZe7jo7PannEiN; Mon, 09 May 2022 19:43:11 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 09 May 2022 19:43:11 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
-Date:   Mon, 9 May 2022 19:43:10 +0200
+        Mon, 9 May 2022 14:04:07 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E35923109D;
+        Mon,  9 May 2022 11:00:11 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id p18so17202892edr.7;
+        Mon, 09 May 2022 11:00:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
+        b=RNexsFbRx1gQtdbWYE5hw4OJCI3HtPhqPUD5BUFamEViXuYg5ZmePtst0py1FQddKo
+         JChc+QzblTpxWVJOpOS38IPJ1kKZc2Uf8lJuvh2Wvk8tsJVPJSIijstdRvFLjm30B8kN
+         JRYRTWHjrXWXjVAK3Y6PmVuZcLB1+XuJntTCdHMqPNJ9eW5HKmz74TmtfA2mEDM/be7d
+         vdBDKUE1bAH2yugKRz6iNCqdlTc/J/DkabnHJ+S9DczdhEVf5VeIbG9zwIa/HCeyECz3
+         xUeTSVWL29mSNK6Y5Yw4h/SLWYRJrxxOy7FMZN9cDEEtRCNG2ft4/nfx5fHqdgyzlorW
+         oDag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
+        b=L2s0/sotDe/Zus3qc24u1FpHd9Quk+HsrnZMEes7NetUoWXj0q3wqpPTavNbQpmuDV
+         FS7mqP1GLBRZlAPWSFIToZPpUqzt20B6PW6XIb9HJQBMcmIqSbGyFiCuFnUaI2VJryuV
+         wxlkbhu7QpYTiBlwQKSEjagB2eO0D2jl2TlIQpuHTf0x9TtzNQ5g/M/XCA0aN0FrB1lm
+         EA2A8u+/wGcHsVzr7dL8XMmMWmOIJHIaeD63zuQjpj3MZLoL0RBU1htVthBALkS6wf/v
+         9mew/7H86AjX9vDw/eTptjP3rOayp8ZplKngwQ1+d/Q8PRf9frT82AzN47EiqYUegeiX
+         wHeA==
+X-Gm-Message-State: AOAM533pRa1LkYlChnW8bLCTBXwkhRIexKejzpzVzxgSrP3UW5P+Iph/
+        a3FQTGyRqvPc9tJZzl68Q1/9KjkS5FZ+1PwDWj4yYRNYDZN4ckJfkso=
+X-Google-Smtp-Source: ABdhPJwTVcHGdp+naHV+dUtWIr1b/VP6pyxUqV4WzQ+FWdmKeMBYD9rAUysZKVyHEV9Cb99QhXlNT+9auh6Atk7H9k0=
+X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
+ m16-20020aa7d350000000b00425e029da56mr18665027edr.296.1652119209687; Mon, 09
+ May 2022 11:00:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
+References: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com> <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
+In-Reply-To: <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 9 May 2022 19:59:33 +0200
+Message-ID: <CAHp75Vca60m+mkPDzh022B4pU2sng8-ZLoEK0POLQON3EWjBKg@mail.gmail.com>
 Subject: Re: [PATCH v1 1/2] serial: 8250_dw: Use devm_add_action_or_reset()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>
-References: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 09/05/2022 à 19:21, Andy Shevchenko a écrit :
-> Slightly simplify ->probe() and drop a few goto labels by using
-> devm_add_action_or_reset() for clock and reset cleanup.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->   drivers/tty/serial/8250/8250_dw.c | 63 +++++++++++++++----------------
->   1 file changed, 31 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 7934e4658281..e7ef61899576 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -484,6 +484,16 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->   	}
->   }
->   
-> +static void dw8250_clk_disable_unprepare(void *data)
-> +{
-> +	clk_disable_unprepare(data);
-> +}
+On Mon, May 9, 2022 at 7:49 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+> Le 09/05/2022 =C3=A0 19:21, Andy Shevchenko a =C3=A9crit :
 
-Hi,
+...
 
-we already have several time this function in different drivers.
-Maybe, it would be nice to have something standart for it.
+> > +static void dw8250_clk_disable_unprepare(void *data)
+> > +{
+> > +     clk_disable_unprepare(data);
+> > +}
 
-A devm_clk_prepare_enable() or something devm-helpers.h ([1])
+> we already have several time this function in different drivers.
+> Maybe, it would be nice to have something standart for it.
+>
+> A devm_clk_prepare_enable() or something devm-helpers.h ([1])
 
-Just my 2c.
+Seems you missed the full story. We tried to add that several times
+[1] and CCF maintainers refused all the time. You may work with them
+to convince them.
 
-CJ
+[1]: https://lore.kernel.org/linux-clk/20210304221247.488173-2-linux@rasmus=
+villemoes.dk/
+(the latest one AFAIK)
 
-[1]: 
-https://elixir.bootlin.com/linux/v5.18-rc6/source/include/linux/devm-helpers.h
-
-> +
-> +static void dw8250_reset_control_assert(void *data)
-> +{
-> +	reset_control_assert(data);
-> +}
-> +
->   static int dw8250_probe(struct platform_device *pdev)
->   {
->   	struct uart_8250_port uart = {}, *up = &uart;
-> @@ -585,35 +595,43 @@ static int dw8250_probe(struct platform_device *pdev)
->   	if (err)
->   		dev_warn(dev, "could not enable optional baudclk: %d\n", err);
->   
-> +	err = devm_add_action_or_reset(dev, dw8250_clk_disable_unprepare, data->clk);
-> +	if (err)
-> +		return err;
-> +
->   	if (data->clk)
->   		p->uartclk = clk_get_rate(data->clk);
->   
->   	/* If no clock rate is defined, fail. */
->   	if (!p->uartclk) {
->   		dev_err(dev, "clock rate not defined\n");
-> -		err = -EINVAL;
-> -		goto err_clk;
-> +		return -EINVAL;
->   	}
->   
->   	data->pclk = devm_clk_get_optional(dev, "apb_pclk");
-> -	if (IS_ERR(data->pclk)) {
-> -		err = PTR_ERR(data->pclk);
-> -		goto err_clk;
-> -	}
-> +	if (IS_ERR(data->pclk))
-> +		return PTR_ERR(data->pclk);
->   
->   	err = clk_prepare_enable(data->pclk);
->   	if (err) {
->   		dev_err(dev, "could not enable apb_pclk\n");
-> -		goto err_clk;
-> +		return err;
->   	}
->   
-> +	err = devm_add_action_or_reset(dev, dw8250_clk_disable_unprepare, data->pclk);
-> +	if (err)
-> +		return err;
-> +
->   	data->rst = devm_reset_control_get_optional_exclusive(dev, NULL);
-> -	if (IS_ERR(data->rst)) {
-> -		err = PTR_ERR(data->rst);
-> -		goto err_pclk;
-> -	}
-> +	if (IS_ERR(data->rst))
-> +		return PTR_ERR(data->rst);
-> +
->   	reset_control_deassert(data->rst);
->   
-> +	err = devm_add_action_or_reset(dev, dw8250_reset_control_assert, data->rst);
-> +	if (err)
-> +		return err;
-> +
->   	dw8250_quirks(p, data);
->   
->   	/* If the Busy Functionality is not implemented, don't handle it */
-> @@ -631,10 +649,8 @@ static int dw8250_probe(struct platform_device *pdev)
->   	}
->   
->   	data->data.line = serial8250_register_8250_port(up);
-> -	if (data->data.line < 0) {
-> -		err = data->data.line;
-> -		goto err_reset;
-> -	}
-> +	if (data->data.line < 0)
-> +		return data->data.line;
->   
->   	/*
->   	 * Some platforms may provide a reference clock shared between several
-> @@ -655,17 +671,6 @@ static int dw8250_probe(struct platform_device *pdev)
->   	pm_runtime_enable(dev);
->   
->   	return 0;
-> -
-> -err_reset:
-> -	reset_control_assert(data->rst);
-> -
-> -err_pclk:
-> -	clk_disable_unprepare(data->pclk);
-> -
-> -err_clk:
-> -	clk_disable_unprepare(data->clk);
-> -
-> -	return err;
->   }
->   
->   static int dw8250_remove(struct platform_device *pdev)
-> @@ -683,12 +688,6 @@ static int dw8250_remove(struct platform_device *pdev)
->   
->   	serial8250_unregister_port(data->data.line);
->   
-> -	reset_control_assert(data->rst);
-> -
-> -	clk_disable_unprepare(data->pclk);
-> -
-> -	clk_disable_unprepare(data->clk);
-> -
->   	pm_runtime_disable(dev);
->   	pm_runtime_put_noidle(dev);
->   
-
+--=20
+With Best Regards,
+Andy Shevchenko
