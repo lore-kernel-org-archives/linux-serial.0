@@ -2,62 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C04C433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB397C433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 20:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240297AbiEISpk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 14:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
+        id S229494AbiEIUdp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 16:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240279AbiEISpi (ORCPT
+        with ESMTP id S229604AbiEIUdg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 14:45:38 -0400
-Received: from out28-99.mail.aliyun.com (out28-99.mail.aliyun.com [115.124.28.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E978E16D5CD;
-        Mon,  9 May 2022 11:41:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1344616|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_news_journal|0.00187464-0.000480582-0.997645;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.Ngqf20o_1652121690;
-Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.Ngqf20o_1652121690)
-          by smtp.aliyun-inc.com(33.13.195.200);
-          Tue, 10 May 2022 02:41:31 +0800
+        Mon, 9 May 2022 16:33:36 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326922C5108;
+        Mon,  9 May 2022 13:22:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652127578;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=SBaBb5ku3Zc6QOsULhZnMQK6VkkGuN4gnq4axlkQKFk=;
+    b=Dv8/bL2/NzmgNugIUYSykCh2WPTWR5OctQC9knBmSSpIiahEES7bbyYZ29iaIiP0fM
+    B9bsoiefHhAuEgOTB1RQR3IA1ipkOaFlmizBgZaBCxsEIQBooV3Fm4AwbWVUEx0qJgj5
+    mGoCGHyuCjT/WRHK9PjVlIjl+yeklJwY1J3ccdRdMUuXAxzYLSVGEgYCGTNNAFXGOlGP
+    c56NQElTLt92NT93Z+Upg1deI3Dlwt6V5NHGPYkyXpXm6QpjH6UH5qLr5eJy40I6emPP
+    bcXJ05azaQh7LAIis6pZeVjEYTk1eWMHm2EVXAihA2U+sqirFJ3nsLZXiM/gzZ870CLA
+    TpqA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8IRUA=="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.44.0 SBL|AUTH)
+    with ESMTPSA id e48d97y49KJb1Ld
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Mon, 9 May 2022 22:19:37 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
 Subject: Re: Question about SC16IS752 device tree.
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     jringle@gridpoint.com, shc_work@mail.ru,
-        Rob Herring <robh@kernel.org>,
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
+Date:   Mon, 9 May 2022 22:19:36 +0200
+Cc:     Paul Cercueil <paul@crapouillou.net>, jringle@gridpoint.com,
+        shc_work@mail.ru, Rob Herring <robh@kernel.org>,
         Paul Boddie <paul@boddie.org.uk>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
         Jiaxun Yang <jiaxun.yang@flygoat.com>,
         linux-serial@vger.kernel.org,
         linux-mips <linux-mips@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <501852E6-6934-4BB2-850C-B53A07580568@goldelico.com>
 References: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
  <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
-From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
-Message-ID: <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
-Date:   Tue, 10 May 2022 02:41:30 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+ <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
+To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Paul,
+Hi,
 
-On 2022/5/10 上午2:13, Paul Cercueil wrote:
-> I can't say for sure that it's your problem, but your bluetooth nodes 
-> are missing "reg" properties. 
+> Am 09.05.2022 um 20:41 schrieb Zhou Yanjie =
+<zhouyanjie@wanyeetech.com>:
+>=20
+> Hi Paul,
+>=20
+> On 2022/5/10 =E4=B8=8A=E5=8D=882:13, Paul Cercueil wrote:
+>> I can't say for sure that it's your problem, but your bluetooth nodes =
+are missing "reg" properties.=20
+>=20
+>=20
+> Unfortunately it doesn't seem to be the problem here, I added "reg" =
+and
+> the problem persists, and I've looked at other device trees that =
+contain
+> "brcm,bcm43438-bt", none of them use "reg", and "reg" is not mentioned =
+in
+> neither "Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt" =
+nor
+> "Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml".
 
+what happens if you remove the serdev children from DTS? Does the driver =
+create two separate /dev/tty ports? And do they work?
 
-Unfortunately it doesn't seem to be the problem here, I added "reg" and
-the problem persists, and I've looked at other device trees that contain
-"brcm,bcm43438-bt", none of them use "reg", and "reg" is not mentioned in
-neither "Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt" nor
-"Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml".
+Maybe the sc16is752 driver does not separate them for child nodes, i.e. =
+while "reg" should be added it may not be handled?
 
-
-Best regards!
+BR,
+Nikolaus
 
