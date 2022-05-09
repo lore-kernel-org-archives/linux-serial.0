@@ -2,127 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DC5C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E56C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 10:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232755AbiEIK1b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 06:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S230000AbiEIKfd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 06:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbiEIK1a (ORCPT
+        with ESMTP id S229517AbiEIKeT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 06:27:30 -0400
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68861DE570
-        for <linux-serial@vger.kernel.org>; Mon,  9 May 2022 03:22:17 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id p189so8088579wmp.3
-        for <linux-serial@vger.kernel.org>; Mon, 09 May 2022 03:22:17 -0700 (PDT)
+        Mon, 9 May 2022 06:34:19 -0400
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784EA2701B1;
+        Mon,  9 May 2022 03:29:34 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so7992536wmn.1;
+        Mon, 09 May 2022 03:29:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=cjmP5f8o6qkhTLtlBX/qb4mHQGvjQadtuCgjH5PFef4=;
-        b=Y+oxLww1vwJvUKiZw+o+HW8UnlcwZskrvSxIuXlMv1byFTtkg9PgiG66KXujNDD1Ys
-         DxztrhvO4Z2MF3hNZj0EOT6AFQZk/OQ5KuzvGl5wzY6I/4SWo5F3/2X92tJJiltqmoE6
-         HBGWznm2IP1PNzXOSEKGJW7rvkKCtPI6RRmAXphAqQ6nY7aQqI+ZLx0f5PyWXPg6J5q9
-         3dj2FcoLvFIIg6lIysyxhKdg+Fa5Gd4LahXoM+6oXhwSTJDwiAnTx+rYxGyz7dqFoYcJ
-         XgKO/hGUILCukzvgkstzmsowciRYPL764IChhkw0fUiLfJzYjOm/rH0sfysFXduVeV5Q
-         x2Xg==
-X-Gm-Message-State: AOAM53112bDArXQLcvmcq4VDvD2tGFq6VSG+7qGnex9jBiQj4qcm1Kac
-        ljbrnPZxsQPiWKxlGLuUyvk=
-X-Google-Smtp-Source: ABdhPJzOjx2UvFMLGfOd4Q5S1rlIh43G9ph88cFzu3lCc/I6qK3l4xqGOb8DtzYJD0yJhaoEB4HrAg==
-X-Received: by 2002:a05:600c:35c6:b0:394:856d:fb07 with SMTP id r6-20020a05600c35c600b00394856dfb07mr9433341wmq.131.1652091720759;
-        Mon, 09 May 2022 03:22:00 -0700 (PDT)
+        bh=IpkNdWLB+i8ZcpamySoEP6TcMlhhIL5OjEgH/QYZ8SU=;
+        b=o11In6S7LBuaox/9BnCEU/Zcu8hg8UU7h1t1QlYvCNGhXX2d+7csyKk8K+bOpgIIme
+         RmIX8ZvewOoXFjkHECbPuJH8k+I1mLS1DdcnJZVA/DjzpKZ5VkYQ6DaN6n6KZZbtZIhU
+         3rdN5sbacCXyVfXm1YjK97wS5JRaMjq+kOBsDz0N/bKMyIZXd3JYHcr2t7kVHDaJv6si
+         CNFpPtXF6MItWT1i6wpH3jk7Tc8oh3MufAEDBK45+3VPo0nXlmXi5XumWIoK53fN4/Up
+         K4hsPRK6IY9qrOnQTPFy2ZEE3m/ZNjSLDdaITjsZP6U8nwRnr0m54Pkmq1NKueJaq6x8
+         lWYw==
+X-Gm-Message-State: AOAM531fFmUZcd7pnTNeNRi2VPyHiyo1WbfGr5svxO6uiNSBSxRUXAqj
+        y8UDRRJweJlHST0fWvaUH4BvXq45ugQ3Wg==
+X-Google-Smtp-Source: ABdhPJycHZI96SBHadCmYXAiG7+2NnnXdRqqb9xx36dMWRkGOOinsULCdInyG0c6r6YC12nePB7imA==
+X-Received: by 2002:a7b:c93a:0:b0:394:2583:69fe with SMTP id h26-20020a7bc93a000000b00394258369femr15664919wml.29.1652092115377;
+        Mon, 09 May 2022 03:28:35 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id i6-20020adffdc6000000b0020c5253d8f1sm10410577wrs.61.2022.05.09.03.21.59
+        by smtp.gmail.com with ESMTPSA id p33-20020a05600c1da100b0038ec8b633fesm11890104wms.1.2022.05.09.03.28.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 03:22:00 -0700 (PDT)
-Message-ID: <26f51ae5-6530-2376-55ac-0cfd3884f1ef@kernel.org>
-Date:   Mon, 9 May 2022 12:21:58 +0200
+        Mon, 09 May 2022 03:28:34 -0700 (PDT)
+Message-ID: <257e1972-a282-f5c9-40c4-a532fdfaf935@kernel.org>
+Date:   Mon, 9 May 2022 12:28:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH] fsl_lpuart: Don't enable interrupts too early
+Subject: Re: [PATCH 2/3] tty: n_gsm: fix mux activation issues in gsm_config()
 Content-Language: en-US
-To:     Indan Zupancic <Indan.Zupancic@mep-info.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     sherry.sun@nxp.com, linux-imx@nxp.com, linux-serial@vger.kernel.org
-References: <20220505114750.45423-1-Indan.Zupancic@mep-info.com>
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220504081733.3494-1-daniel.starke@siemens.com>
+ <20220504081733.3494-2-daniel.starke@siemens.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220505114750.45423-1-Indan.Zupancic@mep-info.com>
+In-Reply-To: <20220504081733.3494-2-daniel.starke@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 05. 22, 13:47, Indan Zupancic wrote:
-> If an irq is pending when devm_request_irq() is called, the irq
-> handler will cause a NULL pointer access because initialisation
-> is not done yet.
-
-Sounds about right. But could you be a bit more specific? Like appending 
-the BUG and its stack trace?
-
-> Fixes: 9d7ee0e28da59 ("tty: serial: lpuart: avoid report NULL interrupt")
-> Signed-off-by: Indan Zupancic <Indan.Zupancic@mep-info.com>
-> ---
->   drivers/tty/serial/fsl_lpuart.c | 18 +++++++++---------
->   1 file changed, 9 insertions(+), 9 deletions(-)
+On 04. 05. 22, 10:17, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 75b3c36c13bc..7b46b97a6ddd 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -2629,6 +2629,7 @@ static int lpuart_probe(struct platform_device *pdev)
->   	struct device_node *np = pdev->dev.of_node;
->   	struct lpuart_port *sport;
->   	struct resource *res;
-> +	irq_handler_t handler;
->   	int ret;
+> The current implementation activates the mux if it was restarted and opens
+> the control channel if the mux was previously closed and we are now acting
+> as initiator instead of responder, which is the default setting.
+> This has two issues.
+> 1) No mux is activated if we keep all default values and only switch to
+> initiator. The control channel is not allocated but will be opened next
+> which results in a NULL pointer dereference.
+> 2) Switching the configuration after it was once configured while keeping
+> the initiator value the same will not reopen the control channel if it was
+> closed due to parameter incompatibilities. The mux remains dead.
+> 
+> Fix 1) by always activating the mux if it is dead after configuration.
+> Fix 2) by always opening the control channel after mux activation.
+> 
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>   drivers/tty/n_gsm.c | 12 ++++++++----
+>   1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 9b0b435cf26e..bcb714031d69 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
 >   
->   	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
-> @@ -2701,17 +2702,11 @@ static int lpuart_probe(struct platform_device *pdev)
+>   static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+>   {
+> +	int ret = 0;
+
+Why is the initialization needed? You can as well declare the variable 
+only inside the if below.
+
+>   	int need_close = 0;
+>   	int need_restart = 0;
 >   
->   	if (lpuart_is_32(sport)) {
->   		lpuart_reg.cons = LPUART32_CONSOLE;
-> -		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart32_int, 0,
-> -					DRIVER_NAME, sport);
-> +		handler = lpuart32_int;
->   	} else {
->   		lpuart_reg.cons = LPUART_CONSOLE;
-> -		ret = devm_request_irq(&pdev->dev, sport->port.irq, lpuart_int, 0,
-> -					DRIVER_NAME, sport);
-> +		handler = lpuart_int;
->   	}
-> -
-> -	if (ret)
-> -		goto failed_irq_request;
-> -
->   	ret = uart_add_one_port(&lpuart_reg, &sport->port);
->   	if (ret)
->   		goto failed_attach_port;
-> @@ -2733,13 +2728,18 @@ static int lpuart_probe(struct platform_device *pdev)
->   
->   	sport->port.rs485_config(&sport->port, &sport->port.rs485);
->   
-> +	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
-> +				DRIVER_NAME, sport);
-> +	if (ret)
-> +		goto failed_irq_request;
-> +
+> @@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+>   	 * FIXME: We need to separate activation/deactivation from adding
+>   	 * and removing from the mux array
+>   	 */
+> -	if (need_restart)
+> -		gsm_activate_mux(gsm);
+> -	if (gsm->initiator && need_close)
+> -		gsm_dlci_begin_open(gsm->dlci[0]);
+> +	if (gsm->dead) {
+> +		ret = gsm_activate_mux(gsm);
+> +		if (ret)
+> +			return ret;
+> +		if (gsm->initiator)
+> +			gsm_dlci_begin_open(gsm->dlci[0]);
+> +	}
 >   	return 0;
->   
-> +failed_irq_request:
->   failed_get_rs485:
->   failed_reset:
->   	uart_remove_one_port(&lpuart_reg, &sport->port);
->   failed_attach_port:
-> -failed_irq_request:
->   	lpuart_disable_clks(sport);
->   	return ret;
 >   }
+>   
 
 
 -- 
