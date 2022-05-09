@@ -2,77 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D90C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C04C433FE
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 18:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240147AbiEISWE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 14:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S240297AbiEISpk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 14:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240143AbiEISWE (ORCPT
+        with ESMTP id S240279AbiEISpi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 14:22:04 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208E32B94E2
-        for <linux-serial@vger.kernel.org>; Mon,  9 May 2022 11:18:08 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id o7xLnswDmF4GZo7xLniG7Y; Mon, 09 May 2022 20:18:07 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 09 May 2022 20:18:07 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <4460783f-6a1f-e8c4-863a-4f6d926590d6@wanadoo.fr>
-Date:   Mon, 9 May 2022 20:18:03 +0200
+        Mon, 9 May 2022 14:45:38 -0400
+Received: from out28-99.mail.aliyun.com (out28-99.mail.aliyun.com [115.124.28.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E978E16D5CD;
+        Mon,  9 May 2022 11:41:35 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1344616|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_news_journal|0.00187464-0.000480582-0.997645;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.Ngqf20o_1652121690;
+Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.Ngqf20o_1652121690)
+          by smtp.aliyun-inc.com(33.13.195.200);
+          Tue, 10 May 2022 02:41:31 +0800
+Subject: Re: Question about SC16IS752 device tree.
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     jringle@gridpoint.com, shc_work@mail.ru,
+        Rob Herring <robh@kernel.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-serial@vger.kernel.org,
+        linux-mips <linux-mips@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
+ <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
+Date:   Tue, 10 May 2022 02:41:30 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v1 1/2] serial: 8250_dw: Use devm_add_action_or_reset()
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-References: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com>
- <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
- <CAHp75Vca60m+mkPDzh022B4pU2sng8-ZLoEK0POLQON3EWjBKg@mail.gmail.com>
-From:   Marion & Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <CAHp75Vca60m+mkPDzh022B4pU2sng8-ZLoEK0POLQON3EWjBKg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Paul,
 
-Le 09/05/2022 à 19:59, Andy Shevchenko a écrit :
-> On Mon, May 9, 2022 at 7:49 PM Christophe JAILLET
-> <christophe.jaillet@wanadoo.fr> wrote:
->> Le 09/05/2022 à 19:21, Andy Shevchenko a écrit :
-> ...
->
->>> +static void dw8250_clk_disable_unprepare(void *data)
->>> +{
->>> +     clk_disable_unprepare(data);
->>> +}
->> we already have several time this function in different drivers.
->> Maybe, it would be nice to have something standart for it.
->>
->> A devm_clk_prepare_enable() or something devm-helpers.h ([1])
-> Seems you missed the full story. We tried to add that several times
-> [1] and CCF maintainers refused all the time. You may work with them
-> to convince them.
->
-> [1]: https://lore.kernel.org/linux-clk/20210304221247.488173-2-linux@rasmusvillemoes.dk/
-> (the latest one AFAIK)
->
-LoL, got it.
+On 2022/5/10 上午2:13, Paul Cercueil wrote:
+> I can't say for sure that it's your problem, but your bluetooth nodes 
+> are missing "reg" properties. 
 
-Sorry for the noise.
 
-CJ
+Unfortunately it doesn't seem to be the problem here, I added "reg" and
+the problem persists, and I've looked at other device trees that contain
+"brcm,bcm43438-bt", none of them use "reg", and "reg" is not mentioned in
+neither "Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt" nor
+"Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml".
 
+
+Best regards!
 
