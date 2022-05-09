@@ -2,63 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5E6C433FE
-	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 05:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9013AC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  9 May 2022 07:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbiEIFzb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 May 2022 01:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
+        id S233481AbiEIHzL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 9 May 2022 03:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235007AbiEIFq3 (ORCPT
+        with ESMTP id S235841AbiEIHkm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 May 2022 01:46:29 -0400
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F7A15E498;
-        Sun,  8 May 2022 22:42:36 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id 125-20020a1c1983000000b003941f354c62so7614128wmz.0;
-        Sun, 08 May 2022 22:42:36 -0700 (PDT)
+        Mon, 9 May 2022 03:40:42 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B43177065
+        for <linux-serial@vger.kernel.org>; Mon,  9 May 2022 00:36:48 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q23so18148679wra.1
+        for <linux-serial@vger.kernel.org>; Mon, 09 May 2022 00:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=6y0i+8IvUfpM15cKXcNjuJU/4mkCpkZfX4YXWqvQ1Js=;
+        b=lhqV1BbqxVLsXAlcHPqFKn2QZeiHzCGSZ3xMHe5C150zWMV3iQdJFB4oLBPwcDwTgz
+         fmtjWtTzoWHg3AHPShPOmwUZHOQXvEsTXw0ThO+dwUG8HFsKio0RSx2j4AKE1BITDeDz
+         /v6xz61ilCoaSDQ2UNdVxgqGLQNZxZLBpfdSfpnehNLRF2t86P8WpCfbPPirLw2/H7FD
+         V6ZsfLw9UHL89Smoe8CqgTK2EWy/87Jzvzm92hH6bx0b1jdgAipRJj2ZZZ2+gV5sTZXE
+         /G1ADH9jSggWv1urk9UdeEH2G1JCS4SFCHLE61bexKvjxaq51Fd37yK1nj+0a609lfDy
+         eUig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=PgUJQCGuVuN7RMUt/u/GB2vkYIZJaEjDbMnifyGw+XM=;
-        b=uWYHN/OTPaoS3Qf10LSpocUCCLihQH0lh6ZiwjMj9Rtsb3OJYGFaBLfkbhP2sRjEEo
-         +MQtww0LFDu9g394XKJlkHNE9/F3jnwxdbpWjb0Tp/HRV75iiQzEMiXWRfeZt5xnH0R1
-         7PfJmAJrL7NxAP3Ack+LcTXerTbXkUKnIXIuLOq4U9WBzXUIqoaSKHgfSYNCOfp9aWOl
-         LMRF1A9EQWp3P/YotgFrhDZMAEf8w4NtIq3E5FdHQDgJcYyxZI5H3la0gYa2pdFmumrR
-         d2Tukv0VeIb5JILapRcrBya/+8ZhjsN5AR8MqMWmaqbJZKjxUdIxO/uqKnnbDVDlhjAy
-         JgZA==
-X-Gm-Message-State: AOAM530hKvIzA/eORU6ymucSZcLJqZ6PB5mgmD8qAeZSP2GWo4WnM1Ia
-        uuAqbTGB3HU1geQ2IkqPWus=
-X-Google-Smtp-Source: ABdhPJwc4eYBOaGWeOZpzdHrP/EzHMr+8axHRm30/zjzwNtxs/nJxF3qH+zPotS6vDu9D2X/XzPbUQ==
-X-Received: by 2002:a05:600c:3b11:b0:394:57eb:c58b with SMTP id m17-20020a05600c3b1100b0039457ebc58bmr20723567wms.3.1652074950839;
-        Sun, 08 May 2022 22:42:30 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id d7-20020adffbc7000000b0020c66310845sm9972919wrs.55.2022.05.08.22.42.29
+        bh=6y0i+8IvUfpM15cKXcNjuJU/4mkCpkZfX4YXWqvQ1Js=;
+        b=Nz+0RC2xrVNOv41sqidpFJQBI01h71lSubMhB+ur9zL/pBMhMFszBi6WivpYh6uxwk
+         0jjb5EU/+VTqPpQgELmklmAECcPh43aiS3mL10qUpXk5rDsJhdcxMd8rPQIjsNwmwK+b
+         9xpHQ0m2mue43iw9ROvT2eD2HEcRCajV+aBhSIeGBfKtBJbktL6/Z6N+VmFbhqBLCBqj
+         e8HttTin4rMmS62qM2OMfYSnnBSM9lq1t8ToHddctGNcM/4iiiqXH4L7tepWlPC8MSAq
+         qWM+ikWHPcStWKljd4r98ltDmy8FKSCWQN1/TZAbntQDOk5TLXZdhV7blAnUjU8nvRvN
+         L4Nw==
+X-Gm-Message-State: AOAM532LZtjC8DFzUNTC7bG6zi6vEWGVSqGWLscqzg/Q5ZBwbhryNs+1
+        s4lPls9Y8SRjDeStSLjr7UGcIKmqwaBPSOJ1
+X-Google-Smtp-Source: ABdhPJy2RhLQ+p1zNBH1qCsIEwkacJo/ZUmf6kHo7ueOOQy2OiKWAzP3ct7aOKYz4lFrNtdvWV9wRw==
+X-Received: by 2002:a5d:4703:0:b0:20a:ce3c:7528 with SMTP id y3-20020a5d4703000000b0020ace3c7528mr12556104wrq.688.1652081799169;
+        Mon, 09 May 2022 00:36:39 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:23c8:2656:fd52:f1cb? ([2001:861:44c0:66c0:23c8:2656:fd52:f1cb])
+        by smtp.gmail.com with ESMTPSA id 11-20020a05600c264b00b0039444973258sm18402407wmy.0.2022.05.09.00.36.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 22:42:30 -0700 (PDT)
-Message-ID: <c0eac83f-8483-7709-b558-561ff7a382b0@kernel.org>
-Date:   Mon, 9 May 2022 07:42:12 +0200
+        Mon, 09 May 2022 00:36:38 -0700 (PDT)
+Message-ID: <cf593ff3-bf57-ccd3-9a25-b28cc604d6f4@baylibre.com>
+Date:   Mon, 9 May 2022 09:36:40 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
+ Thunderbird/91.7.0
 Subject: Re: [PATCH v1] serial: meson: acquire port->lock in startup()
 Content-Language: en-US
 To:     John Ogness <john.ogness@linutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
         Kevin Hilman <khilman@baylibre.com>
 Cc:     Petr Mladek <pmladek@suse.com>,
         Sergey Senozhatsky <senozhatsky@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org, Jerome Brunet <jbrunet@baylibre.com>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-amlogic@lists.infradead.org,
         Marek Szyprowski <m.szyprowski@samsung.com>
 References: <20220508103547.626355-1-john.ogness@linutronix.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
 In-Reply-To: <20220508103547.626355-1-john.ogness@linutronix.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
@@ -66,7 +79,7 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08. 05. 22, 12:35, John Ogness wrote:
+On 08/05/2022 12:35, John Ogness wrote:
 > The uart_ops startup() callback is called without interrupts
 > disabled and without port->lock locked, relatively late during the
 > boot process (from the call path of console_on_rootfs()). If the
@@ -101,11 +114,6 @@ On 08. 05. 22, 12:35, John Ogness wrote:
 > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > Signed-off-by: John Ogness <john.ogness@linutronix.de>
 > Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-Makes sense to me.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
 > ---
 >   drivers/tty/serial/meson_uart.c | 13 +++++++++++++
 >   1 file changed, 13 insertions(+)
@@ -154,7 +162,13 @@ Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 > 
 > base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
 
+Thanks for fixing this, it may also fix an uart apparent lockup I encountered
+several time while developing on the platform, but the target was still alive
+so it matches.
 
--- 
-js
-suse labs
+So I'll add:
+Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+
+and
+
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
