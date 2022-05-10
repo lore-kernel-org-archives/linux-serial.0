@@ -2,88 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1926C433FE
-	for <linux-serial@archiver.kernel.org>; Tue, 10 May 2022 12:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73667C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 10 May 2022 12:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241742AbiEJMag (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 May 2022 08:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S241935AbiEJMt1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 10 May 2022 08:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241776AbiEJMaf (ORCPT
+        with ESMTP id S241933AbiEJMtZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 May 2022 08:30:35 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B42A1FDE;
-        Tue, 10 May 2022 05:26:37 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 2DE551F414F8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652185587;
-        bh=BQiR+KethrLXSU5KRNxuCKrRdMtiP4LV9NgZmry1IWE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UK52OjymyXQ50bxoRn93D0H1e5AAiwKBVZ3CH5REP+WHLsQfiDY1Cr1yf+HvPeHme
-         xZs2t6DYTdc3jgYH+FKahT6uhO30jn8605JcDiT78hETmnKriBbjXpWna273HPekNa
-         3NxX6Mea2XVUY8lJuTYAwpUQ2Y7veS4HTV+o8C3VpP2BC0h0xA87aA4mvIuGyBDcpx
-         0r5fF2hUoWTUn3mg/y/8/qefUvhl4Y4CF+jvWRmMk6BCO2HEq0LriJjOGz/KOextMH
-         521oSnKXv/Vh1rF0+pDIoUoIaNZTke5cikYs+Fz752WOlD/EP6gTDj5EXPMFiTJMBZ
-         eY171MRqval0Q==
-From:   AngeloGioacchino Del Regno 
+        Tue, 10 May 2022 08:49:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EB954F9E;
+        Tue, 10 May 2022 05:45:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9EC7B81D19;
+        Tue, 10 May 2022 12:45:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E830C385C2;
+        Tue, 10 May 2022 12:45:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652186725;
+        bh=6Tfsp4itt1Mc3PO44t815pdkzz8WkX2HTQRq8Fx0SZw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VCU5SEB1Qol28GTL2mHwXApm+Hc0wPXWT55Emw2+4xCbWXbIF6CUBSpoJ4odwKQ6V
+         6UWFUMhHTNnNSWGciRePfWWeZ3MutAMA7f3F6rddeb1b+wHN928/a1Pz048PahIeFS
+         2z8u5WeTBx0me0A2xRg9fhAZRqOYh8XcTgw8v/1HsIVhwHNFwWXtz/YojQjeS5wxuO
+         llX/z/N2nE42clXfqQ5HtQJs/DioaBMYnXDSDuBzXCq9g5b5+sDTZ1BsEP88SBdu9k
+         imexGaCSXnu8Orgtj0IqJHODzIdfZDuqptQIZUEpM4LaMvCLaVPMuA0ojh2e6B8sEk
+         3XD/ygF74XGbQ==
+Date:   Tue, 10 May 2022 13:45:20 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, zhiyong.tao@mediatek.com,
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        matthias.bgg@gmail.com, zhiyong.tao@mediatek.com,
         colin.king@intel.com, linux-serial@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wenst@chromium.org, broonie@kernel.org
-Subject: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right FEATURE_SEL"
-Date:   Tue, 10 May 2022 14:26:20 +0200
-Message-Id: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        wenst@chromium.org
+Subject: Re: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right
+ FEATURE_SEL"
+Message-ID: <YnpeYGbo7JJK0lDk@sirena.org.uk>
+References: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="FZQV7cHcKQJUXSUX"
+Content-Disposition: inline
+In-Reply-To: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
+X-Cookie: I've read SEVEN MILLION books!!
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-It was found that some MediaTek SoCs are incompatible with this
-change. Also, this register was mistakenly understood as it was
-related to the 16550A register layout selection but, at least
-on some IPs, if not all, it's related to something else unknown.
 
-This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
+--FZQV7cHcKQJUXSUX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 7 -------
- 1 file changed, 7 deletions(-)
+On Tue, May 10, 2022 at 02:26:20PM +0200, AngeloGioacchino Del Regno wrote:
+> It was found that some MediaTek SoCs are incompatible with this
+> change. Also, this register was mistakenly understood as it was
+> related to the 16550A register layout selection but, at least
+> on some IPs, if not all, it's related to something else unknown.
+>=20
+> This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
+>=20
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@coll=
+abora.com>
+> ---
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 21053db93ff1..54051ec7b499 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -54,9 +54,6 @@
- #define MTK_UART_TX_TRIGGER	1
- #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
- 
--#define MTK_UART_FEATURE_SEL	39	/* Feature Selection register */
--#define MTK_UART_FEAT_NEWRMAP	BIT(0)	/* Use new register map */
--
- #define MTK_UART_XON1		40	/* I/O: Xon character 1 */
- #define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
- 
-@@ -575,10 +572,6 @@ static int mtk8250_probe(struct platform_device *pdev)
- 		uart.dma = data->dma;
- #endif
- 
--	/* Set AP UART new register map */
--	writel(MTK_UART_FEAT_NEWRMAP, uart.port.membase +
--	       (MTK_UART_FEATURE_SEL << uart.port.regshift));
--
- 	/* Disable Rate Fix function */
- 	writel(0x0, uart.port.membase +
- 			(MTK_UART_RATE_FIX << uart.port.regshift));
--- 
-2.35.1
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
 
+--FZQV7cHcKQJUXSUX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ6Xl8ACgkQJNaLcl1U
+h9CCcgf9GdWINYkwQNpa49JWR+D4PX3vyDYOvAMhApkx2tIGvJiHQ42wCUjXN5G9
+9uGCwzkhq1g4N6ppRhhr2rHaTTHPIwi0J/KaGIGuCMEiFu2MiqmTVmPjXkZ6X9KJ
+TvlW1Q+d9qc+fAdqagKU3py8jQMVY/kEFwXTPE2s6NhUf/TxujQbuSHX4JhJ6CiU
+NtMkMsALrNPQXu0L+7WI1+u84gRGpDalpQpBcPhAZVSuCGUMFUCMKRr/J5PotKoS
+l89HHcBvjyz5IRUtaHnZ23ermw6mOrS9dEAn8jWXSIy7vqhHDHNLfoDMa/loIcMu
+/BhdI1rOs34c3ZtwqzhAT9Tk66Af0g==
+=wDoc
+-----END PGP SIGNATURE-----
+
+--FZQV7cHcKQJUXSUX--
