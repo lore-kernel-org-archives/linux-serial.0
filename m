@@ -2,98 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67353C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 09:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 631A8C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 10:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbiEKJjJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 May 2022 05:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
+        id S231633AbiEKKLz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 May 2022 06:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242976AbiEKJjC (ORCPT
+        with ESMTP id S231944AbiEKKLy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 May 2022 05:39:02 -0400
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573F860B8B;
-        Wed, 11 May 2022 02:38:27 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id h16so1443013wrb.2;
-        Wed, 11 May 2022 02:38:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lzACg4GskWgzpiC8FnJ6syyhmXEEgXE0lIGs/KbCq9o=;
-        b=jtKfFP1lCqOriGDRrs8EeuSS2fvWnHaFJLntOm0zScTV/rPmrps6rxl3v72KDTi7LO
-         vEh9zC+0vOsL3pEwj0192VQcqij+iraKlP01ZaMcaoW6JRO/IOk32pTaTpxNLqegF0+R
-         WEOEdObBj/buvrnpFVkee+nfPmdtk3D+fkdhRVr5fWpjWcVdMbRpcKR6fRzF+s0M/tt+
-         PD00mRDywuk+RjbH+mh2icRjJXpFk6spKIkXGyWNLyOG1R0vK+vjzuSdIux5Vxv17e1i
-         me9gnlL/jNI2xTosySaSv7087/YcyppdBeo51tZ4z8lrHlbahZNZvYj5pBEorz9Hha3c
-         dXGw==
-X-Gm-Message-State: AOAM531PApvYR3wH8V19cW7kGH/DK8AzoptiEUGpS2SMtTj+ZX2NW3zP
-        X0AaK8wyApdlcVdqe0r9Pf4NtdwHnwE=
-X-Google-Smtp-Source: ABdhPJwoJ97JtoBiACfuZa0lRu3jF4CuA/9qZMyWjZsGxIHdriTf72Obw5v7nF1vuabJn1bt50PEUw==
-X-Received: by 2002:a5d:4b48:0:b0:207:9abd:792a with SMTP id w8-20020a5d4b48000000b002079abd792amr11189756wrs.118.1652261905757;
-        Wed, 11 May 2022 02:38:25 -0700 (PDT)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id e8-20020a5d5308000000b0020c5253d8c2sm1209516wrv.14.2022.05.11.02.38.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 02:38:25 -0700 (PDT)
-Message-ID: <cc73ed8b-b51f-59bc-ef4b-5f7e4ab26828@kernel.org>
-Date:   Wed, 11 May 2022 11:38:24 +0200
+        Wed, 11 May 2022 06:11:54 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4AA20F9E3
+        for <linux-serial@vger.kernel.org>; Wed, 11 May 2022 03:11:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652263910; x=1683799910;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Zpq9V3K72SaasCGZkftE4QqDrDdAPlGYVNxuJxrQnyg=;
+  b=fLCqfGm4sdhjkZBg7mDVOLMR5a2saZH9FX45of1nxCAVTzFVGXMJGGbX
+   mD3OAZlsoH1ZfP05oSTURABArbUh0LBZk+VAYqKDLDxuQFzLBXoowRvhA
+   sw7Roa7ZhVFj2yBlwcn7dYlYwy64G2Jno7dGpY4CuSv/iGOe0v0ELKaYN
+   LzHdHH0lO2uT5yvi/sU9WVUQLJgxsaEbtmpVxuyaAlSwLVyMrJTRbPZSb
+   B9mwa6xk0zKmVlCFsIknyMAjBEUqu8028oLRB3kQ5AGSKuuW4jOr8UuW6
+   GZYQZOqaoK+kD+ndr9imG0awAAtc22XCJlZcwD/PiOpwYLB/PT28n9gvr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="332691970"
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="332691970"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 03:11:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="594049537"
+Received: from meliyahx-mobl2.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.32.210])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 03:11:48 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/5] tty/serial termbits cleanups
+Date:   Wed, 11 May 2022 13:11:34 +0300
+Message-Id: <20220511101139.5306-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH -next] tty: serial: max3100: Add missing
- uart_unregister_driver in max3100_probe
-Content-Language: en-US
-To:     Zheng Bin <zhengbin13@huawei.com>, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     gaochao49@huawei.com
-References: <20220511071523.3128725-1-zhengbin13@huawei.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220511071523.3128725-1-zhengbin13@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 05. 22, 9:15, Zheng Bin wrote:
-> max3100_probe misses a call uart_unregister_driver in error path,
-> this patch fixes that.
+A few simple cleanups that I've come across while playing with the
+termbits.
 
-I believe, that's intentional. Cf. uart_driver_registered.
+Ilpo Järvinen (5):
+  tty/termbits: remove #ifdef CMSPAR that is always defined
+  tty/termbits: remove #ifdef BOTHER that is always defined
+  tty/termbits: remove #ifdef IBSHIFT that is always defined
+  serial: fsl_lpuart: Remove unnecessary clearing for CRTSCTS
+  serial: jsm: Use B0 instead of 0
 
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> ---
->   drivers/tty/serial/max3100.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> index 0b5f21fbb53d..6d34ca2a3f7b 100644
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -752,6 +752,7 @@ static int max3100_probe(struct spi_device *spi)
->   		if (!max3100s[i])
->   			break;
->   	if (i == MAX_MAX3100) {
-> +		uart_unregister_driver(&max3100_uart_driver);
->   		dev_warn(&spi->dev, "too many MAX3100 chips\n");
->   		mutex_unlock(&max3100s_lock);
->   		return -ENOMEM;
-> @@ -759,6 +760,7 @@ static int max3100_probe(struct spi_device *spi)
-> 
->   	max3100s[i] = kzalloc(sizeof(struct max3100_port), GFP_KERNEL);
->   	if (!max3100s[i]) {
-> +		uart_unregister_driver(&max3100_uart_driver);
->   		dev_warn(&spi->dev,
->   			 "kmalloc for max3100 structure %d failed!\n", i);
->   		mutex_unlock(&max3100s_lock);
-> --
-> 2.31.1
-> 
-
+ drivers/char/pcmcia/synclink_cs.c   |  2 --
+ drivers/tty/amiserial.c             |  2 --
+ drivers/tty/mxser.c                 |  2 --
+ drivers/tty/serial/8250/8250_port.c |  2 --
+ drivers/tty/serial/fsl_lpuart.c     |  8 +++-----
+ drivers/tty/serial/jsm/jsm_cls.c    |  8 +-------
+ drivers/tty/serial/jsm/jsm_neo.c    |  8 +-------
+ drivers/tty/serial/sunsu.c          |  2 --
+ drivers/tty/tty_baudrate.c          | 31 ++++++-----------------------
+ drivers/tty/tty_ioctl.c             |  2 --
+ drivers/usb/class/cdc-acm.h         |  8 --------
+ drivers/usb/serial/ark3116.c        |  3 +--
+ drivers/usb/serial/whiteheat.c      |  4 ----
+ 13 files changed, 12 insertions(+), 70 deletions(-)
 
 -- 
-js
-suse labs
+2.30.2
+
