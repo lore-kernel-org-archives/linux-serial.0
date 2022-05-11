@@ -2,132 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93A7C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 10:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CD3C433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 15:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237162AbiEKKxG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 May 2022 06:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
+        id S242075AbiEKPED (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 May 2022 11:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiEKKxF (ORCPT
+        with ESMTP id S237091AbiEKPEB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 May 2022 06:53:05 -0400
-X-Greylist: delayed 1804 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 03:53:02 PDT
-Received: from connect2.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618A0880EC;
-        Wed, 11 May 2022 03:53:02 -0700 (PDT)
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by connect2.vanmierlo.com (Kerio Connect 9.4.0) with ESMTPA;
-        Wed, 11 May 2022 12:22:16 +0200
+        Wed, 11 May 2022 11:04:01 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FEC3B3D9;
+        Wed, 11 May 2022 08:04:00 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id w130so3089476oig.0;
+        Wed, 11 May 2022 08:04:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=K2evvn9klzsMhwX82pTe24yAX2JmTp6isBMJsL/SQV4=;
+        b=Bxr6JdHOJKJhSm+R5/84EJaSvHc6hFVkD39KOl33VzkUPhFt81fglWOHaPqn8jOrFJ
+         EeLdjd1EeoljN97ghljC1g43yYgMFwzmPxVO7kDIwOzto971dTW4jo3MgDJCCVtflhL6
+         aiG89d94N9fQWqOSKYxjSl6I/C7bQzkAqwKQHmKxOu0eYfWlRKZ+y18ZSbFa4ZXdJbtY
+         alrBdBanybsfsmqIhRzemu0gJStP7I50rGWizS3VupTwTRTlatYbJzQDXCkfGtgMfFf9
+         zagtsAhICL+emT5qIgB/VqDVKQypYy1l9CUrbkFPLvZqoKJCimOQEmpz/w3XQOtU6Sxo
+         umxA==
+X-Gm-Message-State: AOAM53271bMu1vcHp1/RE1KprColC1YnovLvXs3V7t9Tql7seD8Si2dd
+        pBoNzb5HKGhtEPVueZ9BfOa7ljDXMg==
+X-Google-Smtp-Source: ABdhPJznLUgFwcBWwKLcRWf+OH0tIjOA6OzYk0qvGxxrS32rYsM1faSHtN+DUWeRWazJRKVqpvGp1Q==
+X-Received: by 2002:a05:6808:a93:b0:326:4a90:5e2a with SMTP id q19-20020a0568080a9300b003264a905e2amr2639437oij.211.1652281439654;
+        Wed, 11 May 2022 08:03:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t142-20020acaaa94000000b0032647f4e437sm820644oie.45.2022.05.11.08.03.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 08:03:59 -0700 (PDT)
+Received: (nullmailer pid 310552 invoked by uid 1000);
+        Wed, 11 May 2022 15:03:58 -0000
+Date:   Wed, 11 May 2022 10:03:58 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Phil Edworthy <phil.edworthy@renesas.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: serial: renesas,em-uart: Add RZ/V2M
+ clock to access the registers
+Message-ID: <20220511150358.GA305958-robh@kernel.org>
+References: <20220504094456.24386-1-phil.edworthy@renesas.com>
+ <20220504094456.24386-2-phil.edworthy@renesas.com>
 MIME-Version: 1.0
-Date:   Wed, 11 May 2022 12:22:16 +0200
-From:   m.brock@vanmierlo.com
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Matthias Schiffer' <matthias.schiffer@ew.tq-group.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH] serial: Revert RS485 polarity change on UART open
-In-Reply-To: <df0034da2db14b6b9993c37422a6711d@AcuMS.aculab.com>
-References: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
- <20220329100328.GA2090@wunner.de>
- <b2f29129f966685105e09781620b85c8f4f1a88e.camel@ew.tq-group.com>
- <749eee7dd2c7464a8c4d9ea5972205fa@AcuMS.aculab.com>
- <82266d339e09ad16963e16014cd836fa670b3a0c.camel@ew.tq-group.com>
- <df0034da2db14b6b9993c37422a6711d@AcuMS.aculab.com>
-Message-ID: <8f44fa843e3053f19e3ec749e3083a5a@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504094456.24386-2-phil.edworthy@renesas.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-David Laight wrote on 2022-03-29 15:19:
-> From: Matthias Schiffer
->> Sent: 29 March 2022 14:03
->> 
->> On Tue, 2022-03-29 at 12:55 +0000, David Laight wrote:
->> > From: Matthias Schiffer
->> > > Sent: 29 March 2022 11:39
->> > ...
->> > > I guess that would work. The fact that even the different
->> > > variants of the 8250 are implemented inconsistently makes this
->> > > especially ugly... It certainly puts a damper on the efforts to
->> > > make the handling of RS485 in serial drivers more generic.
->> >
->> > One thing to remember is that RS232 (IIRC really V.38) line driver
->> > chips are typically inverting.
->> >
->> > So the modem signals on a TTL level output will have the
->> > opposite polarity to that required on the actual connector.
->> >
->> > Normally a UART will have an 'active high' register bit for
->> > a modem signal that drives and 'active low' pin so you get
->> > the correct polarity with an inverting line driver.
->> >
->> > 	David
->> >
->> 
->> Indeed. As far as I can tell, this property of UARTs is what got us
->> into this mess: Some people interpreted SER_RS485_RTS_ON_SEND as "set
->> the RTS flag in the MCR register on send", while other thought it
->> should mean "set the RTS pin to high on send", leading to opposite
->> behaviours in different UART drivers (and even different UART variants
->> in the same driver, in the case of the 8250 family).
+On Wed, May 04, 2022 at 10:44:55AM +0100, Phil Edworthy wrote:
+> The RZ/V2M SoC has an additional clock to access the registers. The HW
+> manual says this clock should not be touched as it is used by the
+> "ISP Firmware".
 > 
-> Hmmm... A complete mess.
-> The 'RTS pin' that needs to go high is the one on the (typically) 'D'
-> connector after the inverting line driver.
-> Not the pin on the uart package.
-> I'd expect TTL level serial interfaces to require active low
-> modem signals.
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v4:
+>  - Removed "optional" from description of clock to access the registers
+> v3:
+>  - New patch added
+> ---
+>  .../bindings/serial/renesas,em-uart.yaml      | 32 +++++++++++++++----
+>  1 file changed, 25 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> index 332c385618e1..40a03f255666 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> @@ -9,9 +9,6 @@ title: Renesas EMMA Mobile UART Interface
+>  maintainers:
+>    - Magnus Damm <magnus.damm@gmail.com>
+>  
+> -allOf:
+> -  - $ref: serial.yaml#
+> -
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -29,11 +26,32 @@ properties:
+>    interrupts:
+>      maxItems: 1
+>  
+> -  clocks:
+> -    maxItems: 1
+> +allOf:
+> +  - $ref: serial.yaml#
+>  
+> -  clock-names:
+> -    const: sclk
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: renesas,r9a09g011-uart
+> +    then:
+> +      properties:
 
-A typical 'D' connector for RS485? I've seen all sorts of connectors
-and I can't say one of them is typical. You're assuming there are
-RS232 level shifters in play, but usually there aren't and the TTL
-UART signals are directly connected to an RS485 transceiver. For
-RS485 there is no outside RTS pin, so you will have to talk about
-the UART TTL pin.
+> +        clocks:
+> +          items:
+> +            - description: UART functional clock
+> +            - description: Internal clock to access the registers
+> +        clock-names:
+> +          items:
+> +            - const: sclk
+> +            - const: pclk
 
-https://www.kernel.org/doc/Documentation/serial/serial-rs485.txt
-is unfortunately not entirely clear:
-	/* Set logical level for RTS pin equal to 1 when sending: */
-	rs485conf.flags |= SER_RS485_RTS_ON_SEND;
+Better to put all this at the top level with 'minItems: 1' and then use 
+minItems/maxItems in the if/then schema to define which platforms have 1 
+or 2 clocks.
 
-Most (all?) UART chips have an RTSn, RTS# or /RTS pin which means RTS
-inverted. So the "RTS pin" can't be set to logic level 1, but RTS can.
-
-IMHO it would be best to let SER_RS485_RTS_ON_SEND mean that RTS is
-asserted during sending. That means that RTSn should be 0V.
-
-When the UART chip is connected directly to an RS485 driver with RTSn
-connected to DE, you need SER_RS485_RTS_AFTER_SEND so RTS=0 and
-RTSn=DE=1 during sending.
-
-When a UART is not in RS485 mode and unopened it usually has RTS=0,
-RTSn=1 which would make any directly connected RS485 driver claim
-the bus. This is probably undesired behaviour and thus asks for an
-extra inverter between RTSn and DE. With this added inverter one
-would need SER_RS485_RTS_ON_SEND.
-
-https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/serial/rs485.yaml
-isn't much better either:
-  rs485-rts-active-low:
-     description: drive RTS low when sending (default is high).
-
-Was this meant as "drive the RTSn pin low when sending"?
-
-Finally, can these two methods be synchronized in their wording?
-E.g. can we just drop "rs485-rts-active-low" and replace it with
-"rs485-rts-on-send" and "rs485-rts-after-send"?
-
-Maarten
-
+> +    else:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: UART functional clock
+> +        clock-names:
+> +          items:
+> +            - const: sclk
+>  
+>  required:
+>    - compatible
+> -- 
+> 2.32.0
+> 
+> 
