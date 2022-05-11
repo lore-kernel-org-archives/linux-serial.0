@@ -2,83 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 055BAC433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 06:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E453BC433FE
+	for <linux-serial@archiver.kernel.org>; Wed, 11 May 2022 07:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236832AbiEKGvh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 May 2022 02:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
+        id S238817AbiEKHBh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 11 May 2022 03:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242751AbiEKGv1 (ORCPT
+        with ESMTP id S233352AbiEKHBd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 May 2022 02:51:27 -0400
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4882357128;
-        Tue, 10 May 2022 23:51:19 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id d5so1527136wrb.6;
-        Tue, 10 May 2022 23:51:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1wEl4hKP70nqNM7+s33aDLROWITXXzeuUXQCyFgNxKQ=;
-        b=fL0QpNLjw5Bu1FPrB1EV69pKMr1WMiaxGDyNCVRaUu88Bdh1KTpsixQhD9bddg7O+u
-         6Rvz0mzL/8eE4ABC986jenh9G4Kw7NCZqqmkwbDj02D2UNWsh14SR/maEjFDo2OxI2gj
-         Lk+rHMVrXcEl+uIjjiaaY5mMAGV2ypdg4W7V20ejr8UNBYDll3HZv9lktTcS1Lnz+sPn
-         0Mwf2Y6F08Nq5wTIm31d8qBM5kyCtuiX7JEsILRPAeDBk6KglhUDvYf03Z1RfpUG1jfF
-         WRxTmTq866PI9cwsOBGHYQyf2C7eRHcvciooxoepfEylwhINYPyqS8KGR8xoLro166J9
-         VTwQ==
-X-Gm-Message-State: AOAM530BpgUxgyylrVAGSsY/zJipdAQrKOw5EMpW/1mQrb6Hj/7i2q9j
-        g6JLWtUKKY1Y3eLDXkJG0jE=
-X-Google-Smtp-Source: ABdhPJzvSiFXK+Pkx1A+5Jgez3pwE0NnwYeWyDPJFd2IMdUv3cDPSfUbrL34eucFRES0Ji7AeRNSEg==
-X-Received: by 2002:a05:6000:144a:b0:20c:6b73:804 with SMTP id v10-20020a056000144a00b0020c6b730804mr21963700wrx.88.1652251877878;
-        Tue, 10 May 2022 23:51:17 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id r5-20020a05600c424500b003942a244f3asm4242899wmm.19.2022.05.10.23.51.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 23:51:17 -0700 (PDT)
-Message-ID: <e9a112f8-a35b-1df4-0567-9fddf80c8e17@kernel.org>
-Date:   Wed, 11 May 2022 08:51:16 +0200
+        Wed, 11 May 2022 03:01:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0356648E40;
+        Wed, 11 May 2022 00:01:32 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kym3475jfzGpcY;
+        Wed, 11 May 2022 14:58:40 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 15:01:28 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+Subject: [PATCH -next] tty: serial: max3100: Add missing uart_unregister_driver in max3100_probe
+Date:   Wed, 11 May 2022 15:15:23 +0800
+Message-ID: <20220511071523.3128725-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 1/1] soc: fujitsu: Add A64FX diagnostic interrupt
- driver
-Content-Language: en-US
-To:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        linux-arm-kernel@lists.infradead.org, soc@kernel.org,
-        linux-serial@vger.kernel.org, sumit.garg@linaro.org
-Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
-        will@kernel.org, gregkh@linuxfoundation.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        dianders@chromium.org, linux-kernel@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org
-References: <20220511062113.2645747-1-hasegawa-hitomi@fujitsu.com>
- <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 05. 22, 8:21, Hitomi Hasegawa wrote:
-> --- /dev/null
-> +++ b/drivers/soc/fujitsu/a64fx-diag.c
-> @@ -0,0 +1,155 @@
-...
-> +#define BMC_DIAG_INTERRUPT_STATUS_OFFSET (0x0044)
-> +#define BMC_DIAG_INTERRUPT_ENABLE_OFFSET (0x0040)
+max3100_probe misses a call uart_unregister_driver in error path,
+this patch fixes that.
 
-And I noticed here, I would:
-* remove unneeded parentheses
-* drop the "_OFFSET" suffix
-* just write 8bit values (0x40, 0x44), given they fit
-* order them numerically, 0x40 goes first
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/tty/serial/max3100.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-thanks,
--- 
-js
-suse labs
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 0b5f21fbb53d..6d34ca2a3f7b 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -752,6 +752,7 @@ static int max3100_probe(struct spi_device *spi)
+ 		if (!max3100s[i])
+ 			break;
+ 	if (i == MAX_MAX3100) {
++		uart_unregister_driver(&max3100_uart_driver);
+ 		dev_warn(&spi->dev, "too many MAX3100 chips\n");
+ 		mutex_unlock(&max3100s_lock);
+ 		return -ENOMEM;
+@@ -759,6 +760,7 @@ static int max3100_probe(struct spi_device *spi)
+
+ 	max3100s[i] = kzalloc(sizeof(struct max3100_port), GFP_KERNEL);
+ 	if (!max3100s[i]) {
++		uart_unregister_driver(&max3100_uart_driver);
+ 		dev_warn(&spi->dev,
+ 			 "kmalloc for max3100 structure %d failed!\n", i);
+ 		mutex_unlock(&max3100s_lock);
+--
+2.31.1
+
