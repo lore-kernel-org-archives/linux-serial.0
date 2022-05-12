@@ -2,254 +2,310 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469C5C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 12 May 2022 14:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 909E1C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 12 May 2022 15:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355585AbiELOuM (ORCPT
+        id S1356074AbiELPqz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 May 2022 10:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        Thu, 12 May 2022 11:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355202AbiELOuL (ORCPT
+        with ESMTP id S1355527AbiELPqy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 May 2022 10:50:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D26246D9A;
-        Thu, 12 May 2022 07:50:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14551B8289D;
-        Thu, 12 May 2022 14:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0948C34116;
-        Thu, 12 May 2022 14:50:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652367006;
-        bh=K2lV3MNXpt7/q8fXRKHox/llU0Ii4IdqDmJyyOWTUys=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OMUv8rO34mCmy1mXEbNuVxbIXswxQr4ED+eeKJV7INzxcfi4h9ViVqMLx6F6+aliA
-         8c9Guw8AaY1GUi/x9aftgbWlJtp37gyHFhBS225fLOAB2r7SldyEd8buGgK1W3pMRf
-         Whr8PwtX6/pLWZzE4epmNZDprTZZTe+8NUp3nbgYCdm+rb9F8oe2hlyENcN1U/KBOH
-         IQR1JWqb7tDqzUvNSiKtyH1no4a5/SyAvNr7Cp0IeXKM8+pzZWkoA+U2w9EZH4V1jB
-         RdrTKbK+hSGqNK9BT479qWO2fbDRII0/nBuYvoaNS+bO5nREF0gYJv/fPP62e0psXc
-         t+utEVtVBH29A==
-Received: by mail-pf1-f180.google.com with SMTP id p12so5050553pfn.0;
-        Thu, 12 May 2022 07:50:06 -0700 (PDT)
-X-Gm-Message-State: AOAM530CQ/SJjhmvyolL3336Fsj6qX306TxTel1VYPz5weHAOsy2eSEj
-        UhcBky8Z3nzk8LtSQ5AZFqzZOppDOu/y2FrhJw==
-X-Google-Smtp-Source: ABdhPJy1pFX4NArhGcrcBvppzFMHq0UIZgL6+L9BIRTAPsM3rPRLzjdTgnsRFwBve6LrlO8Ky1aRYN7QvQEuIzj6Ia8=
-X-Received: by 2002:a63:e218:0:b0:3c6:7449:15a2 with SMTP id
- q24-20020a63e218000000b003c6744915a2mr35272pgh.515.1652367006204; Thu, 12 May
- 2022 07:50:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
- <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net> <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
- <501852E6-6934-4BB2-850C-B53A07580568@goldelico.com> <8533f999-f584-ea31-0c44-1ce29c066d88@wanyeetech.com>
- <1B523C47-1F9C-42EE-B242-EF63F89B94F9@goldelico.com> <35c60fea-ac74-9d23-51ac-b877a5b4eb86@wanyeetech.com>
-In-Reply-To: <35c60fea-ac74-9d23-51ac-b877a5b4eb86@wanyeetech.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 12 May 2022 09:49:53 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+vAtfOywCry+6A3cEKaKupyAC1aah6LNk+YdWzxtdVeA@mail.gmail.com>
-Message-ID: <CAL_Jsq+vAtfOywCry+6A3cEKaKupyAC1aah6LNk+YdWzxtdVeA@mail.gmail.com>
-Subject: Re: Question about SC16IS752 device tree.
-To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Paul Cercueil <paul@crapouillou.net>, jringle@gridpoint.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-mips <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>, tomasz.mon@camlingroup.com,
-        l.perczak@camlintechnologies.com
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 12 May 2022 11:46:54 -0400
+Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1196449FB9
+        for <linux-serial@vger.kernel.org>; Thu, 12 May 2022 08:46:50 -0700 (PDT)
+Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CFj2Do003089;
+        Thu, 12 May 2022 15:46:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=date : from : to :
+ cc : subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=PPS06212021;
+ bh=BvgrUeXG6MZbY6CrXJRb7r4eAcs4pfBrXcguDjO7Q7M=;
+ b=oqaznRr5NI6m3y/kwKps98fIkjXzBKzk+YF4CwLTPlmwkrhFYtz8Kecc5ZyfoINXT9fg
+ yXIA67h+VOe1+CJNxqzIrfUbswapdkMR0RU+qCjk5W3X6CLrD5RK+A+1+nm3iu02uDiV
+ Vpa9+me9eVG76RJ0yzirJIlFzL/Vo1wnADWFFCZruYvpFEshvdMs3XPfg8521XulM+cW
+ OXaPs+XtwC32WFg8l1fZBVlpXr8poriBbq6dgMTnlvNaBsFHwdS+38zhtX0VX0ox+MYu
+ TTfxqFCro9/E4rv+U0w/wLnOCsw7ZB0wqUPyuOLph7C2BzkoeZNkBZ6SQTpMYwy5Ga5e cA== 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2171.outbound.protection.outlook.com [104.47.57.171])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3fwfr8c298-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 15:46:30 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kBiBwxjxwPlOs0ZT9/6KZwnu4XGpWv/X6wkGyNxDAsjepELK290/Ibdg/vgwrAWI3LJB1c8HxDEHnONv7Qp4kG6eIQWbJFI1whNK3jacXU7syAijBtXgBY21LyQQG2ThKFAMt7a+ndzWkH13IO+lB3oH4h59utVDfElQf2cUraKUK9twWAQHr2PMP1CD7V7akSZnZQjxozymxvgZH9rMTZGQKrqx8vCTMuwkDgF3ZOGngbgoeQubQ8MBdEhUro3sDgy/mNP0W3PtoeHJawgKC9FyTm2zDPZhC137KZ3wwGA5pOaKYVl2LaqcgcClTHikD74I6Q+G32qIwl1Gbmcvpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BvgrUeXG6MZbY6CrXJRb7r4eAcs4pfBrXcguDjO7Q7M=;
+ b=BWf84UZfeVvGtdudCSW8IbpIw5SZiqGCHZ/nhLp7Y3p3c6gnqpEqnnD7OPTK1r0MYBCGtv0Nt94Ux8nTOiyYjM3L3OqxhfJjj13bgc186HC24+Jie3ph7bnC9ZatV8Pp1cKvIAcVYv9u848O0z2eAHAHPoDU5Pnny7oSwljt0QsR50NZbnJwe6HATNrgCewMk38WktbZmFjM92bPimBin86O7iGhl8NP3si8vktwmT3B9MKkB0plTBKOR6EkcsJInmnT+1lRY5ivRYZLxhahu11ydCrHFi1g2gPiR4EQEHPkJev/kU8gY7+F1ICsBtVe3rSAvDTuWvHqbZe/jFDElg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Received: from DM6PR11MB4545.namprd11.prod.outlook.com (2603:10b6:5:2ae::14)
+ by BN6PR11MB3860.namprd11.prod.outlook.com (2603:10b6:405:77::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Thu, 12 May
+ 2022 15:46:24 +0000
+Received: from DM6PR11MB4545.namprd11.prod.outlook.com
+ ([fe80::89e0:ae63:8b71:4a0f]) by DM6PR11MB4545.namprd11.prod.outlook.com
+ ([fe80::89e0:ae63:8b71:4a0f%6]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 15:46:24 +0000
+Date:   Thu, 12 May 2022 11:46:21 -0400
+From:   Paul Gortmaker <paul.gortmaker@windriver.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>,
+        linux-imx@nxp.com
+Subject: Re: [PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice
+Message-ID: <20220512154621.GC37988@windriver.com>
+References: <20220511093247.91788-1-u.kleine-koenig@pengutronix.de>
+ <20220512012910.GB37988@windriver.com>
+ <20220512061724.4guiyqa6vcdru4iw@pengutronix.de>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220512061724.4guiyqa6vcdru4iw@pengutronix.de>
+X-ClientProxiedBy: YT3PR01CA0135.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:83::32) To DM6PR11MB4545.namprd11.prod.outlook.com
+ (2603:10b6:5:2ae::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 031d3630-dfe6-4bd4-af8c-08da342e91b2
+X-MS-TrafficTypeDiagnostic: BN6PR11MB3860:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR11MB386023DE84A7354562C0D75883CB9@BN6PR11MB3860.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KO+TdxAItptltyAgXYeQt8O5hiK2y85mZNjXMwLhGu7eos5NU1/Ekm6Y3FIE8M7RWoFyRG7KZQQm1c+xnHqPCD4gahsAUY3qt4Jvuh+r1ZWE9aQ6MtGRMTFczP7CzVgkCfSLGb1TXlGzVu1yJebpVw9DuutjA085e7Z8BwyypBWlMSLWDlAhP6mmyBpwILKJhsDJbgN9g4Ad53M2KwD+kZC/FxTfmPTY2h6I8bz2y5byYFrGixZ5FdDsO/b1Fhn5G38XVJVi41K3iM4BIeNNMzCJkN7S/arjVIYXZo9BLne6PYtZuulttoiU+RqGtjy6H1GkggD8ps+Ixbaqrv9TMD7tiq+s4f3cjFiB4DhLe1LPTT7qBcdHiLaOdsQ9J/zfszZGZNWmpvo3JUTKiREIp/6L40nZwQH9OikmERib0r3561rls5AB7M7OA6zv8EqxaUgmzVciWOg7pXfc6yg0kzklliADh/lIpwETKRYhn7C45JT9CXnzNv4zF8hicrCcuTFUj4fdGbo+2kMdj/qG6cI5gxdNiTI6GwkOV5AJXMcjKoPGfsIWxk5iHctfp4/FkdGC0YVDJ3kvKLpLGAUKvmR0YVdtBU/9CjueVqPx8yWz0Z/QCnpewhS7ttoX/TQDNSESOtQTo7djf9tnOtoBgRLswTxStrvcmVnv85Vk7SnZQ9DeRrcZDYd6JSxG3Pn5jK7nIjcWbmY+gOz29QQX7YYN9OvO0jZAJA6cI/bR8gfx+G5o8rSiSeFQglgyUzRpIjuwPVPXyx+fHMdH+qMVRA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4545.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(26005)(86362001)(66574015)(8676002)(83380400001)(66476007)(66556008)(66946007)(8936002)(508600001)(38350700002)(186003)(6506007)(5660300002)(2616005)(33656002)(44832011)(2906002)(6512007)(6666004)(966005)(6486002)(54906003)(6916009)(316002)(36756003)(38100700002)(1076003)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?TmVyzedoHelBxb+4xMDqv4IGLCZw6oJt8EqDilglyu1WFMe0i4VmLEsXcR?=
+ =?iso-8859-1?Q?I2MYvRTr9OGQhXBJkaEaPt1G/YXJ5O3vbT7L3tTfOLoVS/s868c9JGfhTj?=
+ =?iso-8859-1?Q?7ZfZaMsjJfwu14/p3p+PsVvrWKkvAzg4i3q/DcfInHLJB4aMVMVFhQnP54?=
+ =?iso-8859-1?Q?bqfnFQhukwrlH+68p2M5rlogNQu+NB3LZ6Y97JiFgDTvGmcF87ERbmst8S?=
+ =?iso-8859-1?Q?XZoniaoZVvGamBYe00PDg8+Z0lAjtpMcXRAr+2oNXoS3TlacJLYMCv1Swz?=
+ =?iso-8859-1?Q?CAoWeukaI2PWH+4T/ILFcsl12S6mhgk+YPistLN5r9174T86wvnqiOcTiD?=
+ =?iso-8859-1?Q?es/Iy9cQJqpGdrVdfStxTAYrIt6WWNAlSZoBUehlQL5IyuggNOnBh4pR+9?=
+ =?iso-8859-1?Q?J0CCV04R+VdbRIwQAMoul7xgBM9cDuReNSBx81137DEA30Ao7PeM/suKJO?=
+ =?iso-8859-1?Q?P28z/BJFEL8dYqDsu6JE1+ARtwEyVuQn7Ioxmqc5JR1/9U/DGpWuTOVdNX?=
+ =?iso-8859-1?Q?fHjuI3YJ3dkkxHNEIv3jrBNMfO4ZHDAfbVKLYoYsHqTCfUNqDQ9716DwvC?=
+ =?iso-8859-1?Q?liJ8zdKqiPLAJgzuK0hGMVKO2ewWuDOBtVz6fHPBMk+0yl8KQV/4k+GiS3?=
+ =?iso-8859-1?Q?hebopJaiu6Ztz5bjkwzfBTDES8XPl5CSNGf/NFCFqx+5Cy6eaP4zP9o+Pa?=
+ =?iso-8859-1?Q?BMmR75doP3Oz7iVQ44G8Wiir6HwaCZy77yzwFUm49OeRASPODo4Zve9SuD?=
+ =?iso-8859-1?Q?qILQfB7BUjHnrgakE19VD0Egl/ue6pFjgonNhLdxd3B7FYgAW1tdibkuS+?=
+ =?iso-8859-1?Q?LmF1eg5MysoLq9hW8MEay6hOAS8bLw4QXhrQq0tmh2jPq1lhJ4X4BLOrsl?=
+ =?iso-8859-1?Q?G//9UM+16OuDn36++IeYeydX/ITvHSXKtXgNI65nP9WCYbkWiNJunGxXs9?=
+ =?iso-8859-1?Q?Vtt08lyJ9xme6c06GNBkIxUtXCroIBy8mILO+CAp+GFgWom0nz+G9zRf8M?=
+ =?iso-8859-1?Q?p46T0BkCxBIIVi7dpygX9BKWLW8Z+ApmLN2VQqOEqhHpP71PYUaA+stqdK?=
+ =?iso-8859-1?Q?HKX6doLNHq1aOr52DtA3En0SJjVuYdMxsj03S3a9yUhEo8GOBxv686OFNT?=
+ =?iso-8859-1?Q?I6S71JHyw3wrxokuZrBEX5gXrchcFb6AfckKzGW5hjW/vKsdP8xlIV4Jy8?=
+ =?iso-8859-1?Q?eZq2cLcnZyST65UjeAR+NBdQaktXgiTqxrtgVHRWpCilyI38G8uRuLX0D0?=
+ =?iso-8859-1?Q?4JzxibzYfWYpsIelLSZNGunfqDhS5CeIw5aW4ZSa6wq3O/Aur0JnCftDKq?=
+ =?iso-8859-1?Q?o1g4layh99bjmcJ31n04R4HIPToupzmxCI9qr3wjBudcn3dFEY3IKmUj3N?=
+ =?iso-8859-1?Q?wuMSmv1DE5ani4Gsd1v2PIJc8cEpWp5ffHQtOn1AWguAoXEe5I4E0eqIyC?=
+ =?iso-8859-1?Q?SXBN/LCixqnLcwfAfpikobccTw5STUSOO2WPXaC4om9jRtFZa4+nHzURKA?=
+ =?iso-8859-1?Q?f3jochUUCabAuU4hwhf+hrSmwYpIq+YlO/mJZ8idc3RJet2npAIUTu9uZL?=
+ =?iso-8859-1?Q?K9reZZqWxO42kDcTuD1/qMT9aEKaBnkqkor8vRSuq4qU+1dcUxdfX7WOLH?=
+ =?iso-8859-1?Q?n76m4JReYVqWgJT5c5TLMWuUfgp05sDB1VCWeUvL5c7NSQtJxkjPMAFrMr?=
+ =?iso-8859-1?Q?qO7lt4ztiHXtP69Qw+f08qtZrAs+QuWxVVDs+Aa2Hez1DwG7WWVIuP4is4?=
+ =?iso-8859-1?Q?MxWJ+GPuj9NiMYZOobvg/lR9x1gvzmH1/YKW0JYXs3aCigF5/4wbX9Q7hG?=
+ =?iso-8859-1?Q?b2xsewqk/Nk3Q+Ue/oRlMMY6DTPBv1U=3D?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 031d3630-dfe6-4bd4-af8c-08da342e91b2
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4545.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 15:46:24.5935
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6gFepjZL0OjNEVFFI/IzA9IShDqadJ2qpsdviu56VZcuFtGK7h5LfNbyoTBCEqeYyloq1BamtmR3z+uQPExtcw3CMXrrukyvzW/w+OgtTG8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB3860
+X-Proofpoint-ORIG-GUID: GUGBX2ckpId3rvBlhpJuHgSEgfR3rvaM
+X-Proofpoint-GUID: GUGBX2ckpId3rvBlhpJuHgSEgfR3rvaM
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_12,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ phishscore=0 clxscore=1015 malwarescore=0 adultscore=0 priorityscore=1501
+ mlxlogscore=999 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120075
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 10, 2022 at 12:53 PM Zhou Yanjie <zhouyanjie@wanyeetech.com> wr=
-ote:
->
-> Hi,
->
-> On 2022/5/10 =E4=B8=8B=E5=8D=8811:31, H. Nikolaus Schaller wrote:
-> > Hi,
-> >
-> >> Am 10.05.2022 um 04:29 schrieb Zhou Yanjie <zhouyanjie@wanyeetech.com>=
-:
-> >>
-> >> Hi Nikolaus,
-> >>
-> >> On 2022/5/10 =E4=B8=8A=E5=8D=884:19, H. Nikolaus Schaller wrote:
-> >>> Hi,
-> >>>
-> >>>> Am 09.05.2022 um 20:41 schrieb Zhou Yanjie <zhouyanjie@wanyeetech.co=
-m>:
-> >>>>
-> >>>> Hi Paul,
-> >>>>
-> >>>> On 2022/5/10 =E4=B8=8A=E5=8D=882:13, Paul Cercueil wrote:
-> >>>>> I can't say for sure that it's your problem, but your bluetooth nod=
-es are missing "reg" properties.
-> >>>> Unfortunately it doesn't seem to be the problem here, I added "reg" =
-and
-> >>>> the problem persists, and I've looked at other device trees that con=
-tain
-> >>>> "brcm,bcm43438-bt", none of them use "reg", and "reg" is not mention=
-ed in
-> >>>> neither "Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt"=
- nor
-> >>>> "Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml".
-> >>> what happens if you remove the serdev children from DTS? Does the dri=
-ver create two separate /dev/tty ports? And do they work?
-> >>
-> >> Yes, there will be two separate /dev/tty ports (ttySC0 and ttySC1), an=
-d
-> >> both ports can work normally, but at this time the two bluetooth modul=
-es
-> >> are not working.
-> >>
-> >> I guess it is because the driver does not detect bluetooth module node=
-s,
-> >> so the inability to operate "reset-gpios" and "device-wakeup-gpios" ca=
-uses
-> >> the bluetooth module to work incorrectly.
-> > I would assume that it is not prepared to handle two serdev subnodes an=
-d
-> > assign the right gpios.
->
->
-> I found something new now, if I follow the practice in
-> "fsl-ls1012a-frdm.dts"
-> and put the clock node inside the node of SC16IS752:
->
-> &ssi0 {
->      status =3D "okay";
->
->      num-cs =3D <2>;
->
->      pinctrl-names =3D "default";
->      pinctrl-0 =3D <&pins_ssi0>;
->
->      sc16is752: expander@0 {
->          compatible =3D "nxp,sc16is752";
->          reg =3D <0>; /* CE0 */
->          #address-cells =3D <1>;
->          #size-cells =3D <0>;
->
->          spi-rx-bus-width =3D <1>;
->          spi-tx-bus-width =3D <1>;
->          spi-max-frequency =3D <6000000>;
->
->          clocks =3D <&exclk_sc16is752>;
->
->          interrupt-parent =3D <&gpb>;
->          interrupts =3D <18 IRQ_TYPE_EDGE_FALLING>;
->
->          gpio-controller;
->          #gpio-cells =3D <2>;
->
->          exclk_sc16is752: sc16is752 {
->              compatible =3D "fixed-clock";
->              #clock-cells =3D <0>;
->              clock-frequency =3D <48000000>;
->          };
+[Re: [PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice] On 12/05/2=
+022 (Thu 08:17) Uwe Kleine-K=F6nig wrote:
 
-That doesn't look right. This clock source is not part of or coming
-from the sc16is752. This belongs at the top level.
+> Hello Paul,
+>=20
+> first of all thanks for your cooperation on this ancient topic. It's
+> very appreciated.
 
->
->          bluetooth@0 {
->              compatible =3D "brcm,bcm43438-bt";
->              reg =3D <0>;
->              max-speed =3D <1000000>;
->
->              device-wakeup-gpios =3D <&gpc 26 GPIO_ACTIVE_HIGH>;
->              reset-gpios =3D <&gpb 17 GPIO_ACTIVE_LOW>;
->          };
->
->          bluetooth@1 {
->              compatible =3D "brcm,bcm43438-bt";
->              reg =3D <1>;
->              max-speed =3D <1000000>;
->
->              device-wakeup-gpios =3D <&gpc 28 GPIO_ACTIVE_HIGH>;
->              reset-gpios =3D <&gpb 19 GPIO_ACTIVE_LOW>;
->          };
->      };
-> };
->
-> This will cause all bluetooth modules to not work, and if the clock node
-> is moved
-> to the end of the child node, the bluetooth module connected to ttySC0
-> can work
-> normally, which seems to mean that only the first child node can work
-> correctly.
->
->
->
-> And I found this patch:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git/commit/dri=
-vers/tty/serdev?h=3Dusb-next&id=3D08fcee289f341786eb3b44e5f2d1dc850943238e
->
-> It seems to mean that the SC16IS752 driver does not correctly
-> distinguish between
-> the two serial ports, which makes the serdev driver think that the child
-> nodes are
-> on the same serial device bus, which leads to the current problem.
->
->
-> >
-> >>
-> >>> Maybe the sc16is752 driver does not separate them for child nodes, i.=
-e. while "reg" should be added it may not be handled?
-> >>
-> >> I'm not too sure, I'm not very familiar with serial port systems.
-> >> If the truth is what you think, how should I improve it?
-> > Unfortunately I also don't know how the serdev implementation really wo=
-rks.
-> >
-> > It was my nagging to make it happen by persistently proposing a non-uni=
-versal
-> > solutionsome years ago until one of the maintainers had mercy to write =
-a general
-> > solution. So I could switch my driver to simply use the serdev API. It =
-was for a GPS
-> > client device but not a tty side driver.
-> >
-> > I think if you look up the first patches for the serdev interface this =
-should
-> > reveal the original author an he should be able to help.
->
->
-> The original author of the serdev driver is Rob Herring, the original
-> author of the
-> SC16IS752 is Jon Ringle, they are already on the CC list, I also added
-> Johan Hovold
-> and the two authors Tomasz Mo=C5=84 and Lech Percza who sent patches to t=
-he
-> sc16is7xx.c
-> driver in this year.
->
-> Hopefully they can guide us here.
+It was quite the flashback - stuff I'd thought was long forgotten!
 
-I think what needs to happen is of_serdev_register_devices() needs to
-be passed the port index which can then be used to get the child with
-a matching address/index.
+> And oh, I failed to Cc the NXP people. I added them to Cc:, maybe one of
+> them can add something valuable to the discussion.
+>=20
+> On Wed, May 11, 2022 at 09:29:10PM -0400, Paul Gortmaker wrote:
+> > [[PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice] On 11/05/2=
+022 (Wed 11:32) Uwe Kleine-K=F6nig wrote:
+> >=20
+> > > Some Freescale 8250 implementations have the problem that a single lo=
+ng
+> > > break results in one irq per character frame time. The code in
+> > > fsl8250_handle_irq() that is supposed to handle that uses the BI bit =
+in
+> > > lsr_saved_flags to detect such a situation and then skip the second
+> > > received character. However it also stores other error bits and so af=
+ter
+> > > a single frame error the character received in the next irq handling =
+is
+> > > passed to the upper layer with a frame error, too.
+> > >=20
+> > > To weaken this problem restrict saving LSR to only the BI bit.
+> >=20
+> > But what is missing is just what "this problem" is - what applications
+> > are broken and how?  What are the symptoms?  This is a 15+ year old
+> > platform and so one has to ask why this is just being seen now.
+>=20
+> The problem is "However it also stores other error bits and so after a
+> single frame error the character received in the next irq handling is
+> passed to the upper layer with a frame error, too." which is just the
+> sentence before. I hoped this would be understandable :-\
 
-There's not any DT binding that defines how this looks. It could be
-either the slave devices are direct child nodes like you have or each
-serial port should have a child node for the port and the grandchild
-nodes are the slave device. I'd suppose it is possible to have
-multiple devices muxed to a single port (that's what the comment is
-about and handling muxed devices would require more work in serdev).
-That binding would end up looking just like the former style and the
-serdev core could have a hard time figuring out whether it is multiple
-ports or multiple mux settings. I suppose we would be able to
-distinguish that with the presence of mux-control binding or not. In
-any case, all that needs to be considered before we change serdev.
+I was trying to get you to describe symptoms at a higher level - as I
+said above, at the application level - what were you using that wasn't
+working that led you down the path to investigate this?   Transfering
+data wasn't reaching the expected max for baud rate, or serial console
+was showing lags and dropped characters, or ...?
 
-Rob
+The false positive error bits description is fine, but it isn't
+something that a person in the future could read and then say "Oh I'm
+having the same problem - I should backport that!"
+
+> > > Note however that the handling is still broken:
+> > >=20
+> > >  - lsr_saved_flags is updated using orig_lsr which is the LSR content
+> > >    for the first received char, but there might be more in the FIFO, =
+so
+> > >    a character is thrown away that is received later and not necessar=
+ily
+> > >    the one following the break.
+> > >  - The doubled break might be the 2nd and 3rd char in the FIFO, so th=
+e
+> > >    workaround doesn't catch these, because serial8250_rx_chars() does=
+n't
+> > >    handle the workaround.
+> > >  - lsr_saved_flags might have set UART_LSR_BI at the entry of
+> > >    fsl8250_handle_irq() which doesn't originate from
+> > >    fsl8250_handle_irq()'s "up->lsr_saved_flags |=3D orig_lsr &
+> > >    UART_LSR_BI;" but from e.g. from serial8250_tx_empty().
+> > >  - For a long or a short break this isn't about two characters, but m=
+ore
+> > >    or only a single one.
+> >=20
+> > I've long since flushed the context required to parse the above, sorry.
+> > But the part where it says "is still broken" stands out to me.
+>=20
+> The current state is (assuming the errata is accurate and I understood
+> it correctly):=20
+>  - You get a problem for sure if there is a frame error (because the
+>    next good char is thrown away).
+>  - You get a problem for sure if there is a parity error (because the
+>    next good char is thrown away).
+>  - You get a problem for sure if there was an overflow (because the
+>    first good char after the overflow is thrown away).
+>  - The code is racy for break handling. In some unlikely cases the break
+>    workaround is applied wrongly.
+>=20
+> (Where "thrown away" is really: passed to the tty layer with an error
+> indication, which depending on tty settings results in dropping the
+> character or passing it on to userspace.)
+>=20
+> My patch only fixes the first three issues. A part of the reason for the
+> uncomplete fix is that I don't have a platform that requires the workarou=
+nd.
+> (I thought I had, but it doesn't show the described behaviour and
+> instead behaves nicely, i.e. one irq per break and no stray bits are
+> set.)
+
+I was hoping that with the full description of the issue from 12+ years
+ago that you'd be able to reproduce it on your platform with the WAR disabl=
+ed.
+I take it that you tried and SysRQ still worked fine?
+
+I also found a copy of an earlier proposed fix from 2010 on patchworks:
+http://patchwork.ozlabs.org/project/linuxppc-dev/patch/20100301212324.GA173=
+8@windriver.com/
+
+Maybe there are some additional details in there of interest?
+
+I wonder if some other intervening change in that wide time span happens
+to mask the issue?  Who knows.  I'm not sure if you are that interested;
+enough to go try an old kernel to find out...
+
+> That the patch I did is correct is quite obvious for me. Currently the
+> fsl8250_handle_irq() function sets the bits BI, OE, FE and PE in
+
+If I recall correctly, it just clears BI - are you sure it sets bits?
+
+> lsr_saved_flags, but only evaluates BI for the workaround. The commit
+> that introduced that only talks about BI, the mentioned erratum also
+> only mentions BI.
+>=20
+> I can try to make the commit log more convincing. Or if the ability to
+> test this code on an affected platform is declared a requirement, I will
+
+I'm not in any position to declare any requirements - just that when you
+are bit-bashing to work around some "black box" silicon errata, any
+changes might impact whether the WAR is still working or not.
+
+Your change alters lsr_saved_flags for *every* event, even when no breaks
+or workarounds have been in play.  I'm not sure what that might trigger.
+
+> drop the topic, just stop using fsl8250_handle_irq() without feeling sad.
+
+That might be the best option in the end but I did notice something else
+you might want to consider.  I believe the fsl8250_handle_irq() was just
+a copy of the generic serial8250_handle_irq() as it was in 2011, with
+the single block of code inserted for the WAR:
+
++       /* This is the WAR; if last event was BRK, then read and return */
++       if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
++               up->lsr_saved_flags &=3D ~UART_LSR_BI;
++               port->serial_in(port, UART_RX);
++               spin_unlock_irqrestore(&up->port.lock, flags);
++               return 1;
++       }
+
+Of course as we all know - when you copy something, you risk being left
+behind when the original gets updated.  I just took a look at today's
+generic 8250 one -- "git blame drivers/tty/serial/8250/8250_port.c" and
+there are changes that probably have left fsl8250_handle_irq() being
+left behind.  A bit more detective work would be required to see
+changes prior to the refactoring in the 2015 commit of b6830f6df891.
+
+It probably would be worthwhile to return fsl8250_handle_irq() to be the
+"equivalent" of serial8250_handle_irq() + WAR as it was originally.  It
+would be hard to argue against mainlining such changes - they are table
+stakes.  And who knows, with a bit of luck it might solve your issue too?
+
+Of couse that is more effort than to just stop using the workaround, so I
+wouldn't blame you at all if you decided to go that route.
+
+Paul.
+--
+
+>=20
+> Best regards Uwe
+>=20
+> -- Pengutronix e.K.                           | Uwe Kleine-K=F6nig
+> | Industrial Linux Solutions                 |
+> https://www.pengutronix.de/ |
+
+
