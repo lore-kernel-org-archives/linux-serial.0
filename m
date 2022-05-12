@@ -2,163 +2,212 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548C8C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 12 May 2022 06:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3CFC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 12 May 2022 07:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350219AbiELGRl (ORCPT
+        id S1350676AbiELHEW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 May 2022 02:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
+        Thu, 12 May 2022 03:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234728AbiELGRk (ORCPT
+        with ESMTP id S1350688AbiELHEU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 May 2022 02:17:40 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886773065
-        for <linux-serial@vger.kernel.org>; Wed, 11 May 2022 23:17:39 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1np28k-0004Q8-Sm; Thu, 12 May 2022 08:17:34 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1np28f-001paM-Jn; Thu, 12 May 2022 08:17:28 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1np28d-009BXr-Ai; Thu, 12 May 2022 08:17:27 +0200
-Date:   Thu, 12 May 2022 08:17:24 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org, Alan Cox <alan@linux.intel.com>,
-        linux-imx@nxp.com
-Subject: Re: [PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice
-Message-ID: <20220512061724.4guiyqa6vcdru4iw@pengutronix.de>
-References: <20220511093247.91788-1-u.kleine-koenig@pengutronix.de>
- <20220512012910.GB37988@windriver.com>
+        Thu, 12 May 2022 03:04:20 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2090.outbound.protection.outlook.com [40.107.113.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DED5EDD2;
+        Thu, 12 May 2022 00:04:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O44yJEzXBnl2/9ePNnwkbiyAn6FGZSa6XCdmjbo0Mn6lxDUSsH5pusAwfZlIK42CQeuiT13HiHBpJmzykYmRQpQ0gtBzgeDHCCvtkMr40gaWo2ol8iN6Fhbxx2H0sEtWC1+rcfJJHwCV5H3xPfrQlbhOfF9Ad8bkS1wxJnfNb8MJoc2FtwC2MwNgSXD8U1bYwakvdtloBLmQrTCCGFAIrDQEM8swbSsSHZ078P/9SATqZR90wbmPFXPHwagYeXhvsGLcxI/vN4yuw6NSfJsMPqnuAYCXsTka6aj1CjwBy7WsTXBRgwO3n+T5R08liz51TqKR4DMqmYUwIIo577iucg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ta2y51RFLdCgWAgUtmwIogS7U+iZs1dLOANORUOt1Mo=;
+ b=LI03vzZQMGWvBafgIsN7ta3Y5NJ7r8Z0b2HJqnzcFeSudKEdCSbWjR1z93/Z767YYDTYI+9f2F2ljlXGxLntQzEe2YOo6eGi2xeWZi8VE/kUNgAFaJmejIBNtOVOZy/o+V82HWTjjUKoeqNZzRjCfi3R5mdtAqAIWPjx1OVeLKXQDoue7zp6HauKhNfrVtVP6lmjTtnFe7bP2mZCG86XlkIBjMJUihVFIq0oHIlV2iyA5vB56xK9hGcaj+8p9luFXgBxWEis6FamOW9Z2fXLSM+egRNLwvGDsR0LQjGxdkYc7nnpnwLTafxU2u0PsL8NpSCFONmgsTEiCbRetcC6ig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ta2y51RFLdCgWAgUtmwIogS7U+iZs1dLOANORUOt1Mo=;
+ b=A4kms17eJkeGliob41OAoQHOjxpyT+fatG2/IxxdosTLfrlLdofAWmQ3mDozVRhWHaXRYVBkFfLIonnUv83TTy99VXpwILRYMzBOUt9wj8FK4xhUngKm6pFfYWFIASrCZtg0mw7ML0zBmUzk9NG3I+oMpDRS5cmaafOOTf/hdlA=
+Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com (2603:1096:400:de::11)
+ by TYYPR01MB6571.jpnprd01.prod.outlook.com (2603:1096:400:e0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Thu, 12 May
+ 2022 07:04:07 +0000
+Received: from TYYPR01MB7086.jpnprd01.prod.outlook.com
+ ([fe80::e180:5c8b:8ddf:7244]) by TYYPR01MB7086.jpnprd01.prod.outlook.com
+ ([fe80::e180:5c8b:8ddf:7244%7]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 07:04:07 +0000
+From:   Phil Edworthy <phil.edworthy@renesas.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH v4 1/2] dt-bindings: serial: renesas,em-uart: Add RZ/V2M
+ clock to access the registers
+Thread-Topic: [PATCH v4 1/2] dt-bindings: serial: renesas,em-uart: Add RZ/V2M
+ clock to access the registers
+Thread-Index: AQHYX5ur2S9SLAdqdE6hMnKUk4Qgwa0Z0XYAgAEL/xA=
+Date:   Thu, 12 May 2022 07:04:07 +0000
+Message-ID: <TYYPR01MB7086D060B952E349A0F62A91F5CB9@TYYPR01MB7086.jpnprd01.prod.outlook.com>
+References: <20220504094456.24386-1-phil.edworthy@renesas.com>
+ <20220504094456.24386-2-phil.edworthy@renesas.com>
+ <20220511150358.GA305958-robh@kernel.org>
+In-Reply-To: <20220511150358.GA305958-robh@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b9e7ad4d-1962-4cb3-efa9-08da33e59b3a
+x-ms-traffictypediagnostic: TYYPR01MB6571:EE_
+x-microsoft-antispam-prvs: <TYYPR01MB6571C33693CDEA8C869818B3F5CB9@TYYPR01MB6571.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Afu90GFG0aZTZvG2YdvfMVQuvdTIJwZyu2ejtD+fZhNWwFSSNGbq5VlzR1hcKRDIBbXjbAvJP1tJVLCdm7b7OFNqn7IN1M94e4aCj8vYp+2whSHo9OBe2j0pAc8Tb5r1ukxH+0S0X1aIYQYep/IdzCuGstCQYmp+6u8jx5SSIa1wW1W9seS3hWTbSoLIGcvq48cHVxdcDMvmgmAM3eHbBsGcylrfgL9sZXCwYnyJ8YUD093dc2sn5MxntXf7wULWRFnItJZZOtqsfOdKgmJH+JXK9lDU/JNXERJKud4+bH6KESbYPC1I1JxL35W4RZJkuZgHR6Ye5cCyajhE00Cjl1OmOrMrV6vwcGd+cElbvV0njAxWKqCvNMorzEOPF71SasT5T3iB4t2LBlz15v5gpkw4AW0nMSyQaOoanNZyM7U/ivWmQbkZ6vPDsBJ5ULAz/OQNTiVy+sE794YOhVn8+vdKCtLmNwDL7NvKg8OZBtS2BYapvaFM8q/w3OzHVKVQGzjnK6Mc2AJAqTFSbrVx9kenqzsHot994rcvD9y/IEDSNr4HqW8U+CTHN8qDxIpPUVHZwcUH0n76+Gypp5CQ9CVZq6og1PdktFiSY3wDZeFEKjQun+9YfgBNk/wBl88atkwjRHUuPl984wagryjKe4si8QP57xSJk2S1FLbJ8S48FwIyPFMaevgSkWFqDjMXFxhOALDPpkHct//FgZSYcw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB7086.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(9686003)(5660300002)(86362001)(186003)(26005)(44832011)(52536014)(8936002)(122000001)(64756008)(4326008)(8676002)(66446008)(66556008)(66946007)(83380400001)(66476007)(2906002)(38100700002)(38070700005)(76116006)(6506007)(71200400001)(6916009)(53546011)(508600001)(54906003)(33656002)(7696005)(316002)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+4jOYNLeN64JEP2AdWK/FuISIDDv2ZdqrCWK4aZh4KC56cyOohmkhqjM7eD5?=
+ =?us-ascii?Q?yG6zpwNI/WSQWx3hQs8ICf0uTEM1XYMED++QnGF5wukOzX5TeYL9hZXoPtvp?=
+ =?us-ascii?Q?4DHGC5kiF0kfvqKuONOmPnYhLVCHmvH2qdPMcKWnhX430TOiMgkM18po25AS?=
+ =?us-ascii?Q?DNv3QnM1ykBFcmq7Oi3uCL+ymxuTChfRuyy0OtZ/UEJqj4XwqlDq9zwQwNbh?=
+ =?us-ascii?Q?BVA5fq9nqJsfCz1cdV/N/Sg/yKY4A9BnWoRLABfJKzbhYM93OB2Q3L35L2yN?=
+ =?us-ascii?Q?DZlME0EC+ipuPcON7VXa7Y+H9dfoN2ZHKInfdNvrHO5nHVJHPMA/ViY2ZSZ0?=
+ =?us-ascii?Q?KwWVW8ZE8aFyPR2z7T8zvScf2wIPztLTqpLLuO4CAa+Eeuxvp+ao7MXa2++D?=
+ =?us-ascii?Q?IDJ3TSEfBTVlyEEFUqicsgwU4fDnNcCGvDjA+9ssZ6WAihO1uGWa3VNOP9uB?=
+ =?us-ascii?Q?BNdQVeyZVgdcfaM3uFVLMN4Ztp0Xf73Vbapv/aJOTLyhd0N04nRMPBsc/0h+?=
+ =?us-ascii?Q?ve0zyzgV8ICCmQb9X7YufnH+s5/NUN8utNkNy0kue6ZysOyunJ7Yr+w06VLg?=
+ =?us-ascii?Q?VorY8dHTB6EKucdMTyHHBFd7a1DwrG60y6sadgcqfmUQ7zPwFqF16mhRPUfg?=
+ =?us-ascii?Q?z5QB5DIuokY3re57nzvqmOeomGCTt6nO47ibd5k7rwVjL2ItzittYkWB4Q7e?=
+ =?us-ascii?Q?dFHvdu5QiNsVSgymTI6/5r/QRsp7Lb/nRHNS10lTqRWAgTj9TcBZgbJg0Y+d?=
+ =?us-ascii?Q?s/XqVQZVSjFuGYW0iu+hhsvYWIXrpzYGChMzEpHguNsMEbUmV9kysV3lqfMk?=
+ =?us-ascii?Q?hDAc7OcqFAWxdr+oUzxp5iuVJ1z4IIP9gz5h1QBnB8IhdehiMxbdgsdqfBzR?=
+ =?us-ascii?Q?EvErE1Ma7VYVdAm7FyU+iljV55TEz/yIuMDUu97aWDNkL2No2NxclsS5jreN?=
+ =?us-ascii?Q?+shC27stJNxC/M21qIE7+IX6Sa+fkhTXUpI76FQdVV6y5xlADOJKvw+oPReI?=
+ =?us-ascii?Q?TeEr7IqPUlTGJZGLrHHt9+5A8ssukFdpnDN/dtbgobMqSAwvAUrJQTE3EvgO?=
+ =?us-ascii?Q?0Ew5kB71VLyhOpjPYG2Kqnsk7TIz84VQbvp0OhQ6h2XdeAXljm9DLVHGn/Tf?=
+ =?us-ascii?Q?BP74jnF6Uq13bVdjcFU19maA3Uajp6WRLxtosVm182LSa+rxms2WNzgP2zjx?=
+ =?us-ascii?Q?y6LiWtKUxj0wkI3Cfx49A2TNKbctdErTit03rLY8PTKNgTf6VCrT86XLMIDr?=
+ =?us-ascii?Q?YIpzF8cyoB3T1PblQCCijEhqtaMG7hM7/uO8uMh71NzqIkmyZb4nGhk50Eci?=
+ =?us-ascii?Q?6e6yHRhlLjdWw0ypIVPj4AhLG6qrvGxrIZHSqwcn/qhS6sPCn0onXzrIIYcY?=
+ =?us-ascii?Q?yeUgKUBRJyQSiW/goBycGvdQulSMrpTOKB2xXF0wVxs1zvbE5QzV6ISQm96A?=
+ =?us-ascii?Q?SZvsQd/mZg6YL7S1p77Fa8OeuAbo0qwIiYBTwpsDFmdwjYfmI8oyO4NBR5mA?=
+ =?us-ascii?Q?q+xSS6PG8DMPvTC9LEDiH3He7+KTxqP6Hk5u1c3oZ4//viRLBlF4qcsrfsyS?=
+ =?us-ascii?Q?xOhh2SZ8cdsdIoZKIjo4umiBjAfVGduToqVseVdMho5kH4AjWHdppFry7CRN?=
+ =?us-ascii?Q?L2lvfKvvL1hzhTJIRPDS2q/PixLV3aLpWVU6kUMSwvCK34IkY7u1NDfegqYq?=
+ =?us-ascii?Q?1ik0xgQB3QSUxl8TB5MUcIIaWaOiN7bZ41PZblVz9jjvLjfdPQZSBofyo2O0?=
+ =?us-ascii?Q?tPxf52bn3P1cHzu7/f6Oedo0RVbaYP4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ome74vnpv3pyyryr"
-Content-Disposition: inline
-In-Reply-To: <20220512012910.GB37988@windriver.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB7086.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9e7ad4d-1962-4cb3-efa9-08da33e59b3a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 07:04:07.0892
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DiNsFquD9bPliJ4/SNC65sPlti94NOWT/M0M9vl8N7ho/0aBuevGCAOqwwwmlpXPt/VKbqOYfycYfj0tN0Vz75v6yKFGI/u+MWJwp6N6MqU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYPR01MB6571
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Rob,
 
---ome74vnpv3pyyryr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Paul,
-
-first of all thanks for your cooperation on this ancient topic. It's
-very appreciated.
-
-And oh, I failed to Cc the NXP people. I added them to Cc:, maybe one of
-them can add something valuable to the discussion.
-
-On Wed, May 11, 2022 at 09:29:10PM -0400, Paul Gortmaker wrote:
-> [[PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice] On 11/05/202=
-2 (Wed 11:32) Uwe Kleine-K=F6nig wrote:
+On 11 May 2022 16:04 Rob Herring wrote:
+> On Wed, May 04, 2022 at 10:44:55AM +0100, Phil Edworthy wrote:
+> > The RZ/V2M SoC has an additional clock to access the registers. The HW
+> > manual says this clock should not be touched as it is used by the
+> > "ISP Firmware".
+> >
+> > Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> > v4:
+> >  - Removed "optional" from description of clock to access the registers
+> > v3:
+> >  - New patch added
+> > ---
+> >  .../bindings/serial/renesas,em-uart.yaml      | 32 +++++++++++++++----
+> >  1 file changed, 25 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/renesas,em-
+> uart.yaml b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> > index 332c385618e1..40a03f255666 100644
+> > --- a/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/renesas,em-uart.yaml
+> > @@ -9,9 +9,6 @@ title: Renesas EMMA Mobile UART Interface
+> >  maintainers:
+> >    - Magnus Damm <magnus.damm@gmail.com>
+> >
+> > -allOf:
+> > -  - $ref: serial.yaml#
+> > -
+> >  properties:
+> >    compatible:
+> >      oneOf:
+> > @@ -29,11 +26,32 @@ properties:
+> >    interrupts:
+> >      maxItems: 1
+> >
+> > -  clocks:
+> > -    maxItems: 1
+> > +allOf:
+> > +  - $ref: serial.yaml#
+> >
+> > -  clock-names:
+> > -    const: sclk
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            const: renesas,r9a09g011-uart
+> > +    then:
+> > +      properties:
 >=20
-> > Some Freescale 8250 implementations have the problem that a single long
-> > break results in one irq per character frame time. The code in
-> > fsl8250_handle_irq() that is supposed to handle that uses the BI bit in
-> > lsr_saved_flags to detect such a situation and then skip the second
-> > received character. However it also stores other error bits and so after
-> > a single frame error the character received in the next irq handling is
-> > passed to the upper layer with a frame error, too.
-> >=20
-> > To weaken this problem restrict saving LSR to only the BI bit.
+> > +        clocks:
+> > +          items:
+> > +            - description: UART functional clock
+> > +            - description: Internal clock to access the registers
+> > +        clock-names:
+> > +          items:
+> > +            - const: sclk
+> > +            - const: pclk
 >=20
-> But what is missing is just what "this problem" is - what applications
-> are broken and how?  What are the symptoms?  This is a 15+ year old
-> platform and so one has to ask why this is just being seen now.
+> Better to put all this at the top level with 'minItems: 1' and then use
+> minItems/maxItems in the if/then schema to define which platforms have 1
+> or 2 clocks.
 
-The problem is "However it also stores other error bits and so after a
-single frame error the character received in the next irq handling is
-passed to the upper layer with a frame error, too." which is just the
-sentence before. I hoped this would be understandable :-\
+Thanks Rob, will do!
+Phil
 
-> > Note however that the handling is still broken:
-> >=20
-> >  - lsr_saved_flags is updated using orig_lsr which is the LSR content
-> >    for the first received char, but there might be more in the FIFO, so
-> >    a character is thrown away that is received later and not necessarily
-> >    the one following the break.
-> >  - The doubled break might be the 2nd and 3rd char in the FIFO, so the
-> >    workaround doesn't catch these, because serial8250_rx_chars() doesn't
-> >    handle the workaround.
-> >  - lsr_saved_flags might have set UART_LSR_BI at the entry of
-> >    fsl8250_handle_irq() which doesn't originate from
-> >    fsl8250_handle_irq()'s "up->lsr_saved_flags |=3D orig_lsr &
-> >    UART_LSR_BI;" but from e.g. from serial8250_tx_empty().
-> >  - For a long or a short break this isn't about two characters, but more
-> >    or only a single one.
->=20
-> I've long since flushed the context required to parse the above, sorry.
-> But the part where it says "is still broken" stands out to me.
 
-The current state is (assuming the errata is accurate and I understood
-it correctly):=20
- - You get a problem for sure if there is a frame error (because the
-   next good char is thrown away).
- - You get a problem for sure if there is a parity error (because the
-   next good char is thrown away).
- - You get a problem for sure if there was an overflow (because the
-   first good char after the overflow is thrown away).
- - The code is racy for break handling. In some unlikely cases the break
-   workaround is applied wrongly.
-
-(Where "thrown away" is really: passed to the tty layer with an error
-indication, which depending on tty settings results in dropping the
-character or passing it on to userspace.)
-
-My patch only fixes the first three issues. A part of the reason for the
-uncomplete fix is that I don't have a platform that requires the workaround.
-(I thought I had, but it doesn't show the described behaviour and
-instead behaves nicely, i.e. one irq per break and no stray bits are
-set.)
-
-That the patch I did is correct is quite obvious for me. Currently the
-fsl8250_handle_irq() function sets the bits BI, OE, FE and PE in
-lsr_saved_flags, but only evaluates BI for the workaround. The commit
-that introduced that only talks about BI, the mentioned erratum also
-only mentions BI.
-
-I can try to make the commit log more convincing. Or if the ability to
-test this code on an affected platform is declared a requirement, I will
-drop the topic, just stop using fsl8250_handle_irq() without feeling sad.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ome74vnpv3pyyryr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJ8pnEACgkQwfwUeK3K
-7AncYAgAhZL2+BMimg3idGfa/sa88v1jYhJSCxoIVPMePDZW8hsyMnxUKk53ROlc
-5lLx0hQCP2MPYGoTRW9oI4KeBIMlVofL5CZ55UUrxTq1fPlHB8EgjzBLN37SplZf
-jhIz2B6eNdrf1v3Z+rn4cD5jrhSk2zdLqURAItkbKdBUAF5cQMEU/ZSozsMZYFUs
-vNLKZ9ZllU9vXpKIrPsbdAk4Ni+7BELE2mG0lEvJr96m4Uv+QWj4uROLhhUKqBaE
-KoyySx7frdYi9lk/Wmp53030j78t3KwcdmaxpSBl1KH3LBFqdL5qkJVl5rnZLXmM
-0TmO1wMa2vzMpd/XpehNl7YYef1sbw==
-=z8p+
------END PGP SIGNATURE-----
-
---ome74vnpv3pyyryr--
+> > +    else:
+> > +      properties:
+> > +        clocks:
+> > +          items:
+> > +            - description: UART functional clock
+> > +        clock-names:
+> > +          items:
+> > +            - const: sclk
+> >
+> >  required:
+> >    - compatible
+> > --
+> > 2.32.0
+> >
+> >
