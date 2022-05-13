@@ -2,99 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D98C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 728ACC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377643AbiEMHID (ORCPT
+        id S1377678AbiEMHKa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 03:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
+        Fri, 13 May 2022 03:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353010AbiEMHIC (ORCPT
+        with ESMTP id S1352515AbiEMHK3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 03:08:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6D5223871;
-        Fri, 13 May 2022 00:08:00 -0700 (PDT)
+        Fri, 13 May 2022 03:10:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804A72A3774;
+        Fri, 13 May 2022 00:10:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 149C661ED9;
-        Fri, 13 May 2022 07:08:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B20DC34100;
-        Fri, 13 May 2022 07:07:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 03ED4CE2CFD;
+        Fri, 13 May 2022 07:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B820C34100;
+        Fri, 13 May 2022 07:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652425679;
-        bh=9y6I+zGmd3GgMAr3xMYF8f/9wN8gZjKyrU/pked7eeI=;
+        s=k20201202; t=1652425825;
+        bh=mID18fXQqC7NIYUUm4cbw2vY9pjGLLMMdf914py8+lA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qtUGhM+tgX4cVprBvh+OaGIZuEEJA14BC4ou4Dvi/uCvgmJ2T36OwMc75kl0YvcQ2
-         l75ILJatDJWEmy0N3dlsyJH6oaW4qRGOGSjEyATxdqGhfg6MSpYTwcAVEmm9Eri3/M
-         IfGYr3Oy4s03eMDXp5ws4S5N29j/B2pAfE5ZLdTKWuwbjSd2GSkNH3dQfc8VlY6Gme
-         WUctwRHZQN6FR7vVprQGsRBWa9+gGjVBH22G54xD+F4RxDjKimC/jfnWrb2oa7oG/F
-         pQWvWlaus3R5HkP2dRzUZ/DT8EV2j2ECEQca1AOZ+Br0bWlN7e95wX1l/KT+34peJo
-         ZPmk0PV24iAMw==
+        b=n76a5HrIC3G4NQ8t9FzaHlBGapPqhTJIA+kLuGCo4r4Q2x49mJhQF1zo2zT1WJ21S
+         q2K0w664T3IriznhZvRqrA6HIIZzumi836aFQmnY+xLwG0eBQ+/Uk2W51QSZ8LvReW
+         4UQ3j7ndM/NpjcnP32GF/dlTKbBiytrX9DsbM54IZc3ReNgtZTc6kOvlKcGK7zfyBR
+         Zfu/yJjYdJThveYY82AAS5jOsRP4zxqMiNzEkQrP8DmV/2bn3+i6AairpobBqDvFlc
+         5RaetKyzjRC5ybrSmJzG5qjMGmOtqg9e99FI9RoChfNLLTJH8emasugGVfQCqMUNy9
+         a4lAD2M+F1Dhg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1npPP1-0006dr-1W; Fri, 13 May 2022 09:07:55 +0200
-Date:   Fri, 13 May 2022 09:07:55 +0200
+        id 1npPRN-0006ey-VS; Fri, 13 May 2022 09:10:22 +0200
+Date:   Fri, 13 May 2022 09:10:21 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] tty/termbits: remove #ifdef BOTHER that is always
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] tty/termbits: remove #ifdef IBSHIFT that is always
  defined
-Message-ID: <Yn4DyxIUBsEQxj+t@hovoldconsulting.com>
+Message-ID: <Yn4EXQisXkK9w0cs@hovoldconsulting.com>
 References: <20220511101139.5306-1-ilpo.jarvinen@linux.intel.com>
- <20220511101139.5306-3-ilpo.jarvinen@linux.intel.com>
+ <20220511101139.5306-4-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220511101139.5306-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220511101139.5306-4-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:11:36PM +0300, Ilpo Järvinen wrote:
-> BOTHER is defined by all architectures.
+On Wed, May 11, 2022 at 01:11:37PM +0300, Ilpo Järvinen wrote:
+> IBSHIFT is defined by all architectures.
 
-This changed quite recently so please mention the commit in question.
+This also changed recently so mention the commit in question.
 
-No need for the verbose Subject here either.
+Subject is overly verbose here too.
 
 > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 > ---
->  drivers/tty/mxser.c        |  2 --
->  drivers/tty/tty_baudrate.c | 20 +++++---------------
->  drivers/tty/tty_ioctl.c    |  2 --
->  3 files changed, 5 insertions(+), 19 deletions(-)
+>  drivers/tty/tty_baudrate.c | 11 +----------
+>  1 file changed, 1 insertion(+), 10 deletions(-)
 > 
-> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-> index 6ebd3e4ed859..9ea7bd059d0f 100644
-> --- a/drivers/tty/mxser.c
-> +++ b/drivers/tty/mxser.c
-> @@ -528,7 +528,6 @@ static int mxser_set_baud(struct tty_struct *tty, speed_t newspd)
->  	outb(quot >> 8, info->ioaddr + UART_DLM);	/* MS of divisor */
->  	outb(cval, info->ioaddr + UART_LCR);	/* reset DLAB */
->  
-> -#ifdef BOTHER
->  	if (C_BAUD(tty) == BOTHER) {
->  		quot = MXSER_BAUD_BASE % newspd;
->  		quot *= 8;
-> @@ -540,7 +539,6 @@ static int mxser_set_baud(struct tty_struct *tty, speed_t newspd)
->  
->  		mxser_set_must_enum_value(info->ioaddr, quot);
->  	} else
-> -#endif
->  		mxser_set_must_enum_value(info->ioaddr, 0);
+> diff --git a/drivers/tty/tty_baudrate.c b/drivers/tty/tty_baudrate.c
+> index 07bbbfee5635..d10318956c97 100644
+> --- a/drivers/tty/tty_baudrate.c
+> +++ b/drivers/tty/tty_baudrate.c
 
-When removing the ifdef, please add the missing bracket to the else
-branch as per the coding standard.
+> @@ -194,12 +187,10 @@ void tty_termios_encode_baud_rate(struct ktermios *termios,
+>  			 */
+>  			if (ofound == i && !ibinput)
+>  				ifound  = i;
+> -#ifdef IBSHIFT
+>  			else {
+>  				ifound = i;
+>  				termios->c_cflag |= (baud_bits[i] << IBSHIFT);
+>  			}
+> -#endif
+
+Please add the missing brackets to the if branch when removing the ifdef.
 
 Johan
