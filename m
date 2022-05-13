@@ -2,91 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C423C4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 08:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A390C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 10:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbiEMIep (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 04:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43354 "EHLO
+        id S1379308AbiEMKOG (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 May 2022 06:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378346AbiEMIep (ORCPT
+        with ESMTP id S1379289AbiEMKN7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 04:34:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24652A7C3C
-        for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 01:34:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C3DE620B2
-        for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 08:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CC3DC34100;
-        Fri, 13 May 2022 08:34:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652430883;
-        bh=Qt/4PImgM3BmWxG5G5gsTmp+9QqKkzVOpe3OiR3TV04=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bT95QtbQ2JbYgojHNuJzZPs4MF4GzwXAOHs1P0I2yPfW62j4DvAbuFjYHllF2yIlA
-         nL0UM4rjqa0e3vXNs4vDkgYXiGC3L+dfn28SjVxbzuvTVYJTfo1/sSo2Puun2ajHdV
-         15VNkQ18MN/GfAum1nGnbOd/nePgrKBVwk5+v/TEB1p7sKCCVimloTLZ57V4s3e2sn
-         gV1SsnurXJv1s7Q/L8aefEyYsodSyRHL4FccHV4lhOV43NyJebh4gHZp9moSEAGCb4
-         nxi4GmQ4jSe29Ld0WXMN9gjT37IZa+2s2uWyUtYfQfWZmoktdHHuG//W3us9S7SXbM
-         QiXF9pMfegmcg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1npQkx-0007KW-83; Fri, 13 May 2022 10:34:39 +0200
-Date:   Fri, 13 May 2022 10:34:39 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/5] tty/serial: termbits cleanups
-Message-ID: <Yn4YHyTDBJTOtGsQ@hovoldconsulting.com>
-References: <20220513082906.11096-1-ilpo.jarvinen@linux.intel.com>
+        Fri, 13 May 2022 06:13:59 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E2C73558;
+        Fri, 13 May 2022 03:13:56 -0700 (PDT)
+Received: from mail-yw1-f173.google.com ([209.85.128.173]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1McXwD-1oLkit3Rc5-00d1qr; Fri, 13 May 2022 12:13:55 +0200
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2ebf4b91212so85086017b3.8;
+        Fri, 13 May 2022 03:13:54 -0700 (PDT)
+X-Gm-Message-State: AOAM531e/C9z589683ylCZmLM5jmLPzhh1custAobbsiq+3+K/2bIoRs
+        coKUZTCOm6gSRwhXWD9T3rh3V9sytvwDp13XSmM=
+X-Google-Smtp-Source: ABdhPJyHEUP1cRPCzvCwXdPdUSFS+Voh0iZfVi5t4LZi15vwg6YIdcUM0F8JfOUB45yvtXzHOEpnm/S+mdBFUW/UN8c=
+X-Received: by 2002:a0d:cd06:0:b0:2f8:f39c:4cfc with SMTP id
+ p6-20020a0dcd06000000b002f8f39c4cfcmr4713890ywd.495.1652436833571; Fri, 13
+ May 2022 03:13:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220513082906.11096-1-ilpo.jarvinen@linux.intel.com>
+References: <20220511062113.2645747-1-hasegawa-hitomi@fujitsu.com>
+ <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com> <Yntcn4esjJRS50Am@kroah.com>
+In-Reply-To: <Yntcn4esjJRS50Am@kroah.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 13 May 2022 12:13:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3rF7Y27UiGyk34b0KTfvU30rkuoN5GyuNuwcA-V61_-w@mail.gmail.com>
+Message-ID: <CAK8P3a3rF7Y27UiGyk34b0KTfvU30rkuoN5GyuNuwcA-V61_-w@mail.gmail.com>
+Subject: Re: [PATCH v4 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        SoC Team <soc@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:bu9JyNKneSWzrsddBhuHB16iJ1Y2zAOiNp0tzUZEDeaqBuZbgFg
+ LLSPmXrTH9T7fL+uOu7RDTzLzyBHkJ7fbEcTfFctS0FmjVimyARkSsNHwKaE7r2lRq5rHwI
+ MyhQWKD2pXckztgfWwIxj0Qo1poTFh1Uv9zaclT+oOpv7bDIJwtYjLJqguvdT9uuFn3/Egf
+ CPw6bj8t8gurCzs4q0JhQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eMDiuowy8GM=:1ABPjuWJbY1AZDHcaaDzBn
+ ZQr3ie3w/mZIInn8K+wR/mTuzzMI1ks478YUGpCZ+nF8ndWBvkZY5eqL+/Ugt4v3RmQowcflp
+ +lrom/WMMOzEeJm3k5YfYRG5kwOn7ij9Lif/0+1fBWV6feJqt42DmwmoKFCyDTRC93T/ihP/0
+ cVryLVbR6rujllFpmAjTHfeQHncppRiZ3ZxZu4BpL68WbR2vE4K/sVG51uxh3ifsogK6vgouE
+ ibNtypS+MhuI8eAKwvUjAZqqfDoPJMQLJNvZYdXRnQle6AGUuvhkPjanZbru+8luvBJfCthDt
+ G9hac32tw2cPfqZZWDp604cQs+ogEp8ubq4/9ddceNZJh596mSHY1dhQjaRVscMZuPT1l/3Pi
+ YMMhfpV6ZdFuySjk8TjzQLkw6fuBlmL3xPL5KTAeaR8rVKfZEvjKZDl31TxQHstDchqWgqgAu
+ bUZM8CsTmVWry0uCl4L2HJmxSlKb0ZasP0j6dorpVN4g3rl/B4eb3FDexsno2defe5c7s4/aO
+ YFxPeXQzfuKORMi2i7lS9lRery4Z/krEvzEtG/5fvfNCwDCsZNhREe6TdDvI9+woxrbhp92GZ
+ GQ33gxTZjgV84Dnb5NLEmIc/r7OHcrEWxH3AueWp0lnJqolgV3LyvzJtt2cUDF9BM1zK9q7Zu
+ 3l/8jyeFAHMamrseS7Yocs+XGaQc3fztl52eZRk6mtlejSisZZleVy+jv0KA0gAJFWYQkdjHn
+ HR5QEjYfPPbTOnAROQ9IAOad+QGs8/jzBN3JMuq9D6cZH8SgbbMG96Cl07iZpn+LfS4exPYEp
+ IRsYLWoe331mfF1RAoIOnxahDF2vdjpkFFM8ssOew5LTgXko7w=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 13, 2022 at 11:29:01AM +0300, Ilpo Järvinen wrote:
-> A few simple cleanups that I've come across while playing with the
-> termbits.
-> 
-> v2:
-> - Make shortlog simpler
-> - Note when in the history ifdefs became unnecessary
-> - Balance braces
-> - Remove extra parenthesis from the same lines
+On Wed, May 11, 2022 at 8:50 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > --- a/drivers/soc/Makefile
+> > +++ b/drivers/soc/Makefile
+> > @@ -12,6 +12,7 @@ obj-$(CONFIG_SOC_CANAAN)    += canaan/
+> >  obj-$(CONFIG_ARCH_DOVE)              += dove/
+> >  obj-$(CONFIG_MACH_DOVE)              += dove/
+> >  obj-y                                += fsl/
+> > +obj-y                                += fujitsu/
+>
+> Why a sub directory for just one .c file?
 
-Thanks for the update.
- 
-> Ilpo Järvinen (5):
->   tty: remove CMSPAR ifdefs
->   tty: remove BOTHER ifdefs
->   tty: remove IBSHIFT ifdefs
->   serial: fsl_lpuart: Remove unnecessary clearing for CRTSCTS
->   serial: jsm: Use B0 instead of 0
-> 
->  drivers/char/pcmcia/synclink_cs.c   |  2 --
->  drivers/tty/amiserial.c             |  2 --
->  drivers/tty/mxser.c                 |  5 ++---
->  drivers/tty/serial/8250/8250_port.c |  2 --
->  drivers/tty/serial/fsl_lpuart.c     |  8 +++----
->  drivers/tty/serial/jsm/jsm_cls.c    |  8 +------
->  drivers/tty/serial/jsm/jsm_neo.c    |  8 +------
->  drivers/tty/serial/sunsu.c          |  2 --
->  drivers/tty/tty_baudrate.c          | 35 +++++++----------------------
->  drivers/tty/tty_ioctl.c             |  2 --
->  drivers/usb/class/cdc-acm.h         |  8 -------
->  drivers/usb/serial/ark3116.c        |  3 +--
->  drivers/usb/serial/whiteheat.c      |  4 ----
->  13 files changed, 16 insertions(+), 73 deletions(-)
+All the other drivers/soc/ contents are in subdirectories, so I think
+I'd keep it like this.
+There are also other drivers that have been proposed for fujitsu a64fx.
 
-For the series:
-
-Reviewed-by: Johan Hovold <johan@kernel.org>
-
-Johan
+        Arnd
