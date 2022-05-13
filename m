@@ -2,111 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 876A1C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 13:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F3CAC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 22:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240217AbiEMNun (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 09:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S233150AbiEMWmD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 May 2022 18:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382351AbiEMNrL (ORCPT
+        with ESMTP id S232157AbiEMWmC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 09:47:11 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCA04BFE3
-        for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 06:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652449630; x=1683985630;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-id;
-  bh=H2EQ5pmDrOoMyH/GjKpitjLtiV8han2Ap779ubreZUM=;
-  b=FhfVy7N9y4iHza0yVBBxFzXv8ghs6v4SNoQihcsk9rr+r8yYA+vFSBUf
-   6tCVdQg3qbmbhiBklOaHWir96m3VZhVb8kzZ6Y9F0Sq7wIgOaCqFxCy3h
-   UowZ+QMQvrFhT4orN2CMWs3wWUpuNdR6wIxrl1BiXKCv7RRK4xIkEtcEo
-   U/uOy5dGOdu52o1y3/hZ+/MTHBTsLlFZp+UBx0hWOjhsO2cnscwEhfDO4
-   o8lJffEm8Lu9Typ9i24Pr/erhvoKootnZo/oFhi2iQm8k1wyNBc7qTrWK
-   beObz+dHVKNFPf+9RcreewUhXPrF/cfss+7Gz9u7OnHPb0Bi0jMPCGr6t
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269141233"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="269141233"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 06:47:08 -0700
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
-   d="scan'208";a="595228854"
-Received: from huberth-mobl.ger.corp.intel.com ([10.252.34.58])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 06:46:48 -0700
-Date:   Fri, 13 May 2022 16:46:43 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
+        Fri, 13 May 2022 18:42:02 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BF212B266;
+        Fri, 13 May 2022 15:42:00 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 0B73D92009C; Sat, 14 May 2022 00:41:58 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 0464692009B;
+        Fri, 13 May 2022 23:41:57 +0100 (BST)
+Date:   Fri, 13 May 2022 23:41:57 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-cc:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Subject: [PATCH] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
-Message-ID: <035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com>
+cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: [PATCH 0/3] Documentation: Fix issues with Oxford Semiconductor PCIe
+ (Tornado) 950
+Message-ID: <alpine.DEB.2.21.2205131712410.10656@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1629563579-1652448945=:1620"
-Content-ID: <7e215adb-69e3-dc9f-aa14-2d4f9f45076@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-1629563579-1652448945=:1620
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <c9a72977-517b-c59-2fc5-c4ded8df256@linux.intel.com>
+ Here are fixes for the Sphinx processing warnings reported with `make 
+htmldocs' for the description of the Oxford Semiconductor PCIe (Tornado) 
+950 driver recently added.  I have split them into two parts so that they 
+can be considered separately.
 
-SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
-within RS485 operation. The driver checks if they have the same value
-which is not possible to realize with the hardware. The check is taken
-regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
-check fails, which creates problems.
+ First, Documentation/tty/ has been moved to driver-api, which I find not 
+suitable for user documentation, so I have now moved the description to 
+Documentation/misc-devices/.  I found no better place, but I can update 
+the change again if you have a better suggestion.
 
-This check makes it unnecessarily complicated to turn RS485 mode off as
-simple zeroed serial_rs485 struct will trigger that equal values check.
-In addition, the driver itself memsets its rs485 structure to zero when
-RS485 is disabled but if userspace would try to make an TIOCSRS485
-ioctl() call with the very same struct, it would end up failing with
--EINVAL which doesn't make much sense.
+ Second, actual warnings have been removed.  I have corrected quoting for 
+symbol/parameter references, quoted tables and rewritten bibligraphy in
+Sphinx's style.
 
-Resolve the problem by moving the check inside SER_RS485_ENABLED block.
+ Third, the document has now been wired into the misc-devices document, so 
+that it is not an orphan page in the HTML format anymore and it is also 
+included in PDF documentation.
 
-Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+ I have verified the result and considered it visually sound with output 
+produced by `make htmldocs' and `make pdfdocs'.
 
----
- drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ For the latter command however I need to note that several other 
+documents in our Documentation/ tree suffer from a problem that causes 
+`make pdfdocs' to fail (and the failure cannot be worked around with 
+make's `-k -i' options, i.e. no output is ever produced), e.g.:
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 251f0018ae8c..dba5950b8d0e 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
- 	if (!pdata)
- 		return -EINVAL;
- 
--	/* Hardware do not support same RTS level on send and receive */
--	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
--			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
--		return -EINVAL;
- 
- 	if (rs485->flags & SER_RS485_ENABLED) {
-+		/* Hardware do not support same RTS level on send and receive */
-+		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-+		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-+			return -EINVAL;
- 		memset(rs485->padding, 0, sizeof(rs485->padding));
- 		config |= RS485_URA;
- 	} else {
+Markup is unsupported in LaTeX:
+filesystems/9p:: nested tables are not yet implemented.
 
--- 
-tg: (4419da5d5d4b..) fix/8250-fintek-rts-check (depends on: tty-next)
---8323329-1629563579-1652448945=:1620--
+and similarly for: filesystems/erofs, filesystems/f2fs, filesystems/ntfs, 
+networking/device_drivers/ethernet/dlink/dl2k, scsi/arcmsr_spec, 
+scsi/g_NCR5380, scsi/ncr53c8xx, and scsi/sym53c8xx_2.  I don't know if it 
+is a known problem, possibly addressed in a newer version of tools, so 
+I've thought it might be worth reporting.
+
+ I have worked around the problem by removing the offending files, which 
+let `make pdfdocs' proceed to completion.  I have spotted another problem 
+there then in that the table of contents is only generated in the output 
+file produced upon the second or subsequent invocations of `make pdfdocs'.  
+Similarly bibligraphy links (but not the list itself).  Upon the first run 
+of `make pdfdocs' on a clean Documentation/ tree the Contents section only 
+has its heading and bibligraphy links are dead with `[?]' showing (the 
+section is correctly populated however).  It's not clear to me if this is 
+a bug in the tools used or something wrong with our Makefile system, so 
+again I've thought it might be worth reporting.
+
+ NB XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2019/dev/Debian) and 
+Sphinx 1.8.4 here.
+
+ The issues are not directly related to the changes proposed here though,
+so please apply them.
+
+  Maciej
