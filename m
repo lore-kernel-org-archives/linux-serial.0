@@ -2,65 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C3BC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E28DC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354697AbiEMHLb (ORCPT
+        id S1377727AbiEMHOM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 03:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        Fri, 13 May 2022 03:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiEMHL3 (ORCPT
+        with ESMTP id S1377601AbiEMHOJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 03:11:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CA62EA24;
-        Fri, 13 May 2022 00:11:28 -0700 (PDT)
+        Fri, 13 May 2022 03:14:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E312A9CC1;
+        Fri, 13 May 2022 00:14:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA80061ED9;
-        Fri, 13 May 2022 07:11:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10969C34100;
-        Fri, 13 May 2022 07:11:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D720B82C59;
+        Fri, 13 May 2022 07:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3B3C34100;
+        Fri, 13 May 2022 07:14:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652425887;
-        bh=IW0lVa2ye/pD/vmsXD4u9wgZeVqrrjSpYDBsxZfka0w=;
+        s=k20201202; t=1652426045;
+        bh=EI+ONcSQlBGpFM7hWPN3KFhdRCNRtS+UuJKEdNX2cKk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rhzvVE8CcQgZuzfBfjAJ4LedLEHg8UGBQqHBSZRS68AK5kj4NXBGU34pDRkNT+uh1
-         nqQLI7igjHsVzNx/UL4sA3CwhhQd45cxnWOoTsTqwN3P0DpcLBxhDLJj/8uKGVr1hO
-         CvVfMxTZwHoC8dR2jq44Ar6N8Ln8+Njd8FV10OedPvJD+L52JrrrzHDG3jd6GCpGR9
-         s4gjYiCFM/2iWo99+AuzpYr7XLz4br17DKoqpfi9IoLZVt61DJf6GVSBJKckAac4LH
-         u1q6z9G293mVAIpM4P/jfoNCE/5l8mfHTAYs6jFrIPvnJwIy98ef9REdSvJoiov93P
-         XkGd/IpBJh8cA==
+        b=iyUzOxPoCXk/U39lYWWofaNcupx3ZpjG8s4P8PBre07niqseBsVwFDMlCeHAjirBc
+         epCFDDoIsfyWe2lEFUVt3LKBcH4oWPVTJzDa9wn1galtcAnS0VgOv9JExeH9Wjjlo3
+         LBxLO5OgCz4sV1WZxNGefIgioS1LR05+Jlne7rZ0M8jcdIZo+aCixgtd7Z6CBZahlN
+         fduxPbc5basXUPEMh1d5AbykGJAr630CKZ67bBG0jp1gR81EbARB8Gp+n87g6JPGpa
+         UK2M42McOiHtnfdcTiMEEmi+gH7iyJ0AHC/40jWXDcmAkeBdJiKjPfVu0IsOBW33Fm
+         1+IemRICEdHlQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1npPSN-0006fZ-II; Fri, 13 May 2022 09:11:23 +0200
-Date:   Fri, 13 May 2022 09:11:23 +0200
+        id 1npPUw-0006gm-B4; Fri, 13 May 2022 09:14:02 +0200
+Date:   Fri, 13 May 2022 09:14:02 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
 Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] serial: fsl_lpuart: Remove unnecessary clearing for
- CRTSCTS
-Message-ID: <Yn4Em6VtV9rwWjnT@hovoldconsulting.com>
+Subject: Re: [PATCH 5/5] serial: jsm: Use B0 instead of 0
+Message-ID: <Yn4FOofAvoqdaY9D@hovoldconsulting.com>
 References: <20220511101139.5306-1-ilpo.jarvinen@linux.intel.com>
- <20220511101139.5306-5-ilpo.jarvinen@linux.intel.com>
+ <20220511101139.5306-6-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220511101139.5306-5-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220511101139.5306-6-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:11:38PM +0300, Ilpo Järvinen wrote:
-> if (termios->c_cflag & CRTSCTS) guarantees that CRTSCTS is not ever set
-> in the else block so clearing it is unnecessary.
-> 
-> While at it, remove also one pair of extra parenthesis.
+On Wed, May 11, 2022 at 01:11:39PM +0300, Ilpo Järvinen wrote:
+> Use B0 to check zero baudrate rather than literal 0.
 > 
 > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/jsm/jsm_cls.c | 2 +-
+>  drivers/tty/serial/jsm/jsm_neo.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
+> index 046b624e5f71..ca05e84a7c90 100644
+> --- a/drivers/tty/serial/jsm/jsm_cls.c
+> +++ b/drivers/tty/serial/jsm/jsm_cls.c
+> @@ -689,7 +689,7 @@ static void cls_param(struct jsm_channel *ch)
+>  	/*
+>  	 * If baud rate is zero, flush queues, and set mval to drop DTR.
+>  	 */
+> -	if ((ch->ch_c_cflag & (CBAUD)) == 0) {
+> +	if ((ch->ch_c_cflag & (CBAUD)) == B0) {
 
-Reviewed-by: Johan Hovold <johan@kernel.org>
+Sure, why not. How about dropping the unnecessary parenthesis around
+CBAUD while at it?
+
+Johan
