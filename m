@@ -2,267 +2,239 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58992C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 12 May 2022 16:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40136C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344868AbiELQNh (ORCPT
+        id S1377568AbiEMHCH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 May 2022 12:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        Fri, 13 May 2022 03:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237351AbiELQNg (ORCPT
+        with ESMTP id S232041AbiEMHCG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 May 2022 12:13:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6C7644DD
-        for <linux-serial@vger.kernel.org>; Thu, 12 May 2022 09:13:33 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1npBRS-0001Py-3k; Thu, 12 May 2022 18:13:30 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1npBRN-001ur6-2h; Thu, 12 May 2022 18:13:23 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1npBRK-009HMw-Ub; Thu, 12 May 2022 18:13:22 +0200
-Date:   Thu, 12 May 2022 18:13:16 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc:     kernel@pengutronix.de,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-imx@nxp.com, linux-serial@vger.kernel.org,
+        Fri, 13 May 2022 03:02:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD0AC5DB7;
+        Fri, 13 May 2022 00:02:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57F3BB82C44;
+        Fri, 13 May 2022 07:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1224CC34100;
+        Fri, 13 May 2022 07:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652425323;
+        bh=ed9Xjuop8xat3sEczfPwLseBiQGfIJDlKSpeWiAG6qc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FhukNom9BDICDhiz82Y1+ftRhJifpPl4/imUbDRdRXDMg9EPAOph5egRjNy71CJ/S
+         j/eN9n4Iso2qEt1ywb2xcLWU1nrA1VoGTaJ+W8fx5Pd4OSPXAY7gHPjFid/Bh3dmlk
+         q/3aKFSRSsOpz6kooB5d5196EYG6Ca7bOgdtKrRryWJgBBZ7cr6I2dpdS00m/Mgsyw
+         4ML5sGSZxi33r8L7ZyWQrhWr9AHVkcCRzSP4ZfggL1yMue55Eu9h2Cwn0NOfKRFU66
+         Pbzplnj1xpcc4EXPw3rOtRZaStJ6lVRQ1Y5NSkvySbegFlLptUho+1t4A/P7RwCmWr
+         DeDmTWj8Xk3LQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1npPJH-0006bM-4M; Fri, 13 May 2022 09:01:59 +0200
+Date:   Fri, 13 May 2022 09:01:59 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice
-Message-ID: <20220512161316.5pknsjgl6lb75vva@pengutronix.de>
-References: <20220511093247.91788-1-u.kleine-koenig@pengutronix.de>
- <20220512012910.GB37988@windriver.com>
- <20220512061724.4guiyqa6vcdru4iw@pengutronix.de>
- <20220512154621.GC37988@windriver.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 1/5] tty/termbits: remove #ifdef CMSPAR that is always
+ defined
+Message-ID: <Yn4CZzRIKRUjhsS5@hovoldconsulting.com>
+References: <20220511101139.5306-1-ilpo.jarvinen@linux.intel.com>
+ <20220511101139.5306-2-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lhk22cjenmk5dlwn"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220512154621.GC37988@windriver.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220511101139.5306-2-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, May 11, 2022 at 01:11:35PM +0300, Ilpo Järvinen wrote:
+> CMSPAR is defined by all architectures.
 
---lhk22cjenmk5dlwn
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For the sake of reviewers please say something about when this changed. 
 
-Hello Paul,
+Also no need to be so verbose in your Subjects
 
-On Thu, May 12, 2022 at 11:46:21AM -0400, Paul Gortmaker wrote:
-> [Re: [PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice] On 12/05=
-/2022 (Thu 08:17) Uwe Kleine-K=F6nig wrote:
-> > On Wed, May 11, 2022 at 09:29:10PM -0400, Paul Gortmaker wrote:
-> > > [[PATCH] serial: 8250_fsl: Don't report FE, PE and OE twice] On 11/05=
-/2022 (Wed 11:32) Uwe Kleine-K=F6nig wrote:
-> > >=20
-> > > > Some Freescale 8250 implementations have the problem that a single =
-long
-> > > > break results in one irq per character frame time. The code in
-> > > > fsl8250_handle_irq() that is supposed to handle that uses the BI bi=
-t in
-> > > > lsr_saved_flags to detect such a situation and then skip the second
-> > > > received character. However it also stores other error bits and so =
-after
-> > > > a single frame error the character received in the next irq handlin=
-g is
-> > > > passed to the upper layer with a frame error, too.
-> > > >=20
-> > > > To weaken this problem restrict saving LSR to only the BI bit.
-> > >=20
-> > > But what is missing is just what "this problem" is - what applications
-> > > are broken and how?  What are the symptoms?  This is a 15+ year old
-> > > platform and so one has to ask why this is just being seen now.
-> >=20
-> > The problem is "However it also stores other error bits and so after a
-> > single frame error the character received in the next irq handling is
-> > passed to the upper layer with a frame error, too." which is just the
-> > sentence before. I hoped this would be understandable :-\
->=20
-> I was trying to get you to describe symptoms at a higher level - as I
-> said above, at the application level - what were you using that wasn't
-> working that led you down the path to investigate this?   Transfering
-> data wasn't reaching the expected max for baud rate, or serial console
-> was showing lags and dropped characters, or ...?
+	tty: remove CMSPAR ifdefs
 
-The situation where the problem was noticed is: The 8313 is supposed to
-periodically receive a burst of a small (and fixed) number of
-characters. In the field it sometimes happend that there was a peak on
-the data line between two such telegrams which the UART interpreted as a
-character with a parity error. After that the first character of the
-next telegram wasn't received in userspace, because the driver claimed
-it was received with another parity error. So effectively a dropped
-character.
+works just fine and is more in line with the prefix typically used for
+this subsystem.
 
-> The false positive error bits description is fine, but it isn't
-> something that a person in the future could read and then say "Oh I'm
-> having the same problem - I should backport that!"
->=20
-> > > > Note however that the handling is still broken:
-> > > >=20
-> > > >  - lsr_saved_flags is updated using orig_lsr which is the LSR conte=
-nt
-> > > >    for the first received char, but there might be more in the FIFO=
-, so
-> > > >    a character is thrown away that is received later and not necess=
-arily
-> > > >    the one following the break.
-> > > >  - The doubled break might be the 2nd and 3rd char in the FIFO, so =
-the
-> > > >    workaround doesn't catch these, because serial8250_rx_chars() do=
-esn't
-> > > >    handle the workaround.
-> > > >  - lsr_saved_flags might have set UART_LSR_BI at the entry of
-> > > >    fsl8250_handle_irq() which doesn't originate from
-> > > >    fsl8250_handle_irq()'s "up->lsr_saved_flags |=3D orig_lsr &
-> > > >    UART_LSR_BI;" but from e.g. from serial8250_tx_empty().
-> > > >  - For a long or a short break this isn't about two characters, but=
- more
-> > > >    or only a single one.
-> > >=20
-> > > I've long since flushed the context required to parse the above, sorr=
-y.
-> > > But the part where it says "is still broken" stands out to me.
-> >=20
-> > The current state is (assuming the errata is accurate and I understood
-> > it correctly):=20
-> >  - You get a problem for sure if there is a frame error (because the
-> >    next good char is thrown away).
-> >  - You get a problem for sure if there is a parity error (because the
-> >    next good char is thrown away).
-> >  - You get a problem for sure if there was an overflow (because the
-> >    first good char after the overflow is thrown away).
-> >  - The code is racy for break handling. In some unlikely cases the break
-> >    workaround is applied wrongly.
-> >=20
-> > (Where "thrown away" is really: passed to the tty layer with an error
-> > indication, which depending on tty settings results in dropping the
-> > character or passing it on to userspace.)
-> >=20
-> > My patch only fixes the first three issues. A part of the reason for the
-> > uncomplete fix is that I don't have a platform that requires the workar=
-ound.
-> > (I thought I had, but it doesn't show the described behaviour and
-> > instead behaves nicely, i.e. one irq per break and no stray bits are
-> > set.)
->=20
-> I was hoping that with the full description of the issue from 12+ years
-> ago that you'd be able to reproduce it on your platform with the WAR disa=
-bled.
-> I take it that you tried and SysRQ still worked fine?
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/char/pcmcia/synclink_cs.c   | 2 --
+>  drivers/tty/amiserial.c             | 2 --
+>  drivers/tty/serial/8250/8250_port.c | 2 --
+>  drivers/tty/serial/jsm/jsm_cls.c    | 6 ------
+>  drivers/tty/serial/jsm/jsm_neo.c    | 6 ------
+>  drivers/tty/serial/sunsu.c          | 2 --
+>  drivers/usb/class/cdc-acm.h         | 8 --------
+>  drivers/usb/serial/ark3116.c        | 3 +--
+>  drivers/usb/serial/whiteheat.c      | 4 ----
+>  9 files changed, 1 insertion(+), 34 deletions(-)
 
-I think I did. I have to plan a bit of continous time to reverify.
+The change itself looks good otherwise.
 
-> I also found a copy of an earlier proposed fix from 2010 on patchworks:
-> http://patchwork.ozlabs.org/project/linuxppc-dev/patch/20100301212324.GA1=
-738@windriver.com/
->=20
-> Maybe there are some additional details in there of interest?
->=20
-> I wonder if some other intervening change in that wide time span happens
-> to mask the issue?  Who knows.  I'm not sure if you are that interested;
-> enough to go try an old kernel to find out...
->=20
-> > That the patch I did is correct is quite obvious for me. Currently the
-> > fsl8250_handle_irq() function sets the bits BI, OE, FE and PE in
->=20
-> If I recall correctly, it just clears BI - are you sure it sets bits?
+Reviewed-by: Johan Hovold <johan@kernel.org>
 
-Not explicitly, but it does
+> diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
+> index 78baba55a8b5..c20f2cb784e8 100644
+> --- a/drivers/char/pcmcia/synclink_cs.c
+> +++ b/drivers/char/pcmcia/synclink_cs.c
+> @@ -1432,10 +1432,8 @@ static void mgslpc_change_params(MGSLPC_INFO *info, struct tty_struct *tty)
+>  			info->params.parity = ASYNC_PARITY_ODD;
+>  		else
+>  			info->params.parity = ASYNC_PARITY_EVEN;
+> -#ifdef CMSPAR
+>  		if (cflag & CMSPAR)
+>  			info->params.parity = ASYNC_PARITY_SPACE;
+> -#endif
+>  	}
+>  
+>  	/* calculate number of jiffies to transmit a full
+> diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+> index 533d02b38e02..afb2d373dd47 100644
+> --- a/drivers/tty/amiserial.c
+> +++ b/drivers/tty/amiserial.c
+> @@ -588,10 +588,8 @@ static void change_speed(struct tty_struct *tty, struct serial_state *info,
+>  	}
+>  	if (!(cflag & PARODD))
+>  		cval |= UART_LCR_EPAR;
+> -#ifdef CMSPAR
+>  	if (cflag & CMSPAR)
+>  		cval |= UART_LCR_SPAR;
+> -#endif
+>  
+>  	/* Determine divisor based on baud rate */
+>  	baud = tty_get_baud_rate(tty);
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 5591f18f2ea9..78b6dedc43e6 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2620,10 +2620,8 @@ static unsigned char serial8250_compute_lcr(struct uart_8250_port *up,
+>  	}
+>  	if (!(c_cflag & PARODD))
+>  		cval |= UART_LCR_EPAR;
+> -#ifdef CMSPAR
+>  	if (c_cflag & CMSPAR)
+>  		cval |= UART_LCR_SPAR;
+> -#endif
+>  
+>  	return cval;
+>  }
+> diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
+> index 444f233ebd1f..046b624e5f71 100644
+> --- a/drivers/tty/serial/jsm/jsm_cls.c
+> +++ b/drivers/tty/serial/jsm/jsm_cls.c
+> @@ -723,14 +723,8 @@ static void cls_param(struct jsm_channel *ch)
+>  	if (!(ch->ch_c_cflag & PARODD))
+>  		lcr |= UART_LCR_EPAR;
+>  
+> -	/*
+> -	 * Not all platforms support mark/space parity,
+> -	 * so this will hide behind an ifdef.
+> -	 */
+> -#ifdef CMSPAR
+>  	if (ch->ch_c_cflag & CMSPAR)
+>  		lcr |= UART_LCR_SPAR;
+> -#endif
+>  
+>  	if (ch->ch_c_cflag & CSTOPB)
+>  		lcr |= UART_LCR_STOP;
+> diff --git a/drivers/tty/serial/jsm/jsm_neo.c b/drivers/tty/serial/jsm/jsm_neo.c
+> index 110696cdaa1d..0cf586c10688 100644
+> --- a/drivers/tty/serial/jsm/jsm_neo.c
+> +++ b/drivers/tty/serial/jsm/jsm_neo.c
+> @@ -997,14 +997,8 @@ static void neo_param(struct jsm_channel *ch)
+>  	if (!(ch->ch_c_cflag & PARODD))
+>  		lcr |= UART_LCR_EPAR;
+>  
+> -	/*
+> -	 * Not all platforms support mark/space parity,
+> -	 * so this will hide behind an ifdef.
+> -	 */
+> -#ifdef CMSPAR
+>  	if (ch->ch_c_cflag & CMSPAR)
+>  		lcr |= UART_LCR_SPAR;
+> -#endif
+>  
+>  	if (ch->ch_c_cflag & CSTOPB)
+>  		lcr |= UART_LCR_STOP;
+> diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+> index c31389114b86..fff50b5b82eb 100644
+> --- a/drivers/tty/serial/sunsu.c
+> +++ b/drivers/tty/serial/sunsu.c
+> @@ -798,10 +798,8 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
+>  		cval |= UART_LCR_PARITY;
+>  	if (!(cflag & PARODD))
+>  		cval |= UART_LCR_EPAR;
+> -#ifdef CMSPAR
+>  	if (cflag & CMSPAR)
+>  		cval |= UART_LCR_SPAR;
+> -#endif
+>  
+>  	/*
+>  	 * Work around a bug in the Oxford Semiconductor 952 rev B
+> diff --git a/drivers/usb/class/cdc-acm.h b/drivers/usb/class/cdc-acm.h
+> index 3aa7f0a3ad71..d26ecd15be60 100644
+> --- a/drivers/usb/class/cdc-acm.h
+> +++ b/drivers/usb/class/cdc-acm.h
+> @@ -7,14 +7,6 @@
+>   *
+>   */
+>  
+> -/*
+> - * CMSPAR, some architectures can't have space and mark parity.
+> - */
+> -
+> -#ifndef CMSPAR
+> -#define CMSPAR			0
+> -#endif
+> -
+>  /*
+>   * Major and minor numbers.
+>   */
+> diff --git a/drivers/usb/serial/ark3116.c b/drivers/usb/serial/ark3116.c
+> index c0e4df87ff22..39eaa7b97c40 100644
+> --- a/drivers/usb/serial/ark3116.c
+> +++ b/drivers/usb/serial/ark3116.c
+> @@ -208,10 +208,9 @@ static void ark3116_set_termios(struct tty_struct *tty,
+>  		lcr |= UART_LCR_PARITY;
+>  	if (!(cflag & PARODD))
+>  		lcr |= UART_LCR_EPAR;
+> -#ifdef CMSPAR
+>  	if (cflag & CMSPAR)
+>  		lcr |= UART_LCR_SPAR;
+> -#endif
+> +
+>  	/* handshake control */
+>  	hcr = (cflag & CRTSCTS) ? 0x03 : 0x00;
+>  
+> diff --git a/drivers/usb/serial/whiteheat.c b/drivers/usb/serial/whiteheat.c
+> index 06aad0d727dd..332fb92ae575 100644
+> --- a/drivers/usb/serial/whiteheat.c
+> +++ b/drivers/usb/serial/whiteheat.c
+> @@ -30,10 +30,6 @@
+>  #include <linux/usb/ezusb.h>
+>  #include "whiteheat.h"			/* WhiteHEAT specific commands */
+>  
+> -#ifndef CMSPAR
+> -#define CMSPAR 0
+> -#endif
+> -
+>  /*
+>   * Version Information
+>   */
 
-	orig_lsr =3D up->port.serial_in(&up->port, UART_LSR);
-	...
-	up->lsr_saved_flags =3D orig_lsr;
-
-So whatever error bit is read on function entry is reused for the first
-char in the next irq run.
-
-> > lsr_saved_flags, but only evaluates BI for the workaround. The commit
-> > that introduced that only talks about BI, the mentioned erratum also
-> > only mentions BI.
-> >=20
-> > I can try to make the commit log more convincing. Or if the ability to
-> > test this code on an affected platform is declared a requirement, I will
->=20
-> I'm not in any position to declare any requirements - just that when you
-> are bit-bashing to work around some "black box" silicon errata, any
-> changes might impact whether the WAR is still working or not.
->=20
-> Your change alters lsr_saved_flags for *every* event, even when no breaks
-> or workarounds have been in play.  I'm not sure what that might trigger.
->=20
-> > drop the topic, just stop using fsl8250_handle_irq() without feeling sa=
-d.
->=20
-> That might be the best option in the end but I did notice something else
-> you might want to consider.  I believe the fsl8250_handle_irq() was just
-> a copy of the generic serial8250_handle_irq() as it was in 2011, with
-> the single block of code inserted for the WAR:
->=20
-> +       /* This is the WAR; if last event was BRK, then read and return */
-> +       if (unlikely(up->lsr_saved_flags & UART_LSR_BI)) {
-> +               up->lsr_saved_flags &=3D ~UART_LSR_BI;
-> +               port->serial_in(port, UART_RX);
-> +               spin_unlock_irqrestore(&up->port.lock, flags);
-> +               return 1;
-> +       }
->=20
-> Of course as we all know - when you copy something, you risk being left
-> behind when the original gets updated.  I just took a look at today's
-> generic 8250 one -- "git blame drivers/tty/serial/8250/8250_port.c" and
-> there are changes that probably have left fsl8250_handle_irq() being
-> left behind.  A bit more detective work would be required to see
-> changes prior to the refactoring in the 2015 commit of b6830f6df891.
->=20
-> It probably would be worthwhile to return fsl8250_handle_irq() to be the
-> "equivalent" of serial8250_handle_irq() + WAR as it was originally.  It
-> would be hard to argue against mainlining such changes - they are table
-> stakes.  And who knows, with a bit of luck it might solve your issue too?
->=20
-
-Yeah, I already looked into these and part of my plan to fix the
-workaround was to bring fsl8250_handle_irq() on par with the generic irq
-handler routine. Effectively there isn't missing much.
-
-> Of couse that is more effort than to just stop using the workaround, so I
-> wouldn't blame you at all if you decided to go that route.
-
-Will discuss that with my customer how much effort to put into this.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---lhk22cjenmk5dlwn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJ9MhkACgkQwfwUeK3K
-7Anv+wf+NCuGIAOfPewUUXQMVNIFIwEh+hmI0rIHJySFsYQL+XupH2+rSZGhfoxg
-9heCqLrvIDvxiTeZGdi4YCfSkXRAKsp7r+6TCOtZEG/K5jrHiENkHgMtFD7CrIRy
-rx748Q+QjWBpIDszbGcFIeTXmB3jgbaAjbnxzn9eMXTDvLKHhUMLiBixXw8nfRn2
-VL0daCgvITtEqVqdacsRTaEd8sfNgTwx8AL/1MB2hiIr4bnhil8BUJfBfY6QWLJW
-f4TTBDX6l9m4QF1y6vkDybSWi1QctRHLONF7hPlXIQ7q+xCKbghoooZEWWnJeTyg
-fFOxIJ+25awf5NwEmcHpCBKwcy122Q==
-=D/U5
------END PGP SIGNATURE-----
-
---lhk22cjenmk5dlwn--
+Johan
