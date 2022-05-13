@@ -2,79 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E28DC433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 07:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 504C1C433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 08:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377727AbiEMHOM (ORCPT
+        id S1378056AbiEMIHB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 03:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        Fri, 13 May 2022 04:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377601AbiEMHOJ (ORCPT
+        with ESMTP id S1378032AbiEMIGw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 03:14:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E312A9CC1;
-        Fri, 13 May 2022 00:14:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D720B82C59;
-        Fri, 13 May 2022 07:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA3B3C34100;
-        Fri, 13 May 2022 07:14:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652426045;
-        bh=EI+ONcSQlBGpFM7hWPN3KFhdRCNRtS+UuJKEdNX2cKk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iyUzOxPoCXk/U39lYWWofaNcupx3ZpjG8s4P8PBre07niqseBsVwFDMlCeHAjirBc
-         epCFDDoIsfyWe2lEFUVt3LKBcH4oWPVTJzDa9wn1galtcAnS0VgOv9JExeH9Wjjlo3
-         LBxLO5OgCz4sV1WZxNGefIgioS1LR05+Jlne7rZ0M8jcdIZo+aCixgtd7Z6CBZahlN
-         fduxPbc5basXUPEMh1d5AbykGJAr630CKZ67bBG0jp1gR81EbARB8Gp+n87g6JPGpa
-         UK2M42McOiHtnfdcTiMEEmi+gH7iyJ0AHC/40jWXDcmAkeBdJiKjPfVu0IsOBW33Fm
-         1+IemRICEdHlQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1npPUw-0006gm-B4; Fri, 13 May 2022 09:14:02 +0200
-Date:   Fri, 13 May 2022 09:14:02 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] serial: jsm: Use B0 instead of 0
-Message-ID: <Yn4FOofAvoqdaY9D@hovoldconsulting.com>
-References: <20220511101139.5306-1-ilpo.jarvinen@linux.intel.com>
- <20220511101139.5306-6-ilpo.jarvinen@linux.intel.com>
+        Fri, 13 May 2022 04:06:52 -0400
+Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D0450017
+        for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 01:06:42 -0700 (PDT)
+Received: by mail.coredeal.pl (Postfix, from userid 1002)
+        id AE332A4954; Fri, 13 May 2022 08:06:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
+        t=1652429200; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
+        h=Date:From:To:Subject:From;
+        b=X9Vz8AdnqqOrT5atg+IRIduU6fbBEgVYafWXKa9vXOmBGjstTjay+mxzhRR0PZ2c9
+         lbJ2PF62PcFzJzz26GDXA1+lFJZsZZ1Botg5WP51TW4C1pJMOIWMsZfmCPh2rsjkCp
+         QYCixbHNGP/7c68dVvAOQC6SUfCjwGUhFZ5+XxLmhAlp5FZCw9L6fRVkLehZGf8mOq
+         fMNgFtwOV/4t4AcD7VGY06kPjjrWbr0Zh1PYeNdfmUS7TLEPElbsw5LzslmltreyNA
+         sRPiJC2m/Jwc3qM86KOtw6c0loQ5BYrF4wBokh8NgUdleZCV3tTGJLq+qnm4VN7cBK
+         OBzRd1s9nCCLQ==
+Received: by mail.coredeal.pl for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 08:05:55 GMT
+Message-ID: <20220513064500-0.1.33.o0as.0.yhe8ipzrx5@coredeal.pl>
+Date:   Fri, 13 May 2022 08:05:55 GMT
+From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: Biznesowy angielski
+X-Mailer: mail.coredeal.pl
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220511101139.5306-6-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:11:39PM +0300, Ilpo Järvinen wrote:
-> Use B0 to check zero baudrate rather than literal 0.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/jsm/jsm_cls.c | 2 +-
->  drivers/tty/serial/jsm/jsm_neo.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/jsm/jsm_cls.c b/drivers/tty/serial/jsm/jsm_cls.c
-> index 046b624e5f71..ca05e84a7c90 100644
-> --- a/drivers/tty/serial/jsm/jsm_cls.c
-> +++ b/drivers/tty/serial/jsm/jsm_cls.c
-> @@ -689,7 +689,7 @@ static void cls_param(struct jsm_channel *ch)
->  	/*
->  	 * If baud rate is zero, flush queues, and set mval to drop DTR.
->  	 */
-> -	if ((ch->ch_c_cflag & (CBAUD)) == 0) {
-> +	if ((ch->ch_c_cflag & (CBAUD)) == B0) {
+Dzie=C5=84 dobry,=20
 
-Sure, why not. How about dropping the unnecessary parenthesis around
-CBAUD while at it?
+czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
+swoich pracownik=C3=B3w?
 
-Johan
+Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
+w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
+ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
+=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+
+Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
+=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
+re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
+o=C5=BCliwo=C5=9Bci biznesowe.=20
+
+Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
+ kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
+za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
+=2E
+
+Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
+w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+
+
+Pozdrawiam
+Krzysztof Maj
