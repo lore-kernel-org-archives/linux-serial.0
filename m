@@ -2,91 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A390C433F5
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 10:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876A1C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 13:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379308AbiEMKOG (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 06:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
+        id S240217AbiEMNun (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 13 May 2022 09:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379289AbiEMKN7 (ORCPT
+        with ESMTP id S1382351AbiEMNrL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 06:13:59 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E2C73558;
-        Fri, 13 May 2022 03:13:56 -0700 (PDT)
-Received: from mail-yw1-f173.google.com ([209.85.128.173]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1McXwD-1oLkit3Rc5-00d1qr; Fri, 13 May 2022 12:13:55 +0200
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2ebf4b91212so85086017b3.8;
-        Fri, 13 May 2022 03:13:54 -0700 (PDT)
-X-Gm-Message-State: AOAM531e/C9z589683ylCZmLM5jmLPzhh1custAobbsiq+3+K/2bIoRs
-        coKUZTCOm6gSRwhXWD9T3rh3V9sytvwDp13XSmM=
-X-Google-Smtp-Source: ABdhPJyHEUP1cRPCzvCwXdPdUSFS+Voh0iZfVi5t4LZi15vwg6YIdcUM0F8JfOUB45yvtXzHOEpnm/S+mdBFUW/UN8c=
-X-Received: by 2002:a0d:cd06:0:b0:2f8:f39c:4cfc with SMTP id
- p6-20020a0dcd06000000b002f8f39c4cfcmr4713890ywd.495.1652436833571; Fri, 13
- May 2022 03:13:53 -0700 (PDT)
+        Fri, 13 May 2022 09:47:11 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCA04BFE3
+        for <linux-serial@vger.kernel.org>; Fri, 13 May 2022 06:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652449630; x=1683985630;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-id;
+  bh=H2EQ5pmDrOoMyH/GjKpitjLtiV8han2Ap779ubreZUM=;
+  b=FhfVy7N9y4iHza0yVBBxFzXv8ghs6v4SNoQihcsk9rr+r8yYA+vFSBUf
+   6tCVdQg3qbmbhiBklOaHWir96m3VZhVb8kzZ6Y9F0Sq7wIgOaCqFxCy3h
+   UowZ+QMQvrFhT4orN2CMWs3wWUpuNdR6wIxrl1BiXKCv7RRK4xIkEtcEo
+   U/uOy5dGOdu52o1y3/hZ+/MTHBTsLlFZp+UBx0hWOjhsO2cnscwEhfDO4
+   o8lJffEm8Lu9Typ9i24Pr/erhvoKootnZo/oFhi2iQm8k1wyNBc7qTrWK
+   beObz+dHVKNFPf+9RcreewUhXPrF/cfss+7Gz9u7OnHPb0Bi0jMPCGr6t
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269141233"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="269141233"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 06:47:08 -0700
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; 
+   d="scan'208";a="595228854"
+Received: from huberth-mobl.ger.corp.intel.com ([10.252.34.58])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 06:46:48 -0700
+Date:   Fri, 13 May 2022 16:46:43 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Subject: [PATCH] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
+Message-ID: <035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com>
 MIME-Version: 1.0
-References: <20220511062113.2645747-1-hasegawa-hitomi@fujitsu.com>
- <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com> <Yntcn4esjJRS50Am@kroah.com>
-In-Reply-To: <Yntcn4esjJRS50Am@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 13 May 2022 12:13:36 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3rF7Y27UiGyk34b0KTfvU30rkuoN5GyuNuwcA-V61_-w@mail.gmail.com>
-Message-ID: <CAK8P3a3rF7Y27UiGyk34b0KTfvU30rkuoN5GyuNuwcA-V61_-w@mail.gmail.com>
-Subject: Re: [PATCH v4 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:bu9JyNKneSWzrsddBhuHB16iJ1Y2zAOiNp0tzUZEDeaqBuZbgFg
- LLSPmXrTH9T7fL+uOu7RDTzLzyBHkJ7fbEcTfFctS0FmjVimyARkSsNHwKaE7r2lRq5rHwI
- MyhQWKD2pXckztgfWwIxj0Qo1poTFh1Uv9zaclT+oOpv7bDIJwtYjLJqguvdT9uuFn3/Egf
- CPw6bj8t8gurCzs4q0JhQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eMDiuowy8GM=:1ABPjuWJbY1AZDHcaaDzBn
- ZQr3ie3w/mZIInn8K+wR/mTuzzMI1ks478YUGpCZ+nF8ndWBvkZY5eqL+/Ugt4v3RmQowcflp
- +lrom/WMMOzEeJm3k5YfYRG5kwOn7ij9Lif/0+1fBWV6feJqt42DmwmoKFCyDTRC93T/ihP/0
- cVryLVbR6rujllFpmAjTHfeQHncppRiZ3ZxZu4BpL68WbR2vE4K/sVG51uxh3ifsogK6vgouE
- ibNtypS+MhuI8eAKwvUjAZqqfDoPJMQLJNvZYdXRnQle6AGUuvhkPjanZbru+8luvBJfCthDt
- G9hac32tw2cPfqZZWDp604cQs+ogEp8ubq4/9ddceNZJh596mSHY1dhQjaRVscMZuPT1l/3Pi
- YMMhfpV6ZdFuySjk8TjzQLkw6fuBlmL3xPL5KTAeaR8rVKfZEvjKZDl31TxQHstDchqWgqgAu
- bUZM8CsTmVWry0uCl4L2HJmxSlKb0ZasP0j6dorpVN4g3rl/B4eb3FDexsno2defe5c7s4/aO
- YFxPeXQzfuKORMi2i7lS9lRery4Z/krEvzEtG/5fvfNCwDCsZNhREe6TdDvI9+woxrbhp92GZ
- GQ33gxTZjgV84Dnb5NLEmIc/r7OHcrEWxH3AueWp0lnJqolgV3LyvzJtt2cUDF9BM1zK9q7Zu
- 3l/8jyeFAHMamrseS7Yocs+XGaQc3fztl52eZRk6mtlejSisZZleVy+jv0KA0gAJFWYQkdjHn
- HR5QEjYfPPbTOnAROQ9IAOad+QGs8/jzBN3JMuq9D6cZH8SgbbMG96Cl07iZpn+LfS4exPYEp
- IRsYLWoe331mfF1RAoIOnxahDF2vdjpkFFM8ssOew5LTgXko7w=
+Content-Type: multipart/mixed; BOUNDARY="8323329-1629563579-1652448945=:1620"
+Content-ID: <7e215adb-69e3-dc9f-aa14-2d4f9f45076@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 11, 2022 at 8:50 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > --- a/drivers/soc/Makefile
-> > +++ b/drivers/soc/Makefile
-> > @@ -12,6 +12,7 @@ obj-$(CONFIG_SOC_CANAAN)    += canaan/
-> >  obj-$(CONFIG_ARCH_DOVE)              += dove/
-> >  obj-$(CONFIG_MACH_DOVE)              += dove/
-> >  obj-y                                += fsl/
-> > +obj-y                                += fujitsu/
->
-> Why a sub directory for just one .c file?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-All the other drivers/soc/ contents are in subdirectories, so I think
-I'd keep it like this.
-There are also other drivers that have been proposed for fujitsu a64fx.
+--8323329-1629563579-1652448945=:1620
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <c9a72977-517b-c59-2fc5-c4ded8df256@linux.intel.com>
 
-        Arnd
+SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
+within RS485 operation. The driver checks if they have the same value
+which is not possible to realize with the hardware. The check is taken
+regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
+check fails, which creates problems.
+
+This check makes it unnecessarily complicated to turn RS485 mode off as
+simple zeroed serial_rs485 struct will trigger that equal values check.
+In addition, the driver itself memsets its rs485 structure to zero when
+RS485 is disabled but if userspace would try to make an TIOCSRS485
+ioctl() call with the very same struct, it would end up failing with
+-EINVAL which doesn't make much sense.
+
+Resolve the problem by moving the check inside SER_RS485_ENABLED block.
+
+Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+---
+ drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 251f0018ae8c..dba5950b8d0e 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	if (!pdata)
+ 		return -EINVAL;
+ 
+-	/* Hardware do not support same RTS level on send and receive */
+-	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+-			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
+-		return -EINVAL;
+ 
+ 	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Hardware do not support same RTS level on send and receive */
++		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
++		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
++			return -EINVAL;
+ 		memset(rs485->padding, 0, sizeof(rs485->padding));
+ 		config |= RS485_URA;
+ 	} else {
+
+-- 
+tg: (4419da5d5d4b..) fix/8250-fintek-rts-check (depends on: tty-next)
+--8323329-1629563579-1652448945=:1620--
