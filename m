@@ -2,227 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FDAC4332F
-	for <linux-serial@archiver.kernel.org>; Fri, 13 May 2022 22:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A83DC433FE
+	for <linux-serial@archiver.kernel.org>; Sat, 14 May 2022 05:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384832AbiEMWmU (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 May 2022 18:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        id S231874AbiENFue (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 14 May 2022 01:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384829AbiEMWmQ (ORCPT
+        with ESMTP id S231572AbiENFud (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 May 2022 18:42:16 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 358812B266;
-        Fri, 13 May 2022 15:42:10 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 9295092009E; Sat, 14 May 2022 00:42:08 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 8B68892009B;
-        Fri, 13 May 2022 23:42:08 +0100 (BST)
-Date:   Fri, 13 May 2022 23:42:08 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jonathan Corbet <corbet@lwn.net>,
+        Sat, 14 May 2022 01:50:33 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E60339;
+        Fri, 13 May 2022 22:50:30 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so9424203pjb.0;
+        Fri, 13 May 2022 22:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Y+7/3F4K7tO9yPS1FoG+R06LhSxowngPNVcml3EJRXI=;
+        b=Jq+CUR5rZrzmCrD/LVeMvxq+Xb/zak1b+scGfBXtHB2BtZDPcTmAsIj0eEldiX/hxr
+         V/ZNKCZmCnwGjWBrQ/N5kebr6r2Rar2d1AZBLUYgfAmYmnejW13/wG6EiulfG9KLSN94
+         64MGYxOHQrAJJ0VK7xPhvHevvKAhSebmducEdqqeMgyeNsOwP74MEmchgQA+vgTpRYQx
+         Q5aaBJ882rp2u94Bysst1yaf1SxrObIB+PcbgiXMvfYRVPFqV5hxHR694izuvfQCReBJ
+         ETjTbJ/lRJBHIp53DH8K5WNJYqyKGYcnTfNlqCTVeG1EbJT9N62xCReU9dfvuoWCgNa3
+         +0QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Y+7/3F4K7tO9yPS1FoG+R06LhSxowngPNVcml3EJRXI=;
+        b=OSh0XkJuG4uFsi5SztHb2mZnea9wpTCINynADk4rkhFWm+bA4M4nlENoini4GWYk1e
+         6pnTc3ThkWDZ66lFgHoSekxOk4mF0vm6YZG6ShL31CgEkaXrXT+cBUQoHKykGXE1PItW
+         K7gNGHOVYJrIDYe+eAXDhuAlcBf08br/mW3UTt04NAB7if4kZzRqFcp9fNxZQSO4rJM2
+         8JYbtE2PBZGQcn675E7A5s10pPMSJCDuK3iCIfQT1+NKNmwyxg22esIffooZnXTLE0fq
+         vkbWG/3l3dvrfezMGVLbQ/IfOVdpoH8WvfUBnvCpctkLg7KJyBa+JDw8w1ZvyeZDpfXQ
+         mDZg==
+X-Gm-Message-State: AOAM531G8axXigS50K7c5CrPV6hMwkJ08WInLMt8LfxjS48l7wd/wsYc
+        I7p/3cVOFaYZvQq+TAXpzbQ=
+X-Google-Smtp-Source: ABdhPJzZs8nO8pY3xEjkvf9SZbC4iLxTAZKozzoiIBqeTKah3zBlj3A8GW24T0kdEF8AOd5grcPNfg==
+X-Received: by 2002:a17:903:124a:b0:154:c7a4:9374 with SMTP id u10-20020a170903124a00b00154c7a49374mr7870605plh.68.1652507429919;
+        Fri, 13 May 2022 22:50:29 -0700 (PDT)
+Received: from [192.168.43.80] (subs32-116-206-28-36.three.co.id. [116.206.28.36])
+        by smtp.gmail.com with ESMTPSA id n16-20020a6563d0000000b003c14af50607sm2553652pgv.31.2022.05.13.22.50.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 May 2022 22:50:29 -0700 (PDT)
+Message-ID: <02a1d5a9-4a95-ce58-d401-962d8ea5a0a2@gmail.com>
+Date:   Sat, 14 May 2022 12:50:24 +0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 3/3] Documentation: Wire Oxford Semiconductor PCIe
+ (Tornado) 950
+Content-Language: en-US
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Jonathan Corbet <corbet@lwn.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-next@vger.kernel.org
-Subject: [PATCH 2/3] Documentation: Reformat Oxford Semiconductor PCIe
- (Tornado) 950
-In-Reply-To: <alpine.DEB.2.21.2205131712410.10656@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2205131721110.10656@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2205131712410.10656@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <alpine.DEB.2.21.2205131727070.10656@angie.orcam.me.uk>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <alpine.DEB.2.21.2205131727070.10656@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Reformat Oxford Semiconductor PCIe (Tornado) 950 description in terms of 
-reStructuredText markup, fixing warnings with `make htmldocs'.  While at 
-it remove typos: s/the the/the/ and s/the/then/ in lines changed anyway.
+On 5/14/22 05:42, Maciej W. Rozycki wrote:
+> Wire Oxford Semiconductor PCIe (Tornado) 950 description as a chapter 
+> into the misc-devices document.
+> 
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> ---
+>  Documentation/misc-devices/index.rst |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> linux-doc-oxsemi-tornado-wire.diff
+> Index: linux-macro/Documentation/misc-devices/index.rst
+> ===================================================================
+> --- linux-macro.orig/Documentation/misc-devices/index.rst
+> +++ linux-macro/Documentation/misc-devices/index.rst
+> @@ -25,6 +25,7 @@ fit into other categories.
+>     isl29003
+>     lis3lv02d
+>     max6875
+> +   oxsemi-tornado
+>     pci-endpoint-test
+>     spear-pcie-gadget
+>     uacce
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
----
- Documentation/misc-devices/oxsemi-tornado.rst |  136 +++++++++++++-------------
- 1 file changed, 69 insertions(+), 67 deletions(-)
+Shouldn't this patch be squashed into [1/2]?
 
-linux-doc-oxsemi-tornado-fix.diff
-Index: linux-macro/Documentation/misc-devices/oxsemi-tornado.rst
-===================================================================
---- linux-macro.orig/Documentation/misc-devices/oxsemi-tornado.rst
-+++ linux-macro/Documentation/misc-devices/oxsemi-tornado.rst
-@@ -24,15 +24,15 @@ used for the divisor to obtain the reque
- is unaware of the extra clock controls available.
- 
- The oversampling rate is programmed with the TCR register and the clock
--prescaler is programmed with the CPR/CPR2 register pair[1][2][3][4].
--To switch away from the default value of 33.875 for the prescaler the
--the enhanced mode has to be explicitly enabled though, by setting bit 4
--of the EFR.  In that mode setting bit 7 in the MCR enables the prescaler
--or otherwise it is bypassed as if the value of 1 was used.  Additionally
--writing any value to CPR clears CPR2 for compatibility with old software
--written for older conventional PCI Oxford Semiconductor devices that do
--not have the extra prescaler's 9th bit in CPR2, so the CPR/CPR2 register
--pair has to be programmed in the right order.
-+prescaler is programmed with the CPR/CPR2 register pair [OX200]_ [OX952]_
-+[OX954]_ [OX958]_.  To switch away from the default value of 33.875 for
-+the prescaler the enhanced mode has to be explicitly enabled though, by
-+setting bit 4 of the EFR.  In that mode setting bit 7 in the MCR enables
-+the prescaler or otherwise it is bypassed as if the value of 1 was used.
-+Additionally writing any value to CPR clears CPR2 for compatibility with
-+old software written for older conventional PCI Oxford Semiconductor
-+devices that do not have the extra prescaler's 9th bit in CPR2, so the
-+CPR/CPR2 register pair has to be programmed in the right order.
- 
- By using these parameters rates from 15625000bps down to 1bps can be
- obtained, with either exact or highly-accurate actual bit rates for
-@@ -43,48 +43,50 @@ Here are the figures for the standard an
- the requested rate (r), the actual rate yielded (a) and its deviation
- from the requested rate (d), and the values of the oversampling rate
- (tcr), the clock prescaler (cpr) and the divisor (div) produced by the
--new `get_divisor' handler:
-+new ``get_divisor`` handler:
- 
--r: 15625000, a: 15625000.00, d:  0.0000%, tcr:  4, cpr:  1.000, div:     1
--r: 12500000, a: 12500000.00, d:  0.0000%, tcr:  5, cpr:  1.000, div:     1
--r: 10416666, a: 10416666.67, d:  0.0000%, tcr:  6, cpr:  1.000, div:     1
--r:  8928571, a:  8928571.43, d:  0.0000%, tcr:  7, cpr:  1.000, div:     1
--r:  7812500, a:  7812500.00, d:  0.0000%, tcr:  8, cpr:  1.000, div:     1
--r:  4000000, a:  4000000.00, d:  0.0000%, tcr:  5, cpr:  3.125, div:     1
--r:  3686400, a:  3676470.59, d: -0.2694%, tcr:  8, cpr:  2.125, div:     1
--r:  3500000, a:  3496503.50, d: -0.0999%, tcr: 13, cpr:  1.375, div:     1
--r:  3000000, a:  2976190.48, d: -0.7937%, tcr: 14, cpr:  1.500, div:     1
--r:  2500000, a:  2500000.00, d:  0.0000%, tcr: 10, cpr:  2.500, div:     1
--r:  2000000, a:  2000000.00, d:  0.0000%, tcr: 10, cpr:  3.125, div:     1
--r:  1843200, a:  1838235.29, d: -0.2694%, tcr: 16, cpr:  2.125, div:     1
--r:  1500000, a:  1492537.31, d: -0.4975%, tcr:  5, cpr:  8.375, div:     1
--r:  1152000, a:  1152073.73, d:  0.0064%, tcr: 14, cpr:  3.875, div:     1
--r:   921600, a:   919117.65, d: -0.2694%, tcr: 16, cpr:  2.125, div:     2
--r:   576000, a:   576036.87, d:  0.0064%, tcr: 14, cpr:  3.875, div:     2
--r:   460800, a:   460829.49, d:  0.0064%, tcr:  7, cpr:  3.875, div:     5
--r:   230400, a:   230414.75, d:  0.0064%, tcr: 14, cpr:  3.875, div:     5
--r:   115200, a:   115207.37, d:  0.0064%, tcr: 14, cpr:  1.250, div:    31
--r:    57600, a:    57603.69, d:  0.0064%, tcr:  8, cpr:  3.875, div:    35
--r:    38400, a:    38402.46, d:  0.0064%, tcr: 14, cpr:  3.875, div:    30
--r:    19200, a:    19201.23, d:  0.0064%, tcr:  8, cpr:  3.875, div:   105
--r:     9600, a:     9600.06, d:  0.0006%, tcr:  9, cpr:  1.125, div:   643
--r:     4800, a:     4799.98, d: -0.0004%, tcr:  7, cpr:  2.875, div:   647
--r:     2400, a:     2400.02, d:  0.0008%, tcr:  9, cpr:  2.250, div:  1286
--r:     1200, a:     1200.00, d:  0.0000%, tcr: 14, cpr:  2.875, div:  1294
--r:      300, a:      300.00, d:  0.0000%, tcr: 11, cpr:  2.625, div:  7215
--r:      200, a:      200.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 15625
--r:      150, a:      150.00, d:  0.0000%, tcr: 13, cpr:  2.250, div: 14245
--r:      134, a:      134.00, d:  0.0000%, tcr: 11, cpr:  2.625, div: 16153
--r:      110, a:      110.00, d:  0.0000%, tcr: 12, cpr:  1.000, div: 47348
--r:       75, a:       75.00, d:  0.0000%, tcr:  4, cpr:  5.875, div: 35461
--r:       50, a:       50.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 62500
--r:       25, a:       25.00, d:  0.0000%, tcr: 16, cpr:  2.500, div: 62500
--r:        4, a:        4.00, d:  0.0000%, tcr: 16, cpr: 20.000, div: 48828
--r:        2, a:        2.00, d:  0.0000%, tcr: 16, cpr: 40.000, div: 48828
--r:        1, a:        1.00, d:  0.0000%, tcr: 16, cpr: 63.875, div: 61154
-+::
-+
-+ r: 15625000, a: 15625000.00, d:  0.0000%, tcr:  4, cpr:  1.000, div:     1
-+ r: 12500000, a: 12500000.00, d:  0.0000%, tcr:  5, cpr:  1.000, div:     1
-+ r: 10416666, a: 10416666.67, d:  0.0000%, tcr:  6, cpr:  1.000, div:     1
-+ r:  8928571, a:  8928571.43, d:  0.0000%, tcr:  7, cpr:  1.000, div:     1
-+ r:  7812500, a:  7812500.00, d:  0.0000%, tcr:  8, cpr:  1.000, div:     1
-+ r:  4000000, a:  4000000.00, d:  0.0000%, tcr:  5, cpr:  3.125, div:     1
-+ r:  3686400, a:  3676470.59, d: -0.2694%, tcr:  8, cpr:  2.125, div:     1
-+ r:  3500000, a:  3496503.50, d: -0.0999%, tcr: 13, cpr:  1.375, div:     1
-+ r:  3000000, a:  2976190.48, d: -0.7937%, tcr: 14, cpr:  1.500, div:     1
-+ r:  2500000, a:  2500000.00, d:  0.0000%, tcr: 10, cpr:  2.500, div:     1
-+ r:  2000000, a:  2000000.00, d:  0.0000%, tcr: 10, cpr:  3.125, div:     1
-+ r:  1843200, a:  1838235.29, d: -0.2694%, tcr: 16, cpr:  2.125, div:     1
-+ r:  1500000, a:  1492537.31, d: -0.4975%, tcr:  5, cpr:  8.375, div:     1
-+ r:  1152000, a:  1152073.73, d:  0.0064%, tcr: 14, cpr:  3.875, div:     1
-+ r:   921600, a:   919117.65, d: -0.2694%, tcr: 16, cpr:  2.125, div:     2
-+ r:   576000, a:   576036.87, d:  0.0064%, tcr: 14, cpr:  3.875, div:     2
-+ r:   460800, a:   460829.49, d:  0.0064%, tcr:  7, cpr:  3.875, div:     5
-+ r:   230400, a:   230414.75, d:  0.0064%, tcr: 14, cpr:  3.875, div:     5
-+ r:   115200, a:   115207.37, d:  0.0064%, tcr: 14, cpr:  1.250, div:    31
-+ r:    57600, a:    57603.69, d:  0.0064%, tcr:  8, cpr:  3.875, div:    35
-+ r:    38400, a:    38402.46, d:  0.0064%, tcr: 14, cpr:  3.875, div:    30
-+ r:    19200, a:    19201.23, d:  0.0064%, tcr:  8, cpr:  3.875, div:   105
-+ r:     9600, a:     9600.06, d:  0.0006%, tcr:  9, cpr:  1.125, div:   643
-+ r:     4800, a:     4799.98, d: -0.0004%, tcr:  7, cpr:  2.875, div:   647
-+ r:     2400, a:     2400.02, d:  0.0008%, tcr:  9, cpr:  2.250, div:  1286
-+ r:     1200, a:     1200.00, d:  0.0000%, tcr: 14, cpr:  2.875, div:  1294
-+ r:      300, a:      300.00, d:  0.0000%, tcr: 11, cpr:  2.625, div:  7215
-+ r:      200, a:      200.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 15625
-+ r:      150, a:      150.00, d:  0.0000%, tcr: 13, cpr:  2.250, div: 14245
-+ r:      134, a:      134.00, d:  0.0000%, tcr: 11, cpr:  2.625, div: 16153
-+ r:      110, a:      110.00, d:  0.0000%, tcr: 12, cpr:  1.000, div: 47348
-+ r:       75, a:       75.00, d:  0.0000%, tcr:  4, cpr:  5.875, div: 35461
-+ r:       50, a:       50.00, d:  0.0000%, tcr: 16, cpr:  1.250, div: 62500
-+ r:       25, a:       25.00, d:  0.0000%, tcr: 16, cpr:  2.500, div: 62500
-+ r:        4, a:        4.00, d:  0.0000%, tcr: 16, cpr: 20.000, div: 48828
-+ r:        2, a:        2.00, d:  0.0000%, tcr: 16, cpr: 40.000, div: 48828
-+ r:        1, a:        1.00, d:  0.0000%, tcr: 16, cpr: 63.875, div: 61154
- 
- With the baud base set to 15625000 and the unsigned 16-bit UART_DIV_MAX
--limitation imposed by `serial8250_get_baud_rate' standard baud rates
-+limitation imposed by ``serial8250_get_baud_rate`` standard baud rates
- below 300bps become unavailable in the regular way, e.g. the rate of
- 200bps requires the baud base to be divided by 78125 and that is beyond
- the unsigned 16-bit range.  The historic spd_cust feature can still be
-@@ -92,15 +94,17 @@ used by encoding the values for, the pre
- and the clock divisor (DLM/DLL) as follows to obtain such rates if so
- required:
- 
-- 31 29 28             20 19   16 15                            0
--+-----+-----------------+-------+-------------------------------+
--|0 0 0|    CPR2:CPR     |  TCR  |            DLM:DLL            |
--+-----+-----------------+-------+-------------------------------+
-+::
- 
--Use a value such encoded for the `custom_divisor' field along with the
--ASYNC_SPD_CUST flag set in the `flags' field in `struct serial_struct'
-+  31 29 28             20 19   16 15                            0
-+ +-----+-----------------+-------+-------------------------------+
-+ |0 0 0|    CPR2:CPR     |  TCR  |            DLM:DLL            |
-+ +-----+-----------------+-------+-------------------------------+
-+
-+Use a value such encoded for the ``custom_divisor`` field along with the
-+ASYNC_SPD_CUST flag set in the ``flags`` field in ``struct serial_struct``
- passed with the TIOCSSERIAL ioctl(2), such as with the setserial(8)
--utility and its `divisor' and `spd_cust' parameters, and the select
-+utility and its ``divisor`` and ``spd_cust`` parameters, and then select
- the baud rate of 38400bps.  Note that the value of 0 in TCR sets the
- oversampling rate to 16 and prescaler values below 1 in CPR2/CPR are
- clamped by the driver to 1.
-@@ -111,19 +115,17 @@ the oversampling rate and the clock divi
- respectively.  These parameters will set the baud rate for the serial
- port to 62500000 / 62.500 / 1250 / 16 = 50bps.
- 
--References:
--
--[1] "OXPCIe200 PCI Express Multi-Port Bridge", Oxford Semiconductor,
--    Inc., DS-0045, 10 Nov 2008, Section "950 Mode", pp. 64-65
-+Maciej W. Rozycki  <macro@orcam.me.uk>
- 
--[2] "OXPCIe952 PCI Express Bridge to Dual Serial & Parallel Port",
--    Oxford Semiconductor, Inc., DS-0046, Mar 06 08, Section "950 Mode",
--    p. 20
-+.. [OX200] "OXPCIe200 PCI Express Multi-Port Bridge", Oxford Semiconductor,
-+   Inc., DS-0045, 10 Nov 2008, Section "950 Mode", pp. 64-65
- 
--[3] "OXPCIe954 PCI Express Bridge to Quad Serial Port", Oxford
--    Semiconductor, Inc., DS-0047, Feb 08, Section "950 Mode", p. 20
-+.. [OX952] "OXPCIe952 PCI Express Bridge to Dual Serial & Parallel Port",
-+   Oxford Semiconductor, Inc., DS-0046, Mar 06 08, Section "950 Mode",
-+   p. 20
- 
--[4] "OXPCIe958 PCI Express Bridge to Octal Serial Port", Oxford
--    Semiconductor, Inc., DS-0048, Feb 08, Section "950 Mode", p. 20
-+.. [OX954] "OXPCIe954 PCI Express Bridge to Quad Serial Port", Oxford
-+   Semiconductor, Inc., DS-0047, Feb 08, Section "950 Mode", p. 20
- 
--Maciej W. Rozycki  <macro@orcam.me.uk>
-+.. [OX958] "OXPCIe958 PCI Express Bridge to Octal Serial Port", Oxford
-+   Semiconductor, Inc., DS-0048, Feb 08, Section "950 Mode", p. 20
+-- 
+An old man doll... just what I always wanted! - Clara
