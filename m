@@ -2,315 +2,429 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C74C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 14 May 2022 14:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50713C433F5
+	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbiENOxJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 14 May 2022 10:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47950 "EHLO
+        id S233655AbiEOBx7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 14 May 2022 21:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbiENOxI (ORCPT
+        with ESMTP id S233368AbiEOBx6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 14 May 2022 10:53:08 -0400
-Received: from out28-1.mail.aliyun.com (out28-1.mail.aliyun.com [115.124.28.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9033A451;
-        Sat, 14 May 2022 07:53:02 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436291|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0596507-0.000320858-0.940028;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047212;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.NkRoEBs_1652539974;
-Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NkRoEBs_1652539974)
-          by smtp.aliyun-inc.com(33.37.71.62);
-          Sat, 14 May 2022 22:52:55 +0800
-Subject: Re: Question about SC16IS752 device tree.
-To:     Rob Herring <robh@kernel.org>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Paul Cercueil <paul@crapouillou.net>, jringle@gridpoint.com,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-mips <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>, tomasz.mon@camlingroup.com,
-        l.perczak@camlintechnologies.com,
-        Yunian Yang <reimu@sudomaker.com>,
-        =?UTF-8?B?5ZGo5q2j?= <sernia.zhou@foxmail.com>
-References: <7c89db86-4055-90b5-6a67-611410f5759f@wanyeetech.com>
- <ZYNMBR.VDVV3VHFQBMO1@crapouillou.net>
- <04bd0853-7e34-5210-f1b5-f3ea8c35e484@wanyeetech.com>
- <501852E6-6934-4BB2-850C-B53A07580568@goldelico.com>
- <8533f999-f584-ea31-0c44-1ce29c066d88@wanyeetech.com>
- <1B523C47-1F9C-42EE-B242-EF63F89B94F9@goldelico.com>
- <35c60fea-ac74-9d23-51ac-b877a5b4eb86@wanyeetech.com>
- <CAL_Jsq+vAtfOywCry+6A3cEKaKupyAC1aah6LNk+YdWzxtdVeA@mail.gmail.com>
-From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
-Message-ID: <b429a5a6-dad5-469b-a32b-8e2b17642586@wanyeetech.com>
-Date:   Sat, 14 May 2022 22:52:53 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Sat, 14 May 2022 21:53:58 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383C5A47F
+        for <linux-serial@vger.kernel.org>; Sat, 14 May 2022 18:53:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652579637; x=1684115637;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=l1nxTqGP51iA3Qu815j5vXtRNs6CV0NdZ7lxs/+OlSU=;
+  b=K6xdH3J2c/pFxKg/F/ydc41iOO3b4JsTwkrH0NzABcXIqP6rnbsB/8in
+   RDP2YSwcAyBxIliZs9il6XDuGtyTa8tHAGoMyFSSb4iNdnksXY636GW0K
+   WL+HtUcNfG6h00T0UlmA6sAlAKpeMWnWD6Ceg0c1txiGkMXg0IjWsv6D7
+   lngjSHxs13Pmi9kSvyvBTtRFA4Pmo6QKV1vv29Ke0kBZTWv8TVNz6L6S4
+   /cBQjmOnfaqgJLMP9rtdpAKMp7HGiv2QJxMm+ic7Ba6RT6hlKuA86Qs/T
+   waulapwo6xsM5+oIG+hhMtEDCqetXFl6qLHIJfLO7BRpnHbvWaU4qaq4k
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10347"; a="270520605"
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="270520605"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2022 18:53:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,227,1647327600"; 
+   d="scan'208";a="573514524"
+Received: from lkp-server01.sh.intel.com (HELO d1462bc4b09b) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 14 May 2022 18:53:53 -0700
+Received: from kbuild by d1462bc4b09b with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nq3SC-0001Cf-Tb;
+        Sun, 15 May 2022 01:53:52 +0000
+Date:   Sun, 15 May 2022 09:53:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 401fb66a355eb0f22096cf26864324f8e63c7d78
+Message-ID: <62805d2e.qOYqmUposkg1nDvh%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-In-Reply-To: <CAL_Jsq+vAtfOywCry+6A3cEKaKupyAC1aah6LNk+YdWzxtdVeA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rob,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 401fb66a355eb0f22096cf26864324f8e63c7d78  fsl_lpuart: Don't enable interrupts too early
 
-On 2022/5/12 下午10:49, Rob Herring wrote:
-> On Tue, May 10, 2022 at 12:53 PM Zhou Yanjie <zhouyanjie@wanyeetech.com> wrote:
->> Hi,
->>
->> On 2022/5/10 下午11:31, H. Nikolaus Schaller wrote:
->>> Hi,
->>>
->>>> Am 10.05.2022 um 04:29 schrieb Zhou Yanjie <zhouyanjie@wanyeetech.com>:
->>>>
->>>> Hi Nikolaus,
->>>>
->>>> On 2022/5/10 上午4:19, H. Nikolaus Schaller wrote:
->>>>> Hi,
->>>>>
->>>>>> Am 09.05.2022 um 20:41 schrieb Zhou Yanjie <zhouyanjie@wanyeetech.com>:
->>>>>>
->>>>>> Hi Paul,
->>>>>>
->>>>>> On 2022/5/10 上午2:13, Paul Cercueil wrote:
->>>>>>> I can't say for sure that it's your problem, but your bluetooth nodes are missing "reg" properties.
->>>>>> Unfortunately it doesn't seem to be the problem here, I added "reg" and
->>>>>> the problem persists, and I've looked at other device trees that contain
->>>>>> "brcm,bcm43438-bt", none of them use "reg", and "reg" is not mentioned in
->>>>>> neither "Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt" nor
->>>>>> "Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml".
->>>>> what happens if you remove the serdev children from DTS? Does the driver create two separate /dev/tty ports? And do they work?
->>>> Yes, there will be two separate /dev/tty ports (ttySC0 and ttySC1), and
->>>> both ports can work normally, but at this time the two bluetooth modules
->>>> are not working.
->>>>
->>>> I guess it is because the driver does not detect bluetooth module nodes,
->>>> so the inability to operate "reset-gpios" and "device-wakeup-gpios" causes
->>>> the bluetooth module to work incorrectly.
->>> I would assume that it is not prepared to handle two serdev subnodes and
->>> assign the right gpios.
->>
->> I found something new now, if I follow the practice in
->> "fsl-ls1012a-frdm.dts"
->> and put the clock node inside the node of SC16IS752:
->>
->> &ssi0 {
->>       status = "okay";
->>
->>       num-cs = <2>;
->>
->>       pinctrl-names = "default";
->>       pinctrl-0 = <&pins_ssi0>;
->>
->>       sc16is752: expander@0 {
->>           compatible = "nxp,sc16is752";
->>           reg = <0>; /* CE0 */
->>           #address-cells = <1>;
->>           #size-cells = <0>;
->>
->>           spi-rx-bus-width = <1>;
->>           spi-tx-bus-width = <1>;
->>           spi-max-frequency = <6000000>;
->>
->>           clocks = <&exclk_sc16is752>;
->>
->>           interrupt-parent = <&gpb>;
->>           interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
->>
->>           gpio-controller;
->>           #gpio-cells = <2>;
->>
->>           exclk_sc16is752: sc16is752 {
->>               compatible = "fixed-clock";
->>               #clock-cells = <0>;
->>               clock-frequency = <48000000>;
->>           };
-> That doesn't look right. This clock source is not part of or coming
-> from the sc16is752. This belongs at the top level.
+elapsed time: 13105m
 
+configs tested: 347
+configs skipped: 6
 
-I saw in the "arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dts" file 
-that the clock
-node was placed inside the SC16IS752 node, and I found that some 
-RaspberryPi developers
-did the same. I think the reason them do this may be because the clock 
-of SC16IS752 is
-provided by the oscillator circuit inside the chip (an external crystal 
-oscillator is
-required). If you feel this is inappropriate, I will leave the clock 
-node alone.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220507
+powerpc                          allmodconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+s390                             allmodconfig
+s390                             allyesconfig
+powerpc                          allyesconfig
+parisc                           allyesconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arm                        clps711x_defconfig
+arc                 nsimosci_hs_smp_defconfig
+mips                         tb0226_defconfig
+xtensa                       common_defconfig
+arm                      jornada720_defconfig
+m68k                         apollo_defconfig
+m68k                          atari_defconfig
+sh                          sdk7786_defconfig
+arm                           h3600_defconfig
+powerpc                     rainier_defconfig
+sh                ecovec24-romimage_defconfig
+arm                           sunxi_defconfig
+ia64                             alldefconfig
+arm                          exynos_defconfig
+h8300                    h8300h-sim_defconfig
+arm                        multi_v7_defconfig
+powerpc                      mgcoge_defconfig
+xtensa                    smp_lx200_defconfig
+ia64                      gensparse_defconfig
+sparc64                             defconfig
+m68k                       m5475evb_defconfig
+arm                        shmobile_defconfig
+m68k                        mvme16x_defconfig
+m68k                       m5249evb_defconfig
+arm                            pleb_defconfig
+mips                          rb532_defconfig
+riscv                               defconfig
+powerpc                     sequoia_defconfig
+arc                          axs103_defconfig
+sh                             sh03_defconfig
+sh                   sh7724_generic_defconfig
+powerpc                      cm5200_defconfig
+powerpc                       eiger_defconfig
+h8300                            alldefconfig
+sh                           se7343_defconfig
+powerpc                      pasemi_defconfig
+ia64                         bigsur_defconfig
+powerpc                     redwood_defconfig
+mips                  decstation_64_defconfig
+h8300                       h8s-sim_defconfig
+sh                          kfr2r09_defconfig
+sh                           se7712_defconfig
+sparc                       sparc32_defconfig
+powerpc                     pq2fads_defconfig
+arm                         axm55xx_defconfig
+arm                        spear6xx_defconfig
+x86_64                           alldefconfig
+powerpc                     tqm8548_defconfig
+m68k                       bvme6000_defconfig
+m68k                       m5208evb_defconfig
+xtensa                  audio_kc705_defconfig
+arm                          pxa3xx_defconfig
+sh                           se7705_defconfig
+mips                       bmips_be_defconfig
+sh                          landisk_defconfig
+csky                                defconfig
+xtensa                  nommu_kc705_defconfig
+arm                      footbridge_defconfig
+sh                           se7750_defconfig
+arc                         haps_hs_defconfig
+powerpc                    klondike_defconfig
+mips                        vocore2_defconfig
+mips                             allmodconfig
+s390                       zfcpdump_defconfig
+m68k                           sun3_defconfig
+sh                            hp6xx_defconfig
+powerpc                      ppc40x_defconfig
+powerpc                    adder875_defconfig
+arc                        nsim_700_defconfig
+sh                         ecovec24_defconfig
+sh                        dreamcast_defconfig
+mips                 decstation_r4k_defconfig
+powerpc64                        alldefconfig
+arc                        nsimosci_defconfig
+um                           x86_64_defconfig
+powerpc                      tqm8xx_defconfig
+mips                           jazz_defconfig
+sh                     magicpanelr2_defconfig
+powerpc                     tqm8555_defconfig
+sh                         ap325rxa_defconfig
+x86_64                              defconfig
+mips                      loongson3_defconfig
+sparc                            alldefconfig
+powerpc                 mpc837x_rdb_defconfig
+powerpc                       ppc64_defconfig
+arm                        mvebu_v7_defconfig
+sh                          r7785rp_defconfig
+xtensa                          iss_defconfig
+sh                   rts7751r2dplus_defconfig
+m68k                        m5307c3_defconfig
+m68k                          hp300_defconfig
+ia64                          tiger_defconfig
+powerpc                     ep8248e_defconfig
+sh                             espt_defconfig
+arm                       multi_v4t_defconfig
+arm                             ezx_defconfig
+arm                        mini2440_defconfig
+xtensa                              defconfig
+arm                           sama5_defconfig
+sh                         microdev_defconfig
+sh                           se7724_defconfig
+mips                           ci20_defconfig
+sh                          r7780mp_defconfig
+arc                     nsimosci_hs_defconfig
+powerpc                     stx_gp3_defconfig
+um                               alldefconfig
+openrisc                    or1ksim_defconfig
+arm                            xcep_defconfig
+riscv                            allyesconfig
+arm                           viper_defconfig
+sparc                       sparc64_defconfig
+sh                          polaris_defconfig
+sh                        sh7763rdp_defconfig
+powerpc                         wii_defconfig
+microblaze                      mmu_defconfig
+sparc                               defconfig
+sh                                  defconfig
+mips                         mpc30x_defconfig
+arm                            zeus_defconfig
+arm                     eseries_pxa_defconfig
+powerpc                  storcenter_defconfig
+arm                         lubbock_defconfig
+parisc                generic-32bit_defconfig
+alpha                               defconfig
+mips                         bigsur_defconfig
+arm                         nhk8815_defconfig
+i386                                defconfig
+sh                 kfr2r09-romimage_defconfig
+mips                      fuloong2e_defconfig
+powerpc                      ep88xc_defconfig
+sh                          rsk7269_defconfig
+alpha                            alldefconfig
+sh                          rsk7203_defconfig
+powerpc                       maple_defconfig
+ia64                            zx1_defconfig
+xtensa                           alldefconfig
+ia64                        generic_defconfig
+powerpc                   motionpro_defconfig
+arm                      integrator_defconfig
+nios2                         10m50_defconfig
+arm                          gemini_defconfig
+powerpc                      pcm030_defconfig
+powerpc                       holly_defconfig
+powerpc                      ppc6xx_defconfig
+sh                           se7721_defconfig
+alpha                            allyesconfig
+arm                          lpd270_defconfig
+arm                             pxa_defconfig
+arm                        cerfcube_defconfig
+sparc                            allyesconfig
+arm                         vf610m4_defconfig
+arc                           tb10x_defconfig
+microblaze                          defconfig
+mips                         db1xxx_defconfig
+powerpc                   currituck_defconfig
+mips                      maltasmvp_defconfig
+m68k                          sun3x_defconfig
+powerpc                      chrp32_defconfig
+powerpc                     tqm8541_defconfig
+nios2                            allyesconfig
+sh                        apsh4ad0a_defconfig
+sh                          lboxre2_defconfig
+mips                           ip32_defconfig
+arm                         lpc18xx_defconfig
+arm                         s3c6400_defconfig
+arm                           stm32_defconfig
+arm                       aspeed_g5_defconfig
+m68k                        stmark2_defconfig
+xtensa                    xip_kc705_defconfig
+powerpc                mpc7448_hpc2_defconfig
+nios2                               defconfig
+arm                         cm_x300_defconfig
+m68k                        mvme147_defconfig
+arm                             rpc_defconfig
+nios2                            alldefconfig
+arm                            lart_defconfig
+arm                       imx_v6_v7_defconfig
+openrisc                 simple_smp_defconfig
+mips                        bcm47xx_defconfig
+m68k                          multi_defconfig
+arm                            hisi_defconfig
+arc                    vdk_hs38_smp_defconfig
+arc                              alldefconfig
+m68k                         amcore_defconfig
+sh                  sh7785lcr_32bit_defconfig
+m68k                          amiga_defconfig
+parisc                generic-64bit_defconfig
+um                             i386_defconfig
+arm                         at91_dt_defconfig
+h8300                               defconfig
+m68k                            mac_defconfig
+sh                          sdk7780_defconfig
+sh                               j2_defconfig
+riscv                    nommu_k210_defconfig
+powerpc                     asp8347_defconfig
+mips                            ar7_defconfig
+sh                          rsk7264_defconfig
+arm                       omap2plus_defconfig
+powerpc                      arches_defconfig
+powerpc                    sam440ep_defconfig
+sh                           se7722_defconfig
+arm                          iop32x_defconfig
+openrisc                            defconfig
+powerpc                 mpc85xx_cds_defconfig
+mips                  maltasmvp_eva_defconfig
+arm                  randconfig-c002-20220505
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220506
+arm                  randconfig-c002-20220507
+arm                  randconfig-c002-20220508
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                                defconfig
+arc                              allyesconfig
+arc                                 defconfig
+s390                                defconfig
+parisc                              defconfig
+parisc64                            defconfig
+i386                             allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220505
+s390                 randconfig-r044-20220505
+arc                  randconfig-r043-20220505
+arc                  randconfig-r043-20220507
+s390                 randconfig-r044-20220507
+riscv                randconfig-r042-20220507
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                           allyesconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
->
->>           bluetooth@0 {
->>               compatible = "brcm,bcm43438-bt";
->>               reg = <0>;
->>               max-speed = <1000000>;
->>
->>               device-wakeup-gpios = <&gpc 26 GPIO_ACTIVE_HIGH>;
->>               reset-gpios = <&gpb 17 GPIO_ACTIVE_LOW>;
->>           };
->>
->>           bluetooth@1 {
->>               compatible = "brcm,bcm43438-bt";
->>               reg = <1>;
->>               max-speed = <1000000>;
->>
->>               device-wakeup-gpios = <&gpc 28 GPIO_ACTIVE_HIGH>;
->>               reset-gpios = <&gpb 19 GPIO_ACTIVE_LOW>;
->>           };
->>       };
->> };
->>
->> This will cause all bluetooth modules to not work, and if the clock node
->> is moved
->> to the end of the child node, the bluetooth module connected to ttySC0
->> can work
->> normally, which seems to mean that only the first child node can work
->> correctly.
->>
->>
->>
->> And I found this patch:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git/commit/drivers/tty/serdev?h=usb-next&id=08fcee289f341786eb3b44e5f2d1dc850943238e
->>
->> It seems to mean that the SC16IS752 driver does not correctly
->> distinguish between
->> the two serial ports, which makes the serdev driver think that the child
->> nodes are
->> on the same serial device bus, which leads to the current problem.
->>
->>
->>>>> Maybe the sc16is752 driver does not separate them for child nodes, i.e. while "reg" should be added it may not be handled?
->>>> I'm not too sure, I'm not very familiar with serial port systems.
->>>> If the truth is what you think, how should I improve it?
->>> Unfortunately I also don't know how the serdev implementation really works.
->>>
->>> It was my nagging to make it happen by persistently proposing a non-universal
->>> solutionsome years ago until one of the maintainers had mercy to write a general
->>> solution. So I could switch my driver to simply use the serdev API. It was for a GPS
->>> client device but not a tty side driver.
->>>
->>> I think if you look up the first patches for the serdev interface this should
->>> reveal the original author an he should be able to help.
->>
->> The original author of the serdev driver is Rob Herring, the original
->> author of the
->> SC16IS752 is Jon Ringle, they are already on the CC list, I also added
->> Johan Hovold
->> and the two authors Tomasz Moń and Lech Percza who sent patches to the
->> sc16is7xx.c
->> driver in this year.
->>
->> Hopefully they can guide us here.
-> I think what needs to happen is of_serdev_register_devices() needs to
-> be passed the port index which can then be used to get the child with
-> a matching address/index.
->
-> There's not any DT binding that defines how this looks. It could be
-> either the slave devices are direct child nodes like you have or each
-> serial port should have a child node for the port and the grandchild
-> nodes are the slave device. I'd suppose it is possible to have
-> multiple devices muxed to a single port (that's what the comment is
-> about and handling muxed devices would require more work in serdev).
-> That binding would end up looking just like the former style and the
-> serdev core could have a hard time figuring out whether it is multiple
-> ports or multiple mux settings. I suppose we would be able to
-> distinguish that with the presence of mux-control binding or not. In
-> any case, all that needs to be considered before we change serdev.
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220506
+riscv                randconfig-c006-20220506
+mips                 randconfig-c004-20220506
+arm                  randconfig-c002-20220506
+s390                 randconfig-c005-20220506
+powerpc              randconfig-c003-20220507
+riscv                randconfig-c006-20220507
+mips                 randconfig-c004-20220507
+arm                  randconfig-c002-20220507
+powerpc              randconfig-c003-20220508
+riscv                randconfig-c006-20220508
+mips                 randconfig-c004-20220508
+arm                  randconfig-c002-20220508
+arm                           omap1_defconfig
+arm                          moxart_defconfig
+arm                          collie_defconfig
+mips                          ath25_defconfig
+arm                         socfpga_defconfig
+mips                         tb0219_defconfig
+powerpc                     mpc5200_defconfig
+arm                       cns3420vb_defconfig
+mips                      pic32mzda_defconfig
+i386                             allyesconfig
+powerpc                     ksi8560_defconfig
+mips                           rs90_defconfig
+powerpc                   microwatt_defconfig
+powerpc                     skiroot_defconfig
+arm                        vexpress_defconfig
+arm                     davinci_all_defconfig
+powerpc                      pmac32_defconfig
+mips                        maltaup_defconfig
+arm                    vt8500_v6_v7_defconfig
+powerpc                 mpc8560_ads_defconfig
+mips                      malta_kvm_defconfig
+hexagon                             defconfig
+mips                       lemote2f_defconfig
+mips                          ath79_defconfig
+arm                            mmp2_defconfig
+arm                            dove_defconfig
+arm                         lpc32xx_defconfig
+arm                          ixp4xx_defconfig
+powerpc                    ge_imp3a_defconfig
+mips                      maltaaprp_defconfig
+mips                   sb1250_swarm_defconfig
+arm                           spitz_defconfig
+mips                     cu1000-neo_defconfig
+arm                        neponset_defconfig
+arm                       aspeed_g4_defconfig
+powerpc                   lite5200b_defconfig
+powerpc                     tqm5200_defconfig
+arm                         s5pv210_defconfig
+arm                       versatile_defconfig
+mips                malta_qemu_32r6_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+i386                 randconfig-a004-20220509
+i386                 randconfig-a006-20220509
+i386                 randconfig-a002-20220509
+i386                 randconfig-a003-20220509
+i386                 randconfig-a001-20220509
+i386                 randconfig-a005-20220509
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220506
+riscv                randconfig-r042-20220506
+hexagon              randconfig-r041-20220506
+hexagon              randconfig-r045-20220508
+riscv                randconfig-r042-20220508
+hexagon              randconfig-r041-20220508
+hexagon              randconfig-r045-20220505
+hexagon              randconfig-r041-20220505
+hexagon              randconfig-r045-20220509
+hexagon              randconfig-r041-20220509
 
-
-I think it seems that the grandchild node scheme should be more in line 
-with the
-current situation, since on further exploration I found these:
-
-/sys/bus/platform/devices/10043000.spi/spi_master/spi0/spi0.0/serial0/serial0-0
-/sys/bus/platform/devices/10043000.spi/spi_master/spi0/spi0.0/serial1/serial1-0
-
-This means that for the SC16IS752 chip there are two serial device buses 
-(one for
-each serial port). The previous experimental results have proved that 
-the current
-driver does not seem to be able to correctly determine the 
-correspondence between
-two child nodes and two serial device buses, and when I removed the 2nd 
-bluetooth
-device (both module hardware and device tree node) and put the clock 
-node alone,
-I got these:
-
-[    1.208848] Bluetooth: HCI UART driver ver 2.3
-[    1.213302] Bluetooth: HCI UART protocol H4 registered
-[    1.220201] hci_uart_bcm serial0-0: No reset resource, using default 
-baud rate
-[    1.227717] Bluetooth: HCI UART protocol Broadcom registered
-[    1.240239] hci_uart_bcm: probe of serial1-0 failed with error -16
-
-The device tree at this time looks like this:
-
-&ssi0 {
-     status = "okay";
-
-     num-cs = <2>;
-
-     pinctrl-names = "default";
-     pinctrl-0 = <&pins_ssi0>;
-
-     sc16is752: expander@0 {
-         compatible = "nxp,sc16is752";
-         reg = <0>; /* CE0 */
-
-         spi-rx-bus-width = <1>;
-         spi-tx-bus-width = <1>;
-         spi-max-frequency = <4000000>;
-
-         clocks = <&exclk_sc16is752>;
-
-         interrupt-parent = <&gpb>;
-         interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
-
-         gpio-controller;
-         #gpio-cells = <2>;
-
-         bluetooth {
-          compatible = "brcm,bcm43438-bt";
-          max-speed = <1000000>;
-
-          device-wakeup-gpios = <&gpc 26 GPIO_ACTIVE_HIGH>;
-          reset-gpios = <&gpb 17 GPIO_ACTIVE_LOW>;
-         };
-     };
-};
-
-I guess this is also because the current driver can't correctly 
-determine the
-correspondence between the child node and the two serial device buses:
-
-Both serial device buses think that this child node corresponds to 
-themselves,
-so they both try to register it, but because now ttySC1 (corresponding 
-to the
-second serial device bus) is not connected to any bluetooth module, 
-resulting
-in registration failure.
-
-If there are child nodes to represent each port, the correspondence between
-the slave devices (grandchild node) and the serial device buses (child node)
-will be very clear. But unfortunately, it seems that the current SC16IS752
-driver does not support this form (at least there is no relevant information
-in the "Example" given in nxp,sc16is7xx.txt).
-
-I'm not too sure what kind of modifications need to be made to the SC16IS752
-driver to achieve this, could you please give me some guidance (or 
-examples)?
-
-
-Thanks and best regards!
-
-
->
-> Rob
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
