@@ -2,74 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F57C4332F
-	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 11:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B91C433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 14:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231247AbiEOLCZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 May 2022 07:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        id S237096AbiEOO2I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 May 2022 10:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbiEOLCX (ORCPT
+        with ESMTP id S237330AbiEOO1Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 May 2022 07:02:23 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0192625592;
-        Sun, 15 May 2022 04:02:22 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 3BAD292009C; Sun, 15 May 2022 13:02:20 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 2D02192009B;
-        Sun, 15 May 2022 12:02:20 +0100 (BST)
-Date:   Sun, 15 May 2022 12:02:20 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Akira Yokosawa <akiyks@gmail.com>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH 0/3] Documentation: Fix issues with Oxford Semiconductor
- PCIe (Tornado) 950
-In-Reply-To: <f4d40da6-756b-9e75-b867-cc9eedc4b232@gmail.com>
-Message-ID: <alpine.DEB.2.21.2205151152360.10656@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2205131712410.10656@angie.orcam.me.uk> <f4d40da6-756b-9e75-b867-cc9eedc4b232@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Sun, 15 May 2022 10:27:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1A92A277;
+        Sun, 15 May 2022 07:27:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E4FEB80D08;
+        Sun, 15 May 2022 14:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77B9C385B8;
+        Sun, 15 May 2022 14:27:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652624842;
+        bh=jxfW/B8+kAu8FgXHxdJgKY55YrIJ9MHmfV08h5wnndg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ahzaef+u+qCJLBoizgWyYHAbbArgT0kWT65aEnKpH5SZai2LlVhE8ypU+Ei/dYuCj
+         0eFYPPvW+5bYOb2AR/u22TjD0RS5ivy1HOSBekuklNDWBs+zdXV+rXOc4BwnJScsVV
+         Tu2XO7yRApmlD9SF/cdYgnffhkRlDTq4FlidVkEY=
+Date:   Sun, 15 May 2022 16:27:19 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.18-rc7
+Message-ID: <YoENxyxFu4xUQD6b@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 15 May 2022, Akira Yokosawa wrote:
+The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
 
-> >  NB XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2019/dev/Debian) and 
-> > Sphinx 1.8.4 here.
-> 
-> As mentioned in the section titled "PDF and LaTeX builds" in
-> Documentation/doc-guide/sphinx.rst, "make pdfdocs" requires Sphinx 2.4 or
-> later.
+  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
 
- Ack, noted.  Note however that Documentation/Changes says:
+are available in the Git repository at:
 
-Sphinx\ [#f1]_         1.7              sphinx-build --version
-====================== ===============  ========================================
-.. [#f1] Sphinx is needed only to build the Kernel documentation
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
 
-Perhaps the additional requirement could be mentioned in the footnote?
+for you to fetch changes up to 401fb66a355eb0f22096cf26864324f8e63c7d78:
 
-[Also this is a production system and 1.8.4 is the only version available 
-in the distribution it has installed, so I may not be able to upgrade for 
-the foreseeable future anyway.]
+  fsl_lpuart: Don't enable interrupts too early (2022-05-05 23:00:21 +0200)
 
-> You can say "make SPHINXDIRS=<sub dir> htmldocs pdfdocs" to
-> test-build docs under Documentation/<sub dir>/.
-> You might see false warnings of "WARNING: undefined label: ..."
-> which you wouldn't see in full builds, though.
-> 
-> Hope this helps.
+----------------------------------------------------------------
+TTY/Serial driver fixes for 5.18-rc7
 
- Sure, thanks a lot!
+Here are some small tty n_gsm and serial driver fixes for 5.18-rc7 that
+resolve reported problems.  They include:
+	- n_gsm fixes for reported issues
+	- 8250_mtk driver fixes for some platforms
+	- fsl_lpuart driver fix for reported problem.
+	- digicolor driver fix for reported problem.
 
-  Maciej
+All have been in linux-next for a while with no reported problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+AngeloGioacchino Del Regno (3):
+      serial: 8250_mtk: Fix UART_EFR register address
+      serial: 8250_mtk: Make sure to select the right FEATURE_SEL
+      serial: 8250_mtk: Fix register address for XON/XOFF character
+
+Daniel Starke (3):
+      tty: n_gsm: fix buffer over-read in gsm_dlci_data()
+      tty: n_gsm: fix mux activation issues in gsm_config()
+      tty: n_gsm: fix invalid gsmtty_write_room() result
+
+Indan Zupancic (1):
+      fsl_lpuart: Don't enable interrupts too early
+
+Yang Yingliang (1):
+      tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
+
+ drivers/tty/n_gsm.c                  | 20 ++++++++++++--------
+ drivers/tty/serial/8250/8250_mtk.c   | 29 ++++++++++++++++++++---------
+ drivers/tty/serial/digicolor-usart.c |  5 ++---
+ drivers/tty/serial/fsl_lpuart.c      | 18 +++++++++---------
+ 4 files changed, 43 insertions(+), 29 deletions(-)
