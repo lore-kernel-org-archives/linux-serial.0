@@ -2,94 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B91C433FE
-	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 14:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D777C433F5
+	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 15:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237096AbiEOO2I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 May 2022 10:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S237458AbiEOPLk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 15 May 2022 11:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237330AbiEOO1Z (ORCPT
+        with ESMTP id S237451AbiEOPLj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 May 2022 10:27:25 -0400
+        Sun, 15 May 2022 11:11:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1A92A277;
-        Sun, 15 May 2022 07:27:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1905B65EB;
+        Sun, 15 May 2022 08:11:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E4FEB80D08;
-        Sun, 15 May 2022 14:27:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77B9C385B8;
-        Sun, 15 May 2022 14:27:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652624842;
-        bh=jxfW/B8+kAu8FgXHxdJgKY55YrIJ9MHmfV08h5wnndg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ahzaef+u+qCJLBoizgWyYHAbbArgT0kWT65aEnKpH5SZai2LlVhE8ypU+Ei/dYuCj
-         0eFYPPvW+5bYOb2AR/u22TjD0RS5ivy1HOSBekuklNDWBs+zdXV+rXOc4BwnJScsVV
-         Tu2XO7yRApmlD9SF/cdYgnffhkRlDTq4FlidVkEY=
-Date:   Sun, 15 May 2022 16:27:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC2E5B80D18;
+        Sun, 15 May 2022 15:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A27BC34117;
+        Sun, 15 May 2022 15:11:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652627460;
+        bh=vLtALtIMRKySMYk03NaiVsQOMocsPfeYFfj22XmCJ24=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=vD7vVqvgYoDOhjrlKw35s2NGuJD5cTzIjzUPEVmBctEtPYI1aUJEDktR9qvqRFalY
+         E8RLQ0I67gwJ1q8RzD9ZGCofBaIHq63Eb9LysuhvmLg/6j7NgaB4cRoe2s7mE1f3Bo
+         KWftYSM+FQDrzBAA/TGyWYz8oNrE6xu0iA81AbFHj5wLzBUPMrDoKXFqXQMt5Umw/R
+         U0nYEqFCWgyGA+TI44DYvbGk+i7i2hfFaUltjd3kloA4Y7GLbelbw8Vf16cUsu5CLb
+         5TmD5bQXD5lDwK96JpdG2OEOznQGDl+5QVdRVp6Ql+0UmCq5QOqnt421QvWWsDYgkv
+         y8MnfScUoisug==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8439DF03934;
+        Sun, 15 May 2022 15:11:00 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.18-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YoENxyxFu4xUQD6b@kroah.com>
+References: <YoENxyxFu4xUQD6b@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YoENxyxFu4xUQD6b@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
+X-PR-Tracked-Commit-Id: 401fb66a355eb0f22096cf26864324f8e63c7d78
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 6811a466d27ba79e6c31c0aecc74feab0472df36
+Message-Id: <165262746053.2129.3527105823905607193.pr-tracker-bot@kernel.org>
+Date:   Sun, 15 May 2022 15:11:00 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.18-rc7
-Message-ID: <YoENxyxFu4xUQD6b@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
+The pull request you sent on Sun, 15 May 2022 16:27:19 +0200:
 
-  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/6811a466d27ba79e6c31c0aecc74feab0472df36
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
+Thank you!
 
-for you to fetch changes up to 401fb66a355eb0f22096cf26864324f8e63c7d78:
-
-  fsl_lpuart: Don't enable interrupts too early (2022-05-05 23:00:21 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 5.18-rc7
-
-Here are some small tty n_gsm and serial driver fixes for 5.18-rc7 that
-resolve reported problems.  They include:
-	- n_gsm fixes for reported issues
-	- 8250_mtk driver fixes for some platforms
-	- fsl_lpuart driver fix for reported problem.
-	- digicolor driver fix for reported problem.
-
-All have been in linux-next for a while with no reported problems.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-AngeloGioacchino Del Regno (3):
-      serial: 8250_mtk: Fix UART_EFR register address
-      serial: 8250_mtk: Make sure to select the right FEATURE_SEL
-      serial: 8250_mtk: Fix register address for XON/XOFF character
-
-Daniel Starke (3):
-      tty: n_gsm: fix buffer over-read in gsm_dlci_data()
-      tty: n_gsm: fix mux activation issues in gsm_config()
-      tty: n_gsm: fix invalid gsmtty_write_room() result
-
-Indan Zupancic (1):
-      fsl_lpuart: Don't enable interrupts too early
-
-Yang Yingliang (1):
-      tty/serial: digicolor: fix possible null-ptr-deref in digicolor_uart_probe()
-
- drivers/tty/n_gsm.c                  | 20 ++++++++++++--------
- drivers/tty/serial/8250/8250_mtk.c   | 29 ++++++++++++++++++++---------
- drivers/tty/serial/digicolor-usart.c |  5 ++---
- drivers/tty/serial/fsl_lpuart.c      | 18 +++++++++---------
- 4 files changed, 43 insertions(+), 29 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
