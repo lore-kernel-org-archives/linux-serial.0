@@ -2,71 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D777C433F5
-	for <linux-serial@archiver.kernel.org>; Sun, 15 May 2022 15:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A29FC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 16 May 2022 09:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237458AbiEOPLk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 15 May 2022 11:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
+        id S229485AbiEPJUt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 May 2022 05:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237451AbiEOPLj (ORCPT
+        with ESMTP id S234385AbiEPJUf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 15 May 2022 11:11:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1905B65EB;
-        Sun, 15 May 2022 08:11:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC2E5B80D18;
-        Sun, 15 May 2022 15:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A27BC34117;
-        Sun, 15 May 2022 15:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652627460;
-        bh=vLtALtIMRKySMYk03NaiVsQOMocsPfeYFfj22XmCJ24=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=vD7vVqvgYoDOhjrlKw35s2NGuJD5cTzIjzUPEVmBctEtPYI1aUJEDktR9qvqRFalY
-         E8RLQ0I67gwJ1q8RzD9ZGCofBaIHq63Eb9LysuhvmLg/6j7NgaB4cRoe2s7mE1f3Bo
-         KWftYSM+FQDrzBAA/TGyWYz8oNrE6xu0iA81AbFHj5wLzBUPMrDoKXFqXQMt5Umw/R
-         U0nYEqFCWgyGA+TI44DYvbGk+i7i2hfFaUltjd3kloA4Y7GLbelbw8Vf16cUsu5CLb
-         5TmD5bQXD5lDwK96JpdG2OEOznQGDl+5QVdRVp6Ql+0UmCq5QOqnt421QvWWsDYgkv
-         y8MnfScUoisug==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8439DF03934;
-        Sun, 15 May 2022 15:11:00 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.18-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YoENxyxFu4xUQD6b@kroah.com>
-References: <YoENxyxFu4xUQD6b@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YoENxyxFu4xUQD6b@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
-X-PR-Tracked-Commit-Id: 401fb66a355eb0f22096cf26864324f8e63c7d78
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6811a466d27ba79e6c31c0aecc74feab0472df36
-Message-Id: <165262746053.2129.3527105823905607193.pr-tracker-bot@kernel.org>
-Date:   Sun, 15 May 2022 15:11:00 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Mon, 16 May 2022 05:20:35 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF5526102;
+        Mon, 16 May 2022 02:20:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652692829; x=1684228829;
+  h=from:to:cc:subject:date:message-id;
+  bh=f+gPMpnzEuE1lo/LHuKc1FpoHI7Zthw1RbS6wbpsxzw=;
+  b=gRHMRINTY3zZdy0ADzNnvge4WuH8+VIi9pSuC46WtISUdK51uOG9QvY+
+   yaSAMS9Cj8p/cB6id8pHmv7dhkIJYV8SCNFxLVtnugIWYZn3HfU5gAwtN
+   sJV6ZvQPPyjrp6p9JObM8hlcC1mWV5zaKCeCXhICGyTJa7ASqTekKzitB
+   c=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 16 May 2022 02:20:28 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 16 May 2022 02:20:27 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 16 May 2022 14:50:14 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id D4B3E3E54; Mon, 16 May 2022 14:50:13 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V4] serial: core: Do stop_rx in suspend path for console if console_suspend is disabled
+Date:   Mon, 16 May 2022 14:50:10 +0530
+Message-Id: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sun, 15 May 2022 16:27:19 +0200:
+For the case of console_suspend disabled, if back to back suspend/resume
+test is executed, at the end of test, sometimes console would appear to
+be frozen not responding to input. This would happen because, during
+resume, rx transactions can come in before system is ready, malfunction
+of rx happens in turn resulting in console appearing to be stuck.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc7
+Do a stop_rx in suspend sequence to prevent this.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6811a466d27ba79e6c31c0aecc74feab0472df36
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+v4: moved the change to serial core to apply for all drivers
+v3: swapped the order of conditions to be more human readable
+v2: restricted patch to contain only stop_rx in suspend sequence
+v1: intial patch contained 2 additional unrelated changes in vicinity
+---
+ drivers/tty/serial/serial_core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 82a1770..9a85b41 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+ 	}
+ 	put_device(tty_dev);
+ 
+-	/* Nothing to do if the console is not suspending */
+-	if (!console_suspend_enabled && uart_console(uport))
++	/*
++	 * Nothing to do if the console is not suspending
++	 * except stop_rx to prevent any asynchronous data
++	 * over RX line. Re-start_rx, when required, is
++	 * done by set_termios in resume sequence
++	 */
++	if (!console_suspend_enabled && uart_console(uport)) {
++		uport->ops->stop_rx(uport);
+ 		goto unlock;
++	}
+ 
+ 	uport->suspended = 1;
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
