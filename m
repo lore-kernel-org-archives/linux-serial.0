@@ -2,104 +2,163 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00496C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 16 May 2022 09:26:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9CAC433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 16 May 2022 10:38:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242234AbiEPJ0l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 May 2022 05:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
+        id S242602AbiEPKiy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 May 2022 06:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236591AbiEPJ0A (ORCPT
+        with ESMTP id S231665AbiEPKix (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 May 2022 05:26:00 -0400
+        Mon, 16 May 2022 06:38:53 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54236D6C;
-        Mon, 16 May 2022 02:25:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB7D237DC;
+        Mon, 16 May 2022 03:38:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652693159; x=1684229159;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=j32zvz7zIgRB3Uec9x5LBXnza08b8JB8Wqu3W8uAuSo=;
-  b=KGy0uWp6GZA3KzJfxGkzBLMN9Vkq4Du8+/3BPjH+tA8vB5CZnnrho2GQ
-   EeLingwAbPgLaHrNk4QdKTgs7UFzumjQAnseGnoaQTKQl9LHu0J+UEuJf
-   9bmkIL+4j8uqu/w/3/exi5H5jnuPnmzn4pRR+LXoIB1q/UnESsWtX2Hpn
-   4=;
+  t=1652697532; x=1684233532;
+  h=from:to:cc:subject:date:message-id;
+  bh=uv3hpvVLaKZAIJnN9FauPkILRYjjAJhkGFBGer0v5m4=;
+  b=IbOqfwIXGkmuJkqPk6bynuT0XWe8Vo9FsoeX39BsWji+2FOLT7cshGEZ
+   rhYvCPSKtAJjniOrVoyfGqAXQZV177f/ys02BmfNuQUQNuv8xqnejiRL2
+   keRXQ9YdvuREfJ1qa5hCr8hxonDAM5kUO2fw0/R1Lsjl4+BM3cplu1D4N
+   s=;
 Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 16 May 2022 02:25:59 -0700
+  by alexa-out.qualcomm.com with ESMTP; 16 May 2022 03:38:52 -0700
 X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 02:25:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 16 May 2022 02:25:58 -0700
-Received: from [10.216.5.3] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 16 May
- 2022 02:25:55 -0700
-Message-ID: <0eedc244-5c8a-c734-8bba-09a66d050a4e@quicinc.com>
-Date:   Mon, 16 May 2022 14:55:50 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] serial: core: Do stop_rx in suspend path for console if
- console_suspend is disabled
-Content-Language: en-CA
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>
-References: <1651484835-25189-1-git-send-email-quic_vnivarth@quicinc.com>
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 16 May 2022 03:38:50 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 16 May 2022 16:08:34 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id D1B523E6D; Mon, 16 May 2022 16:08:32 +0530 (+0530)
 From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <1651484835-25189-1-git-send-email-quic_vnivarth@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org, quic_c_skakit@quicinc.com,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V2] tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate.
+Date:   Mon, 16 May 2022 16:08:30 +0530
+Message-Id: <1652697510-30543-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch will be dropped.
+Replace the UART frequency table 'root_freq[]' with logic around
+clk_round_rate() so that SoC details like the available clk frequencies
+can change and this driver still works. This reduces tight coupling
+between this UART driver and the SoC clk driver because we no longer
+have to update the 'root_freq[]' array for new SoCs. Instead the driver
+determines the available frequencies at runtime.
 
-Uploaded this change as v4 of an earlier patch.
-Apologies for trouble.
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+v2: loops through clk dividers to zero-in quickly
+v1: intial patch looped through available clk frequencies
+---
+ drivers/tty/serial/qcom_geni_serial.c | 56 ++++++++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 20 deletions(-)
 
-On 5/2/2022 3:17 PM, Vijaya Krishna Nivarthi wrote:
-> For the case of console_suspend disabled, if back to back suspend/resume
-> test is executed, at the end of test, sometimes console would appear to
-> be frozen not responding to input. This would happen because, during
-> resume, rx transactions can come in before system is ready, malfunction
-> of rx happens in turn resulting in console appearing to be stuck.
->
-> Do a stop_rx in suspend sequence to prevent this.
->
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
->   drivers/tty/serial/serial_core.c | 11 +++++++++--
->   1 file changed, 9 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 82a1770..e8c6875 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
->   	}
->   	put_device(tty_dev);
->   
-> -	/* Nothing to do if the console is not suspending */
-> -	if (!console_suspend_enabled && uart_console(uport))
-> +	/*
-> +	 * Nothing to do if the console is not suspending
-> +	 * except stop_rx to prevent any asynchronous data
-> +	 * over RX line. Re start_rx, when required, is
-> +	 * done by set_termios in resume sequence
-> +	 */
-> +	if (!console_suspend_enabled && uart_console(uport)) {
-> +		uport->ops->stop_rx(uport);
->   		goto unlock;
-> +	}
->   
->   	uport->suspended = 1;
->   
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f496102..4733a23 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -149,12 +149,6 @@ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *port);
+ static void qcom_geni_serial_stop_rx(struct uart_port *uport);
+ static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop);
+ 
+-static const unsigned long root_freq[] = {7372800, 14745600, 19200000, 29491200,
+-					32000000, 48000000, 51200000, 64000000,
+-					80000000, 96000000, 100000000,
+-					102400000, 112000000, 120000000,
+-					128000000};
+-
+ #define to_dev_port(ptr, member) \
+ 		container_of(ptr, struct qcom_geni_serial_port, member)
+ 
+@@ -946,25 +940,43 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_cfg(unsigned long clk_freq)
+-{
+-	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(root_freq); i++) {
+-		if (!(root_freq[i] % clk_freq))
+-			return root_freq[i];
+-	}
+-	return 0;
+-}
+-
+-static unsigned long get_clk_div_rate(unsigned int baud,
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+ 			unsigned int sampling_rate, unsigned int *clk_div)
+ {
+ 	unsigned long ser_clk;
+ 	unsigned long desired_clk;
++	unsigned long freq, prev;
++	unsigned long div, maxdiv;
++	int64_t mult;
+ 
+ 	desired_clk = baud * sampling_rate;
+-	ser_clk = get_clk_cfg(desired_clk);
++	if (!desired_clk) {
++		pr_err("%s: Invalid frequency\n", __func__);
++		return 0;
++	}
++
++	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
++	prev = 0;
++
++	for (div = 1; div <= maxdiv; div++) {
++		mult = div * desired_clk;
++		if (mult > ULONG_MAX)
++			break;
++
++		freq = clk_round_rate(clk, (unsigned long)mult);
++		if (!(freq % desired_clk)) {
++			ser_clk = freq;
++			break;
++		}
++
++		if (!prev)
++			ser_clk = freq;
++		else if (prev == freq)
++			break;
++
++		prev = freq;
++	}
++
+ 	if (!ser_clk) {
+ 		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+ 								__func__, baud);
+@@ -972,6 +984,9 @@ static unsigned long get_clk_div_rate(unsigned int baud,
+ 	}
+ 
+ 	*clk_div = ser_clk / desired_clk;
++	if (!(*clk_div))
++		*clk_div = 1;
++
+ 	return ser_clk;
+ }
+ 
+@@ -1003,7 +1018,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+-	clk_rate = get_clk_div_rate(baud, sampling_rate, &clk_div);
++	clk_rate = get_clk_div_rate(port->se.clk, baud,
++		sampling_rate, &clk_div);
+ 	if (!clk_rate)
+ 		goto out_restart_rx;
+ 
+-- 
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
