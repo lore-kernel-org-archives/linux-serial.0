@@ -2,116 +2,210 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48315C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 16 May 2022 13:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA207C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 16 May 2022 13:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242777AbiEPNB7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 May 2022 09:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60330 "EHLO
+        id S238882AbiEPNsS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 16 May 2022 09:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235154AbiEPNB5 (ORCPT
+        with ESMTP id S237525AbiEPNsR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 May 2022 09:01:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594DB39B8A
-        for <linux-serial@vger.kernel.org>; Mon, 16 May 2022 06:01:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 16 May 2022 09:48:17 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34883914C;
+        Mon, 16 May 2022 06:48:15 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CEB75CE167C
-        for <linux-serial@vger.kernel.org>; Mon, 16 May 2022 13:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A3FC3411A
-        for <linux-serial@vger.kernel.org>; Mon, 16 May 2022 13:01:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652706113;
-        bh=dt2q0BAubBNFIivPTcKqyS5+yjvrePptpIbMFFX4X4o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NoM3vXpaJNnJaPy86isXWOiYtGOavhw0R7j9a324NJdKhZ1CZNRJLDk+CJRb/tBz6
-         CM9Yb5DNRqshehz3Yglj0bTWEbSZVnOwltzhQ33bEDtf7UTWNJ+b82eXDLyZfwUTWi
-         ARunBFWQOxDSLZ6sC9eLeuG1TAztBqGkMlTOvzmlWJy9Ew6VAVd+RSkZv6I4h413LI
-         zB2dUzqzYlajex56J8gaoeMnyOeuSBmdRoYnCJprSA+6YG/iTv+yPzhsHX7mpYoL4R
-         J/XEhTN1Q0Ut8Au8g6O/vCUkQz9iD6z4uSj+f0uupwfn/7NvQQAVGz0RP4acLXeybk
-         TNoZsy+Hz55PQ==
-Received: by mail-wm1-f45.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso10889414wma.0
-        for <linux-serial@vger.kernel.org>; Mon, 16 May 2022 06:01:53 -0700 (PDT)
-X-Gm-Message-State: AOAM533NYJm/45m6LVE61zKOxEbLKkWwXXOBsHHOiYhtBWHb1obVGPOV
-        RAAi01rdCDFCwjzH+dude2R9bXkYNI8ythN0u/E=
-X-Google-Smtp-Source: ABdhPJxgRscm3U4PWITja0eAGPvhfZLXR7h/SdLHeitzxZF1wsquht7lO9Gdee/deeKZWNjRRyhbj60z0qsCxyts/HM=
-X-Received: by 2002:a7b:c8c3:0:b0:394:547c:e5af with SMTP id
- f3-20020a7bc8c3000000b00394547ce5afmr27320317wml.202.1652706111351; Mon, 16
- May 2022 06:01:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com>
-In-Reply-To: <035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com>
-From:   Ricardo Ribalda Delgado <ribalda@kernel.org>
-Date:   Mon, 16 May 2022 15:01:35 +0200
-X-Gmail-Original-Message-ID: <CAPybu_0s86DENGRmcrhtsCttpmofGV=qsMeXFcs6=FS9dKVgew@mail.gmail.com>
-Message-ID: <CAPybu_0s86DENGRmcrhtsCttpmofGV=qsMeXFcs6=FS9dKVgew@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L20vB6skwz4xZ5;
+        Mon, 16 May 2022 23:48:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1652708890;
+        bh=IoEgFN1b2dRBNPBgpQ3TrV8TAD3LrZl3dnKWhxyBcE8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=eOCT8tTgO0HB3LTSAxu5VPZmIDCja3jmYMxo19810CBMQQW4VUwng4Vi307xbkQp3
+         NtGdL+eJoxbZnFWifwb7kCOChKLsaCuGHJ7kenALzxiy/5D+lDIzS/Pa9H71ujoCuJ
+         1PcimRASMi9dPMp1ajYEAnJJ845+xdMAWXVLExUxp7rHLl+PjV+9dDRmB7YTQb3gCn
+         dg31DcWS+4zmI+yfmKkMWaecSijwxwHugdByRa5Px62h2UGh7tUSMCsI1YSl6uu9u9
+         OL7ZW1+kKqSCaifOCHd32fjcMBnXMDsj8J86SFvZdwAx4giXzsNaNy7F1zFwFwAeyT
+         iQLit7nUMYGng==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Mark Brown <broonie@kernel.org>,
+        chris.packham@alliedtelesis.co.nz,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>
+Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
+In-Reply-To: <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
+References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
+ <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
+Date:   Mon, 16 May 2022 23:48:05 +1000
+Message-ID: <877d6l7fmy.fsf@mpe.ellerman.id.au>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 13, 2022 at 3:47 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
-> within RS485 operation. The driver checks if they have the same value
-> which is not possible to realize with the hardware. The check is taken
-> regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
-> check fails, which creates problems.
->
-> This check makes it unnecessarily complicated to turn RS485 mode off as
-> simple zeroed serial_rs485 struct will trigger that equal values check.
-> In addition, the driver itself memsets its rs485 structure to zero when
-> RS485 is disabled but if userspace would try to make an TIOCSRS485
-> ioctl() call with the very same struct, it would end up failing with
-> -EINVAL which doesn't make much sense.
->
-> Resolve the problem by moving the check inside SER_RS485_ENABLED block.
->
-> Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid conf=
-iguration")
-> Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-Reviewed-by: Ricardo Ribalda <ribalda@chromium.org>
->
-> ---
->  drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8=
-250/8250_fintek.c
-> index 251f0018ae8c..dba5950b8d0e 100644
-> --- a/drivers/tty/serial/8250/8250_fintek.c
-> +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_por=
-t *port,
->         if (!pdata)
->                 return -EINVAL;
->
-> -       /* Hardware do not support same RTS level on send and receive */
-> -       if (!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
-> -                       !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-> -               return -EINVAL;
->
->         if (rs485->flags & SER_RS485_ENABLED) {
-> +               /* Hardware do not support same RTS level on send and rec=
-eive */
-> +               if (!(rs485->flags & SER_RS485_RTS_ON_SEND) =3D=3D
-> +                   !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-> +                       return -EINVAL;
->                 memset(rs485->padding, 0, sizeof(rs485->padding));
->                 config |=3D RS485_URA;
->         } else {
->
-> --
-> tg: (4419da5d5d4b..) fix/8250-fintek-rts-check (depends on: tty-next)
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> We may convert the GPT driver to use fwnode API for the sake
+> of consistency of the used APIs inside the driver.
+
+I'm not sure about this one.
+
+It's more consistent to use fwnode in this driver, but it's very
+inconsistent with the rest of the powerpc code. We have basically no
+uses of the fwnode APIs at the moment.
+
+It seems like a pretty straight-forward conversion, but there could
+easily be a bug in there, I don't have any way to test it. Do you?
+
+cheers
+
+
+
+> diff --git a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> index ae47fdcc8a96..58c3651034bd 100644
+> --- a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> +++ b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> @@ -53,10 +53,9 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/list.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+>  #include <linux/mutex.h>
+> -#include <linux/of.h>
+> -#include <linux/of_platform.h>
+> -#include <linux/of_gpio.h>
+>  #include <linux/kernel.h>
+>  #include <linux/property.h>
+>  #include <linux/slab.h>
+> @@ -64,7 +63,7 @@
+>  #include <linux/watchdog.h>
+>  #include <linux/miscdevice.h>
+>  #include <linux/uaccess.h>
+> -#include <linux/module.h>
+> +
+>  #include <asm/div64.h>
+>  #include <asm/mpc52xx.h>
+>  
+> @@ -235,18 +234,17 @@ static const struct irq_domain_ops mpc52xx_gpt_irq_ops = {
+>  	.xlate = mpc52xx_gpt_irq_xlate,
+>  };
+>  
+> -static void
+> -mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
+> +static void mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt)
+>  {
+>  	int cascade_virq;
+>  	unsigned long flags;
+>  	u32 mode;
+>  
+> -	cascade_virq = irq_of_parse_and_map(node, 0);
+> -	if (!cascade_virq)
+> +	cascade_virq = platform_get_irq(to_platform_device(gpt->dev), 0);
+> +	if (cascade_virq < 0)
+>  		return;
+>  
+> -	gpt->irqhost = irq_domain_add_linear(node, 1, &mpc52xx_gpt_irq_ops, gpt);
+> +	gpt->irqhost = irq_domain_create_linear(dev_fwnode(gpt->dev), 1, &mpc52xx_gpt_irq_ops, gpt);
+>  	if (!gpt->irqhost) {
+>  		dev_err(gpt->dev, "irq_domain_add_linear() failed\n");
+>  		return;
+> @@ -670,8 +668,7 @@ static int mpc52xx_gpt_wdt_init(void)
+>  	return err;
+>  }
+>  
+> -static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+> -				 const u32 *period)
+> +static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+>  {
+>  	u64 real_timeout;
+>  
+> @@ -679,14 +676,14 @@ static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+>  	mpc52xx_gpt_wdt = gpt;
+>  
+>  	/* configure the wdt if the device tree contained a timeout */
+> -	if (!period || *period == 0)
+> +	if (period == 0)
+>  		return 0;
+>  
+> -	real_timeout = (u64) *period * 1000000000ULL;
+> +	real_timeout = (u64)period * 1000000000ULL;
+>  	if (mpc52xx_gpt_do_start(gpt, real_timeout, 0, 1))
+>  		dev_warn(gpt->dev, "starting as wdt failed\n");
+>  	else
+> -		dev_info(gpt->dev, "watchdog set to %us timeout\n", *period);
+> +		dev_info(gpt->dev, "watchdog set to %us timeout\n", period);
+>  	return 0;
+>  }
+>  
+> @@ -697,8 +694,7 @@ static int mpc52xx_gpt_wdt_init(void)
+>  	return 0;
+>  }
+>  
+> -static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+> -					const u32 *period)
+> +static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+>  {
+>  	return 0;
+>  }
+> @@ -726,25 +722,26 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
+>  	dev_set_drvdata(&ofdev->dev, gpt);
+>  
+>  	mpc52xx_gpt_gpio_setup(gpt);
+> -	mpc52xx_gpt_irq_setup(gpt, ofdev->dev.of_node);
+> +	mpc52xx_gpt_irq_setup(gpt);
+>  
+>  	mutex_lock(&mpc52xx_gpt_list_mutex);
+>  	list_add(&gpt->list, &mpc52xx_gpt_list);
+>  	mutex_unlock(&mpc52xx_gpt_list_mutex);
+>  
+>  	/* check if this device could be a watchdog */
+> -	if (of_get_property(ofdev->dev.of_node, "fsl,has-wdt", NULL) ||
+> -	    of_get_property(ofdev->dev.of_node, "has-wdt", NULL)) {
+> -		const u32 *on_boot_wdt;
+> +	if (device_property_present(gpt->dev, "fsl,has-wdt") ||
+> +	    device_property_present(gpt->dev, "has-wdt")) {
+> +		u32 on_boot_wdt = 0;
+> +		int ret;
+>  
+>  		gpt->wdt_mode = MPC52xx_GPT_CAN_WDT;
+> -		on_boot_wdt = of_get_property(ofdev->dev.of_node,
+> -					      "fsl,wdt-on-boot", NULL);
+> -		if (on_boot_wdt) {
+> +		ret = device_property_read_u32(gpt->dev, "fsl,wdt-on-boot", &on_boot_wdt);
+> +		if (ret) {
+> +			dev_info(gpt->dev, "can function as watchdog\n");
+> +		} else {
+>  			dev_info(gpt->dev, "used as watchdog\n");
+>  			gpt->wdt_mode |= MPC52xx_GPT_IS_WDT;
+> -		} else
+> -			dev_info(gpt->dev, "can function as watchdog\n");
+> +		}
+>  		mpc52xx_gpt_wdt_setup(gpt, on_boot_wdt);
+>  	}
+>  
+> -- 
+> 2.35.1
