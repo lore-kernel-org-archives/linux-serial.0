@@ -2,133 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CE0C43219
-	for <linux-serial@archiver.kernel.org>; Tue, 17 May 2022 16:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72833C433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 17 May 2022 17:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242812AbiEQQaS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 May 2022 12:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        id S1351376AbiEQRIt (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 17 May 2022 13:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232072AbiEQQaQ (ORCPT
+        with ESMTP id S1351389AbiEQRIr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 May 2022 12:30:16 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D7227FCB;
-        Tue, 17 May 2022 09:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652805015; x=1684341015;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0NqJ5VwhtJ3tBjditXPJfSf+c2F9/tHzdRAp1qZ01bI=;
-  b=j3AfRc0u6OCgoEwPQjh4bdI+1qJ1h9afmuYsbH6RsFzvEOkr7hoc7J5o
-   LXchL9r5h3bxJIrV6QosV5BwOqn6TZZlg9nM8veaGnrzGUeGsNzA4FWzM
-   HkYg/B+aEdQ8ZkO/MUdJqUV4GiRarnhm/uDSPW/YXPny2ZYSr7NUyi+oB
-   aVify6KIhjZbva7ea+b2o37ilAq9NdOmu9Rr/smq2t/fyinqrzgTo7rzW
-   X1X9W3YRH3bty1uTDFyQzRo58JAFiep9vEiTPJYx60NY1pYBtg/Llc5xs
-   sZFY/lPSTwlwdwk5Hmoux4dlQfFZTDOHuL2dtNASITWI8qKmzhCEwglKN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271364116"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271364116"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:30:15 -0700
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="626561602"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:30:09 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nr05E-0008C4-Vy;
-        Tue, 17 May 2022 19:30:04 +0300
-Date:   Tue, 17 May 2022 19:30:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mark Brown <broonie@kernel.org>,
-        chris.packham@alliedtelesis.co.nz,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
-Message-ID: <YoPNjPp3LMF2+qKS@smile.fi.intel.com>
-References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
- <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
- <877d6l7fmy.fsf@mpe.ellerman.id.au>
- <YoJaGGwfoSYhaT13@smile.fi.intel.com>
- <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
- <874k1p6oa7.fsf@mpe.ellerman.id.au>
+        Tue, 17 May 2022 13:08:47 -0400
+X-Greylist: delayed 2398 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 10:08:39 PDT
+Received: from mail.neweas.com (mail.neweas.com [162.19.155.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DA6506C8
+        for <linux-serial@vger.kernel.org>; Tue, 17 May 2022 10:08:38 -0700 (PDT)
+Received: by mail.neweas.com (Postfix, from userid 1002)
+        id EFCD822D3B; Tue, 17 May 2022 15:50:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=neweas.com; s=mail;
+        t=1652802658; bh=qQhd+6rcOH+OhrNQ6A9OWLCE/79cwvyTtb6LUe1aYuU=;
+        h=Date:From:To:Subject:From;
+        b=Swnfn6BECDF/K1emPx7M4Ly2ExBDQ0BB2G3meln7BG4EduLTQiyhqNSElLNqpQaTD
+         vbm1AJ9DfR8NHPyPsCxxff4wa9XuuUY3jUamQvVYetFA0Ibfnj2uvV08BrZ89B3owz
+         lfEhwaYeOr0Fxx7U6darmGgyf80lkGuNGL+YLypfiAK6QOSRiBbfSDlSCToEVR6iAu
+         tlcaLi7JBFc2LP8uPKPjeUDuE5kfHoj5C8T49TlTFf+8rL4vHdt00DKhDhcHixssET
+         7ZkYxLTOUd244ZJGEi8+Lod6qz7b8lyzcgo5LFSeH1W4oEyUXyXD+JNIBPWP88fFNo
+         EQIWNTikOetNQ==
+Received: by mail.neweas.com for <linux-serial@vger.kernel.org>; Tue, 17 May 2022 15:50:50 GMT
+Message-ID: <20220517141500-0.1.f.10k4.0.3b6nmhuoi9@neweas.com>
+Date:   Tue, 17 May 2022 15:50:50 GMT
+From:   "Luca Gauthier" <luca.gauthier@neweas.com>
+To:     <linux-serial@vger.kernel.org>
+Subject: New collaboration
+X-Mailer: mail.neweas.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874k1p6oa7.fsf@mpe.ellerman.id.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:38:56AM +1000, Michael Ellerman wrote:
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> > On Mon, May 16, 2022 at 05:05:12PM +0300, Andy Shevchenko wrote:
-> >> On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
-> >> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> >> > > We may convert the GPT driver to use fwnode API for the sake
-> >> > > of consistency of the used APIs inside the driver.
-> >> > 
-> >> > I'm not sure about this one.
-> >> > 
-> >> > It's more consistent to use fwnode in this driver, but it's very
-> >> > inconsistent with the rest of the powerpc code. We have basically no
-> >> > uses of the fwnode APIs at the moment.
-> >> 
-> >> Fair point!
-> >> 
-> >> > It seems like a pretty straight-forward conversion, but there could
-> >> > easily be a bug in there, I don't have any way to test it. Do you?
-> >> 
-> >> Nope, only compile testing. The important part of this series is to
-> >> clean up of_node from GPIO library, so since here it's a user of
-> >> it I want to do that. This patch is just ad-hoc conversion that I
-> >> noticed is possible. But there is no any requirement to do so.
-> >> 
-> >> Lemme drop this from v3.
-> >
-> > I just realize that there is no point to send a v3. You can just apply
-> > first 3 patches. Or is your comment against entire series?
-> 
-> No, my comment is just about this patch.
-> 
-> I don't mind converting to new APIs when it's blocking some other
-> cleanup. But given the age of this code I think it's probably better to
-> just leave the rest of it as-is, unless someone volunteers to test it.
-> 
-> So yeah I'll just take patches 1-3 of this v2 series, no need to resend.
+Hello,
 
-Thanks!
+are you looking for more business clients?
 
-One note though, the fwnode_for_each_parent_node() is not yet available in
-upstream, but will be after v5.19-rc1. It means the patch 3 can't be applied
-without that. That's why LKP complained on patch 4 in this series.
+We would like to start working with you as a partner in acquiring or exch=
+anging leads, which directly translates into mutual benefits in the form =
+of an increased client portfolio.
 
-That said, the easiest way is to postpone it till v5.19-rc1 is out.
+We work in the sector of internet marketing and as one of the first in Eu=
+rope SEO Agencies we=E2=80=99ve introduced the SEO 360 service which allo=
+ws your clients to gain the access to original SEO consultations.
 
--- 
-With Best Regards,
-Andy Shevchenko
+By choosing to work with us you receive support in achieving your busines=
+s goals, and help in handling Digital Marketing for your clients.
 
+We support over 237 partner companies. We have one of the biggest executi=
+ve departments in Europe at our disposal, we=E2=80=99ve prepared over 200=
+0 campaigns in Europe and 200 in the USA and Canada.
 
+Are you interested in the details of our partnership programme?
+
+Yours sincerely,
+Luca Gauthier
