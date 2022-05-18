@@ -2,107 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB90C433F5
-	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 12:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37635C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 12:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236475AbiERMZA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 May 2022 08:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37036 "EHLO
+        id S236479AbiERMZQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 May 2022 08:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236399AbiERMY7 (ORCPT
+        with ESMTP id S236399AbiERMZP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 May 2022 08:24:59 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0BFB41E8
-        for <linux-serial@vger.kernel.org>; Wed, 18 May 2022 05:24:55 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id s12-20020a0568301e0c00b00605f30530c2so1188310otr.9
-        for <linux-serial@vger.kernel.org>; Wed, 18 May 2022 05:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sb7bg/s9/N5CWFYTGhhWzwAaU+Kt6rFIVSTuHr1wPxg=;
-        b=ciAanlZP7Dm2swICrwVKobgfunmFm+V99Lej7bRS2lrIQYxaDVlbraYorj0Yx7e81a
-         utKHIkhDWguI7C5klBnFYkmZDfin2+M9LjytKVtngsNZd+Oh5887J4slQSS/dJMOSP4j
-         KZnEOKrjPA4EPIz0nRYvt+NR+xfd1W7ho6/tZG6cSnp/uZjcbGsaITwvlbLe6herW6w8
-         dwWulwRlZYfk/TZx8BaqhFwSglZWoM+p6A3Uurtd9r1ui+kLR7L7sSXFNem0Hwx7H7QC
-         UzsYLc5QS78DDTfhxpkl81s29YyKqx26GO8gkZG1lXmXw/WqVT3h2UdWzv41zRpaL/PS
-         FNjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sb7bg/s9/N5CWFYTGhhWzwAaU+Kt6rFIVSTuHr1wPxg=;
-        b=r82a8/VMVJU5tDkANAsBcGfPQZTP6Li82lhbI4iNtH8VtEFDeRmh9NEmnQE73DJB9U
-         pE2hzxM4nxzZVWVfmxdal5Ipl876Zv9RygEtONBBclFXt4mfXxjlIvZFBfgAKizmijLR
-         Tjhvr+4ntAm7grmcFQFLkULIgLKCWu4HDbkrEIBRtRyBa6zIDzREaTmEsEgtdwV3j6xi
-         E4/0ifov9za82T/JNBDwuvp3PQXNJZNnP2daMPxYil4Nv7MpI+q7YJCXJ3FWq9cTZAoh
-         S2Z4DrgA01PqV+5AV/3Ax3OuznTmfdM15+QPLA6lvZkj2pqrBJB95I/bG9twqDn1gZf+
-         lSIQ==
-X-Gm-Message-State: AOAM533c6rZ9AJbFm1mOYd+SJ7opkI3yNGEjz91L1aM9U7qCcUlCp/6V
-        QrOIRmDNtCHIt6h8N4RF069loo+KYgYOvDNgeG3rQYLDrFc=
-X-Google-Smtp-Source: ABdhPJzJ/A7zgOpn2XXpVuQQo9rDwf46W+CZiyG5Y9wCmQ1ApB4zIQnTkGwIOvSNmUUeKDc44kHKaLya2BBBMjDtqJg=
-X-Received: by 2002:a9d:f0a:0:b0:606:1e5e:8bc7 with SMTP id
- 10-20020a9d0f0a000000b006061e5e8bc7mr9911131ott.258.1652876695219; Wed, 18
- May 2022 05:24:55 -0700 (PDT)
+        Wed, 18 May 2022 08:25:15 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DAC518FF24;
+        Wed, 18 May 2022 05:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652876714; x=1684412714;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=S/LRXJejZvAPg3mhWE1mMw8GrU9PbO2g/1at3Bi1V74=;
+  b=SrbF8KMxZXJNqxQjPTWAL0MqiezjrSDO7w7xbVPnKc/T4ebzjvE3Gulu
+   DFWDpnQfYQf0KTmPVAbmU4ROrgpD8yy2rmyVLow++k/iVv2DOy5Ii82/C
+   ig/wJp8mXWUmDGpoluwwI6MG62iXdHe490SukGPG6Jes2xposc+9VpAaI
+   zNiycU7v4ng1Dp+Q6KHJb1ykz2lqC0SzPtcMqkynYC1d2koTq/63HWoYw
+   2WF1qOg8it+ukLxoCjaTmKkW5Dyi66DxVdpiIwGpwvIog45pVoOCPHQAb
+   +Z5ZxgcVM7eKgBLXG4xIJ9eiIsWepiTjug6P572fw0ZbYCm5EQvnT5hNu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271775335"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="271775335"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:25:12 -0700
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="597763855"
+Received: from lgomesba-mobl.ger.corp.intel.com ([10.252.38.97])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:25:09 -0700
+Date:   Wed, 18 May 2022 15:25:07 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/9] serial: uartline: Fix BRKINT clearing
+In-Reply-To: <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
+Message-ID: <3c5532e-c8f1-791d-6c58-ccd1c426432@linux.intel.com>
+References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com> <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com> <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAAfyv36U1A21pOOnrUyZ6tKm087dAbJ5kjpOQj6L8kHYBZGmvg@mail.gmail.com>
- <YoTfou30lNY3tW6l@kroah.com>
-In-Reply-To: <YoTfou30lNY3tW6l@kroah.com>
-From:   Belisko Marek <marek.belisko@gmail.com>
-Date:   Wed, 18 May 2022 14:24:43 +0200
-Message-ID: <CAAfyv35CPtn-WBRPnaEK_PV_XWq0UrZURSsYEtsdAcWFfCW9Ag@mail.gmail.com>
-Subject: Re: custom serial driver node not created
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="8323329-733060916-1652876712=:1539"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 18, 2022 at 1:59 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Wed, May 18, 2022 at 01:41:18PM +0200, Belisko Marek wrote:
-> > Hello,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-733060916-1652876712=:1539
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 18 May 2022, Shubhrajyoti Datta wrote:
+
+> On Tue, May 17, 2022 at 5:58 PM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
 > >
-> > I'm writing serial tty driver (it's SPI/UART converter) and I get
-> > inspired by this driver:
-> > https://github.com/raspberrypi/linux/blob/rpi-5.15.y/drivers/tty/serial/sc16is7xx.c
+> > BRKINT is within c_iflag rather than c_cflag.
+> Nit typo in the subject line.
+
+Indeed, good catch. Even after you pointed it out, it was still hard to 
+spot what was wrong with it.
+
+Thanks.
+
+-- 
+ i.
+
+> > Cc: Sean Anderson <sean.anderson@seco.com>
+> > Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > ---
+> >  drivers/tty/serial/uartlite.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
 > >
-> > I have driver probed and also added port to driver which I see in console:
-> > [ 2616.826105] spi0.0: ttyTX0 at I/O 0x1 (irq = 0, base_baud = 9375)
-> > is a test_driver
+> > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> > index 007db67292a2..880e2afbb97b 100644
+> > --- a/drivers/tty/serial/uartlite.c
+> > +++ b/drivers/tty/serial/uartlite.c
+> > @@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+> >         struct uartlite_data *pdata = port->private_data;
 > >
-> > so I should see it in /dev/ttyTX0 but it seems node is not created.
-> > Udev is running on a platform.
-> > Any ideas what can cause this?
->
-> Without seeing the code itself, it's almost impossible to guess.
->
-> Also note that udev does not create device nodes (hasn't for over a
-> decade).  devtmpfs in the kernel does that, udev just helps with
-> managing the permissions of created nodes if needed.
-OK thanks for clarification.
->
-> And why did you pick the ttyTX name?  That's already reserved for that
-> driver, you should use a new one, right?
-I've should used also others like ttyTEST but result was same.
->
-> And what hardware are you writing this driver for that we don't already
-> have a driver for it?
-I'm writing a driver for the following model: Linux CPU is connected
-with SPI with another CPU (Cortex M3) and this other CPU performs UART
-handling based on data which comes over SPI. I would like to expose
-Cortex M3 UARTS on linux as tty ports so it will act as standar serial
-device.
+> >         /* Set termios to what the hardware supports */
+> > -       termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
+> > +       termios->c_iflag &= ~BRKINT;
+> > +       termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
+> >         termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
+> >         tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
+> >
+> > --
+> > 2.30.2
+> >
+> 
 
-Code can be found here: https://pastebin.com/6qpUw2Jt
-
-
-Thanks,
-
-marek
->
-> thanks,
->
-> greg k-h
+--8323329-733060916-1652876712=:1539--
