@@ -2,124 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B80C4332F
-	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 12:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9936CC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 13:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237470AbiERMsj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 May 2022 08:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
+        id S238421AbiERNzi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 May 2022 09:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237508AbiERMrb (ORCPT
+        with ESMTP id S238443AbiERNz0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 May 2022 08:47:31 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97014ECFD
-        for <linux-serial@vger.kernel.org>; Wed, 18 May 2022 05:47:24 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id q8so2450714oif.13
-        for <linux-serial@vger.kernel.org>; Wed, 18 May 2022 05:47:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s6SEi9Ez+z5VtbUYDDVMLwcEedUg7a3Q6tKfoBAQUSk=;
-        b=gNYs5HdAVPPYYwqnybmrf3yWTYCuOoFzXsy+KN2Ccz9cLlPhZ+cCWkOLPBHXI74Chx
-         MRK/hgceClPRizKswwO5U9ZjRIBR6o1CNPHyDN9ICcv7A9+ZOkw8XUQbcPljIHGfSRj3
-         ZABzxYX83iTxf9+5sXK49xGWf2R0t3NggH1RTi0mo4LoCxg+UokrvEvBXY/d/X7kiJnA
-         Xv7S+GUkzs/XD/wMWSUxtW4wu1QEWJhKSLzD+O0I1JiMFH9bO20W00RCj+3GROF6iBnm
-         iNgB8ZsfNFfUTxcqOctBnjwshuTuJheYguL7NlrnRQ2eYVT8GD2KwPYC9LIfPG8lE1UJ
-         eW4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s6SEi9Ez+z5VtbUYDDVMLwcEedUg7a3Q6tKfoBAQUSk=;
-        b=iBw+kEDj2Igqd8Q8rhwG/dcUTFJiogqrqZ8coJX9b6dekLBfBpTrViO5nM+G+opXax
-         qx2AB82ogCfGkzRemk0hiyFflc+DieLpe1AM1PvHZjyA48ihGXCGk1z0ECuDjRJSVCix
-         vp5zCkFEPuPu/qtZpKQ7op21HBtMCIxfhzusks1oe4lz9sKUb+NHSPj2WoVBA+YxcMOv
-         zL4hOWvkr81mjR9OBtsRmQ61r8y3e8MKjpxtj+xoMIHy0DEoovaJyxbYJRvZvjRsOyGH
-         AJb6qBdD1G1QVOD6wPRxXEf8A0Qev5UsBz2vGpBv6hXjcXY53v4lW2+UCD4Wss5rdglZ
-         VbEQ==
-X-Gm-Message-State: AOAM532recvAmf9NcQ3UUTiuBY9b3dL8aEz2DStoPc7cgjpJs1sU1gZy
-        nO+qUuCBjdnYWudAmwbJOrXGwXTDGAKual7KEHS3H3T4p18=
-X-Google-Smtp-Source: ABdhPJx5YQlr7nNJMphcKYqzq1+EhcehY8fzgrOW+DV96Nl08P1w5bdc5ppiRd9ChP1c1HanS/1YJJXE6qqJ7/MAO0o=
-X-Received: by 2002:a05:6808:e8d:b0:322:4fbe:8c5f with SMTP id
- k13-20020a0568080e8d00b003224fbe8c5fmr18583350oil.284.1652878044025; Wed, 18
- May 2022 05:47:24 -0700 (PDT)
+        Wed, 18 May 2022 09:55:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C837E1C7669;
+        Wed, 18 May 2022 06:55:11 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3Dxj5GTtzhZ19;
+        Wed, 18 May 2022 21:54:33 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 21:55:09 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <geert@linux-m68k.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 -next] serial: cpm_uart: Fix build error without CONFIG_SERIAL_CPM_CONSOLE
+Date:   Wed, 18 May 2022 21:54:52 +0800
+Message-ID: <20220518135452.39480-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-References: <CAAfyv36U1A21pOOnrUyZ6tKm087dAbJ5kjpOQj6L8kHYBZGmvg@mail.gmail.com>
- <YoTfou30lNY3tW6l@kroah.com> <CAAfyv35CPtn-WBRPnaEK_PV_XWq0UrZURSsYEtsdAcWFfCW9Ag@mail.gmail.com>
- <YoTpu6Oxlx0RzZCU@kroah.com>
-In-Reply-To: <YoTpu6Oxlx0RzZCU@kroah.com>
-From:   Belisko Marek <marek.belisko@gmail.com>
-Date:   Wed, 18 May 2022 14:47:12 +0200
-Message-ID: <CAAfyv36tbxZb8V0oppPpFaRhxjNHvgUfOXqeEbZjXUd8otf28w@mail.gmail.com>
-Subject: Re: custom serial driver node not created
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 18, 2022 at 2:42 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Wed, May 18, 2022 at 02:24:43PM +0200, Belisko Marek wrote:
-> > On Wed, May 18, 2022 at 1:59 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, May 18, 2022 at 01:41:18PM +0200, Belisko Marek wrote:
-> > > > Hello,
-> > > >
-> > > > I'm writing serial tty driver (it's SPI/UART converter) and I get
-> > > > inspired by this driver:
-> > > > https://github.com/raspberrypi/linux/blob/rpi-5.15.y/drivers/tty/serial/sc16is7xx.c
-> > > >
-> > > > I have driver probed and also added port to driver which I see in console:
-> > > > [ 2616.826105] spi0.0: ttyTX0 at I/O 0x1 (irq = 0, base_baud = 9375)
-> > > > is a test_driver
-> > > >
-> > > > so I should see it in /dev/ttyTX0 but it seems node is not created.
-> > > > Udev is running on a platform.
-> > > > Any ideas what can cause this?
-> > >
-> > > Without seeing the code itself, it's almost impossible to guess.
-> > >
-> > > Also note that udev does not create device nodes (hasn't for over a
-> > > decade).  devtmpfs in the kernel does that, udev just helps with
-> > > managing the permissions of created nodes if needed.
-> > OK thanks for clarification.
-> > >
-> > > And why did you pick the ttyTX name?  That's already reserved for that
-> > > driver, you should use a new one, right?
-> > I've should used also others like ttyTEST but result was same.
-> > >
-> > > And what hardware are you writing this driver for that we don't already
-> > > have a driver for it?
-> > I'm writing a driver for the following model: Linux CPU is connected
-> > with SPI with another CPU (Cortex M3) and this other CPU performs UART
-> > handling based on data which comes over SPI. I would like to expose
-> > Cortex M3 UARTS on linux as tty ports so it will act as standar serial
-> > device.
-> >
-> > Code can be found here: https://pastebin.com/6qpUw2Jt
->
-> Are you sure that your test_probe() call is really being called?
-Of course I've added tons of debugging to the driver and it is probed.
-As I mentioned in first topic I see this printout:
-[ 2616.826105] spi0.0: ttyTX0 at I/O 0x1 (irq = 0, base_baud = 9375)
-is a test_driver
+drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
+drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
+  if (!udbg_port)
+       ^~~~~~~~~
+       uart_port
 
-which came from uart_report_port() foom serial_core.c
->
+commit d142585bceb3 leave this corner, wrap it with #ifdef block
 
-marek
+Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: merge #ifdef
+---
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index d6d3db9c3b1f..db07d6a5d764 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1247,7 +1247,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 	}
+ 
+ #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
+-#ifdef CONFIG_CONSOLE_POLL
++#if defined(CONFIG_CONSOLE_POLL) && defined(CONFIG_SERIAL_CPM_CONSOLE)
+ 	if (!udbg_port)
+ #endif
+ 		udbg_putc = NULL;
 -- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
+2.17.1
 
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
