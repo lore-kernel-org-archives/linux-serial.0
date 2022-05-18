@@ -2,87 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F380C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 01:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0036AC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 18 May 2022 04:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233249AbiERBL6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 May 2022 21:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S229580AbiERERV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 18 May 2022 00:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbiERBK7 (ORCPT
+        with ESMTP id S229483AbiERERQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 May 2022 21:10:59 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524FC10F7;
-        Tue, 17 May 2022 18:10:43 -0700 (PDT)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L2vtf5pMczCsYC;
-        Wed, 18 May 2022 09:05:46 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 09:10:40 +0800
-Subject: Re: [PATCH -next] serial: cpm_uart: Fix build error without
- CONFIG_SERIAL_CPM_CONSOLE
-To:     Jiri Slaby <jirislaby@kernel.org>, <gregkh@linuxfoundation.org>,
-        <geert@linux-m68k.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220517081355.35456-1-yuehaibing@huawei.com>
- <2612fae5-e972-5c82-c44e-af1fb1d839fd@kernel.org>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <6fd7c506-3ab1-7f58-62fc-d02d41b81034@huawei.com>
-Date:   Wed, 18 May 2022 09:10:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        Wed, 18 May 2022 00:17:16 -0400
+Received: from mail.tkos.co.il (mail.tkos.co.il [84.110.109.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2E02661;
+        Tue, 17 May 2022 21:17:14 -0700 (PDT)
+Received: from tarshish (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.tkos.co.il (Postfix) with ESMTPS id B5A474401D4;
+        Wed, 18 May 2022 07:16:05 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+        s=default; t=1652847365;
+        bh=9RQ9Noiiv587Vg/jTUw5O1TnbrjqBwOFn7otp7MOCi0=;
+        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
+        b=bXuURY9a52Og3+pbv1jjY63EQxht7omaZJX8cTIQV252f47OGAtEA5CvXe1horI+X
+         cmCcnrAWGGSdRTZ16c2XhjicBxxHIVRKFj+nBcVeJuNiLew3LVnGSGkczUbSmpfzqH
+         t41Z+0LElO80K+bHOXB9xH2awU5qNodFcGXBHomw5AFW+De+MrZSydg9Vo1J3Z6nO1
+         LIP2ZzJvnIQL/t4CC5hq+M08hEcbS1ZDP/AUzbcjPigyFBPBS+HFLA0tiBNJqTVoGV
+         CD1cLk0a8kv/li5/nHsZIo/xGb0d6rIC2EKWNMxg1IsQNmGAgZBzz1c/7OeJ54epVq
+         TDCzLAvWEyu3g==
+References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com>
+ <20220517110737.37148-3-ilpo.jarvinen@linux.intel.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/9] serial: digicolor-usart: Don't allow CS5-6
+Date:   Wed, 18 May 2022 07:16:01 +0300
+In-reply-to: <20220517110737.37148-3-ilpo.jarvinen@linux.intel.com>
+Message-ID: <87tu9nqxtk.fsf@tarshish>
 MIME-Version: 1.0
-In-Reply-To: <2612fae5-e972-5c82-c44e-af1fb1d839fd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022/5/17 17:12, Jiri Slaby wrote:
-> On 17. 05. 22, 10:13, YueHaibing wrote:
->> drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
->> drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
->>    if (!udbg_port)
->>         ^~~~~~~~~
->>         uart_port
->>
->> commit d142585bceb3 leave this corner, wrap it with #ifdef block
->>
->> Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> index d6d3db9c3b1f..ec3a8f768555 100644
->> --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> @@ -1248,7 +1248,9 @@ static int cpm_uart_init_port(struct device_node *np,
->>     #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
->>   #ifdef CONFIG_CONSOLE_POLL
->> +#ifdef CONFIG_SERIAL_CPM_CONSOLE
->>       if (!udbg_port)
->> +#endif
->>   #endif
-> 
-> That's ugly, could you merge the two to
->   #if defined(ONE) && defined(TWO)
+Hi Ilpo,
 
-Ok, will do this in v2.
-> instead
-> ?
-> 
->>           udbg_putc = NULL;
->>   #endif
-> 
-> 
+On Tue, May 17 2022, Ilpo J=C3=A4rvinen wrote:
+> Only CS7 and CS8 seem supported but CSIZE is not sanitized to CS8 in
+> the default: block.
+>
+> Set CSIZE correctly so that userspace knows the effective value.
+> Incorrect CSIZE also results in miscalculation of the frame bits in
+> tty_get_char_size() or in its predecessor where the roughly the same
+> code is directly within uart_update_timeout().
+>
+> Cc: Baruch Siach <baruch@tkos.co.il>
+> Fixes: 5930cb3511df (serial: driver for Conexant Digicolor USART)
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+Acked-by: Baruch Siach <baruch@tkos.co.il>
+
+Thanks,
+baruch
+
+> ---
+>  drivers/tty/serial/digicolor-usart.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/di=
+gicolor-usart.c
+> index 6d70fea76bb3..65e653eb5026 100644
+> --- a/drivers/tty/serial/digicolor-usart.c
+> +++ b/drivers/tty/serial/digicolor-usart.c
+> @@ -309,6 +309,8 @@ static void digicolor_uart_set_termios(struct uart_po=
+rt *port,
+>  	case CS8:
+>  	default:
+>  		config |=3D UA_CONFIG_CHAR_LEN;
+> +		termios->c_cflag &=3D ~CSIZE;
+> +		termios->c_cflag |=3D CS8;
+>  		break;
+>  	}
+
+
+--=20
+                                                     ~. .~   Tk Open Systems
+=3D}------------------------------------------------ooO--U--Ooo------------=
+{=3D
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
