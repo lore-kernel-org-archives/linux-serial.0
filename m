@@ -2,86 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD6DC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB00C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235481AbiESITv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 04:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        id S229942AbiESIma (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 04:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235497AbiESITD (ORCPT
+        with ESMTP id S231939AbiESIm2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 04:19:03 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B9D663C5;
-        Thu, 19 May 2022 01:18:54 -0700 (PDT)
+        Thu, 19 May 2022 04:42:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135C26AA55;
+        Thu, 19 May 2022 01:42:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652948334; x=1684484334;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nQ+lnY6dYx8GIiIqMS+NqyRc9HSpuylhm5ub7+G+Sro=;
-  b=PtPNFJPRPKsDlIJarL9/zz0hzzgkiVpchWvFuzjrEr6GmChx/jfxjIiJ
-   v/F3U+nsNwf/htYSe6x0wp82rhPVF81mtjw1QB2nEI2vNAgGs34VffSqz
-   G/nmWrZ6VkEBe8MYHGOpQ1SJtukKzsDo7tmBovBEaO+RoxMc0q7iYe9X2
-   CgSGy56lEFEimnEZkl7ACCkLTftiQVa+tO3nVhvTyFk3ryllKzIehfseA
-   zrxXNU9t7gwo/4idbqq9HWzcs02/CUCyCD48wrcyQsts3dlCT21oqrCZq
-   KXlSiDlLHF5CkNH+fB9yAsq5hwfNs82RK89TSwDVuoZh2N+mq8nXJrRSC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272219112"
+  t=1652949747; x=1684485747;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=PgS8XNRf9GQ3vzLVLyP6y/ZH5DIQbtxz9BKblMVr4W8=;
+  b=YAD1FcJHuwvxr9/9jIeTBzaRlfxn/cT53uFLYdJySETbpHVN/bKaTPRk
+   6e2v/y41OXl+JL0hkXRByef8jGSVlSTBy+yFPK8s0BSZCihu/PiKKTSdr
+   lsKI4FLShh7RAA1POZCDNVHDo5lTF3rV2nV5+h6erHB2PNORhzfiqsLvC
+   KMOgZ2kfPaimxHJN3QwkheiwWhWUIgQ2dxJMueg8b2Q/a35393t1h/8mJ
+   61YqCnSlPRrf1xo1g/Xn7pXxbR58fIhgq4OTM+t/rnnJxqDuYMfhR3yfk
+   sCVso3eT2jkKSJmoPTH5PgqIsEFms5yxLJFqAgqxUZeCu2tYppMnEN5bi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259672438"
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="272219112"
+   d="scan'208";a="259672438"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:18:53 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:42:26 -0700
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598431547"
-Received: from ivanovbx-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.33.234])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:18:51 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 9/9] pcmcia: synclink_cs: Don't allow CS5-6
-Date:   Thu, 19 May 2022 11:18:08 +0300
-Message-Id: <20220519081808.3776-10-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220519081808.3776-1-ilpo.jarvinen@linux.intel.com>
-References: <20220519081808.3776-1-ilpo.jarvinen@linux.intel.com>
+   d="scan'208";a="598441086"
+Received: from ivanovbx-mobl1.ger.corp.intel.com ([10.249.33.234])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:42:24 -0700
+Date:   Thu, 19 May 2022 11:42:22 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH] serial: amba-pl011: move header content to .c
+In-Reply-To: <20220519075720.31402-1-jslaby@suse.cz>
+Message-ID: <b57ed6c-29c5-8bb6-fe5b-7f936a2117@linux.intel.com>
+References: <20220519075720.31402-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-479117058-1652949746=:1628"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Only CS7 and CS8 seem supported but CSIZE was not sanitized in termios
-c_cflag. The driver sets 7 bits whenever data_bits is not 8 so default
-to CS7 when CSIZE is not CS8.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/char/pcmcia/synclink_cs.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+--8323329-479117058-1652949746=:1628
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/drivers/char/pcmcia/synclink_cs.c b/drivers/char/pcmcia/synclink_cs.c
-index 78baba55a8b5..d0572bbe8832 100644
---- a/drivers/char/pcmcia/synclink_cs.c
-+++ b/drivers/char/pcmcia/synclink_cs.c
-@@ -1418,7 +1418,11 @@ static void mgslpc_change_params(MGSLPC_INFO *info, struct tty_struct *tty)
- 		info->serial_signals &= ~(SerialSignal_RTS | SerialSignal_DTR);
- 
- 	/* byte size and parity */
--
-+	if ((cflag & CSIZE) != CS8) {
-+		cflag &= ~CSIZE;
-+		cflag |= CS7;
-+		tty->termios.c_cflag = cflag;
-+	}
- 	info->params.data_bits = tty_get_char_size(cflag);
- 
- 	if (cflag & CSTOPB)
+On Thu, 19 May 2022, Jiri Slaby wrote:
+
+> There is no point keeping the header content separated. In this case, it
+> is only an enum. So move the enum to the appropriate source file.
+> 
+> Cc: Russell King <linux@armlinux.org.uk>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.30.2
-
+ i.
+--8323329-479117058-1652949746=:1628--
