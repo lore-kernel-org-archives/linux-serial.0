@@ -2,158 +2,258 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0C4C433FE
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 13:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6303EC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 15:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbiESNFv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 09:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S239582AbiESPXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 11:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238401AbiESNFt (ORCPT
+        with ESMTP id S236632AbiESPXj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 09:05:49 -0400
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFC8C03;
-        Thu, 19 May 2022 06:05:44 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id s12-20020a0568301e0c00b00605f30530c2so3488203otr.9;
-        Thu, 19 May 2022 06:05:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Q/j+6fWgTqD415mSRX9AX0OXoNhg/oIoVCv39xRaqdo=;
-        b=gYQQI0cKb6ZC+EVtZ433tLxSNNolxHSfxLXLsGwMV1k4TsOzH5v2MFajvFAybTiFVC
-         QOFbDUx1orTzKAcJBWKbJXlaQfA9ef1Iaj8TP3K0KGlXVXjRU4rpgLd3KACORlXTZKMq
-         +HB0cHt+Tp1hw9Q+MEG8E7rf8dgku7plZMCHHsrNUfcVYFlto2h68CbM2lWrA9QxIYdU
-         oCI8hlFSF9KKcSr2d0sz3H8bOrgkLlymIUBSpOBvUoVumScULH3ITKwebrwZUpXIGUvi
-         1VjfWiHzNo1MBhk8kqXZLiJLQmnxSCcfNeCVLOVItYbxT2C2wJhVYbJuS93OnuydtPy4
-         T3lQ==
-X-Gm-Message-State: AOAM530+I5d95mQxpg9crDSEWyHR0F3QkkHrZZe30F4qXj4YBl6qPDxO
-        aIeFKQLAA82n9LL/DhE6x4FFakPZyQ==
-X-Google-Smtp-Source: ABdhPJyPEkqet1JAMCaueSPlwvRkHmeO55aWygzOBFDEVMu07vwehIQomdtoatme15/VpZ1w6QwVQw==
-X-Received: by 2002:a05:6830:1e13:b0:605:f05e:d413 with SMTP id s19-20020a0568301e1300b00605f05ed413mr1876449otr.296.1652965543699;
-        Thu, 19 May 2022 06:05:43 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r206-20020aca5dd7000000b00325cda1ffbbsm1752423oib.58.2022.05.19.06.05.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:05:42 -0700 (PDT)
-Received: (nullmailer pid 1359569 invoked by uid 1000);
-        Thu, 19 May 2022 13:05:39 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     AngeloGioacchino Del Regno 
+        Thu, 19 May 2022 11:23:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E3EEAB91;
+        Thu, 19 May 2022 08:23:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 157861F45DE5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652973814;
+        bh=xWc+axcD/uWFzdlFw1pWb5QQCccJg4clTtiNxJyGAQE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EplFyVNZqw+jA2X1zm+N2KTSqHUx8DqS9/mhW06PW3zizqB8a3zFWUIqI2qbjagTh
+         c2S8qerZD/7Gzw5aVehuh+suhcNDEG/kJ8M+nhfBYEkeYOX0K7OA4kTnzz3Vh9HBkg
+         QjnMNO4q1t0Zf2+vx57thaa+kihKvX+PffH2NAOpr5e/lZ26pkAhgaLuoY+K5bK/n8
+         ercfEm9BZuuElevSDb09QZWaZ9fG+wr/0p1xIselKQ9YsJQJXhgncDgkj85zcbO9RB
+         vJS4nzb1iXNuAz/lIpHGi/OtDmMha/z7Gep8k6rh8/XnFV3g1T/k4c0gBF3Pwcir/B
+         ayCfbn6s9S0Cg==
+From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220519105928.22826-1-angelogioacchino.delregno@collabora.com>
-References: <20220519105928.22826-1-angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH] dt-bindings: serial: mtk-uart: Convert txt to json-schema
-Date:   Thu, 19 May 2022 08:05:39 -0500
-Message-Id: <1652965539.994674.1359568.nullmailer@robh.at.kernel.org>
+To:     gregkh@linuxfoundation.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2] dt-bindings: serial: mtk-uart: Convert txt to json-schema
+Date:   Thu, 19 May 2022 17:23:29 +0200
+Message-Id: <20220519152329.55028-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 19 May 2022 12:59:28 +0200, AngeloGioacchino Del Regno wrote:
-> Convert the mtk-uart documentation from freeform text to a json-schema.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/serial/mediatek,uart.yaml        | 118 ++++++++++++++++++
->  .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
->  2 files changed, 118 insertions(+), 59 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
->  delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
-> 
+Convert the mtk-uart documentation from freeform text to a json-schema.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
+v2: Changed to also accept just "mediatek,mt6577-uart" as compatible.
 
 
-serial@11002000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6592-evb.dtb
+ .../bindings/serial/mediatek,uart.yaml        | 121 ++++++++++++++++++
+ .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
+ 2 files changed, 121 insertions(+), 59 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
 
-serial@11002000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11003000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11003000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11003000: More than one condition true in oneOf schema:
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-cozmo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-damu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel14-sku2.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku6.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-sku7.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kappa.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-sku1.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu-sku22.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku272.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku288.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku0.dtb
-	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dtb
-
-serial@11004000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11004000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11005000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11005000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6592-evb.dtb
-
-serial@11006000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11006000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11007000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11007000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11008000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11008000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11009000: compatible:0: 'mediatek,mt6577-uart' is not one of ['mediatek,mt2701-uart', 'mediatek,mt2712-uart', 'mediatek,mt6580-uart', 'mediatek,mt6582-uart', 'mediatek,mt6589-uart', 'mediatek,mt6755-uart', 'mediatek,mt6765-uart', 'mediatek,mt6779-uart', 'mediatek,mt6795-uart', 'mediatek,mt6797-uart', 'mediatek,mt7622-uart', 'mediatek,mt7623-uart', 'mediatek,mt7629-uart', 'mediatek,mt7986-uart', 'mediatek,mt8127-uart', 'mediatek,mt8135-uart', 'mediatek,mt8173-uart', 'mediatek,mt8183-uart', 'mediatek,mt8186-uart', 'mediatek,mt8192-uart', 'mediatek,mt8195-uart', 'mediatek,mt8516-uart']
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
-
-serial@11009000: compatible: ['mediatek,mt6577-uart'] is too short
-	arch/arm/boot/dts/mt6589-aquaris5.dtb
-	arch/arm/boot/dts/mt6589-fairphone-fp1.dtb
+diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+new file mode 100644
+index 000000000000..7929aa123487
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+@@ -0,0 +1,121 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/mediatek,uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek Universal Asynchronous Receiver/Transmitter (UART)
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++allOf:
++  - $ref: serial.yaml#
++
++description: |+
++  The MediaTek UART is based on the basic 8250 UART and compatible
++  with 16550A, with enhancements for high speed baud rates and
++  support for DMA.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: mediatek,mt6577-uart
++      - items:
++          - enum:
++              - mediatek,mt2701-uart
++              - mediatek,mt2712-uart
++              - mediatek,mt6580-uart
++              - mediatek,mt6582-uart
++              - mediatek,mt6589-uart
++              - mediatek,mt6755-uart
++              - mediatek,mt6765-uart
++              - mediatek,mt6779-uart
++              - mediatek,mt6795-uart
++              - mediatek,mt6797-uart
++              - mediatek,mt7622-uart
++              - mediatek,mt7623-uart
++              - mediatek,mt7629-uart
++              - mediatek,mt7986-uart
++              - mediatek,mt8127-uart
++              - mediatek,mt8135-uart
++              - mediatek,mt8173-uart
++              - mediatek,mt8183-uart
++              - mediatek,mt8186-uart
++              - mediatek,mt8192-uart
++              - mediatek,mt8195-uart
++              - mediatek,mt8516-uart
++          - const: mediatek,mt6577-uart
++
++  reg:
++    description: The base address of the UART register bank
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++    items:
++      - description: The clock the baudrate is derived from
++      - description: The bus clock for register accesses
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: baud
++      - const: bus
++
++  dmas:
++    items:
++      - description: phandle to TX DMA
++      - description: phandle to RX DMA
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    description:
++      The UART interrupt and optionally the RX in-band wakeup interrupt.
++    minItems: 1
++    items:
++      - const: uart
++      - const: wakeup
++
++  pinctrl-0: true
++  pinctrl-1: true
++
++  pinctrl-names:
++    minItems: 1
++    items:
++      - const: default
++      - const: sleep
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@11006000 {
++        compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
++        reg = <0x11006000 0x400>;
++        interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
++                     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
++        interrupt-names = "uart", "wakeup";
++        clocks = <&uart_clk>, <&bus_clk>;
++        clock-names = "baud", "bus";
++        pinctrl-0 = <&uart_pin>;
++        pinctrl-1 = <&uart_pin_sleep>;
++        pinctrl-names = "default", "sleep";
++    };
+diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+deleted file mode 100644
+index 113b5d6a2245..000000000000
+--- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
++++ /dev/null
+@@ -1,59 +0,0 @@
+-* MediaTek Universal Asynchronous Receiver/Transmitter (UART)
+-
+-Required properties:
+-- compatible should contain:
+-  * "mediatek,mt2701-uart" for MT2701 compatible UARTS
+-  * "mediatek,mt2712-uart" for MT2712 compatible UARTS
+-  * "mediatek,mt6580-uart" for MT6580 compatible UARTS
+-  * "mediatek,mt6582-uart" for MT6582 compatible UARTS
+-  * "mediatek,mt6589-uart" for MT6589 compatible UARTS
+-  * "mediatek,mt6755-uart" for MT6755 compatible UARTS
+-  * "mediatek,mt6765-uart" for MT6765 compatible UARTS
+-  * "mediatek,mt6779-uart" for MT6779 compatible UARTS
+-  * "mediatek,mt6795-uart" for MT6795 compatible UARTS
+-  * "mediatek,mt6797-uart" for MT6797 compatible UARTS
+-  * "mediatek,mt7622-uart" for MT7622 compatible UARTS
+-  * "mediatek,mt7623-uart" for MT7623 compatible UARTS
+-  * "mediatek,mt7629-uart" for MT7629 compatible UARTS
+-  * "mediatek,mt7986-uart", "mediatek,mt6577-uart" for MT7986 compatible UARTS
+-  * "mediatek,mt8127-uart" for MT8127 compatible UARTS
+-  * "mediatek,mt8135-uart" for MT8135 compatible UARTS
+-  * "mediatek,mt8173-uart" for MT8173 compatible UARTS
+-  * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+-  * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+-  * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
+-  * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
+-  * "mediatek,mt8516-uart" for MT8516 compatible UARTS
+-  * "mediatek,mt6577-uart" for MT6577 and all of the above
+-
+-- reg: The base address of the UART register bank.
+-
+-- interrupts:
+-  index 0: an interrupt specifier for the UART controller itself
+-  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
+-           support Rx in-band wake up. If one would like to use this feature,
+-           one must create an addtional pinctrl to reconfigure Rx pin to normal
+-           GPIO before suspend.
+-
+-- clocks : Must contain an entry for each entry in clock-names.
+-  See ../clocks/clock-bindings.txt for details.
+-- clock-names:
+-  - "baud": The clock the baudrate is derived from
+-  - "bus": The bus clock for register accesses (optional)
+-
+-For compatibility with older device trees an unnamed clock is used for the
+-baud clock if the baudclk does not exist. Do not use this for new designs.
+-
+-Example:
+-
+-	uart0: serial@11006000 {
+-		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
+-		reg = <0x11006000 0x400>;
+-		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
+-		clocks = <&uart_clk>, <&bus_clk>;
+-		clock-names = "baud", "bus";
+-		pinctrl-names = "default", "sleep";
+-		pinctrl-0 = <&uart_pin>;
+-		pinctrl-1 = <&uart_pin_sleep>;
+-	};
+-- 
+2.35.1
 
