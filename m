@@ -2,83 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8501EC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A439C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 09:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbiESI7b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 04:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
+        id S232291AbiESJCa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 05:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233827AbiESI7a (ORCPT
+        with ESMTP id S235764AbiESJC3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 04:59:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EADA502A;
-        Thu, 19 May 2022 01:59:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652950769; x=1684486769;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=05Fuppx/L9sCpsgYnyjfWyFaI5tXbG/b+Ttzw5ROFAg=;
-  b=avL7D8cSzgGgw4MppOZ8NF1YUoVk2pIrtrCyuFdFbLRlNowQN0a4f0iw
-   dC+a1a5jrh1QvhszNp5uDTSC9Ol3zlm5Yh2Sh0Toc8N0rXJS1aNQWWjeD
-   pDc6UYeAUDuGMoEFU/hxPotvk7W+rvRbtyCawlLOAutN1ht0QGx0Uqu5A
-   ye9n3vU0Jxh0zbsBEF926VvfsL4Mi8sMwhHJ1eNAQcSBBxhqwrhQww7an
-   MpPGUz8QyCg6Nh08N3WmNBIeOFM4QQkS3hq3NoVilAiZk2dSPITJQ1AgV
-   3RVqO1teTPdoEGkSPkxac7pNYCFIBmcQFN2aFtVUwztxTE+mN8rSWDTy+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259679129"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="259679129"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598445933"
-Received: from ivanovbx-mobl1.ger.corp.intel.com ([10.249.33.234])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:26 -0700
-Date:   Thu, 19 May 2022 11:59:24 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 19 May 2022 05:02:29 -0400
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E759A76D1;
+        Thu, 19 May 2022 02:02:28 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id gi33so136916ejc.3;
+        Thu, 19 May 2022 02:02:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=THpG01QnqTAAfo+jNCu5AXbH2/rIQPzXpYrqduPsMlM=;
+        b=3gsP/dyyZEb7uDifMBdKLdRIW6Qs8vJTf0I83tlA7stcVfAl88T2J+J4bsWJl8QA2+
+         1mW8daEmgDXIUIlp+tVwXczuX930lrzhjzqgHpDNYf1UUIR1KvsIzW73Le/YjjHPpraI
+         C5qlin541UHwcR4X0KTqabGar1G+DuMZlFi/+4N6daYFYJHbI9ADq/HlJ4mPgJ9Rejzw
+         yPoS/rX4H5x+RJuWaij0Rk5sGaWfOm5o/0QYZzZ05kt1gHuHIYk0Hn6HgeL9PUHsbkxC
+         udXds6cGnZCPsTxwJoEmV2MkJru7yYQx83sKzoz3pnpES8IvCmBomURZ5yjljf9MPSBj
+         0OsQ==
+X-Gm-Message-State: AOAM533ExILvnLKCJuJT0VnomZ/H+WxHYfYB5Tp6kSh35IAsBEGzVshE
+        OTcM8at0UrTxZqCncpYMpLg=
+X-Google-Smtp-Source: ABdhPJw+lC9whLnqbBMumURJrOM0ojoOt9qoF7cCu5Ekou9qvC+nxuif8HEOuNQfIb5DfbuW8KODfg==
+X-Received: by 2002:a17:907:6d96:b0:6fe:6da7:6bc6 with SMTP id sb22-20020a1709076d9600b006fe6da76bc6mr3195793ejc.57.1652950946941;
+        Thu, 19 May 2022 02:02:26 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id q18-20020aa7cc12000000b0042aa40e76cbsm2529102edt.80.2022.05.19.02.02.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 02:02:24 -0700 (PDT)
+Message-ID: <b61169e6-259c-f47e-b91f-c6cf3a5e5f39@kernel.org>
+Date:   Thu, 19 May 2022 11:02:23 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/4] serial: pmac_zilog: remove unfinished DBDMA support
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Paul Mackerras <paulus@samba.org>
-Subject: Re: [PATCH 4/4] serial: pmac_zilog: remove initial print
-In-Reply-To: <20220519075653.31356-4-jslaby@suse.cz>
-Message-ID: <2adeae5a-cc42-5a3c-a1e0-2b26f294834@linux.intel.com>
-References: <20220519075653.31356-1-jslaby@suse.cz> <20220519075653.31356-4-jslaby@suse.cz>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-461353659-1652950754=:1628"
-Content-ID: <378db1e4-e6db-c394-358f-d690cb7870f7@linux.intel.com>
+References: <20220519075653.31356-1-jslaby@suse.cz>
+ <2f7a739f-61b4-a1af-7c9b-70c5b93c6281@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <2f7a739f-61b4-a1af-7c9b-70c5b93c6281@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-461353659-1652950754=:1628
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <9e628ba6-962-3ab-bd6a-436b56f87c8e@linux.intel.com>
-
-On Thu, 19 May 2022, Jiri Slaby wrote:
-
-> Don't report about the driver when loaded. It's unneeded and frowned
-> upon nowadays.
+On 19. 05. 22, 10:56, Ilpo JÃ¤rvinen wrote:
+> On Thu, 19 May 2022, Jiri Slaby wrote:
 > 
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> The support for DBDMA was never completed. Remove the the code that only
+>> maps spaces without real work.
+>>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>> Cc: Paul Mackerras <paulus@samba.org>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   drivers/tty/serial/pmac_zilog.c | 38 +--------------------------------
+>>   drivers/tty/serial/pmac_zilog.h |  9 --------
+>>   2 files changed, 1 insertion(+), 46 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+>> index c903085acb8d..2953ff64a892 100644
+>> --- a/drivers/tty/serial/pmac_zilog.c
+>> +++ b/drivers/tty/serial/pmac_zilog.c
+> 
+> How about dropping this too:
+> #include <asm/dbdma.h>
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Good point, fixed, will send v2 eventually.
 
-for patches 2-4.
-
+thanks,
 -- 
- i.
---8323329-461353659-1652950754=:1628--
+js
+suse labs
