@@ -2,117 +2,164 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13CE7C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 07:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3606C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 07:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbiESHCr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 03:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
+        id S234552AbiESHJ1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 03:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiESHCp (ORCPT
+        with ESMTP id S232079AbiESHJY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 03:02:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B23B19C
-        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 00:02:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 363C361A8A
-        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 07:02:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10922C34100;
-        Thu, 19 May 2022 07:02:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652943763;
-        bh=15fHYFqNeavE+taYo/yl6z6a68MOaZGBw4pYrJkVNCY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U8cdPBj+jNwJhxgverQhcm2TNMcW6WvjV+U9X50vdrDlrtH88bIca54BWS+EoK/gK
-         SXxNyV/mvT6TcrzL79lsYVcXfyjUe2FuQaCr682dVPQ9kPg1CHuw6i+3BSrIoSpUSl
-         E1xNDkbnCzaKEucpsyg8+hzguf5a4G2wTse2pxqk=
-Date:   Thu, 19 May 2022 09:02:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     christopher tyerman <linuxkernel@firebladeautomationsystems.uk>
-Cc:     linux-serial@vger.kernel.org
-Subject: Re: Using Serdev is it Possible to Pull RX Low
-Message-ID: <YoXrj6r+rhpSpZXt@kroah.com>
-References: <341d8439-4466-7182-745d-ba613301e009@firebladeautomationsystems.uk>
- <YoSy2vnS68wkLpcO@kroah.com>
- <e92ad3ac-3d52-7f77-8839-74ef81a74154@firebladeautomationsystems.uk>
+        Thu, 19 May 2022 03:09:24 -0400
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB54B8BD1
+        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 00:09:22 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202205190709206f220d0e0c43ae7ca1
+        for <linux-serial@vger.kernel.org>;
+        Thu, 19 May 2022 09:09:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ETzLW+MBUZNXPayW3Chm6h6U8ObCVBXcowJbowiynow=;
+ b=GuG7GX9BKym6JkvBwfUy3u2KvAjh8nkmqAg6ZOg3d3pFsBn5V4R4+DhgGVtVDXxJB/V4Pa
+ ktJK4Mmh6dGUZ5eGALapmo+st8dCB/UMA1IFNH1qf+nK9wUcFWsxUcEeRs6NKuqUpN/KoBUO
+ 9b7SNWUws17TdGlxtf/mPSz5rls2M=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 3/9] tty: n_gsm: fix wrong queuing behavior in gsm_dlci_data_output()
+Date:   Thu, 19 May 2022 09:07:51 +0200
+Message-Id: <20220519070757.2096-3-daniel.starke@siemens.com>
+In-Reply-To: <20220519070757.2096-1-daniel.starke@siemens.com>
+References: <20220519070757.2096-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e92ad3ac-3d52-7f77-8839-74ef81a74154@firebladeautomationsystems.uk>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 18, 2022 at 07:11:38PM +0100, christopher tyerman wrote:
-> On 18/05/2022 09:48, Greg KH wrote:> On Tue, May 17, 2022 at 07:42:46PM
-> +0100, linuxkernel wrote:
-> >> hello I, looking at writing a kernel driver for the Texas instruments
-> >> TPS92662A/TPS92663A which uses a "UART bus" e.g
-> >> |-----------|    |-----------|    |-----------|     |-----------|
-> >> |           |    | TPS92662A |    | TPS92662A |     | TPS92663A |
-> >> |   UART    |    | -Q1       |    | -Q1       |     | -Q1 	   |
-> >> |           |    |           |    |           |     |           |
-> >> |-----------|    |-----------|    |-----------|     |-----------|
-> >>       |                |                |                 |
-> >>       |                |                |                 |
-> >>       |                |                |                 |
-> >>       -----------------------------------------------------
-> >> and control communications by specific sequencing. configuring this
-> >> appears to require being able to pull RX Low
-> >>> The MCU unit can reset the device UART and protocol state machine at
-> >>> any time by holding the RX input low for a period of at least 12 bit
-> >>> times (16 × 12 CLK periods).
-> >> practically i can always pull RX low via other means, but if the UART
-> >> can do this it would be better and be more generic.
-> > How can your UART do that in a generic way? thanks, greg k-h sorry
-> 
-> im not sure i explained that clearly
-> 
-> i also appear to have, not got the previous diagram right, (corrected in
-> this reply for clarity) Im still getting used to plain text emails.
-> 
-> im not that familiar with UARTs in practice, and after re-reading i think i
-> could have phrased that better, as had issue with MCU/IC UART TX/RX
-> perspectives
-> 
-> e.g
-> 
-> |-----------|           |-----------|
-> |         TX|-----------|RX         |
-> | MCU UART  |           |    IC     |
-> |         RX|-----------|TX         |
-> |-----------|           |-----------|
-> 
-> from the mcu perspective its the TX pin, while from the RX pin from the ICs
-> perspective.
-> 
-> from that perspective i need to pull the ICs RX pin low which means pull the
-> MCU UART TX pin Low.
-> 
-> now this seems conceptually similar to a "break condition"
-> 
-> which some tty functions can produce
-> e.g
-> static int send_break(struct tty_struct *tty, unsigned int duration)
-> [https://elixir.bootlin.com/linux/latest/source/drivers tty/tty_io.c#L2461]
-> 
-> with which i might me half way to answering my own question
-> 
-> i can't see call to that via serdev, or equivalent
-> 
+From: Daniel Starke <daniel.starke@siemens.com>
 
-That is correct, serdev can not handle break conditions on the tty port
-right now.  You need to write a "real" serial driver if you want to have
-that type of control over the connection.
+1) The function drains the fifo for the given user tty/DLCI without
+considering 'TX_THRESH_HI' and different to gsm_dlci_data_output_framed(),
+which moves only one packet from the user side to the internal transmission
+queue. We can only handle one packet at a time here if we want to allow
+DLCI priority handling in gsm_dlci_data_sweep() to avoid link starvation.
+2) Furthermore, the additional header octet from convergence layer type 2
+is not counted against MTU. It is part of the UI/UIH frame message which
+needs to be limited to MTU. Hence, it is wrong not to consider this octet.
+3) Finally, the waiting user tty is not informed about freed space in its
+send queue.
 
-You could propose a patch for serdev to handle break, try that and
-submit it and see if the serdev maintainer agrees that it is a worth
-addition.
+Take at most one packet worth of data out of the DLCI fifo to fix 1).
+Limit the max user data size per packet to MTU - 1 in case of convergence
+layer type 2 to leave space for the control signal octet which is added in
+the later part of the function. This fixes 2).
+Add tty_port_tty_wakeup() to wake up the user tty if new write space has
+been made available to fix 3).
 
-thanks,
+Fixes: 268e526b935e ("tty/n_gsm: avoid fifo overflow in gsm_dlci_data_output")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 74 +++++++++++++++++++++++++--------------------
+ 1 file changed, 42 insertions(+), 32 deletions(-)
 
-greg k-h
+See patch 6 regarding changes since to v1.
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index e695956fc96c..0a9924445968 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -869,41 +869,51 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ {
+ 	struct gsm_msg *msg;
+ 	u8 *dp;
+-	int len, total_size, size;
+-	int h = dlci->adaption - 1;
++	int h, len, size;
+ 
+-	total_size = 0;
+-	while (1) {
+-		len = kfifo_len(&dlci->fifo);
+-		if (len == 0)
+-			return total_size;
+-
+-		/* MTU/MRU count only the data bits */
+-		if (len > gsm->mtu)
+-			len = gsm->mtu;
+-
+-		size = len + h;
+-
+-		msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+-		/* FIXME: need a timer or something to kick this so it can't
+-		   get stuck with no work outstanding and no buffer free */
+-		if (msg == NULL)
+-			return -ENOMEM;
+-		dp = msg->data;
+-		switch (dlci->adaption) {
+-		case 1:	/* Unstructured */
+-			break;
+-		case 2:	/* Unstructed with modem bits.
+-		Always one byte as we never send inline break data */
+-			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
+-			break;
+-		}
+-		WARN_ON(kfifo_out_locked(&dlci->fifo, dp , len, &dlci->lock) != len);
+-		__gsm_data_queue(dlci, msg);
+-		total_size += size;
++	/* for modem bits without break data */
++	h = ((dlci->adaption == 1) ? 0 : 1);
++
++	len = kfifo_len(&dlci->fifo);
++	if (len == 0)
++		return 0;
++
++	/* MTU/MRU count only the data bits but watch adaption mode */
++	if ((len + h) > gsm->mtu)
++		len = gsm->mtu - h;
++
++	size = len + h;
++
++	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
++	/* FIXME: need a timer or something to kick this so it can't
++	 * get stuck with no work outstanding and no buffer free
++	 */
++	if (!msg)
++		return -ENOMEM;
++	dp = msg->data;
++	switch (dlci->adaption) {
++	case 1: /* Unstructured */
++		break;
++	case 2: /* Unstructured with modem bits.
++		 * Always one byte as we never send inline break data
++		 */
++		*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
++		break;
++	default:
++		pr_err("%s: unsupported adaption %d\n", __func__,
++		       dlci->adaption);
++		break;
+ 	}
++
++	WARN_ON(len != kfifo_out_locked(&dlci->fifo, dp, len,
++		&dlci->lock));
++
++	/* Notify upper layer about available send space. */
++	tty_port_tty_wakeup(&dlci->port);
++
++	__gsm_data_queue(dlci, msg);
+ 	/* Bytes of data we used up */
+-	return total_size;
++	return size;
+ }
+ 
+ /**
+-- 
+2.34.1
+
