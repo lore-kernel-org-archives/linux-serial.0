@@ -2,92 +2,251 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A439C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 09:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1549C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 10:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbiESJCa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 05:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
+        id S233493AbiESK7g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 06:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235764AbiESJC3 (ORCPT
+        with ESMTP id S232026AbiESK7g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 05:02:29 -0400
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E759A76D1;
-        Thu, 19 May 2022 02:02:28 -0700 (PDT)
-Received: by mail-ej1-f50.google.com with SMTP id gi33so136916ejc.3;
-        Thu, 19 May 2022 02:02:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=THpG01QnqTAAfo+jNCu5AXbH2/rIQPzXpYrqduPsMlM=;
-        b=3gsP/dyyZEb7uDifMBdKLdRIW6Qs8vJTf0I83tlA7stcVfAl88T2J+J4bsWJl8QA2+
-         1mW8daEmgDXIUIlp+tVwXczuX930lrzhjzqgHpDNYf1UUIR1KvsIzW73Le/YjjHPpraI
-         C5qlin541UHwcR4X0KTqabGar1G+DuMZlFi/+4N6daYFYJHbI9ADq/HlJ4mPgJ9Rejzw
-         yPoS/rX4H5x+RJuWaij0Rk5sGaWfOm5o/0QYZzZ05kt1gHuHIYk0Hn6HgeL9PUHsbkxC
-         udXds6cGnZCPsTxwJoEmV2MkJru7yYQx83sKzoz3pnpES8IvCmBomURZ5yjljf9MPSBj
-         0OsQ==
-X-Gm-Message-State: AOAM533ExILvnLKCJuJT0VnomZ/H+WxHYfYB5Tp6kSh35IAsBEGzVshE
-        OTcM8at0UrTxZqCncpYMpLg=
-X-Google-Smtp-Source: ABdhPJw+lC9whLnqbBMumURJrOM0ojoOt9qoF7cCu5Ekou9qvC+nxuif8HEOuNQfIb5DfbuW8KODfg==
-X-Received: by 2002:a17:907:6d96:b0:6fe:6da7:6bc6 with SMTP id sb22-20020a1709076d9600b006fe6da76bc6mr3195793ejc.57.1652950946941;
-        Thu, 19 May 2022 02:02:26 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id q18-20020aa7cc12000000b0042aa40e76cbsm2529102edt.80.2022.05.19.02.02.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 02:02:24 -0700 (PDT)
-Message-ID: <b61169e6-259c-f47e-b91f-c6cf3a5e5f39@kernel.org>
-Date:   Thu, 19 May 2022 11:02:23 +0200
+        Thu, 19 May 2022 06:59:36 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06368AF31D;
+        Thu, 19 May 2022 03:59:35 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 3EE6B1F45A41
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652957973;
+        bh=OvdE5DqVSmf6V3Hh/uC4yUE8G4B1Yfty3nshezlJAsg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nhEwpfQ7OcyAG8+NvJfjAWbHIuJCuFL5Yr8eR25H/8B9s5IY1U+edXuk06f1ZKe1c
+         25CEKVxv7p4eZeLy8/xqr5ylaXy3c1HoIMVo8JUXe2yH+HYwJkm02WtOVNyGtOGMMN
+         dxEP4HtlYhPx3ZarMbWCA8F3yCvqt/NUZyGtjWl45StroWjbtdNxTagU763/LQKm0k
+         x9kPn0yjr3Tf68HhhR0VcI1Df754uiDHzYc1vZzJLrTPaD1KlRs5V4BYVwkD+cf0rA
+         9ZpVByocxPmrgXWWl047AkXiDDr93laTHnrCGc3Q8udVtuPtqpK5NGk01DUxhHhAw2
+         jmZn1m0I1ZWPA==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     gregkh@linuxfoundation.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH] dt-bindings: serial: mtk-uart: Convert txt to json-schema
+Date:   Thu, 19 May 2022 12:59:28 +0200
+Message-Id: <20220519105928.22826-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/4] serial: pmac_zilog: remove unfinished DBDMA support
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-References: <20220519075653.31356-1-jslaby@suse.cz>
- <2f7a739f-61b4-a1af-7c9b-70c5b93c6281@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <2f7a739f-61b4-a1af-7c9b-70c5b93c6281@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19. 05. 22, 10:56, Ilpo Järvinen wrote:
-> On Thu, 19 May 2022, Jiri Slaby wrote:
-> 
->> The support for DBDMA was never completed. Remove the the code that only
->> maps spaces without real work.
->>
->> Cc: Michael Ellerman <mpe@ellerman.id.au>
->> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
->> Cc: Paul Mackerras <paulus@samba.org>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> ---
->>   drivers/tty/serial/pmac_zilog.c | 38 +--------------------------------
->>   drivers/tty/serial/pmac_zilog.h |  9 --------
->>   2 files changed, 1 insertion(+), 46 deletions(-)
->>
->> diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
->> index c903085acb8d..2953ff64a892 100644
->> --- a/drivers/tty/serial/pmac_zilog.c
->> +++ b/drivers/tty/serial/pmac_zilog.c
-> 
-> How about dropping this too:
-> #include <asm/dbdma.h>
+Convert the mtk-uart documentation from freeform text to a json-schema.
 
-Good point, fixed, will send v2 eventually.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../bindings/serial/mediatek,uart.yaml        | 118 ++++++++++++++++++
+ .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
+ 2 files changed, 118 insertions(+), 59 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
 
-thanks,
+diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+new file mode 100644
+index 000000000000..d5a1386162cc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+@@ -0,0 +1,118 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/mediatek,uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek Universal Asynchronous Receiver/Transmitter (UART)
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++allOf:
++  - $ref: serial.yaml#
++
++description: |+
++  The MediaTek UART is based on the basic 8250 UART and compatible
++  with 16550A, with enhancements for high speed baud rates and
++  support for DMA.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt2701-uart
++          - mediatek,mt2712-uart
++          - mediatek,mt6580-uart
++          - mediatek,mt6582-uart
++          - mediatek,mt6589-uart
++          - mediatek,mt6755-uart
++          - mediatek,mt6765-uart
++          - mediatek,mt6779-uart
++          - mediatek,mt6795-uart
++          - mediatek,mt6797-uart
++          - mediatek,mt7622-uart
++          - mediatek,mt7623-uart
++          - mediatek,mt7629-uart
++          - mediatek,mt7986-uart
++          - mediatek,mt8127-uart
++          - mediatek,mt8135-uart
++          - mediatek,mt8173-uart
++          - mediatek,mt8183-uart
++          - mediatek,mt8186-uart
++          - mediatek,mt8192-uart
++          - mediatek,mt8195-uart
++          - mediatek,mt8516-uart
++      - const: mediatek,mt6577-uart
++
++  reg:
++    description: The base address of the UART register bank
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++    items:
++      - description: The clock the baudrate is derived from
++      - description: The bus clock for register accesses
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: baud
++      - const: bus
++
++  dmas:
++    items:
++      - description: phandle to TX DMA
++      - description: phandle to RX DMA
++
++  dma-names:
++    items:
++      - const: tx
++      - const: rx
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    description:
++      The UART interrupt and optionally the RX in-band wakeup interrupt.
++    minItems: 1
++    items:
++      - const: uart
++      - const: wakeup
++
++  pinctrl-0: true
++  pinctrl-1: true
++
++  pinctrl-names:
++    minItems: 1
++    items:
++      - const: default
++      - const: sleep
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@11006000 {
++        compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
++        reg = <0x11006000 0x400>;
++        interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
++                     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
++        interrupt-names = "uart", "wakeup";
++        clocks = <&uart_clk>, <&bus_clk>;
++        clock-names = "baud", "bus";
++        pinctrl-0 = <&uart_pin>;
++        pinctrl-1 = <&uart_pin_sleep>;
++        pinctrl-names = "default", "sleep";
++    };
+diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+deleted file mode 100644
+index 113b5d6a2245..000000000000
+--- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
++++ /dev/null
+@@ -1,59 +0,0 @@
+-* MediaTek Universal Asynchronous Receiver/Transmitter (UART)
+-
+-Required properties:
+-- compatible should contain:
+-  * "mediatek,mt2701-uart" for MT2701 compatible UARTS
+-  * "mediatek,mt2712-uart" for MT2712 compatible UARTS
+-  * "mediatek,mt6580-uart" for MT6580 compatible UARTS
+-  * "mediatek,mt6582-uart" for MT6582 compatible UARTS
+-  * "mediatek,mt6589-uart" for MT6589 compatible UARTS
+-  * "mediatek,mt6755-uart" for MT6755 compatible UARTS
+-  * "mediatek,mt6765-uart" for MT6765 compatible UARTS
+-  * "mediatek,mt6779-uart" for MT6779 compatible UARTS
+-  * "mediatek,mt6795-uart" for MT6795 compatible UARTS
+-  * "mediatek,mt6797-uart" for MT6797 compatible UARTS
+-  * "mediatek,mt7622-uart" for MT7622 compatible UARTS
+-  * "mediatek,mt7623-uart" for MT7623 compatible UARTS
+-  * "mediatek,mt7629-uart" for MT7629 compatible UARTS
+-  * "mediatek,mt7986-uart", "mediatek,mt6577-uart" for MT7986 compatible UARTS
+-  * "mediatek,mt8127-uart" for MT8127 compatible UARTS
+-  * "mediatek,mt8135-uart" for MT8135 compatible UARTS
+-  * "mediatek,mt8173-uart" for MT8173 compatible UARTS
+-  * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+-  * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+-  * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
+-  * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
+-  * "mediatek,mt8516-uart" for MT8516 compatible UARTS
+-  * "mediatek,mt6577-uart" for MT6577 and all of the above
+-
+-- reg: The base address of the UART register bank.
+-
+-- interrupts:
+-  index 0: an interrupt specifier for the UART controller itself
+-  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
+-           support Rx in-band wake up. If one would like to use this feature,
+-           one must create an addtional pinctrl to reconfigure Rx pin to normal
+-           GPIO before suspend.
+-
+-- clocks : Must contain an entry for each entry in clock-names.
+-  See ../clocks/clock-bindings.txt for details.
+-- clock-names:
+-  - "baud": The clock the baudrate is derived from
+-  - "bus": The bus clock for register accesses (optional)
+-
+-For compatibility with older device trees an unnamed clock is used for the
+-baud clock if the baudclk does not exist. Do not use this for new designs.
+-
+-Example:
+-
+-	uart0: serial@11006000 {
+-		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
+-		reg = <0x11006000 0x400>;
+-		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
+-		clocks = <&uart_clk>, <&bus_clk>;
+-		clock-names = "baud", "bus";
+-		pinctrl-names = "default", "sleep";
+-		pinctrl-0 = <&uart_pin>;
+-		pinctrl-1 = <&uart_pin_sleep>;
+-	};
 -- 
-js
-suse labs
+2.35.1
+
