@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1135C433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 07:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 812FFC4332F
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 07:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234539AbiESHLs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 03:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
+        id S231931AbiESHLt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 03:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234861AbiESHLO (ORCPT
+        with ESMTP id S234863AbiESHLO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 19 May 2022 03:11:14 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 19 May 2022 00:10:25 PDT
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 19 May 2022 00:10:28 PDT
 Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D4DB8BD9
-        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 00:10:25 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202205190709206289192473079436e3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6267CC1ECA
+        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 00:10:26 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220519070922ec62f129d9afd771c9
         for <linux-serial@vger.kernel.org>;
-        Thu, 19 May 2022 09:09:21 +0200
+        Thu, 19 May 2022 09:09:23 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=4Bq05jMmGOSBQBP7BvGVwVSPmvwgQZYvbIERYnoCYA0=;
- b=ZRwTvThIX1+8Vk3ZvLPBe6Fspc9Co9mxNX8FQLvpZ2dCWwf4OcSrR+/kjNYlgF54a8znCj
- Fucs9Z4/llHT1DQYmXlan6FpVIBCaXdNdKUHXMn4lW1/Re1R3Kk7ATLqDQXREx44BBpzoOA6
- FaG3hChnupaB/x8q3TWysN7J5vH60=;
+ bh=TtFKgkubh8vB/+tP7jOMSJDnb/+ZNOd4vHbqaVOTX4U=;
+ b=Ci7A3k3Pk1oSrfQ0Sk/6RMQlvCITX27l4rgtkz0WCFkPO31t7iafIwwgnMrbuoBr+VV3lf
+ QCxypBagSE2Tjyb4g6q4C/N19tAm1rmJvlMyL9NnIDuuIUS5QZjxg5juqest2SC0GReKYVbF
+ /wt8DIb2y0+FBNM0b8ttXSOyjJWH4=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 4/9] tty: n_gsm: fix missing timer to handle stalled links
-Date:   Thu, 19 May 2022 09:07:52 +0200
-Message-Id: <20220519070757.2096-4-daniel.starke@siemens.com>
+Subject: [PATCH v2 7/9] tty: n_gsm: fix packet re-transmission without open control channel
+Date:   Thu, 19 May 2022 09:07:55 +0200
+Message-Id: <20220519070757.2096-7-daniel.starke@siemens.com>
 In-Reply-To: <20220519070757.2096-1-daniel.starke@siemens.com>
 References: <20220519070757.2096-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,141 +46,34 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The current implementation does not handle the situation that no data is in
-the internal queue and needs to be sent out while the user tty fifo is
-full.
-Add a timer that moves more data from user tty down to the internal queue
-which is then serialized on the ldisc. This timer is triggered if no data
-was moved from a user tty to the internal queue within 10 * T1.
+In the current implementation control packets are re-transmitted even if
+the control channel closed down during T2. This is wrong.
+Check whether the control channel is open before re-transmitting any
+packets. Note that control channel open/close is handled by T1 and not T2
+and remains unaffected by this.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 43 +++++++++++++++++++++++++++++++++++--------
- 1 file changed, 35 insertions(+), 8 deletions(-)
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 See patch 6 regarding changes since to v1.
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 0a9924445968..3a4a2394d970 100644
+index 6d68aaf1dae8..dfc537eb2b49 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -244,6 +244,7 @@ struct gsm_mux {
- 	struct list_head tx_list;	/* Pending data packets */
- 
- 	/* Control messages */
-+	struct timer_list kick_timer;	/* Kick TX queuing on timeout */
- 	struct timer_list t2_timer;	/* Retransmit timer for commands */
- 	int cretries;			/* Command retry counter */
- 	struct gsm_control *pending_cmd;/* Our current pending command */
-@@ -833,6 +834,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 	list_add_tail(&msg->list, &gsm->tx_list);
- 	gsm->tx_bytes += msg->len;
- 	gsm_data_kick(gsm, dlci);
-+	mod_timer(&gsm->kick_timer, jiffies + 10 * gsm->t1 * HZ / 100);
- }
- 
- /**
-@@ -885,9 +887,6 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 	size = len + h;
- 
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--	/* FIXME: need a timer or something to kick this so it can't
--	 * get stuck with no work outstanding and no buffer free
--	 */
- 	if (!msg)
- 		return -ENOMEM;
- 	dp = msg->data;
-@@ -964,9 +963,6 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
- 
- 	size = len + overhead;
- 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--
--	/* FIXME: need a timer or something to kick this so it can't
--	   get stuck with no work outstanding and no buffer free */
- 	if (msg == NULL) {
- 		skb_queue_tail(&dlci->skb_list, dlci->skb);
- 		dlci->skb = NULL;
-@@ -1062,9 +1058,9 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
-  *	renegotiate DLCI priorities with optional stuff. Needs optimising.
-  */
- 
--static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
-+static int gsm_dlci_data_sweep(struct gsm_mux *gsm)
- {
--	int len;
-+	int len, ret = 0;
- 	/* Priority ordering: We should do priority with RR of the groups */
- 	int i = 1;
- 
-@@ -1087,7 +1083,11 @@ static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
- 		/* DLCI empty - try the next */
- 		if (len == 0)
- 			i++;
-+		else
-+			ret++;
- 	}
-+
-+	return ret;
- }
- 
- /**
-@@ -1806,6 +1806,30 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
- 	}
- }
- 
-+/**
-+ *	gsm_kick_timer	-	transmit if possible
-+ *	@t: timer contained in our gsm object
-+ *
-+ *	Transmit data from DLCIs if the queue is empty. We can't rely on
-+ *	a tty wakeup except when we filled the pipe so we need to fire off
-+ *	new data ourselves in other cases.
-+ */
-+static void gsm_kick_timer(struct timer_list *t)
-+{
-+	struct gsm_mux *gsm = from_timer(gsm, t, kick_timer);
-+	unsigned long flags;
-+	int sent = 0;
-+
-+	spin_lock_irqsave(&gsm->tx_lock, flags);
-+	/* If we have nothing running then we need to fire up */
-+	if (gsm->tx_bytes < TX_THRESH_LO)
-+		sent = gsm_dlci_data_sweep(gsm);
-+	spin_unlock_irqrestore(&gsm->tx_lock, flags);
-+
-+	if (sent && debug & 4)
-+		pr_info("%s TX queue stalled\n", __func__);
-+}
-+
- /*
-  *	Allocate/Free DLCI channels
-  */
-@@ -2261,6 +2285,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	}
- 
- 	/* Finish outstanding timers, making sure they are done */
-+	del_timer_sync(&gsm->kick_timer);
- 	del_timer_sync(&gsm->t2_timer);
- 
- 	/* Free up any link layer users and finally the control channel */
-@@ -2293,6 +2318,7 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	struct gsm_dlci *dlci;
- 	int ret;
- 
-+	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
- 	spin_lock_init(&gsm->control_lock);
-@@ -2699,6 +2725,7 @@ static int gsmld_open(struct tty_struct *tty)
- 
- 	gsmld_attach_gsm(tty, gsm);
- 
-+	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 
- 	return 0;
+@@ -1624,7 +1624,7 @@ static void gsm_control_retransmit(struct timer_list *t)
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		if (gsm->cretries == 0) {
++		if (gsm->cretries == 0 || !gsm->dlci[0] || gsm->dlci[0]->dead) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+ 			ctrl->done = 1;
 -- 
 2.34.1
 
