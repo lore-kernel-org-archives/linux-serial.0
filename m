@@ -2,258 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6303EC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 15:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE47C433F5
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 16:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239582AbiESPXq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 11:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        id S234684AbiESQRf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 12:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236632AbiESPXj (ORCPT
+        with ESMTP id S232987AbiESQRd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 11:23:39 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E3EEAB91;
-        Thu, 19 May 2022 08:23:36 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 157861F45DE5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652973814;
-        bh=xWc+axcD/uWFzdlFw1pWb5QQCccJg4clTtiNxJyGAQE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EplFyVNZqw+jA2X1zm+N2KTSqHUx8DqS9/mhW06PW3zizqB8a3zFWUIqI2qbjagTh
-         c2S8qerZD/7Gzw5aVehuh+suhcNDEG/kJ8M+nhfBYEkeYOX0K7OA4kTnzz3Vh9HBkg
-         QjnMNO4q1t0Zf2+vx57thaa+kihKvX+PffH2NAOpr5e/lZ26pkAhgaLuoY+K5bK/n8
-         ercfEm9BZuuElevSDb09QZWaZ9fG+wr/0p1xIselKQ9YsJQJXhgncDgkj85zcbO9RB
-         vJS4nzb1iXNuAz/lIpHGi/OtDmMha/z7Gep8k6rh8/XnFV3g1T/k4c0gBF3Pwcir/B
-         ayCfbn6s9S0Cg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     gregkh@linuxfoundation.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2] dt-bindings: serial: mtk-uart: Convert txt to json-schema
-Date:   Thu, 19 May 2022 17:23:29 +0200
-Message-Id: <20220519152329.55028-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 19 May 2022 12:17:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F03D0289;
+        Thu, 19 May 2022 09:17:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F899B8266C;
+        Thu, 19 May 2022 16:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80B3C385AA;
+        Thu, 19 May 2022 16:17:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652977049;
+        bh=U5yzL+CNoWVKrDgGlCP/DCVT+PIEOgDIgx3wiuOFGFM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LmkJc7DkBLA8Qi9GHuf+MM9b5EhJ2jIlhirBdaKWAyiWrfYywDdkgNDbMbJdlH4cb
+         6g0LYLYPPm9WepowDFrdWTv3R/CdQXr4z3T+08Bj0z5rRSbYuqqSAOoHx1bhUwC6r9
+         mirodZrKFOp3SITLWSeMwy1i3bYddIHct0nJo2Qw=
+Date:   Thu, 19 May 2022 18:17:26 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/9] tty: n_gsm: fix user open not possible at
+ responder until initiator open
+Message-ID: <YoZtlq3RkNU56xFx@kroah.com>
+References: <20220519070757.2096-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519070757.2096-1-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the mtk-uart documentation from freeform text to a json-schema.
+On Thu, May 19, 2022 at 09:07:49AM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> After setting up the control channel on both sides the responder side may
+> want to open a virtual tty to listen on until the initiator starts an
+> application on a user channel. The current implementation allows the
+> open() but no other operation, like termios. These fail with EINVAL.
+> The responder sided application has no means to detect an open by the
+> initiator sided application this way. And the initiator sided applications
+> usually expect the responder sided application to listen on the user
+> channel upon open.
+> Set the user channel into half-open state on responder side once a user
+> application opens the virtual tty to allow IO operations on it.
+> Furthermore, keep the user channel constipated until the initiator side
+> opens it to give the responder sided application the chance to detect the
+> new connection and to avoid data loss if the responder sided application
+> starts sending before the user channel is open.
+> 
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++++++++--
+>  1 file changed, 29 insertions(+), 2 deletions(-)
+> 
+> This commit was not changed as there have been no comments on it in v1.
+> 
+> Link: https://lore.kernel.org/all/20220506144725.1946-1-daniel.starke@siemens.com/
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index fd8b86dde525..08fea3e7674d 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -1493,6 +1493,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
+>  	if (debug & 8)
+>  		pr_debug("DLCI %d goes closed.\n", dlci->addr);
+>  	dlci->state = DLCI_CLOSED;
+> +	/* Prevent us from sending data before the link is up again */
+> +	dlci->constipated = true;
+>  	if (dlci->addr != 0) {
+>  		tty_port_tty_hangup(&dlci->port, false);
+>  		spin_lock_irqsave(&dlci->lock, flags);
+> @@ -1522,6 +1524,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+>  	del_timer(&dlci->t1);
+>  	/* This will let a tty open continue */
+>  	dlci->state = DLCI_OPEN;
+> +	dlci->constipated = false;
+>  	if (debug & 8)
+>  		pr_debug("DLCI %d goes open.\n", dlci->addr);
+>  	/* Send current modem state */
+> @@ -1602,6 +1605,25 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
+>  	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+>  }
+>  
+> +/**
+> + *	gsm_dlci_wait_open	-	wait for channel open procedure
+> + *	@dlci: DLCI to open
+> + *
+> + *	Wait for a DLCI opening from the other side. Asynchronously wait until
+> + *	we get a SABM and set off timers and the responses.
+> + */
+> +static void gsm_dlci_wait_open(struct gsm_dlci *dlci)
+> +{
+> +	switch (dlci->state) {
+> +	case DLCI_CLOSED:
+> +	case DLCI_CLOSING:
+> +		dlci->state = DLCI_OPENING;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +}
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
+The documentation for this function is odd, you are not waiting for
+anything.  You are just changing the state.  This makes no sense as-is,
+sorry.
 
-v2: Changed to also accept just "mediatek,mt6577-uart" as compatible.
-
-
- .../bindings/serial/mediatek,uart.yaml        | 121 ++++++++++++++++++
- .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
- 2 files changed, 121 insertions(+), 59 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
-
-diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-new file mode 100644
-index 000000000000..7929aa123487
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-@@ -0,0 +1,121 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/mediatek,uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek Universal Asynchronous Receiver/Transmitter (UART)
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+
-+allOf:
-+  - $ref: serial.yaml#
-+
-+description: |+
-+  The MediaTek UART is based on the basic 8250 UART and compatible
-+  with 16550A, with enhancements for high speed baud rates and
-+  support for DMA.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - const: mediatek,mt6577-uart
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-uart
-+              - mediatek,mt2712-uart
-+              - mediatek,mt6580-uart
-+              - mediatek,mt6582-uart
-+              - mediatek,mt6589-uart
-+              - mediatek,mt6755-uart
-+              - mediatek,mt6765-uart
-+              - mediatek,mt6779-uart
-+              - mediatek,mt6795-uart
-+              - mediatek,mt6797-uart
-+              - mediatek,mt7622-uart
-+              - mediatek,mt7623-uart
-+              - mediatek,mt7629-uart
-+              - mediatek,mt7986-uart
-+              - mediatek,mt8127-uart
-+              - mediatek,mt8135-uart
-+              - mediatek,mt8173-uart
-+              - mediatek,mt8183-uart
-+              - mediatek,mt8186-uart
-+              - mediatek,mt8192-uart
-+              - mediatek,mt8195-uart
-+              - mediatek,mt8516-uart
-+          - const: mediatek,mt6577-uart
-+
-+  reg:
-+    description: The base address of the UART register bank
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+    items:
-+      - description: The clock the baudrate is derived from
-+      - description: The bus clock for register accesses
-+
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: baud
-+      - const: bus
-+
-+  dmas:
-+    items:
-+      - description: phandle to TX DMA
-+      - description: phandle to RX DMA
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    description:
-+      The UART interrupt and optionally the RX in-band wakeup interrupt.
-+    minItems: 1
-+    items:
-+      - const: uart
-+      - const: wakeup
-+
-+  pinctrl-0: true
-+  pinctrl-1: true
-+
-+  pinctrl-names:
-+    minItems: 1
-+    items:
-+      - const: default
-+      - const: sleep
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    serial@11006000 {
-+        compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
-+        reg = <0x11006000 0x400>;
-+        interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
-+                     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
-+        interrupt-names = "uart", "wakeup";
-+        clocks = <&uart_clk>, <&bus_clk>;
-+        clock-names = "baud", "bus";
-+        pinctrl-0 = <&uart_pin>;
-+        pinctrl-1 = <&uart_pin_sleep>;
-+        pinctrl-names = "default", "sleep";
-+    };
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-deleted file mode 100644
-index 113b5d6a2245..000000000000
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ /dev/null
-@@ -1,59 +0,0 @@
--* MediaTek Universal Asynchronous Receiver/Transmitter (UART)
--
--Required properties:
--- compatible should contain:
--  * "mediatek,mt2701-uart" for MT2701 compatible UARTS
--  * "mediatek,mt2712-uart" for MT2712 compatible UARTS
--  * "mediatek,mt6580-uart" for MT6580 compatible UARTS
--  * "mediatek,mt6582-uart" for MT6582 compatible UARTS
--  * "mediatek,mt6589-uart" for MT6589 compatible UARTS
--  * "mediatek,mt6755-uart" for MT6755 compatible UARTS
--  * "mediatek,mt6765-uart" for MT6765 compatible UARTS
--  * "mediatek,mt6779-uart" for MT6779 compatible UARTS
--  * "mediatek,mt6795-uart" for MT6795 compatible UARTS
--  * "mediatek,mt6797-uart" for MT6797 compatible UARTS
--  * "mediatek,mt7622-uart" for MT7622 compatible UARTS
--  * "mediatek,mt7623-uart" for MT7623 compatible UARTS
--  * "mediatek,mt7629-uart" for MT7629 compatible UARTS
--  * "mediatek,mt7986-uart", "mediatek,mt6577-uart" for MT7986 compatible UARTS
--  * "mediatek,mt8127-uart" for MT8127 compatible UARTS
--  * "mediatek,mt8135-uart" for MT8135 compatible UARTS
--  * "mediatek,mt8173-uart" for MT8173 compatible UARTS
--  * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
--  * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
--  * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
--  * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
--  * "mediatek,mt8516-uart" for MT8516 compatible UARTS
--  * "mediatek,mt6577-uart" for MT6577 and all of the above
--
--- reg: The base address of the UART register bank.
--
--- interrupts:
--  index 0: an interrupt specifier for the UART controller itself
--  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
--           support Rx in-band wake up. If one would like to use this feature,
--           one must create an addtional pinctrl to reconfigure Rx pin to normal
--           GPIO before suspend.
--
--- clocks : Must contain an entry for each entry in clock-names.
--  See ../clocks/clock-bindings.txt for details.
--- clock-names:
--  - "baud": The clock the baudrate is derived from
--  - "bus": The bus clock for register accesses (optional)
--
--For compatibility with older device trees an unnamed clock is used for the
--baud clock if the baudclk does not exist. Do not use this for new designs.
--
--Example:
--
--	uart0: serial@11006000 {
--		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
--		reg = <0x11006000 0x400>;
--		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
--		clocks = <&uart_clk>, <&bus_clk>;
--		clock-names = "baud", "bus";
--		pinctrl-names = "default", "sleep";
--		pinctrl-0 = <&uart_pin>;
--		pinctrl-1 = <&uart_pin_sleep>;
--	};
--- 
-2.35.1
-
+greg k-h
