@@ -2,158 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A4FC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 07:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53365C433FE
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiESH5g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 03:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
+        id S235285AbiESISg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 04:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235064AbiESH51 (ORCPT
+        with ESMTP id S235373AbiESISZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 03:57:27 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2363C49E;
-        Thu, 19 May 2022 00:57:22 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5265E21B2F;
-        Thu, 19 May 2022 07:57:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652947041; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=Z4alrCp3n4M0QAnk7ntgmbNwbf4GzlpevASy3Qy1ZPA=;
-        b=oDq8z7z9nwwgvEFVsyo8Bs3jDH/asiWOWdV+gl7rHnQDKeMRVNUWBRSef6oc+dYPa5mwQJ
-        y6b6XcUcXmSCECjDzY7kwtKlKzGUDUa7keDKShBDmOAWW9Fp71iHZCUwA73xjtoMAZanNG
-        fT7EkOEev5IbII4H+ep9ou8U38R28T0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652947041;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=Z4alrCp3n4M0QAnk7ntgmbNwbf4GzlpevASy3Qy1ZPA=;
-        b=P9J+Ym70oKtZgRoiVhlbUKzD3IseUrsaIDdKZdyKzAYraA86AU22KUaPpks3D1wlb7IXt0
-        TsYa8mM5YxxOp6Bg==
-Received: from localhost.localdomain (unknown [10.100.201.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1A8862C141;
-        Thu, 19 May 2022 07:57:21 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH] serial: amba-pl011: move header content to .c
-Date:   Thu, 19 May 2022 09:57:20 +0200
-Message-Id: <20220519075720.31402-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.1
+        Thu, 19 May 2022 04:18:25 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D057262CEA
+        for <linux-serial@vger.kernel.org>; Thu, 19 May 2022 01:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652948299; x=1684484299;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=w9VMcqLOPWmz9VtnV9v4gs0T9a3YjWrIwM3KSoISY4k=;
+  b=gZxLHuVq26FJNFHNL6E0GJMPbMF5DrZmFdA1dDxiFs7Hq8PwVOIds/ar
+   t6vUCpKRG02y+X2lxm9sJA2jpYPbT3uSATuVogBd8qS6R15EiVeCG0qj4
+   jlsEAMXWhlD5HzDiqyThevDoCDOmrRHNNOWw6rF6KCRL5Ol2fx5GHHoez
+   o9QE0c3Dhntflf+HlzTUgNQsaRUry3p3e/2pVCYHxFNGRGSA2MEEV0wbU
+   2rOiNymgR4XDFQAIWmJYwHvbIeBWK2ECKIOHEPxqyBRHTotBdx9V517qe
+   7J7Hgnyi3EhRd6Tpr1Vnf3URUt75pntInNrX/CJWigwSmGUVLUpMBCg17
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272218819"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="272218819"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:18:18 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="598431142"
+Received: from ivanovbx-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.33.234])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:18:16 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 0/9] tty/serial: Termios flag fixes
+Date:   Thu, 19 May 2022 11:17:59 +0300
+Message-Id: <20220519081808.3776-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There is no point keeping the header content separated. In this case, it
-is only an enum. So move the enum to the appropriate source file.
+Here are a few termios flag fixes, mostly CSIZE but a few other flags
+as well. The fixed flags returned to userspace should now match to what
+the driver is using. Incorrect CSIZE also causes a miscalculation of
+timeout in serial core (but it might not be a huge problem being just
+a handwavy long timeout).
 
-Cc: Russell King <linux@armlinux.org.uk>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/amba-pl011.c | 32 ++++++++++++++++++++++++++++--
- drivers/tty/serial/amba-pl011.h | 35 ---------------------------------
- 2 files changed, 30 insertions(+), 37 deletions(-)
- delete mode 100644 drivers/tty/serial/amba-pl011.h
+v2:
+- Corrected shortlog typo
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 98c45a57e6e9..97ef41cb2721 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -42,8 +42,6 @@
- #include <linux/io.h>
- #include <linux/acpi.h>
- 
--#include "amba-pl011.h"
--
- #define UART_NR			14
- 
- #define SERIAL_AMBA_MAJOR	204
-@@ -55,6 +53,36 @@
- #define UART_DR_ERROR		(UART011_DR_OE|UART011_DR_BE|UART011_DR_PE|UART011_DR_FE)
- #define UART_DUMMY_DR_RX	(1 << 16)
- 
-+enum {
-+	REG_DR,
-+	REG_ST_DMAWM,
-+	REG_ST_TIMEOUT,
-+	REG_FR,
-+	REG_LCRH_RX,
-+	REG_LCRH_TX,
-+	REG_IBRD,
-+	REG_FBRD,
-+	REG_CR,
-+	REG_IFLS,
-+	REG_IMSC,
-+	REG_RIS,
-+	REG_MIS,
-+	REG_ICR,
-+	REG_DMACR,
-+	REG_ST_XFCR,
-+	REG_ST_XON1,
-+	REG_ST_XON2,
-+	REG_ST_XOFF1,
-+	REG_ST_XOFF2,
-+	REG_ST_ITCR,
-+	REG_ST_ITIP,
-+	REG_ST_ABCR,
-+	REG_ST_ABIMSC,
-+
-+	/* The size of the array - must be last */
-+	REG_ARRAY_SIZE,
-+};
-+
- static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
- 	[REG_DR] = UART01x_DR,
- 	[REG_FR] = UART01x_FR,
-diff --git a/drivers/tty/serial/amba-pl011.h b/drivers/tty/serial/amba-pl011.h
-deleted file mode 100644
-index 077eb12a3472..000000000000
---- a/drivers/tty/serial/amba-pl011.h
-+++ /dev/null
-@@ -1,35 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef AMBA_PL011_H
--#define AMBA_PL011_H
--
--enum {
--	REG_DR,
--	REG_ST_DMAWM,
--	REG_ST_TIMEOUT,
--	REG_FR,
--	REG_LCRH_RX,
--	REG_LCRH_TX,
--	REG_IBRD,
--	REG_FBRD,
--	REG_CR,
--	REG_IFLS,
--	REG_IMSC,
--	REG_RIS,
--	REG_MIS,
--	REG_ICR,
--	REG_DMACR,
--	REG_ST_XFCR,
--	REG_ST_XON1,
--	REG_ST_XON2,
--	REG_ST_XOFF1,
--	REG_ST_XOFF2,
--	REG_ST_ITCR,
--	REG_ST_ITIP,
--	REG_ST_ABCR,
--	REG_ST_ABIMSC,
--
--	/* The size of the array - must be last */
--	REG_ARRAY_SIZE,
--};
--
--#endif
+Ilpo Järvinen (9):
+  serial: uartlite: Fix BRKINT clearing
+  serial: digicolor-usart: Don't allow CS5-6
+  serial: rda-uart: Don't allow CS5-6
+  serial: txx9: Don't allow CS5-6
+  serial: sh-sci: Don't allow CS5-6
+  serial: sifive: Sanitize CSIZE and c_iflag
+  serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
+  serial: stm32-usart: Correct CSIZE, bits, and parity
+  pcmcia: synclink_cs: Don't allow CS5-6
+
+ drivers/char/pcmcia/synclink_cs.c    |  6 +++++-
+ drivers/tty/serial/digicolor-usart.c |  2 ++
+ drivers/tty/serial/rda-uart.c        |  2 ++
+ drivers/tty/serial/serial_txx9.c     |  2 ++
+ drivers/tty/serial/sh-sci.c          |  6 +++++-
+ drivers/tty/serial/sifive.c          |  6 +++++-
+ drivers/tty/serial/st-asc.c          |  4 ++++
+ drivers/tty/serial/stm32-usart.c     | 15 ++++++++++++---
+ drivers/tty/serial/uartlite.c        |  3 ++-
+ 9 files changed, 39 insertions(+), 7 deletions(-)
+
 -- 
-2.36.1
+2.30.2
 
