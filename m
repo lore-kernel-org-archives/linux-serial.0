@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA1FC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8501EC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 08:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiESI5C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 04:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S235128AbiESI7b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 19 May 2022 04:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231704AbiESI5C (ORCPT
+        with ESMTP id S233827AbiESI7a (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 04:57:02 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCA956FA1;
-        Thu, 19 May 2022 01:56:59 -0700 (PDT)
+        Thu, 19 May 2022 04:59:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EADA502A;
+        Thu, 19 May 2022 01:59:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652950619; x=1684486619;
+  t=1652950769; x=1684486769;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=wYyL5jNtJLvThuTJXbDz7/sXDwDLXfvwFOauQDsuJu8=;
-  b=Q0H9nCSER7PJ6fj43FHJMW+Z/fBJIxAbHWtRcpYuALTmHc+OuhbUE9EG
-   Ae+U+kOLnxZG5qK+NZCRodmMrY/opw9A0tSgogFazGfk+LheLzjEMh0JP
-   oSJ+SaSgtUVKxXKESamSi1OnSdfjVI0iw15FIA2CItFF30rqk63+qAn7Q
-   mvkyQON8b1lDuBnRd85Jgj+4vE8JJ/6EDeMaTC76TGHPVxjCKS+8+UxOi
-   ZAyP0+n+eDgWwLYO+umaoDQRh8ypJClYtMNDKhVUdh67rAA/Y0I6GIO7g
-   L5Zao1dyXNobj2c8kvmvrT/Pncc3ftEX2LsfONnu0/sPF1wVJ/GhcuCmj
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="252621613"
+   references:mime-version:content-id;
+  bh=05Fuppx/L9sCpsgYnyjfWyFaI5tXbG/b+Ttzw5ROFAg=;
+  b=avL7D8cSzgGgw4MppOZ8NF1YUoVk2pIrtrCyuFdFbLRlNowQN0a4f0iw
+   dC+a1a5jrh1QvhszNp5uDTSC9Ol3zlm5Yh2Sh0Toc8N0rXJS1aNQWWjeD
+   pDc6UYeAUDuGMoEFU/hxPotvk7W+rvRbtyCawlLOAutN1ht0QGx0Uqu5A
+   ye9n3vU0Jxh0zbsBEF926VvfsL4Mi8sMwhHJ1eNAQcSBBxhqwrhQww7an
+   MpPGUz8QyCg6Nh08N3WmNBIeOFM4QQkS3hq3NoVilAiZk2dSPITJQ1AgV
+   3RVqO1teTPdoEGkSPkxac7pNYCFIBmcQFN2aFtVUwztxTE+mN8rSWDTy+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259679129"
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="252621613"
+   d="scan'208";a="259679129"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:56:59 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:28 -0700
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598445313"
+   d="scan'208";a="598445933"
 Received: from ivanovbx-mobl1.ger.corp.intel.com ([10.249.33.234])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:56:57 -0700
-Date:   Thu, 19 May 2022 11:56:54 +0300 (EEST)
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:26 -0700
+Date:   Thu, 19 May 2022 11:59:24 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -46,149 +46,39 @@ cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Paul Mackerras <paulus@samba.org>
-Subject: Re: [PATCH 1/4] serial: pmac_zilog: remove unfinished DBDMA
- support
-In-Reply-To: <20220519075653.31356-1-jslaby@suse.cz>
-Message-ID: <2f7a739f-61b4-a1af-7c9b-70c5b93c6281@linux.intel.com>
-References: <20220519075653.31356-1-jslaby@suse.cz>
+Subject: Re: [PATCH 4/4] serial: pmac_zilog: remove initial print
+In-Reply-To: <20220519075653.31356-4-jslaby@suse.cz>
+Message-ID: <2adeae5a-cc42-5a3c-a1e0-2b26f294834@linux.intel.com>
+References: <20220519075653.31356-1-jslaby@suse.cz> <20220519075653.31356-4-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; BOUNDARY="8323329-461353659-1652950754=:1628"
+Content-ID: <378db1e4-e6db-c394-358f-d690cb7870f7@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-461353659-1652950754=:1628
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <9e628ba6-962-3ab-bd6a-436b56f87c8e@linux.intel.com>
+
 On Thu, 19 May 2022, Jiri Slaby wrote:
 
-> The support for DBDMA was never completed. Remove the the code that only
-> maps spaces without real work.
+> Don't report about the driver when loaded. It's unneeded and frowned
+> upon nowadays.
 > 
 > Cc: Michael Ellerman <mpe@ellerman.id.au>
 > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
 > Cc: Paul Mackerras <paulus@samba.org>
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/serial/pmac_zilog.c | 38 +--------------------------------
->  drivers/tty/serial/pmac_zilog.h |  9 --------
->  2 files changed, 1 insertion(+), 46 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-> index c903085acb8d..2953ff64a892 100644
-> --- a/drivers/tty/serial/pmac_zilog.c
-> +++ b/drivers/tty/serial/pmac_zilog.c
 
-How about dropping this too:
-#include <asm/dbdma.h>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+for patches 2-4.
 
 -- 
  i.
-
-
-> @@ -65,9 +65,6 @@
->  
->  #include "pmac_zilog.h"
->  
-> -/* Not yet implemented */
-> -#undef HAS_DBDMA
-> -
->  static char version[] __initdata = "pmac_zilog: 0.6 (Benjamin Herrenschmidt <benh@kernel.crashing.org>)";
->  MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
->  MODULE_DESCRIPTION("Driver for the Mac and PowerMac serial ports.");
-> @@ -1399,7 +1396,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
->  		char	name[1];
->  	} *slots;
->  	int len;
-> -	struct resource r_ports, r_rxdma, r_txdma;
-> +	struct resource r_ports;
->  
->  	/*
->  	 * Request & map chip registers
-> @@ -1411,35 +1408,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
->  
->  	uap->control_reg = uap->port.membase;
->  	uap->data_reg = uap->control_reg + 0x10;
-> -	
-> -	/*
-> -	 * Request & map DBDMA registers
-> -	 */
-> -#ifdef HAS_DBDMA
-> -	if (of_address_to_resource(np, 1, &r_txdma) == 0 &&
-> -	    of_address_to_resource(np, 2, &r_rxdma) == 0)
-> -		uap->flags |= PMACZILOG_FLAG_HAS_DMA;
-> -#else
-> -	memset(&r_txdma, 0, sizeof(struct resource));
-> -	memset(&r_rxdma, 0, sizeof(struct resource));
-> -#endif	
-> -	if (ZS_HAS_DMA(uap)) {
-> -		uap->tx_dma_regs = ioremap(r_txdma.start, 0x100);
-> -		if (uap->tx_dma_regs == NULL) {	
-> -			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
-> -			goto no_dma;
-> -		}
-> -		uap->rx_dma_regs = ioremap(r_rxdma.start, 0x100);
-> -		if (uap->rx_dma_regs == NULL) {	
-> -			iounmap(uap->tx_dma_regs);
-> -			uap->tx_dma_regs = NULL;
-> -			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
-> -			goto no_dma;
-> -		}
-> -		uap->tx_dma_irq = irq_of_parse_and_map(np, 1);
-> -		uap->rx_dma_irq = irq_of_parse_and_map(np, 2);
-> -	}
-> -no_dma:
->  
->  	/*
->  	 * Detect port type
-> @@ -1505,8 +1473,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
->  	    of_device_is_compatible(np->parent->parent, "gatwick")) {
->  		/* IRQs on gatwick are offset by 64 */
->  		uap->port.irq = irq_create_mapping(NULL, 64 + 15);
-> -		uap->tx_dma_irq = irq_create_mapping(NULL, 64 + 4);
-> -		uap->rx_dma_irq = irq_create_mapping(NULL, 64 + 5);
->  	}
->  
->  	/* Setup some valid baud rate information in the register
-> @@ -1526,8 +1492,6 @@ static void pmz_dispose_port(struct uart_pmac_port *uap)
->  	struct device_node *np;
->  
->  	np = uap->node;
-> -	iounmap(uap->rx_dma_regs);
-> -	iounmap(uap->tx_dma_regs);
->  	iounmap(uap->control_reg);
->  	uap->node = NULL;
->  	of_node_put(np);
-> diff --git a/drivers/tty/serial/pmac_zilog.h b/drivers/tty/serial/pmac_zilog.h
-> index fa85b0de5c2f..87337b748d6d 100644
-> --- a/drivers/tty/serial/pmac_zilog.h
-> +++ b/drivers/tty/serial/pmac_zilog.h
-> @@ -43,7 +43,6 @@ struct uart_pmac_port {
->  #define PMACZILOG_FLAG_TX_ACTIVE	0x00000040
->  #define PMACZILOG_FLAG_IS_IRDA		0x00000100
->  #define PMACZILOG_FLAG_IS_INTMODEM	0x00000200
-> -#define PMACZILOG_FLAG_HAS_DMA		0x00000400
->  #define PMACZILOG_FLAG_RSRC_REQUESTED	0x00000800
->  #define PMACZILOG_FLAG_IS_OPEN		0x00002000
->  #define PMACZILOG_FLAG_IS_EXTCLK	0x00008000
-> @@ -55,13 +54,6 @@ struct uart_pmac_port {
->  	volatile u8			__iomem *control_reg;
->  	volatile u8			__iomem *data_reg;
->  
-> -#ifdef CONFIG_PPC_PMAC
-> -	unsigned int			tx_dma_irq;
-> -	unsigned int			rx_dma_irq;
-> -	volatile struct dbdma_regs	__iomem *tx_dma_regs;
-> -	volatile struct dbdma_regs	__iomem *rx_dma_regs;
-> -#endif
-> -
->  	unsigned char			irq_name[8];
->  
->  	struct ktermios			termios_cache;
-> @@ -377,7 +369,6 @@ static inline void zssync(struct uart_pmac_port *port)
->  #define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & PMACZILOG_FLAG_MODEM_STATUS)
->  #define ZS_IS_IRDA(UP)			((UP)->flags & PMACZILOG_FLAG_IS_IRDA)
->  #define ZS_IS_INTMODEM(UP)		((UP)->flags & PMACZILOG_FLAG_IS_INTMODEM)
-> -#define ZS_HAS_DMA(UP)			((UP)->flags & PMACZILOG_FLAG_HAS_DMA)
->  #define ZS_IS_OPEN(UP)			((UP)->flags & PMACZILOG_FLAG_IS_OPEN)
->  #define ZS_IS_EXTCLK(UP)		((UP)->flags & PMACZILOG_FLAG_IS_EXTCLK)
->  
-> 
-
+--8323329-461353659-1652950754=:1628--
