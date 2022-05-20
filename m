@@ -2,109 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C27C43219
-	for <linux-serial@archiver.kernel.org>; Thu, 19 May 2022 21:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A1AC433F5
+	for <linux-serial@archiver.kernel.org>; Fri, 20 May 2022 06:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245105AbiESVUK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 May 2022 17:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
+        id S1345764AbiETGUD (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 20 May 2022 02:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiESVUI (ORCPT
+        with ESMTP id S233905AbiETGUD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 May 2022 17:20:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF53ED726;
-        Thu, 19 May 2022 14:20:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52B84B8250B;
-        Thu, 19 May 2022 21:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C6FC385AA;
-        Thu, 19 May 2022 21:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652995205;
-        bh=SvQDWvHaw/Ro4+sDEA3LzYO4ioj59uSH1d5BBRvD684=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lZPvgxQ/0GEOJbdI/RsIgFr7yLZfcUJvpqzkwIfYr6DnYL+2Rhom2zrrp9ZJYTqpF
-         2BbR9KFYoHbcXxtwZrm5jEIxoonOr6uHesOrfW2SzdnjGAFe7wRyLtBeOLomEHF142
-         GyhjeqDrl/+/XblALv6RzMdFZz//uCum30g8tGHTm+Jh2eHBkWU+fpxNxNOYIVKpdO
-         Yz+zapxuT0saXPNbmmikHL5VGRFl3k5i/okcNGRFGOcWY43CajAV5gIwlk5K91/tPl
-         FY3nh2Cq1LMWd9FJmk7x7tKje3C8gCWlhNIHrrazJdMY61SXsJMc302TGt3KV0Bc7z
-         VYeES8NTlFwKw==
-Date:   Thu, 19 May 2022 22:19:54 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix properties without any type
-Message-ID: <Yoa0egr9vhTHcxjp@sirena.org.uk>
-References: <20220519211411.2200720-1-robh@kernel.org>
+        Fri, 20 May 2022 02:20:03 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF7F14C74D;
+        Thu, 19 May 2022 23:20:00 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24JJnLmo022160;
+        Fri, 20 May 2022 08:19:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=efeJifdma56rD3trwjzxCU9cZ0DK0SMJX02sClHrbfw=;
+ b=duJP13Um8k8SytXA95+J6+41SUITXlFftu0VVJusXjoXGlWE+hO9McLhFxdnCVLFtko1
+ ZmSdCQpkEndPusIF/r9q5pcVDvxYw/w4vA2uL/mDMWuAE/RyTisKju+kfTIxG/5rT75w
+ sf2k1ODFUeXbP3rmTs5q2suSUrnh5Zi4ZauLVONb3/P8W/k3AVM8sS7/R/C6/sEKEc6/
+ +x50g20BkAv+OK8L5ktVfvxs0SiDpsdA+krPtVMSDNX2Kn7RBdZ7LbEnPkGKMwRiUGjk
+ v7bBF8qzczUzLu9zTPVm9QNOMIqopusYnZrRV1If34WISsbNJAAEHRn2BF5iqXkCC+Kk nA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g23aj62rn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 08:19:39 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 619B410002A;
+        Fri, 20 May 2022 08:19:37 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 58640210F73;
+        Fri, 20 May 2022 08:19:37 +0200 (CEST)
+Received: from [10.201.20.162] (10.75.127.49) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 20 May
+ 2022 08:19:36 +0200
+Message-ID: <6f3de705-7db5-584c-1b3a-3ff7fb5c9096@foss.st.com>
+Date:   Fri, 20 May 2022 08:19:36 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="eXFy+XxgE7404o6q"
-Content-Disposition: inline
-In-Reply-To: <20220519211411.2200720-1-robh@kernel.org>
-X-Cookie: Some restrictions may apply.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 7/9] serial: st-asc: Sanitize CSIZE and correct PARENB
+ for CS7
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220519081808.3776-1-ilpo.jarvinen@linux.intel.com>
+ <20220519081808.3776-8-ilpo.jarvinen@linux.intel.com>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20220519081808.3776-8-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-20_02,2022-05-19_03,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Ilpo
 
---eXFy+XxgE7404o6q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 5/19/22 10:18, Ilpo Järvinen wrote:
+> Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
+> CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
+> to have parity, thus add PARENB.
+> 
+> Incorrect CSIZE results in miscalculation of the frame bits in
+> tty_get_char_size() or in its predecessor where the roughly the same
+> code is directly within uart_update_timeout().
+> 
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+> Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/st-asc.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index d7fd692286cf..1b0da603ab54 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -535,10 +535,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+>  	/* set character length */
+>  	if ((cflag & CSIZE) == CS7) {
+>  		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
+> +		cflag |= PARENB;
+>  	} else {
+>  		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
+>  						ASC_CTL_MODE_8BIT;
+> +		cflag &= ~CSIZE;
+> +		cflag |= CS8;
+>  	}
+> +	termios->c_cflag = cflag;
+>  
+>  	/* set stop bit */
+>  	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
 
-On Thu, May 19, 2022 at 04:14:11PM -0500, Rob Herring wrote:
-> Now that the schema tools can extract type information for all
-> properties (in order to decode dtb files), finding properties missing
-> any type definition is fairly trivial though not yet automated.
->=20
-> Fix the various property schemas which are missing a type. Most of these
-> tend to be device specific properties which don't have a vendor prefix.
-> A vendor prefix is how we normally ensure a type is defined.
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---eXFy+XxgE7404o6q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKGtHkACgkQJNaLcl1U
-h9CTcgf/YrxaonL9unlOXD9rVNzVh2gBFZV2wTefQuNDSwkIM40MNQLcoafgcXo5
-gFwpnXnCULN4HW9E4gsxeDnj3lcvR/bPgnNtrHetwyPKH/I99KJSgtm6605GyKWF
-4d5cVzASF5iCk9z6tn51f2x6jCCLVkVoAOOohCc3nYr1YbXRtQSnKKS8vYaNyqVq
-/sELkTEEdwMdl9AML+9S0amyFoPS92ZdcFlFWZIjjzPmidXQxZuL7tGvs9O56vj+
-QUESokWc4u2ziIcTQT9X0XXb9dDJjhXWaFiHNc38F7o+ad3kBXAhgzzBzMC/6fLI
-/352XipOMFDBOV9MMA03nK4kEtXQBA==
-=MbOe
------END PGP SIGNATURE-----
-
---eXFy+XxgE7404o6q--
+Thanks
+Patrice
