@@ -2,92 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 920BDC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 20 May 2022 15:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C797C433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 21 May 2022 11:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240023AbiETPb1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 May 2022 11:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S1352648AbiEULNv (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 May 2022 07:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237360AbiETPb1 (ORCPT
+        with ESMTP id S242628AbiEULMG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 May 2022 11:31:27 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 08:31:25 PDT
-Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B455536B
-        for <linux-serial@vger.kernel.org>; Fri, 20 May 2022 08:31:24 -0700 (PDT)
+        Sat, 21 May 2022 07:12:06 -0400
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C954E2B1B3;
+        Sat, 21 May 2022 04:12:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=rsa1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=kwToCduxEHKRlf6xTfLStwKuhJjU+lyECx++Tp7rwBg=;
-        b=dKidBF+iQ7d11gWNT/UoyXW+3Hs3JRy8MCTHjV+5ua+Tg8M5cogj66cbemiXXWJkpK0zsojA7lQyE
-         +WqVoFZWQ6MJXXhEGgSw5lyAml+bPL2Bob4FIJw5qswzhyuzPAS6nncjClEcmRp8/q5uuFnaXkNE2d
-         CPuaLrtvtWobbmHB9tsxsDLdpABvzpEFwrP2Hjj7G7q9P4zXpqd59UkkCfAXbqYiZX0JhO/0Al924K
-         wFSjZf6TdiexU83WgAFrBKHbEHcVNpQIMy29BaLvT2CXdB5WMu+1QWT1QpW5jqN1dCLHfvlGz7DBJM
-         XMgEyhF4mJWi5tS9mXMNT9APf2Wijnw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=ed1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=kwToCduxEHKRlf6xTfLStwKuhJjU+lyECx++Tp7rwBg=;
-        b=n6agCsCBqaR8eTktbf5YnuH91+U1tOyO7hFP5kGyWriJEdb5PGp+30pFXfAEW1f4wny+jHMBg9N+G
-         uHm+DFOBg==
-X-HalOne-Cookie: 6d6a2faa20e68cf1e8fd7d3b59daf8d1323c09c1
-X-HalOne-ID: c1025af6-d851-11ec-a909-d0431ea8a290
-Received: from mailproxy2.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id c1025af6-d851-11ec-a909-d0431ea8a290;
-        Fri, 20 May 2022 15:30:19 +0000 (UTC)
-Date:   Fri, 20 May 2022 17:30:17 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kQa5cfuPEsbdnRvQ8ftErp/mynhbBnfSGp1TG+fR1bE=;
+  b=OECAspocGk4KwZCivgUPEzFkLguLIRQPoDoEpXglC2sSYPNhPHPamMmI
+   JuyFmyXTJ+PX7DO9bt9rZQ1rP5jcYEuqFkijNX+brIopDjempkX26hzqz
+   a9IN/YSAFyDvSvGkoPi6ksuBOHUa9Yw5/EhjNM0ikg8dfohbWyGjU/bSQ
+   k=;
+Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
+   d="scan'208";a="14727918"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Laxman Dewangan <ldewangan@nvidia.com>
+Cc:     kernel-janitors@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        chrome-platform@lists.linux.dev, alsa-devel@alsa-project.org,
-        linux-pm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-pci@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix properties without any type
-Message-ID: <Yoe0CRhygXOIrYJc@ravnborg.org>
-References: <20220519211411.2200720-1-robh@kernel.org>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: tegra: fix typos in comments
+Date:   Sat, 21 May 2022 13:10:33 +0200
+Message-Id: <20220521111145.81697-23-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519211411.2200720-1-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 19, 2022 at 04:14:11PM -0500, Rob Herring wrote:
-> Now that the schema tools can extract type information for all
-> properties (in order to decode dtb files), finding properties missing
-> any type definition is fairly trivial though not yet automated.
-> 
-> Fix the various property schemas which are missing a type. Most of these
-> tend to be device specific properties which don't have a vendor prefix.
-> A vendor prefix is how we normally ensure a type is defined.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Sam Ravnborg <sam@ravnborg.org> # for everything in .../bindings/display/
+Spelling mistakes (triple letters) in comments.
+Detected with the help of Coccinelle.
+
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+
+---
+ drivers/tty/serial/serial-tegra.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index d942ab152f5a..101fb585e6f9 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -441,7 +441,7 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
+ 
+ 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
+ 		if (lsr & UART_LSR_OE) {
+-			/* Overrrun error */
++			/* Overrun error */
+ 			flag = TTY_OVERRUN;
+ 			tup->uport.icount.overrun++;
+ 			dev_dbg(tup->uport.dev, "Got overrun errors\n");
+@@ -1080,7 +1080,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+ 	tup->rx_in_progress = 1;
+ 
+ 	/*
+-	 * Enable IE_RXS for the receive status interrupts like line errros.
++	 * Enable IE_RXS for the receive status interrupts like line errors.
+ 	 * Enable IE_RX_TIMEOUT to get the bytes which cannot be DMA'd.
+ 	 *
+ 	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
+
