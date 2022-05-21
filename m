@@ -2,82 +2,275 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C797C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 21 May 2022 11:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87263C43217
+	for <linux-serial@archiver.kernel.org>; Sat, 21 May 2022 15:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352648AbiEULNv (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 May 2022 07:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        id S244707AbiEUPDv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 May 2022 11:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242628AbiEULMG (ORCPT
+        with ESMTP id S244641AbiEUPDt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:06 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C954E2B1B3;
-        Sat, 21 May 2022 04:12:03 -0700 (PDT)
+        Sat, 21 May 2022 11:03:49 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6F99154A
+        for <linux-serial@vger.kernel.org>; Sat, 21 May 2022 08:03:45 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bq30so18798093lfb.3
+        for <linux-serial@vger.kernel.org>; Sat, 21 May 2022 08:03:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kQa5cfuPEsbdnRvQ8ftErp/mynhbBnfSGp1TG+fR1bE=;
-  b=OECAspocGk4KwZCivgUPEzFkLguLIRQPoDoEpXglC2sSYPNhPHPamMmI
-   JuyFmyXTJ+PX7DO9bt9rZQ1rP5jcYEuqFkijNX+brIopDjempkX26hzqz
-   a9IN/YSAFyDvSvGkoPi6ksuBOHUa9Yw5/EhjNM0ikg8dfohbWyGjU/bSQ
-   k=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727918"
-Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Laxman Dewangan <ldewangan@nvidia.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: tegra: fix typos in comments
-Date:   Sat, 21 May 2022 13:10:33 +0200
-Message-Id: <20220521111145.81697-23-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 2.20.1
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4qCtL0+bm+n7u/HXMR/ejdT6S5mFrpV8yho83BhRO5s=;
+        b=y5RaZjFHrW8w0QDRcNsylDIFb53EJ2po4JTV2FpNAdkAYoZdu1qF5axrhsPQuGATng
+         IRhb46WEpzowjRCtShPff9kYW6hHmeuNWcNUVWWram5Vsu13pwjOphSj50HlavWfE75o
+         fl8HJqVUjSx8QbwUjbHsCAWiX5BauC0NO2ZKYDPS4ebr9JVbKM3hZESP+xBd6W4RKh33
+         MjPK1gRmYo1vuibvD7RGvzYvB0fQWdgtoSLYcw2VHu54BnbEvJcolLEa1EoGN8BAPKCL
+         xL8v5PmCr8qaYJ68UOqWoeB4NePuVP6tv4mkCntQBpW2qZmf/QlRL9lcpkc3pjzue05U
+         zOAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4qCtL0+bm+n7u/HXMR/ejdT6S5mFrpV8yho83BhRO5s=;
+        b=ruzMhtnqoCRMB+LjyvP7UxLGyEBtzRE+WxCXDYQXwG9H2BPXsBvyZQbkIF8I0w0t53
+         YaHEE/mLmmquZsvSB2gwc68IJdVhkq6xIG+5JMP9KWQZLSSQTuZpWowyN88jYPJN3T4Y
+         C85FUtDeT2MtgP4HWOTU6VaBi6Az7c+93K1JCiAjcgEm2wVXJBGSF7Jl57F7rfUwJAar
+         x//9xJXPgBhPF3CuOS0P9gx4aodcgeaXDNOn0EJuoas62kJQ6+O5WLTYcQ4QAvylR1OD
+         fbLWS2h4+ia32oXAR0qBcncq5ysSc9CQEFA+aYFRff59zWQRo9WTOrAAxZAVwp6iNyj2
+         li1g==
+X-Gm-Message-State: AOAM530kzMW60mUxv5gZENxtrA6NQryjqa247ZPN72/LgSSRVpnTdwmy
+        7nqPWy1ZF5jJvZBG0cUj9nAICA==
+X-Google-Smtp-Source: ABdhPJxtHDtDb6cleVJCc0ulh0XswzEKTSNzq7RDBh7mwPl4obmqj7ZYfKIcfiHfX3+2J00L6fmtSQ==
+X-Received: by 2002:ac2:4f0c:0:b0:477:cb8e:bd8b with SMTP id k12-20020ac24f0c000000b00477cb8ebd8bmr5791149lfr.209.1653145423865;
+        Sat, 21 May 2022 08:03:43 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id p20-20020ac24ed4000000b0047255d210easm1087910lfr.25.2022.05.21.08.03.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 May 2022 08:03:43 -0700 (PDT)
+Message-ID: <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
+Date:   Sat, 21 May 2022 17:03:41 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] dt-bindings: Fix properties without any type
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Peter Rosin <peda@axentia.se>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
+        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org
+References: <20220519211411.2200720-1-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220519211411.2200720-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Spelling mistakes (triple letters) in comments.
-Detected with the help of Coccinelle.
+On 19/05/2022 23:14, Rob Herring wrote:
+> Now that the schema tools can extract type information for all
+> properties (in order to decode dtb files), finding properties missing
+> any type definition is fairly trivial though not yet automated.
+> 
+> Fix the various property schemas which are missing a type. Most of these
+> tend to be device specific properties which don't have a vendor prefix.
+> A vendor prefix is how we normally ensure a type is defined.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../arm/hisilicon/controller/hip04-bootwrapper.yaml       | 5 +++--
+>  .../bindings/display/bridge/toshiba,tc358768.yaml         | 1 +
+>  .../devicetree/bindings/display/panel/panel-timing.yaml   | 5 +++++
+>  .../bindings/display/panel/raydium,rm67191.yaml           | 1 +
+>  .../bindings/display/panel/samsung,s6e8aa0.yaml           | 1 +
+>  .../devicetree/bindings/gpio/fairchild,74hc595.yaml       | 1 +
+>  .../devicetree/bindings/input/google,cros-ec-keyb.yaml    | 1 +
+>  .../devicetree/bindings/input/matrix-keymap.yaml          | 4 ++++
+>  Documentation/devicetree/bindings/media/i2c/adv7604.yaml  | 3 ++-
+>  Documentation/devicetree/bindings/mux/reg-mux.yaml        | 8 ++++++--
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml      | 1 +
+>  Documentation/devicetree/bindings/net/ingenic,mac.yaml    | 1 +
+>  .../devicetree/bindings/net/ti,davinci-mdio.yaml          | 1 +
+>  .../devicetree/bindings/net/wireless/ti,wlcore.yaml       | 2 ++
+>  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml          | 6 ++++--
+>  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml   | 2 ++
+>  .../devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml    | 2 ++
+>  Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml | 1 +
+>  .../devicetree/bindings/power/supply/battery.yaml         | 7 ++++++-
+>  .../devicetree/bindings/power/supply/charger-manager.yaml | 1 +
+>  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml   | 1 +
+>  Documentation/devicetree/bindings/serial/8250.yaml        | 1 +
+>  .../devicetree/bindings/sound/audio-graph-card2.yaml      | 3 +++
+>  .../devicetree/bindings/sound/imx-audio-hdmi.yaml         | 3 +++
+>  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml   | 1 +
+>  25 files changed, 55 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
+> index 7378159e61df..483caf0ce25b 100644
+> --- a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
+> +++ b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
+> @@ -17,14 +17,15 @@ properties:
+>        - const: hisilicon,hip04-bootwrapper
+>  
+>    boot-method:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>      description: |
+>        Address and size of boot method.
+>        [0]: bootwrapper physical address
+>        [1]: bootwrapper size
+>        [2]: relocation physical address
+>        [3]: relocation size
+> -    minItems: 1
+> -    maxItems: 2
+> +    minItems: 2
+> +    maxItems: 4
+>  
+>  required:
+>    - compatible
+> diff --git a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
+> index 3bd670b8e5cd..0b6f5bef120f 100644
+> --- a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
+> +++ b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
+> @@ -58,6 +58,7 @@ properties:
+>  
+>              properties:
+>                data-lines:
+> +                $ref: /schemas/types.yaml#/definitions/uint32
+>                  enum: [ 16, 18, 24 ]
+>  
+>        port@1:
+> diff --git a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> index 7749de95ee40..229e3b36ee29 100644
+> --- a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> @@ -146,6 +146,7 @@ properties:
+>        Horizontal sync pulse.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+>  
+>    vsync-active:
+> @@ -153,6 +154,7 @@ properties:
+>        Vertical sync pulse.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+>  
+>    de-active:
+> @@ -160,6 +162,7 @@ properties:
+>        Data enable.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+>  
+>    pixelclk-active:
+> @@ -169,6 +172,7 @@ properties:
+>        sample data on rising edge.
+>        Use 1 to drive pixel data on rising edge and
+>        sample data on falling edge
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+>  
+>    syncclk-active:
+> @@ -179,6 +183,7 @@ properties:
+>        sample sync on rising edge of pixel clock.
+>        Use 1 to drive sync on rising edge and
+>        sample sync on falling edge of pixel clock
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+>  
+>    interlaced:
+> diff --git a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+> index 745dd247c409..617aa8c8c03a 100644
+> --- a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+> @@ -24,6 +24,7 @@ properties:
+>  
+>    dsi-lanes:
+>      description: Number of DSI lanes to be used must be <3> or <4>
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [3, 4]
+>  
+>    v3p3-supply:
+> diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
+> index ca959451557e..1cdc91b3439f 100644
+> --- a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
+> @@ -36,6 +36,7 @@ properties:
+>  
+>    init-delay:
+>      description: delay after initialization sequence [ms]
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>  
+>    panel-width-mm:
+>      description: physical panel width [mm]
+> diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> index 5fe19fa5f67c..a99e7842ca17 100644
+> --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> @@ -26,6 +26,7 @@ properties:
+>      const: 2
+>  
+>    registers-number:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      description: Number of daisy-chained shift registers
+>  
+>    enable-gpios:
+> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> index e8f137abb03c..aa61fe64be63 100644
+> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> @@ -31,6 +31,7 @@ properties:
+>      type: boolean
+>  
+>    function-row-physmap:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>      minItems: 1
+>      maxItems: 15
+>      description: |
+> diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> index 6699d5e32dca..9f703bb51e12 100644
+> --- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> +++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> @@ -27,6 +27,10 @@ properties:
+>        column and linux key-code. The 32-bit big endian cell is packed as:
+>            row << 24 | column << 16 | key-code
+>  
+> +  linux,no-autorepeat:
+> +    type: boolean
+> +    description: Disable keyrepeat
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+This should be rather a separate patch - it's documenting a missing
+property, not only a type.
 
----
- drivers/tty/serial/serial-tegra.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index d942ab152f5a..101fb585e6f9 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -441,7 +441,7 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
- 
- 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
- 		if (lsr & UART_LSR_OE) {
--			/* Overrrun error */
-+			/* Overrun error */
- 			flag = TTY_OVERRUN;
- 			tup->uport.icount.overrun++;
- 			dev_dbg(tup->uport.dev, "Got overrun errors\n");
-@@ -1080,7 +1080,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
- 	tup->rx_in_progress = 1;
- 
- 	/*
--	 * Enable IE_RXS for the receive status interrupts like line errros.
-+	 * Enable IE_RXS for the receive status interrupts like line errors.
- 	 * Enable IE_RX_TIMEOUT to get the bytes which cannot be DMA'd.
- 	 *
- 	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
-
+Best regards,
+Krzysztof
