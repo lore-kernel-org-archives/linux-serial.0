@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A2FC433F5
-	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2232C433FE
+	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348503AbiEVP6f (ORCPT
+        id S1349558AbiEVP6j (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 May 2022 11:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
+        Sun, 22 May 2022 11:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349255AbiEVP61 (ORCPT
+        with ESMTP id S1349106AbiEVP6e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 May 2022 11:58:27 -0400
+        Sun, 22 May 2022 11:58:34 -0400
 Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD773B2BC;
-        Sun, 22 May 2022 08:58:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8A73B2A6;
+        Sun, 22 May 2022 08:58:29 -0700 (PDT)
 Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9Mi031642;
+        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9e4031647;
         Sun, 22 May 2022 18:51:09 +0300
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 4975063A4A; Sun, 22 May 2022 18:51:09 +0300 (IDT)
+        id A554D63A4B; Sun, 22 May 2022 18:51:09 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
         venture@google.com, yuenn@google.com, benjaminfair@google.com,
@@ -39,9 +39,9 @@ Cc:     soc@kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 11/19] dt-bindings: reset: npcm: Add support for NPCM8XX
-Date:   Sun, 22 May 2022 18:50:38 +0300
-Message-Id: <20220522155046.260146-12-tmaimon77@gmail.com>
+Subject: [PATCH v1 17/19] arm64: dts: nuvoton: Add initial NPCM8XX device tree
+Date:   Sun, 22 May 2022 18:50:44 +0300
+Message-Id: <20220522155046.260146-18-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
 References: <20220522155046.260146-1-tmaimon77@gmail.com>
@@ -51,184 +51,319 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add binding document and device tree binding
-constants for Nuvoton BMC NPCM8XX reset controller.
+This adds initial device tree support for the
+Nuvoton NPCM845 Board Management controller (BMC) SoC family.
+
+The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
+have various peripheral IPs.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- .../bindings/reset/nuvoton,npcm-reset.txt     |  17 ++-
- .../dt-bindings/reset/nuvoton,npcm8xx-reset.h | 124 ++++++++++++++++++
- 2 files changed, 139 insertions(+), 2 deletions(-)
- create mode 100644 include/dt-bindings/reset/nuvoton,npcm8xx-reset.h
+ arch/arm64/boot/dts/Makefile                  |   1 +
+ .../dts/nuvoton/nuvoton-common-npcm8xx.dtsi   | 197 ++++++++++++++++++
+ .../boot/dts/nuvoton/nuvoton-npcm845.dtsi     |  77 +++++++
+ 3 files changed, 275 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
+ create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
 
-diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.txt b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.txt
-index cb1613092ee7..b7eb8615b68b 100644
---- a/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.txt
-+++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm-reset.txt
-@@ -1,14 +1,15 @@
- Nuvoton NPCM Reset controller
- 
- Required properties:
--- compatible : "nuvoton,npcm750-reset" for NPCM7XX BMC
-+- compatible : "nuvoton,npcm750-reset" for Poleg NPCM7XX BMC.
-+               "nuvoton,npcm845-reset" for Arbel NPCM8XX BMC.
- - reg : specifies physical base address and size of the register.
- - #reset-cells: must be set to 2
- - syscon: a phandle to access GCR registers.
- 
- Optional property:
- - nuvoton,sw-reset-number - Contains the software reset number to restart the SoC.
--  NPCM7xx contain four software reset that represent numbers 1 to 4.
-+  NPCM7xx and NPCM8xx contain four software reset that represent numbers 1 to 4.
- 
-   If 'nuvoton,sw-reset-number' is not specified software reset is disabled.
- 
-@@ -32,3 +33,15 @@ example:
-         };
- 
- The index could be found in <dt-bindings/reset/nuvoton,npcm7xx-reset.h>.
-+
-+Specifying reset lines connected to IP NPCM8XX modules
-+======================================================
-+example:
-+
-+        spi0: spi@..... {
-+                ...
-+                resets = <&rstc NPCM8XX_RESET_IPSRST2 NPCM8XX_RESET_PSPI1>;
-+                ...
-+        };
-+
-+The index could be found in <dt-bindings/reset/nuvoton,npcm8xx-reset.h>.
-diff --git a/include/dt-bindings/reset/nuvoton,npcm8xx-reset.h b/include/dt-bindings/reset/nuvoton,npcm8xx-reset.h
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index 1ba04e31a438..7b107fa7414b 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -19,6 +19,7 @@ subdir-y += lg
+ subdir-y += marvell
+ subdir-y += mediatek
+ subdir-y += microchip
++subdir-y += nuvoton
+ subdir-y += nvidia
+ subdir-y += qcom
+ subdir-y += realtek
+diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
 new file mode 100644
-index 000000000000..4b832a0fd1dd
+index 000000000000..19c672ecfee7
 --- /dev/null
-+++ b/include/dt-bindings/reset/nuvoton,npcm8xx-reset.h
-@@ -0,0 +1,124 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+// Copyright (c) 2022 Nuvoton Technology corporation.
++++ b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
+@@ -0,0 +1,197 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
 +
-+#ifndef _DT_BINDINGS_NPCM8XX_RESET_H
-+#define _DT_BINDINGS_NPCM8XX_RESET_H
++#include <dt-bindings/clock/nuvoton,npcm8xx-clock.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/interrupt-controller/irq.h>
 +
-+#define NPCM8XX_RESET_IPSRST1		0x20
-+#define NPCM8XX_RESET_IPSRST2		0x24
-+#define NPCM8XX_RESET_IPSRST3		0x34
-+#define NPCM8XX_RESET_IPSRST4		0x74
++/ {
++	#address-cells = <2>;
++	#size-cells = <2>;
++	interrupt-parent = <&gic>;
 +
-+/* Reset lines on IP1 reset module (NPCM8XX_RESET_IPSRST1) */
-+#define NPCM8XX_RESET_GDMA0		3
-+#define NPCM8XX_RESET_UDC1		5
-+#define NPCM8XX_RESET_GMAC3		6
-+#define NPCM8XX_RESET_UART_2_3		7
-+#define NPCM8XX_RESET_UDC2		8
-+#define NPCM8XX_RESET_PECI		9
-+#define NPCM8XX_RESET_AES		10
-+#define NPCM8XX_RESET_UART_0_1		11
-+#define NPCM8XX_RESET_MC		12
-+#define NPCM8XX_RESET_SMB2		13
-+#define NPCM8XX_RESET_SMB3		14
-+#define NPCM8XX_RESET_SMB4		15
-+#define NPCM8XX_RESET_SMB5		16
-+#define NPCM8XX_RESET_PWM_M0		18
-+#define NPCM8XX_RESET_TIMER_0_4		19
-+#define NPCM8XX_RESET_TIMER_5_9		20
-+#define NPCM8XX_RESET_GMAC4		21
-+#define NPCM8XX_RESET_UDC4		22
-+#define NPCM8XX_RESET_UDC5		23
-+#define NPCM8XX_RESET_UDC6		24
-+#define NPCM8XX_RESET_UDC3		25
-+#define NPCM8XX_RESET_ADC		27
-+#define NPCM8XX_RESET_SMB6		28
-+#define NPCM8XX_RESET_SMB7		29
-+#define NPCM8XX_RESET_SMB0		30
-+#define NPCM8XX_RESET_SMB1		31
++	/* external reference clock */
++	clk_refclk: clk-refclk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <25000000>;
++		clock-output-names = "refclk";
++	};
 +
-+/* Reset lines on IP2 reset module (NPCM8XX_RESET_IPSRST2) */
-+#define NPCM8XX_RESET_MFT0		0
-+#define NPCM8XX_RESET_MFT1		1
-+#define NPCM8XX_RESET_MFT2		2
-+#define NPCM8XX_RESET_MFT3		3
-+#define NPCM8XX_RESET_MFT4		4
-+#define NPCM8XX_RESET_MFT5		5
-+#define NPCM8XX_RESET_MFT6		6
-+#define NPCM8XX_RESET_MFT7		7
-+#define NPCM8XX_RESET_MMC		8
-+#define NPCM8XX_RESET_GFX_SYS		10
-+#define NPCM8XX_RESET_AHB_PCIBRG	11
-+#define NPCM8XX_RESET_VDMA		12
-+#define NPCM8XX_RESET_ECE		13
-+#define NPCM8XX_RESET_VCD		14
-+#define NPCM8XX_RESET_VIRUART1		16
-+#define NPCM8XX_RESET_VIRUART2		17
-+#define NPCM8XX_RESET_SIOX1		18
-+#define NPCM8XX_RESET_SIOX2		19
-+#define NPCM8XX_RESET_BT		20
-+#define NPCM8XX_RESET_3DES		21
-+#define NPCM8XX_RESET_PSPI2		23
-+#define NPCM8XX_RESET_GMAC2		25
-+#define NPCM8XX_RESET_USBH1		26
-+#define NPCM8XX_RESET_GMAC1		28
-+#define NPCM8XX_RESET_CP1		31
++	/* external reference clock for cpu. float in normal operation */
++	clk_sysbypck: clk-sysbypck {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <1000000000>;
++		clock-output-names = "sysbypck";
++	};
 +
-+/* Reset lines on IP3 reset module (NPCM8XX_RESET_IPSRST3) */
-+#define NPCM8XX_RESET_PWM_M1		0
-+#define NPCM8XX_RESET_SMB12		1
-+#define NPCM8XX_RESET_SPIX		2
-+#define NPCM8XX_RESET_SMB13		3
-+#define NPCM8XX_RESET_UDC0		4
-+#define NPCM8XX_RESET_UDC7		5
-+#define NPCM8XX_RESET_UDC8		6
-+#define NPCM8XX_RESET_UDC9		7
-+#define NPCM8XX_RESET_USBHUB		8
-+#define NPCM8XX_RESET_PCI_MAILBOX	9
-+#define NPCM8XX_RESET_GDMA1		10
-+#define NPCM8XX_RESET_GDMA2		11
-+#define NPCM8XX_RESET_SMB14		12
-+#define NPCM8XX_RESET_SHA		13
-+#define NPCM8XX_RESET_SEC_ECC		14
-+#define NPCM8XX_RESET_PCIE_RC		15
-+#define NPCM8XX_RESET_TIMER_10_14	16
-+#define NPCM8XX_RESET_RNG		17
-+#define NPCM8XX_RESET_SMB15		18
-+#define NPCM8XX_RESET_SMB8		19
-+#define NPCM8XX_RESET_SMB9		20
-+#define NPCM8XX_RESET_SMB10		21
-+#define NPCM8XX_RESET_SMB11		22
-+#define NPCM8XX_RESET_ESPI		23
-+#define NPCM8XX_RESET_USB_PHY_1		24
-+#define NPCM8XX_RESET_USB_PHY_2		25
++	/* external reference clock for MC. float in normal operation */
++	clk_mcbypck: clk-mcbypck {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <1050000000>;
++		clock-output-names = "mcbypck";
++	};
 +
-+/* Reset lines on IP4 reset module (NPCM8XX_RESET_IPSRST4) */
-+#define NPCM8XX_RESET_SMB16		0
-+#define NPCM8XX_RESET_SMB17		1
-+#define NPCM8XX_RESET_SMB18		2
-+#define NPCM8XX_RESET_SMB19		3
-+#define NPCM8XX_RESET_SMB20		4
-+#define NPCM8XX_RESET_SMB21		5
-+#define NPCM8XX_RESET_SMB22		6
-+#define NPCM8XX_RESET_SMB23		7
-+#define NPCM8XX_RESET_I3C0		8
-+#define NPCM8XX_RESET_I3C1		9
-+#define NPCM8XX_RESET_I3C2		10
-+#define NPCM8XX_RESET_I3C3		11
-+#define NPCM8XX_RESET_I3C4		12
-+#define NPCM8XX_RESET_I3C5		13
-+#define NPCM8XX_RESET_UART4		16
-+#define NPCM8XX_RESET_UART5		17
-+#define NPCM8XX_RESET_UART6		18
-+#define NPCM8XX_RESET_PCIMBX2		19
-+#define NPCM8XX_RESET_SMB24		22
-+#define NPCM8XX_RESET_SMB25		23
-+#define NPCM8XX_RESET_SMB26		24
-+#define NPCM8XX_RESET_USBPHY3		25
-+#define NPCM8XX_RESET_PCIRCPHY		27
-+#define NPCM8XX_RESET_PWM_M2		28
-+#define NPCM8XX_RESET_JTM1		29
-+#define NPCM8XX_RESET_JTM2		30
-+#define NPCM8XX_RESET_USBH2		31
++	soc {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		compatible = "simple-bus";
++		interrupt-parent = <&gic>;
++		ranges;
 +
-+#endif
++		gcr: gcr@f0800000 {
++			compatible = "nuvoton,npcm845-gcr", "syscon",
++				"simple-mfd";
++			reg = <0x0 0xf0800000 0x0 0x1000>;
++		};
++
++		gic: interrupt-controller@dfff9000 {
++			compatible = "arm,gic-400";
++			reg = <0x0 0xdfff9000 0x0 0x1000>,
++			      <0x0 0xdfffa000 0x0 0x2000>,
++			      <0x0 0xdfffc000 0x0 0x2000>,
++			      <0x0 0xdfffe000 0x0 0x2000>;
++			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
++			#interrupt-cells = <3>;
++			interrupt-controller;
++			#address-cells = <0>;
++			ppi-partitions {
++				ppi_cluster0: interrupt-partition-0 {
++					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
++				};
++			};
++		};
++	};
++
++	ahb {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		compatible = "simple-bus";
++		interrupt-parent = <&gic>;
++		ranges;
++
++		rstc: rstc@f0801000 {
++			compatible = "nuvoton,npcm845-reset";
++			reg = <0x0 0xf0801000 0x0 0x78>;
++			#reset-cells = <2>;
++			syscon = <&gcr>;
++		};
++
++		clk: clock-controller@f0801000 {
++			compatible = "nuvoton,npcm845-clk";
++			#clock-cells = <1>;
++			reg = <0x0 0xf0801000 0x0 0x1000>;
++			clock-names = "refclk", "sysbypck", "mcbypck";
++			clocks = <&clk_refclk>, <&clk_sysbypck>, <&clk_mcbypck>;
++		};
++
++		apb {
++			#address-cells = <1>;
++			#size-cells = <1>;
++			compatible = "simple-bus";
++			interrupt-parent = <&gic>;
++			ranges = <0x0 0x0 0xf0000000 0x00300000>,
++				<0xfff00000 0x0 0xfff00000 0x00016000>;
++
++			timer0: timer@8000 {
++				compatible = "nuvoton,npcm845-timer";
++				interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
++				reg = <0x8000 0x1C>;
++				clocks	= <&clk_refclk>;
++				clock-names = "refclk";
++			};
++
++			serial0: serial@0 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x0 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial1: serial@1000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x1000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial2: serial@2000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x2000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial3: serial@3000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x3000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial4: serial@4000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x4000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial5: serial@5000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x5000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			serial6: serial@6000 {
++				compatible = "nuvoton,npcm845-uart";
++				reg = <0x6000 0x1000>;
++				clocks = <&clk NPCM8XX_CLK_UART>;
++				interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>;
++				reg-shift = <2>;
++				status = "disabled";
++			};
++
++			watchdog0: watchdog@801c {
++				compatible = "nuvoton,npcm845-wdt";
++				interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
++				reg = <0x801c 0x4>;
++				status = "disabled";
++				clocks = <&clk_refclk>;
++				syscon = <&gcr>;
++			};
++
++			watchdog1: watchdog@901c {
++				compatible = "nuvoton,npcm845-wdt";
++				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
++				reg = <0x901c 0x4>;
++				status = "disabled";
++				clocks = <&clk_refclk>;
++				syscon = <&gcr>;
++			};
++
++			watchdog2: watchdog@a01c {
++				compatible = "nuvoton,npcm845-wdt";
++				interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
++				reg = <0xa01c 0x4>;
++				status = "disabled";
++				clocks = <&clk_refclk>;
++				syscon = <&gcr>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
+new file mode 100644
+index 000000000000..900cee112251
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
+@@ -0,0 +1,77 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
++
++#include "nuvoton-common-npcm8xx.dtsi"
++
++/ {
++	#address-cells = <2>;
++	#size-cells = <2>;
++	interrupt-parent = <&gic>;
++
++	cpus {
++		#address-cells = <2>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a35";
++			clocks = <&clk NPCM8XX_CLK_CPU>;
++			reg = <0x0 0x0>;
++			next-level-cache = <&l2>;
++			enable-method = "psci";
++		};
++
++		cpu1: cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a35";
++			clocks = <&clk NPCM8XX_CLK_CPU>;
++			reg = <0x0 0x1>;
++			next-level-cache = <&l2>;
++			enable-method = "psci";
++		};
++
++		cpu2: cpu@2 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a35";
++			clocks = <&clk NPCM8XX_CLK_CPU>;
++			reg = <0x0 0x2>;
++			next-level-cache = <&l2>;
++			enable-method = "psci";
++		};
++
++		cpu3: cpu@3 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a35";
++			clocks = <&clk NPCM8XX_CLK_CPU>;
++			reg = <0x0 0x3>;
++			next-level-cache = <&l2>;
++			enable-method = "psci";
++		};
++
++		l2: l2-cache {
++			compatible = "cache";
++		};
++	};
++
++	arm-pmu {
++		compatible = "arm,cortex-a35-pmu";
++		interrupts = <GIC_SPI 242 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
++
++	psci {
++		compatible      = "arm,psci-1.0";
++		method          = "smc";
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
++	};
++};
 -- 
 2.33.0
 
