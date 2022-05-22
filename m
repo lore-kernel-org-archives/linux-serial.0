@@ -2,32 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB36AC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 16:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DFBC4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 16:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349472AbiEVP6h (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 May 2022 11:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S238234AbiEVQqG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 22 May 2022 12:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349014AbiEVP63 (ORCPT
+        with ESMTP id S235505AbiEVQqA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 May 2022 11:58:29 -0400
-Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE563B29E;
-        Sun, 22 May 2022 08:58:26 -0700 (PDT)
-Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9qj031643;
-        Sun, 22 May 2022 18:51:09 +0300
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 5B95663A4B; Sun, 22 May 2022 18:51:09 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        Sun, 22 May 2022 12:46:00 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98342C3F;
+        Sun, 22 May 2022 09:45:56 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id g13-20020a9d6b0d000000b0060b13026e0dso627337otp.8;
+        Sun, 22 May 2022 09:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A3MW2E4hPy/aQENWXOJ2JWZ+xI8KBMasjdB1XQlQXhk=;
+        b=fKUUM7yY2M3lYi3DacllA37dpumIb+5hsm4dGf862dt912aTwJh8O+JEDrr8XE4/Ao
+         /O+xEx8SUbw2Z+V0qTdJmLn/1+t41l7ol0S7LAxefEQMBwC1XJhqQOtfCtIB73JgXOR3
+         OvjT1vbQbn93hcd2cAQdnZVGk8QLX4BxAh2XE/2kB3vu5Gun01Sq2aL6hCWl19gFDqS+
+         lXWmOGGP8f4NAEyrFbYAffWuz9qh/9lkvljoE2Tk7ZAPBhSnGZIGz36rtY1x1R/nCoRr
+         KMy1HxbOp1tN4zmy2vN1V9LnSn1Tz1sizrk7jMXsGuDrFlZBLzLp+P6BMJ3xlz9i09Q4
+         zZ8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A3MW2E4hPy/aQENWXOJ2JWZ+xI8KBMasjdB1XQlQXhk=;
+        b=PsV6Dl6fWHWkcpYhMc6q8FdySKWwq3RV9w6/8IK0SIX6uI7v/20RQf6atR3OjfVy3k
+         xBnlmcmUr/aFHAEbYDAYHBY61G8VQ2ErPneOP1QsK6UQUbpQlraOHApvgy1tP6Zy8a4S
+         4CizkQODhv6OSnvOF8sKvSr0C0zG8Nj3Yt7eOesyLPOhqkpHXeW8xT4RlEp/Af9LpDGa
+         2KmxknrNRAaeu8bqYj9e0FiEMJufvn/VuB0bnCO0UkHQgmb6AXfcpvcWW7cPVL/vW5iV
+         SypR7jHGfCZs+4Xr5kL1/sv86EoDXXshPI5w85RbS+xvGVRPlhsomkwQC8P4c6ubJM+R
+         tVzw==
+X-Gm-Message-State: AOAM533MBEXeGN/fuLr9rOi77m2dBqixXL2YOjsifoIKRBslam3JP245
+        JU6DvbDkmtPiOVg0Hu3UiPc=
+X-Google-Smtp-Source: ABdhPJwF7V+fwRvOwZOSp3lwb6vsxQ0qSZ6aw4g7kZDyU1NwNpYq17KF/k0k72MH8MxbQ3y6RscDVw==
+X-Received: by 2002:a05:6830:124e:b0:60a:fff3:c05b with SMTP id s14-20020a056830124e00b0060afff3c05bmr2616441otp.264.1653237955725;
+        Sun, 22 May 2022 09:45:55 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m12-20020a4a390c000000b0035eb4e5a6cbsm3423043ooa.33.2022.05.22.09.45.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 May 2022 09:45:54 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <6d691a7d-7601-a077-fc8e-67e0c4917615@roeck-us.net>
+Date:   Sun, 22 May 2022 09:45:50 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v1 06/19] watchdog: npcm_wdt: Add NPCM845 watchdog support
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
         gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        tglx@linutronix.de, wim@linux-watchdog.org,
         catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
         olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
         bjorn.andersson@linaro.org, geert+renesas@glider.be,
@@ -37,269 +74,37 @@ To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
 Cc:     soc@kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 12/19] reset: npcm: Add NPCM8XX support
-Date:   Sun, 22 May 2022 18:50:39 +0300
-Message-Id: <20220522155046.260146-13-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
+        linux-arm-kernel@lists.infradead.org
 References: <20220522155046.260146-1-tmaimon77@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+ <20220522155046.260146-7-tmaimon77@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220522155046.260146-7-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Updated the NPCM reset driver to add
-support for Nuvoton BMC NPCM8XX SoC.
-As part of adding NPCM8XX support
-- Add NPCM8XX specific compatible string.
-- Add NPCM8XX USB reset.
-- Some of the Reset Id and number of resets are
-  different from NPCM7XX.
+On 5/22/22 08:50, Tomer Maimon wrote:
+> Add Nuvoton BMC NPCM845 watchdog support.
+> The NPCM845 uses the same watchdog as the NPCM750.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>   drivers/watchdog/npcm_wdt.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
+> index 28a24caa2627..0b91a3fbec09 100644
+> --- a/drivers/watchdog/npcm_wdt.c
+> +++ b/drivers/watchdog/npcm_wdt.c
+> @@ -231,6 +231,7 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+>   static const struct of_device_id npcm_wdt_match[] = {
+>   	{.compatible = "nuvoton,wpcm450-wdt"},
+>   	{.compatible = "nuvoton,npcm750-wdt"},
+> +	{.compatible = "nuvoton,npcm845-wdt"},
+>   	{},
+>   };
+>   MODULE_DEVICE_TABLE(of, npcm_wdt_match);
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- drivers/reset/reset-npcm.c | 157 ++++++++++++++++++++++++++++++-------
- 1 file changed, 130 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/reset/reset-npcm.c b/drivers/reset/reset-npcm.c
-index 0c963b21eddc..8d82a45dd580 100644
---- a/drivers/reset/reset-npcm.c
-+++ b/drivers/reset/reset-npcm.c
-@@ -17,13 +17,20 @@
- 
- /* NPCM7xx GCR registers */
- #define NPCM_MDLR_OFFSET	0x7C
--#define NPCM_MDLR_USBD0		BIT(9)
--#define NPCM_MDLR_USBD1		BIT(8)
--#define NPCM_MDLR_USBD2_4	BIT(21)
--#define NPCM_MDLR_USBD5_9	BIT(22)
-+#define NPCM7XX_MDLR_USBD0	BIT(9)
-+#define NPCM7XX_MDLR_USBD1	BIT(8)
-+#define NPCM7XX_MDLR_USBD2_4	BIT(21)
-+#define NPCM7XX_MDLR_USBD5_9	BIT(22)
-+
-+/* NPCM8xx MDLR bits */
-+#define NPCM8XX_MDLR_USBD0_3	BIT(9)
-+#define NPCM8XX_MDLR_USBD4_7	BIT(22)
-+#define NPCM8XX_MDLR_USBD8	BIT(24)
-+#define NPCM8XX_MDLR_USBD9	BIT(21)
- 
- #define NPCM_USB1PHYCTL_OFFSET	0x140
- #define NPCM_USB2PHYCTL_OFFSET	0x144
-+#define NPCM_USB3PHYCTL_OFFSET	0x148
- #define NPCM_USBXPHYCTL_RS	BIT(28)
- 
- /* NPCM7xx Reset registers */
-@@ -49,12 +56,17 @@
- #define NPCM_IPSRST3_USBPHY1	BIT(24)
- #define NPCM_IPSRST3_USBPHY2	BIT(25)
- 
-+#define NPCM_IPSRST4		0x74
-+#define NPCM_IPSRST4_USBPHY3	BIT(25)
-+#define NPCM_IPSRST4_USB_HOST2	BIT(31)
-+
- #define NPCM_RC_RESETS_PER_REG	32
- #define NPCM_MASK_RESETS	GENMASK(4, 0)
- 
- struct npcm_rc_data {
- 	struct reset_controller_dev rcdev;
- 	struct notifier_block restart_nb;
-+	struct regmap *gcr_regmap;
- 	u32 sw_reset_number;
- 	void __iomem *base;
- 	spinlock_t lock;
-@@ -124,7 +136,7 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
- 
- 	offset = reset_spec->args[0];
- 	if (offset != NPCM_IPSRST1 && offset != NPCM_IPSRST2 &&
--	    offset != NPCM_IPSRST3) {
-+	    offset != NPCM_IPSRST3 && offset != NPCM_IPSRST4) {
- 		dev_err(rcdev->dev, "Error reset register (0x%x)\n", offset);
- 		return -EINVAL;
- 	}
-@@ -139,39 +151,28 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
- 
- static const struct of_device_id npcm_rc_match[] = {
- 	{ .compatible = "nuvoton,npcm750-reset"},
-+	{ .compatible = "nuvoton,npcm845-reset"},
- 	{ }
- };
- 
--/*
-- *  The following procedure should be observed in USB PHY, USB device and
-- *  USB host initialization at BMC boot
-- */
--static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
-+static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
- {
- 	u32 mdlr, iprst1, iprst2, iprst3;
--	struct device *dev = &pdev->dev;
--	struct regmap *gcr_regmap;
- 	u32 ipsrst1_bits = 0;
- 	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
- 	u32 ipsrst3_bits = 0;
- 
--	gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "syscon");
--	if (IS_ERR(gcr_regmap)) {
--		dev_err(&pdev->dev, "Failed to find gcr syscon");
--		return PTR_ERR(gcr_regmap);
--	}
--
- 	/* checking which USB device is enabled */
--	regmap_read(gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
--	if (!(mdlr & NPCM_MDLR_USBD0))
-+	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
-+	if (!(mdlr & NPCM7XX_MDLR_USBD0))
- 		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
--	if (!(mdlr & NPCM_MDLR_USBD1))
-+	if (!(mdlr & NPCM7XX_MDLR_USBD1))
- 		ipsrst1_bits |= NPCM_IPSRST1_USBD1;
--	if (!(mdlr & NPCM_MDLR_USBD2_4))
-+	if (!(mdlr & NPCM7XX_MDLR_USBD2_4))
- 		ipsrst1_bits |= (NPCM_IPSRST1_USBD2 |
- 				 NPCM_IPSRST1_USBD3 |
- 				 NPCM_IPSRST1_USBD4);
--	if (!(mdlr & NPCM_MDLR_USBD0)) {
-+	if (!(mdlr & NPCM7XX_MDLR_USBD0)) {
- 		ipsrst1_bits |= (NPCM_IPSRST1_USBD5 |
- 				 NPCM_IPSRST1_USBD6);
- 		ipsrst3_bits |= (NPCM_IPSRST3_USBD7 |
-@@ -194,9 +195,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	writel(iprst3, rc->base + NPCM_IPSRST3);
- 
- 	/* clear USB PHY RS bit */
--	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, 0);
--	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, 0);
- 
- 	/* deassert reset USB PHY */
-@@ -206,9 +207,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	udelay(50);
- 
- 	/* set USB PHY RS bit */
--	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
--	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
- 
- 	/* deassert reset USB devices*/
-@@ -219,6 +220,108 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	writel(iprst1, rc->base + NPCM_IPSRST1);
- 	writel(iprst2, rc->base + NPCM_IPSRST2);
- 	writel(iprst3, rc->base + NPCM_IPSRST3);
-+}
-+
-+static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
-+{
-+	u32 mdlr, iprst1, iprst2, iprst3, iprst4;
-+	u32 ipsrst1_bits = 0;
-+	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
-+	u32 ipsrst3_bits = 0;
-+	u32 ipsrst4_bits = NPCM_IPSRST4_USB_HOST2 | NPCM_IPSRST4_USBPHY3;
-+
-+	/* checking which USB device is enabled */
-+	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
-+	if (!(mdlr & NPCM8XX_MDLR_USBD0_3)) {
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
-+		ipsrst1_bits |= (NPCM_IPSRST1_USBD1 |
-+				 NPCM_IPSRST1_USBD2 |
-+				 NPCM_IPSRST1_USBD3);
-+	}
-+	if (!(mdlr & NPCM8XX_MDLR_USBD4_7)) {
-+		ipsrst1_bits |= (NPCM_IPSRST1_USBD4 |
-+				 NPCM_IPSRST1_USBD5 |
-+				 NPCM_IPSRST1_USBD6);
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD7;
-+	}
-+
-+	if (!(mdlr & NPCM8XX_MDLR_USBD8))
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD8;
-+	if (!(mdlr & NPCM8XX_MDLR_USBD9))
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD9;
-+
-+	/* assert reset USB PHY and USB devices */
-+	iprst1 = readl(rc->base + NPCM_IPSRST1);
-+	iprst2 = readl(rc->base + NPCM_IPSRST2);
-+	iprst3 = readl(rc->base + NPCM_IPSRST3);
-+	iprst4 = readl(rc->base + NPCM_IPSRST4);
-+
-+	iprst1 |= ipsrst1_bits;
-+	iprst2 |= ipsrst2_bits;
-+	iprst3 |= (ipsrst3_bits | NPCM_IPSRST3_USBPHY1 |
-+		   NPCM_IPSRST3_USBPHY2);
-+	iprst2 |= ipsrst4_bits;
-+
-+	writel(iprst1, rc->base + NPCM_IPSRST1);
-+	writel(iprst2, rc->base + NPCM_IPSRST2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+
-+	/* clear USB PHY RS bit */
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+
-+	/* deassert reset USB PHY */
-+	iprst3 &= ~(NPCM_IPSRST3_USBPHY1 | NPCM_IPSRST3_USBPHY2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	iprst4 &= ~NPCM_IPSRST4_USBPHY3;
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+
-+	/* set USB PHY RS bit */
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+
-+	/* deassert reset USB devices*/
-+	iprst1 &= ~ipsrst1_bits;
-+	iprst2 &= ~ipsrst2_bits;
-+	iprst3 &= ~ipsrst3_bits;
-+	iprst4 &= ~ipsrst4_bits;
-+
-+	writel(iprst1, rc->base + NPCM_IPSRST1);
-+	writel(iprst2, rc->base + NPCM_IPSRST2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+}
-+
-+/*
-+ *  The following procedure should be observed in USB PHY, USB device and
-+ *  USB host initialization at BMC boot
-+ */
-+static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
-+
-+	rc->gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "syscon");
-+	if (IS_ERR(rc->gcr_regmap)) {
-+		dev_err(&pdev->dev, "Failed to find gcr syscon");
-+		return PTR_ERR(rc->gcr_regmap);
-+	}
-+
-+	if (of_device_is_compatible(np, "nuvoton,npcm750-reset"))
-+		npcm_usb_reset_npcm7xx(rc);
-+	else if (of_device_is_compatible(np, "nuvoton,npcm845-reset"))
-+		npcm_usb_reset_npcm8xx(rc);
-+	else
-+		return -ENODEV;
- 
- 	return 0;
- }
--- 
-2.33.0
-
+Acked-by: Guenter Roeck <linux@roeck-us.net>
