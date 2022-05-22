@@ -2,275 +2,326 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87263C43217
-	for <linux-serial@archiver.kernel.org>; Sat, 21 May 2022 15:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E68EC433F5
+	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 00:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244707AbiEUPDv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 May 2022 11:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
+        id S1347687AbiEVALL (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 21 May 2022 20:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244641AbiEUPDt (ORCPT
+        with ESMTP id S238810AbiEVALA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 May 2022 11:03:49 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6F99154A
-        for <linux-serial@vger.kernel.org>; Sat, 21 May 2022 08:03:45 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bq30so18798093lfb.3
-        for <linux-serial@vger.kernel.org>; Sat, 21 May 2022 08:03:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4qCtL0+bm+n7u/HXMR/ejdT6S5mFrpV8yho83BhRO5s=;
-        b=y5RaZjFHrW8w0QDRcNsylDIFb53EJ2po4JTV2FpNAdkAYoZdu1qF5axrhsPQuGATng
-         IRhb46WEpzowjRCtShPff9kYW6hHmeuNWcNUVWWram5Vsu13pwjOphSj50HlavWfE75o
-         fl8HJqVUjSx8QbwUjbHsCAWiX5BauC0NO2ZKYDPS4ebr9JVbKM3hZESP+xBd6W4RKh33
-         MjPK1gRmYo1vuibvD7RGvzYvB0fQWdgtoSLYcw2VHu54BnbEvJcolLEa1EoGN8BAPKCL
-         xL8v5PmCr8qaYJ68UOqWoeB4NePuVP6tv4mkCntQBpW2qZmf/QlRL9lcpkc3pjzue05U
-         zOAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4qCtL0+bm+n7u/HXMR/ejdT6S5mFrpV8yho83BhRO5s=;
-        b=ruzMhtnqoCRMB+LjyvP7UxLGyEBtzRE+WxCXDYQXwG9H2BPXsBvyZQbkIF8I0w0t53
-         YaHEE/mLmmquZsvSB2gwc68IJdVhkq6xIG+5JMP9KWQZLSSQTuZpWowyN88jYPJN3T4Y
-         C85FUtDeT2MtgP4HWOTU6VaBi6Az7c+93K1JCiAjcgEm2wVXJBGSF7Jl57F7rfUwJAar
-         x//9xJXPgBhPF3CuOS0P9gx4aodcgeaXDNOn0EJuoas62kJQ6+O5WLTYcQ4QAvylR1OD
-         fbLWS2h4+ia32oXAR0qBcncq5ysSc9CQEFA+aYFRff59zWQRo9WTOrAAxZAVwp6iNyj2
-         li1g==
-X-Gm-Message-State: AOAM530kzMW60mUxv5gZENxtrA6NQryjqa247ZPN72/LgSSRVpnTdwmy
-        7nqPWy1ZF5jJvZBG0cUj9nAICA==
-X-Google-Smtp-Source: ABdhPJxtHDtDb6cleVJCc0ulh0XswzEKTSNzq7RDBh7mwPl4obmqj7ZYfKIcfiHfX3+2J00L6fmtSQ==
-X-Received: by 2002:ac2:4f0c:0:b0:477:cb8e:bd8b with SMTP id k12-20020ac24f0c000000b00477cb8ebd8bmr5791149lfr.209.1653145423865;
-        Sat, 21 May 2022 08:03:43 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id p20-20020ac24ed4000000b0047255d210easm1087910lfr.25.2022.05.21.08.03.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 May 2022 08:03:43 -0700 (PDT)
-Message-ID: <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
-Date:   Sat, 21 May 2022 17:03:41 +0200
+        Sat, 21 May 2022 20:11:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBCF12630
+        for <linux-serial@vger.kernel.org>; Sat, 21 May 2022 17:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653178257; x=1684714257;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0dew8rOxHDgdoTFTQ8cDpuA9h2M6hjLQSnH6Hf9aAF4=;
+  b=edMUDc5maMh9rCNQ1Hvz2WtrxZvCCNZMfUMQSpOqS//EynPvQSeX7T2n
+   fTeu30t2JuuxUhtCsWqyodLQLL+OexilcrqAnSnEc5paDuT3/4ufMty3b
+   pWfpvWyzbcmmzH3gBZi1c2EKP+Awbb2xMqKdPUdX88RFDGneMopJbq4OS
+   cNpuzoXVjPXmBwy0gSjAVTUZK+zJUySfvSylNeR98At3PXovABdFJk9Cj
+   CZ26tTSljWvN+45K5ooh0WOBJOCtRmq46tiJX0BgVOdI+qE66sSOo8Pqz
+   JyyC79Q0mDatqytHu3tw7H8gOkr/gM7QSnLdcqM4CraUtBmG2rJ95kbHT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="272899734"
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="272899734"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 17:10:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="607589385"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 21 May 2022 17:10:56 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nsZBP-0006ki-Hj;
+        Sun, 22 May 2022 00:10:55 +0000
+Date:   Sun, 22 May 2022 08:10:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 25e02ba60f0fbe65ba07553b5b2b8867726273c4
+Message-ID: <62897f81.JxTlbyQwbgirXEwE%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] dt-bindings: Fix properties without any type
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-References: <20220519211411.2200720-1-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220519211411.2200720-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19/05/2022 23:14, Rob Herring wrote:
-> Now that the schema tools can extract type information for all
-> properties (in order to decode dtb files), finding properties missing
-> any type definition is fairly trivial though not yet automated.
-> 
-> Fix the various property schemas which are missing a type. Most of these
-> tend to be device specific properties which don't have a vendor prefix.
-> A vendor prefix is how we normally ensure a type is defined.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../arm/hisilicon/controller/hip04-bootwrapper.yaml       | 5 +++--
->  .../bindings/display/bridge/toshiba,tc358768.yaml         | 1 +
->  .../devicetree/bindings/display/panel/panel-timing.yaml   | 5 +++++
->  .../bindings/display/panel/raydium,rm67191.yaml           | 1 +
->  .../bindings/display/panel/samsung,s6e8aa0.yaml           | 1 +
->  .../devicetree/bindings/gpio/fairchild,74hc595.yaml       | 1 +
->  .../devicetree/bindings/input/google,cros-ec-keyb.yaml    | 1 +
->  .../devicetree/bindings/input/matrix-keymap.yaml          | 4 ++++
->  Documentation/devicetree/bindings/media/i2c/adv7604.yaml  | 3 ++-
->  Documentation/devicetree/bindings/mux/reg-mux.yaml        | 8 ++++++--
->  Documentation/devicetree/bindings/net/cdns,macb.yaml      | 1 +
->  Documentation/devicetree/bindings/net/ingenic,mac.yaml    | 1 +
->  .../devicetree/bindings/net/ti,davinci-mdio.yaml          | 1 +
->  .../devicetree/bindings/net/wireless/ti,wlcore.yaml       | 2 ++
->  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml          | 6 ++++--
->  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml   | 2 ++
->  .../devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml    | 2 ++
->  Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml | 1 +
->  .../devicetree/bindings/power/supply/battery.yaml         | 7 ++++++-
->  .../devicetree/bindings/power/supply/charger-manager.yaml | 1 +
->  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml   | 1 +
->  Documentation/devicetree/bindings/serial/8250.yaml        | 1 +
->  .../devicetree/bindings/sound/audio-graph-card2.yaml      | 3 +++
->  .../devicetree/bindings/sound/imx-audio-hdmi.yaml         | 3 +++
->  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml   | 1 +
->  25 files changed, 55 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> index 7378159e61df..483caf0ce25b 100644
-> --- a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> +++ b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> @@ -17,14 +17,15 @@ properties:
->        - const: hisilicon,hip04-bootwrapper
->  
->    boot-method:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->      description: |
->        Address and size of boot method.
->        [0]: bootwrapper physical address
->        [1]: bootwrapper size
->        [2]: relocation physical address
->        [3]: relocation size
-> -    minItems: 1
-> -    maxItems: 2
-> +    minItems: 2
-> +    maxItems: 4
->  
->  required:
->    - compatible
-> diff --git a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> index 3bd670b8e5cd..0b6f5bef120f 100644
-> --- a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> +++ b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> @@ -58,6 +58,7 @@ properties:
->  
->              properties:
->                data-lines:
-> +                $ref: /schemas/types.yaml#/definitions/uint32
->                  enum: [ 16, 18, 24 ]
->  
->        port@1:
-> diff --git a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> index 7749de95ee40..229e3b36ee29 100644
-> --- a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> @@ -146,6 +146,7 @@ properties:
->        Horizontal sync pulse.
->        0 selects active low, 1 selects active high.
->        If omitted then it is not used by the hardware
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [0, 1]
->  
->    vsync-active:
-> @@ -153,6 +154,7 @@ properties:
->        Vertical sync pulse.
->        0 selects active low, 1 selects active high.
->        If omitted then it is not used by the hardware
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [0, 1]
->  
->    de-active:
-> @@ -160,6 +162,7 @@ properties:
->        Data enable.
->        0 selects active low, 1 selects active high.
->        If omitted then it is not used by the hardware
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [0, 1]
->  
->    pixelclk-active:
-> @@ -169,6 +172,7 @@ properties:
->        sample data on rising edge.
->        Use 1 to drive pixel data on rising edge and
->        sample data on falling edge
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [0, 1]
->  
->    syncclk-active:
-> @@ -179,6 +183,7 @@ properties:
->        sample sync on rising edge of pixel clock.
->        Use 1 to drive sync on rising edge and
->        sample sync on falling edge of pixel clock
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [0, 1]
->  
->    interlaced:
-> diff --git a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> index 745dd247c409..617aa8c8c03a 100644
-> --- a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> @@ -24,6 +24,7 @@ properties:
->  
->    dsi-lanes:
->      description: Number of DSI lanes to be used must be <3> or <4>
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      enum: [3, 4]
->  
->    v3p3-supply:
-> diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> index ca959451557e..1cdc91b3439f 100644
-> --- a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> @@ -36,6 +36,7 @@ properties:
->  
->    init-delay:
->      description: delay after initialization sequence [ms]
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->  
->    panel-width-mm:
->      description: physical panel width [mm]
-> diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> index 5fe19fa5f67c..a99e7842ca17 100644
-> --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> @@ -26,6 +26,7 @@ properties:
->      const: 2
->  
->    registers-number:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
->      description: Number of daisy-chained shift registers
->  
->    enable-gpios:
-> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> index e8f137abb03c..aa61fe64be63 100644
-> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> @@ -31,6 +31,7 @@ properties:
->      type: boolean
->  
->    function-row-physmap:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->      minItems: 1
->      maxItems: 15
->      description: |
-> diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> index 6699d5e32dca..9f703bb51e12 100644
-> --- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> +++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> @@ -27,6 +27,10 @@ properties:
->        column and linux key-code. The 32-bit big endian cell is packed as:
->            row << 24 | column << 16 | key-code
->  
-> +  linux,no-autorepeat:
-> +    type: boolean
-> +    description: Disable keyrepeat
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 25e02ba60f0fbe65ba07553b5b2b8867726273c4  tty: Rework receive flow control char logic
 
-This should be rather a separate patch - it's documenting a missing
-property, not only a type.
+elapsed time: 3284m
 
-Best regards,
-Krzysztof
+configs tested: 245
+configs skipped: 5
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc64                           defconfig
+arc                                 defconfig
+powerpc                     asp8347_defconfig
+m68k                            mac_defconfig
+ia64                            zx1_defconfig
+ia64                      gensparse_defconfig
+arm                            pleb_defconfig
+sh                            titan_defconfig
+sh                            migor_defconfig
+arm                      footbridge_defconfig
+s390                          debug_defconfig
+xtensa                    xip_kc705_defconfig
+sh                               j2_defconfig
+um                                  defconfig
+um                               alldefconfig
+arm                        shmobile_defconfig
+mips                      maltasmvp_defconfig
+powerpc                    sam440ep_defconfig
+powerpc                      cm5200_defconfig
+mips                           ci20_defconfig
+s390                             allyesconfig
+xtensa                          iss_defconfig
+ia64                        generic_defconfig
+powerpc                      chrp32_defconfig
+mips                  maltasmvp_eva_defconfig
+riscv                            allyesconfig
+powerpc                      pcm030_defconfig
+sh                   sh7770_generic_defconfig
+h8300                    h8300h-sim_defconfig
+arm                        mini2440_defconfig
+xtensa                           allyesconfig
+sh                           se7721_defconfig
+arm                           tegra_defconfig
+m68k                            q40_defconfig
+ia64                          tiger_defconfig
+sh                           se7750_defconfig
+mips                  decstation_64_defconfig
+arm                            zeus_defconfig
+h8300                            allyesconfig
+arm                          badge4_defconfig
+arm                        cerfcube_defconfig
+arm                           corgi_defconfig
+xtensa                  audio_kc705_defconfig
+arm                            lart_defconfig
+sh                          r7785rp_defconfig
+sh                        sh7763rdp_defconfig
+sh                         microdev_defconfig
+arm                      jornada720_defconfig
+powerpc                     sequoia_defconfig
+powerpc                        cell_defconfig
+sh                                  defconfig
+powerpc                    klondike_defconfig
+arm                       imx_v6_v7_defconfig
+sh                           se7206_defconfig
+arm                           h3600_defconfig
+parisc                generic-64bit_defconfig
+sh                           se7619_defconfig
+alpha                               defconfig
+arm                           h5000_defconfig
+arm                        multi_v7_defconfig
+ia64                         bigsur_defconfig
+sh                          landisk_defconfig
+alpha                            allyesconfig
+arm                        realview_defconfig
+arm                            qcom_defconfig
+sh                           se7343_defconfig
+nios2                            alldefconfig
+arc                        nsimosci_defconfig
+powerpc                     stx_gp3_defconfig
+sparc64                          alldefconfig
+powerpc                      ep88xc_defconfig
+h8300                       h8s-sim_defconfig
+powerpc                     mpc83xx_defconfig
+powerpc                 mpc834x_mds_defconfig
+sh                          urquell_defconfig
+m68k                       m5208evb_defconfig
+mips                             allyesconfig
+m68k                       bvme6000_defconfig
+x86_64                           alldefconfig
+powerpc                 canyonlands_defconfig
+powerpc                       eiger_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                   motionpro_defconfig
+arc                          axs103_defconfig
+sh                          sdk7786_defconfig
+mips                 decstation_r4k_defconfig
+um                             i386_defconfig
+s390                       zfcpdump_defconfig
+arm                           sama5_defconfig
+m68k                             allyesconfig
+m68k                          hp300_defconfig
+mips                         mpc30x_defconfig
+powerpc                        warp_defconfig
+powerpc                 mpc837x_mds_defconfig
+arm                           viper_defconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                        keystone_defconfig
+openrisc                 simple_smp_defconfig
+xtensa                generic_kc705_defconfig
+powerpc                       holly_defconfig
+arc                          axs101_defconfig
+powerpc                     rainier_defconfig
+powerpc                      mgcoge_defconfig
+mips                     loongson1b_defconfig
+arc                         haps_hs_defconfig
+sh                               allmodconfig
+sh                   secureedge5410_defconfig
+m68k                           sun3_defconfig
+sparc64                             defconfig
+arm                            xcep_defconfig
+arc                 nsimosci_hs_smp_defconfig
+powerpc                mpc7448_hpc2_defconfig
+nios2                         3c120_defconfig
+m68k                          sun3x_defconfig
+sh                        sh7757lcr_defconfig
+powerpc                      ppc6xx_defconfig
+m68k                          amiga_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220519
+arm                  randconfig-c002-20220522
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+riscv                             allnoconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a005
+i386                          randconfig-a001
+i386                          randconfig-a003
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220519
+arc                  randconfig-r043-20220522
+s390                 randconfig-r044-20220522
+riscv                randconfig-r042-20220522
+riscv                    nommu_k210_defconfig
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+powerpc              randconfig-c003-20220519
+x86_64                        randconfig-c007
+riscv                randconfig-c006-20220519
+mips                 randconfig-c004-20220519
+i386                          randconfig-c001
+arm                  randconfig-c002-20220519
+s390                 randconfig-c005-20220519
+arm                  randconfig-c002-20220522
+s390                 randconfig-c005-20220522
+powerpc              randconfig-c003-20220522
+riscv                randconfig-c006-20220522
+mips                 randconfig-c004-20220522
+powerpc                          g5_defconfig
+hexagon                             defconfig
+mips                      pic32mzda_defconfig
+arm                          ep93xx_defconfig
+mips                     loongson2k_defconfig
+mips                      malta_kvm_defconfig
+arm                              alldefconfig
+arm                          ixp4xx_defconfig
+powerpc                      pmac32_defconfig
+powerpc                     tqm5200_defconfig
+i386                             allyesconfig
+powerpc                    socrates_defconfig
+powerpc                   microwatt_defconfig
+powerpc                      acadia_defconfig
+mips                           ip22_defconfig
+arm                     davinci_all_defconfig
+arm                         mv78xx0_defconfig
+powerpc                    ge_imp3a_defconfig
+arm                         s5pv210_defconfig
+powerpc                 mpc8560_ads_defconfig
+powerpc                   bluestone_defconfig
+powerpc                      katmai_defconfig
+powerpc                        icon_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                 mpc836x_rdk_defconfig
+mips                           rs90_defconfig
+arm                       spear13xx_defconfig
+powerpc                 mpc8272_ads_defconfig
+arm                         palmz72_defconfig
+mips                            e55_defconfig
+arm                  colibri_pxa300_defconfig
+arm                        mvebu_v5_defconfig
+powerpc                  mpc885_ads_defconfig
+powerpc                    gamecube_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220519
+riscv                randconfig-r042-20220519
+hexagon              randconfig-r041-20220519
+hexagon              randconfig-r045-20220522
+hexagon              randconfig-r041-20220522
+s390                 randconfig-r044-20220519
+hexagon              randconfig-r045-20220521
+hexagon              randconfig-r041-20220521
+s390                 randconfig-r044-20220521
+riscv                randconfig-r042-20220521
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
