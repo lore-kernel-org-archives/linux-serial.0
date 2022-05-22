@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C51DC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E0EC4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349464AbiEVP7I (ORCPT
+        id S1349351AbiEVP7Q (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 May 2022 11:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
+        Sun, 22 May 2022 11:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348791AbiEVP57 (ORCPT
+        with ESMTP id S1349301AbiEVP5q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 May 2022 11:57:59 -0400
+        Sun, 22 May 2022 11:57:46 -0400
 Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6439F3B3C6;
-        Sun, 22 May 2022 08:57:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958D83BA60;
+        Sun, 22 May 2022 08:57:37 -0700 (PDT)
 Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp3eJ031624;
-        Sun, 22 May 2022 18:51:03 +0300
+        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9aw031646;
+        Sun, 22 May 2022 18:51:09 +0300
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 7B97D63A4F; Sun, 22 May 2022 18:51:01 +0300 (IDT)
+        id C47B663A4B; Sun, 22 May 2022 18:51:09 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
         venture@google.com, yuenn@google.com, benjaminfair@google.com,
@@ -39,9 +39,9 @@ Cc:     soc@kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 05/19] dt-bindings: watchdog: npcm: Add npcm845 compatible string
-Date:   Sun, 22 May 2022 18:50:32 +0300
-Message-Id: <20220522155046.260146-6-tmaimon77@gmail.com>
+Subject: [PATCH v1 19/19] arm64: defconfig: Add Nuvoton NPCM family support
+Date:   Sun, 22 May 2022 18:50:46 +0300
+Message-Id: <20220522155046.260146-20-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
 References: <20220522155046.260146-1-tmaimon77@gmail.com>
@@ -51,27 +51,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add a compatible string for Nuvoton BMC NPCM845 watchdog.
+Enable basic drivers for NPCM8XX booting up support:
+Architecture, Clock, and WD.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- .../devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt          | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/configs/defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-index 9059f54dc023..866a958b8a2b 100644
---- a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-+++ b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-@@ -6,7 +6,8 @@ expiry.
- 
- Required properties:
- - compatible      : "nuvoton,npcm750-wdt" for NPCM750 (Poleg), or
--                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon).
-+                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon), or
-+                    "nuvoton,npcm845-wdt" for NPCM845 (Arbel).
- - reg             : Offset and length of the register set for the device.
- - interrupts      : Contain the timer interrupt with flags for
-                     falling edge.
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 50aa3d75ab4f..42ad8ac85b99 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -49,6 +49,7 @@ CONFIG_ARCH_MEDIATEK=y
+ CONFIG_ARCH_MESON=y
+ CONFIG_ARCH_MVEBU=y
+ CONFIG_ARCH_MXC=y
++CONFIG_ARCH_NPCM=y
+ CONFIG_ARCH_QCOM=y
+ CONFIG_ARCH_RENESAS=y
+ CONFIG_ARCH_ROCKCHIP=y
+@@ -617,6 +618,7 @@ CONFIG_RENESAS_WDT=y
+ CONFIG_RENESAS_RZG2LWDT=y
+ CONFIG_UNIPHIER_WATCHDOG=y
+ CONFIG_BCM2835_WDT=y
++CONFIG_NPCM7XX_WATCHDOG=y
+ CONFIG_MFD_ALTERA_SYSMGR=y
+ CONFIG_MFD_BD9571MWV=y
+ CONFIG_MFD_AXP20X_I2C=y
+@@ -997,6 +999,7 @@ CONFIG_COMMON_CLK_FSL_SAI=y
+ CONFIG_COMMON_CLK_S2MPS11=y
+ CONFIG_COMMON_CLK_PWM=y
+ CONFIG_COMMON_CLK_VC5=y
++CONFIG_COMMON_CLK_NPCM8XX=y
+ CONFIG_COMMON_CLK_BD718XX=m
+ CONFIG_CLK_RASPBERRYPI=m
+ CONFIG_CLK_IMX8MM=y
 -- 
 2.33.0
 
