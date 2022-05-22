@@ -2,25 +2,25 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37A6C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9935DC4332F
+	for <linux-serial@archiver.kernel.org>; Sun, 22 May 2022 15:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348987AbiEVP6R (ORCPT
+        id S1348993AbiEVP60 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 22 May 2022 11:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        Sun, 22 May 2022 11:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348996AbiEVP6P (ORCPT
+        with ESMTP id S1348981AbiEVP6Q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 22 May 2022 11:58:15 -0400
+        Sun, 22 May 2022 11:58:16 -0400
 Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307DC3B29E;
-        Sun, 22 May 2022 08:58:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EF33B2A4;
+        Sun, 22 May 2022 08:58:15 -0700 (PDT)
 Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9au031646;
+        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9Ye031650;
         Sun, 22 May 2022 18:51:09 +0300
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 94C7263A4A; Sun, 22 May 2022 18:51:09 +0300 (IDT)
+        id B4BA863A4A; Sun, 22 May 2022 18:51:09 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
         venture@google.com, yuenn@google.com, benjaminfair@google.com,
@@ -39,69 +39,92 @@ Cc:     soc@kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 16/19] arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
-Date:   Sun, 22 May 2022 18:50:43 +0300
-Message-Id: <20220522155046.260146-17-tmaimon77@gmail.com>
+Subject: [PATCH v1 18/19] arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
+Date:   Sun, 22 May 2022 18:50:45 +0300
+Message-Id: <20220522155046.260146-19-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
 References: <20220522155046.260146-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This adds support for the Nuvoton NPCM8XX Board Management
-controller (BMC) SoC family.
-
-The NPCM8XX based quad-core Cortex-A35 ARMv8 architecture.
+Add initial Nuvoton NPCM845 evaluation board device tree.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- MAINTAINERS                  |  3 +++
- arch/arm64/Kconfig.platforms | 11 +++++++++++
- 2 files changed, 14 insertions(+)
+ arch/arm64/boot/dts/nuvoton/Makefile          |  2 +
+ .../boot/dts/nuvoton/nuvoton-npcm845-evb.dts  | 50 +++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
+ create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d6d879cb0afd..bb81dda94372 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2431,9 +2431,12 @@ F:	Documentation/devicetree/bindings/*/*npcm*
- F:	Documentation/devicetree/bindings/arm/npcm/*
- F:	arch/arm/boot/dts/nuvoton-npcm*
- F:	arch/arm/mach-npcm/
-+F:	arch/arm64/boot/dts/nuvoton/
- F:	drivers/*/*npcm*
- F:	drivers/*/*/*npcm*
- F:	include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
-+F:	include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-+F:	include/dt-bindings/clock/nuvoton,npcm8xx-reset.h
- 
- ARM/NUVOTON WPCM450 ARCHITECTURE
- M:	Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 30b123cde02c..1767027ee9e8 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -203,6 +203,17 @@ config ARCH_MXC
- 	  This enables support for the ARMv8 based SoCs in the
- 	  NXP i.MX family.
- 
-+config ARCH_NPCM
-+	bool "Nuvoton NPCM Architecture"
-+	select PINCTRL
-+	select GPIOLIB
-+	select NPCM7XX_TIMER
-+	select RESET_CONTROLLER
-+	select MFD_SYSCON
-+	help
-+	  General support for NPCM8xx BMC (Arbel).
-+	  Nuvoton NPCM8xx BMC based on the Cortex A35.
+diff --git a/arch/arm64/boot/dts/nuvoton/Makefile b/arch/arm64/boot/dts/nuvoton/Makefile
+new file mode 100644
+index 000000000000..a99dab90472a
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_ARCH_NPCM) += nuvoton-npcm845-evb.dtb
+diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
+new file mode 100644
+index 000000000000..d7a9a85f8075
+--- /dev/null
++++ b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
 +
- config ARCH_QCOM
- 	bool "Qualcomm Platforms"
- 	select GPIOLIB
++/dts-v1/;
++#include "nuvoton-npcm845.dtsi"
++
++/ {
++	model = "Nuvoton npcm845 Development Board (Device Tree)";
++	compatible = "nuvoton,npcm845";
++
++	aliases {
++		serial0 = &serial0;
++		serial1 = &serial1;
++		serial2 = &serial2;
++		serial3 = &serial3;
++	};
++
++	chosen {
++		stdout-path = &serial0;
++	};
++
++	memory {
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++
++	ahb {
++
++		apb {
++			serial0: serial@0 {
++				status = "okay";
++			};
++
++			serial1: serial@1000 {
++				status = "disabled";
++			};
++
++			serial2: serial@2000 {
++				status = "disabled";
++			};
++
++			serial3: serial@3000 {
++				status = "disabled";
++			};
++
++			watchdog1: watchdog@901c {
++				status = "okay";
++			};
++		};
++	};
++};
 -- 
 2.33.0
 
