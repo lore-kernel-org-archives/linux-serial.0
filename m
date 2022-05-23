@@ -2,266 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D93DC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 16:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4075C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 21:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiEWQ4W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 May 2022 12:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S230057AbiEWVdB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 May 2022 17:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239229AbiEWQ4O (ORCPT
+        with ESMTP id S229835AbiEWVdA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 May 2022 12:56:14 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40F4E40;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-edeb6c3642so19212178fac.3;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FfAOhZNasQcy6TRDHmB8U+mc653MKDmGV3a61UnarkE=;
-        b=4KkfVM5goTSkVfLLz4yJUTYK9jwLwzP8f/PpRo8aB8IkJKQi4ENdB4cz/bZLj0eHjb
-         YEXOmwJPZz219J0oESUvV2cbqkJIpqB2mqP/ypOKRIxZB5Q9ecba77zNia8ciYFPTPbk
-         vrPNx2dzj7Nu7sb5kIUa1SknUEJwHpW4RVMX3HI+Rcflbis/zJ+RO3KVWPHkHoMAjboW
-         RPDv58ohM5ox6JZFx3SnjCEC6tUT4eWwAHijPFqTXLOB6kbQmb/HSuAr60U1UXZA/cFV
-         IF9PfZ6TLKCtKhg8wZAkXPMRJlyHYLB34KalgVgU4A29QzcRkpiOUSSNuUBlkObVOCfG
-         wCkw==
-X-Gm-Message-State: AOAM533vkLoWrjdNEctnWHVHHnoq5MUMqieCqa4zrXOERLLWtvOXgsOu
-        fOCXzySz8awOAEzcFjzLRA==
-X-Google-Smtp-Source: ABdhPJzG3ZFQrmj1v1yitS4jTC5DzQZmWnfRLp9MNvhBwUQ6yufF6JdEMRoPfxaQK0q/QMOIiKOBDg==
-X-Received: by 2002:a05:6870:5823:b0:f2:2dfd:8df0 with SMTP id r35-20020a056870582300b000f22dfd8df0mr6004573oap.157.1653324972043;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id eb38-20020a056870a8a600b000edf5a12baasm3976216oab.46.2022.05.23.09.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 09:56:11 -0700 (PDT)
-Received: (nullmailer pid 1750116 invoked by uid 1000);
-        Mon, 23 May 2022 16:56:09 -0000
-Date:   Mon, 23 May 2022 11:56:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix properties without any type
-Message-ID: <20220523165609.GA1743214-robh@kernel.org>
-References: <20220519211411.2200720-1-robh@kernel.org>
- <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
+        Mon, 23 May 2022 17:33:00 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B549AF1D3
+        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 14:32:53 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220523213247euoutp014e0cbf6b8eac506e9b09f07431fd8010~x2WVh4XwK0351203512euoutp01P
+        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 21:32:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220523213247euoutp014e0cbf6b8eac506e9b09f07431fd8010~x2WVh4XwK0351203512euoutp01P
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653341567;
+        bh=CuA90U34Sy398IZHnKSyqiV58r/MsKlMAgzP1H/ssfQ=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=QN9eyH9ylCEMp7ECmyoXYI5174UrezW5k0Fqlc0XQdccTzB5bQ5e7UD87WjQzBb6X
+         oRf5WqPLsYtQWynyYgBmEKOveosnPt4V3KYPH3QfpN33kN8k18RIFBoFmBwiFbrY/W
+         /L+iGkGdTJEj+ec0HQSc+ldpQT4VXQxJlsUHDOv4=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220523213247eucas1p1d18fd34f643aba4ced6c0504b1db29c2~x2WVHLigO2492924929eucas1p1R;
+        Mon, 23 May 2022 21:32:47 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id F9.48.10260.F7DFB826; Mon, 23
+        May 2022 22:32:47 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0~x2WUiJNDA1924419244eucas1p2Z;
+        Mon, 23 May 2022 21:32:46 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220523213246eusmtrp1656cb1c58caf277860cef71122195812~x2WUhYoEU2000220002eusmtrp1v;
+        Mon, 23 May 2022 21:32:46 +0000 (GMT)
+X-AuditID: cbfec7f5-bddff70000002814-81-628bfd7fd378
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 97.BA.09522.E7DFB826; Mon, 23
+        May 2022 22:32:46 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220523213246eusmtip2f1d7ac0017236a3f681beefedc2e6a09~x2WT-q8Yq1690516905eusmtip24;
+        Mon, 23 May 2022 21:32:45 +0000 (GMT)
+Message-ID: <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
+Date:   Mon, 23 May 2022 23:32:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
+ console_suspend is disabled
+Content-Language: en-US
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMKsWRmVeSWpSXmKPExsWy7djPc7r1f7uTDN5NYLU4u+wgm0Xz4vVs
+        Fu/mylhc3jWHzeLM4l52i88bHjNaLL60ks3i66XJzBbH7zxlcuD0mN1wkcVj06pONo/9c9ew
+        e0zcU+fxeZNcAGsUl01Kak5mWWqRvl0CV8a9lxsYC06JVLyal9nAeEWgi5GTQ0LARKLr303m
+        LkYuDiGBFYwSHWunsUM4XxglLp1dxALhfGaUmLtlBhNMy5rms1AtyxklFp1/CFX1kVFi9sUj
+        7CBVvAJ2Eg13nwJ1cHCwCKhKLNpfDBEWlDg58wkLiC0qkCTx5s1VZhBbWCBd4snCbWALmAXE
+        JW49mc8EMlNEYCXQgqt/WCASsRIdj16ygthsAoYSXW+72EBsTgEvifkT5rFD1MhLbH87B+w6
+        CYE3HBKzep+yQ5ztIrHg5EdGCFtY4tXxLVBxGYnTk3tYQA6VEMiX+DvDGCJcIXHt9RpmCNta
+        4s65X2wgJcwCmhLrd+lDhB0lPp3rZITo5JO48VYQ4gI+iUnbpjNDhHklOtqEIKrVJGYdXwe3
+        8+CFS8wTGJVmIQXKLCTPz0LyyyyEvQsYWVYxiqeWFuempxYb56WW6xUn5haX5qXrJefnbmIE
+        pqPT/45/3cG44tVHvUOMTByMhxglOJiVRHi3J3YkCfGmJFZWpRblxxeV5qQWH2KU5mBREudN
+        ztyQKCSQnliSmp2aWpBaBJNl4uCUamDiqVAUeXQj7MylTAYvuZoljryHCq/MOa8Uq3CE1yDo
+        2sSit4KLbb9dbPrT07rmzs8Ubq4sx8WJZ3d7by70C/Xw4WtlNz76+tasx4znOHdmXvf1r2o5
+        z7vKpOlr6VmrC0nG5rb5gv/nvrjLEdQgUvyg+lODU5fwtE0/6qUWWHmxcdR6XVzoYX9gv5nR
+        jOttp5LtqkV7eJ56Tcs9IJOoKPbCebfgsbeZy9z9A6YLcN9y1qh6E66/UyCdYcLGk5M33ylU
+        LYuMT517pLlgmtLCVsFl+579CyjN39/ls8XlmLp9j8/tMz/rBBLaP6/43qmf/H7SPRW5myfE
+        ozqK9yxVWbJNaOH0SXs4N7+/X+Tuel6JpTgj0VCLuag4EQCMUX4ntgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGIsWRmVeSWpSXmKPExsVy+t/xe7p1f7uTDB4tULQ4u+wgm0Xz4vVs
+        Fu/mylhc3jWHzeLM4l52i88bHjNaLL60ks3i66XJzBbH7zxlcuD0mN1wkcVj06pONo/9c9ew
+        e0zcU+fxeZNcAGuUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWRqZK+nU1Kak5m
+        WWqRvl2CXsa9lxsYC06JVLyal9nAeEWgi5GTQ0LARGJN81nmLkYuDiGBpYwSV9ZuZYZIyEic
+        nNbACmELS/y51sUGUfSeUeLsu9XsIAleATuJhrtPmboYOThYBFQlFu0vhggLSpyc+YQFJCwq
+        kCRx5DA/SFhYIF3iycJtTCA2s4C4xK0n85lARooIrGSUmLrpGDNEIlbi1cFnLCC2kICnxM5F
+        a9lAbDYBQ4mut11gNqeAl8T8CfPYIerNJLq2djFC2PIS29/OYZ7AKDQLyRmzkOybhaRlFpKW
+        BYwsqxhFUkuLc9Nziw31ihNzi0vz0vWS83M3MQIjcNuxn5t3MM579VHvECMTB+MhRgkOZiUR
+        3u2JHUlCvCmJlVWpRfnxRaU5qcWHGE2BQTGRWUo0OR+YAvJK4g3NDEwNTcwsDUwtzYyVxHk9
+        CzoShQTSE0tSs1NTC1KLYPqYODilGpgUTA22b3XbfG/RpdhO4fkT3ggwHWYXtRIyPljw0vai
+        07xX/jsM8kQu3bQ2Mt5ru/pbeOsDcRMvkY/MWxPLl15dtkYo8F4Ju+O5yk7Hde0bvIIW6zuf
+        5q+VaOO90TIl9oeVzkKORYd4N7HO+j0vokHafMLkRMvZfyJ1ajUK+++/OrWKc/WylGsnuV/P
+        W/U83MZ7iVZ4rsqxVXwC7g+D7na4yph2fNnbuM3z6q9p1SqMTZN3Tjrbs32NnLnI/7ZK9zeC
+        601iLa5PnPKsWML7yI+nMmr1vLq5N+1//+JKuxV1sLavZxfbI3MFK7YQ0/yLjhEu9g7/j5/m
+        VJm5obXgbuv0669/pW06N/P+e/GML/uVWIozEg21mIuKEwFzKO0QSQMAAA==
+X-CMS-MailID: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+        <CGME20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, May 21, 2022 at 05:03:41PM +0200, Krzysztof Kozlowski wrote:
-> On 19/05/2022 23:14, Rob Herring wrote:
-> > Now that the schema tools can extract type information for all
-> > properties (in order to decode dtb files), finding properties missing
-> > any type definition is fairly trivial though not yet automated.
-> > 
-> > Fix the various property schemas which are missing a type. Most of these
-> > tend to be device specific properties which don't have a vendor prefix.
-> > A vendor prefix is how we normally ensure a type is defined.
-> > 
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../arm/hisilicon/controller/hip04-bootwrapper.yaml       | 5 +++--
-> >  .../bindings/display/bridge/toshiba,tc358768.yaml         | 1 +
-> >  .../devicetree/bindings/display/panel/panel-timing.yaml   | 5 +++++
-> >  .../bindings/display/panel/raydium,rm67191.yaml           | 1 +
-> >  .../bindings/display/panel/samsung,s6e8aa0.yaml           | 1 +
-> >  .../devicetree/bindings/gpio/fairchild,74hc595.yaml       | 1 +
-> >  .../devicetree/bindings/input/google,cros-ec-keyb.yaml    | 1 +
-> >  .../devicetree/bindings/input/matrix-keymap.yaml          | 4 ++++
-> >  Documentation/devicetree/bindings/media/i2c/adv7604.yaml  | 3 ++-
-> >  Documentation/devicetree/bindings/mux/reg-mux.yaml        | 8 ++++++--
-> >  Documentation/devicetree/bindings/net/cdns,macb.yaml      | 1 +
-> >  Documentation/devicetree/bindings/net/ingenic,mac.yaml    | 1 +
-> >  .../devicetree/bindings/net/ti,davinci-mdio.yaml          | 1 +
-> >  .../devicetree/bindings/net/wireless/ti,wlcore.yaml       | 2 ++
-> >  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml          | 6 ++++--
-> >  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml   | 2 ++
-> >  .../devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml    | 2 ++
-> >  Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml | 1 +
-> >  .../devicetree/bindings/power/supply/battery.yaml         | 7 ++++++-
-> >  .../devicetree/bindings/power/supply/charger-manager.yaml | 1 +
-> >  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml   | 1 +
-> >  Documentation/devicetree/bindings/serial/8250.yaml        | 1 +
-> >  .../devicetree/bindings/sound/audio-graph-card2.yaml      | 3 +++
-> >  .../devicetree/bindings/sound/imx-audio-hdmi.yaml         | 3 +++
-> >  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml   | 1 +
-> >  25 files changed, 55 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > index 7378159e61df..483caf0ce25b 100644
-> > --- a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > @@ -17,14 +17,15 @@ properties:
-> >        - const: hisilicon,hip04-bootwrapper
-> >  
-> >    boot-method:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> >      description: |
-> >        Address and size of boot method.
-> >        [0]: bootwrapper physical address
-> >        [1]: bootwrapper size
-> >        [2]: relocation physical address
-> >        [3]: relocation size
-> > -    minItems: 1
-> > -    maxItems: 2
-> > +    minItems: 2
-> > +    maxItems: 4
-> >  
-> >  required:
-> >    - compatible
-> > diff --git a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > index 3bd670b8e5cd..0b6f5bef120f 100644
-> > --- a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > +++ b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > @@ -58,6 +58,7 @@ properties:
-> >  
-> >              properties:
-> >                data-lines:
-> > +                $ref: /schemas/types.yaml#/definitions/uint32
-> >                  enum: [ 16, 18, 24 ]
-> >  
-> >        port@1:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > index 7749de95ee40..229e3b36ee29 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > @@ -146,6 +146,7 @@ properties:
-> >        Horizontal sync pulse.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    vsync-active:
-> > @@ -153,6 +154,7 @@ properties:
-> >        Vertical sync pulse.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    de-active:
-> > @@ -160,6 +162,7 @@ properties:
-> >        Data enable.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    pixelclk-active:
-> > @@ -169,6 +172,7 @@ properties:
-> >        sample data on rising edge.
-> >        Use 1 to drive pixel data on rising edge and
-> >        sample data on falling edge
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    syncclk-active:
-> > @@ -179,6 +183,7 @@ properties:
-> >        sample sync on rising edge of pixel clock.
-> >        Use 1 to drive sync on rising edge and
-> >        sample sync on falling edge of pixel clock
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    interlaced:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > index 745dd247c409..617aa8c8c03a 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > @@ -24,6 +24,7 @@ properties:
-> >  
-> >    dsi-lanes:
-> >      description: Number of DSI lanes to be used must be <3> or <4>
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [3, 4]
-> >  
-> >    v3p3-supply:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > index ca959451557e..1cdc91b3439f 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > @@ -36,6 +36,7 @@ properties:
-> >  
-> >    init-delay:
-> >      description: delay after initialization sequence [ms]
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >  
-> >    panel-width-mm:
-> >      description: physical panel width [mm]
-> > diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > index 5fe19fa5f67c..a99e7842ca17 100644
-> > --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > @@ -26,6 +26,7 @@ properties:
-> >      const: 2
-> >  
-> >    registers-number:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      description: Number of daisy-chained shift registers
-> >  
-> >    enable-gpios:
-> > diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > index e8f137abb03c..aa61fe64be63 100644
-> > --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > @@ -31,6 +31,7 @@ properties:
-> >      type: boolean
-> >  
-> >    function-row-physmap:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> >      minItems: 1
-> >      maxItems: 15
-> >      description: |
-> > diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > index 6699d5e32dca..9f703bb51e12 100644
-> > --- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > +++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > @@ -27,6 +27,10 @@ properties:
-> >        column and linux key-code. The 32-bit big endian cell is packed as:
-> >            row << 24 | column << 16 | key-code
-> >  
-> > +  linux,no-autorepeat:
-> > +    type: boolean
-> > +    description: Disable keyrepeat
-> 
-> This should be rather a separate patch - it's documenting a missing
-> property, not only a type.
+Hi,
 
-Yes, I've dropped this hunk while applying.
+On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
+> For the case of console_suspend disabled, if back to back suspend/resume
+> test is executed, at the end of test, sometimes console would appear to
+> be frozen not responding to input. This would happen because, during
+> resume, rx transactions can come in before system is ready, malfunction
+> of rx happens in turn resulting in console appearing to be stuck.
+>
+> Do a stop_rx in suspend sequence to prevent this.
+>
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+> v4: moved the change to serial core to apply for all drivers
+> v3: swapped the order of conditions to be more human readable
+> v2: restricted patch to contain only stop_rx in suspend sequence
+> v1: intial patch contained 2 additional unrelated changes in vicinity
+> ---
 
-Rob
+This patch landed recently in linux-next as commit c9d2325cdb92 
+("serial: core: Do stop_rx in suspend path for console if 
+console_suspend is disabled").
+
+Unfortunately it breaks console operation on my test systems after 
+system suspend/resume cycle if 'no_console_suspend' kernel parameter is 
+present. System properly resumes from suspend, the console displays all 
+the messages and even command line prompt, but then doesn't react on any 
+input. If I remove the 'no_console_suspend' parameter, the console is 
+again operational after system suspend/resume cycle. Before this patch 
+it worked fine regardless the 'no_console_suspend' parameter.
+
+If this matters, the test system is ARM 32bit Samsung Exynos5422-based 
+Odroid XU3lite board.
+
+>   drivers/tty/serial/serial_core.c | 11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 82a1770..9a85b41 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+>   	}
+>   	put_device(tty_dev);
+>   
+> -	/* Nothing to do if the console is not suspending */
+> -	if (!console_suspend_enabled && uart_console(uport))
+> +	/*
+> +	 * Nothing to do if the console is not suspending
+> +	 * except stop_rx to prevent any asynchronous data
+> +	 * over RX line. Re-start_rx, when required, is
+> +	 * done by set_termios in resume sequence
+> +	 */
+> +	if (!console_suspend_enabled && uart_console(uport)) {
+> +		uport->ops->stop_rx(uport);
+>   		goto unlock;
+> +	}
+>   
+>   	uport->suspended = 1;
+>   
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
