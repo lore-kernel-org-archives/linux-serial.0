@@ -2,120 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DD8C43217
-	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 15:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D07C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 15:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238053AbiEWPh4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 May 2022 11:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
+        id S238143AbiEWPvI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 May 2022 11:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237953AbiEWPhx (ORCPT
+        with ESMTP id S238186AbiEWPvH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 May 2022 11:37:53 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8150930F4E
-        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 08:37:49 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id 1so4329157ljh.8
-        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 08:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CNVGYK72FSE/DjXuo5FhnaPlB7gNCfpfmdbuSxUtMOc=;
-        b=iau23czuiMXjm0hyqdsK5LqTD+cKYVfnaA9S+hQdET23Y0mX06Yvmm6kF7vXaHTfPy
-         8//i31Rg+IIST3l9Sr0HyecMRQN5OqkZNKc8CS9yKXVH/8RbMhhmXeqzZSfepaj/zkwe
-         ofB4tGj5QcepTEaNJQGL0uCSEQ2ADJPDbE222xkpnEOy/i6hOMC2Gogln7uIOXz1Z2Un
-         eEdA7dxiMWE4KY6pnEhnPDqWZSOM1zSWeijmWVE9dewujOLdGsLSCspFY3jrwHLY5uJy
-         G/qZz7B6FWs1eIB6vxDShca3e0arrF3KoP7sa7f+DQmKL7DLNfpzlnJHap6kywfaaz7X
-         P+oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CNVGYK72FSE/DjXuo5FhnaPlB7gNCfpfmdbuSxUtMOc=;
-        b=WIX8uoxzoL24nhzN10zCOFP3fjq7PGIftDynx+YiN+CQfJDTrZOOG1dI70i214v18n
-         4FcP7K2OM4DcfZiz7eAqt/xnZvhz9bWSb9CkfEVxgeEa8/FJZhQmAimCtblcKppmPB6y
-         kS/b2VmU6itu8FgSVkjoxh9p5HrGIzeGE42DEo1H5xczwKtlTdDBhkJLextbVKBUByrw
-         QxVVkRHUEX77lrVcDH5PyvRp7GrCfGPsaKhLU4e71M//3t0EPLxtzd5LcaET6x1HwgMs
-         N71ND47LwVRY9eraIILRkX37j1EUMZ0Wbja3/2gqQwSiHVOXYCmRu4AvG/joLJ0j+D+X
-         MVDg==
-X-Gm-Message-State: AOAM532+E5OWyJNpojm7i5qT320lEog/eQGDzPndUoAWazjROJKxum4q
-        QnGTzU+7nLPRH7zt5Vk9PSzCIQ==
-X-Google-Smtp-Source: ABdhPJytSX0vw8XiyL0IPRTPz7bNI0Vb5IqxXheMy8cJ6OyJZo+/AZv6Os8PjXd8yRyNcZKkTN4sOg==
-X-Received: by 2002:a05:651c:b06:b0:253:e51a:c507 with SMTP id b6-20020a05651c0b0600b00253e51ac507mr6361505ljr.420.1653320267494;
-        Mon, 23 May 2022 08:37:47 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id o14-20020a05651205ce00b0047255d211c2sm2036295lfo.241.2022.05.23.08.37.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 08:37:46 -0700 (PDT)
-Message-ID: <fd52f328-c895-e27e-4807-eb0b8f14a247@linaro.org>
-Date:   Mon, 23 May 2022 17:37:44 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 18/19] arm64: dts: nuvoton: Add initial NPCM845 EVB
- device tree
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Mon, 23 May 2022 11:51:07 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59AC12A9;
+        Mon, 23 May 2022 08:51:01 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 0D3BD80C2;
+        Mon, 23 May 2022 15:47:00 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniel Starke <daniel.starke@siemens.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        robert.hancock@calian.com,
-        nathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20220522155046.260146-1-tmaimon77@gmail.com>
- <20220522155046.260146-19-tmaimon77@gmail.com>
- <CAK8P3a1LCkM-w_Oi2qUqgq_Qxsg64uoGg5aaz=X8pBENHBhj0A@mail.gmail.com>
- <CAP6Zq1j8PEQ2m7rG5YztesiOfXExCr=UMPFhD=Oe+GYDwGP95g@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAP6Zq1j8PEQ2m7rG5YztesiOfXExCr=UMPFhD=Oe+GYDwGP95g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Johan Hovold <johan@kernel.org>,
+        Zhenguo Zhao <Zhenguo.Zhao1@unisoc.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] tty: n_gsm: Debug output allocation must use GFP_ATOMIC
+Date:   Mon, 23 May 2022 18:50:52 +0300
+Message-Id: <20220523155052.57129-1-tony@atomide.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23/05/2022 16:17, Tomer Maimon wrote:
-> Hi,
-> 
-> Thanks for your comments.
-> 
-> the patch will modify according to your comments and will be sent in the
-> next kernel revision 5.19.rc1
-> 
+Dan Carpenter <dan.carpenter@oracle.com> reported the following Smatch
+warning:
 
-None of your emails reach lists because of using HTML. Please use
-appropriate messaging format.
+drivers/tty/n_gsm.c:720 gsm_data_kick()
+warn: sleeping in atomic context
 
-Best regards,
-Krzysztof
+This is because gsm_control_message() is holding a spin lock so
+gsm_hex_dump_bytes() needs to use GFP_ATOMIC instead of GFP_KERNEL.
+
+Fixes: 925ea0fa5277 ("tty: n_gsm: Fix packet data hex dump output")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ drivers/tty/n_gsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -459,7 +459,7 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
+ 		return;
+ 	}
+ 
+-	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
++	prefix = kasprintf(GFP_ATOMIC, "%s: ", fname);
+ 	if (!prefix)
+ 		return;
+ 	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
+-- 
+2.36.1
