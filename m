@@ -2,403 +2,592 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B257AC433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 07:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0507C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 07:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbiEWHYc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 May 2022 03:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        id S231210AbiEWH2M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 May 2022 03:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiEWHYC (ORCPT
+        with ESMTP id S230376AbiEWH1j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 May 2022 03:24:02 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FFB3A1B7;
-        Mon, 23 May 2022 00:17:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653290258; x=1684826258;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=ev8v7cyguP4Weqk3Bhpwe6YaRfyri/aaDhL9TcGpb8I=;
-  b=OE9+ap3Q9zdtnOJxSTb8kEpeo/ZmSvGahLmXghqMz+2ZBkdM1OlqWPf4
-   8X+Ub4xTVj3xYi95Y6jO624KN00aRoDkz44RsrN53MLkNcDknmt4fsA+H
-   8GgzhTNeCaD/LtTjf+uXOhqCYi2y+8k7qXUBcbzBgwNExBBHyTGny5qch
-   rlacEMUZkw8un+JcEFMZyqmOah4Ev0xqF5EtgbbeFkzxC4fuJ+VM/rVFE
-   YIrZZR13c79Pxn7k9GO879Z2cTK+HXafgihEB4iKOMSM/e+YSoF3a33Dq
-   hJacjVpgumve4Bp2ky+QGJ3RBQ3yOuRobZ7YdjK22WWSwXLTch8r/uKON
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="359523924"
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="359523924"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:07:23 -0700
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
-   d="scan'208";a="600484629"
-Received: from tstralma-mobl1.ger.corp.intel.com ([10.252.55.107])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:07:13 -0700
-Date:   Mon, 23 May 2022 10:07:07 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-cc:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        Mon, 23 May 2022 03:27:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C505CDFAA;
+        Mon, 23 May 2022 00:24:01 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id DFF2F1F42B4D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653289176;
+        bh=fMIMMhJRlJQe9JKTSpnuOU6Ds5f0JXS0sAh5aX1dd3M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b93nE9YSM6DJsc4kIBgfLAD6U78/aWTdtTmsANj5h0ZRnRfo49OptjrpkvL4fnoKm
+         wB8yj9ZRGClhMgn1w9k6xiOW8xGF8aMj8SPwbcgV4hXJb9FMUHIsOTTQGKRSQb+kG5
+         ePAX785C9NVljDivTAcPR1iUa37w9iJxbOT3cMYCJXDEmkknbpRk5ejESbjH/uE02w
+         daTt/EZpgIgStQAkSWMNMhpvEBFiHaUJ0l3oxRKs8rkGig6JbRQdGBk0R5B+MbW2Bx
+         nPusTCOcwNztXImaE8sIQlB7OBIU0ivaJnNdkupLnTAa3C5F6+47ch4ScrpzpYdXhO
+         TZjBStxjJ8xgQ==
+Received: by mercury (Postfix, from userid 1000)
+        id 8AA59106043A; Mon, 23 May 2022 08:59:33 +0200 (CEST)
+Date:   Mon, 23 May 2022 08:59:33 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Peter Rosin <peda@axentia.se>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        daniel.lezcano@linaro.org, tglx@linutronix.de,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, Jiri Slaby <jirislaby@kernel.org>,
-        shawnguo@kernel.org, bjorn.andersson@linaro.org,
-        geert+renesas@glider.be, marcel.ziswiler@toradex.com,
-        vkoul@kernel.org, biju.das.jz@bp.renesas.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, robert.hancock@calian.com,
-        j.neuschaefer@gmx.net, lkundrak@v3.sk, soc@kernel.org,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-clk@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1 08/19] clk: npcm8xx: add clock controller
-In-Reply-To: <20220522155046.260146-9-tmaimon77@gmail.com>
-Message-ID: <6fa3d94c-294d-1c6c-5738-6d15b2e17e90@linux.intel.com>
-References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-9-tmaimon77@gmail.com>
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
+        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Fix properties without any type
+Message-ID: <20220523065933.kq5dxxe2chvp2r7w@mercury.elektranox.org>
+References: <20220519211411.2200720-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qdtpx5mo3ymeklm2"
+Content-Disposition: inline
+In-Reply-To: <20220519211411.2200720-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 22 May 2022, Tomer Maimon wrote:
 
-> Nuvoton Arbel BMC NPCM7XX contains an integrated clock controller, which
-> generates and supplies clocks to all modules within the BMC.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+--qdtpx5mo3ymeklm2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +static struct clk_hw *
-> +npcm8xx_clk_register_pll(void __iomem *pllcon, const char *name,
-> +			 const char *parent_name, unsigned long flags)
-> +{
-> +	struct npcm8xx_clk_pll *pll;
-> +	struct clk_init_data init;
-> +	struct clk_hw *hw;
-> +	int ret;
-> +
-> +	pll = kzalloc(sizeof(*pll), GFP_KERNEL);
-> +	if (!pll)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	pr_debug("%s reg, name=%s, p=%s\n", __func__, name, parent_name);
-> +
-> +	init.name = name;
-> +	init.ops = &npcm8xx_clk_pll_ops;
-> +	init.parent_names = &parent_name;
-> +	init.num_parents = 1;
-> +	init.flags = flags;
-> +
-> +	pll->pllcon = pllcon;
-> +	pll->hw.init = &init;
-> +
-> +	hw = &pll->hw;
-> +
-> +	ret = clk_hw_register(NULL, hw);
-> +	if (ret) {
-> +		kfree(pll);
-> +		hw = ERR_PTR(ret);
-> +	}
-> +
-> +	return hw;
-> +}
-> +
-> +#define NPCM8XX_CLKEN1          (0x00)
-> +#define NPCM8XX_CLKEN2          (0x28)
-> +#define NPCM8XX_CLKEN3          (0x30)
-> +#define NPCM8XX_CLKEN4          (0x70)
-> +#define NPCM8XX_CLKSEL          (0x04)
-> +#define NPCM8XX_CLKDIV1         (0x08)
-> +#define NPCM8XX_CLKDIV2         (0x2C)
-> +#define NPCM8XX_CLKDIV3         (0x58)
-> +#define NPCM8XX_CLKDIV4         (0x7C)
-> +#define NPCM8XX_PLLCON0         (0x0C)
-> +#define NPCM8XX_PLLCON1         (0x10)
-> +#define NPCM8XX_PLLCON2         (0x54)
-> +#define NPCM8XX_SWRSTR          (0x14)
-> +#define NPCM8XX_IRQWAKECON      (0x18)
-> +#define NPCM8XX_IRQWAKEFLAG     (0x1C)
-> +#define NPCM8XX_IPSRST1         (0x20)
-> +#define NPCM8XX_IPSRST2         (0x24)
-> +#define NPCM8XX_IPSRST3         (0x34)
-> +#define NPCM8XX_WD0RCR          (0x38)
-> +#define NPCM8XX_WD1RCR          (0x3C)
-> +#define NPCM8XX_WD2RCR          (0x40)
-> +#define NPCM8XX_SWRSTC1         (0x44)
-> +#define NPCM8XX_SWRSTC2         (0x48)
-> +#define NPCM8XX_SWRSTC3         (0x4C)
-> +#define NPCM8XX_SWRSTC4         (0x50)
-> +#define NPCM8XX_CORSTC          (0x5C)
-> +#define NPCM8XX_PLLCONG         (0x60)
-> +#define NPCM8XX_AHBCKFI         (0x64)
-> +#define NPCM8XX_SECCNT          (0x68)
-> +#define NPCM8XX_CNTR25M         (0x6C)
-> +#define NPCM8XX_THRTL_CNT       (0xC0)
-> +
-> +struct npcm8xx_clk_gate_data {
-> +	u32 reg;
-> +	u8 bit_idx;
-> +	const char *name;
-> +	const char *parent_name;
-> +	unsigned long flags;
-> +	/*
-> +	 * If this clock is exported via DT, set onecell_idx to constant
-> +	 * defined in include/dt-bindings/clock/nuvoton, NPCM8XX-clock.h for
-> +	 * this specific clock.  Otherwise, set to -1.
-> +	 */
-> +	int onecell_idx;
-> +};
-> +
-> +struct npcm8xx_clk_mux_data {
-> +	u8 shift;
-> +	u8 mask;
-> +	u32 *table;
-> +	const char *name;
-> +	const char * const *parent_names;
-> +	u8 num_parents;
-> +	unsigned long flags;
-> +	/*
-> +	 * If this clock is exported via DT, set onecell_idx to constant
-> +	 * defined in include/dt-bindings/clock/nuvoton, NPCM8XX-clock.h for
-> +	 * this specific clock.  Otherwise, set to -1.
-> +	 */
-> +	int onecell_idx;
-> +
-> +};
-> +
-> +struct npcm8xx_clk_div_fixed_data {
-> +	u8 mult;
-> +	u8 div;
-> +	const char *name;
-> +	const char *parent_name;
-> +	u8 clk_divider_flags;
-> +	/*
-> +	 * If this clock is exported via DT, set onecell_idx to constant
-> +	 * defined in include/dt-bindings/clock/nuvoton, NPCM8XX-clock.h for
-> +	 * this specific clock.  Otherwise, set to -1.
-> +	 */
-> +	int onecell_idx;
-> +};
-> +
-> +struct npcm8xx_clk_div_data {
-> +	u32 reg;
-> +	u8 shift;
-> +	u8 width;
-> +	const char *name;
-> +	const char *parent_name;
-> +	u8 clk_divider_flags;
-> +	unsigned long flags;
-> +	/*
-> +	 * If this clock is exported via DT, set onecell_idx to constant
-> +	 * defined in include/dt-bindings/clock/nuvoton, NPCM8XX-clock.h for
-> +	 * this specific clock.  Otherwise, set to -1.
-> +	 */
-> +	int onecell_idx;
-> +};
-> +
-> +struct npcm8xx_clk_pll_data {
-> +	u32 reg;
-> +	const char *name;
-> +	const char *parent_name;
-> +	unsigned long flags;
-> +	/*
-> +	 * If this clock is exported via DT, set onecell_idx to constant
-> +	 * defined in include/dt-bindings/clock/nuvoton, NPCM8XX-clock.h for
-> +	 * this specific clock.  Otherwise, set to -1.
-> +	 */
-> +	int onecell_idx;
-> +};
-> +
+Hi,
 
+On Thu, May 19, 2022 at 04:14:11PM -0500, Rob Herring wrote:
+> Now that the schema tools can extract type information for all
+> properties (in order to decode dtb files), finding properties missing
+> any type definition is fairly trivial though not yet automated.
+>=20
+> Fix the various property schemas which are missing a type. Most of these
+> tend to be device specific properties which don't have a vendor prefix.
+> A vendor prefix is how we normally ensure a type is defined.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../arm/hisilicon/controller/hip04-bootwrapper.yaml       | 5 +++--
+>  .../bindings/display/bridge/toshiba,tc358768.yaml         | 1 +
+>  .../devicetree/bindings/display/panel/panel-timing.yaml   | 5 +++++
+>  .../bindings/display/panel/raydium,rm67191.yaml           | 1 +
+>  .../bindings/display/panel/samsung,s6e8aa0.yaml           | 1 +
+>  .../devicetree/bindings/gpio/fairchild,74hc595.yaml       | 1 +
+>  .../devicetree/bindings/input/google,cros-ec-keyb.yaml    | 1 +
+>  .../devicetree/bindings/input/matrix-keymap.yaml          | 4 ++++
+>  Documentation/devicetree/bindings/media/i2c/adv7604.yaml  | 3 ++-
+>  Documentation/devicetree/bindings/mux/reg-mux.yaml        | 8 ++++++--
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml      | 1 +
+>  Documentation/devicetree/bindings/net/ingenic,mac.yaml    | 1 +
+>  .../devicetree/bindings/net/ti,davinci-mdio.yaml          | 1 +
+>  .../devicetree/bindings/net/wireless/ti,wlcore.yaml       | 2 ++
+>  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml          | 6 ++++--
+>  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml   | 2 ++
+>  .../devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml    | 2 ++
+>  Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml | 1 +
+>  .../devicetree/bindings/power/supply/battery.yaml         | 7 ++++++-
+>  .../devicetree/bindings/power/supply/charger-manager.yaml | 1 +
+>  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml   | 1 +
+>  Documentation/devicetree/bindings/serial/8250.yaml        | 1 +
+>  .../devicetree/bindings/sound/audio-graph-card2.yaml      | 3 +++
+>  .../devicetree/bindings/sound/imx-audio-hdmi.yaml         | 3 +++
+>  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml   | 1 +
+>  25 files changed, 55 insertions(+), 8 deletions(-)
 
-> +/*
-> + * Single copy of strings used to refer to clocks within this driver indexed by
-> + * above enum.
-> + */
-> +#define NPCM8XX_CLK_S_REFCLK      "refclk"
-> +#define NPCM8XX_CLK_S_SYSBYPCK    "sysbypck"
-> +#define NPCM8XX_CLK_S_MCBYPCK     "mcbypck"
-> +#define NPCM8XX_CLK_S_GFXBYPCK    "gfxbypck"
-> +#define NPCM8XX_CLK_S_PLL0        "pll0"
-> +#define NPCM8XX_CLK_S_PLL1        "pll1"
-> +#define NPCM8XX_CLK_S_PLL1_DIV2   "pll1_div2"
-> +#define NPCM8XX_CLK_S_PLL2        "pll2"
-> +#define NPCM8XX_CLK_S_PLL_GFX     "pll_gfx"
-> +#define NPCM8XX_CLK_S_PLL2_DIV2   "pll2_div2"
-> +#define NPCM8XX_CLK_S_PIX_MUX     "gfx_pixel"
-> +#define NPCM8XX_CLK_S_GPRFSEL_MUX "gprfsel_mux"
-> +#define NPCM8XX_CLK_S_MC_MUX      "mc_phy"
-> +#define NPCM8XX_CLK_S_CPU_MUX     "cpu"  /*AKA system clock.*/
+For power-supply:
 
-Add spaces around comment.
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-> +#define NPCM8XX_CLK_S_MC          "mc"
-> +#define NPCM8XX_CLK_S_AXI         "axi"  /*AKA CLK2*/
-> +#define NPCM8XX_CLK_S_AHB         "ahb"  /*AKA CLK4*/
+-- Sebastian
 
-Ditto.
+>=20
+> diff --git a/Documentation/devicetree/bindings/arm/hisilicon/controller/h=
+ip04-bootwrapper.yaml b/Documentation/devicetree/bindings/arm/hisilicon/con=
+troller/hip04-bootwrapper.yaml
+> index 7378159e61df..483caf0ce25b 100644
+> --- a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bo=
+otwrapper.yaml
+> +++ b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bo=
+otwrapper.yaml
+> @@ -17,14 +17,15 @@ properties:
+>        - const: hisilicon,hip04-bootwrapper
+> =20
+>    boot-method:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>      description: |
+>        Address and size of boot method.
+>        [0]: bootwrapper physical address
+>        [1]: bootwrapper size
+>        [2]: relocation physical address
+>        [3]: relocation size
+> -    minItems: 1
+> -    maxItems: 2
+> +    minItems: 2
+> +    maxItems: 4
+> =20
+>  required:
+>    - compatible
+> diff --git a/Documentation/devicetree/bindings/display/bridge/toshiba,tc3=
+58768.yaml b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358=
+768.yaml
+> index 3bd670b8e5cd..0b6f5bef120f 100644
+> --- a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.y=
+aml
+> +++ b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.y=
+aml
+> @@ -58,6 +58,7 @@ properties:
+> =20
+>              properties:
+>                data-lines:
+> +                $ref: /schemas/types.yaml#/definitions/uint32
+>                  enum: [ 16, 18, 24 ]
+> =20
+>        port@1:
+> diff --git a/Documentation/devicetree/bindings/display/panel/panel-timing=
+=2Eyaml b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> index 7749de95ee40..229e3b36ee29 100644
+> --- a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
+> @@ -146,6 +146,7 @@ properties:
+>        Horizontal sync pulse.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+> =20
+>    vsync-active:
+> @@ -153,6 +154,7 @@ properties:
+>        Vertical sync pulse.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+> =20
+>    de-active:
+> @@ -160,6 +162,7 @@ properties:
+>        Data enable.
+>        0 selects active low, 1 selects active high.
+>        If omitted then it is not used by the hardware
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+> =20
+>    pixelclk-active:
+> @@ -169,6 +172,7 @@ properties:
+>        sample data on rising edge.
+>        Use 1 to drive pixel data on rising edge and
+>        sample data on falling edge
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+> =20
+>    syncclk-active:
+> @@ -179,6 +183,7 @@ properties:
+>        sample sync on rising edge of pixel clock.
+>        Use 1 to drive sync on rising edge and
+>        sample sync on falling edge of pixel clock
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [0, 1]
+> =20
+>    interlaced:
+> diff --git a/Documentation/devicetree/bindings/display/panel/raydium,rm67=
+191.yaml b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.=
+yaml
+> index 745dd247c409..617aa8c8c03a 100644
+> --- a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+> @@ -24,6 +24,7 @@ properties:
+> =20
+>    dsi-lanes:
+>      description: Number of DSI lanes to be used must be <3> or <4>
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [3, 4]
+> =20
+>    v3p3-supply:
+> diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e8=
+aa0.yaml b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.=
+yaml
+> index ca959451557e..1cdc91b3439f 100644
+> --- a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
+> @@ -36,6 +36,7 @@ properties:
+> =20
+>    init-delay:
+>      description: delay after initialization sequence [ms]
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> =20
+>    panel-width-mm:
+>      description: physical panel width [mm]
+> diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yam=
+l b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> index 5fe19fa5f67c..a99e7842ca17 100644
+> --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+> @@ -26,6 +26,7 @@ properties:
+>      const: 2
+> =20
+>    registers-number:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      description: Number of daisy-chained shift registers
+> =20
+>    enable-gpios:
+> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.=
+yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> index e8f137abb03c..aa61fe64be63 100644
+> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
+> @@ -31,6 +31,7 @@ properties:
+>      type: boolean
+> =20
+>    function-row-physmap:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>      minItems: 1
+>      maxItems: 15
+>      description: |
+> diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b=
+/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> index 6699d5e32dca..9f703bb51e12 100644
+> --- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> +++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
+> @@ -27,6 +27,10 @@ properties:
+>        column and linux key-code. The 32-bit big endian cell is packed as:
+>            row << 24 | column << 16 | key-code
+> =20
+> +  linux,no-autorepeat:
+> +    type: boolean
+> +    description: Disable keyrepeat
+> +
+>    keypad,num-rows:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      description: Number of row lines connected to the keypad controller.
+> diff --git a/Documentation/devicetree/bindings/media/i2c/adv7604.yaml b/D=
+ocumentation/devicetree/bindings/media/i2c/adv7604.yaml
+> index c19d8391e2d5..7589d377c686 100644
+> --- a/Documentation/devicetree/bindings/media/i2c/adv7604.yaml
+> +++ b/Documentation/devicetree/bindings/media/i2c/adv7604.yaml
+> @@ -60,7 +60,8 @@ properties:
+>        enables hot-plug detection.
+> =20
+>    default-input:
+> -    maxItems: 1
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1 ]
+>      description:
+>        Select which input is selected after reset.
+> =20
+> diff --git a/Documentation/devicetree/bindings/mux/reg-mux.yaml b/Documen=
+tation/devicetree/bindings/mux/reg-mux.yaml
+> index 60d5746eb39d..e2f6b11f1254 100644
+> --- a/Documentation/devicetree/bindings/mux/reg-mux.yaml
+> +++ b/Documentation/devicetree/bindings/mux/reg-mux.yaml
+> @@ -25,8 +25,12 @@ properties:
+>      const: 1
+> =20
+>    mux-reg-masks:
+> -    description: an array of register offset and pre-shifted bitfield ma=
+sk
+> -      pairs, each describing a single mux control.
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    items:
+> +      items:
+> +        - description: register offset
+> +        - description: pre-shifted bitfield mask
+> +    description: Each entry describes a single mux control.
+> =20
+>    idle-states: true
+> =20
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Docum=
+entation/devicetree/bindings/net/cdns,macb.yaml
+> index 6cd3d853dcba..59fe2789fa44 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -129,6 +129,7 @@ patternProperties:
+>        reset-gpios: true
+> =20
+>        magic-packet:
+> +        type: boolean
+>          description:
+>            Indicates that the hardware supports waking up via magic packe=
+t.
+> =20
+> diff --git a/Documentation/devicetree/bindings/net/ingenic,mac.yaml b/Doc=
+umentation/devicetree/bindings/net/ingenic,mac.yaml
+> index 8e52b2e683b8..93b3e991d209 100644
+> --- a/Documentation/devicetree/bindings/net/ingenic,mac.yaml
+> +++ b/Documentation/devicetree/bindings/net/ingenic,mac.yaml
+> @@ -37,6 +37,7 @@ properties:
+>      const: stmmaceth
+> =20
+>    mode-reg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+>      description: An extra syscon register that control ethernet interfac=
+e and timing delay
+> =20
+>    rx-clk-delay-ps:
+> diff --git a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml b=
+/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+> index 6f44f9516c36..a339202c5e8e 100644
+> --- a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+> @@ -34,6 +34,7 @@ properties:
+>      maxItems: 1
+> =20
+>    bus_freq:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      maximum: 2500000
+>      description: MDIO Bus frequency
+> =20
+> diff --git a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yam=
+l b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+> index 8dd164d10290..d68bb2ec1f7e 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+> @@ -54,9 +54,11 @@ properties:
+> =20
+> =20
+>    ref-clock-frequency:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      description: Reference clock frequency.
+> =20
+>    tcxo-clock-frequency:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      description: TCXO clock frequency.
+> =20
+>    clock-xtal:
+> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b=
+/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> index e59059ab5be0..b78535040f04 100644
+> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+> @@ -55,13 +55,15 @@ properties:
+>        Translation Unit) registers.
+> =20
+>    num-ib-windows:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    maximum: 256
+>      description: number of inbound address translation windows
+> -    maxItems: 1
+>      deprecated: true
+> =20
+>    num-ob-windows:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    maximum: 256
+>      description: number of outbound address translation windows
+> -    maxItems: 1
+>      deprecated: true
+> =20
+>  required:
+> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml b/Do=
+cumentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> index a5345c494744..c90e5e2d25f6 100644
+> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> @@ -68,6 +68,8 @@ properties:
+>        Translation Unit) registers.
+> =20
+>    num-viewport:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    maximum: 256
+>      description: |
+>        number of view ports configured in hardware. If a platform
+>        does not specify it, the driver autodetects it.
+> diff --git a/Documentation/devicetree/bindings/pinctrl/canaan,k210-fpioa.=
+yaml b/Documentation/devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml
+> index 53e963e090f2..533b4cfe33d2 100644
+> --- a/Documentation/devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml
+> +++ b/Documentation/devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml
+> @@ -120,6 +120,7 @@ patternProperties:
+>        input-schmitt-disable: true
+> =20
+>        input-polarity-invert:
+> +        type: boolean
+>          description:
+>            Enable or disable pin input polarity inversion.
+> =20
+> @@ -132,6 +133,7 @@ patternProperties:
+>        output-low: true
+> =20
+>        output-polarity-invert:
+> +        type: boolean
+>          description:
+>            Enable or disable pin output polarity inversion.
+> =20
+> diff --git a/Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml b/=
+Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml
+> index 3301fa0c2653..301db7daf870 100644
+> --- a/Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml
+> +++ b/Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml
+> @@ -51,6 +51,7 @@ properties:
+>        supported by the CPR power domain.
+> =20
+>    acc-syscon:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+>      description: A phandle to the syscon used for writing ACC settings.
+> =20
+>    nvmem-cells:
+> diff --git a/Documentation/devicetree/bindings/power/supply/battery.yaml =
+b/Documentation/devicetree/bindings/power/supply/battery.yaml
+> index d56ac484fec5..491488e7b970 100644
+> --- a/Documentation/devicetree/bindings/power/supply/battery.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/battery.yaml
+> @@ -85,8 +85,13 @@ properties:
+>      description: battery factory internal resistance
+> =20
+>    resistance-temp-table:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+> +    items:
+> +      items:
+> +        - description: the temperature in degree Celsius
+> +        - description: battery internal resistance percent
+>      description: |
+> -      An array providing the temperature in degree Celsius
+> +      A table providing the temperature in degree Celsius
+>        and corresponding battery internal resistance percent, which is us=
+ed to
+>        look up the resistance percent according to current temperature to=
+ get an
+>        accurate batterty internal resistance in different temperatures.
+> diff --git a/Documentation/devicetree/bindings/power/supply/charger-manag=
+er.yaml b/Documentation/devicetree/bindings/power/supply/charger-manager.ya=
+ml
+> index c863cfa67865..fbb2204769aa 100644
+> --- a/Documentation/devicetree/bindings/power/supply/charger-manager.yaml
+> +++ b/Documentation/devicetree/bindings/power/supply/charger-manager.yaml
+> @@ -36,6 +36,7 @@ properties:
+> =20
+>    cm-poll-mode:
+>      description: polling mode
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      default: 0
+>      enum:
+>        - 0 # disabled
+> diff --git a/Documentation/devicetree/bindings/rng/st,stm32-rng.yaml b/Do=
+cumentation/devicetree/bindings/rng/st,stm32-rng.yaml
+> index 9a6e4eaf4d3c..fcd86f822a9c 100644
+> --- a/Documentation/devicetree/bindings/rng/st,stm32-rng.yaml
+> +++ b/Documentation/devicetree/bindings/rng/st,stm32-rng.yaml
+> @@ -27,6 +27,7 @@ properties:
+>      maxItems: 1
+> =20
+>    clock-error-detect:
+> +    type: boolean
+>      description: If set enable the clock detection management
+> =20
+>  required:
+> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documen=
+tation/devicetree/bindings/serial/8250.yaml
+> index 3bab2f27b970..5f6b113d378f 100644
+> --- a/Documentation/devicetree/bindings/serial/8250.yaml
+> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+> @@ -138,6 +138,7 @@ properties:
+>      description: The current active speed of the UART.
+> =20
+>    reg-offset:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      description: |
+>        Offset to apply to the mapbase from the start of the registers.
+> =20
+> diff --git a/Documentation/devicetree/bindings/sound/audio-graph-card2.ya=
+ml b/Documentation/devicetree/bindings/sound/audio-graph-card2.yaml
+> index f7e94b1e0e4b..7416067c945e 100644
+> --- a/Documentation/devicetree/bindings/sound/audio-graph-card2.yaml
+> +++ b/Documentation/devicetree/bindings/sound/audio-graph-card2.yaml
+> @@ -24,10 +24,13 @@ properties:
+>        connection's sink, the second being the connection's source.
+>      $ref: /schemas/types.yaml#/definitions/non-unique-string-array
+>    multi:
+> +    type: object
+>      description: Multi-CPU/Codec node
+>    dpcm:
+> +    type: object
+>      description: DPCM node
+>    codec2codec:
+> +    type: object
+>      description: Codec to Codec node
+> =20
+>  required:
+> diff --git a/Documentation/devicetree/bindings/sound/imx-audio-hdmi.yaml =
+b/Documentation/devicetree/bindings/sound/imx-audio-hdmi.yaml
+> index d5474f83ac2c..e7e7bb65c366 100644
+> --- a/Documentation/devicetree/bindings/sound/imx-audio-hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/sound/imx-audio-hdmi.yaml
+> @@ -20,9 +20,11 @@ properties:
+>      description: User specified audio sound card name
+> =20
+>    audio-cpu:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+>      description: The phandle of an CPU DAI controller
+> =20
+>    hdmi-out:
+> +    type: boolean
+>      description: |
+>        This is a boolean property. If present, the transmitting function
+>        of HDMI will be enabled, indicating there's a physical HDMI out
+> @@ -30,6 +32,7 @@ properties:
+>        block, such as an HDMI encoder or display-controller.
+> =20
+>    hdmi-in:
+> +    type: boolean
+>      description: |
+>        This is a boolean property. If present, the receiving function of
+>        HDMI will be enabled, indicating there is a physical HDMI in
+> diff --git a/Documentation/devicetree/bindings/usb/smsc,usb3503.yaml b/Do=
+cumentation/devicetree/bindings/usb/smsc,usb3503.yaml
+> index b9e219829801..321b6f166197 100644
+> --- a/Documentation/devicetree/bindings/usb/smsc,usb3503.yaml
+> +++ b/Documentation/devicetree/bindings/usb/smsc,usb3503.yaml
+> @@ -45,6 +45,7 @@ properties:
+>        property if all ports have to be enabled.
+> =20
+>    initial-mode:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+>      enum: [1, 2]
+>      description: >
+>        Specifies initial mode. 1 for Hub mode, 2 for standby mode.
+> --=20
+> 2.34.1
+>=20
 
-> +static void __init npcm8xx_clk_init(struct device_node *clk_np)
-> +{
-> +	struct clk_hw_onecell_data *npcm8xx_clk_data;
-> +	void __iomem *clk_base;
-> +	struct resource res;
-> +	struct clk_hw *hw;
-> +	int ret;
-> +	int i;
-> +
-> +	ret = of_address_to_resource(clk_np, 0, &res);
-> +	if (ret) {
-> +		pr_err("%pOFn: failed to get resource, ret %d\n", clk_np, ret);
-> +		return;
-> +	}
-> +
-> +	clk_base = ioremap(res.start, resource_size(&res));
-> +	if (!clk_base)
-> +		goto npcm8xx_init_error;
-> +
-> +	npcm8xx_clk_data = kzalloc(struct_size(npcm8xx_clk_data, hws,
-> +					       NPCM8XX_NUM_CLOCKS), GFP_KERNEL);
-> +	if (!npcm8xx_clk_data)
-> +		goto npcm8xx_init_np_err;
-> +
-> +	npcm8xx_clk_data->num = NPCM8XX_NUM_CLOCKS;
-> +
-> +	for (i = 0; i < NPCM8XX_NUM_CLOCKS; i++)
-> +		npcm8xx_clk_data->hws[i] = ERR_PTR(-EPROBE_DEFER);
-> +
-> +	/* Register plls */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_plls); i++) {
-> +		const struct npcm8xx_clk_pll_data *pll_data = &npcm8xx_plls[i];
-> +
-> +		hw = npcm8xx_clk_register_pll(clk_base + pll_data->reg,
-> +					      pll_data->name,
-> +					      pll_data->parent_name,
-> +					      pll_data->flags);
-> +		if (IS_ERR(hw)) {
+--qdtpx5mo3ymeklm2
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Who deregisters the already registered plls on error paths?
+-----BEGIN PGP SIGNATURE-----
 
-You might want to consider devm_ variants in npcm8xx_clk_register_pll() to 
-make the cleanup simpler.
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmKLMMYACgkQ2O7X88g7
++ppw2xAAl0vBYZf1CgfDpJ+FG8uvWFMvL1zJnLWnGehckZCyHM1UPl7+pMlnNQH9
+CcE2ZhnsNwbnVyzwE6cM7wHpykHZ1vm10oEQ5NCJXGYfwkJliFfY+1FjDYr4u0CC
+cBv4Jtm+9aeuMNdQSlLdKe42tsvdfrszZ87rvZCjrGDCHTfdBMzQJq52ubyRN+Js
+GcNCpZcmU4wHx2KaV5ulTDcbn/aszCfgiXv5OnrcgTYNyYxQhC2KTabev9SHKXeG
+GqKebLt5HjxB5zxcZ6gIDHZCagq9Gz5zdFNMbpDghXrzV90UjhFnoCmTq5x6YQjV
+WAzIdCjj28n91dDC+MojBZtHTtjCA63D2ywbbPZaNIRXkHbpMOTU18I91TkAYF2e
+lD56173I9XS2qsr/vgryeaFruiaLMKk1igWcXZsKkvsNuJsB2gbHjrr9uie0ysaR
+sS9bs9tgOrjbOFx+jxCafEn98JvhYTwG3w3NGPzYwL2I9WNn6IdZHquTtsQHenWU
+55FmwvfHrzvR2S6Ehe9xiwfog6CJpTSbegiXhhN/iRwrSDoCFZTtwLDut7rGNqQ2
+0tLIJV/wMAF6TJegC24Q3NB+DdxPJ3r020+BSeswqoAzxg8XFrOx+A9xlcbxQGtY
+kJh1dEYtYu5bZLDiX7QdbEW1aiz2TTSsnhXBi3/xDSqJx05/bnk=
+=n1xp
+-----END PGP SIGNATURE-----
 
-Please check the other error path rollbacks from this point onward too.
-
-> +			pr_err("npcm8xx_clk: Can't register pll\n");
-> +			goto npcm8xx_init_fail;
-> +		}
-> +
-> +		if (pll_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[pll_data->onecell_idx] = hw;
-> +	}
-> +
-> +	/* Register fixed dividers */
-> +	hw = clk_hw_register_fixed_factor(NULL, NPCM8XX_CLK_S_PLL1_DIV2,
-> +					  NPCM8XX_CLK_S_PLL1, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		pr_err("npcm8xx_clk: Can't register fixed div\n");
-> +		goto npcm8xx_init_fail;
-> +	}
-> +
-> +	hw = clk_hw_register_fixed_factor(NULL, NPCM8XX_CLK_S_PLL2_DIV2,
-> +					  NPCM8XX_CLK_S_PLL2, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		pr_err("npcm8xx_clk: Can't register pll div2\n");
-> +		goto npcm8xx_init_fail;
-> +	}
-> +
-> +	hw = clk_hw_register_fixed_factor(NULL, NPCM8XX_CLK_S_PRE_CLK,
-> +					  NPCM8XX_CLK_S_CPU_MUX, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		pr_err("npcm8xx_clk: Can't register ckclk div2\n");
-> +		goto npcm8xx_init_fail;
-> +	}
-> +
-> +	hw = clk_hw_register_fixed_factor(NULL, NPCM8XX_CLK_S_AXI,
-> +					  NPCM8XX_CLK_S_TH, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		pr_err("npcm8xx_clk: Can't register axi div2\n");
-> +		goto npcm8xx_init_fail;
-> +	}
-> +
-> +	hw = clk_hw_register_fixed_factor(NULL, NPCM8XX_CLK_S_ATB,
-> +					  NPCM8XX_CLK_S_AXI, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		pr_err("npcm8xx_clk: Can't register atb div2\n");
-> +		goto npcm8xx_init_fail;
-> +	}
-> +
-> +	/* Register muxes */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_muxes); i++) {
-> +		const struct npcm8xx_clk_mux_data *mux_data = &npcm8xx_muxes[i];
-> +
-> +		hw = clk_hw_register_mux_table(NULL, mux_data->name,
-> +					       mux_data->parent_names,
-> +					       mux_data->num_parents,
-> +					       mux_data->flags,
-> +					       clk_base + NPCM8XX_CLKSEL,
-> +					       mux_data->shift,
-> +					       mux_data->mask, 0,
-> +					       mux_data->table,
-> +					       &npcm8xx_clk_lock);
-> +
-> +		if (IS_ERR(hw)) {
-> +			pr_err("npcm8xx_clk: Can't register mux\n");
-> +			goto npcm8xx_init_fail;
-> +		}
-> +
-> +		if (mux_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[mux_data->onecell_idx] = hw;
-> +	}
-> +
-> +	/* Register clock dividers specified in npcm8xx_divs */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_divs); i++) {
-> +		const struct npcm8xx_clk_div_data *div_data = &npcm8xx_divs[i];
-> +
-> +		hw = clk_hw_register_divider(NULL, div_data->name,
-> +					     div_data->parent_name,
-> +					     div_data->flags,
-> +					     clk_base + div_data->reg,
-> +					     div_data->shift, div_data->width,
-> +					     div_data->clk_divider_flags,
-> +					     &npcm8xx_clk_lock);
-> +		if (IS_ERR(hw)) {
-> +			pr_err("npcm8xx_clk: Can't register div table\n");
-> +			goto npcm8xx_init_fail;
-> +		}
-> +
-> +		if (div_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[div_data->onecell_idx] = hw;
-> +	}
-> +
-> +	ret = of_clk_add_hw_provider(clk_np, of_clk_hw_onecell_get,
-> +				     npcm8xx_clk_data);
-> +	if (ret)
-> +		pr_err("failed to add DT provider: %d\n", ret);
-> +
-> +	of_node_put(clk_np);
-> +
-> +	return;
-> +
-> +npcm8xx_init_fail:
-> +	kfree(npcm8xx_clk_data->hws);
-> +npcm8xx_init_np_err:
-> +	iounmap(clk_base);
-> +npcm8xx_init_error:
-> +	of_node_put(clk_np);
-> +}
-> +
-> +CLK_OF_DECLARE(npcm8xx_clk_init, "nuvoton,npcm845-clk", npcm8xx_clk_init);
-> 
-
--- 
- i.
-
+--qdtpx5mo3ymeklm2--
