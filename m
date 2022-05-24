@@ -2,257 +2,186 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CC6C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 24 May 2022 11:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E4BC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 24 May 2022 11:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiEXLua (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 May 2022 07:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
+        id S233413AbiEXLyU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 24 May 2022 07:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235951AbiEXLu3 (ORCPT
+        with ESMTP id S234331AbiEXLyT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 May 2022 07:50:29 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615A72A709;
-        Tue, 24 May 2022 04:50:27 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E59EC1F43B14
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653393025;
-        bh=jeLT50JLqlVRVb/Mw9cwiM57a6SZA+DS0GFPVnc6CFQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Xs3kmbfBIDlWtUB9pUgMRmNwjQFDRQpVvpDP033s7nYE8OBbS+Vmyo2rU/4l8izM7
-         3t5VEG/ygQHG1FvC91j/slt9hK0d5g6JFb2/vzwHBq2vINL8kbrZpH9zLeVR2uSD2N
-         B0Lj6H9GrZ110YPiVjISuIvEk2Vcn6zCBk0iLnqqpkyDqk6vuGW5ppDV1H0JZexBtX
-         veWBs0YsqXRA9dPeh7OoRoJSiHepv67/MJ3t46rw37MBXEB0dDmQCf+h2hpDuQ0Z0q
-         wqq8btiM7WrPJSKI6Di4rMVuGsT/1fb8oN8iWn+g91c0ZB5jdLnvhSL2EqbrcbRoH7
-         lYcGoKBmA4b0Q==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     gregkh@linuxfoundation.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3] dt-bindings: serial: mtk-uart: Convert txt to json-schema
-Date:   Tue, 24 May 2022 13:50:19 +0200
-Message-Id: <20220524115019.97246-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 24 May 2022 07:54:19 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E005C869
+        for <linux-serial@vger.kernel.org>; Tue, 24 May 2022 04:54:13 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220524115409euoutp017aeb57a1257b1d45efa26ec7b92abc2e~yCGZ1roU11931819318euoutp01i
+        for <linux-serial@vger.kernel.org>; Tue, 24 May 2022 11:54:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220524115409euoutp017aeb57a1257b1d45efa26ec7b92abc2e~yCGZ1roU11931819318euoutp01i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653393249;
+        bh=yT/79pn8tfNbkmklbfRodID9kX1dePZImAH6HmhhX8I=;
+        h=Date:Subject:From:To:Cc:In-Reply-To:References:From;
+        b=gnlxr01a0kcn1+hNmLjNHo9QRrSMmysU8kgyE8VEVvC8qxyFpMRckQc/sO3r6NT7M
+         mxKYxgTutkJTmNwZmKL17Lhc5Hso9SNdmACK6m12dYszBNISiBfdkRfkKqHlQwJKSg
+         FLbGi6jHjJwwtIJddCdiZyFghR1HGZ9wBorqn9F0=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220524115408eucas1p1a7b32022daa40fceed58ddd532a2bebb~yCGZaqBFb0501305013eucas1p1l;
+        Tue, 24 May 2022 11:54:08 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 4D.24.10260.067CC826; Tue, 24
+        May 2022 12:54:08 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b~yCGZA2Wvx0273402734eucas1p1a;
+        Tue, 24 May 2022 11:54:08 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220524115408eusmtrp1d3c1948dd7b38679ed339ac66513e630~yCGY-7yRG1897318973eusmtrp1c;
+        Tue, 24 May 2022 11:54:08 +0000 (GMT)
+X-AuditID: cbfec7f5-bddff70000002814-1d-628cc760f75e
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id CA.D4.09404.067CC826; Tue, 24
+        May 2022 12:54:08 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220524115407eusmtip2b29283fa052f60b6370ab701558e655a~yCGYa_tCb2983429834eusmtip2g;
+        Tue, 24 May 2022 11:54:07 +0000 (GMT)
+Message-ID: <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
+Date:   Tue, 24 May 2022 13:54:07 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
+ console_suspend is disabled
+Content-Language: en-US
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org
+In-Reply-To: <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
 Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMKsWRmVeSWpSXmKPExsWy7djPc7oJx3uSDD51GlucXXaQzaJ58Xo2
+        i3dzZSwu75rDZnFmcS+7xecNjxktFl9ayWbx9dJkZovjd54yOXB6zG64yOKxaVUnm8f+uWvY
+        PSbuqfP4vEkugDWKyyYlNSezLLVI3y6BK+Pr+wuMBZMlKqZ0fmRrYHwv3MXIySEhYCIx8e1L
+        NhBbSGAFo8TqLwldjFxA9hdGibO/77BDOJ8ZJfYducIK0/H32FNGiMRyRoldN/cxQTgfGSXe
+        /GxkBqniFbCTuNP/AGwui4CqxNedi5gg4oISJ2c+YQGxRQWSJN68uQpWLyyQLvFk4TawGmYB
+        cYlbT+aD2WwChhJdb7vYQBaICKxklFh09Q8LRFGsRMejl0AncXBwCthLXGgthAjLSzRvnc0M
+        Ui8h8IJDorljPjvE2S4SE3d+gnpBWOLV8S1QcRmJ05N7WEDmSAjkS/ydYQwRrpC49noNM4Rt
+        LXHn3C82kBJmAU2J9bv0IcKOElOvNzNCdPJJ3HgrCHEBn8SkbdOZIcK8Eh1tQhDVahKzjq+D
+        23nwwiXmCYxKs5DCZBaS32ch+WUWwt4FjCyrGMVTS4tz01OLjfNSy/WKE3OLS/PS9ZLzczcx
+        AtPR6X/Hv+5gXPHqo94hRiYOxkOMEhzMSiK8KWE9SUK8KYmVValF+fFFpTmpxYcYpTlYlMR5
+        kzM3JAoJpCeWpGanphakFsFkmTg4pRqY5ErZal27H5yef+F6s5qJ/fxF59ac4md/tVn3caw+
+        S9LFfCMGzdyOXWnJltKKJzw+qfb9+P3NOSffW/CErOdr7sm16RpZZ2843tyg9cVcbXPIod3+
+        L9o5589pvTBJjfNIxh8WHRHBqBg2Ho/Y7QvYTrLf3bmnWa33ePYpvfBPLiXedkdufE9d+vXW
+        14NX9/ybm5p24sPDvaV/fLqnpk+okfq+6zh71s6Q8PuPuz3Wb+OVXqHE/PRF4mUtyfsp8x39
+        aiJOuumIvmX8oly6J32TlVLbES6NI5Gi81/FZnXpcxVeCd7TslnR5FaqM4vr9f218Xtu17aZ
+        eK2dJXLo7JSp0Stf6N3l7Xq0YsuK/MAXSizFGYmGWsxFxYkAY0pknrYDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOIsWRmVeSWpSXmKPExsVy+t/xe7oJx3uSDDYeEbY4u+wgm0Xz4vVs
+        Fu/mylhc3jWHzeLM4l52i88bHjNaLL60ks3i66XJzBbH7zxlcuD0mN1wkcVj06pONo/9c9ew
+        e0zcU+fxeZNcAGuUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWRqZK+nU1Kak5m
+        WWqRvl2CXsbX9xcYCyZLVEzp/MjWwPheuIuRk0NCwETi77GnjF2MXBxCAksZJZZdeMUIkZCR
+        ODmtgRXCFpb4c62LDaLoPaPE5MePwBK8AnYSd/ofsIHYLAKqEl93LmKCiAtKnJz5hKWLkYND
+        VCBJ4shhfpCwsEC6xJOF28BKmAXEJW49mQ9mswkYSnS9hZgvIrCSUWLqpmPMEEWxEq8OPmMB
+        sYUE6iTeHwcp4uDgFLCXuNBaCFFiJtG1tYsRwpaXaN46m3kCo9AsJFfMQrJuFpKWWUhaFjCy
+        rGIUSS0tzk3PLTbSK07MLS7NS9dLzs/dxAiMwW3Hfm7Zwbjy1Ue9Q4xMHIyHGCU4mJVEeFPC
+        epKEeFMSK6tSi/Lji0pzUosPMZoCg2Iis5Rocj4wCeSVxBuaGZgamphZGphamhkrifN6FnQk
+        CgmkJ5akZqemFqQWwfQxcXBKNTCx8XbcsT7669/zzjv37JNM7G5vK8tw5xN/6HL3TezptxMm
+        rlm78cCOqZ7OWw9Oqb6jeHlVx8Trf545tx4LEu/aeH3ZI5Gtx2pmPb1ePOOiiUHsyixhw9XK
+        866FfJnO8Sjw3mMv+b1KrR5q+xlUGOT3JVfLbuJXuT2PwUZ39mYL87vix7/Y+caEtyU67Hy0
+        ik0oI820Ppzxdua738HnWOMKuVemWW/uv2L+6s3mbaufHL3JN3PCjrsRDh/eXVBYOXPr7mlf
+        e1l4C3f27nk0Vdqxu6G/c15VYcZHnXSnLTzFV5veVD1MOq35z/757b1KCU4muUs3ajN1/T0Y
+        ddhqxuPjXQnhf8rLDrx8lhkS7q16RomlOCPRUIu5qDgRAFo4T8NKAwAA
+X-CMS-MailID: 20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+        <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
+        <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the mtk-uart documentation from freeform text to a json-schema.
+On 23.05.2022 23:32, Marek Szyprowski wrote:
+> Hi,
+>
+> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
+>> For the case of console_suspend disabled, if back to back suspend/resume
+>> test is executed, at the end of test, sometimes console would appear to
+>> be frozen not responding to input. This would happen because, during
+>> resume, rx transactions can come in before system is ready, malfunction
+>> of rx happens in turn resulting in console appearing to be stuck.
+>>
+>> Do a stop_rx in suspend sequence to prevent this.
+>>
+>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>> ---
+>> v4: moved the change to serial core to apply for all drivers
+>> v3: swapped the order of conditions to be more human readable
+>> v2: restricted patch to contain only stop_rx in suspend sequence
+>> v1: intial patch contained 2 additional unrelated changes in vicinity
+>> ---
+>
+> This patch landed recently in linux-next as commit c9d2325cdb92 
+> ("serial: core: Do stop_rx in suspend path for console if 
+> console_suspend is disabled").
+>
+> Unfortunately it breaks console operation on my test systems after 
+> system suspend/resume cycle if 'no_console_suspend' kernel parameter 
+> is present. System properly resumes from suspend, the console displays 
+> all the messages and even command line prompt, but then doesn't react 
+> on any input. If I remove the 'no_console_suspend' parameter, the 
+> console is again operational after system suspend/resume cycle. Before 
+> this patch it worked fine regardless the 'no_console_suspend' parameter.
+>
+> If this matters, the test system is ARM 32bit Samsung Exynos5422-based 
+> Odroid XU3lite board.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
 
-v3: Addressed issues found in Krzysztof's review
-v2: Changed to also accept just "mediatek,mt6577-uart" as compatible.
+One more information. This issue can be easily reproduced with QEMU. It 
+happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when 
+'no_console_suspend' is added to kernel's cmdline.
 
- .../bindings/serial/mediatek,uart.yaml        | 120 ++++++++++++++++++
- .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
- 2 files changed, 120 insertions(+), 59 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
 
-diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-new file mode 100644
-index 000000000000..4ff27d6d4d5b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-@@ -0,0 +1,120 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/mediatek,uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek Universal Asynchronous Receiver/Transmitter (UART)
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+
-+allOf:
-+  - $ref: serial.yaml#
-+
-+description: |
-+  The MediaTek UART is based on the basic 8250 UART and compatible
-+  with 16550A, with enhancements for high speed baud rates and
-+  support for DMA.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: mediatek,mt6577-uart
-+      - items:
-+          - enum:
-+              - mediatek,mt2701-uart
-+              - mediatek,mt2712-uart
-+              - mediatek,mt6580-uart
-+              - mediatek,mt6582-uart
-+              - mediatek,mt6589-uart
-+              - mediatek,mt6755-uart
-+              - mediatek,mt6765-uart
-+              - mediatek,mt6779-uart
-+              - mediatek,mt6795-uart
-+              - mediatek,mt6797-uart
-+              - mediatek,mt7622-uart
-+              - mediatek,mt7623-uart
-+              - mediatek,mt7629-uart
-+              - mediatek,mt7986-uart
-+              - mediatek,mt8127-uart
-+              - mediatek,mt8135-uart
-+              - mediatek,mt8173-uart
-+              - mediatek,mt8183-uart
-+              - mediatek,mt8186-uart
-+              - mediatek,mt8192-uart
-+              - mediatek,mt8195-uart
-+              - mediatek,mt8516-uart
-+          - const: mediatek,mt6577-uart
-+
-+  reg:
-+    description: The base address of the UART register bank
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+    items:
-+      - description: The clock the baudrate is derived from
-+      - description: The bus clock for register accesses
-+
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: baud
-+      - const: bus
-+
-+  dmas:
-+    items:
-+      - description: phandle to TX DMA
-+      - description: phandle to RX DMA
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    description:
-+      The UART interrupt and optionally the RX in-band wakeup interrupt.
-+    minItems: 1
-+    items:
-+      - const: uart
-+      - const: wakeup
-+
-+  pinctrl-0: true
-+  pinctrl-1: true
-+
-+  pinctrl-names:
-+    minItems: 1
-+    items:
-+      - const: default
-+      - const: sleep
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    serial@11006000 {
-+        compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
-+        reg = <0x11006000 0x400>;
-+        interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
-+                     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
-+        interrupt-names = "uart", "wakeup";
-+        clocks = <&uart_clk>, <&bus_clk>;
-+        clock-names = "baud", "bus";
-+        pinctrl-0 = <&uart_pin>;
-+        pinctrl-1 = <&uart_pin_sleep>;
-+        pinctrl-names = "default", "sleep";
-+    };
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-deleted file mode 100644
-index 113b5d6a2245..000000000000
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ /dev/null
-@@ -1,59 +0,0 @@
--* MediaTek Universal Asynchronous Receiver/Transmitter (UART)
--
--Required properties:
--- compatible should contain:
--  * "mediatek,mt2701-uart" for MT2701 compatible UARTS
--  * "mediatek,mt2712-uart" for MT2712 compatible UARTS
--  * "mediatek,mt6580-uart" for MT6580 compatible UARTS
--  * "mediatek,mt6582-uart" for MT6582 compatible UARTS
--  * "mediatek,mt6589-uart" for MT6589 compatible UARTS
--  * "mediatek,mt6755-uart" for MT6755 compatible UARTS
--  * "mediatek,mt6765-uart" for MT6765 compatible UARTS
--  * "mediatek,mt6779-uart" for MT6779 compatible UARTS
--  * "mediatek,mt6795-uart" for MT6795 compatible UARTS
--  * "mediatek,mt6797-uart" for MT6797 compatible UARTS
--  * "mediatek,mt7622-uart" for MT7622 compatible UARTS
--  * "mediatek,mt7623-uart" for MT7623 compatible UARTS
--  * "mediatek,mt7629-uart" for MT7629 compatible UARTS
--  * "mediatek,mt7986-uart", "mediatek,mt6577-uart" for MT7986 compatible UARTS
--  * "mediatek,mt8127-uart" for MT8127 compatible UARTS
--  * "mediatek,mt8135-uart" for MT8135 compatible UARTS
--  * "mediatek,mt8173-uart" for MT8173 compatible UARTS
--  * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
--  * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
--  * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
--  * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
--  * "mediatek,mt8516-uart" for MT8516 compatible UARTS
--  * "mediatek,mt6577-uart" for MT6577 and all of the above
--
--- reg: The base address of the UART register bank.
--
--- interrupts:
--  index 0: an interrupt specifier for the UART controller itself
--  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
--           support Rx in-band wake up. If one would like to use this feature,
--           one must create an addtional pinctrl to reconfigure Rx pin to normal
--           GPIO before suspend.
--
--- clocks : Must contain an entry for each entry in clock-names.
--  See ../clocks/clock-bindings.txt for details.
--- clock-names:
--  - "baud": The clock the baudrate is derived from
--  - "bus": The bus clock for register accesses (optional)
--
--For compatibility with older device trees an unnamed clock is used for the
--baud clock if the baudclk does not exist. Do not use this for new designs.
--
--Example:
--
--	uart0: serial@11006000 {
--		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
--		reg = <0x11006000 0x400>;
--		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
--		clocks = <&uart_clk>, <&bus_clk>;
--		clock-names = "baud", "bus";
--		pinctrl-names = "default", "sleep";
--		pinctrl-0 = <&uart_pin>;
--		pinctrl-1 = <&uart_pin_sleep>;
--	};
+>
+>>   drivers/tty/serial/serial_core.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c 
+>> b/drivers/tty/serial/serial_core.c
+>> index 82a1770..9a85b41 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, 
+>> struct uart_port *uport)
+>>       }
+>>       put_device(tty_dev);
+>>   -    /* Nothing to do if the console is not suspending */
+>> -    if (!console_suspend_enabled && uart_console(uport))
+>> +    /*
+>> +     * Nothing to do if the console is not suspending
+>> +     * except stop_rx to prevent any asynchronous data
+>> +     * over RX line. Re-start_rx, when required, is
+>> +     * done by set_termios in resume sequence
+>> +     */
+>> +    if (!console_suspend_enabled && uart_console(uport)) {
+>> +        uport->ops->stop_rx(uport);
+>>           goto unlock;
+>> +    }
+>>         uport->suspended = 1;
+>
+> Best regards
+
+Best regards
 -- 
-2.35.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
