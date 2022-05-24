@@ -2,176 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4075C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 23 May 2022 21:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15018C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 24 May 2022 02:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiEWVdB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 May 2022 17:33:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S229445AbiEXCVS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 23 May 2022 22:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiEWVdA (ORCPT
+        with ESMTP id S233064AbiEXCVR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 May 2022 17:33:00 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B549AF1D3
-        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 14:32:53 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220523213247euoutp014e0cbf6b8eac506e9b09f07431fd8010~x2WVh4XwK0351203512euoutp01P
-        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 21:32:47 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220523213247euoutp014e0cbf6b8eac506e9b09f07431fd8010~x2WVh4XwK0351203512euoutp01P
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653341567;
-        bh=CuA90U34Sy398IZHnKSyqiV58r/MsKlMAgzP1H/ssfQ=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=QN9eyH9ylCEMp7ECmyoXYI5174UrezW5k0Fqlc0XQdccTzB5bQ5e7UD87WjQzBb6X
-         oRf5WqPLsYtQWynyYgBmEKOveosnPt4V3KYPH3QfpN33kN8k18RIFBoFmBwiFbrY/W
-         /L+iGkGdTJEj+ec0HQSc+ldpQT4VXQxJlsUHDOv4=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220523213247eucas1p1d18fd34f643aba4ced6c0504b1db29c2~x2WVHLigO2492924929eucas1p1R;
-        Mon, 23 May 2022 21:32:47 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id F9.48.10260.F7DFB826; Mon, 23
-        May 2022 22:32:47 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0~x2WUiJNDA1924419244eucas1p2Z;
-        Mon, 23 May 2022 21:32:46 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220523213246eusmtrp1656cb1c58caf277860cef71122195812~x2WUhYoEU2000220002eusmtrp1v;
-        Mon, 23 May 2022 21:32:46 +0000 (GMT)
-X-AuditID: cbfec7f5-bddff70000002814-81-628bfd7fd378
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 97.BA.09522.E7DFB826; Mon, 23
-        May 2022 22:32:46 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523213246eusmtip2f1d7ac0017236a3f681beefedc2e6a09~x2WT-q8Yq1690516905eusmtip24;
-        Mon, 23 May 2022 21:32:45 +0000 (GMT)
-Message-ID: <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
-Date:   Mon, 23 May 2022 23:32:46 +0200
+        Mon, 23 May 2022 22:21:17 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE5B7672
+        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 19:21:16 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id i68so12931599qke.11
+        for <linux-serial@vger.kernel.org>; Mon, 23 May 2022 19:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=uf2Jdsip0ywvu8mLU9XReWchD1u3huP01v2DKhSll3g=;
+        b=X81R8zYPfroNkR9HHoF6rEVi2xjM2I0P630wizJ0RnOiHByp9v8tkrpG4i2isl55ig
+         Udh7YObYXYxz7vB6+FryTlyCdZzGJk+m8kc8yEDoWeWLI7FLdlb9e/KUFuScGPPRmF24
+         jKJq0qT8eo039F+U8HFa5DytbRAXrbFSUHhsM1yv953LoHZRvfcDBWB1HMPmCCWrvmUA
+         RC4GOW5LqsD57Z9V6vuFB/jZ7VXoIDR/547ejKxOjaGZvUcIUBA7pEHSoJ1sRrqxCEdV
+         RrmJAkZEO6YNOBYBFFEvthdl3r23OFhZrmQL0i9m6CpoEOUetQg+cSJALwB1hc/bhw/m
+         Z86A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=uf2Jdsip0ywvu8mLU9XReWchD1u3huP01v2DKhSll3g=;
+        b=VoArWE4a6imgTwhr2kHJQFhrgx07Lw56B+7Xx7EZC+VaVv7Hchao3VVyanuj9g2hIx
+         6S0z8cAtC0Sz4wsjgttxXsylAPq4NY8gaFk7fUMUc3jPdLFRXkWf3Y6O54HARMljFf0E
+         hAz+AoNehepIjXpfISo3H6tiwQn9lczP/vXTcP29ktiptkcrjyQrM+43zuRA96cMwveg
+         rtoO3loLbvRITzx3FX+d60HUzo/JlY50CymerkMRxTrhKoGBq7Fh1zkl7+V+VVkYVoRp
+         B99edm86MjwexrGzu0dYgbQyOuhCXr7EHooOIIQQ5fA1KJq/FoPX702OibFzg5ClCyvM
+         hDkQ==
+X-Gm-Message-State: AOAM531L2g3JeN2B92WSD0ZgaE+pwy6tCM8TW6u2OittUgQRTdiQNc6i
+        IMa6iPzv9FqE4A61HQMsodmKOyDKULCgtyvXtVhWgI4vxKw=
+X-Google-Smtp-Source: ABdhPJyAh/B2rIKt18ap79MAF4IulCN+Ft1hLwMwVC4qIWRdZszA48gynVj3RimOhf8E8wKfxXLcl5Lk4bkqpvq1cLs=
+X-Received: by 2002:a05:620a:b0b:b0:6a3:5f9a:1b80 with SMTP id
+ t11-20020a05620a0b0b00b006a35f9a1b80mr9353747qkg.283.1653358875671; Mon, 23
+ May 2022 19:21:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
- console_suspend is disabled
-Content-Language: en-US
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMKsWRmVeSWpSXmKPExsWy7djPc7r1f7uTDN5NYLU4u+wgm0Xz4vVs
-        Fu/mylhc3jWHzeLM4l52i88bHjNaLL60ks3i66XJzBbH7zxlcuD0mN1wkcVj06pONo/9c9ew
-        e0zcU+fxeZNcAGsUl01Kak5mWWqRvl0CV8a9lxsYC06JVLyal9nAeEWgi5GTQ0LARKLr303m
-        LkYuDiGBFYwSHWunsUM4XxglLp1dxALhfGaUmLtlBhNMy5rms1AtyxklFp1/CFX1kVFi9sUj
-        7CBVvAJ2Eg13nwJ1cHCwCKhKLNpfDBEWlDg58wkLiC0qkCTx5s1VZhBbWCBd4snCbWALmAXE
-        JW49mc8EMlNEYCXQgqt/WCASsRIdj16ygthsAoYSXW+72EBsTgEvifkT5rFD1MhLbH87B+w6
-        CYE3HBKzep+yQ5ztIrHg5EdGCFtY4tXxLVBxGYnTk3tYQA6VEMiX+DvDGCJcIXHt9RpmCNta
-        4s65X2wgJcwCmhLrd+lDhB0lPp3rZITo5JO48VYQ4gI+iUnbpjNDhHklOtqEIKrVJGYdXwe3
-        8+CFS8wTGJVmIQXKLCTPz0LyyyyEvQsYWVYxiqeWFuempxYb56WW6xUn5haX5qXrJefnbmIE
-        pqPT/45/3cG44tVHvUOMTByMhxglOJiVRHi3J3YkCfGmJFZWpRblxxeV5qQWH2KU5mBREudN
-        ztyQKCSQnliSmp2aWpBaBJNl4uCUamDiqVAUeXQj7MylTAYvuZoljryHCq/MOa8Uq3CE1yDo
-        2sSit4KLbb9dbPrT07rmzs8Ubq4sx8WJZ3d7by70C/Xw4WtlNz76+tasx4znOHdmXvf1r2o5
-        z7vKpOlr6VmrC0nG5rb5gv/nvrjLEdQgUvyg+lODU5fwtE0/6qUWWHmxcdR6XVzoYX9gv5nR
-        jOttp5LtqkV7eJ56Tcs9IJOoKPbCebfgsbeZy9z9A6YLcN9y1qh6E66/UyCdYcLGk5M33ylU
-        LYuMT517pLlgmtLCVsFl+579CyjN39/ls8XlmLp9j8/tMz/rBBLaP6/43qmf/H7SPRW5myfE
-        ozqK9yxVWbJNaOH0SXs4N7+/X+Tuel6JpTgj0VCLuag4EQCMUX4ntgMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGIsWRmVeSWpSXmKPExsVy+t/xe7p1f7uTDB4tULQ4u+wgm0Xz4vVs
-        Fu/mylhc3jWHzeLM4l52i88bHjNaLL60ks3i66XJzBbH7zxlcuD0mN1wkcVj06pONo/9c9ew
-        e0zcU+fxeZNcAGuUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWRqZK+nU1Kak5m
-        WWqRvl2CXsa9lxsYC06JVLyal9nAeEWgi5GTQ0LARGJN81nmLkYuDiGBpYwSV9ZuZYZIyEic
-        nNbACmELS/y51sUGUfSeUeLsu9XsIAleATuJhrtPmboYOThYBFQlFu0vhggLSpyc+YQFJCwq
-        kCRx5DA/SFhYIF3iycJtTCA2s4C4xK0n85lARooIrGSUmLrpGDNEIlbi1cFnLCC2kICnxM5F
-        a9lAbDYBQ4mut11gNqeAl8T8CfPYIerNJLq2djFC2PIS29/OYZ7AKDQLyRmzkOybhaRlFpKW
-        BYwsqxhFUkuLc9Nziw31ihNzi0vz0vWS83M3MQIjcNuxn5t3MM579VHvECMTB+MhRgkOZiUR
-        3u2JHUlCvCmJlVWpRfnxRaU5qcWHGE2BQTGRWUo0OR+YAvJK4g3NDEwNTcwsDUwtzYyVxHk9
-        CzoShQTSE0tSs1NTC1KLYPqYODilGpgUTA22b3XbfG/RpdhO4fkT3ggwHWYXtRIyPljw0vai
-        07xX/jsM8kQu3bQ2Mt5ru/pbeOsDcRMvkY/MWxPLl15dtkYo8F4Ju+O5yk7Hde0bvIIW6zuf
-        5q+VaOO90TIl9oeVzkKORYd4N7HO+j0vokHafMLkRMvZfyJ1ajUK+++/OrWKc/WylGsnuV/P
-        W/U83MZ7iVZ4rsqxVXwC7g+D7na4yph2fNnbuM3z6q9p1SqMTZN3Tjrbs32NnLnI/7ZK9zeC
-        601iLa5PnPKsWML7yI+nMmr1vLq5N+1//+JKuxV1sLavZxfbI3MFK7YQ0/yLjhEu9g7/j5/m
-        VJm5obXgbuv0669/pW06N/P+e/GML/uVWIozEg21mIuKEwFzKO0QSQMAAA==
-X-CMS-MailID: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0
-References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
-        <CGME20220523213246eucas1p2d0da08d931a996cd3410eda1c2fd48c0@eucas1p2.samsung.com>
+From:   cael <juanfengpy@gmail.com>
+Date:   Tue, 24 May 2022 10:21:04 +0800
+Message-ID: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
+Subject: tty: fix a possible hang on tty device
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+We have met a hang on pty device, the reader was blocking at
+ epoll on master side, the writer was sleeping at wait_woken inside
+ n_tty_write on slave side ,and the write buffer on tty_port was full, we
+ found that the reader and writer would never be woken again and block
+ forever.
 
-On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
-> For the case of console_suspend disabled, if back to back suspend/resume
-> test is executed, at the end of test, sometimes console would appear to
-> be frozen not responding to input. This would happen because, during
-> resume, rx transactions can come in before system is ready, malfunction
-> of rx happens in turn resulting in console appearing to be stuck.
->
-> Do a stop_rx in suspend sequence to prevent this.
->
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
-> v4: moved the change to serial core to apply for all drivers
-> v3: swapped the order of conditions to be more human readable
-> v2: restricted patch to contain only stop_rx in suspend sequence
-> v1: intial patch contained 2 additional unrelated changes in vicinity
-> ---
+We thought the problem was caused as a race between reader and
+kworker as follows:
+n_tty_read(reader)| n_tty_receive_buf_common(kworker)
+                  |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
+                  |room <= 0
+copy_from_read_buf|
+n_tty_kick_worker |
+                  |ldata->no_room = true
 
-This patch landed recently in linux-next as commit c9d2325cdb92 
-("serial: core: Do stop_rx in suspend path for console if 
-console_suspend is disabled").
+After writing to slave device, writer wakes up kworker to flush
+data on tty_port to reader, and the kworker finds that reader
+has no room to store data so room <= 0 is met. At this moment,
+reader consumes all the data on reader buffer and call
+n_tty_kick_worker to check ldata->no_room and finds that there
+is no need to call tty_buffer_restart_work to flush data to reader
+and reader quits reading. Then kworker sets ldata->no_room=true
+and quits too.
 
-Unfortunately it breaks console operation on my test systems after 
-system suspend/resume cycle if 'no_console_suspend' kernel parameter is 
-present. System properly resumes from suspend, the console displays all 
-the messages and even command line prompt, but then doesn't react on any 
-input. If I remove the 'no_console_suspend' parameter, the console is 
-again operational after system suspend/resume cycle. Before this patch 
-it worked fine regardless the 'no_console_suspend' parameter.
+If write buffer is not full, writer will wake kworker to flush data
+again after following writes, but if writer buffer is full and writer
+goes to sleep, kworker will never be woken again and tty device is
+blocked.
 
-If this matters, the test system is ARM 32bit Samsung Exynos5422-based 
-Odroid XU3lite board.
+We think this problem can be solved with a check for read buffer
+inside function n_tty_receive_buf_common, if read buffer is empty and
+ldata->no_room is true, this means that kworker has more data to flush
+to read buffer, so a call to n_tty_kick_worker is necessary.
 
->   drivers/tty/serial/serial_core.c | 11 +++++++++--
->   1 file changed, 9 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 82a1770..9a85b41 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
->   	}
->   	put_device(tty_dev);
->   
-> -	/* Nothing to do if the console is not suspending */
-> -	if (!console_suspend_enabled && uart_console(uport))
-> +	/*
-> +	 * Nothing to do if the console is not suspending
-> +	 * except stop_rx to prevent any asynchronous data
-> +	 * over RX line. Re-start_rx, when required, is
-> +	 * done by set_termios in resume sequence
-> +	 */
-> +	if (!console_suspend_enabled && uart_console(uport)) {
-> +		uport->ops->stop_rx(uport);
->   		goto unlock;
-> +	}
->   
->   	uport->suspended = 1;
->   
+Signed-off-by: cael <juanfengpy@gmail.com>
+---
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index efc72104c840..36c7bc033c78 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1663,6 +1663,9 @@ n_tty_receive_buf_common(struct tty_struct *tty,
+const unsigned char *cp,
+        } else
+                n_tty_check_throttle(tty);
 
-Best regards
++       if (!chars_in_buffer(tty))
++               n_tty_kick_worker(tty);
++
+        up_read(&tty->termios_rwsem);
+
+        return rcvd;
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+2.27.0
