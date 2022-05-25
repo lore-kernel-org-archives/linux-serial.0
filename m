@@ -2,92 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5DCC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 25 May 2022 13:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C15FFC433F5
+	for <linux-serial@archiver.kernel.org>; Wed, 25 May 2022 13:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244389AbiEYNcx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 May 2022 09:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        id S229665AbiEYNfM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 May 2022 09:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241480AbiEYNcw (ORCPT
+        with ESMTP id S244458AbiEYNfK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 May 2022 09:32:52 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C383632A;
-        Wed, 25 May 2022 06:32:49 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 98BBB24000B;
-        Wed, 25 May 2022 13:32:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653485567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=K2LLmMdA4vHYK7N2vJ1T6WRKIiii8VMOFALIJtd4D6w=;
-        b=WLizWyxeP8bSi00jmOplHPRDBzG6UMRAOcv+dJ6Gxr4Z8ybrBSyOf/pnL1ON4vwvw3fdti
-        hTwIqRcWcMTTjOrzDOOiRbeEj/1dxPACkT5XfxFZTX3/kRJ/6yZ9hKRJfRA81CF+7+oQ9F
-        N5bwEZNQMxXm/HzdjcRZnAwxC7qDtBoMXa5zImRXdshOAzpPeMJCUAYE2D2lly6xkidzxL
-        SRLTfH/77Lgi+b1J7nBH8Np1KznlniCOV1s0voi4+y5zwS7W9RSRuUTMiVKs26jo3fbRb4
-        E+66YLaKF53MT+zSK2XLB7k1EPQ5TGXdVJnOKcgVEN762+9mAxGhMLtXd/iABg==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Daniel Starke <daniel.starke@siemens.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Zhenguo Zhao <Zhenguo.Zhao1@unisoc.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH] tty: n_gsm: Debug output allocation must use GFP_ATOMIC
-In-Reply-To: <20220523155052.57129-1-tony@atomide.com>
-References: <20220523155052.57129-1-tony@atomide.com>
-Date:   Wed, 25 May 2022 15:32:46 +0200
-Message-ID: <87sfoxyby9.fsf@BL-laptop>
+        Wed, 25 May 2022 09:35:10 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A045EBCC;
+        Wed, 25 May 2022 06:35:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653485709; x=1685021709;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lPcr1Kl7mtugE4RnqH82rEuS7mbXO0sNIAN2KGPqVMo=;
+  b=i/fOWTCu2/M3fMyD63v5sdDuw2pC+U3J0PZ/y/u0O0abU1hCJD3TJSEK
+   fAceBIcgjXTDKpgr01wQ20C7YjrPfvb6LGQXINdo1+Wl3YFJJ/OANgYz2
+   aF3JB6H9ppi/dC9z6xG/2ivFzN6MIZcx9XHpugxN9/hXXdS540jbk2SjU
+   KP4b4BEY6IzFqFpBwxYI96yK15dpVcCykpCB/TjzkXI/cMMyx76AXOWnl
+   b7O3zrHu97kd7exjs108l7jB7MGCCwF3faWabbZ+STjlCUdvvAnsLt6Y1
+   6drtbEVgQzMim43o93x5fzfQFm4J4kTwvf/5Vi+sKlJgjMadd59FNQN8m
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="175023846"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 May 2022 06:35:08 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 25 May 2022 06:35:08 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 25 May 2022 06:35:05 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 0/3] serial: atmel: cleanup code
+Date:   Wed, 25 May 2022 16:37:30 +0300
+Message-ID: <20220525133733.1051714-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Tony Lindgren <tony@atomide.com> writes:
+Hi,
 
-> Dan Carpenter <dan.carpenter@oracle.com> reported the following Smatch
-> warning:
->
-> drivers/tty/n_gsm.c:720 gsm_data_kick()
-> warn: sleeping in atomic context
->
-> This is because gsm_control_message() is holding a spin lock so
-> gsm_hex_dump_bytes() needs to use GFP_ATOMIC instead of GFP_KERNEL.
->
-> Fixes: 925ea0fa5277 ("tty: n_gsm: Fix packet data hex dump output")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
+The following patches does some cleanup for atmel_serial driver by
+switching to dev_pm_ops and improving clock management code. Along with
+it I took the chance and introduced a patch for st-asc which removes the
+include of pm_runtime.h.
 
+Thank you,
+Claudiu Beznea
 
-Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Claudiu Beznea (3):
+  tty: serial: atmel: stop using legacy pm ops
+  tty: serial: atmel: improve clock management
+  serial: st-asc: remove include of pm_runtime.h
 
-
-> ---
->  drivers/tty/n_gsm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -459,7 +459,7 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
->  		return;
->  	}
->  
-> -	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
-> +	prefix = kasprintf(GFP_ATOMIC, "%s: ", fname);
->  	if (!prefix)
->  		return;
->  	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
-> -- 
-> 2.36.1
+ drivers/tty/serial/atmel_serial.c | 93 +++++++++----------------------
+ drivers/tty/serial/st-asc.c       |  1 -
+ 2 files changed, 26 insertions(+), 68 deletions(-)
 
 -- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+2.34.1
+
