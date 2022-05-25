@@ -2,62 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF0CC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 25 May 2022 13:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5DCC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 25 May 2022 13:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbiEYNF4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 May 2022 09:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
+        id S244389AbiEYNcx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 25 May 2022 09:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232809AbiEYNF4 (ORCPT
+        with ESMTP id S241480AbiEYNcw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 May 2022 09:05:56 -0400
-X-Greylist: delayed 98730 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 06:05:55 PDT
-Received: from box.indicandustries.com (hwsrv-970840.hostwindsdns.com [104.168.149.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CB2A5AB4
-        for <linux-serial@vger.kernel.org>; Wed, 25 May 2022 06:05:55 -0700 (PDT)
-Received: from authenticated-user (box.indicandustries.com [104.168.149.109])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.indicandustries.com (Postfix) with ESMTPSA id 61093107A47
-        for <linux-serial@vger.kernel.org>; Tue, 24 May 2022 03:24:40 -0600 (MDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=box.indicandustries.com; s=mail; t=1653384280;
-        bh=V6VCn7WEbqHjVVQ20/+SYu6rwS1WmTHcxX88g+j430s=;
-        h=Reply-To:From:To:Subject:Date:From;
-        b=JRZvyHurTHST6dTqTzFoDdzl/MZIhgcD89/FIFV+VhdyBBjwqnuQCnG/NWoRr9fvf
-         HVJOXZJA/yfyv5ogJRGMGjAb0tgM6RCtnXrhJkEVag/oDlHZ56sOUJQ5XbJtVKOa1y
-         v9hxopuKZ+c7sSHYVX9BC8X9W5lvFl80Xb5Uv3jlSo1VTW7/i9E2F+hN18fkQOL6gc
-         M2GWmNfyMe/w8y513PJNCtU9AGggY1ovvEaNvga/a3B2d2LrZarhSMc0f02cvKfw0C
-         /uHmnLRKsYqbjIdY5RrK/+mDTT50b0g1BCOtjH2NK/KumpZNcXBtrE1kPwEs9Mxztt
-         loJMTOMqxK4kw==
-Reply-To: amjalia90@gmail.com
-From:   amjad.ali@box.indicandustries.com
-To:     linux-serial@vger.kernel.org
-Subject: Hello Sir, I seek your urgent consideration.
-Date:   24 May 2022 11:24:40 +0200
-Message-ID: <20220524112440.B358E831C40B6E7B@box.indicandustries.com>
+        Wed, 25 May 2022 09:32:52 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C383632A;
+        Wed, 25 May 2022 06:32:49 -0700 (PDT)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 98BBB24000B;
+        Wed, 25 May 2022 13:32:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653485567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=K2LLmMdA4vHYK7N2vJ1T6WRKIiii8VMOFALIJtd4D6w=;
+        b=WLizWyxeP8bSi00jmOplHPRDBzG6UMRAOcv+dJ6Gxr4Z8ybrBSyOf/pnL1ON4vwvw3fdti
+        hTwIqRcWcMTTjOrzDOOiRbeEj/1dxPACkT5XfxFZTX3/kRJ/6yZ9hKRJfRA81CF+7+oQ9F
+        N5bwEZNQMxXm/HzdjcRZnAwxC7qDtBoMXa5zImRXdshOAzpPeMJCUAYE2D2lly6xkidzxL
+        SRLTfH/77Lgi+b1J7nBH8Np1KznlniCOV1s0voi4+y5zwS7W9RSRuUTMiVKs26jo3fbRb4
+        E+66YLaKF53MT+zSK2XLB7k1EPQ5TGXdVJnOKcgVEN762+9mAxGhMLtXd/iABg==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniel Starke <daniel.starke@siemens.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Zhenguo Zhao <Zhenguo.Zhao1@unisoc.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] tty: n_gsm: Debug output allocation must use GFP_ATOMIC
+In-Reply-To: <20220523155052.57129-1-tony@atomide.com>
+References: <20220523155052.57129-1-tony@atomide.com>
+Date:   Wed, 25 May 2022 15:32:46 +0200
+Message-ID: <87sfoxyby9.fsf@BL-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+Tony Lindgren <tony@atomide.com> writes:
 
-Greetings? I am Amjad. I work with a leading Bio Firm.  Due to=20
-the setbacks of the pandemic, my company has opened a bid in=20
-search of new suppliers for basic raw materials needed in=20
-production.
+> Dan Carpenter <dan.carpenter@oracle.com> reported the following Smatch
+> warning:
+>
+> drivers/tty/n_gsm.c:720 gsm_data_kick()
+> warn: sleeping in atomic context
+>
+> This is because gsm_control_message() is holding a spin lock so
+> gsm_hex_dump_bytes() needs to use GFP_ATOMIC instead of GFP_KERNEL.
+>
+> Fixes: 925ea0fa5277 ("tty: n_gsm: Fix packet data hex dump output")
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
-I am seeking a representative=C2=A0as I am a staff, I can not be=20
-involved directly. It may not be your area of work but the=20
-profits are great and I will guide you through. I have already=20
-sourced a local supplier for this. I only need a reliable=20
-representative.
 
-Please get back to me so I can explain this in full.
+Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 
-Amjad
+
+> ---
+>  drivers/tty/n_gsm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -459,7 +459,7 @@ static void gsm_hex_dump_bytes(const char *fname, const u8 *data,
+>  		return;
+>  	}
+>  
+> -	prefix = kasprintf(GFP_KERNEL, "%s: ", fname);
+> +	prefix = kasprintf(GFP_ATOMIC, "%s: ", fname);
+>  	if (!prefix)
+>  		return;
+>  	print_hex_dump(KERN_INFO, prefix, DUMP_PREFIX_OFFSET, 16, 1, data, len,
+> -- 
+> 2.36.1
+
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
