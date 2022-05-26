@@ -2,168 +2,207 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2061AC433F5
-	for <linux-serial@archiver.kernel.org>; Thu, 26 May 2022 08:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9081C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 26 May 2022 11:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244897AbiEZI0I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 May 2022 04:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S235785AbiEZLn3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 26 May 2022 07:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiEZI0F (ORCPT
+        with ESMTP id S244416AbiEZLn1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 May 2022 04:26:05 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCD9C1EF7;
-        Thu, 26 May 2022 01:26:04 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y141so1682078ybe.13;
-        Thu, 26 May 2022 01:26:04 -0700 (PDT)
+        Thu, 26 May 2022 07:43:27 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6F3393F4
+        for <linux-serial@vger.kernel.org>; Thu, 26 May 2022 04:43:24 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so1513331pjq.2
+        for <linux-serial@vger.kernel.org>; Thu, 26 May 2022 04:43:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=cF4F8fR9RrLCIQgZCm7I0h1IGLH3ZvWS9O1N9K+Bhcc=;
-        b=J9owjAjNOol3qvL5fD+FxkvWvvyyr+fiKj7zP3vK75HA/GCrK7W11JyqnBi5ZYFVpk
-         OPzoeeDMcwCL6BHvgHHOjMTARiBVYRJPYeVRrytgasE2ujRVr6LbO1L9a07jaJ/Tp1cx
-         soAnUj1Gori1RT2qxbN/jQFit0h1AJluuAEyHnkbvH5DTfbmIeveVtK5c99giLBtvQdG
-         9r2gJPnCczkdRXWFedOT+vROpPdVx6aIp5Zpp0r6uAL71JO8et2JHA2KjNBcBkTe8gA2
-         WVmBfLMykaOKiEDGecR89P6YhukXLAY6BRkNke5yfY3dVARrA7XLoQzFp+MDuUfLQBoy
-         rwWg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kq02GySVi94nZ9Mc+L7RCzpSrSe7oKjAYDJQaI+i1/M=;
+        b=jozl4ktxfx3kr41Xwo8mDlqT0z+gvOtnOWlJyYgee9yUgxgyfuOYUr1lx4RnOCQ6/1
+         EBChnizEhkGg98Qpb9CpWmqjZ9uwiJaLdKFSO74efjp/2WlLeF/PdqTf24D+LPN1P8LG
+         ut0mRRmlv8336aUyZvx8kApwOfcK8sDhtM7WuIfl2MBmS6ZuL17nr1XnMweom7zSFLQr
+         SU1LW9cXuv0oj342u5+FBEYK8zvWP3Ncp6alE6PlZBLutNfav0Wkn2mPAAiG73k05zRM
+         KXagAGOXvyhZJWcXTLNF9MpM0OMfwxpf1lgKnc+SiFLpACDo558o3HfUfDT5kBkmCL4j
+         kpBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=cF4F8fR9RrLCIQgZCm7I0h1IGLH3ZvWS9O1N9K+Bhcc=;
-        b=wLRAb0aVot9eyZorpxCWy4UJK9/IrwkHeo57OC3tVq7GEZ0gYjrWOBRWSvb52zXxVp
-         cUfxb53SYRtctR6hzlEaq+s6mg220ZA9UtlM4wCaUF/fiaKXmLQdoozJVI3WMCEPoZxa
-         kUnPW22758eXgGVLHCBxMjthJFLK9DFSi2bOzuHR3ScFOi07HBQBjacduXcQi9PJYrhO
-         qUB1yTTOJCyBhMc7elT4JEJ0Ct+FppMPLjeHg7UK8cLFjp5XSq1cMuBgMbj2pYPSuson
-         H1RqdfVJXNeMsvbZxU3iOvubEWiciHpNlNOIZ+Y0HVNvQEOe+BwBHC3N2z5HSAnAqsS2
-         WMYA==
-X-Gm-Message-State: AOAM5333H8IvLf8xuc1A8GLC06LJxTvD/i9doQ8tmKNSYKG/7r3qrtHR
-        OGKSTOjYnKd6pq4sRSlMFGwns08hlrUXygelidXfo6hQ
-X-Google-Smtp-Source: ABdhPJxFrXUPBbpkcE38MScAMAlvnteEOgB59zBjsulMMo/RVSVP+6slaOR6NvJf0UOWtB9QL3SRibyz3h5P4yLLHrM=
-X-Received: by 2002:a25:ada5:0:b0:64f:59d3:960e with SMTP id
- z37-20020a25ada5000000b0064f59d3960emr27762448ybi.401.1653553564005; Thu, 26
- May 2022 01:26:04 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a05:7000:7aa7:0:0:0:0 with HTTP; Thu, 26 May 2022 01:26:03
- -0700 (PDT)
-From:   Mychaela Falconia <mychaela.falconia@gmail.com>
-Date:   Thu, 26 May 2022 00:26:03 -0800
-Message-ID: <CA+uuBqZWHy80_kV30jmXiGpohyuxHa1obPGpi-oOWsAbufBZ5g@mail.gmail.com>
-Subject: Revisiting unwanted auto-assertion of DTR & RTS on serial port open
-To:     Johan Hovold <johan@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kq02GySVi94nZ9Mc+L7RCzpSrSe7oKjAYDJQaI+i1/M=;
+        b=MP0/DGrIdkurhm8LExI27CeO5WYKYyTR8C8miTeSONOUKjRqGURCpOGsu85q6LlFq1
+         PmCwYn5iF/2JHe3w8A2HO83RcXvc/oxViGgKeAUb8JZ5qViCR8xaytepHxxCKacjFteD
+         2abqVV1JLBx8GBdqYzt5RyxiW6TAJcIWM26br+tbGFfOGaTyuilyaX6wwTCGyM6JRWPO
+         aJbu1g6AmOYVO9uTohNN46ws/hJ4G32D4qRvsoI4uXwPXq5fQ6ZjUesT/Q4qsE1GSg17
+         30bxjO1RiYxXnqJ3Gg+oknnjzZ2duZaFiTMhPVAAnkzzIrmge8xx51aGuYcsIdaHoSd1
+         NX+Q==
+X-Gm-Message-State: AOAM530oLUs+twZU2vTof8FmCaXB98ihWSO0Js1QnZpZXXHrjMhIOEik
+        zsFKxZ52WuoNm8c9KAxaqpXWMg==
+X-Google-Smtp-Source: ABdhPJxfALbrt1KmDbthK4aKVj2I9eMN8ID458hdF4feL14JAdfjm2AEeZoz0NS/AVyWmIjpPI7ETg==
+X-Received: by 2002:a17:902:7781:b0:161:c85a:8fff with SMTP id o1-20020a170902778100b00161c85a8fffmr37569596pll.97.1653565404194;
+        Thu, 26 May 2022 04:43:24 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id a16-20020aa78650000000b0050dc7628137sm1320375pfo.17.2022.05.26.04.43.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 04:43:23 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilia Lin <ilia.lin@kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Mark Brown <broonie@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Nishanth Menon <nm@ti.com>, NXP Linux Team <linux-imx@nxp.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Qiang Yu <yuq825@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Clark <robdclark@gmail.com>, Rob Herring <robh@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sean Paul <sean@poorly.run>, Shawn Guo <shawnguo@kernel.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Rafael Wysocki <rjw@rjwysocki.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        lima@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH 00/31] OPP: Add new configuration interface: dev_pm_opp_set_config()
+Date:   Thu, 26 May 2022 17:11:59 +0530
+Message-Id: <cover.1653564321.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Linux serial and usb-serial maintainers,
+Hello,
 
-I am the hardware engineer who fought here unsuccessfully a year and a
-half ago to add Linux support for serial hardware devices in which DTR
-and/or RTS modem control signals have been repurposed for non-standard
-uses.  On such hw devices it is very often the case that DTR and RTS
-may be asserted ONLY when explicitly requested by specialized
-userspace applications that go with the hw (by way of TIOCMBIS ioctl,
-often followed by a delay and TIOCMBIC to produce a pulse), and NOT at
-any other times - in particular, it must be possible to open the
-serial port for byte Rx/Tx communication with the target device
-_without_ that open syscall unstoppably asserting DTR & RTS right
-there and then.  Here is the previous round of discussion:
+We have too many configuration specific APIs currently, six of them already,
+like dev_pm_opp_set_regulators(). This makes it complex/messy for both the OPP
+core and its users to manage. There is also code redundancy in these API, in the
+way they add/manage the OPP table specific stuff.
 
-https://lore.kernel.org/linux-serial/X8iuCXYhOBVMGvXv@localhost/T/
+This patch series is an attempt to simplify these interfaces by adding a single
+interface, dev_pm_opp_set_config(), which replaces all the existing ones. This
+also migrates the users to the new API.
 
-I am now revisiting this issue and making another attempt to get this
-capability added to Linux.  The new development is that I have tested
-the corresponding feature in FreeBSD, and found it to work correctly -
-thus FreeBSD is now the first (and so far only) Unix-style OS in the
-world that features an actually working, usable fix for the 1970s UNIX
-design bug of unstoppably asserting DTR & RTS on serial port open.
-Wouldn't it be good for Linux to follow suit?
+The first two patches help get the API in place, followed by patches to migrate
+the end users. Once all the users are migrated, the last few patches remove the
+now unused interfaces.
 
-The feature in question was added to FreeBSD quite recently:
+I have lightly tested this on Hikey960 for now and also getting help from
+various build/boot bots, gitlab and lkp, to get these tested. It would be
+helpful if someone with access to the affected platforms can give it a try.
 
-https://reviews.freebsd.org/D20031
+This is pushed here:
 
-The above link was provided by Johan here a year and a half ago, in
-the previous round of this battle.  However, only now I have had a
-chance to test FreeBSD's implementation on actual hardware, and
-confirm that it actually works as required for signal-repurposing hw
-applications.
+git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config
 
-The diff that appears on the FreeBSD review page above only adds one
-new termios flag, CNO_RTSDTR added to cflags.  Johan was proposing
-implementing a similar new termios flag in Linux - however, there is a
-crucial difference between what Johan was proposing for Linux vs what
-is actually implemented in FreeBSD, and it's the difference between
-usable and unusable.
+The entire patchset shall get merged via the OPP tree in 5.20-rc1, please do not
+merge individual patches.
 
-FreeBSD's counterpart to Linux ttyUSBx is ttyUx or cuaUx devices.
-However, FreeBSD also has .init and .lock devices which don't exist in
-Linux, and it's the .init device that makes their newly added
-CNO_RTSDTR feature actually work in a usable manner.  If you have a
-serial device that absolutely does not tolerate unwanted assertions of
-DTR/RTS, not even for one nanosecond, under FreeBSD you can make it
-work as follows (using cuaU0 as example here):
+Thanks.
 
-Step 1: open /dev/cuaU0.init (the .init suffix is crucial) and perform
-the ioctl setting CNO_RTSDTR on this initial-state device.  This step
-can be done with stty command.  These .init devices have the special
-property that opening one does NOT cause modem control lines to be
-asserted, unlike the regular ttyXX or cuaXX device.
+--
+Viresh
 
-Step 2: once the previous step is done, you can open the regular
-/dev/cuaU0 device for communication, and no unwanted DTR/RTS assertion
-will happen.
+Viresh Kumar (31):
+  OPP: Track if clock name is configured by platform
+  OPP: Add dev_pm_opp_set_config() and friends
+  cpufreq: dt: Migrate to dev_pm_opp_set_config()
+  cpufreq: imx: Migrate to dev_pm_opp_set_config()
+  cpufreq: qcom-nvmem: Migrate to dev_pm_opp_set_config()
+  cpufreq: sti: Migrate to dev_pm_opp_set_config()
+  cpufreq: sun50i: Migrate to dev_pm_opp_set_config()
+  cpufreq: tegra20: Migrate to dev_pm_opp_set_config()
+  cpufreq: ti: Migrate to dev_pm_opp_set_config()
+  devfreq: exynos: Migrate to dev_pm_opp_set_config()
+  devfreq: sun8i: Migrate to dev_pm_opp_set_config()
+  devfreq: tegra30: Migrate to dev_pm_opp_set_config()
+  drm/lima: Migrate to dev_pm_opp_set_config()
+  drm/msm: Migrate to dev_pm_opp_set_config()
+  drm/panfrost: Migrate to dev_pm_opp_set_config()
+  drm/tegra: Migrate to dev_pm_opp_set_config()
+  media: venus: Migrate to dev_pm_opp_set_config()
+  media: tegra: Migrate to dev_pm_opp_set_config()
+  mmc: sdhci-msm: Migrate to dev_pm_opp_set_config()
+  OPP: ti: Migrate to dev_pm_opp_set_config()
+  soc/tegra: Remove the call to devm_pm_opp_set_clkname()
+  soc/tegra: Migrate to dev_pm_opp_set_config()
+  spi: qcom: Migrate to dev_pm_opp_set_config()
+  serial: qcom: Migrate to dev_pm_opp_set_config()
+  OPP: Remove dev_pm_opp_set_regulators() and friends
+  OPP: Remove dev_pm_opp_set_supported_hw() and friends
+  OPP: Remove dev_pm_opp_set_clkname() and friends
+  OPP: Remove dev_pm_opp_register_set_opp_helper() and friends
+  OPP: Remove dev_pm_opp_attach_genpd() and friends
+  OPP: Remove dev_pm_opp_set_prop_name() and friends
+  OPP: Rearrange dev_pm_opp_set_config() and friends
 
-Johan's proposal for Linux was superficially similar: he proposed
-adding a similar new termios flag.  But because Linux does not have
-any counterpart to FreeBSD's .init devices, a termios flag won't work
-for this purpose in Linux, it would create a chicken-and-egg problem:
-one would need to open the serial port first in order to set the
-termios flag, and this very act would cause DTR & RTS to be asserted,
-causing irreparable damage: electrocution, setting off explosives, use
-your imagination for how these signals could be wired to do highly
-damaging actions.
+ drivers/cpufreq/cpufreq-dt.c                  |  14 +-
+ drivers/cpufreq/imx-cpufreq-dt.c              |  12 +-
+ drivers/cpufreq/qcom-cpufreq-nvmem.c          | 107 +---
+ drivers/cpufreq/sti-cpufreq.c                 |  22 +-
+ drivers/cpufreq/sun50i-cpufreq-nvmem.c        |  11 +-
+ drivers/cpufreq/tegra20-cpufreq.c             |  12 +-
+ drivers/cpufreq/ti-cpufreq.c                  |  38 +-
+ drivers/devfreq/exynos-bus.c                  |  14 +-
+ drivers/devfreq/sun8i-a33-mbus.c              |   7 +-
+ drivers/devfreq/tegra30-devfreq.c             |   8 +-
+ drivers/gpu/drm/lima/lima_devfreq.c           |  11 +-
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |   8 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |  10 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   5 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c              |   5 +-
+ drivers/gpu/drm/msm/dsi/dsi_host.c            |   5 +-
+ drivers/gpu/drm/panfrost/panfrost_devfreq.c   |   9 +-
+ drivers/gpu/drm/tegra/gr3d.c                  |   6 +-
+ .../media/platform/qcom/venus/pm_helpers.c    |  16 +-
+ drivers/memory/tegra/tegra124-emc.c           |  14 +-
+ drivers/mmc/host/sdhci-msm.c                  |   5 +-
+ drivers/opp/core.c                            | 540 +++++++-----------
+ drivers/opp/opp.h                             |   2 +
+ drivers/opp/ti-opp-supply.c                   |   6 +-
+ drivers/soc/tegra/common.c                    |  14 +-
+ drivers/soc/tegra/pmc.c                       |   8 +-
+ drivers/spi/spi-geni-qcom.c                   |   5 +-
+ drivers/spi/spi-qcom-qspi.c                   |   5 +-
+ drivers/tty/serial/qcom_geni_serial.c         |   5 +-
+ include/linux/pm_opp.h                        | 118 ++--
+ 30 files changed, 444 insertions(+), 598 deletions(-)
 
-Out of various methods that were discussed here a year and a half ago,
-only the sysfs approach would produce a user capability match to what
-FreeBSD now provides.  The termios flag idea is a dead end, unless
-this community feels that FreeBSD's ttyXX.init and ttyXX.lock should
-also be replicated in Linux in full.  Another sensible way would be to
-define a new open flag, such as O_NODTR, or reuse/abuse an existing
-flag like O_DIRECT which currently does nothing for tty devices - but
-people have objected that this approach would be limited to custom
-userspace programs, precluding the use of echo, cat etc.
+-- 
+2.31.1.272.g89b43f80a514
 
-I now argue for the sysfs attribute approach.  Johan had a patch (he
-made it, but didn't fight for it because he really preferred the
-termios flag instead) adding a /sys/class/tty/ttyXXX/nordy attribute -
-setting this attribute to 1 would suppress automatic assertion of DTR
-and RTS on serial port open.  One could argue that a better name for
-this new sysfs attribute would be something like
-/sys/class/tty/ttyXXX/manual_dtr_rts - but I'll be happy no matter how
-it's named, as long as the essential functionality remains.
-
-This sysfs attribute would produce the same fundamental workflow as
-currently exists in FreeBSD.  In FreeBSD one needs to open
-/dev/cuaXX.init, do the necessary ioctl, then close that fd and open
-another path (/dev/cuaXX) to do the actual serial communication.  With
-the proposed sysfs attribute, the same fundamental workflow will apply
-here: open the sysfs path, do the necessary attribute write, then
-close the sysfs fd and open /dev/ttyXXX for the actual communication.
-In both cases the preliminary step (/dev/cuaXX.init in FreeBSD, sysfs
-path in my proposal for Linux) can be done from the shell, or it can
-be incorporated into custom userspace sw that works with the custom hw
-device.
-
-I can dig up Johan's old patch adding the nordy attribute, update it
-for current HEAD, and formally resubmit it - would the maintainers be
-agreeable to such course?
-
-Sincerely,
-Mychaela Falconia (she/her)
-Custom hardware design engineer,
-designing hw specifically for use with FOSS operating systems
