@@ -2,111 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0041C433FE
-	for <linux-serial@archiver.kernel.org>; Fri, 27 May 2022 22:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F573C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 27 May 2022 22:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbiE0Wgp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 May 2022 18:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
+        id S1354814AbiE0Wgq (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 27 May 2022 18:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354779AbiE0Wgo (ORCPT
+        with ESMTP id S1354787AbiE0Wgo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 27 May 2022 18:36:44 -0400
 Received: from freecalypso.org (freecalypso.org [195.154.163.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5F724BE4;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC71C255AF;
         Fri, 27 May 2022 15:36:42 -0700 (PDT)
 Received: by freecalypso.org (Postfix, from userid 1001)
-        id 2AB56374022D; Fri, 27 May 2022 22:27:28 +0000 (UTC)
+        id A369E3740211; Fri, 27 May 2022 22:27:13 +0000 (UTC)
 From:   "Mychaela N. Falconia" <falcon@freecalypso.org>
 To:     Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Cc:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         mychaela.falconia@gmail.com
-Subject: [PATCH 5/6] USB: serial: ftdi_sio: pass port to quirk port_probe
- functions
-Message-Id: <20220527222728.2AB56374022D@freecalypso.org>
-Date:   Fri, 27 May 2022 22:27:28 +0000 (UTC)
+Subject: [PATCH 2/6] serial: core: add sysfs attribute to suppress raising DTR
+ & RTS on open
+Message-Id: <20220527222713.A369E3740211@freecalypso.org>
+Date:   Fri, 27 May 2022 22:27:13 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The original code passed only the pointer to the ftdi_private struct
-to quirk port_probe functions.  However, some quirks may need to be
-applied conditionally only to some channels of a multichannel FT2232x
-or FT4232H device, and if a given quirk's port_probe function needs
-to figure out which channel of a multichannel device is currently
-being considered, it needs access to the port pointer passed to the
-ftdi_sio_port_probe() function, so it can traverse USB data structures
-from there.
+Add a manual_rtsdtr sysfs attribute to suppress automatic raising of
+DTR and RTS modem control signals on serial port open.
 
+This special mode can be used to prevent undesirable side effects on
+open for applications where these lines are used for non-standard
+purposes such as generating power-on and reset pulses.
+
+Co-developed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Mychaela N. Falconia <falcon@freecalypso.org>
 ---
- drivers/usb/serial/ftdi_sio.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ Documentation/ABI/testing/sysfs-tty | 10 ++++++++++
+ drivers/tty/serial/serial_core.c    | 27 +++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-index 49c08f07c969..6523a36dcc45 100644
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -88,15 +88,15 @@ struct ftdi_private {
- struct ftdi_sio_quirk {
- 	int (*probe)(struct usb_serial *);
- 	/* Special settings for probed ports. */
--	void (*port_probe)(struct ftdi_private *);
-+	void (*port_probe)(struct usb_serial_port *);
+diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
+index 820e412d38a8..3e666538451b 100644
+--- a/Documentation/ABI/testing/sysfs-tty
++++ b/Documentation/ABI/testing/sysfs-tty
+@@ -161,3 +161,13 @@ Contact:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Description:
+ 		 Allows user to detach or attach back the given device as
+ 		 kernel console. It shows and accepts a boolean variable.
++
++What:		/sys/class/tty/tty<x>/manual_rtsdtr
++Date:		May 2022
++Contact:	Mychaela N. Falconia <falcon@freecalypso.org>
++Description:
++		 Writing 1 into this flag attribute suppresses automatic
++		 assertion of DTR & RTS on serial port open, putting these
++		 signals under manual control (TIOCMBIS & TIOCMBIC).
++		 Writing 0 restores standard POSIX/SUS behaviour of
++		 automatically asserting both DTR and RTS on open.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9a85b41caa0a..b47004a3fb77 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2870,6 +2870,31 @@ static ssize_t console_store(struct device *dev,
+ 	return ret < 0 ? ret : count;
+ }
+ 
++static ssize_t manual_rtsdtr_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
++{
++	struct tty_port *port = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", tty_port_manual_rtsdtr(port));
++}
++
++static ssize_t manual_rtsdtr_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t count)
++{
++	struct tty_port *port = dev_get_drvdata(dev);
++	bool val;
++	int ret;
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	tty_port_set_manual_rtsdtr(port, val);
++
++	return count;
++}
++
+ static DEVICE_ATTR_RO(uartclk);
+ static DEVICE_ATTR_RO(type);
+ static DEVICE_ATTR_RO(line);
+@@ -2884,6 +2909,7 @@ static DEVICE_ATTR_RO(io_type);
+ static DEVICE_ATTR_RO(iomem_base);
+ static DEVICE_ATTR_RO(iomem_reg_shift);
+ static DEVICE_ATTR_RW(console);
++static DEVICE_ATTR_RW(manual_rtsdtr);
+ 
+ static struct attribute *tty_dev_attrs[] = {
+ 	&dev_attr_uartclk.attr,
+@@ -2900,6 +2926,7 @@ static struct attribute *tty_dev_attrs[] = {
+ 	&dev_attr_iomem_base.attr,
+ 	&dev_attr_iomem_reg_shift.attr,
+ 	&dev_attr_console.attr,
++	&dev_attr_manual_rtsdtr.attr,
+ 	NULL
  };
  
- static int   ftdi_jtag_probe(struct usb_serial *serial);
- static int   ftdi_NDI_device_setup(struct usb_serial *serial);
- static int   ftdi_stmclite_probe(struct usb_serial *serial);
- static int   ftdi_8u2232c_probe(struct usb_serial *serial);
--static void  ftdi_USB_UIRT_setup(struct ftdi_private *priv);
--static void  ftdi_HE_TIRA1_setup(struct ftdi_private *priv);
-+static void  ftdi_USB_UIRT_setup(struct usb_serial_port *port);
-+static void  ftdi_HE_TIRA1_setup(struct usb_serial_port *port);
- 
- static const struct ftdi_sio_quirk ftdi_jtag_quirk = {
- 	.probe	= ftdi_jtag_probe,
-@@ -2238,11 +2238,11 @@ static int ftdi_sio_port_probe(struct usb_serial_port *port)
- 
- 	mutex_init(&priv->cfg_lock);
- 
--	if (quirk && quirk->port_probe)
--		quirk->port_probe(priv);
--
- 	usb_set_serial_port_data(port, priv);
- 
-+	if (quirk && quirk->port_probe)
-+		quirk->port_probe(port);
-+
- 	ftdi_determine_type(port);
- 	ftdi_set_max_packet_size(port);
- 	if (read_latency_timer(port) < 0)
-@@ -2263,8 +2263,10 @@ static int ftdi_sio_port_probe(struct usb_serial_port *port)
- /* Setup for the USB-UIRT device, which requires hardwired
-  * baudrate (38400 gets mapped to 312500) */
- /* Called from usbserial:serial_probe */
--static void ftdi_USB_UIRT_setup(struct ftdi_private *priv)
-+static void ftdi_USB_UIRT_setup(struct usb_serial_port *port)
- {
-+	struct ftdi_private *priv = usb_get_serial_port_data(port);
-+
- 	priv->flags |= ASYNC_SPD_CUST;
- 	priv->custom_divisor = 77;
- 	priv->force_baud = 38400;
-@@ -2273,8 +2275,10 @@ static void ftdi_USB_UIRT_setup(struct ftdi_private *priv)
- /* Setup for the HE-TIRA1 device, which requires hardwired
-  * baudrate (38400 gets mapped to 100000) and RTS-CTS enabled.  */
- 
--static void ftdi_HE_TIRA1_setup(struct ftdi_private *priv)
-+static void ftdi_HE_TIRA1_setup(struct usb_serial_port *port)
- {
-+	struct ftdi_private *priv = usb_get_serial_port_data(port);
-+
- 	priv->flags |= ASYNC_SPD_CUST;
- 	priv->custom_divisor = 240;
- 	priv->force_baud = 38400;
 -- 
 2.9.0
 
