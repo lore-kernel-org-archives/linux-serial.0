@@ -2,167 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA69FC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 13:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DC7C433FE
+	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237040AbiE3NbQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 May 2022 09:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        id S237806AbiE3Nnw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 May 2022 09:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237238AbiE3NaP (ORCPT
+        with ESMTP id S237804AbiE3NmF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1D3562C4;
-        Mon, 30 May 2022 06:26:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42F60B80AE8;
-        Mon, 30 May 2022 13:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A194C3411A;
-        Mon, 30 May 2022 13:26:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653917211;
-        bh=jQxRXVeofHNHJwXBNCoacrIHt+NDfKthlcM1Aw4nXmY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vD8SBMIjmxM38Xn4OgWF+oRNE7kkCCqOEA/RtpNj4VpZMwBqSnuN8t4aXTDN2DLF2
-         Kd+jrbeI7pQBZ6x5chNP8Ko4jHdzA3AiMwrz24iemd3kOWEwI+jSUDhcPEOldzAHV4
-         GAhUz4VaspsGax0FgN5cAnxtA1u5gK6/1E1aFTZQ=
-Date:   Mon, 30 May 2022 15:26:47 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Mychaela N. Falconia" <falcon@freecalypso.org>
-Cc:     Johan Hovold <johan@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        mychaela.falconia@gmail.com
-Subject: Re: [PATCH 0/6] serial ports: add ability to suppress raising DTR &
- RTS on open
-Message-ID: <YpTGF1dh2RafcFT2@kroah.com>
-References: <20220527222703.BA4D3374020E@freecalypso.org>
+        Mon, 30 May 2022 09:42:05 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1BC9A98C;
+        Mon, 30 May 2022 06:32:03 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id w27so6858443edl.7;
+        Mon, 30 May 2022 06:32:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VmC5J5LAtvxholHC0kJMwLzD6EpuzXL1X0zC6FmW1Eo=;
+        b=gtClHKizARJKVaT/I/8Z7FkUBInOenM6EVVtQwhZldOZiiVHS5tkuBJG5zlvBIUpL0
+         rvudAZhIfyA/MRCGN94wHSVTqkYEExkxROH6YwlKGNDPREjeyNua5axKWdgGq9PXB9Qv
+         6/A2y0SPcDGNDhntWPM5aArmXnDmP7Ah4vH4Rq+EHrrX4LQ+H8BwHK8yo6DbLaFHkrke
+         4ST0RMWoVI1vS/8thOslzdfROfixbC6gi0HrjGtBkfwnE9mZQmd09WUWRI/Dl/wBcKHq
+         wjoo/W8V3045qertaSYvpan4puzMRtRj8oVIz1iL+ZlydadJ8aPDLudZMaSAfHwoExWX
+         /Hag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VmC5J5LAtvxholHC0kJMwLzD6EpuzXL1X0zC6FmW1Eo=;
+        b=zR8tEXxqsP/LZRPxov31jKzLqS8d+GO9tZ7frwkyjTxDPsw4H0JtfVlHfsyreU9oJU
+         Idmtc4VnXQuFiPSQj6izpDE7e+CAyqQHknUtCZr1tAJmOi4c3gRGCNakRBv++sYK+TRp
+         4G2gxejAJb+z5GjxrxSaoRIEKRP+ClNx3n3Syn8AmCsQLQRJUOQ7h0P1DqJCayGtSief
+         Hi7zo9wz34U2qI2K8D0kxQmUk1k4ebIaNHnZDTe1JMD2XJB6yYy5YXOpCcTX2AKQehfF
+         qwm8gRHKwihcAa6xUiG1dO9VsDFXGxk2R/K3hQpmYZWhDPIH3tA6ZY1widxuSkfCg0xu
+         al5g==
+X-Gm-Message-State: AOAM533CSTvWCNv7nQiJ2uJVmDYzJ7sJfkUBLGLECft5jZIc3FQm2do1
+        RjcDzEmiB2r0U2O1jJ/znB5qBm1nnLrqgfme/3E=
+X-Google-Smtp-Source: ABdhPJw7yEAy0iu+jD3K6+RYaallqZkORRLUe8H7vJHEHL+AYzkc3jtqNHKEFmro5Xmt/PBuwTdey0kle8MLbQy7fsI=
+X-Received: by 2002:a05:6402:4394:b0:42a:e84c:2cfb with SMTP id
+ o20-20020a056402439400b0042ae84c2cfbmr59605567edc.97.1653917521475; Mon, 30
+ May 2022 06:32:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527222703.BA4D3374020E@freecalypso.org>
+References: <20220527222709.1AC8837401F1@freecalypso.org>
+In-Reply-To: <20220527222709.1AC8837401F1@freecalypso.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 30 May 2022 15:31:25 +0200
+Message-ID: <CAHp75VeQzY+Pfru4LSgv+fqya-2F7G21TjaVsybCqQBSD8NeUw@mail.gmail.com>
+Subject: Re: [PATCH 1/6] tty: add port flag to suppress raising DTR & RTS on open
+To:     "Mychaela N. Falconia" <falcon@freecalypso.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        Mychaela Falconia <mychaela.falconia@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 27, 2022 at 10:27:03PM +0000, Mychaela N. Falconia wrote:
-> Back in 1970s UNIX a poor design decision was made regarding serial port
-> handling; this bad design has been codified into standards (POSIX, SUS)
-> and persists into present-day Linux.
+On Sat, May 28, 2022 at 8:51 PM Mychaela N. Falconia
+<falcon@freecalypso.org> wrote:
+>
+> There exist special serial devices (either attaching to generic serial
+> ports or containing a built-in USB-serial chip) in which DTR and/or RTS
+> have been repurposed for non-standard uses.  Depending on exactly how
+> these signals are repurposed, standard POSIX/SUS behaviour of
 
-Odd that you state it this way, as this IS the RS-232 standard
-requirement that was released in 1968, so codifying it into the POSIX
-standard and using it in Linux today was a good thing so that we can use
-Linux on hardware built for the standard.
+Which version of POSIX and SUS standards are in consideration?
 
-To ignore the public, accepted, standard is to become an operating
-system that does not follow the standard, which would not be a good
-thing at all.
+> unconditionally raising both signals on open may range from harmless
+> to undesirable to a total killer, precluding the use of Linux with
+> such custom hardware.
+>
+> The newly added TTY_PORT_MANUAL_RTSDTR flag switches an individual
+> serial port from POSIX/SUS standard to non-standard behaviour: when
+> set, it suppresses the built-in action of raising DTR & RTS on serial
+> port open.
+>
+> This flag can be exported through sysfs, and it can also be set by
+> USB-serial device drivers when they see a custom hw device (identified
+> by VID:PID) that is known to be wired in a way that requires this flag
+> to be set.
 
-> In 2021 FreeBSD 13.0 became the
-> first Unix-style OS to fix the problem; the present patch series aims
-> to implement a similar solution in Linux.
+Is it only the USB class of devices that are affected or do we have
+examples on other buses?
 
-Again, this is not a "problem", it is a "let us use these pins for
-something that they were not designed to be used for" type of thing.
-You are wanting to ignore the well known and very common standard of the
-past 53 years because you wish to reuse a UART pin as a GPIO pin, which
-is not any sort of standardized thing at all.
+...
 
-> The root of the problem is the POSIX/SUS-codified design decision to
-> always automatically assert both DTR and RTS modem control signals on
-> the initial open of a serial port, without giving userspace any ability
-> to say "no, please don't do it".
+>  void tty_port_raise_dtr_rts(struct tty_port *port)
+>  {
+> -       if (port->ops->dtr_rts)
+> +       if (port->ops->dtr_rts && !tty_port_manual_rtsdtr(port))
+>                 port->ops->dtr_rts(port, 1);
 
-Again, that is the standard, why wouldn't you want to do that?  To not
-do that would be to break interoperability with millions of devices out
-there (remember modems?)
+Logically I would put them otherwise, first to check a custom flag and
+then the existence of the callback.
 
-> This design is flawed on a fundamental
-> philosophical level: an OS kernel needs to provide a mechanism for
-> applications to operate on hardware, rather than insert its own mind
-> in the middle.  If a user wishes to open any kind of hardware device
-> and perform arbitrary operations on that device, the kernel needs to
-> allow this access unobstructed, provided that the user has the necessary
-> permissions.  If the user is asking to merely open a hardware device,
-> but the kernel refuses to provide such "simple open" access without
-> mandatorily imposing some specific hardware action along with that
-> open, this behaviour needs to be considered a defect, a design bug.
+>  }
 
-Again, this is not a design bug, but the requirement that the OS follow
-the 50+ year old documented and accepted standard for this hardware
-interface.  This is designed properly.
-
-> Because the design bug is codified in POSIX, SUS etc, it cannot be
-> simply fixed - a change to default behaviour would violate standards
-> and break bazillion existing applications.  Instead the only possible
-> solutions at this point in time have to take the form of creative
-> workarounds - and by necessity, such creative workarounds should NOT
-> be expected to be "pretty" or architecturally clean.  The
-> architecturally-clean boat has sailed a few decades ago - in the
-> present time, non-pretty workarounds are required.
-
-Again, you are wanting a workaround for a limitation of your hardware
-design, not a limitation of the RS-232 standard.  You are creating
-non-compliant hardware and wish to control it in a way the hardware was
-not originally intended to be controlled.
-
-And that's fine, but don't speak of it as if we somehow messed up 53
-years ago and no one has noticed it since then.  That's just
-condencending to all of us who have maintained and worked with this
-codebase and standard for these 50+ years.
-
-On a personal note, I've been working on UARTs and RS-232 since "only"
-1992 on a paid basis, and I have never heard of anyone objecting to this
-portion of the RS-232 standard in a way to make it sound like it was
-designed incorrectly this way.  But then again, I've only been doing
-this for 30 years now, maybe I'm too new at this :)
-
-> The solution implemented in FreeBSD relies on a feature of that OS
-> which does not exist in Linux: initial-state devices.
-
-Linux dropped those a long time ago for good reasons, let's not revisit
-that design decision again please.
-
-> There is also one other possibility: there exist some hardware devices
-> in which a USB-serial converter chip and the application circuit behind
-> that chip (which repurposes DTR & RTS for non-standard uses) are
-> integrated into a single monolithic device, with a custom USB VID:PID
-> identifying the hardware device as a whole.  Because they are custom
-> ID codes not known at all to "naive" OS kernels, adding Linux support
-> for any such hw device will necessarily require adding knowledge of
-> that custom VID:PID to the appropriate USB-serial driver - and if it
-> is *known* that this paricular hardware device is wired in such a way
-> that requires the manual_rtsdtr flag to be set, then it makes the most
-> sense for the USB-serial driver to set the flag in the device-specific
-> quirk.  The present patch series adds support for one such device.
-> 
-> Mychaela N. Falconia (6):
->   tty: add port flag to suppress raising DTR & RTS on open
->   serial: core: add sysfs attribute to suppress raising DTR & RTS on
->     open
->   serial: core: fully suppress raising DTR & RTS on open if
->     manual_rtsdtr
->   USB: serial: add sysfs attribute to suppress raising DTR & RTS on open
->   USB: serial: ftdi_sio: pass port to quirk port_probe functions
->   USB: serial: ftdi_sio: add support for FreeCalypso DUART28C adapter
-
-From what I recall with the original patch series, Johan is the author
-of these, not you.  Rebasing and forwarding on is great, but please
-never drop original authorship of patches, that's just rude, and in
-some cases, ripe for legal worries.
-
-Can you fix that all up, tone down the "this is all wrong" verbage, and
-properly resend the series as a joined patch series (your emails are not
-threaded properly at all and our tools can not find them correct, just
-use 'git send-email' and that would solve it.) and then after the merge
-window, I'll reconsider this series.
-
-Also please document what has changed since Johan's original submission
-to now, and why it should now be accepted when it was rejected then.
-
-thanks,
-
-greg k-h
+-- 
+With Best Regards,
+Andy Shevchenko
