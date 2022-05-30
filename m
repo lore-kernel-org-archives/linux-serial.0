@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9313BC433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 15:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEBEC433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 15:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240809AbiE3PjE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 May 2022 11:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        id S233928AbiE3Pj2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 May 2022 11:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241349AbiE3Pik (ORCPT
+        with ESMTP id S237103AbiE3Piz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 May 2022 11:38:40 -0400
+        Mon, 30 May 2022 11:38:55 -0400
 Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180F25EBC0
-        for <linux-serial@vger.kernel.org>; Mon, 30 May 2022 07:46:29 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20220530144627df0161ff73faee7f27
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D08ABAA
+        for <linux-serial@vger.kernel.org>; Mon, 30 May 2022 07:46:33 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202205301446315e24bbcdd77061cecc
         for <linux-serial@vger.kernel.org>;
-        Mon, 30 May 2022 16:46:28 +0200
+        Mon, 30 May 2022 16:46:31 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=37lGgpsTVFX6pGasppSwbTmEJqfdxwkpod/qzrWq4p4=;
- b=CblSyTmIGxYLtmdD9VBMl6FG5WJual5PAhVWA+hlAZ+U+ZM73My2oU3an0+U6Ia0VXXGBA
- BUo6TkMH/KEAye+/ZTpA2n6HdJnT2BpFLs+Ja6wGttB7o3gqqmVfwsZ0Fpj28JaKw67ncoJ3
- dlTrXXlhRWJcQnAZlG/Kz6QQTGXxI=;
+ bh=vjCZnJlkGKf+jcIPuDFQBSVbJFVWz+DiqFe3ZaJS4b8=;
+ b=QIzTsSQikYXPx9W4y2QpkNI1ifNbZAW1JTYmGOvMjwtwIB2IJkgReiuL3XwEE9sJs7ntah
+ gbedjXj1ln7lheE9T3uG3BNpXwQTmHMT7FJAfpUzedelRT6ZUvWiLYPrc1jU5BC506xA3tvX
+ NWOvk1lqtSEOoG4WcLybXeLBtY7/Q=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 3/9] tty: n_gsm: fix wrong queuing behavior in gsm_dlci_data_output()
-Date:   Mon, 30 May 2022 16:45:06 +0200
-Message-Id: <20220530144512.2731-3-daniel.starke@siemens.com>
+Subject: [PATCH v3 8/9] tty: n_gsm: fix resource allocation order in gsm_activate_mux()
+Date:   Mon, 30 May 2022 16:45:11 +0200
+Message-Id: <20220530144512.2731-8-daniel.starke@siemens.com>
 In-Reply-To: <20220530144512.2731-1-daniel.starke@siemens.com>
 References: <20220530144512.2731-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,123 +45,48 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-1) The function drains the fifo for the given user tty/DLCI without
-considering 'TX_THRESH_HI' and different to gsm_dlci_data_output_framed(),
-which moves only one packet from the user side to the internal transmission
-queue. We can only handle one packet at a time here if we want to allow
-DLCI priority handling in gsm_dlci_data_sweep() to avoid link starvation.
-2) Furthermore, the additional header octet from convergence layer type 2
-is not counted against MTU. It is part of the UI/UIH frame message which
-needs to be limited to MTU. Hence, it is wrong not to consider this octet.
-3) Finally, the waiting user tty is not informed about freed space in its
-send queue.
+Within gsm_activate_mux() all timers and locks are initiated before the
+actual resource for the control channel is allocated. This can lead to race
+conditions.
 
-Take at most one packet worth of data out of the DLCI fifo to fix 1).
-Limit the max user data size per packet to MTU - 1 in case of convergence
-layer type 2 to leave space for the control signal octet which is added in
-the later part of the function. This fixes 2).
-Add tty_port_tty_wakeup() to wake up the user tty if new write space has
-been made available to fix 3).
+Allocate the control channel DLCI object first to avoid race conditions.
 
-Fixes: 268e526b935e ("tty/n_gsm: avoid fifo overflow in gsm_dlci_data_output")
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 74 +++++++++++++++++++++++++--------------------
- 1 file changed, 42 insertions(+), 32 deletions(-)
+ drivers/tty/n_gsm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 There have been no comments on v2, hence, no change was done.
 
-Link: https://lore.kernel.org/all/20220519070757.2096-3-daniel.starke@siemens.com/
+Link: https://lore.kernel.org/all/20220519070757.2096-8-daniel.starke@siemens.com/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9b0bbd0d35d0..b51e2023d88d 100644
+index 9e4ada510c9f..b0b093e8e9d9 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -869,41 +869,51 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- {
- 	struct gsm_msg *msg;
- 	u8 *dp;
--	int len, total_size, size;
--	int h = dlci->adaption - 1;
-+	int h, len, size;
+@@ -2483,6 +2483,10 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
+ 	struct gsm_dlci *dlci;
+ 	int ret;
  
--	total_size = 0;
--	while (1) {
--		len = kfifo_len(&dlci->fifo);
--		if (len == 0)
--			return total_size;
--
--		/* MTU/MRU count only the data bits */
--		if (len > gsm->mtu)
--			len = gsm->mtu;
--
--		size = len + h;
--
--		msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
--		/* FIXME: need a timer or something to kick this so it can't
--		   get stuck with no work outstanding and no buffer free */
--		if (msg == NULL)
--			return -ENOMEM;
--		dp = msg->data;
--		switch (dlci->adaption) {
--		case 1:	/* Unstructured */
--			break;
--		case 2:	/* Unstructed with modem bits.
--		Always one byte as we never send inline break data */
--			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
--			break;
--		}
--		WARN_ON(kfifo_out_locked(&dlci->fifo, dp , len, &dlci->lock) != len);
--		__gsm_data_queue(dlci, msg);
--		total_size += size;
-+	/* for modem bits without break data */
-+	h = ((dlci->adaption == 1) ? 0 : 1);
-+
-+	len = kfifo_len(&dlci->fifo);
-+	if (len == 0)
-+		return 0;
-+
-+	/* MTU/MRU count only the data bits but watch adaption mode */
-+	if ((len + h) > gsm->mtu)
-+		len = gsm->mtu - h;
-+
-+	size = len + h;
-+
-+	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
-+	/* FIXME: need a timer or something to kick this so it can't
-+	 * get stuck with no work outstanding and no buffer free
-+	 */
-+	if (!msg)
++	dlci = gsm_dlci_alloc(gsm, 0);
++	if (dlci == NULL)
 +		return -ENOMEM;
-+	dp = msg->data;
-+	switch (dlci->adaption) {
-+	case 1: /* Unstructured */
-+		break;
-+	case 2: /* Unstructured with modem bits.
-+		 * Always one byte as we never send inline break data
-+		 */
-+		*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
-+		break;
-+	default:
-+		pr_err("%s: unsupported adaption %d\n", __func__,
-+		       dlci->adaption);
-+		break;
- 	}
 +
-+	WARN_ON(len != kfifo_out_locked(&dlci->fifo, dp, len,
-+		&dlci->lock));
-+
-+	/* Notify upper layer about available send space. */
-+	tty_port_tty_wakeup(&dlci->port);
-+
-+	__gsm_data_queue(dlci, msg);
- 	/* Bytes of data we used up */
--	return total_size;
-+	return size;
- }
+ 	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
+ 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
+@@ -2499,9 +2503,6 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
+ 	if (ret)
+ 		return ret;
  
- /**
+-	dlci = gsm_dlci_alloc(gsm, 0);
+-	if (dlci == NULL)
+-		return -ENOMEM;
+ 	gsm->has_devices = true;
+ 	gsm->dead = false;		/* Tty opens are now permissible */
+ 	return 0;
 -- 
 2.34.1
 
