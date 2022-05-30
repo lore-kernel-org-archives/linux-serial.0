@@ -2,56 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DC7C433FE
-	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 13:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C60C4321E
+	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 13:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237806AbiE3Nnw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 May 2022 09:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
+        id S235110AbiE3Nwh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 May 2022 09:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237804AbiE3NmF (ORCPT
+        with ESMTP id S236893AbiE3Nvz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 May 2022 09:42:05 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1BC9A98C;
-        Mon, 30 May 2022 06:32:03 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id w27so6858443edl.7;
-        Mon, 30 May 2022 06:32:03 -0700 (PDT)
+        Mon, 30 May 2022 09:51:55 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666FADF73;
+        Mon, 30 May 2022 06:36:57 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id wh22so20901344ejb.7;
+        Mon, 30 May 2022 06:36:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VmC5J5LAtvxholHC0kJMwLzD6EpuzXL1X0zC6FmW1Eo=;
-        b=gtClHKizARJKVaT/I/8Z7FkUBInOenM6EVVtQwhZldOZiiVHS5tkuBJG5zlvBIUpL0
-         rvudAZhIfyA/MRCGN94wHSVTqkYEExkxROH6YwlKGNDPREjeyNua5axKWdgGq9PXB9Qv
-         6/A2y0SPcDGNDhntWPM5aArmXnDmP7Ah4vH4Rq+EHrrX4LQ+H8BwHK8yo6DbLaFHkrke
-         4ST0RMWoVI1vS/8thOslzdfROfixbC6gi0HrjGtBkfwnE9mZQmd09WUWRI/Dl/wBcKHq
-         wjoo/W8V3045qertaSYvpan4puzMRtRj8oVIz1iL+ZlydadJ8aPDLudZMaSAfHwoExWX
-         /Hag==
+        bh=937kmwxUYWQp9ITb4YK1bDcj17pWbp4MJAyEaMgPVI8=;
+        b=P6kPWsCrPPP4m4QmX35oeBVlGVewzKEvH4KkZgpHrvLfAmo822AQ3Pe0cKy8E7iSxp
+         L7TyMMUZxBWN89nTxyGkmfCTyxgTgvBVfEgAlF3vxkKhZV0D4flO5ryoXtWkRBViSYxR
+         +B+HRlhCHl+Iludco8eczAungH4k6ybNUhO0dcM67HNzs9qJW7bhlCCQWcML87N9GkcG
+         6qeHVXdOF9BFLRfQ+sUytO0Zfo16JCfV1im0T/wIYBY76SMZK5Ap/kBWIAlLVc5t6Tg+
+         UHBZhEmVUnZ04tKFplmuUbmcvCmz66iC1sPKQqOefh23q4J4fwuHjN9p4rZeoZPDkaCL
+         do9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VmC5J5LAtvxholHC0kJMwLzD6EpuzXL1X0zC6FmW1Eo=;
-        b=zR8tEXxqsP/LZRPxov31jKzLqS8d+GO9tZ7frwkyjTxDPsw4H0JtfVlHfsyreU9oJU
-         Idmtc4VnXQuFiPSQj6izpDE7e+CAyqQHknUtCZr1tAJmOi4c3gRGCNakRBv++sYK+TRp
-         4G2gxejAJb+z5GjxrxSaoRIEKRP+ClNx3n3Syn8AmCsQLQRJUOQ7h0P1DqJCayGtSief
-         Hi7zo9wz34U2qI2K8D0kxQmUk1k4ebIaNHnZDTe1JMD2XJB6yYy5YXOpCcTX2AKQehfF
-         qwm8gRHKwihcAa6xUiG1dO9VsDFXGxk2R/K3hQpmYZWhDPIH3tA6ZY1widxuSkfCg0xu
-         al5g==
-X-Gm-Message-State: AOAM533CSTvWCNv7nQiJ2uJVmDYzJ7sJfkUBLGLECft5jZIc3FQm2do1
-        RjcDzEmiB2r0U2O1jJ/znB5qBm1nnLrqgfme/3E=
-X-Google-Smtp-Source: ABdhPJw7yEAy0iu+jD3K6+RYaallqZkORRLUe8H7vJHEHL+AYzkc3jtqNHKEFmro5Xmt/PBuwTdey0kle8MLbQy7fsI=
-X-Received: by 2002:a05:6402:4394:b0:42a:e84c:2cfb with SMTP id
- o20-20020a056402439400b0042ae84c2cfbmr59605567edc.97.1653917521475; Mon, 30
- May 2022 06:32:01 -0700 (PDT)
+        bh=937kmwxUYWQp9ITb4YK1bDcj17pWbp4MJAyEaMgPVI8=;
+        b=VfTIeMwUZItU4hLo3FutM7sILMCdHx/xEGJsmLvnj4KZ74cfSNIwhMVlieEQXWCkOJ
+         llhPK/H0W7p2KGfNS/FxQiQ6YfBTt6QqJEF8xaQwR6onMnCTneI1tThIYf6XxM0nSf0g
+         iyhL05zus1mYVOKNLmoLSZpYH4V1Gpnu/EvPmQdPPGgblnfYyccre42kolfNvhgyg52/
+         xkxIJlSiEqDZ4K7/YH3JPkj3rurhE65HieIMlvdzD5giVUSVzLARdXldDKYchsGjGZJL
+         MBzgdgH/VUCPP8SRAJi63RE5bzgxFJqj6d5mVrEX90ynCjyOcy/9ByxjA7g/tqe0r9fn
+         rsdQ==
+X-Gm-Message-State: AOAM530d3vO84GdhMQsZ8kwH0KzZ8i03/oMTvhCt2b/Agdh4CZy2Zuwy
+        FrdsoCaygYgQNudSVYo55UZ/vrb67J30MgbyX5I=
+X-Google-Smtp-Source: ABdhPJynoTMUIY84GPa2469SMdZmfaKyElHA9Qt9eYR5ODn56YIGffT0w/CJT8Chw/YBmCDiRJi++2Vfw41TEcxidTQ=
+X-Received: by 2002:a17:907:6e01:b0:6fe:fe21:8c56 with SMTP id
+ sd1-20020a1709076e0100b006fefe218c56mr28697989ejc.579.1653917815205; Mon, 30
+ May 2022 06:36:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220527222709.1AC8837401F1@freecalypso.org>
-In-Reply-To: <20220527222709.1AC8837401F1@freecalypso.org>
+References: <20220527222718.A21433740218@freecalypso.org>
+In-Reply-To: <20220527222718.A21433740218@freecalypso.org>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 30 May 2022 15:31:25 +0200
-Message-ID: <CAHp75VeQzY+Pfru4LSgv+fqya-2F7G21TjaVsybCqQBSD8NeUw@mail.gmail.com>
-Subject: Re: [PATCH 1/6] tty: add port flag to suppress raising DTR & RTS on open
+Date:   Mon, 30 May 2022 15:36:18 +0200
+Message-ID: <CAHp75VdjCMjKzmE0pNzhPb9pOPeQ3qpMi925meWsJCHXUNuLiQ@mail.gmail.com>
+Subject: Re: [PATCH 3/6] serial: core: fully suppress raising DTR & RTS on
+ open if manual_rtsdtr
 To:     "Mychaela N. Falconia" <falcon@freecalypso.org>
 Cc:     Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -64,45 +65,25 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, May 28, 2022 at 8:51 PM Mychaela N. Falconia
+On Sat, May 28, 2022 at 9:53 PM Mychaela N. Falconia
 <falcon@freecalypso.org> wrote:
 >
-> There exist special serial devices (either attaching to generic serial
-> ports or containing a built-in USB-serial chip) in which DTR and/or RTS
-> have been repurposed for non-standard uses.  Depending on exactly how
-> these signals are repurposed, standard POSIX/SUS behaviour of
-
-Which version of POSIX and SUS standards are in consideration?
-
-> unconditionally raising both signals on open may range from harmless
-> to undesirable to a total killer, precluding the use of Linux with
-> such custom hardware.
->
-> The newly added TTY_PORT_MANUAL_RTSDTR flag switches an individual
-> serial port from POSIX/SUS standard to non-standard behaviour: when
-> set, it suppresses the built-in action of raising DTR & RTS on serial
-> port open.
->
-> This flag can be exported through sysfs, and it can also be set by
-> USB-serial device drivers when they see a custom hw device (identified
-> by VID:PID) that is known to be wired in a way that requires this flag
-> to be set.
-
-Is it only the USB class of devices that are affected or do we have
-examples on other buses?
+> When manual_rtsdtr sysfs attribute is written as 1,
+> TTY_PORT_MANUAL_RTSDTR is set, and the call to raise DTR & RTS in
+> tty_port_raise_dtr_rts() is suppressed.  However, there is one other
+> place where these signals are also raised on open: uart_port_startup()
+> in drivers/tty/serial/serial_core.c - this other point of raising
+> DTR & RTS also needs to be suppressed if TTY_PORT_MANUAL_RTSDTR is set.
 
 ...
 
->  void tty_port_raise_dtr_rts(struct tty_port *port)
->  {
-> -       if (port->ops->dtr_rts)
-> +       if (port->ops->dtr_rts && !tty_port_manual_rtsdtr(port))
->                 port->ops->dtr_rts(port, 1);
+> -               if (init_hw && C_BAUD(tty))
+> +               if (init_hw && !tty_port_manual_rtsdtr(&state->port) &&
+> +                   C_BAUD(tty))
+>                         uart_port_dtr_rts(uport, 1);
+>         }
 
-Logically I would put them otherwise, first to check a custom flag and
-then the existence of the callback.
-
->  }
+As per patch 1, I would put the custom flag check first.
 
 -- 
 With Best Regards,
