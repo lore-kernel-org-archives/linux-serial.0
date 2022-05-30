@@ -2,195 +2,183 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFC6C4332F
-	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 12:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76287C433F5
+	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 13:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236131AbiE3MYl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 May 2022 08:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        id S236407AbiE3NNl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 May 2022 09:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236119AbiE3MYj (ORCPT
+        with ESMTP id S236419AbiE3NNj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 May 2022 08:24:39 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03737CDDB;
-        Mon, 30 May 2022 05:24:37 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id w27so6615918edl.7;
-        Mon, 30 May 2022 05:24:37 -0700 (PDT)
+        Mon, 30 May 2022 09:13:39 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CE235A80
+        for <linux-serial@vger.kernel.org>; Mon, 30 May 2022 06:13:38 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id c12so622332qvr.3
+        for <linux-serial@vger.kernel.org>; Mon, 30 May 2022 06:13:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gf3IvEnikRvp3Oa8O4SMunFc6fuhRnS1KPonMS+jQ+I=;
-        b=NyQ+kCGK3kg3v6Adv/XUYZAJCjEWhflsEmpIwgkeTZw0Ni7YgQNimIJ2MWBNV1J314
-         nFrO3LoILzRYfe9Uxh7YsjXWZd2OPNcp8ToAqOOe0jCLJgXnz/o5vCjc42nMfojO7kCj
-         QAgjC16cVioo2a0vkXIolNnbvAvJQXhm23uI9P611ez5yYfOfS+13Mj3Ko5Y3eSd8nqu
-         04KBpo7UkSbNUsWgDO4pPc/PjbB3R5O+rJ4J80+Wq+oPF1Ds2ccn9Jw9JfMx9b+VGSBj
-         RdU8wZe8Yc+5yxCCchki9DZpn+1NmjBczSEkDXrqxz61zhVt9K2emiU88ADzGKrJNWRU
-         bnag==
+         :cc:content-transfer-encoding;
+        bh=o/aZXwXBuN81Nfmz0wfUZhmQYBBH9mgz/65/1poT6dk=;
+        b=cQOAFJnuGpzWRJUKEmzHLcrhfEMoWwwsIaOniC+jEWZG4MWM3YFfDFKu79Nm2bpoyV
+         5MpFyDsMBds+yCEQ/ZlE+X0XkttgWUzfrf50TIJQU3cb3Dk7ae3b7xs/If5RNoHNhi7n
+         iUGTZIQmk2vMOf/TboGZWoYeDzPLNFwAavjYZNLIm0fsUwij3YOHgAUb7GdDxXnIS+XG
+         v8GmY7Z2H1k63y/ijpkHD7hLRNMQGb0c24QBORyLghRTEajpuGrhrW1VNtSwE2EbS71y
+         LMy2tiY92jOJup0H1o8w6hBTU/eRc6fGpjzyd7qrUVuL8BwKroToEZmQNSWHcZj7o5WH
+         lCVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gf3IvEnikRvp3Oa8O4SMunFc6fuhRnS1KPonMS+jQ+I=;
-        b=KNGwRgAMLmeFE709/ScNI0S0eOlAVPL2H6+DUBTmfREg5Z2XhMZ8h6QKV/QsQhK/Jq
-         DurzMYS7XPnSbfAcSnaJNVycp8gAZhcgZEWv7HCKsm5cn4TtNWDJG9ioy3Q+Fk6w8gaD
-         fAts/qBVsczUhedTktuLYZOeuvTMamDTzFCfwq0gUoo84BGC1LkWZ5gNnQqzO4EEcu5t
-         jutyAy4vJlQkz0seMTch0IyV/hp82afvKccXcZn6wc4sMHe5z6cU8zHMxSN8ZmpKw3ot
-         L1POJ/qPgu6ILtRSenrjoD3nC0pJI/lKkajsStNhgPQToKN5emms4mX0WU1+fl18U7Vt
-         UHbQ==
-X-Gm-Message-State: AOAM533+/0TJO1fNOmSf8q6E4m4LzjcMx/Kzowd99zithjiu6s4PiRVk
-        Owy0dkvgsArDsTP+vBbIXkE4Cx0C7ZkL8Amp+Lk=
-X-Google-Smtp-Source: ABdhPJyByk+8pCmJj05rtEymQhMckw/8QiNYSuteRwbfSGq4YiABghOAxycfRHnt7uQgycGiWNHw22Dc1Nbyr02Cx7o=
-X-Received: by 2002:a05:6402:2382:b0:42b:7fec:1abf with SMTP id
- j2-20020a056402238200b0042b7fec1abfmr33516209eda.111.1653913476233; Mon, 30
- May 2022 05:24:36 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o/aZXwXBuN81Nfmz0wfUZhmQYBBH9mgz/65/1poT6dk=;
+        b=yGq0oS/wUV2EKe2SiR0zHQqDBKCWzQbGx+GEaXYbqxegWVm/ZHkr7fG3HmBrfrLSyl
+         /s4P4zy9tpzTrb9h7eeGoPoc1N0iVeOKUYWroI68VMaWAIeVaVTBLXOJzbJ8VWisRC5a
+         32iNZVBwOp/X2/6Py7w8orX3UxCn7ekX6PlD+bN8WeabzqizckyaBDRd1jU8dh9FLTp+
+         k57AJsv6mZ/HgjM/M7A9uDvEMhuhpA+8oXWaADq1PUdp/IHi+CH/hIs4kQ0EV82HKLd4
+         bPmsw8ASjP/RwTR8S40i45xpzS4fEdLn0rFqOeYAhj6syJKb2AwUJP6c2/eMFwOtDNWG
+         Oy3g==
+X-Gm-Message-State: AOAM532Bl4TgRcfnPcNSfgPIIM/xe9+huYitUMEcDxRK2TGWS/vW9WnH
+        E2vfBSDV5apEU5qfd8y/mcdLppvt8IpOBVZ9g18=
+X-Google-Smtp-Source: ABdhPJxKsj/Bs/IgvyTXG0X/rg4rHYtYaVIVRbbNWEL+AzHl97NZYtQBmY6lF9OrtqxzVOVdVR8s/hhDS1109vgrmA4=
+X-Received: by 2002:ad4:5b8e:0:b0:464:50c4:c568 with SMTP id
+ 14-20020ad45b8e000000b0046450c4c568mr3894275qvp.115.1653916417281; Mon, 30
+ May 2022 06:13:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220522155046.260146-1-tmaimon77@gmail.com> <CAK8P3a2CUy17vbd5Go523894vcF_oLz=dAR7JNLsUuR1Gsc9sA@mail.gmail.com>
-In-Reply-To: <CAK8P3a2CUy17vbd5Go523894vcF_oLz=dAR7JNLsUuR1Gsc9sA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 30 May 2022 14:24:00 +0200
-Message-ID: <CAHp75Vc3i6bWOo_ZHD25rtn0o1pjzHtdfRQg4RkAfrmMs77eOw@mail.gmail.com>
-Subject: Re: [PATCH v1 00/19] Introduce Nuvoton Arbel NPCM8XX BMC SoC
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+References: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
+ <b316c623-ca11-716f-4445-9b35e075630@linux.intel.com> <CAPmgiU+=uA9DrN13kAYb7VQ0xmfEA+xUduu+qEvp75qxFpZq7g@mail.gmail.com>
+ <707c16ca-1610-68b1-fc96-4c5906f2c86@linux.intel.com> <CAPmgiUKar69xaRJ5F2oXBx+WPjSipqKjth85bm+NHZsmzsb+pg@mail.gmail.com>
+ <c4de15d1-547d-eefe-eb43-c2e9da8f57ed@linux.intel.com> <CAPmgiULo4h8bOrzL+XJ5Pndw0kz80fBPfH_KNLx3c5j-Yj04SA@mail.gmail.com>
+ <269a9a97-dc62-a89-d978-3be8e9d1f7e4@linux.intel.com>
+In-Reply-To: <269a9a97-dc62-a89-d978-3be8e9d1f7e4@linux.intel.com>
+From:   cael <juanfengpy@gmail.com>
+Date:   Mon, 30 May 2022 21:13:26 +0800
+Message-ID: <CAPmgiUK=aTDJjPYooQGDbNvdOs+z6AbAj5zU7e_0SJhSk2pz9w@mail.gmail.com>
+Subject: Re: tty: fix a possible hang on tty device
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
+        linux-serial <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 23, 2022 at 1:59 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Sun, May 22, 2022 at 5:50 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
-> >
-> > This patchset  adds initial support for the Nuvoton
-> > Arbel NPCM8XX Board Management controller (BMC) SoC family.
-> >
-> > The Nuvoton Arbel NPCM8XX SoC is a fourth-generation BMC.
-> > The NPCM8XX computing subsystem comprises a quadcore ARM
-> > Cortex A35 ARM-V8 architecture.
-> >
-> > This patchset adds minimal architecture and drivers such as:
-> > Clocksource, Clock, Reset, and WD.
-> >
-> > Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
-> >
-> > This patchset was tested on the Arbel NPCM8XX evaluation board.
->
-> Thanks for your submission. Please note a few things about the process here:
->
-> - The merge window is currently open, which means a lo
+Thanks, You are right, barrier is needed here. I changed the patch as follo=
+ws:
+1) WRITE_ONCE and READ_ONCE is used to access ldata->no_room since
+n_tty_kick_worker  would be called in kworker and reader cpu;
+2) smp_mb added in chars_in_buffer as this function will be called in
+reader and kworker, accessing commit_head and read_tail; and to make
+sure that read_tail is not read before setting no_room in
+n_tty_receive_buf_common;
+3) smp_mb added in n_tty_read to make sure that no_room is not read
+before setting read_tail.
+---
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index efc72104c840..3327687da0d3 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
+        struct n_tty_data *ldata =3D tty->disc_data;
 
-Something wrong with the script?
+        /* Did the input worker stop? Restart it */
+-       if (unlikely(ldata->no_room)) {
+-               ldata->no_room =3D 0;
++       if (unlikely(READ_ONCE(ldata->no_room))) {
++               WRITE_ONCE(ldata->no_room, 0);
 
-> Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
->
-> This patchset was tested on the Arbel NPCM8XX evaluation board.
->
-> Tomer Maimon (19):
->   dt-bindings: timer: npcm: Add npcm845 compatible string
->   clocksource: timer-npcm7xx: Add NPCM845 timer support
->   dt-bindings: serial: 8250: Add npcm845 compatible string
->   tty: serial: 8250: Add NPCM845 UART support
->   dt-bindings: watchdog: npcm: Add npcm845 compatible string
->   watchdog: npcm_wdt: Add NPCM845 watchdog support
->   dt-binding: clk: npcm845: Add binding for Nuvoton NPCM8XX Clock
->   clk: npcm8xx: add clock controller
->   dt-bindings: reset: add syscon property
->   reset: npcm: using syscon instead of device data
->   dt-bindings: reset: npcm: Add support for NPCM8XX
->   reset: npcm: Add NPCM8XX support
->   dt-bindings: arm: npcm: Add maintainer
->   dt-bindings: arm: npcm: Add nuvoton,npcm845 compatible string
->   dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
->   arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
->   arm64: dts: nuvoton: Add initial NPCM8XX device tree
->   arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
->   arm64: defconfig: Add Nuvoton NPCM family supportt of maintainers
->   won't be reviewing your patches at the moment. It may be better to wait
->   for the -rc1 to be out before sending out v2
->
-> - don't send your patches to soc@kernel.org unless you want me to pick
->   them up into the soc tree and they have been reviewed already. The series
->   is clearly still under review at the moment, and I expect it to go through
->   a few revisions first.
->
-> - gmail marked your emails as possible spam for me. I don't know what
->   happened here, but you may want to look into this to ensure that
->   everybody receives it.
->
-> Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
->
-> This patchset was tested on the Arbel NPCM8XX evaluation board.
->
-> Tomer Maimon (19):
->   dt-bindings: timer: npcm: Add npcm845 compatible string
->   clocksource: timer-npcm7xx: Add NPCM845 timer support
->   dt-bindings: serial: 8250: Add npcm845 compatible string
->   tty: serial: 8250: Add NPCM845 UART support
->   dt-bindings: watchdog: npcm: Add npcm845 compatible string
->   watchdog: npcm_wdt: Add NPCM845 watchdog support
->   dt-binding: clk: npcm845: Add binding for Nuvoton NPCM8XX Clock
->   clk: npcm8xx: add clock controller
->   dt-bindings: reset: add syscon property
->   reset: npcm: using syscon instead of device data
->   dt-bindings: reset: npcm: Add support for NPCM8XX
->   reset: npcm: Add NPCM8XX support
->   dt-bindings: arm: npcm: Add maintainer
->   dt-bindings: arm: npcm: Add nuvoton,npcm845 compatible string
->   dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
->   arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
->   arm64: dts: nuvoton: Add initial NPCM8XX device tree
->   arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
->   arm64: defconfig: Add Nuvoton NPCM family support
->
-> - For an initial platform submission, I can merge the
->   clk/clocksource/serial/reset drivers along with the platform if they
->   have an Ack from the subsystem maintainers. I would normally
->   not include the watchdog patch in this as it's not essential, but
->   I suppose that it's fine if you only do a oneline change and it
->   has an Ack. If you have other nonessential drivers that need changes,
->   best submit them separately though.
->
->          Arnd
+                WARN_RATELIMIT(tty->port->itty =3D=3D NULL,
+                                "scheduling with invalid itty\n");
+@@ -221,6 +221,7 @@ static ssize_t chars_in_buffer(struct tty_struct *tty)
+        struct n_tty_data *ldata =3D tty->disc_data;
+        ssize_t n =3D 0;
 
++       smp_mb();
+        if (!ldata->icanon)
+                n =3D ldata->commit_head - ldata->read_tail;
+        else
+@@ -1632,7 +1633,7 @@ n_tty_receive_buf_common(struct tty_struct *tty,
+const unsigned char *cp,
+                        if (overflow && room < 0)
+                                ldata->read_head--;
+                        room =3D overflow;
+-                       ldata->no_room =3D flow && !room;
++                       WRITE_ONCE(ldata->no_room, flow && !room);
+                } else
+                        overflow =3D 0;
 
+@@ -1663,6 +1664,9 @@ n_tty_receive_buf_common(struct tty_struct *tty,
+const unsigned char *cp,
+        } else
+                n_tty_check_throttle(tty);
 
--- 
-With Best Regards,
-Andy Shevchenko
++       if (!chars_in_buffer(tty))
++               n_tty_kick_worker(tty);
++
+        up_read(&tty->termios_rwsem);
+
+        return rcvd;
+@@ -2180,8 +2184,10 @@ static ssize_t n_tty_read(struct tty_struct
+*tty, struct file *file,
+                if (time)
+                        timeout =3D time;
+        }
+-       if (tail !=3D ldata->read_tail)
++       if (tail !=3D ldata->read_tail) {
++               smp_mb();
+                n_tty_kick_worker(tty);
++       }
+        up_read(&tty->termios_rwsem);
+
+        remove_wait_queue(&tty->read_wait, &wait);
+--
+2.27.0
+
+Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> =E4=BA=8E2022=E5=B9=B45=
+=E6=9C=8825=E6=97=A5=E5=91=A8=E4=B8=89 19:21=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, 25 May 2022, cael wrote:
+>
+> > >Now you switched to an entirely different case, not the one we were
+> > >talking about. ...There is no ldisc->no_room =3D true race in the case
+> > >you now described.
+> > So, I think we should back to the case ldata->no_room=3Dtrue as
+> > ldata->no_room=3Dfalse seems harmless.
+> >
+> > >I'm not worried about the case where both cpus call n_tty_kick_worker =
+but
+> > >the case where producer cpu sees chars_in_buffer() > 0 and consumer cp=
+u
+> > >!no_room.
+> >
+> > As ldata->no_room=3Dtrue is set before checking chars_in_buffer()
+>
+> Please take a brief look at Documentation/memory-barriers.txt and then
+> tell me if you still find this claim to be true.
+>
+> > if producer
+> > finds chars_in_buffer() > 0, then if reader is currently in n_tty_read,
+>
+> ...Then please do a similar analysis for ldata->read_tail. What guarantee=
+s
+> its update is seen by the producer cpu when the reader is already past th=
+e
+> point you think it still must be in?
+>
+> > when reader quits n_tty_read, n_tty_kick_worker will be called. If read=
+er
+> > has already exited n_tty_read, which means that reader still has data t=
+o read,
+> > next time reader will call n_tty_kick_worker inside n_tty_read too.
+>
+> C-level analysis alone is not going to be very useful here given you're
+> dealing with a concurrency challenge here.
+>
+>
+> --
+>  i.
+>
+>
