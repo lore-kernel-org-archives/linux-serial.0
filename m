@@ -2,100 +2,195 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA81C433F5
-	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 07:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFC6C4332F
+	for <linux-serial@archiver.kernel.org>; Mon, 30 May 2022 12:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233876AbiE3Hrf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 May 2022 03:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
+        id S236131AbiE3MYl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 30 May 2022 08:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233866AbiE3Hrf (ORCPT
+        with ESMTP id S236119AbiE3MYj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 May 2022 03:47:35 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C8C231;
-        Mon, 30 May 2022 00:47:33 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U754Gl030968;
-        Mon, 30 May 2022 09:47:13 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=UBWQwj9S3yGVaktZPncCoGFJIIU7PVRDqaQkLPdqAMw=;
- b=veMvXMzPG9H0DTZ8eQWoZPR1ZXgcgfpmLftnzevsnkenHv0c17Z3b46MEE6Ndr8GPBgN
- nutc9doqf8hxiQuXCqxLufe/3xq8XdZDKo+iB9d6FpFLivxIlPCb50TQQcBBIu2IGAv1
- 9Vgi7oqH7MKBlOiZsM03jzzYWlD6Vfb+Wo2z6u2ww6NiQuSRJlPHmKWRmWnrw/OP7JND
- aokeYFo6Ex5JaI549U1+8tXm3a8V5yDOumk1jUwx6w8P4eiK+A5UV/Y/j9PZKtpkqt38
- /KNh7PjWWOmotXe73vDLnmdhrB/na0m1McJCkSbqxMe5nHHEZPeGp+os0YXqaZx9HDFQ hw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gbc5084mt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 30 May 2022 09:47:13 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AE23610002A;
-        Mon, 30 May 2022 09:47:12 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 944AC2171DE;
-        Mon, 30 May 2022 09:47:12 +0200 (CEST)
-Received: from [10.251.21.188] (10.75.127.44) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 30 May
- 2022 09:47:11 +0200
-Message-ID: <85932bcc-cd9c-f804-7bde-39a1c48cf0ee@foss.st.com>
-Date:   Mon, 30 May 2022 09:47:11 +0200
+        Mon, 30 May 2022 08:24:39 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03737CDDB;
+        Mon, 30 May 2022 05:24:37 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id w27so6615918edl.7;
+        Mon, 30 May 2022 05:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gf3IvEnikRvp3Oa8O4SMunFc6fuhRnS1KPonMS+jQ+I=;
+        b=NyQ+kCGK3kg3v6Adv/XUYZAJCjEWhflsEmpIwgkeTZw0Ni7YgQNimIJ2MWBNV1J314
+         nFrO3LoILzRYfe9Uxh7YsjXWZd2OPNcp8ToAqOOe0jCLJgXnz/o5vCjc42nMfojO7kCj
+         QAgjC16cVioo2a0vkXIolNnbvAvJQXhm23uI9P611ez5yYfOfS+13Mj3Ko5Y3eSd8nqu
+         04KBpo7UkSbNUsWgDO4pPc/PjbB3R5O+rJ4J80+Wq+oPF1Ds2ccn9Jw9JfMx9b+VGSBj
+         RdU8wZe8Yc+5yxCCchki9DZpn+1NmjBczSEkDXrqxz61zhVt9K2emiU88ADzGKrJNWRU
+         bnag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gf3IvEnikRvp3Oa8O4SMunFc6fuhRnS1KPonMS+jQ+I=;
+        b=KNGwRgAMLmeFE709/ScNI0S0eOlAVPL2H6+DUBTmfREg5Z2XhMZ8h6QKV/QsQhK/Jq
+         DurzMYS7XPnSbfAcSnaJNVycp8gAZhcgZEWv7HCKsm5cn4TtNWDJG9ioy3Q+Fk6w8gaD
+         fAts/qBVsczUhedTktuLYZOeuvTMamDTzFCfwq0gUoo84BGC1LkWZ5gNnQqzO4EEcu5t
+         jutyAy4vJlQkz0seMTch0IyV/hp82afvKccXcZn6wc4sMHe5z6cU8zHMxSN8ZmpKw3ot
+         L1POJ/qPgu6ILtRSenrjoD3nC0pJI/lKkajsStNhgPQToKN5emms4mX0WU1+fl18U7Vt
+         UHbQ==
+X-Gm-Message-State: AOAM533+/0TJO1fNOmSf8q6E4m4LzjcMx/Kzowd99zithjiu6s4PiRVk
+        Owy0dkvgsArDsTP+vBbIXkE4Cx0C7ZkL8Amp+Lk=
+X-Google-Smtp-Source: ABdhPJyByk+8pCmJj05rtEymQhMckw/8QiNYSuteRwbfSGq4YiABghOAxycfRHnt7uQgycGiWNHw22Dc1Nbyr02Cx7o=
+X-Received: by 2002:a05:6402:2382:b0:42b:7fec:1abf with SMTP id
+ j2-20020a056402238200b0042b7fec1abfmr33516209eda.111.1653913476233; Mon, 30
+ May 2022 05:24:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/3] serial: st-asc: remove include of pm_runtime.h
-Content-Language: en-US
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220525133733.1051714-1-claudiu.beznea@microchip.com>
- <20220525133733.1051714-4-claudiu.beznea@microchip.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20220525133733.1051714-4-claudiu.beznea@microchip.com>
+References: <20220522155046.260146-1-tmaimon77@gmail.com> <CAK8P3a2CUy17vbd5Go523894vcF_oLz=dAR7JNLsUuR1Gsc9sA@mail.gmail.com>
+In-Reply-To: <CAK8P3a2CUy17vbd5Go523894vcF_oLz=dAR7JNLsUuR1Gsc9sA@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 30 May 2022 14:24:00 +0200
+Message-ID: <CAHp75Vc3i6bWOo_ZHD25rtn0o1pjzHtdfRQg4RkAfrmMs77eOw@mail.gmail.com>
+Subject: Re: [PATCH v1 00/19] Introduce Nuvoton Arbel NPCM8XX BMC SoC
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Tomer Maimon <tmaimon77@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-30_02,2022-05-27_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Claudiu
+On Mon, May 23, 2022 at 1:59 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Sun, May 22, 2022 at 5:50 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
+> >
+> > This patchset  adds initial support for the Nuvoton
+> > Arbel NPCM8XX Board Management controller (BMC) SoC family.
+> >
+> > The Nuvoton Arbel NPCM8XX SoC is a fourth-generation BMC.
+> > The NPCM8XX computing subsystem comprises a quadcore ARM
+> > Cortex A35 ARM-V8 architecture.
+> >
+> > This patchset adds minimal architecture and drivers such as:
+> > Clocksource, Clock, Reset, and WD.
+> >
+> > Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
+> >
+> > This patchset was tested on the Arbel NPCM8XX evaluation board.
+>
+> Thanks for your submission. Please note a few things about the process here:
+>
+> - The merge window is currently open, which means a lo
 
-On 5/25/22 15:37, Claudiu Beznea wrote:
-> st-asc driver doesn't use helpers from pm_runtime.h thus remove its
-> include.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  drivers/tty/serial/st-asc.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-> index 1b0da603ab54..cce42f4c9bc2 100644
-> --- a/drivers/tty/serial/st-asc.c
-> +++ b/drivers/tty/serial/st-asc.c
-> @@ -17,7 +17,6 @@
->  #include <linux/tty_flip.h>
->  #include <linux/delay.h>
->  #include <linux/spinlock.h>
-> -#include <linux/pm_runtime.h>
->  #include <linux/of.h>
->  #include <linux/of_platform.h>
->  #include <linux/serial_core.h>
+Something wrong with the script?
+
+> Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
+>
+> This patchset was tested on the Arbel NPCM8XX evaluation board.
+>
+> Tomer Maimon (19):
+>   dt-bindings: timer: npcm: Add npcm845 compatible string
+>   clocksource: timer-npcm7xx: Add NPCM845 timer support
+>   dt-bindings: serial: 8250: Add npcm845 compatible string
+>   tty: serial: 8250: Add NPCM845 UART support
+>   dt-bindings: watchdog: npcm: Add npcm845 compatible string
+>   watchdog: npcm_wdt: Add NPCM845 watchdog support
+>   dt-binding: clk: npcm845: Add binding for Nuvoton NPCM8XX Clock
+>   clk: npcm8xx: add clock controller
+>   dt-bindings: reset: add syscon property
+>   reset: npcm: using syscon instead of device data
+>   dt-bindings: reset: npcm: Add support for NPCM8XX
+>   reset: npcm: Add NPCM8XX support
+>   dt-bindings: arm: npcm: Add maintainer
+>   dt-bindings: arm: npcm: Add nuvoton,npcm845 compatible string
+>   dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
+>   arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
+>   arm64: dts: nuvoton: Add initial NPCM8XX device tree
+>   arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
+>   arm64: defconfig: Add Nuvoton NPCM family supportt of maintainers
+>   won't be reviewing your patches at the moment. It may be better to wait
+>   for the -rc1 to be out before sending out v2
+>
+> - don't send your patches to soc@kernel.org unless you want me to pick
+>   them up into the soc tree and they have been reviewed already. The series
+>   is clearly still under review at the moment, and I expect it to go through
+>   a few revisions first.
+>
+> - gmail marked your emails as possible spam for me. I don't know what
+>   happened here, but you may want to look into this to ensure that
+>   everybody receives it.
+>
+> Some of the Arbel NPCM8XX peripherals are based on Poleg NPCM7XX.
+>
+> This patchset was tested on the Arbel NPCM8XX evaluation board.
+>
+> Tomer Maimon (19):
+>   dt-bindings: timer: npcm: Add npcm845 compatible string
+>   clocksource: timer-npcm7xx: Add NPCM845 timer support
+>   dt-bindings: serial: 8250: Add npcm845 compatible string
+>   tty: serial: 8250: Add NPCM845 UART support
+>   dt-bindings: watchdog: npcm: Add npcm845 compatible string
+>   watchdog: npcm_wdt: Add NPCM845 watchdog support
+>   dt-binding: clk: npcm845: Add binding for Nuvoton NPCM8XX Clock
+>   clk: npcm8xx: add clock controller
+>   dt-bindings: reset: add syscon property
+>   reset: npcm: using syscon instead of device data
+>   dt-bindings: reset: npcm: Add support for NPCM8XX
+>   reset: npcm: Add NPCM8XX support
+>   dt-bindings: arm: npcm: Add maintainer
+>   dt-bindings: arm: npcm: Add nuvoton,npcm845 compatible string
+>   dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
+>   arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
+>   arm64: dts: nuvoton: Add initial NPCM8XX device tree
+>   arm64: dts: nuvoton: Add initial NPCM845 EVB device tree
+>   arm64: defconfig: Add Nuvoton NPCM family support
+>
+> - For an initial platform submission, I can merge the
+>   clk/clocksource/serial/reset drivers along with the platform if they
+>   have an Ack from the subsystem maintainers. I would normally
+>   not include the watchdog patch in this as it's not essential, but
+>   I suppose that it's fine if you only do a oneline change and it
+>   has an Ack. If you have other nonessential drivers that need changes,
+>   best submit them separately though.
+>
+>          Arnd
 
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-Thanks
+-- 
+With Best Regards,
+Andy Shevchenko
