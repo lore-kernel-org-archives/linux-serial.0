@@ -2,140 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5764AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 14:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 913DFC433F5
+	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 17:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344409AbiEaOvp (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 May 2022 10:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        id S245246AbiEaR70 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 May 2022 13:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbiEaOvo (ORCPT
+        with ESMTP id S1346765AbiEaR7Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 May 2022 10:51:44 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57592C0;
-        Tue, 31 May 2022 07:51:42 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gi33so27202962ejc.3;
-        Tue, 31 May 2022 07:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
-        b=c5jUWMojZvgZti6/EtmJ57YkLR6oDynJR2USvxGJHFWnb6HRX6qskr/MZ/exC8PpkG
-         DAMqrH6bm7rN8kHrecyf0yQ1+80KGh1OSii93TVVIWfTxJ70JSMsWtT5QTuPgqcUk0EG
-         MXV0K0uAxv64DWc6UbAdf9MS711tYfA2WXBbPoH8z0pG6JxTtKE7TLaVzH/VirVfhXN0
-         qLSTVOQG41Z5miblPbIHxV42N+/oUUfkhewl8vc56MB+26EhkHf+c8ugyR95iuHxrlQ6
-         opXKLDH9/q//+qz3Hzn33JYku9Iqvf1noOjMraprySoaxsIJ3hkqwHfn2Qkk0sO86a+i
-         NkiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
-        b=75chPzIq1oeAZ5oHw2NYJISPe9uCEtc9O8B/IHNf0scxs7gGyOk0HgY+HZ+alIsdvU
-         iUA1ylbF4k+GgufL8p9TBecSc0fJ4WpEUPFwOUdw20TEEs0P+ZwD7dcMGCRCAvaKJ5jo
-         t7k0SuwHYyzl4zdevonxFN5XtOmu0CprIspdlO9YG2jjHYuQBn1BHCg8RzUfirSd8lgB
-         hKGqWp1TziX8CNaAjI/SdnodDU5ieSP3cDDMn5J/Hxd7npU+ygETki/Df68xL/ZiBewo
-         xfcfEh96dhJLqvcu1r1bLD5x9Gh0BTVDnHn7rhazSxIi+5bN5qxYB2pz2efXOtVZcbd8
-         FNYQ==
-X-Gm-Message-State: AOAM531yf5zJd4rgbbykAeSDCvR42e3v0aClaz6M83esJ2bf11MjOCVl
-        ZUsk3JlW0J7GY/Qq2I3myIRjaRYqbboRhVJDAjG5QdJRjW5smQ==
-X-Google-Smtp-Source: ABdhPJyyUxrqkDU9Pdnv/wBT4Ukiky8NfAEOA6SUjdD/jhw8Z0mgIWoKCw/A1Uiiw0BwLN05D8FyNz3mtYHWbLct3XQ=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr27196777ejc.497.1654008700721; Tue, 31
- May 2022 07:51:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220530221429.1248083-1-demonsingur@gmail.com> <20220530221429.1248083-3-demonsingur@gmail.com>
-In-Reply-To: <20220530221429.1248083-3-demonsingur@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 31 May 2022 16:51:04 +0200
-Message-ID: <CAHp75Vdi8q1SkLz-SC9pr1Hj_tO=6d42g8OQM7zE8dMUGCG9Wg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] serial: max310x: make accessing revision id interface-agnostic
+        Tue, 31 May 2022 13:59:24 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0EF8AE62;
+        Tue, 31 May 2022 10:59:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654019963; x=1685555963;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=b6mwshQJi0+lvKDxPFp5xJiYo27cGUYqQ874eJ6J3JA=;
+  b=KJq+hDlCO1ErmqqM7W9sgA/oSl7Fz98cUVF7U4WEeMbxJwDh/sfzJKPF
+   CYlJELH1bnGIfQRWey+bfl5CJ6zAl3B+3r2j6j/Zm/vksQEQt0iD+EH+9
+   cwFwsPtV2DFchWCij2rEkPEYTMNl0ne0fHryXpCYrKIezDeWmKYbKeRJu
+   nftB2dSYxkJ7zQq02X7sUVmQA1kv/5GRKT/CIHAZhWHAwRfSKaI+zkijE
+   ELP0H0YRZtlWEDCBj5P33ovF+39LreZTNgtd+BcvtQo6C2glix4wNI39y
+   K+WGBFwNJAZDkEy3biB/k8QkIrwUrh1e74yoErKzFjr+KTiTd/fSZsIO2
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255208930"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="255208930"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:59:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="605802463"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 31 May 2022 10:59:20 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nw69H-0002w6-VR;
+        Tue, 31 May 2022 17:59:19 +0000
+Date:   Wed, 1 Jun 2022 01:58:39 +0800
+From:   kernel test robot <lkp@intel.com>
 To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Cosmin Tanislav <cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 4/4] serial: max310x: implement I2C support
+Message-ID: <202206010102.px37QPmH-lkp@intel.com>
+References: <20220530221429.1248083-4-demonsingur@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530221429.1248083-4-demonsingur@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 31, 2022 at 3:55 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
->
-> From: Cosmin Tanislav <cosmin.tanislav@analog.com>
->
-> SPI can only use 5 address bits, since one bit is reserved for
-> specifying R/W and 2 bits are used to specify the UART port.
-> To access registers that have addresses past 0x1F, an extended
-> register space can be enabled by writing to the GlobalCommand
-> register (address 0x1F).
->
-> I2C uses 8 address bits. The R/W bit is placed in the slave
-> address, and so is the UART port. Because of this, registers
-> that have addresses higher than 0x1F can be accessed normally.
->
-> To access the RevID register, on SPI, 0xCE must be written to
-> the 0x1F address to enable the extended register space, after
-> which the RevID register is accessible at address 0x5. 0xCD
-> must be written to the 0x1F address to disable the extended
-> register space.
->
-> On I2C, the RevID register is accessible at address 0x25.
->
-> Create an interface config struct, and add a method for
-> toggling the extended register space and a member for the RevId
-> register address. Implement these for SPI.
+Hi Cosmin,
 
-...
+I love your patch! Perhaps something to improve:
 
->  struct max310x_port {
->         const struct max310x_devtype *devtype;
-> +       const struct max310x_if_cfg *if_cfg;
->         struct regmap           *regmap;
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on usb/usb-testing v5.18 next-20220531]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-I believe the most used pointer is regmap and putting it to be a first
-member will make pointer arithmetic no-op at compile time. That said,
-adding new member is better after this one.
+url:    https://github.com/intel-lab-lkp/linux/commits/Cosmin-Tanislav/serial-max310x-use-regmap-methods-for-SPI-batch-operations/20220531-061619
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220601/202206010102.px37QPmH-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/6c293b95fc5654df5353ba273a9bbd08f1cd3f3a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Cosmin-Tanislav/serial-max310x-use-regmap-methods-for-SPI-batch-operations/20220531-061619
+        git checkout 6c293b95fc5654df5353ba273a9bbd08f1cd3f3a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/tty/serial/
 
->         struct clk              *clk;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-...
+All warnings (new ones prefixed by >>):
 
-> +       ret = s->if_cfg->set_ext_reg_en(dev, true);
+>> drivers/tty/serial/max310x.c:1658:1: warning: unused label 'err_i2c_register' [-Wunused-label]
+   err_i2c_register:
+   ^~~~~~~~~~~~~~~~~
+   1 warning generated.
 
-It sounds like a voodoo speech. Can we name the callback better?
-->extended_reg_enable() ?
 
->         if (ret)
->                 return ret;
+vim +/err_i2c_register +1658 drivers/tty/serial/max310x.c
 
-...
-
->  static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
-> +                        const struct max310x_if_cfg *if_cfg,
->                          struct regmap **regmaps, int irq)
-
-It should be commented on the other patch, but since I can't see it in
-my mailbox (yet) I put it here. So,
-looking into usage of regmaps parameter it logically should be declared as
-
-struct regmap *regmaps[]
-
-(yes, I know that there is no difference for the compiler, but code
-human reader).
-
-...
-
-> -       return max310x_probe(&spi->dev, devtype, regmaps, spi->irq);
-> +       return max310x_probe(&spi->dev, devtype, &max310x_spi_if_cfg, regmaps,
-> +                            spi->irq);
-
-Can still be on one line, no?
+  1652	
+  1653		return 0;
+  1654	
+  1655	err_spi_register:
+  1656		spi_unregister_driver(&max310x_spi_driver);
+  1657	
+> 1658	err_i2c_register:
+  1659		uart_unregister_driver(&max310x_uart);
+  1660	
+  1661		return ret;
+  1662	}
+  1663	module_init(max310x_uart_init);
+  1664	
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
