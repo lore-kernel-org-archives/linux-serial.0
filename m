@@ -2,102 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3F7C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 04:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E2AC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 04:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243851AbiEaEh0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 May 2022 00:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        id S240933AbiEaEha (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 May 2022 00:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243847AbiEaEhX (ORCPT
+        with ESMTP id S243857AbiEaEh2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 May 2022 00:37:23 -0400
+        Tue, 31 May 2022 00:37:28 -0400
 Received: from freecalypso.org (freecalypso.org [195.154.163.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD8F5E178;
-        Mon, 30 May 2022 21:37:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A929157F;
+        Mon, 30 May 2022 21:37:27 -0700 (PDT)
 Received: by freecalypso.org (Postfix, from userid 1001)
-        id 25B0F37401A9; Tue, 31 May 2022 04:36:50 +0000 (UTC)
+        id DDF783740232; Tue, 31 May 2022 04:36:55 +0000 (UTC)
 From:   "Mychaela N. Falconia" <falcon@freecalypso.org>
 To:     Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Cc:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
         mychaela.falconia@gmail.com
-Subject: [PATCH v2 1/6] tty: add port flag to suppress ready signalling on open
+Subject: [PATCH v2 2/6] serial: core: add sysfs attribute to suppress ready
+ signalling on open
 In-Reply-To: <20220531043356.8CAB637401A9@freecalypso.org>
 References: <20220531043356.8CAB637401A9@freecalypso.org>
-Message-Id: <20220531043650.25B0F37401A9@freecalypso.org>
-Date:   Tue, 31 May 2022 04:36:49 +0000 (UTC)
+Message-Id: <20220531043655.DDF783740232@freecalypso.org>
+Date:   Tue, 31 May 2022 04:36:55 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-Add a NORDY port flag to suppress raising the modem-control lines on
-open to signal DTE readiness.
-
-This can be used to implement a NORDY termios control flag to complement
-HUPCL, which controls lowering of the modem-control lines on final
-close.
-
-Initially drivers can export the flag through sysfs, which also allows
-control over the lines on first open.
+Add a nordy sysfs attribute to suppress raising the modem-control lines
+on open to signal DTE readiness.
 
 This can be used to prevent undesirable side-effects on open for
 applications where the DTR and RTS lines are used for non-standard
 purposes such as generating power-on and reset pulses.
 
 Signed-off-by: Johan Hovold <johan@kernel.org>
-[rebase: move from include/linux/tty.h to include/linux/tty_port.h]
 Signed-off-by: Mychaela N. Falconia <falcon@freecalypso.org>
 ---
- drivers/tty/tty_port.c   |  2 +-
- include/linux/tty_port.h | 11 +++++++++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-tty |  7 +++++++
+ drivers/tty/serial/serial_core.c    | 26 ++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 880608a65773..84831c1b6d10 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -441,7 +441,7 @@ EXPORT_SYMBOL(tty_port_carrier_raised);
-  */
- void tty_port_raise_dtr_rts(struct tty_port *port)
- {
--	if (port->ops->dtr_rts)
-+	if (port->ops->dtr_rts && !tty_port_nordy(port))
- 		port->ops->dtr_rts(port, 1);
- }
- EXPORT_SYMBOL(tty_port_raise_dtr_rts);
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 58e9619116b7..0c1581cbfe2b 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -133,6 +133,7 @@ struct tty_port {
- #define TTY_PORT_CHECK_CD	4	/* carrier detect enabled */
- #define TTY_PORT_KOPENED	5	/* device exclusively opened by
- 					   kernel */
-+#define TTY_PORT_NORDY		6	/* do not raise DTR/RTS on open */
- 
- void tty_port_init(struct tty_port *port);
- void tty_port_link_device(struct tty_port *port, struct tty_driver *driver,
-@@ -226,6 +227,16 @@ static inline void tty_port_set_kopened(struct tty_port *port, bool val)
- 	assign_bit(TTY_PORT_KOPENED, &port->iflags, val);
+diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
+index 820e412d38a8..98cb5cf0af75 100644
+--- a/Documentation/ABI/testing/sysfs-tty
++++ b/Documentation/ABI/testing/sysfs-tty
+@@ -161,3 +161,10 @@ Contact:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ Description:
+ 		 Allows user to detach or attach back the given device as
+ 		 kernel console. It shows and accepts a boolean variable.
++
++What:		/sys/class/tty/ttyS0/nordy
++Date:		November 2020
++Contact:	Johan Hovold <johan@kernel.org>
++Description:
++		 Show and store the port NORDY flag which suppresses raising
++		 the modem-control lines on open to signal DTE readiness.
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 9a85b41caa0a..a17ac4efaceb 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2870,6 +2870,30 @@ static ssize_t console_store(struct device *dev,
+ 	return ret < 0 ? ret : count;
  }
  
-+static inline bool tty_port_nordy(const struct tty_port *port)
++static ssize_t nordy_show(struct device *dev, struct device_attribute *attr,
++				char *buf)
 +{
-+	return test_bit(TTY_PORT_NORDY, &port->iflags);
++	struct tty_port *port = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", tty_port_nordy(port));
 +}
 +
-+static inline void tty_port_set_nordy(struct tty_port *port, bool val)
++static ssize_t nordy_store(struct device *dev, struct device_attribute *attr,
++				const char *buf, size_t count)
 +{
-+	assign_bit(TTY_PORT_NORDY, &port->iflags, val);
++	struct tty_port *port = dev_get_drvdata(dev);
++	bool val;
++	int ret;
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	tty_port_set_nordy(port, val);
++
++	return count;
 +}
 +
- struct tty_struct *tty_port_tty_get(struct tty_port *port);
- void tty_port_tty_set(struct tty_port *port, struct tty_struct *tty);
- int tty_port_carrier_raised(struct tty_port *port);
+ static DEVICE_ATTR_RO(uartclk);
+ static DEVICE_ATTR_RO(type);
+ static DEVICE_ATTR_RO(line);
+@@ -2884,6 +2908,7 @@ static DEVICE_ATTR_RO(io_type);
+ static DEVICE_ATTR_RO(iomem_base);
+ static DEVICE_ATTR_RO(iomem_reg_shift);
+ static DEVICE_ATTR_RW(console);
++static DEVICE_ATTR_RW(nordy);
+ 
+ static struct attribute *tty_dev_attrs[] = {
+ 	&dev_attr_uartclk.attr,
+@@ -2900,6 +2925,7 @@ static struct attribute *tty_dev_attrs[] = {
+ 	&dev_attr_iomem_base.attr,
+ 	&dev_attr_iomem_reg_shift.attr,
+ 	&dev_attr_console.attr,
++	&dev_attr_nordy.attr,
+ 	NULL
+ };
+ 
 -- 
 2.9.0
 
