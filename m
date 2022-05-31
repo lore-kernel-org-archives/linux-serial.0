@@ -2,134 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 245D9C433F5
-	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 04:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1EFC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 31 May 2022 07:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243857AbiEaEhw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 May 2022 00:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        id S244569AbiEaH5I (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 31 May 2022 03:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243854AbiEaEhu (ORCPT
+        with ESMTP id S244670AbiEaH5H (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 May 2022 00:37:50 -0400
-Received: from freecalypso.org (freecalypso.org [195.154.163.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6B362BDC;
-        Mon, 30 May 2022 21:37:49 -0700 (PDT)
-Received: by freecalypso.org (Postfix, from userid 1001)
-        id DFBA4374025F; Tue, 31 May 2022 04:37:17 +0000 (UTC)
-From:   "Mychaela N. Falconia" <falcon@freecalypso.org>
-To:     Johan Hovold <johan@kernel.org>,
+        Tue, 31 May 2022 03:57:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A415F20183;
+        Tue, 31 May 2022 00:57:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653983825; x=1685519825;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2qo+vdNeMZC+dPSZPwxzeS8DLwk8VHCFX0R27WGhj4U=;
+  b=acx/ZqFC9ykVRx6wnvcaOKWtX0fyPhYcZt+hlz2xE+7cOSGD01/k0I4E
+   OnxCFgQQ3c/29aN71kdDHh3a51oo5I7bpm5jXLYS9qYAoQUH4OfBC/A/P
+   9hA6ppqO5zUkKOpEEVI4E1t2sDey2Z5r5SZVZY3Yirp1GLyXcCSV+Ehew
+   b2zH1XWvwblvkmIPG+PVf5+mwYul9f61C03zQIiaFSfnukNNi5S6piKaU
+   gfY8qupLwtLjZpKBpVaVPRmPPRrXG4u4zUX3spqrVMTerPWddpiOwdM1j
+   vb/HoVpgE04Soy/8jPhZSRpjs5OxbC4jcJxf17TGMUhml2vzsJ3YYeOMA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="274900605"
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="274900605"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 00:57:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="903864894"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 31 May 2022 00:57:02 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nvwkQ-0002Uk-9z;
+        Tue, 31 May 2022 07:57:02 +0000
+Date:   Tue, 31 May 2022 15:56:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     kbuild-all@lists.01.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        mychaela.falconia@gmail.com
-Subject: [PATCH v2 6/6] USB: serial: ftdi_sio: add support for FreeCalypso
- DUART28C adapter
-In-Reply-To: <20220531043356.8CAB637401A9@freecalypso.org>
-References: <20220531043356.8CAB637401A9@freecalypso.org>
-Message-Id: <20220531043717.DFBA4374025F@freecalypso.org>
-Date:   Tue, 31 May 2022 04:37:17 +0000 (UTC)
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH 4/4] serial: max310x: implement I2C support
+Message-ID: <202205311555.lv5uAjEN-lkp@intel.com>
+References: <20220530221429.1248083-4-demonsingur@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530221429.1248083-4-demonsingur@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-FreeCalypso DUART28C is an FT2232D-based USB to dual UART adapter
-with a special quirk: Channel B RTS and DTR outputs (BDBUS2 and BDBUS4
-on the chip) have been repurposed to drive PWON and RESET controls
-on Calypso targets.  The circuit is wired such that BDBUS[24] high
-(RTS/DTR inactive) is the normal state with Iota VRPC controls
-NOT activated, whereas BDBUS[24] low (RTS or DTR active) turn ON
-the corresponding open drain control signal drivers.
+Hi Cosmin,
 
-A special ftdi_sio driver quirk is needed in order to suppress
-automatic assertion of DTR & RTS on device open: this device's
-special PWON and RESET control drivers MUST NOT be activated
-when the port is ordinarily opened for plain serial communication,
-instead they must only be activated when a special userspace
-application explicitly requests such activation with a TIOCMBIS ioctl.
-These special userspace applications are responsible for making the
-needed pulse with a TIOCMBIS, delay, TIOCMBIC sequence.
+I love your patch! Yet something to improve:
 
-The special quirk is conditionalized on the DUART28C adapter's custom
-USB ID, and is further limited to FT2232D Channel B only: Channel A
-is wired normally, with the chip's ADBUS2 and ADBUS4 outputs
-actually being RTS and DTR rather than something else.
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing v5.18 next-20220531]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Signed-off-by: Mychaela N. Falconia <falcon@freecalypso.org>
----
- drivers/usb/serial/ftdi_sio.c     | 25 +++++++++++++++++++++++++
- drivers/usb/serial/ftdi_sio_ids.h |  1 +
- 2 files changed, 26 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/Cosmin-Tanislav/serial-max310x-use-regmap-methods-for-SPI-batch-operations/20220531-061619
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: openrisc-randconfig-c023-20220531 (https://download.01.org/0day-ci/archive/20220531/202205311555.lv5uAjEN-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/6c293b95fc5654df5353ba273a9bbd08f1cd3f3a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Cosmin-Tanislav/serial-max310x-use-regmap-methods-for-SPI-batch-operations/20220531-061619
+        git checkout 6c293b95fc5654df5353ba273a9bbd08f1cd3f3a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/tty/serial/
 
-diff --git a/drivers/usb/serial/ftdi_sio.c b/drivers/usb/serial/ftdi_sio.c
-index 6523a36dcc45..f62d9f804c73 100644
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -97,6 +97,7 @@ static int   ftdi_stmclite_probe(struct usb_serial *serial);
- static int   ftdi_8u2232c_probe(struct usb_serial *serial);
- static void  ftdi_USB_UIRT_setup(struct usb_serial_port *port);
- static void  ftdi_HE_TIRA1_setup(struct usb_serial_port *port);
-+static void  ftdi_duart28c_setup(struct usb_serial_port *port);
- 
- static const struct ftdi_sio_quirk ftdi_jtag_quirk = {
- 	.probe	= ftdi_jtag_probe,
-@@ -122,6 +123,10 @@ static const struct ftdi_sio_quirk ftdi_8u2232c_quirk = {
- 	.probe	= ftdi_8u2232c_probe,
- };
- 
-+static const struct ftdi_sio_quirk ftdi_duart28c_quirk = {
-+	.port_probe = ftdi_duart28c_setup,
-+};
-+
- /*
-  * The 8U232AM has the same API as the sio except for:
-  * - it can support MUCH higher baudrates; up to:
-@@ -1050,6 +1055,8 @@ static const struct usb_device_id id_table_combined[] = {
- 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
- 	{ USB_DEVICE(FTDI_VID, FTDI_FALCONIA_JTAG_UNBUF_PID),
- 		.driver_info = (kernel_ulong_t)&ftdi_jtag_quirk },
-+	{ USB_DEVICE(FTDI_VID, FTDI_FALCONIA_DUART28C_PID),
-+		.driver_info = (kernel_ulong_t)&ftdi_duart28c_quirk },
- 	{ }					/* Terminating entry */
- };
- 
-@@ -2372,6 +2379,24 @@ static int ftdi_stmclite_probe(struct usb_serial *serial)
- 	return 0;
- }
- 
-+/*
-+ * FreeCalypso DUART28C is an FT2232D-based USB to dual UART adapter
-+ * with a special quirk: Channel B RTS and DTR outputs (BDBUS2 and BDBUS4
-+ * on the chip) have been repurposed to drive PWON and RESET controls.
-+ *
-+ * Only Channel B is subject to the quirk - Channel A needs to retain
-+ * standard POSIX/SUS behaviour.
-+ */
-+static void ftdi_duart28c_setup(struct usb_serial_port *port)
-+{
-+	struct usb_serial *serial = port->serial;
-+	struct usb_interface *intf = serial->interface;
-+	int ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
-+
-+	if (ifnum == 1)
-+		tty_port_set_nordy(&port->port, true);
-+}
-+
- static void ftdi_sio_port_remove(struct usb_serial_port *port)
- {
- 	struct ftdi_private *priv = usb_get_serial_port_data(port);
-diff --git a/drivers/usb/serial/ftdi_sio_ids.h b/drivers/usb/serial/ftdi_sio_ids.h
-index d1a9564697a4..6ff2509e54a2 100644
---- a/drivers/usb/serial/ftdi_sio_ids.h
-+++ b/drivers/usb/serial/ftdi_sio_ids.h
-@@ -45,6 +45,7 @@
-  */
- #define FTDI_FALCONIA_JTAG_BUF_PID	0x7150
- #define FTDI_FALCONIA_JTAG_UNBUF_PID	0x7151
-+#define FTDI_FALCONIA_DUART28C_PID	0x7152
- 
- /* Sienna Serial Interface by Secyourit GmbH */
- #define FTDI_SIENNA_PID		0x8348
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All error/warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/max310x.c: In function 'max310x_i2c_probe':
+>> drivers/tty/serial/max310x.c:1603:31: error: implicit declaration of function 'devm_i2c_new_dummy_device' [-Werror=implicit-function-declaration]
+    1603 |                 port_client = devm_i2c_new_dummy_device(&client->dev,
+         |                               ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/tty/serial/max310x.c:1603:29: warning: assignment to 'struct i2c_client *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    1603 |                 port_client = devm_i2c_new_dummy_device(&client->dev,
+         |                             ^
+   drivers/tty/serial/max310x.c: In function 'max310x_uart_init':
+   drivers/tty/serial/max310x.c:1658:1: warning: label 'err_i2c_register' defined but not used [-Wunused-label]
+    1658 | err_i2c_register:
+         | ^~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/devm_i2c_new_dummy_device +1603 drivers/tty/serial/max310x.c
+
+  1582	
+  1583	static int max310x_i2c_probe(struct i2c_client *client)
+  1584	{
+  1585		const struct max310x_devtype *devtype =
+  1586				device_get_match_data(&client->dev);
+  1587		struct i2c_client *port_client;
+  1588		struct regmap *regmaps[4];
+  1589		unsigned int i;
+  1590		u8 port_addr;
+  1591	
+  1592		if (client->addr < devtype->slave_addr.min ||
+  1593			client->addr > devtype->slave_addr.max)
+  1594			return dev_err_probe(&client->dev, -EINVAL,
+  1595					     "Slave addr 0x%x outside of range [0x%x, 0x%x]\n",
+  1596					     client->addr, devtype->slave_addr.min,
+  1597					     devtype->slave_addr.max);
+  1598	
+  1599		regmaps[0] = devm_regmap_init_i2c(client, &regcfg_i2c);
+  1600	
+  1601		for (i = 1; i < devtype->nr; i++) {
+  1602			port_addr = max310x_i2c_slave_addr(client->addr, i);
+> 1603			port_client = devm_i2c_new_dummy_device(&client->dev,
+  1604								client->adapter,
+  1605								port_addr);
+  1606	
+  1607			regmaps[i] = devm_regmap_init_i2c(port_client, &regcfg_i2c);
+  1608		}
+  1609	
+  1610		return max310x_probe(&client->dev, devtype, &max310x_i2c_if_cfg,
+  1611				     regmaps, client->irq);
+  1612	}
+  1613	
+
 -- 
-2.9.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
