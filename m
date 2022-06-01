@@ -2,175 +2,140 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AE6C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 13:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 150DACCA471
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 14:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237020AbiFANjl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
+        id S1344171AbiFAOBw (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236397AbiFANjk (ORCPT
+        with ESMTP id S1354160AbiFAOAA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:39:40 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52997983F
-        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 06:39:39 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id x20so1141650qtp.8
-        for <linux-serial@vger.kernel.org>; Wed, 01 Jun 2022 06:39:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lYT6vkKhoxi+C71B0x/kXfHY61ignH5X4XMR052omCI=;
-        b=dTkVjStHB/sP8tw573f0wqO5XLqv8KSgPnKkTNveGsKGk40ErXhU5frzv4sAVGgV4w
-         X/oSLNCJjdtza7SeG2EvTG+OAtbFfJLbUIGef3Qf8d/u4fkXCfLSEthcAQdYnKUJaavT
-         sp3jKR53ivjzXG102T7YxHaLonsFY37hJ8y9L/+q7E7G23XtQZXhBQIRwO/L+6EMYF8d
-         M8RvSDEtiBlEROEpASo+FfGwAJGe8jUPFla/XHGviircXoiA0dtNdJApB1wfJJEUgBQq
-         lLOlitkk6zQuyRGjZo8thS4yJt88GNT5xzWgC++Ty8blJweZF5fci5SVfKF+kNu7kpZB
-         xmUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lYT6vkKhoxi+C71B0x/kXfHY61ignH5X4XMR052omCI=;
-        b=6FBPNPax8LPeKPHRzC4cgw4Be9vngzZrgsJXm1J/Dzrl/Sm32dpvDWRUs/BPLuQnMJ
-         t4Ty3v9G3AzefcXq7KWNPEYp5Uu9vQnoeseA6Hmxdzvnf/6NscwabBURQX7uanxWM3Cr
-         HFyAHgveckPPEcssR/nR6sYA1xuhvAe7L2ryhg++JvK4TKfaubmfJUxJrAdGdC4mgwep
-         Oj7pcCb7V+iAx8rho6Co4+zJrX4FFALbKsyPNH4zqt6MensQpIkHz5B6N617A/MLJM9C
-         8kpAAVyv1M83ixmDKDx8Nc13O0L+CoNRq1Fvg1a+WncywNisuNvzFBXEa4O0IocEuiyg
-         n9JA==
-X-Gm-Message-State: AOAM531rfw67L8WpYzO9oarGJHKdDIQXEqBBEcJ7ZyqcUfd7ijXhlhYU
-        ibuyYedOTmTbB+ssZEf54dqnVBg89ISugUtHQ5w=
-X-Google-Smtp-Source: ABdhPJwmm77uF3TuUppV2W7naHImIkcRUl15fvt9P+3gBdKjoJP7u2mKf/8txKGRpePaRLc+exZnlXxE5AyjdKbXC9c=
-X-Received: by 2002:a05:622a:355:b0:2fc:dd8:8961 with SMTP id
- r21-20020a05622a035500b002fc0dd88961mr26004282qtw.281.1654090778962; Wed, 01
- Jun 2022 06:39:38 -0700 (PDT)
+        Wed, 1 Jun 2022 10:00:00 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8761E8B0B5;
+        Wed,  1 Jun 2022 06:56:16 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C02EE22175;
+        Wed,  1 Jun 2022 15:55:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1654091738;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qveomebm5Cm9gpRTlOxUQGp85QoLnRj3uf6m3R58Nzc=;
+        b=Ef/T/TwwXV0heKml7fRseyMbGK7LE2+swTLvvn7d8LSmdzqE8e6cbdZzZxk9HZJ2JlZIBM
+        Nr1uZ2TAQwTaU9/W0rZWuOpoSO5SD3Xzxzqvwe7zasvq5a7hJD2KKgv+LFN3WAWZNz5Ak4
+        4GXk6tTMylkqmrh3sTisRmzrsYwL4Mo=
+From:   Michael Walle <michael@walle.cc>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH] earlycon: prevent multiple register_console()
+Date:   Wed,  1 Jun 2022 15:55:28 +0200
+Message-Id: <20220601135528.3176471-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
- <YpczhMOT5BvxqL/P@kroah.com>
-In-Reply-To: <YpczhMOT5BvxqL/P@kroah.com>
-From:   cael <juanfengpy@gmail.com>
-Date:   Wed, 1 Jun 2022 21:39:27 +0800
-Message-ID: <CAPmgiULBpWvPV4WzBFY1JMcijg_EkP+w7q6rAWVgdp196WGKXQ@mail.gmail.com>
-Subject: Re: tty: fix a possible hang on tty device
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: cael <juanfengpy@gmail.com>
-Subject: [PATCH v2] tty: fix a possible hang on tty device
+If the earlycon parameter is given twice, the kernel will spit out a
+WARN() in register_console() because it was already registered. The
+non-dt variant setup_earlycon() already handles that gracefully. The dt
+variant of_setup_earlycon() doesn't. Add the check there and propagate
+it through early_init_dt_scan_chosen_stdout().
 
-We have met a hang on pty device, the reader was blocking
-at epoll on master side, the writer was sleeping at wait_woken
-inside n_tty_write on slave side, and the write buffer on
-tty_port was full, we found that the reader and writer would
-never be woken again and block forever.
+FWIW, this doesn't happen if CONFIG_ACPI_SPCR_TABLE is set. In that case
+the registration is delayed until after earlycon parameter(s) are
+parsed.
 
-The problem was caused by a race between reader and kworker:
-n_tty_read(reader):  n_tty_receive_buf_common(kworker):
-                    |room =3D N_TTY_BUF_SIZE - (ldata->read_head - tail)
-                    |room <=3D 0
-copy_from_read_buf()|
-n_tty_kick_worker() |
-                    |ldata->no_room =3D true
-
-After writing to slave device, writer wakes up kworker to flush
-data on tty_port to reader, and the kworker finds that reader
-has no room to store data so room <=3D 0 is met. At this moment,
-reader consumes all the data on reader buffer and call
-n_tty_kick_worker to check ldata->no_room which is false and
-reader quits reading. Then kworker sets ldata->no_room=3Dtrue
-and quits too.
-
-If write buffer is not full, writer will wake kworker to flush data
-again after following writes, but if writer buffer is full and writer
-goes to sleep, kworker will never be woken again and tty device is
-blocked.
-
-This problem can be solved with a check for read buffer size inside
-n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
-is true, a call to n_tty_kick_worker is necessary to keep flushing
-data to reader.
-
-Signed-off-by: cael <juanfengpy@gmail.com>
-Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index efc72104c840..21241ea7cdb9 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
-        struct n_tty_data *ldata =3D tty->disc_data;
 
-        /* Did the input worker stop? Restart it */
--       if (unlikely(ldata->no_room)) {
--               ldata->no_room =3D 0;
-+       if (unlikely(READ_ONCE(ldata->no_room))) {
-+               WRITE_ONCE(ldata->no_room, 0);
+I'm not sure if this should have a Fixes tag or not. If so I guess it
+should be the very first commit which introduced the support (commit
+fb11ffe74c79 ("of/fdt: add FDT serial scanning for earlycon")).
 
-                WARN_RATELIMIT(tty->port->itty =3D=3D NULL,
-                                "scheduling with invalid itty\n");
-@@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty,
-const unsigned char *cp,
-                        if (overflow && room < 0)
-                                ldata->read_head--;
-                        room =3D overflow;
--                       ldata->no_room =3D flow && !room;
-+                       WRITE_ONCE(ldata->no_room, flow && !room);
-                } else
-                        overflow =3D 0;
+For the curious, here is the backtrace:
 
-@@ -1663,6 +1663,21 @@ n_tty_receive_buf_common(struct tty_struct
-*tty, const unsigned char *cp,
-        } else
-                n_tty_check_throttle(tty);
+[    0.000000] ------------[ cut here ]------------
+[    0.000000] WARNING: CPU: 0 PID: 0 at kernel/printk/printk.c:3328 register_console+0x2b4/0x364
+[    0.000000] console 'atmel_serial0' already registered
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-next-20220601+ #652
+[    0.000000] Hardware name: Generic DT based system
+[    0.000000] Backtrace: 
+[    0.000000]  dump_backtrace from show_stack+0x18/0x1c
+[    0.000000]  show_stack from dump_stack_lvl+0x48/0x54
+[    0.000000]  dump_stack_lvl from dump_stack+0x18/0x1c
+[    0.000000]  dump_stack from __warn+0xd0/0x148
+[    0.000000]  __warn from warn_slowpath_fmt+0x9c/0xc4
+[    0.000000]  warn_slowpath_fmt from register_console+0x2b4/0x364
+[    0.000000]  register_console from of_setup_earlycon+0x29c/0x2ac
+[    0.000000]  of_setup_earlycon from early_init_dt_scan_chosen_stdout+0x154/0x18c
+[    0.000000]  early_init_dt_scan_chosen_stdout from param_setup_earlycon+0x40/0x48
+[    0.000000]  param_setup_earlycon from do_early_param+0x88/0xc4
+[    0.000000]  do_early_param from parse_args+0x1a4/0x404
+[    0.000000]  parse_args from parse_early_options+0x40/0x48
+[    0.000000]  parse_early_options from parse_early_param+0x38/0x48
+[    0.000000]  parse_early_param from setup_arch+0x114/0x7a4
+[    0.000000]  setup_arch from start_kernel+0x74/0x6dc
+[    0.000000]  start_kernel from 0x0
+[    0.000000] ---[ end trace 0000000000000000 ]---
 
-+       if (READ_ONCE(ldata->no_room)) {
-+               /*
-+                * Reader ensures that read_tail is updated before
-checking no_room,
-+                * make sure that no_room is set before reading read_tail h=
-ere.
-+                * Now no_room is visible by reader, the race needs to
-be handled is
-+                * that reader has passed checkpoint for no_room and
-reader buffer
-+                * is empty, if so n_tty_kick_worker will not be
-called by reader,
-+                * instead, this function is called here.
-+                * barrier is paired with smp_mb() in n_tty_read()
-+                */
-+               smp_mb();
-+               if (!chars_in_buffer(tty))
-+                       n_tty_kick_worker(tty);
-+       }
-+
-        up_read(&tty->termios_rwsem);
+ drivers/of/fdt.c              | 6 ++++--
+ drivers/tty/serial/earlycon.c | 5 ++++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-        return rcvd;
-@@ -2180,8 +2195,14 @@ static ssize_t n_tty_read(struct tty_struct
-*tty, struct file *file,
-                if (time)
-                        timeout =3D time;
-        }
--       if (tail !=3D ldata->read_tail)
-+       if (tail !=3D ldata->read_tail) {
-+               /*
-+                * Make sure no_room is not read before setting read_tail,
-+                * paired with smp_mb() in n_tty_receive_buf_common()
-+                */
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index a8f5b6532165..7f3524213b43 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -1025,6 +1025,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 	int l;
+ 	const struct earlycon_id *match;
+ 	const void *fdt = initial_boot_params;
++	int ret;
+ 
+ 	offset = fdt_path_offset(fdt, "/chosen");
+ 	if (offset < 0)
+@@ -1057,8 +1058,9 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 		if (fdt_node_check_compatible(fdt, offset, match->compatible))
+ 			continue;
+ 
+-		if (of_setup_earlycon(match, offset, options) == 0)
+-			return 0;
++		ret = of_setup_earlycon(match, offset, options);
++		if (!ret || ret == -EALREADY)
++			return ret;
+ 	}
+ 	return -ENODEV;
+ }
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 57c70851f22a..59fedf7be572 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -230,7 +230,10 @@ static int __init param_setup_earlycon(char *buf)
+ 			earlycon_acpi_spcr_enable = true;
+ 			return 0;
+ 		} else if (!buf) {
+-			return early_init_dt_scan_chosen_stdout();
++			err = early_init_dt_scan_chosen_stdout();
++			if (err == -EALREADY)
++				return 0;
++			return err;
+ 		}
+ 	}
+ 
+-- 
+2.30.2
 
-+               smp_mb();
-                n_tty_kick_worker(tty);
-+       }
-        up_read(&tty->termios_rwsem);
-
-        remove_wait_queue(&tty->read_wait, &wait);
---
-2.27.0
