@@ -2,67 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0030BC433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 09:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9673C4332F
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 09:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351074AbiFAJcM (ORCPT
+        id S1351145AbiFAJeY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
+        Wed, 1 Jun 2022 05:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351057AbiFAJcK (ORCPT
+        with ESMTP id S238434AbiFAJeX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:32:10 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A08C82157
-        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 02:32:09 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id n28so1338579edb.9
-        for <linux-serial@vger.kernel.org>; Wed, 01 Jun 2022 02:32:09 -0700 (PDT)
+        Wed, 1 Jun 2022 05:34:23 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBB18B0B6
+        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 02:34:20 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id w27so1352644edl.7
+        for <linux-serial@vger.kernel.org>; Wed, 01 Jun 2022 02:34:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9rLHj//9k/15fypiFbMELs3ChxXWRGpeQMJrEmUMxUs=;
-        b=QIpbmzzYJ0HAltV9KIinq7hcn1/hnXtpRXtMmZG9J7qu9J+yvPLSDMoa7T1mF07mXK
-         H0apr2OZxGQd0U1WCKeMv8lb+Fm0H/mDYSMtRdWizypZAKluo8iAZmIxB1zzo1cgkxVD
-         8FqROBoannHWns4ltnEoaFMetuFzZVnMg34x8TBZHDiL1S+h+agEWmJXOJBPr45zEleE
-         wIN4pLzhGLnCkSJ6swE6lcLnjUX895KzSJg8xs9oTGRBgvcXRQgxWZs0dfq2tVdBw1lA
-         e+iovxTxiCiSptWs6zjF6xpsc90sU1LjwN9TwlBSRUrniu3cN+/+/2A8nwrc4UNO1Pv1
-         qyIQ==
+        bh=roNxqKUu0+AV4DeO1JbEmmYOyNX8wIcqoT9AzN3Cm2M=;
+        b=bRYOQ9fGbJR0V+y0wEZKLfg/TqqyZIxzKGA17cV2dYd4XNtRdHyH4/yeq/LxJn/NsU
+         j6OqB6oDPLhE4+MsUHuxGDg87PixqxiwzQaEWzu7LQlfhqmrcWF4UkzqEBolU2arg+t6
+         ZEwzrsNkZLoDZczkN8gxN3A8zioU+OYUAKXz6M2fKE+P44DYTD4hjyLrpXG1BBn8GjtJ
+         Zwt1N2HkZX6pvO+XccPH+zn+GyEdE+57hkLjfHZB8pbh1tqGeuiAAR6NSEznBiagvjAc
+         M1xkmzTZ28Y8eJe5MQO0kbBJUDQjPWxbeeOzk7JlypHCfAslHnHPBBQFMRZo+sI+F7y6
+         ilhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=9rLHj//9k/15fypiFbMELs3ChxXWRGpeQMJrEmUMxUs=;
-        b=AHz6+/DQr/PySdsCTWVmv75p5hlMeE/L7/TrEaEAEY6tLlsFHoPx75kJbz8KzvgFHc
-         JhLwyigubo/RzZsknp6f1MDuW8G+JN/BLhLxvKLRKtBaKjk5X4P4yLgZqxg1Lopawxi1
-         dUYo07Tzu7FpX/8a5aicEjJbwTm7qSuAWSi02O5zdi3pDvbgMMpAZtOTVbxOOVUCQ66J
-         3o60d1WGTyz65xPaZg0cV3bSUIzORAWKo1VJT1El6WPXjldpVArqOX6Kg2Zztc/sjrjq
-         YR7Qvedk06GLo7TRZICz8MWxjgtS/FUC8xvKeNRW00G1bceUTADxOck32s1x72BD71Vx
-         HN5w==
-X-Gm-Message-State: AOAM533e97SGCi2SvqaEvpmzRtlL0vGvzNX9S5wb03SrBOMjLczHIqpc
-        +pgsK9bkK2q6XlvENXY0v/2TbQ==
-X-Google-Smtp-Source: ABdhPJxIaNQdmdCizYbGGHKjK+me0jgNnS5X6cMWDDf2h3DFwSO74zQhHh65gXy+skv8i/8hh9yGoQ==
-X-Received: by 2002:a05:6402:e9f:b0:41c:df21:b113 with SMTP id h31-20020a0564020e9f00b0041cdf21b113mr69039921eda.217.1654075928172;
-        Wed, 01 Jun 2022 02:32:08 -0700 (PDT)
+        bh=roNxqKUu0+AV4DeO1JbEmmYOyNX8wIcqoT9AzN3Cm2M=;
+        b=4ppEmOPwlVKsGJpeQubLlMCHRG4GQEitR4m20aR/0eRNmXaNaxsWmau+pBzwH7q7SX
+         ufGVdRmjRM8IwbHfj7bkm4iEDFpno4TEyihhAo4HtHKq8C+N6izFfigh8XV2nlgmArCm
+         nHEPPwiEwxPLTEqkLZCsh6icghQeNE0nGgxgWF/6ZgEXugNtU7Z1NnvUBflZyx/OtU/Z
+         m+2FxIaEziEVkmNP6IMQvxXOv86tX1CQ6Dq9v71jKfmVo5niIA0ymU1g2LC1i6tjDpk4
+         QvwNSYX9o6DJxMOvvpby5OQ21wZHnwtE2oDWvD4ItFQiLQPpaOjp0Bm/sq9+yi5uUrTd
+         CDkg==
+X-Gm-Message-State: AOAM532rPUj/j0qov5u2QxhhLo7o/aw/ho/JNcsnzIOZ3EJ3E97zwJ9R
+        dfsNI/Aq11naiyQgZBGeKwKiXJ8nVEnM9T4X
+X-Google-Smtp-Source: ABdhPJzh9Lf8L/NKchmFQc388SPcHvGUJvGg8NbDDJ7Sxuy5dahguWAyQXRYAWLbvqWHCJKhyvlBgQ==
+X-Received: by 2002:a05:6402:42c1:b0:42d:fba6:d5c5 with SMTP id i1-20020a05640242c100b0042dfba6d5c5mr1180660edc.295.1654076059375;
+        Wed, 01 Jun 2022 02:34:19 -0700 (PDT)
 Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i23-20020a1709061e5700b00708a2ae7620sm102525ejj.67.2022.06.01.02.32.06
+        by smtp.gmail.com with ESMTPSA id b8-20020aa7c6c8000000b0042617ba637bsm710427eds.5.2022.06.01.02.34.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 02:32:07 -0700 (PDT)
-Message-ID: <efdbb151-8213-d1e7-a935-0e857947d450@linaro.org>
-Date:   Wed, 1 Jun 2022 11:32:06 +0200
+        Wed, 01 Jun 2022 02:34:18 -0700 (PDT)
+Message-ID: <c510cf8e-4111-8886-99e0-8ad35b3086a8@linaro.org>
+Date:   Wed, 1 Jun 2022 11:34:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH 00/17] Add support for MT8365 EVK board
+Subject: Re: [PATCH 02/17] dt-bindings: memory: add mt8365 SoC binding
+ documentation
 Content-Language: en-US
 To:     Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
         qii.wang@mediatek.com, matthias.bgg@gmail.com, jic23@kernel.org,
         chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
         srinivas.kandagatla@linaro.org, chunfeng.yun@mediatek.com,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        Yong Wu <yong.wu@mediatek.com>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
@@ -71,8 +73,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
 References: <20220531135026.238475-1-fparent@baylibre.com>
+ <20220531135026.238475-3-fparent@baylibre.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220531135026.238475-1-fparent@baylibre.com>
+In-Reply-To: <20220531135026.238475-3-fparent@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -80,26 +83,73 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 31/05/2022 15:50, Fabien Parent wrote:
-> This patch series adds support for the MT8365 EVK board.
+> Add MediaTek SMI bindings for MT8365 SoC.
 > 
-> This series has dependencies on the following series:
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646256
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646091
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646083
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646081
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646076
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646068
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646020
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646052
-> https://lore.kernel.org/r/20220504091923.2219-2-rex-bc.chen@mediatek.com 
-> https://lore.kernel.org/r/20220512062622.31484-2-chunfeng.yun@mediatek.com 
-> https://lore.kernel.org/r/20220512062622.31484-1-chunfeng.yun@mediatek.com
-> https://lore.kernel.org/r/20220524115019.97246-1-angelogioacchino.delregno@collabora.com
-> https://lore.kernel.org/all/20220127015857.9868-1-biao.huang@mediatek.com/
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 ++++++
+>  .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 6 ++++++
+>  2 files changed, 12 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> index a98b359bf909..e1029ac99ab4 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> @@ -46,6 +46,11 @@ properties:
+>            - const: mediatek,mt7623-smi-common
+>            - const: mediatek,mt2701-smi-common
+>  
+> +      - description: for mt8365
 
-Eh... and how we are supposed to test or apply this? Such dependencies
-could mean none of automated tools will pick it up, so your patchset has
-to wait till dependencies got merged.
+Skip description and:
+
+> +        items:
+> +          - const: mediatek,mt8365-smi-common
+
+This should be rather enum. I see existing code did that way, but this
+way makes it bloated. If new device compatible with mt8186 comes, should
+be added to this enum, not to new items.
+
+> +          - const: mediatek,mt8186-smi-common
+> +
+>    reg:
+>      maxItems: 1
+>  
+> @@ -130,6 +135,7 @@ allOf:
+>              - mediatek,mt8192-smi-common
+>              - mediatek,mt8195-smi-common-vdo
+>              - mediatek,mt8195-smi-common-vpp
+> +            - mediatek,mt8365-smi-common
+>  
+>      then:
+>        properties:
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> index c886681f62a7..815d87fc64a0 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> @@ -32,6 +32,11 @@ properties:
+>            - const: mediatek,mt7623-smi-larb
+>            - const: mediatek,mt2701-smi-larb
+>  
+> +      - description: for mt8365
+> +        items:
+> +          - const: mediatek,mt8365-smi-larb
+> +          - const: mediatek,mt8186-smi-larb
+
+Ditto.
+
+> +
+>    reg:
+>      maxItems: 1
+>  
+> @@ -78,6 +83,7 @@ allOf:
+>              - mediatek,mt8183-smi-larb
+>              - mediatek,mt8186-smi-larb
+>              - mediatek,mt8195-smi-larb
+> +            - mediatek,mt8365-smi-larb
+>  
+>      then:
+>        properties:
 
 
 Best regards,
