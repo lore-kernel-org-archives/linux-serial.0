@@ -2,69 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC32C433F5
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 10:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF2DC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 11:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352349AbiFAKrA (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        id S242630AbiFALZF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Jun 2022 07:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352409AbiFAKqn (ORCPT
+        with ESMTP id S1352643AbiFALZB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:46:43 -0400
+        Wed, 1 Jun 2022 07:25:01 -0400
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3258B7E1FA;
-        Wed,  1 Jun 2022 03:46:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3FC4664A;
+        Wed,  1 Jun 2022 04:24:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654080395; x=1685616395;
+  t=1654082695; x=1685618695;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=b5qedcwIh/YsEv38RoqMhtjohICmIZUWqBvAcbBcEqs=;
-  b=S9TG9S7iCHfCZfS3pit+G9vczBbx4kAMbf34eb/L6zRv0KveC7NtAKhk
-   Tj7Ttg6gNT1axznRH86iRLSOhLK+bQRn5/ONIMeGNkwzMJxsnc2DMtPo/
-   9+7lOYqE2asqERx3HZGoHjZ3ElmsXPlBL87eUeIwKywoV1mHIPmQGc9J7
-   s=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 03:46:34 -0700
+  bh=oU0TXYjoeSYGvAnbOhKPOk9x41DF16IWFxcwFwX4/jk=;
+  b=BXXzCvkAVE+x1nrWk9cm8K/wneNJ905rcBpZiGet47nVQpErtLsJXMu1
+   m6JD+3MgqSF/0jIGf3vUswoXXLtsBxCUzjeQkxOBnim2CS3ZTzq7Sof1u
+   5HYl5NjclljtE+lR7Yx6Kz/IhUae5aTGJalB6Zmw4+B6Sl0lx3Se9eBbv
+   8=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 04:24:55 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:46:34 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 04:24:55 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 1 Jun 2022 03:46:34 -0700
+ 15.2.986.22; Wed, 1 Jun 2022 04:24:54 -0700
 Received: from [10.216.8.63] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 03:46:29 -0700
-Message-ID: <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
-Date:   Wed, 1 Jun 2022 16:15:59 +0530
+ 04:24:51 -0700
+Message-ID: <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
+Date:   Wed, 1 Jun 2022 16:54:48 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
- get_clk_div_rate()
+Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
+ console_suspend is disabled
 Content-Language: en-CA
-To:     Doug Anderson <dianders@chromium.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        "Stephen Boyd" <swboyd@chromium.org>
-References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
+        <mka@chromium.org>, <swboyd@chromium.org>
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+ <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
+ <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
+ <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
 From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+In-Reply-To: <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -72,106 +68,81 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi,
 
-On 6/1/2022 12:58 AM, Doug Anderson wrote:
-> Hi,
->
-> On Tue, May 31, 2022 at 11:18 AM Vijaya Krishna Nivarthi
-> <quic_vnivarth@quicinc.com> wrote:
->> Add missing initialisation and correct type casting
+On 5/24/2022 5:24 PM, Marek Szyprowski wrote:
+> On 23.05.2022 23:32, Marek Szyprowski wrote:
+>> Hi,
 >>
->> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
->> ---
->>   drivers/tty/serial/qcom_geni_serial.c | 8 ++++----
->>   1 file changed, 4 insertions(+), 4 deletions(-)
+>> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
+>>> For the case of console_suspend disabled, if back to back suspend/resume
+>>> test is executed, at the end of test, sometimes console would appear to
+>>> be frozen not responding to input. This would happen because, during
+>>> resume, rx transactions can come in before system is ready, malfunction
+>>> of rx happens in turn resulting in console appearing to be stuck.
+>>>
+>>> Do a stop_rx in suspend sequence to prevent this.
+>>>
+>>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>>> ---
+>>> v4: moved the change to serial core to apply for all drivers
+>>> v3: swapped the order of conditions to be more human readable
+>>> v2: restricted patch to contain only stop_rx in suspend sequence
+>>> v1: intial patch contained 2 additional unrelated changes in vicinity
+>>> ---
+>> This patch landed recently in linux-next as commit c9d2325cdb92
+>> ("serial: core: Do stop_rx in suspend path for console if
+>> console_suspend is disabled").
 >>
->> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->> index 4733a23..08f3ad4 100644
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -943,11 +943,11 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
->>   static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
->>                          unsigned int sampling_rate, unsigned int *clk_div)
->>   {
->> -       unsigned long ser_clk;
->> +       unsigned long ser_clk = 0;
-> In this patch it's not at all obvious why you'd need to init to 0. I
-> think the "for loop" is guaranteed to run at least once because
-> "max_div" is known at compile time. ...and currently each time through
-> the "for" loop you'll always set "ser_clk".
-
-Ok, I realised we will never break out of for loop exceeding ULONG_MAX 
-in 1st pass, so yes ser_clk will always be set.
-
-> I think in a future patch you'll want to _remove_ this from the for loop:
->
-> if (!prev)
->    ser_clk = freq;
-
-Intent is to save (and use) 1st freq if we cannot find an exact divider.
-
-Isn't it ok?
-
-For example please find debug output for a required frequency of 51.2MHz.
-
-We try dividers 1, 2, 3 and end up with 52.1MHz the first result.
-
-[   18.815432] 20220509 get_clk_div_rate desired_clk:51200000
-[   18.821081] 20220509 get_clk_div_rate maxdiv:4095
-[   18.825924] 20220509 get_clk_div_rate div:1
-[   18.830239] 20220509 get_clk_div_rate freq:52174000
-[   18.835288] 20220509 get_clk_div_rate div:2
-[   18.839628] 20220509 get_clk_div_rate freq:100000000
-[   18.844794] 20220509 get_clk_div_rate div:3
-[   18.849119] 20220509 get_clk_div_rate freq:100000000
-[   18.854254] 20220509 get_clk_div_rate reached max frequency breaking...
-[   18.861072] 20220509 get_clk_div_rate clk_div=1, ser_clk=52174000
-
-The behaviour was same earlier too when root_freq table was present.
-
-The table did contain 51.2MHz and we would exit with same but on call to 
-clk_set_rate(51.2MHz) we were ending up with 52.1MHz
-
->
-> ...and _that's_ when you should init "ser_clk" to 0. Until then I'd
-> leave it as uninitialized...
->
-> Honestly, I'd throw all the fixes into one series, too.
-
-My concern was if there would be a requirement to split the changes.
-
-Will put in all in 1 series with Fixes tag.
-
->
->
->>          unsigned long desired_clk;
->>          unsigned long freq, prev;
->>          unsigned long div, maxdiv;
->> -       int64_t mult;
->> +       unsigned long long mult;
+>> Unfortunately it breaks console operation on my test systems after
+>> system suspend/resume cycle if 'no_console_suspend' kernel parameter
+>> is present. System properly resumes from suspend, the console displays
+>> all the messages and even command line prompt, but then doesn't react
+>> on any input. If I remove the 'no_console_suspend' parameter, the
+>> console is again operational after system suspend/resume cycle. Before
+>> this patch it worked fine regardless the 'no_console_suspend' parameter.
 >>
->>          desired_clk = baud * sampling_rate;
->>          if (!desired_clk) {
->> @@ -959,8 +959,8 @@ static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
->>          prev = 0;
->>
->>          for (div = 1; div <= maxdiv; div++) {
->> -               mult = div * desired_clk;
->> -               if (mult > ULONG_MAX)
->> +               mult = (unsigned long long)div * (unsigned long long)desired_clk;
-> I think you only need to cast one of the two. The other will be
-> up-cast automatically.
-Will change.
+>> If this matters, the test system is ARM 32bit Samsung Exynos5422-based
+>> Odroid XU3lite board.
 >
+> One more information. This issue can be easily reproduced with QEMU. It
+> happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when
+> 'no_console_suspend' is added to kernel's cmdline.
 >
->> +               if (mult > (unsigned long long)ULONG_MAX)
-> I don't think you need this cast. As far as I know the C language will
-> "upcast" to the larger of the two types.
-Will change.
->
->
-> -Doug
+Ideally, as comments indicate, the set_termios should have done stop_rx 
+at begin and start_rx at end to take care of this issue.
 
+This is probably missing in your driver. Can we check if this can be 
+fixed? OR other option is
+
+Add a start_rx in uart_resume_port after call to set_termios to handle 
+this scenario for other drivers.
+
+Please let me know if there are any concerns for this options.
+
+>>>    drivers/tty/serial/serial_core.c | 11 +++++++++--
+>>>    1 file changed, 9 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/serial_core.c
+>>> b/drivers/tty/serial/serial_core.c
+>>> index 82a1770..9a85b41 100644
+>>> --- a/drivers/tty/serial/serial_core.c
+>>> +++ b/drivers/tty/serial/serial_core.c
+>>> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv,
+>>> struct uart_port *uport)
+>>>        }
+>>>        put_device(tty_dev);
+>>>    -    /* Nothing to do if the console is not suspending */
+>>> -    if (!console_suspend_enabled && uart_console(uport))
+>>> +    /*
+>>> +     * Nothing to do if the console is not suspending
+>>> +     * except stop_rx to prevent any asynchronous data
+>>> +     * over RX line. Re-start_rx, when required, is
+>>> +     * done by set_termios in resume sequence
+>>> +     */
+>>> +    if (!console_suspend_enabled && uart_console(uport)) {
+>>> +        uport->ops->stop_rx(uport);
+>>>            goto unlock;
+>>> +    }
+>>>          uport->suspended = 1;
+>> Best regards
+> Best regards
 Thank you.
-
--Vijay/
-
