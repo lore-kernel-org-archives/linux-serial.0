@@ -2,147 +2,175 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF2DC433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 11:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AE6C433F5
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 13:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242630AbiFALZF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jun 2022 07:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        id S237020AbiFANjl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352643AbiFALZB (ORCPT
+        with ESMTP id S236397AbiFANjk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jun 2022 07:25:01 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3FC4664A;
-        Wed,  1 Jun 2022 04:24:55 -0700 (PDT)
+        Wed, 1 Jun 2022 09:39:40 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52997983F
+        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 06:39:39 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id x20so1141650qtp.8
+        for <linux-serial@vger.kernel.org>; Wed, 01 Jun 2022 06:39:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654082695; x=1685618695;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oU0TXYjoeSYGvAnbOhKPOk9x41DF16IWFxcwFwX4/jk=;
-  b=BXXzCvkAVE+x1nrWk9cm8K/wneNJ905rcBpZiGet47nVQpErtLsJXMu1
-   m6JD+3MgqSF/0jIGf3vUswoXXLtsBxCUzjeQkxOBnim2CS3ZTzq7Sof1u
-   5HYl5NjclljtE+lR7Yx6Kz/IhUae5aTGJalB6Zmw4+B6Sl0lx3Se9eBbv
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 04:24:55 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 04:24:55 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 1 Jun 2022 04:24:54 -0700
-Received: from [10.216.8.63] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 04:24:51 -0700
-Message-ID: <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
-Date:   Wed, 1 Jun 2022 16:54:48 +0530
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lYT6vkKhoxi+C71B0x/kXfHY61ignH5X4XMR052omCI=;
+        b=dTkVjStHB/sP8tw573f0wqO5XLqv8KSgPnKkTNveGsKGk40ErXhU5frzv4sAVGgV4w
+         X/oSLNCJjdtza7SeG2EvTG+OAtbFfJLbUIGef3Qf8d/u4fkXCfLSEthcAQdYnKUJaavT
+         sp3jKR53ivjzXG102T7YxHaLonsFY37hJ8y9L/+q7E7G23XtQZXhBQIRwO/L+6EMYF8d
+         M8RvSDEtiBlEROEpASo+FfGwAJGe8jUPFla/XHGviircXoiA0dtNdJApB1wfJJEUgBQq
+         lLOlitkk6zQuyRGjZo8thS4yJt88GNT5xzWgC++Ty8blJweZF5fci5SVfKF+kNu7kpZB
+         xmUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lYT6vkKhoxi+C71B0x/kXfHY61ignH5X4XMR052omCI=;
+        b=6FBPNPax8LPeKPHRzC4cgw4Be9vngzZrgsJXm1J/Dzrl/Sm32dpvDWRUs/BPLuQnMJ
+         t4Ty3v9G3AzefcXq7KWNPEYp5Uu9vQnoeseA6Hmxdzvnf/6NscwabBURQX7uanxWM3Cr
+         HFyAHgveckPPEcssR/nR6sYA1xuhvAe7L2ryhg++JvK4TKfaubmfJUxJrAdGdC4mgwep
+         Oj7pcCb7V+iAx8rho6Co4+zJrX4FFALbKsyPNH4zqt6MensQpIkHz5B6N617A/MLJM9C
+         8kpAAVyv1M83ixmDKDx8Nc13O0L+CoNRq1Fvg1a+WncywNisuNvzFBXEa4O0IocEuiyg
+         n9JA==
+X-Gm-Message-State: AOAM531rfw67L8WpYzO9oarGJHKdDIQXEqBBEcJ7ZyqcUfd7ijXhlhYU
+        ibuyYedOTmTbB+ssZEf54dqnVBg89ISugUtHQ5w=
+X-Google-Smtp-Source: ABdhPJwmm77uF3TuUppV2W7naHImIkcRUl15fvt9P+3gBdKjoJP7u2mKf/8txKGRpePaRLc+exZnlXxE5AyjdKbXC9c=
+X-Received: by 2002:a05:622a:355:b0:2fc:dd8:8961 with SMTP id
+ r21-20020a05622a035500b002fc0dd88961mr26004282qtw.281.1654090778962; Wed, 01
+ Jun 2022 06:39:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
- console_suspend is disabled
-Content-Language: en-CA
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
-        <mka@chromium.org>, <swboyd@chromium.org>
-References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
- <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
- <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
- <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
+ <YpczhMOT5BvxqL/P@kroah.com>
+In-Reply-To: <YpczhMOT5BvxqL/P@kroah.com>
+From:   cael <juanfengpy@gmail.com>
+Date:   Wed, 1 Jun 2022 21:39:27 +0800
+Message-ID: <CAPmgiULBpWvPV4WzBFY1JMcijg_EkP+w7q6rAWVgdp196WGKXQ@mail.gmail.com>
+Subject: Re: tty: fix a possible hang on tty device
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+From: cael <juanfengpy@gmail.com>
+Subject: [PATCH v2] tty: fix a possible hang on tty device
 
-On 5/24/2022 5:24 PM, Marek Szyprowski wrote:
-> On 23.05.2022 23:32, Marek Szyprowski wrote:
->> Hi,
->>
->> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
->>> For the case of console_suspend disabled, if back to back suspend/resume
->>> test is executed, at the end of test, sometimes console would appear to
->>> be frozen not responding to input. This would happen because, during
->>> resume, rx transactions can come in before system is ready, malfunction
->>> of rx happens in turn resulting in console appearing to be stuck.
->>>
->>> Do a stop_rx in suspend sequence to prevent this.
->>>
->>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
->>> ---
->>> v4: moved the change to serial core to apply for all drivers
->>> v3: swapped the order of conditions to be more human readable
->>> v2: restricted patch to contain only stop_rx in suspend sequence
->>> v1: intial patch contained 2 additional unrelated changes in vicinity
->>> ---
->> This patch landed recently in linux-next as commit c9d2325cdb92
->> ("serial: core: Do stop_rx in suspend path for console if
->> console_suspend is disabled").
->>
->> Unfortunately it breaks console operation on my test systems after
->> system suspend/resume cycle if 'no_console_suspend' kernel parameter
->> is present. System properly resumes from suspend, the console displays
->> all the messages and even command line prompt, but then doesn't react
->> on any input. If I remove the 'no_console_suspend' parameter, the
->> console is again operational after system suspend/resume cycle. Before
->> this patch it worked fine regardless the 'no_console_suspend' parameter.
->>
->> If this matters, the test system is ARM 32bit Samsung Exynos5422-based
->> Odroid XU3lite board.
->
-> One more information. This issue can be easily reproduced with QEMU. It
-> happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when
-> 'no_console_suspend' is added to kernel's cmdline.
->
-Ideally, as comments indicate, the set_termios should have done stop_rx 
-at begin and start_rx at end to take care of this issue.
+We have met a hang on pty device, the reader was blocking
+at epoll on master side, the writer was sleeping at wait_woken
+inside n_tty_write on slave side, and the write buffer on
+tty_port was full, we found that the reader and writer would
+never be woken again and block forever.
 
-This is probably missing in your driver. Can we check if this can be 
-fixed? OR other option is
+The problem was caused by a race between reader and kworker:
+n_tty_read(reader):  n_tty_receive_buf_common(kworker):
+                    |room =3D N_TTY_BUF_SIZE - (ldata->read_head - tail)
+                    |room <=3D 0
+copy_from_read_buf()|
+n_tty_kick_worker() |
+                    |ldata->no_room =3D true
 
-Add a start_rx in uart_resume_port after call to set_termios to handle 
-this scenario for other drivers.
+After writing to slave device, writer wakes up kworker to flush
+data on tty_port to reader, and the kworker finds that reader
+has no room to store data so room <=3D 0 is met. At this moment,
+reader consumes all the data on reader buffer and call
+n_tty_kick_worker to check ldata->no_room which is false and
+reader quits reading. Then kworker sets ldata->no_room=3Dtrue
+and quits too.
 
-Please let me know if there are any concerns for this options.
+If write buffer is not full, writer will wake kworker to flush data
+again after following writes, but if writer buffer is full and writer
+goes to sleep, kworker will never be woken again and tty device is
+blocked.
 
->>>    drivers/tty/serial/serial_core.c | 11 +++++++++--
->>>    1 file changed, 9 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/serial_core.c
->>> b/drivers/tty/serial/serial_core.c
->>> index 82a1770..9a85b41 100644
->>> --- a/drivers/tty/serial/serial_core.c
->>> +++ b/drivers/tty/serial/serial_core.c
->>> @@ -2211,9 +2211,16 @@ int uart_suspend_port(struct uart_driver *drv,
->>> struct uart_port *uport)
->>>        }
->>>        put_device(tty_dev);
->>>    -    /* Nothing to do if the console is not suspending */
->>> -    if (!console_suspend_enabled && uart_console(uport))
->>> +    /*
->>> +     * Nothing to do if the console is not suspending
->>> +     * except stop_rx to prevent any asynchronous data
->>> +     * over RX line. Re-start_rx, when required, is
->>> +     * done by set_termios in resume sequence
->>> +     */
->>> +    if (!console_suspend_enabled && uart_console(uport)) {
->>> +        uport->ops->stop_rx(uport);
->>>            goto unlock;
->>> +    }
->>>          uport->suspended = 1;
->> Best regards
-> Best regards
-Thank you.
+This problem can be solved with a check for read buffer size inside
+n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
+is true, a call to n_tty_kick_worker is necessary to keep flushing
+data to reader.
+
+Signed-off-by: cael <juanfengpy@gmail.com>
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+---
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index efc72104c840..21241ea7cdb9 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
+        struct n_tty_data *ldata =3D tty->disc_data;
+
+        /* Did the input worker stop? Restart it */
+-       if (unlikely(ldata->no_room)) {
+-               ldata->no_room =3D 0;
++       if (unlikely(READ_ONCE(ldata->no_room))) {
++               WRITE_ONCE(ldata->no_room, 0);
+
+                WARN_RATELIMIT(tty->port->itty =3D=3D NULL,
+                                "scheduling with invalid itty\n");
+@@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty,
+const unsigned char *cp,
+                        if (overflow && room < 0)
+                                ldata->read_head--;
+                        room =3D overflow;
+-                       ldata->no_room =3D flow && !room;
++                       WRITE_ONCE(ldata->no_room, flow && !room);
+                } else
+                        overflow =3D 0;
+
+@@ -1663,6 +1663,21 @@ n_tty_receive_buf_common(struct tty_struct
+*tty, const unsigned char *cp,
+        } else
+                n_tty_check_throttle(tty);
+
++       if (READ_ONCE(ldata->no_room)) {
++               /*
++                * Reader ensures that read_tail is updated before
+checking no_room,
++                * make sure that no_room is set before reading read_tail h=
+ere.
++                * Now no_room is visible by reader, the race needs to
+be handled is
++                * that reader has passed checkpoint for no_room and
+reader buffer
++                * is empty, if so n_tty_kick_worker will not be
+called by reader,
++                * instead, this function is called here.
++                * barrier is paired with smp_mb() in n_tty_read()
++                */
++               smp_mb();
++               if (!chars_in_buffer(tty))
++                       n_tty_kick_worker(tty);
++       }
++
+        up_read(&tty->termios_rwsem);
+
+        return rcvd;
+@@ -2180,8 +2195,14 @@ static ssize_t n_tty_read(struct tty_struct
+*tty, struct file *file,
+                if (time)
+                        timeout =3D time;
+        }
+-       if (tail !=3D ldata->read_tail)
++       if (tail !=3D ldata->read_tail) {
++               /*
++                * Make sure no_room is not read before setting read_tail,
++                * paired with smp_mb() in n_tty_receive_buf_common()
++                */
+
++               smp_mb();
+                n_tty_kick_worker(tty);
++       }
+        up_read(&tty->termios_rwsem);
+
+        remove_wait_queue(&tty->read_wait, &wait);
+--
+2.27.0
