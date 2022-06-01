@@ -2,205 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EEEC433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 14:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71465CCA478
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Jun 2022 15:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347768AbiFAOrj (ORCPT
+        id S1348423AbiFAPIF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        Wed, 1 Jun 2022 11:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233844AbiFAOrh (ORCPT
+        with ESMTP id S1344567AbiFAPIE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:47:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8102A50E28
-        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 07:47:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49891B81AFD
-        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 14:47:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A10C385A5;
-        Wed,  1 Jun 2022 14:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654094853;
-        bh=UCmfceCi1c2wNQpeJkRvdWAk+ZSmVjhjMrENuP10L5A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GXrj01hslRUccgMqGpq/ze9iN0HpOS0VxEzSA1O8U6/wJwmNtmc0LI23jGW6A+H2O
-         LPBN/t+kNyzQK4OcBsMNIOqZNRXT2/4xwZkfQL6WirSqP1hKnGgp/b2ieOrjIgaLwv
-         0anzsDAh7BX/J2ewNYOdVEPl3M1+YT/g4QvGAAjk=
-Date:   Wed, 1 Jun 2022 16:47:26 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     cael <juanfengpy@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: tty: fix a possible hang on tty device
-Message-ID: <Ypd7/rSkZ5ez5Dr5@kroah.com>
-References: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
- <YpczhMOT5BvxqL/P@kroah.com>
- <CAPmgiULBpWvPV4WzBFY1JMcijg_EkP+w7q6rAWVgdp196WGKXQ@mail.gmail.com>
+        Wed, 1 Jun 2022 11:08:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002556D181
+        for <linux-serial@vger.kernel.org>; Wed,  1 Jun 2022 08:08:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1654096067;
+        bh=2kv8RiXdA0qxNspb/2fDNaF0Q8s5Jy/Qmx21CY+FbW0=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:Subject:Reply-To:From:
+         In-Reply-To;
+        b=E+MZ4r+TMj+QZdS742fp620K9oAyL28TQ0+A/Lk0xgMI9+Ug604xyFSc1zFcHD8E9
+         dUbMEzYioAfOcjADFKCOccJFJbAJUDUha6DtDh8oPg2cVi47c/QO0ggzY6IBz74pGF
+         k6ZEYY8g6MgtIr9WTIZ+QLhBNdvAFATyh9idcgCA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.21] ([217.61.157.109]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MUGi9-1oM6533Wvj-00RHqb; Wed, 01
+ Jun 2022 17:07:46 +0200
+Message-ID: <23accb82-8f75-4773-4fad-b6218930da62@public-files.de>
+Date:   Wed, 1 Jun 2022 17:07:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPmgiULBpWvPV4WzBFY1JMcijg_EkP+w7q6rAWVgdp196WGKXQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+To:     angelogioacchino.delregno@collabora.com
+Cc:     gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
+        matthias.bgg@gmail.com
+References: <CAGXv+5Hx7cRwNzLWrExcFGy=MMOc3-0EbqCanv2E0G_DKXLCgg@mail.gmail.com>
+Subject: [BUG] mtk serial broken on mt7622 with 5.18.0
+Content-Language: en-US
+Reply-To: frank-w@public-files.de
+From:   Frank Wunderlich <frank-w@public-files.de>
+In-Reply-To: <CAGXv+5Hx7cRwNzLWrExcFGy=MMOc3-0EbqCanv2E0G_DKXLCgg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:6HmAzGI+kinOSC+Tl2WcUAHn+3P/WzdwxHLd5Tmjfz5a41e0Skx
+ l+5KgKrzBISREEBeZ3GuEeKyClVMKWEN0Z/qXZUUkGhCWRGoZTlcK8MpJzWd7MlfYF4XjlU
+ jkjpBr8WcdxD19q5V1CF1vavRPK/SA0q2MseKN/s+XC1BMZZA7a7Mbh3iSFMuXandWC59iW
+ xroIVTM/42n1asMBmH0Zw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Iv6HGkEx/fc=:1DMtqfDyP3hN/Ill9AC4Gy
+ rsZIcHGn2NZh4OyRutBiJQ+2tpf23z48mAfoJXRsVZ+otUf971zU9up3JVpU0ztcx6IOcTp8C
+ SXrNCPWbW0se6mvAnCQ7PpEVt6JOuNp3tnk1Fr7ImK8FOGqxk1nB1bW7XqSXLCXzNYBsSfEFJ
+ NbjNmwZBjURUqjKP3ZBdnFi7CvG+1IPXCisHwvcxF2jwQ0atAFjV9N/M6rN4KWUybehqvIrdf
+ i11vhjUbL4Nww7pYu7sKl2FpnCRPdxjVAGw9fDIXo2vGasE1YUGB0vYjhMhOsLVXqow/JM8In
+ rLVFC8CosGxmdON5cwQFPBtPV7kSyvZ27UTu7ARIoxyPxVOQAKFiHSL3o2KLIbbbOuhYpWKPZ
+ WCYT55Txq8g41MiuHWr6oiE7PClkVJnVOYR02Rj9vPLX7ESmPTgCaJXzTleiARyhEXgLkkVWA
+ z9t0lDmD0q7JpnuPeUBMI750/G1gFHZZlJ0ebPk9EniL2YaVgSYu65DfrS73LuTk8z9aaEhrO
+ fklsz01W1ubCyAknSIovTUe1VkH/WRLjUmuhHOa/+s+9ikLhOcjlHIBeHjMSDXVqAaAuVjQJ/
+ Wh1OYewI6qsMI49AXc779kigr4hRt/x6dzBWLU2Elpbe6KuOG/DxscPMZgSsyR1vFh+FLPWOv
+ AYqX63/DcTdfbDVZKbCAmKqXWsybktfGC9sOQd9U4c/pmJJMhv4aCTtf6GFCRAvFYPwa7W3dx
+ x7a9qcv7sRuHgpQWfdpkMHbZbOF9CEwlnxTVdUVCC6h7N1l5U3jbsLQjjTmV6kKg2VCkZ8/mf
+ J6WD/gEytiuCFTiRS68dPfyumFmrfUVRv3Lsayo/x58ZCqaj5gAJnKYHFk4Y44o2lDT2dFYt/
+ GDcmpCnZG2R74kWXVJPsYQviHMQtQTRBBNZxMywo/VupFMsBU08wNRm/uJUu4viy+tH1PHS4+
+ uZZSAafgzh638p3aLRlMAJi9cxgUt3PbjclQUI/lrH1qBv5yF+v60L2goVOSkxdD7X4v42ljl
+ tQjlsk3A2dqt8mLqbpGMnXNWusl+Tk46RgRr3y+pFHCf9IDxImMuz/Dw/lE17jn6Ndhmko/yk
+ +/Dqp7Hpgk1dBboNSl74IC3e12nnfv2qYI8QvngKOB/Ck30N7muI2tHZA==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 09:39:27PM +0800, cael wrote:
-> From: cael <juanfengpy@gmail.com>
-> Subject: [PATCH v2] tty: fix a possible hang on tty device
-> 
-> We have met a hang on pty device, the reader was blocking
-> at epoll on master side, the writer was sleeping at wait_woken
-> inside n_tty_write on slave side, and the write buffer on
-> tty_port was full, we found that the reader and writer would
-> never be woken again and block forever.
-> 
-> The problem was caused by a race between reader and kworker:
-> n_tty_read(reader):  n_tty_receive_buf_common(kworker):
->                     |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
->                     |room <= 0
-> copy_from_read_buf()|
-> n_tty_kick_worker() |
->                     |ldata->no_room = true
-> 
-> After writing to slave device, writer wakes up kworker to flush
-> data on tty_port to reader, and the kworker finds that reader
-> has no room to store data so room <= 0 is met. At this moment,
-> reader consumes all the data on reader buffer and call
-> n_tty_kick_worker to check ldata->no_room which is false and
-> reader quits reading. Then kworker sets ldata->no_room=true
-> and quits too.
-> 
-> If write buffer is not full, writer will wake kworker to flush data
-> again after following writes, but if writer buffer is full and writer
-> goes to sleep, kworker will never be woken again and tty device is
-> blocked.
-> 
-> This problem can be solved with a check for read buffer size inside
-> n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
-> is true, a call to n_tty_kick_worker is necessary to keep flushing
-> data to reader.
-> 
-> Signed-off-by: cael <juanfengpy@gmail.com>
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
-> ---
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index efc72104c840..21241ea7cdb9 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
->         struct n_tty_data *ldata = tty->disc_data;
-> 
->         /* Did the input worker stop? Restart it */
-> -       if (unlikely(ldata->no_room)) {
-> -               ldata->no_room = 0;
-> +       if (unlikely(READ_ONCE(ldata->no_room))) {
-> +               WRITE_ONCE(ldata->no_room, 0);
-> 
->                 WARN_RATELIMIT(tty->port->itty == NULL,
->                                 "scheduling with invalid itty\n");
-> @@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty,
-> const unsigned char *cp,
->                         if (overflow && room < 0)
->                                 ldata->read_head--;
->                         room = overflow;
-> -                       ldata->no_room = flow && !room;
-> +                       WRITE_ONCE(ldata->no_room, flow && !room);
->                 } else
->                         overflow = 0;
-> 
-> @@ -1663,6 +1663,21 @@ n_tty_receive_buf_common(struct tty_struct
-> *tty, const unsigned char *cp,
->         } else
->                 n_tty_check_throttle(tty);
-> 
-> +       if (READ_ONCE(ldata->no_room)) {
-> +               /*
-> +                * Reader ensures that read_tail is updated before
-> checking no_room,
-> +                * make sure that no_room is set before reading read_tail here.
-> +                * Now no_room is visible by reader, the race needs to
-> be handled is
-> +                * that reader has passed checkpoint for no_room and
-> reader buffer
-> +                * is empty, if so n_tty_kick_worker will not be
-> called by reader,
-> +                * instead, this function is called here.
-> +                * barrier is paired with smp_mb() in n_tty_read()
-> +                */
-> +               smp_mb();
-> +               if (!chars_in_buffer(tty))
-> +                       n_tty_kick_worker(tty);
-> +       }
-> +
->         up_read(&tty->termios_rwsem);
-> 
->         return rcvd;
-> @@ -2180,8 +2195,14 @@ static ssize_t n_tty_read(struct tty_struct
-> *tty, struct file *file,
->                 if (time)
->                         timeout = time;
->         }
-> -       if (tail != ldata->read_tail)
-> +       if (tail != ldata->read_tail) {
-> +               /*
-> +                * Make sure no_room is not read before setting read_tail,
-> +                * paired with smp_mb() in n_tty_receive_buf_common()
-> +                */
-> 
-> +               smp_mb();
->                 n_tty_kick_worker(tty);
-> +       }
->         up_read(&tty->termios_rwsem);
-> 
->         remove_wait_queue(&tty->read_wait, &wait);
-> --
-> 2.27.0
-
 Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+i get a serial console hang on booting my mt7622 bananapi r64 with 5.18.0
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+[    0.591802] Serial: 8250/16550 driver, 3 ports, IRQ sharing disabled
+[    0.599915] printk: console [ttyS0] disabled
+[    0.624563] 11002000.serial: ttyS0 at MMIO 0x11002000 (irq =3D 126,
+base_baud =3D 1562500) is a 16550A
 
-- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
-  and can not be applied.  Please read the file,
-  Documentation/email-clients.txt in order to fix this.
+git bisect points to this commit (cannot revert it alone)
 
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what a proper Subject: line should
-  look like.
+6f81fdded0d024c7d4084d434764f30bca1cd6b1 is the first bad commit
+commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1
+Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.co=
+m>
+Date:   Wed Apr 27 15:23:27 2022 +0200
 
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file, Documentation/SubmittingPatches
-  for how to do this correctly.
+     serial: 8250_mtk: Make sure to select the right FEATURE_SEL
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+     Set the FEATURE_SEL at probe time to make sure that BIT(0) is enabled=
+:
+     this guarantees that when the port is configured as AP UART, the
+     right register layout is interpreted by the UART IP.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+     Signed-off-by: AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com>
+     Cc: stable <stable@vger.kernel.org>
+     Link:
+https://lore.kernel.org/r/20220427132328.228297-3-angelogioacchino.delregn=
+o@collabora.com
+     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-thanks,
+  drivers/tty/serial/8250/8250_mtk.c | 7 +++++++
+  1 file changed, 7 insertions(+)
 
-greg k-h's patch email bot
+merged by 6811a466d27b "Merge tag 'tty-5.18-rc7'"
+
+reverted these 2 commits works for me
+e1bfdbc7daca 2022-04-27 serial: 8250_mtk: Fix register address for
+XON/XOFF character
+6f81fdded0d0 2022-04-27 serial: 8250_mtk: Make sure to select the right
+FEATURE_SEL
+
+have see this discussion [1], but can't manage to import mbox file to
+thunderbird yet
+
+regards Frank
+
+[1]
+https://lore.kernel.org/linux-arm-kernel/CAGXv+5Hx7cRwNzLWrExcFGy=3DMMOc3-=
+0EbqCanv2E0G_DKXLCgg@mail.gmail.com/#t
