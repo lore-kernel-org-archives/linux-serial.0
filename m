@@ -2,110 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCDBC43334
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 17:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E71DC43334
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 21:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237340AbiFBRDK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Jun 2022 13:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        id S229977AbiFBVJ0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Jun 2022 17:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234929AbiFBRDK (ORCPT
+        with ESMTP id S239013AbiFBVJV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Jun 2022 13:03:10 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6911B1FA67;
-        Thu,  2 Jun 2022 10:03:09 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2ec42eae76bso57793717b3.10;
-        Thu, 02 Jun 2022 10:03:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=tOyhHrccKEe42HVZG3/loPKJzOL1E5L81bn2HsTKWV4=;
-        b=Lj1mogPfiekNzIq2p5Zzi8Pfg5Ow7ooj3ntEFokLmC+TnxOOq085vPC8pz4hLv22zC
-         EJv25ivsh2w8Qg/ccxCFMsbyvhsYtEerOIl7SWA5SDM1JAm+EenbWcWD+1SOzOtHF9PX
-         ucVahjG2bPbPPXHyKovkOmfgFTqlMWQ7bhQgFGAU1nFv02dM6HHGsIQ2MOYWi73SlmrG
-         HI2hjzh29RZTFRsr+RXiEEY97eRPpoFrIEog1KGWFQ5SOEjzaSnAzA2GbTe9OHVVhDdw
-         yruflPonvsho/eOr8S7yxl09k6ryD0SuZAhypaEI1vIYPjteQeQOucP4A8n9STJe5Ca2
-         GwEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=tOyhHrccKEe42HVZG3/loPKJzOL1E5L81bn2HsTKWV4=;
-        b=IfM/NlIa9rzaigjn90GiznqaL9G7gMmAxabv9yz7rFz5cUDAVG69D6rgGuD3AtNLjB
-         W4FwTIhnJRVCrsQGR00eQwMlIlWkbwWeaqWCOux01yHz+scyKDyd6+GjOhkU3nRtqhw1
-         fJhxcQHBzhJuFG7N3WZoFPlIAcEDepDo4n1LC3tIfqrzhQ19qWaSrzVrLN6M18JECmeb
-         jqFPxvxBmnmxzYVXSvR6Vs5pWC2MOrT6x+tD0Qk5GlxsWZckJDo1MSSR42c2nlRBeTWH
-         ncWcLSZk50AZ+LeWxo643bRj+CuBG1880C+dNK7idWJ0J8mllKxMdHHUml00dvI2WAQW
-         zbvw==
-X-Gm-Message-State: AOAM533FF57VAycBAl0Ns26/3ymfX9beKA/v5ns9ATCXCKou0bMCM9/U
-        SwRUQfvbIzcAOrx3dRgTlIBF/j0LewUHeNlXjlw=
-X-Google-Smtp-Source: ABdhPJzX5JCdVYOv0aLjT6oZN1D77hW+EZECwabMIrptLdgW9ZAmWGH6rNEd4i1GfwqxiL/W4nR1ly4peukVQOH7aXQ=
-X-Received: by 2002:a81:c44b:0:b0:2d6:4726:ef4b with SMTP id
- s11-20020a81c44b000000b002d64726ef4bmr6711751ywj.184.1654189388664; Thu, 02
- Jun 2022 10:03:08 -0700 (PDT)
+        Thu, 2 Jun 2022 17:09:21 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96203584B;
+        Thu,  2 Jun 2022 14:09:18 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aede9.dynamic.kabel-deutschland.de [95.90.237.233])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E9B1461EA1923;
+        Thu,  2 Jun 2022 23:09:15 +0200 (CEST)
+Message-ID: <1880b7a7-2353-c381-5afb-1d4224eb223b@molgen.mpg.de>
+Date:   Thu, 2 Jun 2022 23:09:15 +0200
 MIME-Version: 1.0
-Received: by 2002:a05:7000:7aa7:0:0:0:0 with HTTP; Thu, 2 Jun 2022 10:03:08
- -0700 (PDT)
-In-Reply-To: <22ccc180-a3ab-77cf-a771-00113e712ac4@kernel.org>
-References: <20220531043356.8CAB637401A9@freecalypso.org> <20220531043655.DDF783740232@freecalypso.org>
- <dbec85f5-7b28-3d0b-6b39-bd4296a49a70@kernel.org> <CA+uuBqacb3X+km-3EtdRxaWi0FvxZWCv8RpCo-+qaNkT-=JAgw@mail.gmail.com>
- <22ccc180-a3ab-77cf-a771-00113e712ac4@kernel.org>
-From:   Mychaela Falconia <mychaela.falconia@gmail.com>
-Date:   Thu, 2 Jun 2022 09:03:08 -0800
-Message-ID: <CA+uuBqbEpdUBxxAEsGypExP5ag7Ue7Z9MvWmCrSYxvWDiOfTdQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] serial: core: add sysfs attribute to suppress
- ready signalling on open
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: Non-working serial console
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+References: <d8e9f4fe-e8dc-67aa-e240-f2f5f1dfca2f@molgen.mpg.de>
+In-Reply-To: <d8e9f4fe-e8dc-67aa-e240-f2f5f1dfca2f@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Jiri Slaby wrote:
+Dear Linux folks,
 
-> As long as you break no currently supported devices.
 
-This condition is a given, and has always been satisfied in all of my
-patch proposals, including those patches which I currently instruct my
-users to install locally to work with my GSM devices.
+Am 02.06.22 um 18:50 schrieb Paul Menzel:
 
-> I've just noticed the double negative "!tty_port_nordy()" on both calls of
-> that function. I guess there was already a discussion about the naming,
-> but wouldn't it make more sense to dub it like tty_port_do_rtscts()?
+> Since a while I noticed, output to the serial console with 
+> `console=ttyS0,115200n8` does not work with the attached configuration 
+> `defconfig-non-working-serial.txt` created by `make savedefconfig`. 
+> Only, when with `earlyprintk=ttyS0,115200,keep` the serial console 
+> starts working. I am able to reproduce it in QEMU. It’s reproducible 
+> with Linus’ latest master branch.
+> 
+>      $ git log --oneline --no-decorate -1
+>      8ab2afa23bd19 Merge tag 'for-5.19/fbdev-1' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev
+>      $ qemu-system-x86_64 --version
+>      QEMU emulator version 5.1.0
+>      Copyright (c) 2003-2020 Fabrice Bellard and the QEMU Project developers
+>      $ qemu-system-x86_64 -kernel arch/x86/boot/bzImage -append "console=ttyS0,115200n8" -serial file:/dev/shm/kernel.txt -curses
+> 
+> With `earlyprintk=` it works:
+> 
+>      $ qemu-system-x86_64 -kernel arch/x86/boot/bzImage -append "earlyprintk=serial console=ttyS0,115200n8" -serial file:/dev/shm/kernel.txt -curses
+> 
+> Strangely, I found a different configuration, where it works, but I 
+> didn’t see what configuration option makes the difference.
+> 
+> Can you reproduce the problem with `defconfig-no-working-serial.txt`?
 
-There are two aspects to this naming issue:
+It turns out, the non-working configuration build the serial 8250 driver 
+as a module (`CONFIG_SERIAL_8250=m`) instead of building it into the 
+Linux kernel. Building it into the Linux kernel and using 
+`CONFIG_SERIAL_8250_CONSOLE=y` fixes my issue.
 
-1) names of internal flags and functions that exist only inside the
-kernel;
+```
+$ diff -u .config.old .config
+--- .config.old 2022-05-31 18:40:31.329017225 +0200
++++ .config     2022-06-02 22:53:06.317175267 +0200
+@@ -1814,6 +1814,7 @@
 
-2) name of the sysfs attribute exported to userspace.
+  CONFIG_UEFI_CPER=y
+  CONFIG_UEFI_CPER_X86=y
++CONFIG_EFI_EARLYCON=y
+  CONFIG_EFI_CUSTOM_SSDT_OVERLAYS=y
+  # CONFIG_EFI_DISABLE_RUNTIME is not set
+  # CONFIG_EFI_COCO_SECRET is not set
+@@ -2554,11 +2555,13 @@
+  #
+  # Serial drivers
+  #
+-CONFIG_SERIAL_8250=m
++CONFIG_SERIAL_EARLYCON=y
++CONFIG_SERIAL_8250=y
+  # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
+  CONFIG_SERIAL_8250_PNP=y
+  # CONFIG_SERIAL_8250_16550A_VARIANTS is not set
+  # CONFIG_SERIAL_8250_FINTEK is not set
++CONFIG_SERIAL_8250_CONSOLE=y
+  CONFIG_SERIAL_8250_DMA=y
+  # CONFIG_SERIAL_8250_PCI is not set
+  CONFIG_SERIAL_8250_NR_UARTS=32
+@@ -2575,7 +2578,8 @@
+  #
+  # CONFIG_SERIAL_KGDB_NMI is not set
+  # CONFIG_SERIAL_UARTLITE is not set
+-CONFIG_SERIAL_CORE=m
++CONFIG_SERIAL_CORE=y
++CONFIG_SERIAL_CORE_CONSOLE=y
+  CONFIG_CONSOLE_POLL=y
+  # CONFIG_SERIAL_JSM is not set
+  # CONFIG_SERIAL_LANTIQ is not set
+@@ -2590,7 +2594,7 @@
+  # CONFIG_SERIAL_SPRD is not set
+   # end of Serial drivers
 
-The latter part constitutes ABI, hence it is the one that calls for
-serious reflection on the choice of name.  The sysfs portion of the
-present patch series (as opposed to the USB VID:PID-keyed portion)
-originates from Johan, and the nordy name for the sysfs attribute
-(and for the internal flag and function for consistency) was his
-choice.
+-CONFIG_SERIAL_MCTRL_GPIO=m
++CONFIG_SERIAL_MCTRL_GPIO=y
+  # CONFIG_SERIAL_NONSTANDARD is not set
+  # CONFIG_N_GSM is not set
+  # CONFIG_NOZOMI is not set
+```
 
-My own preferred choice for the sysfs attribute name would be something
-like manual_rtsdtr rather than nordy; I feel that a name such as
-manual_rtsdtr conveys what is being done: asking the kernel to put
-these modem control outputs under manual control (TIOCMBIS & TIOCMBIC)
-instead of automatic assertion on open.  Johan argued a year and a
-half ago that nordy was a better name as it indicated "please suppress
-ready signaling" - it's a different perspective.  Johan, are you still
-around?  Do you still favor nordy as the sysfs attribute name?
+The question is, if `earlyprintk=ttyS0,115200(,keep)` worked before with 
+`CONFIG_SERIAL_8250=m`, why the driver is needed, and `console=ttyS0,…` 
+cannot fall back to the earlyprintk driver.
 
-At the end of the day, I will be happy with _any_ name for the sysfs
-attribute - to end users it's the functionality that matters, not the
-name - and because it's ABI, once the sysfs attribute is implemented
-with some given name, it will stay.  So, can some authoritative people
-please weigh in on how this sysfs attribute should be named?  Should
-it be nordy?  manual_rtsdtr?  Something else?
 
-M~
+Kind regards,
+
+Paul
