@@ -2,151 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C8B7C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 08:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86615C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 09:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232459AbiFBIwg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S232712AbiFBJAs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Jun 2022 05:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiFBIwf (ORCPT
+        with ESMTP id S229895AbiFBJAr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:52:35 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7075F45ADC;
-        Thu,  2 Jun 2022 01:52:31 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 2 Jun 2022 05:00:47 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F4420A0A7;
+        Thu,  2 Jun 2022 02:00:46 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id EE8752223E;
-        Thu,  2 Jun 2022 10:52:28 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E45F52223E;
+        Thu,  2 Jun 2022 11:00:43 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1654159949;
+        t=1654160444;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jwNt2A64Uimiyvogwxk15XDFZT8JagE7v8+a7BtJjLg=;
-        b=fe22pOYV8FB4xcx1IleSAX6hTBhzhsIUT297iQf1Ox7Ux/zm3CJsGSl/fIHkD7VovutxPg
-        4yYFBEaTP5mKwdjrgd6lVmhROpgnm+dWeHZSK7znQqB7q7vrJ+fFDrt9kzM8SD1LRC/d25
-        7xh1P8z3T5mAtZ/07M8OjjptM7HzggU=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 02 Jun 2022 10:52:28 +0200
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B5z9oWKQYYGAn6NKzZ7SMfavjtu2i1gf/5FZ3zbr/XI=;
+        b=dMvI8c7rdMfMVwVYZ7dXmJGi5WR0OCQVhScMP3skmxPCD7CY13Z7IuHlPi3HGskm/oZtGS
+        SZvJZGJArb8HuMuXE7IeDHLmwfmxYOKLslstZA6b7UJzt7Pj8jY+ysC23gBC5T2pY89Whd
+        eO3JDue2VLfxAF0/9ARXT8qZzR8D0u0=
 From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Frank Rowand <frowand.list@gmail.com>,
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] earlycon: prevent multiple register_console()
-In-Reply-To: <CAL_JsqK6DjLTXqu475XTJXBOFihJEePw40zQcx+sCF7tG3GkSA@mail.gmail.com>
-References: <20220601135528.3176471-1-michael@walle.cc>
- <CAL_JsqK6DjLTXqu475XTJXBOFihJEePw40zQcx+sCF7tG3GkSA@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <c0b2814a22f6a15d465875f177d17ab2@walle.cc>
-X-Sender: michael@walle.cc
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH v2] earlycon: prevent multiple register_console()
+Date:   Thu,  2 Jun 2022 11:00:38 +0200
+Message-Id: <20220602090038.3201897-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+If the earlycon parameter is given twice, the kernel will spit out a
+WARN() in register_console() because it was already registered. The
+non-dt variant setup_earlycon() already handles that gracefully. The dt
+variant of_setup_earlycon() doesn't. Add the check there and add the
+-EALREADY handling in early_init_dt_scan_chosen_stdout().
 
-Am 2022-06-01 18:39, schrieb Rob Herring:
-> On Wed, Jun 1, 2022 at 8:55 AM Michael Walle <michael@walle.cc> wrote:
->> 
->> If the earlycon parameter is given twice, the kernel will spit out a
->> WARN() in register_console() because it was already registered. The
->> non-dt variant setup_earlycon() already handles that gracefully. The 
->> dt
->> variant of_setup_earlycon() doesn't. Add the check there and propagate
->> it through early_init_dt_scan_chosen_stdout().
->> 
->> FWIW, this doesn't happen if CONFIG_ACPI_SPCR_TABLE is set. In that 
->> case
->> the registration is delayed until after earlycon parameter(s) are
->> parsed.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
+FWIW, this doesn't happen if CONFIG_ACPI_SPCR_TABLE is set. In that case
+the registration is delayed until after earlycon parameter(s) are
+parsed.
 
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+changes since v1:
+ - add missing EALREADY handling in of_setup_earlycon()
+ - return 0 early as suggested by Rob
 
-Scrap this version. Somehow I missed to add the actual check in
-of_setup_earlycon() to this patch.
+For the curious, here is the backtrace:
 
->> I'm not sure if this should have a Fixes tag or not. If so I guess it
->> should be the very first commit which introduced the support (commit
->> fb11ffe74c79 ("of/fdt: add FDT serial scanning for earlycon")).
-> 
-> Considering no one noticed or cared in 8 years and that earlycon is
-> supposed to be a debug option, I'd say no.
-> 
->> For the curious, here is the backtrace:
->> 
->> [    0.000000] ------------[ cut here ]------------
->> [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/printk/printk.c:3328 
->> register_console+0x2b4/0x364
->> [    0.000000] console 'atmel_serial0' already registered
->> [    0.000000] Modules linked in:
->> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 
->> 5.18.0-next-20220601+ #652
->> [    0.000000] Hardware name: Generic DT based system
->> [    0.000000] Backtrace:
->> [    0.000000]  dump_backtrace from show_stack+0x18/0x1c
->> [    0.000000]  show_stack from dump_stack_lvl+0x48/0x54
->> [    0.000000]  dump_stack_lvl from dump_stack+0x18/0x1c
->> [    0.000000]  dump_stack from __warn+0xd0/0x148
->> [    0.000000]  __warn from warn_slowpath_fmt+0x9c/0xc4
->> [    0.000000]  warn_slowpath_fmt from register_console+0x2b4/0x364
->> [    0.000000]  register_console from of_setup_earlycon+0x29c/0x2ac
->> [    0.000000]  of_setup_earlycon from 
->> early_init_dt_scan_chosen_stdout+0x154/0x18c
->> [    0.000000]  early_init_dt_scan_chosen_stdout from 
->> param_setup_earlycon+0x40/0x48
->> [    0.000000]  param_setup_earlycon from do_early_param+0x88/0xc4
->> [    0.000000]  do_early_param from parse_args+0x1a4/0x404
->> [    0.000000]  parse_args from parse_early_options+0x40/0x48
->> [    0.000000]  parse_early_options from parse_early_param+0x38/0x48
->> [    0.000000]  parse_early_param from setup_arch+0x114/0x7a4
->> [    0.000000]  setup_arch from start_kernel+0x74/0x6dc
->> [    0.000000]  start_kernel from 0x0
->> [    0.000000] ---[ end trace 0000000000000000 ]---
->> 
->>  drivers/of/fdt.c              | 6 ++++--
->>  drivers/tty/serial/earlycon.c | 5 ++++-
->>  2 files changed, 8 insertions(+), 3 deletions(-)
->> 
->> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
->> index a8f5b6532165..7f3524213b43 100644
->> --- a/drivers/of/fdt.c
->> +++ b/drivers/of/fdt.c
->> @@ -1025,6 +1025,7 @@ int __init 
->> early_init_dt_scan_chosen_stdout(void)
->>         int l;
->>         const struct earlycon_id *match;
->>         const void *fdt = initial_boot_params;
->> +       int ret;
->> 
->>         offset = fdt_path_offset(fdt, "/chosen");
->>         if (offset < 0)
->> @@ -1057,8 +1058,9 @@ int __init 
->> early_init_dt_scan_chosen_stdout(void)
->>                 if (fdt_node_check_compatible(fdt, offset, 
->> match->compatible))
->>                         continue;
->> 
->> -               if (of_setup_earlycon(match, offset, options) == 0)
->> -                       return 0;
->> +               ret = of_setup_earlycon(match, offset, options);
->> +               if (!ret || ret == -EALREADY)
->> +                       return ret;
-> 
-> Wouldn't just doing a 'return 0' here be simpler? The only other
-> caller of this function doesn't check the error.
+[    0.000000] ------------[ cut here ]------------
+[    0.000000] WARNING: CPU: 0 PID: 0 at kernel/printk/printk.c:3328 register_console+0x2b4/0x364
+[    0.000000] console 'atmel_serial0' already registered
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-next-20220601+ #652
+[    0.000000] Hardware name: Generic DT based system
+[    0.000000] Backtrace:
+[    0.000000]  dump_backtrace from show_stack+0x18/0x1c
+[    0.000000]  show_stack from dump_stack_lvl+0x48/0x54
+[    0.000000]  dump_stack_lvl from dump_stack+0x18/0x1c
+[    0.000000]  dump_stack from __warn+0xd0/0x148
+[    0.000000]  __warn from warn_slowpath_fmt+0x9c/0xc4
+[    0.000000]  warn_slowpath_fmt from register_console+0x2b4/0x364
+[    0.000000]  register_console from of_setup_earlycon+0x29c/0x2ac
+[    0.000000]  of_setup_earlycon from early_init_dt_scan_chosen_stdout+0x154/0x18c
+[    0.000000]  early_init_dt_scan_chosen_stdout from param_setup_earlycon+0x40/0x48
+[    0.000000]  param_setup_earlycon from do_early_param+0x88/0xc4
+[    0.000000]  do_early_param from parse_args+0x1a4/0x404
+[    0.000000]  parse_args from parse_early_options+0x40/0x48
+[    0.000000]  parse_early_options from parse_early_param+0x38/0x48
+[    0.000000]  parse_early_param from setup_arch+0x114/0x7a4
+[    0.000000]  setup_arch from start_kernel+0x74/0x6dc
+[    0.000000]  start_kernel from 0x0
+[    0.000000] ---[ end trace 0000000000000000 ]---
 
-Ok.
+ drivers/of/fdt.c              | 4 +++-
+ drivers/tty/serial/earlycon.c | 3 +++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
--michael
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index a8f5b6532165..043b12be22d6 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -1025,6 +1025,7 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 	int l;
+ 	const struct earlycon_id *match;
+ 	const void *fdt = initial_boot_params;
++	int ret;
+ 
+ 	offset = fdt_path_offset(fdt, "/chosen");
+ 	if (offset < 0)
+@@ -1057,7 +1058,8 @@ int __init early_init_dt_scan_chosen_stdout(void)
+ 		if (fdt_node_check_compatible(fdt, offset, match->compatible))
+ 			continue;
+ 
+-		if (of_setup_earlycon(match, offset, options) == 0)
++		ret = of_setup_earlycon(match, offset, options);
++		if (!ret || ret == -EALREADY)
+ 			return 0;
+ 	}
+ 	return -ENODEV;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 57c70851f22a..88d08ba1ca83 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -253,6 +253,9 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 	bool big_endian;
+ 	u64 addr;
+ 
++	if (early_con.flags & CON_ENABLED)
++		return -EALREADY;
++
+ 	spin_lock_init(&port->lock);
+ 	port->iotype = UPIO_MEM;
+ 	addr = of_flat_dt_translate_address(node);
+-- 
+2.30.2
+
