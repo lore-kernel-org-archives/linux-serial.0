@@ -2,89 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1C3CCA478
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 08:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD80C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 08:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiFBIbe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
+        id S231678AbiFBIf2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232435AbiFBIbd (ORCPT
+        with ESMTP id S230003AbiFBIf0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:31:33 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2E8138B6F;
-        Thu,  2 Jun 2022 01:31:30 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 26FA421AFA;
-        Thu,  2 Jun 2022 08:31:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654158689; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=5mZl3ZNZZwSu+jBdshpeM5NmyVR6o4sDm1B5v32GAbw=;
-        b=owOnrPDJm9uioMTlKiJMEHF9FqkITMeWdIoHmUN7IGzuQo/vVtOrOwruNYHJYUV9c7v0tk
-        V8hy1q09Sal5d/EZNiq0ReaqKFfe09qfHdkWP1qzSAXh72imZtlFItch3yUusYDPL9Z03+
-        vAjCQHA75Yq+X7Pm+9TrYgTc4DlGJ3I=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654158689;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=5mZl3ZNZZwSu+jBdshpeM5NmyVR6o4sDm1B5v32GAbw=;
-        b=0xFQcCmnbvbcbf6vzSderaeCeGU37f6FJDL6jBfszFi9ciIREtxgdmfWWifhJm06SYCdnN
-        V7gBOkk93bI28aBg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E69DD2C141;
-        Thu,  2 Jun 2022 08:31:28 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/2] tty/vt: defkeymap.c_shipped, little unification with loadkeys
-Date:   Thu,  2 Jun 2022 10:31:27 +0200
-Message-Id: <20220602083128.22540-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.1
+        Thu, 2 Jun 2022 04:35:26 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2476C1FD9E2;
+        Thu,  2 Jun 2022 01:35:25 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id l204so7103074ybf.10;
+        Thu, 02 Jun 2022 01:35:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=fyv5qXxzRNlKcviUT5bygdy56T+SSeZ5/D4qh4GaJ0A=;
+        b=qh3siJ0ZDSNbxxC4A4CsxhfazOwNXCJwRuTjBIKb3jsLY0Gq1yx3fW8iJeV1sjIj8B
+         z/ffvyWHo+mt/46cfhhJk0/dHa8bF22XEMNbLklweze5HaMcSWyP5E4UMXDIQCGRWg6J
+         l6ySKFNBJHuyZezDl6q2iu4Q7BBx34ivlbasf4AukcHYTrCDphbhISrYsBNnVbDsYSgd
+         Ztj25La3vbV61aml3p+GRbIbAhvRA/uIVNTFlH7JCNInmfFlvgKYldXAoVzvibYV05pR
+         CEX7etZUYaM3/A3J2QfUoojtvsZFZGRjI9yFWTz2pINn8QpxfKT5gxJ00LplH+Kew6i0
+         wn5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=fyv5qXxzRNlKcviUT5bygdy56T+SSeZ5/D4qh4GaJ0A=;
+        b=lXZzx6P4mq78qpscjM245Zpup7gDIMZhQGpI0qk89TuBGSDMlpsdRaU3K7Gq7fQCuq
+         cO/cJDl2ogRv2tXWPzLy+IgvEZBHHORcQvbE1Uu4lxJCF/1xYEVJgibduiJQysmi5xNL
+         uIiGFlFjEKP1N3xjgpRizTix5MMdOI/WWeExNHCeRvuUTyLgrtOCLNrJXXPI84buI7MD
+         ImKwu6+bzE+P0A0UyvHYchLwVZ4hdvl4bRXnUWcxBM3qwWwjpkldE07cN6ptLIUaHbb7
+         z8WnvzETrLGN5+O18KAaCxpKz1dlzYb2FL0971TimgAjvPe/t0T0hHk35y6O+p81YSzN
+         AF6g==
+X-Gm-Message-State: AOAM531jY3ogoLBZojZzgXgVRBQ+SQ5ASTtwq8vxP/hVxBDPP8aA+yv2
+        r9avlEAu9OBYL9figWg+Aeal3yYsj1KWI5rvHlhMIGfT
+X-Google-Smtp-Source: ABdhPJxH6XEghFHDdpos+Xl2mWZyzTjeqluvnrO3eIGlg1FS01vOR1J8dLdTBrMHRSpjEtnHIhUKVnkuiOvZbJ/AlGA=
+X-Received: by 2002:a25:945:0:b0:65c:e3e8:b04 with SMTP id u5-20020a250945000000b0065ce3e80b04mr4091820ybm.441.1654158924403;
+ Thu, 02 Jun 2022 01:35:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:7000:7aa7:0:0:0:0 with HTTP; Thu, 2 Jun 2022 01:35:23
+ -0700 (PDT)
+In-Reply-To: <dbec85f5-7b28-3d0b-6b39-bd4296a49a70@kernel.org>
+References: <20220531043356.8CAB637401A9@freecalypso.org> <20220531043655.DDF783740232@freecalypso.org>
+ <dbec85f5-7b28-3d0b-6b39-bd4296a49a70@kernel.org>
+From:   Mychaela Falconia <mychaela.falconia@gmail.com>
+Date:   Thu, 2 Jun 2022 00:35:23 -0800
+Message-ID: <CA+uuBqacb3X+km-3EtdRxaWi0FvxZWCv8RpCo-+qaNkT-=JAgw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] serial: core: add sysfs attribute to suppress
+ ready signalling on open
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-loadkeys 2.4.0 currently:
-* notes the use of --unicode to the output, and
-* uses "unsigned short" for key_maps instead of "ushort".
+Jiri Slaby wrote:
 
-So make our shipped file consistent with the generated output in this
-regard.
+> s@ttyS0@ttyS<x>@
+> [...]
+> sysfs_emit()? (Even if I know %d won't overflow PAGE_SIZE :P.)
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/vt/defkeymap.c_shipped | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Thanks for the feedback - saving it for v3 of my patch series.
 
-diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
-index 094d95bf0005..0c043e4f292e 100644
---- a/drivers/tty/vt/defkeymap.c_shipped
-+++ b/drivers/tty/vt/defkeymap.c_shipped
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Do not edit this file! It was automatically generated by   */
--/*    loadkeys --mktable defkeymap.map > defkeymap.c          */
-+/* Do not edit this file! It was automatically generated by     */
-+/*    loadkeys --mktable --unicode defkeymap.map > defkeymap.c  */
- 
- #include <linux/types.h>
- #include <linux/keyboard.h>
-@@ -139,7 +139,7 @@ static unsigned short ctrl_alt_map[NR_KEYS] = {
- 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
- };
- 
--ushort *key_maps[MAX_NR_KEYMAPS] = {
-+unsigned short *key_maps[MAX_NR_KEYMAPS] = {
- 	plain_map, shift_map, altgr_map, NULL,
- 	ctrl_map, shift_ctrl_map, NULL, NULL,
- 	alt_map, NULL, NULL, NULL,
--- 
-2.36.1
+Any comments, positive or negative, on the principal/philosophical
+idea behind this proposed patch series?
 
+M~
