@@ -2,109 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBE3C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 14:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8669C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Jun 2022 15:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235969AbiFBOaD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
+        id S236529AbiFBPml (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235985AbiFBOaB (ORCPT
+        with ESMTP id S236515AbiFBPmk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:30:01 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00DA26A903;
-        Thu,  2 Jun 2022 07:30:00 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e93bbb54f9so6898386fac.12;
-        Thu, 02 Jun 2022 07:30:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GCZRja3up0NniP+FBJkrSPbAN7cm/0rj1PnFJjF7f58=;
-        b=0hbvPX1Er6UnKKclVv6OyHAbnw57+gTFo+aVPC6TAKDQ7awz7Cv5TxVnHTx6eAoA+I
-         zvGop4d0/+vSzpumf0Rn/xxbIaWwFGSEtoS9R5DfLYR8LvSP6GB5eeN3anIPTnpOtYXh
-         /3e8ctMHpBvygpe4i0Ei19KLPPr7Wiz+cZKP2gBuGqBZ1ifi5bFnQlH8CVNEwQmLaGH3
-         XRrvf62bPDZniFFfFBpIKiodUcGGay0L82J4rd7eKsoWciPbIZJWD1CMi9xZFCMMLtyI
-         I744haA8CZDti6ru/F4kTT8Cm2PAyAbFUwTZ6eN+mb9KG0NFGz3HTcMQeE4PVGuTc2nP
-         8Psg==
-X-Gm-Message-State: AOAM533OMAVOVSwH9MyoeaLqj9MUacCG/ndpozLQcb74Zm4Zs0Z3k3Qv
-        1x1VfBWpH3Uq2BvlWAAVQek4g4zDbw==
-X-Google-Smtp-Source: ABdhPJy0wN+X8qo0zzoZjphbLnRoW33ogoxYcs/yMHHCE8XzMYyUyT5udgELdnz3goP8BW7MQrZazw==
-X-Received: by 2002:a05:6870:c390:b0:f1:6a3a:227b with SMTP id g16-20020a056870c39000b000f16a3a227bmr2979334oao.142.1654180200039;
-        Thu, 02 Jun 2022 07:30:00 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id hc12-20020a056870788c00b000f33804cea9sm1966400oab.36.2022.06.02.07.29.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 07:29:59 -0700 (PDT)
-Received: (nullmailer pid 2256680 invoked by uid 1000);
-        Thu, 02 Jun 2022 14:29:59 -0000
-Date:   Thu, 2 Jun 2022 09:29:59 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Frank Rowand <frowand.list@gmail.com>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] earlycon: prevent multiple register_console()
-Message-ID: <20220602142959.GA2256623-robh@kernel.org>
-References: <20220602090038.3201897-1-michael@walle.cc>
+        Thu, 2 Jun 2022 11:42:40 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5989B27623C;
+        Thu,  2 Jun 2022 08:42:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654184559; x=1685720559;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dHXkcn+vdeBtOzMm0MELukXq9yPGsPhdHl1IklX7ohk=;
+  b=Rk+xjUM+v9sVwqmueaT8orb/8VmNQKis4QsFVGypBE9rwAOAf+MHMtxo
+   N3iMiub4U4oB9MDiQ74ReEZIumK0juVpDHA5/DhJRxmPWBJpBf+aIHZuC
+   S7B8FiHXBsjQRP8onmz09D4XK+xYIG0kGY2cNr3B+iK1Pf2joNMJLAnGZ
+   k=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 02 Jun 2022 08:42:38 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 08:42:37 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 2 Jun 2022 08:42:37 -0700
+Received: from [10.216.8.63] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 2 Jun 2022
+ 08:42:34 -0700
+Message-ID: <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
+Date:   Thu, 2 Jun 2022 21:12:31 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602090038.3201897-1-michael@walle.cc>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
+ console_suspend is disabled
+Content-Language: en-CA
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
+        <mka@chromium.org>, <swboyd@chromium.org>
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+ <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
+ <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
+ <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
+ <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
+ <fb44af37-daf7-974d-95fe-1a6c2cdab676@samsung.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <fb44af37-daf7-974d-95fe-1a6c2cdab676@samsung.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 02 Jun 2022 11:00:38 +0200, Michael Walle wrote:
-> If the earlycon parameter is given twice, the kernel will spit out a
-> WARN() in register_console() because it was already registered. The
-> non-dt variant setup_earlycon() already handles that gracefully. The dt
-> variant of_setup_earlycon() doesn't. Add the check there and add the
-> -EALREADY handling in early_init_dt_scan_chosen_stdout().
-> 
-> FWIW, this doesn't happen if CONFIG_ACPI_SPCR_TABLE is set. In that case
-> the registration is delayed until after earlycon parameter(s) are
-> parsed.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> changes since v1:
->  - add missing EALREADY handling in of_setup_earlycon()
->  - return 0 early as suggested by Rob
-> 
-> For the curious, here is the backtrace:
-> 
-> [    0.000000] ------------[ cut here ]------------
-> [    0.000000] WARNING: CPU: 0 PID: 0 at kernel/printk/printk.c:3328 register_console+0x2b4/0x364
-> [    0.000000] console 'atmel_serial0' already registered
-> [    0.000000] Modules linked in:
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.18.0-next-20220601+ #652
-> [    0.000000] Hardware name: Generic DT based system
-> [    0.000000] Backtrace:
-> [    0.000000]  dump_backtrace from show_stack+0x18/0x1c
-> [    0.000000]  show_stack from dump_stack_lvl+0x48/0x54
-> [    0.000000]  dump_stack_lvl from dump_stack+0x18/0x1c
-> [    0.000000]  dump_stack from __warn+0xd0/0x148
-> [    0.000000]  __warn from warn_slowpath_fmt+0x9c/0xc4
-> [    0.000000]  warn_slowpath_fmt from register_console+0x2b4/0x364
-> [    0.000000]  register_console from of_setup_earlycon+0x29c/0x2ac
-> [    0.000000]  of_setup_earlycon from early_init_dt_scan_chosen_stdout+0x154/0x18c
-> [    0.000000]  early_init_dt_scan_chosen_stdout from param_setup_earlycon+0x40/0x48
-> [    0.000000]  param_setup_earlycon from do_early_param+0x88/0xc4
-> [    0.000000]  do_early_param from parse_args+0x1a4/0x404
-> [    0.000000]  parse_args from parse_early_options+0x40/0x48
-> [    0.000000]  parse_early_options from parse_early_param+0x38/0x48
-> [    0.000000]  parse_early_param from setup_arch+0x114/0x7a4
-> [    0.000000]  setup_arch from start_kernel+0x74/0x6dc
-> [    0.000000]  start_kernel from 0x0
-> [    0.000000] ---[ end trace 0000000000000000 ]---
-> 
->  drivers/of/fdt.c              | 4 +++-
->  drivers/tty/serial/earlycon.c | 3 +++
->  2 files changed, 6 insertions(+), 1 deletion(-)
-> 
+Hi,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+
+On 6/2/2022 3:55 AM, Marek Szyprowski wrote:
+> Hi,
+>
+> On 01.06.2022 13:24, Vijaya Krishna Nivarthi wrote:
+>> On 5/24/2022 5:24 PM, Marek Szyprowski wrote:
+>>> On 23.05.2022 23:32, Marek Szyprowski wrote:
+>>>> Hi,
+>>>>
+>>>> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
+>>>>> For the case of console_suspend disabled, if back to back
+>>>>> suspend/resume
+>>>>> test is executed, at the end of test, sometimes console would
+>>>>> appear to
+>>>>> be frozen not responding to input. This would happen because, during
+>>>>> resume, rx transactions can come in before system is ready,
+>>>>> malfunction
+>>>>> of rx happens in turn resulting in console appearing to be stuck.
+>>>>>
+>>>>> Do a stop_rx in suspend sequence to prevent this.
+>>>>>
+>>>>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>>>>> ---
+>>>>> v4: moved the change to serial core to apply for all drivers
+>>>>> v3: swapped the order of conditions to be more human readable
+>>>>> v2: restricted patch to contain only stop_rx in suspend sequence
+>>>>> v1: intial patch contained 2 additional unrelated changes in vicinity
+>>>>> ---
+>>>> This patch landed recently in linux-next as commit c9d2325cdb92
+>>>> ("serial: core: Do stop_rx in suspend path for console if
+>>>> console_suspend is disabled").
+>>>>
+>>>> Unfortunately it breaks console operation on my test systems after
+>>>> system suspend/resume cycle if 'no_console_suspend' kernel parameter
+>>>> is present. System properly resumes from suspend, the console displays
+>>>> all the messages and even command line prompt, but then doesn't react
+>>>> on any input. If I remove the 'no_console_suspend' parameter, the
+>>>> console is again operational after system suspend/resume cycle. Before
+>>>> this patch it worked fine regardless the 'no_console_suspend'
+>>>> parameter.
+>>>>
+>>>> If this matters, the test system is ARM 32bit Samsung Exynos5422-based
+>>>> Odroid XU3lite board.
+>>> One more information. This issue can be easily reproduced with QEMU. It
+>>> happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when
+>>> 'no_console_suspend' is added to kernel's cmdline.
+>>>
+>> Ideally, as comments indicate, the set_termios should have done
+>> stop_rx at begin and start_rx at end to take care of this issue.
+>>
+>> This is probably missing in your driver. Can we check if this can be
+>> fixed?
+> Sure, just point me what need to be added in amba-pl011.c and
+> samsung_tty.c. I've briefly compared the suspend/resume paths of those
+> drivers with other drivers and I don't see anything missing there.
+>
+>> OR other option is
+>>
+>> Add a start_rx in uart_resume_port after call to set_termios to handle
+>> this scenario for other drivers.
+>>
+>> Please let me know if there are any concerns for this options.
+> IMHO this looks like an issue that affects lots of drivers and it should
+> be handled in the core.
+
+Sure, we will look into both aspects and get back as soon as possible.
+
+Thank you.
+
+>
+>   > ...
+>
+> Best regards
