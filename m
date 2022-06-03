@@ -2,170 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2429CC43334
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Jun 2022 18:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 812FEC43334
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Jun 2022 19:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348301AbiFCSyc (ORCPT
+        id S1349277AbiFCT26 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
+        Fri, 3 Jun 2022 15:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348295AbiFCSyb (ORCPT
+        with ESMTP id S244845AbiFCT25 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:54:31 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55CE289AD;
-        Fri,  3 Jun 2022 11:54:30 -0700 (PDT)
+        Fri, 3 Jun 2022 15:28:57 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DA1580FE
+        for <linux-serial@vger.kernel.org>; Fri,  3 Jun 2022 12:28:56 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id n28so11412255edb.9
+        for <linux-serial@vger.kernel.org>; Fri, 03 Jun 2022 12:28:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654282470; x=1685818470;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=+bJH935PB5pfQJUgE5Lu1i5hWq8Cu1nLmIvkALLizzI=;
-  b=D6tN55dFGcSREaxNbr547kk6a62H48RVUS6RV/k/tYP3LqOc6/SrLkJO
-   p/wvbdCr+2YS//o8c8ULAaMz1E6kYftbORGgYe5uiIyXGK9mK+bUvCbJA
-   EXDEX9Wo5gD3ecrazM/hV+sYm+upVgN26vy+L86YvE6NvmYOxa8seQedw
-   g=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 03 Jun 2022 11:54:30 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:54:30 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 3 Jun 2022 11:54:30 -0700
-Received: from [10.216.1.37] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 3 Jun 2022
- 11:54:26 -0700
-Message-ID: <f525c352-d995-0589-584f-0e9acf419f80@quicinc.com>
-Date:   Sat, 4 Jun 2022 00:24:23 +0530
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NLcd3Cw3hjI1NfLbhZ7+1EK5axo7GcECogVJtB2kQoo=;
+        b=n63Lg6qyTjWXwuTeS8v+72aLJUJKw4vX/fzlGVF9KlWhmWjFlvsfSiHMmLjmJq8wL+
+         J1+x0KJSnIYLk4zcB8ymTQjBIInkv9QNNiGw+gbTuk6Agp3JicslpgubNSGLpQP5/Qnp
+         V13l+3GFTz3kWlwBXsM4/d9NyoyY6+LvUMNLw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NLcd3Cw3hjI1NfLbhZ7+1EK5axo7GcECogVJtB2kQoo=;
+        b=QawffSVlXc0aiWvD4qFAi/UfIjbHid+7TfHjJIUmfuJXIqdzGiAnYyUw0YwRtComql
+         NO2JsXfhae2vVuC1xvxqobV0/pS+k2O2xAhM3eVYnfkdM4d9OjFroKd6w6jIj9+G/zIF
+         cNsqGRZF+Z1QA1SxRnuubWSIjJO1wV+oo4JS0jE/957Q6LjR8lYI1aTIesjcQYICK6GG
+         +tCygBpVdt0B3R4Y6DZiHRU3TGfxg1xeCkNoi/ZEgpp2jtMv6+Y6qBYkY+hgTyLDDNJV
+         P4B++rT5jz6ukPsD0g/mXkovWOva0liDQ1AWvAe5yTLVtWKd+kcKP4YSQ9QR1Sai6rSZ
+         vJKg==
+X-Gm-Message-State: AOAM532butnex4P6JRwMI/R4eQH61cfdEAsotLZl+KGJecbjMSdLh6J9
+        9xvJizqBkY9sTDLv4lC/1DblERp/3w9ZQmaWMVU=
+X-Google-Smtp-Source: ABdhPJzbWqqWch8L1eUpW4SiAuXksbiEoyhb68BqLLvDX+lrr1Th5Qrt+75oo1WXJtu/VbX3K0IwHA==
+X-Received: by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id b10-20020a056402084a00b00423fe998c53mr12337068edz.195.1654284534700;
+        Fri, 03 Jun 2022 12:28:54 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id j3-20020a170906094300b0070ad296e4b0sm2018112ejd.186.2022.06.03.12.28.51
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jun 2022 12:28:52 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id h5so11637010wrb.0
+        for <linux-serial@vger.kernel.org>; Fri, 03 Jun 2022 12:28:51 -0700 (PDT)
+X-Received: by 2002:a5d:6483:0:b0:20f:d046:6382 with SMTP id
+ o3-20020a5d6483000000b0020fd0466382mr9544675wri.342.1654284530598; Fri, 03
+ Jun 2022 12:28:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+ <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com> <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
+ <3866c083-0064-ac9a-4587-91a83946525d@samsung.com> <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
+ <fb44af37-daf7-974d-95fe-1a6c2cdab676@samsung.com> <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
+ <f525c352-d995-0589-584f-0e9acf419f80@quicinc.com>
+In-Reply-To: <f525c352-d995-0589-584f-0e9acf419f80@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 3 Jun 2022 12:28:38 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UyNgfYe2Xh3uuYYHB4yPajZKO+i8nCngFn7TedbF-piA@mail.gmail.com>
+Message-ID: <CAD=FV=UyNgfYe2Xh3uuYYHB4yPajZKO+i8nCngFn7TedbF-piA@mail.gmail.com>
 Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
  console_suspend is disabled
-Content-Language: en-CA
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
-        <mka@chromium.org>, <swboyd@chromium.org>
-References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
- <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
- <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
- <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
- <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
- <fb44af37-daf7-974d-95fe-1a6c2cdab676@samsung.com>
- <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
-In-Reply-To: <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        quic_msavaliy@quicinc.com, Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi,
 
-
-On 6/2/2022 9:12 PM, Vijaya Krishna Nivarthi wrote:
-> Hi,
+On Fri, Jun 3, 2022 at 11:54 AM Vijaya Krishna Nivarthi
+<quic_vnivarth@quicinc.com> wrote:
 >
+> >>> Add a start_rx in uart_resume_port after call to set_termios to handle
+> >>> this scenario for other drivers.
 >
-> On 6/2/2022 3:55 AM, Marek Szyprowski wrote:
->> Hi,
->>
->> On 01.06.2022 13:24, Vijaya Krishna Nivarthi wrote:
->>> On 5/24/2022 5:24 PM, Marek Szyprowski wrote:
->>>> On 23.05.2022 23:32, Marek Szyprowski wrote:
->>>>> Hi,
->>>>>
->>>>> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
->>>>>> For the case of console_suspend disabled, if back to back
->>>>>> suspend/resume
->>>>>> test is executed, at the end of test, sometimes console would
->>>>>> appear to
->>>>>> be frozen not responding to input. This would happen because, during
->>>>>> resume, rx transactions can come in before system is ready,
->>>>>> malfunction
->>>>>> of rx happens in turn resulting in console appearing to be stuck.
->>>>>>
->>>>>> Do a stop_rx in suspend sequence to prevent this.
->>>>>>
->>>>>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
->>>>>> ---
->>>>>> v4: moved the change to serial core to apply for all drivers
->>>>>> v3: swapped the order of conditions to be more human readable
->>>>>> v2: restricted patch to contain only stop_rx in suspend sequence
->>>>>> v1: intial patch contained 2 additional unrelated changes in 
->>>>>> vicinity
->>>>>> ---
->>>>> This patch landed recently in linux-next as commit c9d2325cdb92
->>>>> ("serial: core: Do stop_rx in suspend path for console if
->>>>> console_suspend is disabled").
->>>>>
->>>>> Unfortunately it breaks console operation on my test systems after
->>>>> system suspend/resume cycle if 'no_console_suspend' kernel parameter
->>>>> is present. System properly resumes from suspend, the console 
->>>>> displays
->>>>> all the messages and even command line prompt, but then doesn't react
->>>>> on any input. If I remove the 'no_console_suspend' parameter, the
->>>>> console is again operational after system suspend/resume cycle. 
->>>>> Before
->>>>> this patch it worked fine regardless the 'no_console_suspend'
->>>>> parameter.
->>>>>
->>>>> If this matters, the test system is ARM 32bit Samsung 
->>>>> Exynos5422-based
->>>>> Odroid XU3lite board.
->>>> One more information. This issue can be easily reproduced with 
->>>> QEMU. It
->>>> happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when
->>>> 'no_console_suspend' is added to kernel's cmdline.
->>>>
->>> Ideally, as comments indicate, the set_termios should have done
->>> stop_rx at begin and start_rx at end to take care of this issue.
->>>
->>> This is probably missing in your driver. Can we check if this can be
->>> fixed?
->> Sure, just point me what need to be added in amba-pl011.c and
->> samsung_tty.c. I've briefly compared the suspend/resume paths of those
->> drivers with other drivers and I don't see anything missing there.
->>
->>> OR other option is
->>>
->>> Add a start_rx in uart_resume_port after call to set_termios to handle
->>> this scenario for other drivers.
-
-Since start_rx is not exposed it doesn't seem like we will be able to 
-handle it in core.
-
-In your drivers, Can we add a call to stop_rx at begin of set_termios 
-and then undo it at end?
-
-That would ensure that set_termios functionality is unaffected while 
-fixing the broken cases?
-
-If that's not an option we will have to go back to a previous version of 
-limiting the change to qcom driver.
-
-Thank you.
-
->>>
->>> Please let me know if there are any concerns for this options.
->> IMHO this looks like an issue that affects lots of drivers and it should
->> be handled in the core.
+> Since start_rx is not exposed it doesn't seem like we will be able to
+> handle it in core.
 >
-> Sure, we will look into both aspects and get back as soon as possible.
+> In your drivers, Can we add a call to stop_rx at begin of set_termios
+> and then undo it at end?
 >
-> Thank you.
+> That would ensure that set_termios functionality is unaffected while
+> fixing the broken cases?
 >
->>
->>   > ...
->>
->> Best regards
+> If that's not an option we will have to go back to a previous version of
+> limiting the change to qcom driver.
+
+How about this: add an optional start_rx() callback to "struct
+uart_ops" and then only do your stop_rx() logic in uart_suspend_port()
+if you'll be able to start it again (AKA if the start_rx() callback is
+not NULL). That keeps the logic in the core.
+
+-Doug
