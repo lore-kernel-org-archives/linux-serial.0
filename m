@@ -2,51 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A427CCA473
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2149DC43334
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233248AbiFFKFb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39450 "EHLO
+        id S233280AbiFFKFd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233081AbiFFKF3 (ORCPT
+        with ESMTP id S233036AbiFFKF3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 6 Jun 2022 06:05:29 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D7D6B7CC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E2F66207;
         Mon,  6 Jun 2022 03:05:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1654509924; x=1686045924;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UPKALUhJ57HvaWDZolkV+MIlJXrWd+36QgzI4liyduE=;
-  b=lF/Gh3WLZLTqCjYR0f7ocPh+f2pxTbo2bQf1XM5A8u+LVPTYS/QJlI1Y
-   Z0q8Vx6hJ10WPquYbZGssxQ7eoJPvze/Y1IKdMyIX0rI8GxDcdq1alJ31
-   3bXfWP5dHD5eO88VBj7vXW4NVZ8i4ck4IIECOAAsqbaLOVAnAVe+yCqm5
-   ObQ7RX7RFKO9szKRHKlf7n2KdaH+xcGs/UmQu6kMRp1hSO++YoDsGr8S4
-   p2OFPgqVBcTo7CAJkaL04sIxw4sJQzXAhZCCS1IA1m1R+/bq6132WCJPI
-   KFb8JwvghDLXGZ/7PeX50PDOMhLtnRZCNgFCtxj7Fi3Gwrc+bc9NlmNZj
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nl/Cl7bz5pNe4naULcGm3w7oTRumNgiPNhJiqVmMNic=;
+  b=G/HkFiUOP21asFpjjl2LoKxG4Jk28WhOxGpUY8oGwfe2l/LrTStkh+dU
+   6YnHKiLAEZAeIgXAegB3E0ceyI78JDs/bgirCrOsJAJ5yGAuiDxmnn5V+
+   W4b9UMe4yNjqyzsN8wCVl0M9UWgLlIplNvsJfHT4L3+9s8ScVmeimVDEd
+   j6ZIUM9TFq/cxLEFA55TgNtecpcGYRfBRNa6Hf07Qi4aPPSeXhmg0sjon
+   TS3KTEE183OzoTZ4yJH34qoJq11tb3aYZYDkwKJ/y/er0x4F7HROmWTrO
+   Job3m94YqCC2+6E4LMtOgt380CsIRI9QOmKQ0jSbWFpncd27B79R1hmXk
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987033"
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987024"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987033"
+   d="scan'208";a="362987024"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:04:57 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:04:50 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523421"
+   d="scan'208";a="635523353"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:04:56 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:04:43 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 02/36] serial: Move serial_rs485 sanitization into separate function
-Date:   Mon,  6 Jun 2022 13:03:59 +0300
-Message-Id: <20220606100433.13793-3-ilpo.jarvinen@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        alexandre.belloni@bootlin.com, alexandre.torgue@foss.st.com,
+        andriy.shevchenko@linux.intel.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        claudiu.beznea@microchip.com, corbet@lwn.net, festevam@gmail.com,
+        f.fainelli@gmail.com, kernel@pengutronix.de,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        linux-doc@vger.kernel.org, linux-imx@nxp.com,
+        linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, nicolas.ferre@microchip.com,
+        nsaenz@kernel.org, richard.genoud@gmail.com, rjui@broadcom.com,
+        sbranden@broadcom.com, s.hauer@pengutronix.de, shawnguo@kernel.org,
+        vz@mleia.com
+Subject: [PATCH 00/36] RS485 serial_rs485 sanitization
+Date:   Mon,  6 Jun 2022 13:03:57 +0300
+Message-Id: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
-References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,89 +65,154 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add uart_sanitize_serial_rs485() function for sanitizing serial_rs485
-structure fields.
+This series adds sanitization to serial_rs485 struct before passing it
+to driver's rs485_config. This takes the work Lino Sanfilippo started
+(0ed12afa5655^..60efd0513916) a bit further. By moving sanitization of
+the rs485 struct into the serial core, per driver rs485_config() is
+more into the point, that is, setting up the hw to realize RS485.
 
-No functional changes.
+The other benefit is that with the sanitization, the other drivers no
+longer need to care when new things are added to serial_rs485 as serial
+core handles them on the other drivers' behalf. The addressing mode
+changes I'll submit separately will take advantage of this. The
+addressing mode changes were the main motivator for doing the changes,
+however, I believe these changes stand on their feet even w/o
+considering the addressing mode changes.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 55 +++++++++++++++++---------------
- 1 file changed, 30 insertions(+), 25 deletions(-)
+The series is long because per driver changes are split into two
+different stages. The key objectives here for the split have been to
+keep things bisect safe and to do changes per driver rather than in one
+large block. This required 4 stages:
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 8466181db4e9..44a50158552d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1276,6 +1276,35 @@ static int uart_get_icount(struct tty_struct *tty,
- 	return 0;
- }
- 
-+static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs485 *rs485)
-+{
-+	/* pick sane settings if the user hasn't */
-+	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-+	    !(rs485->flags & SER_RS485_RTS_AFTER_SEND)) {
-+		dev_warn_ratelimited(port->dev,
-+			"%s (%d): invalid RTS setting, using RTS_ON_SEND instead\n",
-+			port->name, port->line);
-+		rs485->flags |= SER_RS485_RTS_ON_SEND;
-+		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
-+	}
-+
-+	if (rs485->delay_rts_before_send > RS485_MAX_RTS_DELAY) {
-+		rs485->delay_rts_before_send = RS485_MAX_RTS_DELAY;
-+		dev_warn_ratelimited(port->dev,
-+			"%s (%d): RTS delay before sending clamped to %u ms\n",
-+			port->name, port->line, rs485->delay_rts_before_send);
-+	}
-+
-+	if (rs485->delay_rts_after_send > RS485_MAX_RTS_DELAY) {
-+		rs485->delay_rts_after_send = RS485_MAX_RTS_DELAY;
-+		dev_warn_ratelimited(port->dev,
-+			"%s (%d): RTS delay after sending clamped to %u ms\n",
-+			port->name, port->line, rs485->delay_rts_after_send);
-+	}
-+	/* Return clean padding area to userspace */
-+	memset(rs485->padding, 0, sizeof(rs485->padding));
-+}
-+
- int uart_rs485_config(struct uart_port *port)
- {
- 	return port->rs485_config(port, &port->rs485);
-@@ -1311,31 +1340,7 @@ static int uart_set_rs485_config(struct uart_port *port,
- 	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
- 		return -EFAULT;
- 
--	/* pick sane settings if the user hasn't */
--	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
--	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
--		dev_warn_ratelimited(port->dev,
--			"%s (%d): invalid RTS setting, using RTS_ON_SEND instead\n",
--			port->name, port->line);
--		rs485.flags |= SER_RS485_RTS_ON_SEND;
--		rs485.flags &= ~SER_RS485_RTS_AFTER_SEND;
--	}
--
--	if (rs485.delay_rts_before_send > RS485_MAX_RTS_DELAY) {
--		rs485.delay_rts_before_send = RS485_MAX_RTS_DELAY;
--		dev_warn_ratelimited(port->dev,
--			"%s (%d): RTS delay before sending clamped to %u ms\n",
--			port->name, port->line, rs485.delay_rts_before_send);
--	}
--
--	if (rs485.delay_rts_after_send > RS485_MAX_RTS_DELAY) {
--		rs485.delay_rts_after_send = RS485_MAX_RTS_DELAY;
--		dev_warn_ratelimited(port->dev,
--			"%s (%d): RTS delay after sending clamped to %u ms\n",
--			port->name, port->line, rs485.delay_rts_after_send);
--	}
--	/* Return clean padding area to userspace */
--	memset(rs485.padding, 0, sizeof(rs485.padding));
-+	uart_sanitize_serial_rs485(port, &rs485);
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 	ret = port->rs485_config(port, &rs485);
+  1) Add datastructure entries & other preps (01-03)
+  2) Per driver rs485_supported (04-21)
+  3) Sanitization, core taking advantage of rs485_supported (22-24)
+  4) Cleanup per driver custom sanitization code (25-36)
+
+As you can see, the downside of this split is that the per driver code
+is split to 2+4 patches which makes some things moving less obvious.
+Merging them is only possible if the stages 2-4 are done in one large
+change (little bits here and there could be left out from it but not
+much).
+
+In stage 3 patches, there are a few userspace interface impacting
+changes with userspace api regression potential:
+
+  a) Some drivers have not cleared flags/fields in per driver code while
+     other drivers have. The old behavior is inconsistent. Now the bits
+     will get cleaned up by serial core. I don't believe it's going to
+     cause issues.
+
+  b) Init path now sanitizes configuration if rs485_config is being
+     called from the init path (mainly coming from dt). It attempts to
+     repair some incorrect configurations which seems ok.
+
+     However, if RS485 mode is not enabled at boot, serial_rs485 struct
+     gets cleared in order for it to match what the port is configured
+     with (RS232). Such clearing implies losing values that were
+     configured through dt and that could perhaps be seen as unwanted
+     side-effect from having consistent serial_rs485?
+
+     There is also impact for the ioctl path from this clearing of
+     serial_rs485 when RS485 is disabled but impact seems minor at most.
+
+  c) Returning -EINVAL for non-legacy flags. This also affects setting
+     bits that were previously padding (that is, all flags bits
+     currently not defined in include/uapi/linux/serial.h). It was
+     possible to put garbage into them earlier but no more. I guess
+     this is not very likely a big issue. No non-legacy flags are
+     added in this series (the addressing mode changes submitted
+     separately will add new flags).
+
+Cc: alexandre.belloni@bootlin.com
+Cc: alexandre.torgue@foss.st.com
+Cc: andriy.shevchenko@linux.intel.com
+Cc: bcm-kernel-feedback-list@broadcom.com
+Cc: claudiu.beznea@microchip.com
+Cc: corbet@lwn.net
+Cc: festevam@gmail.com
+Cc: f.fainelli@gmail.com
+Cc: kernel@pengutronix.de
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux@armlinux.org.uk
+Cc: linux-doc@vger.kernel.org
+Cc: linux-imx@nxp.com
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-rpi-kernel@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: mcoquelin.stm32@gmail.com
+Cc: nicolas.ferre@microchip.com
+Cc: nsaenz@kernel.org
+Cc: richard.genoud@gmail.com
+Cc: rjui@broadcom.com
+Cc: sbranden@broadcom.com
+Cc: s.hauer@pengutronix.de
+Cc: shawnguo@kernel.org
+Cc: vz@mleia.com
+
+Ilpo Järvinen (36):
+  serial: Add uart_rs485_config()
+  serial: Move serial_rs485 sanitization into separate function
+  serial: Add rs485_supported to uart_port
+  serial: 8250: Create serial8250_em485_supported for em485 users
+  serial: 8250_bcm2835aux: Use serial8250_em485_supported
+  serial: 8250_dwlib: Fill in rs485_supported
+  serial: 8250_exar: Fill in rs485_supported
+  serial: 8250_fintek: Fill in rs485_supported
+  serial: 8250_lpc18cc: Fill in rs485_supported
+  serial: 8250_of: Use serial8250_em485_supported
+  serial: 8250_pci: Fill in rs485_supported for pci_fintek
+  serial: pl011: Fill in rs485_supported
+  serial: ar933x: Fill in rs485_supported
+  serial: atmel: Fill in rs485_supported
+  serial: fsl_lpuart: Fill in rs485_supported
+  serial: imx: Fill in rs485_supported
+  serial: max310x: Fill in rs485_supported
+  serial: mcf: Fill in rs485_supported
+  serial: omap: Fill in rs485_supported
+  serial: sc16is7xx: Fill in rs485_supported
+  serial: stm32: Fill in rs485_supported
+  serial: Sanitize rs485_struct
+  serial: Clear rs485 struct when non-RS485 mode is set
+  serial: return -EINVAL for non-legacy RS485 flags
+  serial: 8250_dwlib: Remove serial_rs485 sanitization
+  serial: 8250_fintek: Remove serial_rs485 sanitization
+  serial: 8250: lpc18xx: Remove serial_rs485 sanitization
+  serial: 8250_pci: Remove serial_rs485 sanitization
+  serial: pl011: Remove serial_rs485 sanitization
+  serial: fsl_lpuart: Call core's sanitization and remove custom one
+  serial: imx: Remove serial_rs485 sanitization
+  serial: max310x: Remove serial_rs485 sanitization
+  serial: 8250_exar: Remove serial_rs485 assignment
+  serial: mcf: Remove serial_rs485 assignment
+  serial: sc16is7xx: Remove serial_rs485 assignment
+  serial: 8250: Remove serial_rs485 sanitization from em485
+
+ .../driver-api/serial/serial-rs485.rst        |  12 +-
+ drivers/tty/serial/8250/8250.h                |   1 +
+ drivers/tty/serial/8250/8250_bcm2835aux.c     |   1 +
+ drivers/tty/serial/8250/8250_core.c           |   1 +
+ drivers/tty/serial/8250/8250_dwlib.c          |  17 +--
+ drivers/tty/serial/8250/8250_exar.c           |  14 +-
+ drivers/tty/serial/8250/8250_fintek.c         |  29 +++--
+ drivers/tty/serial/8250/8250_lpc18xx.c        |  20 +--
+ drivers/tty/serial/8250/8250_of.c             |   1 +
+ drivers/tty/serial/8250/8250_pci.c            |  24 +---
+ drivers/tty/serial/8250/8250_port.c           |  28 ++--
+ drivers/tty/serial/amba-pl011.c               |  13 +-
+ drivers/tty/serial/ar933x_uart.c              |   7 +
+ drivers/tty/serial/atmel_serial.c             |   7 +
+ drivers/tty/serial/fsl_lpuart.c               |  25 +---
+ drivers/tty/serial/imx.c                      |  19 ++-
+ drivers/tty/serial/max310x.c                  |   9 +-
+ drivers/tty/serial/mcf.c                      |   7 +-
+ drivers/tty/serial/omap-serial.c              |   8 ++
+ drivers/tty/serial/sc16is7xx.c                |   8 +-
+ drivers/tty/serial/serial_core.c              | 120 ++++++++++++++----
+ drivers/tty/serial/stm32-usart.c              |   8 ++
+ include/linux/serial_core.h                   |   2 +
+ 23 files changed, 247 insertions(+), 134 deletions(-)
+
 -- 
 2.30.2
 
