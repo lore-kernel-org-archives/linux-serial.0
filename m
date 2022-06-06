@@ -2,50 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAF6C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A57C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233364AbiFFKFo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S233352AbiFFKFs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233290AbiFFKFd (ORCPT
+        with ESMTP id S233310AbiFFKFk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:05:33 -0400
+        Mon, 6 Jun 2022 06:05:40 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEE17037D;
-        Mon,  6 Jun 2022 03:05:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6DC719EF;
+        Mon,  6 Jun 2022 03:05:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509931; x=1686045931;
+  t=1654509933; x=1686045933;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mvMP5iOD0jyEc6hOIs4E2k/EmjgKpS0mQlR4xWMekx0=;
-  b=XTza74f/4pFYwUzFa9fLyuZ3nV41yw6QForA+rjeLUYyq8mKEGbT02Dn
-   tKaU7R7dWoDrC67ImBO0S6ZzAHLuzT9P+GaDeI/SJrlN1sC/dtjQYr32W
-   GopXaQWophrXv5E5Z9xjeOw6j7J50vKLYvVhtgXG7ltNTVLl1wYasD+GR
-   Gmd4d/ZpCuxsWwTV3+Ab5+jpPClCQCGr3sQiyui8FMlR0Cg/x5HomRMT/
-   lfSX9xEEpSNENRJfxY7C00cyIL0TxF/ln+7uFsIabw7sLKN3Y4UMQqomH
-   ILBDFasSQYnDjABQe8xmpG18XFSpvCih/AA6Yizwua9qmBrNctt5PLwjS
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987040"
+  bh=uiu6/OhYYKXexbF3L+XQuHEeDHHGh13iJur0g7QkeDo=;
+  b=IwTitZE36Z3pIA+HQV40r84DMV4fHpBCqOhtXSeDrowCdwIXOmcFjGof
+   iifQmuekdNbU8bhNoHqXdZuwKBpgkNDd+qdwP73bnOYnOc0Eq09NfCdwA
+   1FeLCju+G2Dmp7fJcIFJ8bnkuWHQiGoc1Wqf1dPBlphuBcKAHWXUVen51
+   F9n3AV+NGyPGOgQrRdcupIq6ztEWvlLY4WjD1Xv1zgX4ffzNMTWm5nyrr
+   fzIQ4GNHy7Gfy3AMc33Jh7/YnBpYwi7k7Zo3X47XJB4whFwOE6MwPpExJ
+   /o+tlDCCb76+BctUx9gNT/h21rx6PczFG+DQLju9RgEM3gXTHC/Zlhkmi
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987045"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987040"
+   d="scan'208";a="362987045"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:10 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:19 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523560"
+   d="scan'208";a="635523608"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:08 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:17 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 06/36] serial: 8250_dwlib: Fill in rs485_supported
-Date:   Mon,  6 Jun 2022 13:04:03 +0300
-Message-Id: <20220606100433.13793-7-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 09/36] serial: 8250_lpc18cc: Fill in rs485_supported
+Date:   Mon,  6 Jun 2022 13:04:06 +0300
+Message-Id: <20220606100433.13793-10-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -56,41 +56,38 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add information on supported serial_rs485 features. When the driver is
-using em485, take advantage of serial8250_em485_supported.
+Add information on supported serial_rs485 features.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dwlib.c | 7 +++++++
+ drivers/tty/serial/8250/8250_lpc18xx.c | 7 +++++++
  1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-index fbabfdd8c7b8..120b29519d74 100644
---- a/drivers/tty/serial/8250/8250_dwlib.c
-+++ b/drivers/tty/serial/8250/8250_dwlib.c
-@@ -149,6 +149,11 @@ static bool dw8250_detect_rs485_hw(struct uart_port *p)
- 	return reg;
+diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
+index 570e25d6f37e..66ce5d05fe9c 100644
+--- a/drivers/tty/serial/8250/8250_lpc18xx.c
++++ b/drivers/tty/serial/8250/8250_lpc18xx.c
+@@ -98,6 +98,12 @@ static void lpc18xx_uart_serial_out(struct uart_port *p, int offset, int value)
+ 	writel(value, p->membase + offset);
  }
  
-+static const struct serial_rs485 dw8250_rs485_supported = {
-+	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_RTS_ON_SEND |
-+		 SER_RS485_RTS_AFTER_SEND,
++static const struct serial_rs485 lpc18xx_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
++	.delay_rts_after_send = 1,
++	/* Delay RTS before send is not supported */
 +};
 +
- void dw8250_setup_port(struct uart_port *p)
+ static int lpc18xx_serial_probe(struct platform_device *pdev)
  {
- 	struct dw8250_port_data *pd = p->private_data;
-@@ -159,8 +164,10 @@ void dw8250_setup_port(struct uart_port *p)
- 	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
- 	if (pd->hw_rs485_support) {
- 		p->rs485_config = dw8250_rs485_config;
-+		p->rs485_supported = &dw8250_rs485_supported;
- 	} else {
- 		p->rs485_config = serial8250_em485_config;
-+		p->rs485_supported = &serial8250_em485_supported;
- 		up->rs485_start_tx = serial8250_em485_start_tx;
- 		up->rs485_stop_tx = serial8250_em485_stop_tx;
- 	}
+ 	struct lpc18xx_uart_data *data;
+@@ -168,6 +174,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
+ 	uart.port.uartclk = clk_get_rate(data->clk_uart);
+ 	uart.port.private_data = data;
+ 	uart.port.rs485_config = lpc18xx_rs485_config;
++	uart.port.rs485_supported = &lpc18xx_rs485_supported;
+ 	uart.port.serial_out = lpc18xx_uart_serial_out;
+ 
+ 	uart.dma = &data->dma;
 -- 
 2.30.2
 
