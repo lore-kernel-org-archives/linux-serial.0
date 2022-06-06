@@ -2,94 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53434CCA473
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 14:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5477EC43334
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 14:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239634AbiFFOZu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
+        id S239657AbiFFOcZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239581AbiFFOZt (ORCPT
+        with ESMTP id S239568AbiFFOcZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:25:49 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F1E2D6AA6;
-        Mon,  6 Jun 2022 07:25:48 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y19so29294228ejq.6;
-        Mon, 06 Jun 2022 07:25:48 -0700 (PDT)
+        Mon, 6 Jun 2022 10:32:25 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA5E19F8A;
+        Mon,  6 Jun 2022 07:32:22 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id m20so29283807ejj.10;
+        Mon, 06 Jun 2022 07:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a0c8aCXTnV+YnzgcVK3cYCsnaQ2OrGwT8XZ+B+Q/jUg=;
-        b=GcisAG8Oa7796L9CONDDt6OIIQn0huGp9VfxwdG6OouVCGHztFap6mMZZrhHRGubZm
-         VD9xcpd+/w40aih8Uj1iNf3fS6OHMI7M428hiwgs1qwYgoB6xRXUdr6DXRRE+wJRgH17
-         X4yAfXt9TFiN0Uq9XO6mGXYiYh9CvWMwBB46Ob6gs+X5yZBGTSuFuJhdyu8tZjKKDja9
-         5vQxw+xJdSKO/qUzjCo7Lw8T0N2E1gfSSON+TWD+Yiro/wHufQAbakKOR9o/ALbwWw39
-         Mjk4pA0NCdIy1PD7V9S++yqxdnhdQL7NJn4Bpr+QigZIH/aJOArjyD89A2r0AyQMM3MF
-         +9BQ==
+         :cc:content-transfer-encoding;
+        bh=LIT3NTOsC7NowXp4Z1Nxh6Sac8z4PgQBaEerVN5FpP8=;
+        b=almcHK6LQ2DyRgGvCWV8q7K7XfxP4/2NblraJHlMYjlTl92TI02I9+HCNGP7EEPM88
+         GX73xqp8vvf+b3pqB8IDQQTvEWRah+58XPnuFp2Nyooq5sHCUM2uzjgtEkFPzJTfqxN8
+         7ywRCM37wEIg8lah6XSyVoIr6Q9nOJ3WIhDGqyHeGAIkswf/iktkC40m7rhDPL7cSeI2
+         P5xry8p1VUqb2riidZUbHGqYAIg2wgnVdHkKFG1NLYXUum/LkZU9b877p9yiO3GNOio7
+         OhUNPHgKFRuKWBGrEMSj92+1SiMVNDfwvIbwUkPDiY+Vohd5H0C0hm1svSG4urhiMGGj
+         FJKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a0c8aCXTnV+YnzgcVK3cYCsnaQ2OrGwT8XZ+B+Q/jUg=;
-        b=xRUfZLbt7pgkmkndADiD5svasc8yeKo7IFKHDng827fF079+05zFEltgmS+5eTZKAm
-         /8HNggDCMP51NDyJlAne0cAR0oUui3Rutl2Ig8PEsWCQoSMn++8CEm+G0r2rwcgTs2cn
-         YO6MHVOtc7B55qTGJnlr9OFyqSMoagTyiAo+ftq9sr958qG94YC7mvGYX0Fq75NHom/l
-         kcppgoMfkOiOMDqL4mcoswbf2hSV8QrGwTPPseXgaUdK2noeI0kligEfJVoUVOA5t/9q
-         3RpFno1Nq21ztOdhJFatHA2ZOELanMmkfixWJx9KH1K/YtFDqTM1lG+NiA5rbejzwpgL
-         ZTbA==
-X-Gm-Message-State: AOAM531b/4O2RqX6jLFYGJCl2vdEHSBv5KfHL9SG33CdcsuGEJ4IngOc
-        nFzCGhlVMWGMDyOJDFtsiPW6EskmpIZ2RrpBfILXaLwUX4SADg==
-X-Google-Smtp-Source: ABdhPJzD7u77fBcesP17TjFNq0z2fD+tq04dRC4JePcC1QiaGc2nhtbfkRYB0490U7l5eh6dTvULHUrEbwCqVDzeShc=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr22624124ejc.497.1654525547146; Mon, 06
- Jun 2022 07:25:47 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LIT3NTOsC7NowXp4Z1Nxh6Sac8z4PgQBaEerVN5FpP8=;
+        b=yCwf8Pl1rlLHFWYSFbArdnETIM8LQaow1Pg6cBtvwlax1dhYu0G0L14wNDrzvFuqhJ
+         gfWcqdsmERHlN9LvI8On1foNMeQKOgHOSyJcFKqDLO63OD2mbwZ6WcZ+TTY5BrLjwZOq
+         YjgLO02CnF0bDP0eUPvKVqkyJ7rrwgiVbuRRtTB5vQ6Qm0kncJySMhpH4aamSqfEtFmJ
+         mG+3tRlGNdNyJk7uNXNxbbpqlg7saONf7EgfHwSys0KzhuXjq4oDX2DlW1AkUCMkKiGD
+         B8ZyaTSbUVeX1KCKeRJ6AU4DR4n0ZMEgQCqYrP22WCoy7i17AwB4vGvimdzq7746INKJ
+         f55g==
+X-Gm-Message-State: AOAM533ft4JftjmFiZPGu/sD7dru1I89aoyxMTohCfYeOvft0TGoBOoB
+        bATzfwvavgICaIwINWvHoksIQZuXqsozhuFDkCc=
+X-Google-Smtp-Source: ABdhPJy6UQPbd2ONT3dQRyiW5E4Yq2lQTA1whZjW8/aroaW09EW7+O9WEkxv0LWx4JEWD5Ja2ZFia5j7aDz12l3YNco=
+X-Received: by 2002:a17:906:d9d9:b0:710:f2ae:b455 with SMTP id
+ qk25-20020a170906d9d900b00710f2aeb455mr10522126ejb.77.1654525941064; Mon, 06
+ Jun 2022 07:32:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220605144659.4169853-1-demonsingur@gmail.com>
-In-Reply-To: <20220605144659.4169853-1-demonsingur@gmail.com>
+References: <d8e9f4fe-e8dc-67aa-e240-f2f5f1dfca2f@molgen.mpg.de>
+ <1880b7a7-2353-c381-5afb-1d4224eb223b@molgen.mpg.de> <YpsgHpRfz0JQcm9D@kroah.com>
+ <477007d7-e573-56dd-90de-877eeebd5c4c@molgen.mpg.de>
+In-Reply-To: <477007d7-e573-56dd-90de-877eeebd5c4c@molgen.mpg.de>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 16:25:10 +0200
-Message-ID: <CAHp75VeHAGM=cxGRzWsv7KxUD0rjiudxOJ2HrtgtTFbuG+z8=g@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] MAX310X I2C support
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+Date:   Mon, 6 Jun 2022 16:31:44 +0200
+Message-ID: <CAHp75Vc01Ei5wEKG6kqELD=O3CSz8xs3jd8KJpxnfYJ=+f_nXA@mail.gmail.com>
+Subject: Re: Non-working serial console
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 8:08 AM Cosmin Tanislav <demonsingur@gmail.com> wrote:
->
-> V1 -> V2:
->  * set_ext_reg_en -> extended_reg_enable
->  * move extended_reg_enable functions under guards
->  * move if_cfg structs under guards
->  * remove __maybe_unused from max310x_i2c_driver
->  * fix order of error labels in module register
->  * guard i2c register error label
+On Mon, Jun 6, 2022 at 5:44 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+> Am 04.06.22 um 11:04 schrieb Greg KH:
 
-LGTM, thanks!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+...
 
-> Cosmin Tanislav (4):
->   serial: max310x: use regmap methods for SPI batch operations
->   serial: max310x: use a separate regmap for each port
->   serial: max310x: make accessing revision id interface-agnostic
->   serial: max310x: implement I2C support
->
->  drivers/tty/serial/Kconfig   |   1 +
->  drivers/tty/serial/max310x.c | 261 ++++++++++++++++++++++++++---------
->  2 files changed, 200 insertions(+), 62 deletions(-)
->
-> --
-> 2.36.1
->
+> I am still confused, that `earlyprintk=3DttyS0,115200,keep` works though
+> despite `CONFIG_SERIAL_8250=3Dm`. Doesn=E2=80=99t that mean, that Linux
+> nevertheless contains some code to initialize the serial console, and
+> send data to it?
 
+If you keep x86 in mind, then yes, three different console code
+handling (decompressing stage, boot stage, driver stage) + earlyprintk
+(on top of the same code for decompressing / booting stages) +
+earlycon (this is actually a driver:ish stage).
 
--- 
+--=20
 With Best Regards,
 Andy Shevchenko
