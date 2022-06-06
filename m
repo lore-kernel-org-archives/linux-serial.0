@@ -2,51 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFCFC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 13:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29BA2CCA481
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 13:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238920AbiFFNcg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
+        id S238944AbiFFNcj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238935AbiFFNce (ORCPT
+        with ESMTP id S238924AbiFFNcg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:32:34 -0400
+        Mon, 6 Jun 2022 09:32:36 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B2B39823
-        for <linux-serial@vger.kernel.org>; Mon,  6 Jun 2022 06:32:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A724348B;
+        Mon,  6 Jun 2022 06:32:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654522350; x=1686058350;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2yHJC8Sm3uK/XacvPKDqInBl0xvWjTDXZbM8uHdxefs=;
-  b=Iov/k3fvRi6l9wd9ZjW2J1TOWE+jMUguZQqu0+/Gw5VE8pUGXAPFhUEa
-   V+NfqjfC0WCMnZFM/A4xyLhhc2nbqKiNvtlhaeS3kplKsJ8pIgSHAIRvb
-   nf0TtisTnzAexr6OfhED71qwVRk2gftGIWrIfZ2M9feYCN4Bn8MVI6i6X
-   CGCKAYXurvVBNlNhepvD6AteMa3rb3Id/cYm1wHjzktI486ElnywQ3d07
-   v1uEZbXjDAuRBtkFbeKcZEkmOx82OVOx/anhLEvpQfvU6aV+i0LzTfffW
-   8YxcE7z+6Q9xXI8P1w7y2mT3/U+x9ghZ5GtdVoKSTVUS+eHe0EgCUHFee
+  t=1654522354; x=1686058354;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+cv5qN1igNw1Zx5NSV2OW8gEhkMunXxsP88oD3ZR3ck=;
+  b=Jl6v+7H1eV0r2f2TRxDbJCBuRWqynama6YcA6/QOrhaV1xwEuiQQCY0B
+   eBcCV4xuL2WmQJ3KU+TIxpQPyfz4duy0RGGJWuavLqZmWzgtTmiO0KYOL
+   rEFmDXDcHWeoqwpRRWujA5K0OlabWXFhdw0x7TBk4p7sOZC5GLOt/vUyl
+   xoFM4zVpdR0rHi1036tsVujlS4WCXtg6HQ5Gp9lcGDQtlQZZKU1JQnT4X
+   oqWFa+SvG9io9c1am4nW3RL50wr0rN8s74jV9928Cq3gtp/Hy6LvRJ6KZ
+   FYNMlVx+tlXehuIk0PcFFGgzom5NYZPxKUGGI35AympIy0OuUWNQwEiEh
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="264590581"
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="264590623"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="264590581"
+   d="scan'208";a="264590623"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:32:25 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:32:32 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="906550621"
+   d="scan'208";a="906550690"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:32:22 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:32:30 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Gilles Buloz <gilles.buloz@kontron.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v5 0/2] tty/serial: Process XON/XOFF robustly
-Date:   Mon,  6 Jun 2022 16:32:13 +0300
-Message-Id: <20220606133215.57537-1-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v5 2/2] tty: Use flow-control char function on closing path
+Date:   Mon,  6 Jun 2022 16:32:15 +0300
+Message-Id: <20220606133215.57537-3-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220606133215.57537-1-ilpo.jarvinen@linux.intel.com>
+References: <20220606133215.57537-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -54,73 +56,54 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-XON/XOFF are used for software flow-control on serial lines. XON and
-XOFF appear as characters within the stream but should be processed as
-soon as possible.
+Use n_tty_receive_char_flow_ctrl also on the closing path. This makes
+the code cleaner and consistent.
 
-The characters received by the UART drivers are in intermediate buffers
-until TTY receives them. In the case where the TTY is not read from,
-the characters may get stuck into those intermediate buffers until
-user-space reads from the TTY. Among the characters stuck in the
-buffers, can also be those XON/XOFF flow control characters. A stuck
-flow-control character is not very useful.
+However, there a small change of regression!
 
-This patch series addresses the issue by checking if TTY is slow to
-process characters, that is, eats less than the given amount. If TTY is
-slow, a lookahead is invoked for the characters that remain in the
-intermediate buffer(s).
+The earlier closing path has a small difference compared with the
+normal receive path. If START_CHAR and STOP_CHAR are equal, their
+precedence is different depending on which path a character is
+processed. I don't know whether this difference was intentional or
+not, and if equal START_CHAR and STOP_CHAR is actually used anywhere.
+But it feels not so useful corner case.
 
-Then at a later time, receive_buf needs to ensure the flow-control
-actions are not retaken when those same characters get pushed to TTY.
+While this change would logically belong to those earlier changes,
+having a separate patch for this is useful. If this regresses, bisect
+can pinpoint this change rather than the large patch. Also, this
+change is not necessary to minimal fix for the issue addressed in
+the previous patch.
 
-This patch series fixes an issue but I'm not able to pinpoint to a
-specific commit id to provide a Fixes tag. The last patch of the series
-is not needed for minimal fix (and has a small chance of regression
-too), thus that patch shouldn't be sent to stable.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/n_tty.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-v1 -> v2:
-- Add flow ctrl char funcs in separate change & rework logic a bit.
-  I believe it's now cleaner than it would have been with the
-  suggestions during v1 review, please recheck.
-- Renamed n_tty_lookahead_special to n_tty_lookahead_flow_ctrl
-- Fixed logic for START_CHAR == STOP_CHAR case
-- Use unsigned int for lookahead_count in receive_buf call chain
-- Use consistent types in lookahead call chain
-- Improved indentation & line splits for function params
-- Corrected tty_ldisc.h comments documenting tty_ldisc_ops
-- Tweaked comment format
-
-v2 -> v3:
-- Split preparatory patch moving/rearranging code to two
-- Fix closing path giving change for ... || xx to execute
-  instead of skipping the flow-control char
-- Use the same flow-control char function on closing path
-  (just a cleanup, non-fix as last patch, a small change of
-  regression exists)
-
-v3 -> v4:
-- Rework lookahead_count, it is now kept internal to n_tty ldisc rather
-  than passed around through the whole callchain
-- Dropped Gilles' Tested-by due to major changes
-- Improve comments & changelogs
-
-v4 -> v5:
-- Rebased & removed the applied patch
-- Explain the algorithm a bit more in the commit message
-
-
-Ilpo Järvinen (2):
-  tty: Implement lookahead to process XON/XOFF timely
-  tty: Use flow-control char function on closing path
-
- drivers/tty/n_tty.c        | 91 ++++++++++++++++++++++++++++++--------
- drivers/tty/tty_buffer.c   | 59 ++++++++++++++++++++----
- drivers/tty/tty_port.c     | 21 +++++++++
- include/linux/tty_buffer.h |  1 +
- include/linux/tty_ldisc.h  | 13 ++++++
- include/linux/tty_port.h   |  2 +
- 6 files changed, 159 insertions(+), 28 deletions(-)
-
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 917b5970b2e0..ea4dc316eafb 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1434,15 +1434,10 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
+ 		c = tolower(c);
+ 
+ 	if (I_IXON(tty)) {
+-		if (c == STOP_CHAR(tty)) {
+-			if (!lookahead_done)
+-				stop_tty(tty);
+-		} else if (c == START_CHAR(tty) && lookahead_done) {
+-			return;
+-		} else if (c == START_CHAR(tty) ||
+-			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+-			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+-			  c != SUSP_CHAR(tty))) {
++		if (!n_tty_receive_char_flow_ctrl(tty, c, lookahead_done) &&
++		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
++		    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
++		    c != SUSP_CHAR(tty)) {
+ 			start_tty(tty);
+ 			process_echoes(tty);
+ 		}
 -- 
 2.30.2
 
