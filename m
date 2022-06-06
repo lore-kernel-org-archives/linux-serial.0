@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D37CCA47E
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A96FACCA47E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233405AbiFFKFn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        id S233321AbiFFKFo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiFFKFd (ORCPT
+        with ESMTP id S233295AbiFFKFd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 6 Jun 2022 06:05:33 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE166FA19;
-        Mon,  6 Jun 2022 03:05:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C856D1BF;
+        Mon,  6 Jun 2022 03:05:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509929; x=1686045929;
+  t=1654509932; x=1686045932;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=30sgEmomZFJSjr9ND+w2PFIvZclLSnuuV9GPE1kuVgI=;
-  b=P/6fB59tKAS+++Ev8mLX5KcQJjwgT0nIKcD74+Fv/vC7G8/Pj0ibNTcO
-   9mY4p1twYlb+wyh+OcBr1KjDM+JSzPCr9obHxGZ6B6JtRj85UwVfzDChK
-   +MRbIgj3+1LNFyjEDVYnjGrjX/dUNeNhTjpyupL1fTL6tc7pKNdLYG0VM
-   b7SMI4rJg8Pni5sPq7LLhls+9AAE0Y5uamJa8irKRWIvmqCSBKFDUUUIt
-   lPjJHiu7xdq7a7047fUnjbjorqej5nKIKavHlq4842+9HVSXeh9a4T+36
-   N4OBq2xm14GKaXP1GJKmQ45IjGrm5RCa6fe7XDRtSlR3y42lEppLv2XM7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987036"
+  bh=WqrcVFYGblqHCkvnnCBwU3N04CPl2ZyImCOIMc3L9wQ=;
+  b=gRfhsJfDJaPPnxEkXA3YbSqweQ3KD6srTe/ng1Vm659xkcHyVHf6Kk56
+   /dvapv4f3YO5II+fNvbq2WrNP+ftmDBNEpmcDyoj+J4VSRMwerCA2v9Cm
+   HGBWYOx29smrdWSbgMZy9j3ZFFGHI1MUS/x+IVhBfdJ95B4da6aUV1Yan
+   iPikNNPks3MMwhBG4yPMR6VkVE+lrJyNcWqmUJtCAHZeW8a3W6FK0NmZQ
+   m0sG9kDxT+QNIFVktXH3k6Cap1Ey9VKDj5olLRt7lOoAI2PoxskgReW4I
+   jwCly0LLMi+c1jE9JeuCfknkJVir2D6yw88lTV3AgH39f74oNCPHJQdQI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987042"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987036"
+   d="scan'208";a="362987042"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:03 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:13 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523476"
+   d="scan'208";a="635523580"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:01 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:11 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 04/36] serial: 8250: Create serial8250_em485_supported for em485 users
-Date:   Mon,  6 Jun 2022 13:04:01 +0300
-Message-Id: <20220606100433.13793-5-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 07/36] serial: 8250_exar: Fill in rs485_supported
+Date:   Mon,  6 Jun 2022 13:04:04 +0300
+Message-Id: <20220606100433.13793-8-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -54,46 +54,68 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Create serial8250_em485_supported for the serial_rs485 features
-supported by the em485 framework.
+Add information on supported serial_rs485 features.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250.h      | 1 +
- drivers/tty/serial/8250/8250_port.c | 8 ++++++++
- 2 files changed, 9 insertions(+)
+ drivers/tty/serial/8250/8250_exar.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index d70adaa3b117..e5d44867a876 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -187,6 +187,7 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485);
- void serial8250_em485_start_tx(struct uart_8250_port *p);
- void serial8250_em485_stop_tx(struct uart_8250_port *p);
- void serial8250_em485_destroy(struct uart_8250_port *p);
-+extern struct serial_rs485 serial8250_em485_supported;
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 7292917ac878..11916f603a3d 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -113,6 +113,7 @@ struct exar8250;
  
- /* MCR <-> TIOCM conversion */
- static inline int serial8250_TIOCM_to_MCR(int tiocm)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d7384ab364d2..a825fbc215a7 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -647,6 +647,14 @@ void serial8250_em485_destroy(struct uart_8250_port *p)
+ struct exar8250_platform {
+ 	int (*rs485_config)(struct uart_port *, struct serial_rs485 *);
++	const struct serial_rs485 *rs485_supported;
+ 	int (*register_gpio)(struct pci_dev *, struct uart_8250_port *);
+ 	void (*unregister_gpio)(struct uart_8250_port *);
+ };
+@@ -431,10 +432,15 @@ static int generic_rs485_config(struct uart_port *port,
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(serial8250_em485_destroy);
  
-+struct serial_rs485 serial8250_em485_supported = {
-+	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
-+		 SER_RS485_TERMINATE_BUS | SER_RS485_RX_DURING_TX,
-+	.delay_rts_before_send = 1,
-+	.delay_rts_after_send = 1,
++static const struct serial_rs485 generic_rs485_supported = {
++	.flags = SER_RS485_ENABLED,
 +};
-+EXPORT_SYMBOL_GPL(serial8250_em485_supported);
 +
- /**
-  * serial8250_em485_config() - generic ->rs485_config() callback
-  * @port: uart port
+ static const struct exar8250_platform exar8250_default_platform = {
+ 	.register_gpio = xr17v35x_register_gpio,
+ 	.unregister_gpio = xr17v35x_unregister_gpio,
+ 	.rs485_config = generic_rs485_config,
++	.rs485_supported = &generic_rs485_supported,
+ };
+ 
+ static int iot2040_rs485_config(struct uart_port *port,
+@@ -470,6 +476,10 @@ static int iot2040_rs485_config(struct uart_port *port,
+ 	return generic_rs485_config(port, rs485);
+ }
+ 
++static const struct serial_rs485 iot2040_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_TERMINATE_BUS,
++};
++
+ static const struct property_entry iot2040_gpio_properties[] = {
+ 	PROPERTY_ENTRY_U32("exar,first-pin", 10),
+ 	PROPERTY_ENTRY_U32("ngpios", 1),
+@@ -498,6 +508,7 @@ static int iot2040_register_gpio(struct pci_dev *pcidev,
+ 
+ static const struct exar8250_platform iot2040_platform = {
+ 	.rs485_config = iot2040_rs485_config,
++	.rs485_supported = &iot2040_rs485_supported,
+ 	.register_gpio = iot2040_register_gpio,
+ 	.unregister_gpio = xr17v35x_unregister_gpio,
+ };
+@@ -540,6 +551,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 
+ 	port->port.uartclk = baud * 16;
+ 	port->port.rs485_config = platform->rs485_config;
++	port->port.rs485_supported = platform->rs485_supported;
+ 
+ 	/*
+ 	 * Setup the UART clock for the devices on expansion slot to
 -- 
 2.30.2
 
