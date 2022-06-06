@@ -2,110 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A16C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 15:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A608DC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 15:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241134AbiFFPql (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S241177AbiFFPru (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241125AbiFFPqj (ORCPT
+        with ESMTP id S241164AbiFFPrt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:46:39 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A4F326D7;
-        Mon,  6 Jun 2022 08:46:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654530397; x=1686066397;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Rowern8il6mlvB4ADbpapufGbGqLa/M/1dT71/livmA=;
-  b=L5h1Myx5nEMapHy7cLuv2DwuSuUdNohJuD1OSn+TvIGBZedIMy/cveq4
-   3O5BH19aP1x2clh28XJ5kC6oqRIA+AKktfv63y3/Tu3+u/Bg7ItkOonD7
-   C95lkkdbiYgcBGb2H9Yt4NO+tcNhd/injkNSJ5qUyxfnB4HoFZ2XauDuA
-   9/QE6c4iLgIw8Zrihz/sKvFeExGSIwdma/ISWlpEuUdfkMZinUaO+T3y5
-   yqEIN33Z6qprMNRmzBGEzoSjdpGWNcJzBJ4J7ixWPVTkY6DAD6huAYrOZ
-   5/rp4pF5hgbMWNJ4TiTcNYBRQvXCr5pYijNgfCRWKV5gmISEWxAjQMij+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="264656681"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="264656681"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:37:15 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635653602"
-Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:37:11 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v6 2/2] tty: Use flow-control char function on closing path
-Date:   Mon,  6 Jun 2022 18:36:52 +0300
-Message-Id: <20220606153652.63554-3-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220606153652.63554-1-ilpo.jarvinen@linux.intel.com>
-References: <20220606153652.63554-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 6 Jun 2022 11:47:49 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC27814A0;
+        Mon,  6 Jun 2022 08:47:46 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id m20so29715653ejj.10;
+        Mon, 06 Jun 2022 08:47:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zMXoJ5ovah/EPnw+eVVA7zsLZ8X5B88gH27UvNQPmpQ=;
+        b=BGShGVp/McO0ebp1bfrzMcVVGNJL7uCdsRPuRgW3RV5eJ3q6HnZR3BvGz3JsycimK9
+         tFeS1eVWNNrc1+K+h9F29eBrGXjcr7mdKBXRcA4d/Xu+ojcechXrj/X3tcCpxbEZGKAs
+         89XcuSfklrum52HjCpJic0Hkg24iskxELUqdUED6yrDO60z74P7w+rdID5JiryWAotGY
+         +/zb+2/nOqw8ItNo3vycr8MRg/ZebES+0ENtjO8mm5IKvrT/tf8iC/OwWbImu6kss0os
+         dJ5Gb0nTEqUbbRFSm6+E4VPUusl8QnySUwYItrWMCkVrkV2tR9187BaKLNI2ibgyN/BX
+         iyKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zMXoJ5ovah/EPnw+eVVA7zsLZ8X5B88gH27UvNQPmpQ=;
+        b=Qi9iah/RoNArH2rhp0rFw+RZCgta79gCsSPl0ugd2aBwCMgZv/O161FR7QfIox3iIY
+         4AuqMng3iE3xL2kS1Lh/2yjQMP26CPim5XQd1jz2uWWqLRHIFwBs4HQ9gClO+lregsAQ
+         ynVz0kyaRBMdwug6R7wNe1/Lnmjm8Me7vJRzzfWMNw6TBGmFhNG2ZjH/9VT+l9w3i3xx
+         mRkbySSkSfpDjxO7V6kQ0BBlagLVYmr7EBiluSQs96mUEv/ElL9ikU73FbIYXRxpNMXQ
+         lBr3GABT7/w3kb9ftXP2hDXEE0lONsihRCHhlY0C5ft7130TdWOzLCNmciS3L1oUOPxB
+         Z9lA==
+X-Gm-Message-State: AOAM5335hkNijIOuA5KfHXVqa7fJo592IYrMSA3jBYTn3sJpW6t2mFXQ
+        4udb+ImJnsuZQI3nguMuAd/bMHX4m635uX+dvbA=
+X-Google-Smtp-Source: ABdhPJz5X2jGDojQOqVTsOyfTkcmqZ3IMzoha4y2SNbY4Y4Vn2qld3Y3g05vnax+v60x8GGYgd5cRV4GbdXAjFu4ezE=
+X-Received: by 2002:a17:907:9721:b0:70c:65e7:2aa5 with SMTP id
+ jg33-20020a170907972100b0070c65e72aa5mr18760471ejc.132.1654530464708; Mon, 06
+ Jun 2022 08:47:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220606144124.29691-1-wangxiang@cdjrlc.com>
+In-Reply-To: <20220606144124.29691-1-wangxiang@cdjrlc.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 6 Jun 2022 17:47:07 +0200
+Message-ID: <CAHp75Ved-Nx8AQ5=y3rLYu6gQxAkR4WxHLk_tF=XSbw5D_EH9w@mail.gmail.com>
+Subject: Re: [PATCH v2] serial: 8250_omap: Fix syntax errors in comments
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Tony Lindgren <tony@atomide.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use n_tty_receive_char_flow_ctrl also on the closing path. This makes
-the code cleaner and consistent.
+On Mon, Jun 6, 2022 at 4:56 PM Xiang wangx <wangxiang@cdjrlc.com> wrote:
+>
+> Delete the redundant word 'have'.
 
-However, there a small change of regression!
+I think I have given you a tag...
 
-The earlier closing path has a small difference compared with the
-normal receive path. If START_CHAR and STOP_CHAR are equal, their
-precedence is different depending on which path a character is
-processed. I don't know whether this difference was intentional or
-not, and if equal START_CHAR and STOP_CHAR is actually used anywhere.
-But it feels not so useful corner case.
+Please, read the chapter in the Documentation on how to handle
+community interactions:
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
 
-While this change would logically belong to those earlier changes,
-having a separate patch for this is useful. If this regresses, bisect
-can pinpoint this change rather than the large patch. Also, this
-change is not necessary to minimal fix for the issue addressed in
-the previous patch.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/n_tty.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 8d80384df874..3afdd9033a9c 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1434,15 +1434,10 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
- 		c = tolower(c);
- 
- 	if (I_IXON(tty)) {
--		if (c == STOP_CHAR(tty)) {
--			if (!lookahead_done)
--				stop_tty(tty);
--		} else if (c == START_CHAR(tty) && lookahead_done) {
--			return;
--		} else if (c == START_CHAR(tty) ||
--			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
--			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
--			  c != SUSP_CHAR(tty))) {
-+		if (!n_tty_receive_char_flow_ctrl(tty, c, lookahead_done) &&
-+		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
-+		    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
-+		    c != SUSP_CHAR(tty)) {
- 			start_tty(tty);
- 			process_echoes(tty);
- 		}
 -- 
-2.30.2
-
+With Best Regards,
+Andy Shevchenko
