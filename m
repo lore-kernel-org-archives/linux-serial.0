@@ -2,243 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FE9C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 18:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E949CC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 19:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbiFFS3Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        id S232542AbiFFTlX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 15:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbiFFS3Z (ORCPT
+        with ESMTP id S232529AbiFFTlQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:29:25 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763A21AF6EB
-        for <linux-serial@vger.kernel.org>; Mon,  6 Jun 2022 11:29:21 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id l18so9354048lje.13
-        for <linux-serial@vger.kernel.org>; Mon, 06 Jun 2022 11:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rsv2N92+ZqJEH9bTxNPmExrepo9exn8lWuSrT2tKiOI=;
-        b=CDRN5wvevDSX4L6VqzDHsCD/eYaYFxLIjrjvDqvfUY+zAZ8soBwmK9oZR2d906uKTM
-         DeeQR42u/Z70lsKCub+iMsXnU0YBa9nSvQ8N3RIatmDxUX0k66bbt78vQrErqH824Vk2
-         nTrB/ubSBF25YQ/ORyc1m07tu1dLOF3LVUokOXM3uYi5fbYULpQI0pBr53SHJ6Y9ECWm
-         tiOKhcVGEqPtEho6uQFRF8gZr027NjFevnNZBQrUP6W4fu8tXmq9IPNstzR/CcxweYSf
-         lYBFCLBLmyQx8WeETP7/wuI18EDZPM8K+62AOGQpOndlQj0/Y4wM5Ls/7BCOBDuj8/WL
-         5GRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rsv2N92+ZqJEH9bTxNPmExrepo9exn8lWuSrT2tKiOI=;
-        b=B5bBD5RWwNX0MzpYUb/HqYfANVnmgC5XnkTv5Ek0VboatAKLA2KUYEKcg7nRImVANd
-         XMpgLb8EFyb1OFs0mrsocfXay1XYd3DPZhHS9+fEL8JC0fJBnYUFs92gpkajSc52ZUZi
-         +i0oleopqRsiUtMlVGkNAOPbAoyA0eCh3JA9HZ7makbyl4u6KvrAYY1pGJfqSZxWjcwV
-         BSbtKdH45YDf0YG/t/8NPMNvYBB/3i+sWTTKdLgatVGcVthiCJ5sVqSpW+nAPYV1lE0Q
-         DnIoFBiMSQYUXisJs24s2O4bchAb9aB8HZQ8rCHBz6jNWkzX0T8h1Kbl+SxJlqg1Fib7
-         2AGA==
-X-Gm-Message-State: AOAM530HSpuGWOY0ka9Nn6vbnW1GM7wLkJQsotJoX9fRTrFVe2Gi/vN7
-        jj4dkM844MUrjceLAiZRjjJ7v154vvw+GcC0DB/qAsC9oJE=
-X-Google-Smtp-Source: ABdhPJz9WBVfjcWsnEhD1m8xEt5J4gYwmCxK9iWJrGTUUViNn3ZQW/arYk5oezL4vGONjYr05Zn9cp/XNsth6qnJcTA=
-X-Received: by 2002:a2e:a90a:0:b0:253:de3f:812b with SMTP id
- j10-20020a2ea90a000000b00253de3f812bmr48330959ljq.400.1654540159081; Mon, 06
- Jun 2022 11:29:19 -0700 (PDT)
+        Mon, 6 Jun 2022 15:41:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC1EEC31B
+        for <linux-serial@vger.kernel.org>; Mon,  6 Jun 2022 12:41:15 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyIar-0000Vw-Vx; Mon, 06 Jun 2022 21:40:54 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyIar-006r9b-5D; Mon, 06 Jun 2022 21:40:51 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyIao-00Ecds-Va; Mon, 06 Jun 2022 21:40:50 +0200
+Date:   Mon, 6 Jun 2022 21:40:46 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
+ read
+Message-ID: <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+ <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
+ <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+ <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
+ <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+ <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220529134605.12881-1-trix@redhat.com>
-In-Reply-To: <20220529134605.12881-1-trix@redhat.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 6 Jun 2022 11:29:07 -0700
-Message-ID: <CAKwvOdnvcP4m_+4gjhmjX+xmmU2um6_HGVqQa0euFCkwog6i1A@mail.gmail.com>
-Subject: Re: [PATCH] serial: core: check if uart_get_info succeeds before using
-To:     Tom Rix <trix@redhat.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        nathan@kernel.org, peter@hurleysoftware.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="boqcs7jrkk3rfnqe"
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, May 29, 2022 at 6:46 AM Tom Rix <trix@redhat.com> wrote:
->
-> clang static analysis reports this representative issue
-> drivers/tty/serial/serial_core.c:2818:9: warning: 3rd function call argument is an uninitialized value [core.CallAndMessage]
->         return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
->                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> uart_get_info() is used the *show() functions.  When uart_get_info() fails, what is reported
-> is garbage.  So check if uart_get_info() succeeded.
 
-Hi Tom,
-Thanks for the patch. What do you think about throwing __must_check on
-the definition of uart_get_info with a comment that members of the
-retinfo param will not be initialized if the return value is not zero?
+--boqcs7jrkk3rfnqe
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Otherwise, patch LGTM.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+On Mon, Jun 06, 2022 at 07:01:15PM +0200, Andy Shevchenko wrote:
+> On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=E4rvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> > On Mon, 6 Jun 2022, Andy Shevchenko wrote:
+> > > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=E4rvinen
+> > > <ilpo.jarvinen@linux.intel.com> wrote:
+>=20
+> ...
+>=20
+> > > But more importantly I do not see the reason for the Acked-by tag when
+> > > SoB of the same person is present.
+> >
+> > I just repeated what Uwe gave me. Maybe he didn't notice he was already
+> > there as SoB.
+> >
+> > This situation is anyway a bit more complex than usual. The line I took
+> > was part of Uwe's much larger patch initially (which was fully reverted)
+> > so his SoB was carried over to preserve the authorship. As I made a
+> > non-trivial modification to his original patch by removing almost all of
+> > it, I added my SoB too. Given this situation, I kind of thought he Acked
+> > (approved) the post-modification version of it.
+>=20
+> I believe you haven't preserved the authorship that way (since From
+> line is different), but since you have done non-trivial changes and
+> Uwe is okay with them, the straightforward tag chain would be (with
+> your authorship implied):
+> Co-developed-by: Uwe
+> SoB: Uwe
+> SoB: yours
 
->
-> Fixes: 4047b37122d1 ("serial: core: Prevent unsafe uart port access, part 1")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/tty/serial/serial_core.c | 52 ++++++++++++++++++++++++--------
->  1 file changed, 39 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 9a85b41caa0a..4160f6711c5d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2690,7 +2690,9 @@ static ssize_t uartclk_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.baud_base * 16);
->  }
->
-> @@ -2700,7 +2702,9 @@ static ssize_t type_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.type);
->  }
->
-> @@ -2710,7 +2714,9 @@ static ssize_t line_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.line);
->  }
->
-> @@ -2721,7 +2727,9 @@ static ssize_t port_show(struct device *dev,
->         struct tty_port *port = dev_get_drvdata(dev);
->         unsigned long ioaddr;
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         ioaddr = tmp.port;
->         if (HIGH_BITS_OFFSET)
->                 ioaddr |= (unsigned long)tmp.port_high << HIGH_BITS_OFFSET;
-> @@ -2734,7 +2742,9 @@ static ssize_t irq_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.irq);
->  }
->
-> @@ -2744,7 +2754,9 @@ static ssize_t flags_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "0x%X\n", tmp.flags);
->  }
->
-> @@ -2754,7 +2766,9 @@ static ssize_t xmit_fifo_size_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.xmit_fifo_size);
->  }
->
-> @@ -2764,7 +2778,9 @@ static ssize_t close_delay_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.close_delay);
->  }
->
-> @@ -2774,7 +2790,9 @@ static ssize_t closing_wait_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.closing_wait);
->  }
->
-> @@ -2784,7 +2802,9 @@ static ssize_t custom_divisor_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.custom_divisor);
->  }
->
-> @@ -2794,7 +2814,9 @@ static ssize_t io_type_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.io_type);
->  }
->
-> @@ -2804,7 +2826,9 @@ static ssize_t iomem_base_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "0x%lX\n", (unsigned long)tmp.iomem_base);
->  }
->
-> @@ -2814,7 +2838,9 @@ static ssize_t iomem_reg_shift_show(struct device *dev,
->         struct serial_struct tmp;
->         struct tty_port *port = dev_get_drvdata(dev);
->
-> -       uart_get_info(port, &tmp);
-> +       if (uart_get_info(port, &tmp))
-> +               return 0;
-> +
->         return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
->  }
->
-> --
-> 2.27.0
->
+I don't care much, but IMHO the initial set of tags made sense to me. It
+has my S-o-b because the change is (somewhat) taken from me and it has
+my ack because the modification looked good to me.
 
+But indeed, fixing the email address would be appreciated. Do with the
+tags whatever you consider sensible.
 
--- 
-Thanks,
-~Nick Desaulniers
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--boqcs7jrkk3rfnqe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKeWDsACgkQwfwUeK3K
+7AmPzwf/UunASJnTiJ/16Znc5eL73N0/lllPWSFZb3IosqdtED2Mor24XTBEiSfh
+9M51DzIbS0eQwaZ9erpoy3m6y1eI3Kq+pfVf9qyZPne/3mKgrV8xU2/GcVHH6T6e
+LfdvfCzG/RjbOfQO6RyvtGtXK5SIHpvaml+Ka0hLiCjVXlunLyqjcAXw/D5h+v08
+zs83AyGp6NVmlUHdFyKG3imtS6MAgWywU2HhZn+EonKWwDvhCp/8Oo98x7PyVsux
+Qcfo7JXHYV8CCUWJ0hTyvOXns7Uwhz0R8qYtEcA0WVJFhWbAL9nnjROo35ij9IUG
+bwh9V1S1n/FbRkSdT9UMkwqz9TyOpQ==
+=XeMl
+-----END PGP SIGNATURE-----
+
+--boqcs7jrkk3rfnqe--
