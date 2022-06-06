@@ -2,48 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63331C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ED1CCA47E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiFFKFu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
+        id S233036AbiFFKFw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233315AbiFFKFk (ORCPT
+        with ESMTP id S233339AbiFFKFl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:05:40 -0400
+        Mon, 6 Jun 2022 06:05:41 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C6E72215;
-        Mon,  6 Jun 2022 03:05:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D4DE15F0;
+        Mon,  6 Jun 2022 03:05:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509934; x=1686045934;
+  t=1654509936; x=1686045936;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=a3xiWY53ELIfaqncp7g4ITt07ZnohdpPD8QPL9eVyFY=;
-  b=Q+XY1j14M0Xs2P8k8LIlYVlydLEfPK1/EiRwnHW1kGjCSNNKL8bPkvwh
-   HdUjbh9nSHe3kC4yt/JVFLqtkQ1dwNwsdb0YxKPntbB/e43WY3+CvIMiM
-   y1MUyXCtjsXHPxQ9sgK1ZLADTdrLbNKJSyqINxOijMeHgi1RKTW+1Xo0g
-   ozpLrs0IKZXtp1zZTbEYVqBSK5/AVGtN4LoVM4POKekfx1HgOtQStT64H
-   hoVzpWtG7mj1Z1wrY19sabVwz610C5ie9/P25bEq/zSRMYooDLdFioqVi
-   NMcb2rmF7trMILOdI1bbwTz6G1QjTo/pWXZLgFB9uG5+oyLsT0fMuBi4J
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987049"
+  bh=WndMwTVfuW00rnE/S6LgTXND/zSnSa30GDTQqWRCwI8=;
+  b=hHE2W06YlK+ItNQYMWYHY0U+xNz3LDnMX5WbYI8mjpL6eIhrjOEFyE7u
+   2l/m4ACY9Adl9GoUgt2qspaxuQuvYYBvFtl4OpsfvDmqiksEnNjUKKTCf
+   CxcAgiKJPpw2+gsA3NWqzIeIrgo4vNeSAhu8iS6nDaTGJNaLgkNqi1sSS
+   hbKGm/ZhN+Ic6u0WbsS1mBkMMvw3I94AFzjmzFEfm4jg1k8C1TDxR8D/4
+   TEEkoq+bOajzQ75hWF+ljINpwTrlbfgq8e/ukFIX7wDPBWZ4qePkDystN
+   D6F9WyJDbwJCZqL8vAh3zY0SGMYaqLhu2uuB3CmG91V7rmFy+uHU2mG3e
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987054"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987049"
+   d="scan'208";a="362987054"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:21 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:34 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523630"
+   d="scan'208";a="635523712"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:20 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:31 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 10/36] serial: 8250_of: Use serial8250_em485_supported
-Date:   Mon,  6 Jun 2022 13:04:07 +0300
-Message-Id: <20220606100433.13793-11-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 14/36] serial: atmel: Fill in rs485_supported
+Date:   Mon,  6 Jun 2022 13:04:11 +0300
+Message-Id: <20220606100433.13793-15-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -54,24 +59,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-8250_of uses em485, fill in rs485_supported accordingly.
+Add information on supported serial_rs485 features.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_of.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/atmel_serial.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 5a699a1aa79c..65cccd559db2 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -165,6 +165,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index dd1c7e4bd1c9..74dd1d3ac46f 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2473,6 +2473,12 @@ static const struct uart_ops atmel_pops = {
+ #endif
+ };
  
- 	port->dev = &ofdev->dev;
- 	port->rs485_config = serial8250_em485_config;
-+	port->rs485_supported = &serial8250_em485_supported;
- 	up->rs485_start_tx = serial8250_em485_start_tx;
- 	up->rs485_stop_tx = serial8250_em485_stop_tx;
++static const struct serial_rs485 atmel_rs485_supported = {
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX,
++	.delay_rts_before_send = 1,
++	.delay_rts_after_send = 1,
++};
++
+ /*
+  * Configure the port from the platform device resource info.
+  */
+@@ -2494,6 +2500,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+ 	port->mapbase		= mpdev->resource[0].start;
+ 	port->irq		= platform_get_irq(mpdev, 0);
+ 	port->rs485_config	= atmel_config_rs485;
++	port->rs485_supported	= &atmel_rs485_supported;
+ 	port->iso7816_config	= atmel_config_iso7816;
+ 	port->membase		= NULL;
  
 -- 
 2.30.2
