@@ -2,77 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A608DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 15:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C39C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 17:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241177AbiFFPru (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41910 "EHLO
+        id S229512AbiFFRNI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241164AbiFFPrt (ORCPT
+        with ESMTP id S229505AbiFFRMs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:47:49 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC27814A0;
-        Mon,  6 Jun 2022 08:47:46 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id m20so29715653ejj.10;
-        Mon, 06 Jun 2022 08:47:46 -0700 (PDT)
+        Mon, 6 Jun 2022 13:12:48 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0926543B;
+        Mon,  6 Jun 2022 10:01:53 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id v1so19471906ejg.13;
+        Mon, 06 Jun 2022 10:01:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zMXoJ5ovah/EPnw+eVVA7zsLZ8X5B88gH27UvNQPmpQ=;
-        b=BGShGVp/McO0ebp1bfrzMcVVGNJL7uCdsRPuRgW3RV5eJ3q6HnZR3BvGz3JsycimK9
-         tFeS1eVWNNrc1+K+h9F29eBrGXjcr7mdKBXRcA4d/Xu+ojcechXrj/X3tcCpxbEZGKAs
-         89XcuSfklrum52HjCpJic0Hkg24iskxELUqdUED6yrDO60z74P7w+rdID5JiryWAotGY
-         +/zb+2/nOqw8ItNo3vycr8MRg/ZebES+0ENtjO8mm5IKvrT/tf8iC/OwWbImu6kss0os
-         dJ5Gb0nTEqUbbRFSm6+E4VPUusl8QnySUwYItrWMCkVrkV2tR9187BaKLNI2ibgyN/BX
-         iyKw==
+         :cc:content-transfer-encoding;
+        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
+        b=lJvGt4cT7Wc3DUsIMaQJsU+RQuEVx65ETRRSCvyxvEvxFajh86RC7k/CefpleSbE7Z
+         CJHl/5Ookhpz2/i3QdX2NFv5FHsSkeZb0+1akLAgL8edxon2E7iL5TcbJbdwKmlabZm8
+         dqdBfLGwCVDfd9si6nR8Pphnta9eMUHMkpsu9+TrvFqdvE/l7URNK6O5r0x4YVOKMGKm
+         m+Mzn3E8wh/U5G4b1elvFdtUayEL8E+3JCbWSF8b6/kTv/38HnitXj3Kmf2YWvwTmlkj
+         qpX41+bJ32sG+yCL/bnUciDsBj0HSsEI5LM0JYHD9uAxMEYFD4Mp/ax86AQ1+YAC3s3B
+         yiUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zMXoJ5ovah/EPnw+eVVA7zsLZ8X5B88gH27UvNQPmpQ=;
-        b=Qi9iah/RoNArH2rhp0rFw+RZCgta79gCsSPl0ugd2aBwCMgZv/O161FR7QfIox3iIY
-         4AuqMng3iE3xL2kS1Lh/2yjQMP26CPim5XQd1jz2uWWqLRHIFwBs4HQ9gClO+lregsAQ
-         ynVz0kyaRBMdwug6R7wNe1/Lnmjm8Me7vJRzzfWMNw6TBGmFhNG2ZjH/9VT+l9w3i3xx
-         mRkbySSkSfpDjxO7V6kQ0BBlagLVYmr7EBiluSQs96mUEv/ElL9ikU73FbIYXRxpNMXQ
-         lBr3GABT7/w3kb9ftXP2hDXEE0lONsihRCHhlY0C5ft7130TdWOzLCNmciS3L1oUOPxB
-         Z9lA==
-X-Gm-Message-State: AOAM5335hkNijIOuA5KfHXVqa7fJo592IYrMSA3jBYTn3sJpW6t2mFXQ
-        4udb+ImJnsuZQI3nguMuAd/bMHX4m635uX+dvbA=
-X-Google-Smtp-Source: ABdhPJz5X2jGDojQOqVTsOyfTkcmqZ3IMzoha4y2SNbY4Y4Vn2qld3Y3g05vnax+v60x8GGYgd5cRV4GbdXAjFu4ezE=
-X-Received: by 2002:a17:907:9721:b0:70c:65e7:2aa5 with SMTP id
- jg33-20020a170907972100b0070c65e72aa5mr18760471ejc.132.1654530464708; Mon, 06
- Jun 2022 08:47:44 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
+        b=jeqnBBjSAgOYozdonhihQAVzeG6gitdwU5t+VHBoz8ZG/hJyNHls/kqHatRZOlh262
+         /YGRf7MMr2lEURW6BBfhQUPkScyPg6bcx0hy/0rUmjTXaGZ3RoD6Pr4bN7pT51JClAQd
+         Sw+Rd+SIR+OBE5s6Eogmo3AvSGBk83ig8veXhZdR+JzyHhtFLiqyHWo/B3xnKcNsKveC
+         phuzg65wsl2RGnE1S369ILVcXz21m4KcuCcL7vJRHBEgbMgqyPIgYXeyqfHLW2lEaDCu
+         7u2Uz3kKbWQMWkWw+/M4WXed7v9Xu5wj2a7Vh3Al9SMdY8uZj+wpaVFsTvPQT3b8V93v
+         9YMQ==
+X-Gm-Message-State: AOAM531GbvcQp88LDvdsCNK1mDRaIcNFGXWzR724IENH2f6cEmkWvzWv
+        hFLakHqTzSJlKGsPRkLa87yoCz09cuUyxUzu79ZzGjuqLww=
+X-Google-Smtp-Source: ABdhPJzovU3c9OvgJvFgFzpioKQzX8EX17ry25J4mXgs9aUqi2Qyk8sPpBoEWgnTBS4jNoJCUffSCB20fcohU9dPV4M=
+X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
+ dc1-20020a170906c7c100b00711d2e999d0mr4128843ejb.639.1654534911686; Mon, 06
+ Jun 2022 10:01:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220606144124.29691-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20220606144124.29691-1-wangxiang@cdjrlc.com>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+ <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+ <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com> <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+In-Reply-To: <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 17:47:07 +0200
-Message-ID: <CAHp75Ved-Nx8AQ5=y3rLYu6gQxAkR4WxHLk_tF=XSbw5D_EH9w@mail.gmail.com>
-Subject: Re: [PATCH v2] serial: 8250_omap: Fix syntax errors in comments
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Mon, 6 Jun 2022 19:01:15 +0200
+Message-ID: <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 4:56 PM Xiang wangx <wangxiang@cdjrlc.com> wrote:
+On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Mon, 6 Jun 2022, Andy Shevchenko wrote:
+> > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@linux.intel.com> wrote:
+
+...
+
+> > But more importantly I do not see the reason for the Acked-by tag when
+> > SoB of the same person is present.
 >
-> Delete the redundant word 'have'.
+> I just repeated what Uwe gave me. Maybe he didn't notice he was already
+> there as SoB.
+>
+> This situation is anyway a bit more complex than usual. The line I took
+> was part of Uwe's much larger patch initially (which was fully reverted)
+> so his SoB was carried over to preserve the authorship. As I made a
+> non-trivial modification to his original patch by removing almost all of
+> it, I added my SoB too. Given this situation, I kind of thought he Acked
+> (approved) the post-modification version of it.
 
-I think I have given you a tag...
+I believe you haven't preserved the authorship that way (since From
+line is different), but since you have done non-trivial changes and
+Uwe is okay with them, the straightforward tag chain would be (with
+your authorship implied):
+Co-developed-by: Uwe
+SoB: Uwe
+SoB: yours
 
-Please, read the chapter in the Documentation on how to handle
-community interactions:
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes
-
--- 
+--=20
 With Best Regards,
 Andy Shevchenko
