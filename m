@@ -2,54 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 115A2C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DC0C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jun 2022 10:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbiFFKGj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S233551AbiFFKGm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbiFFKGb (ORCPT
+        with ESMTP id S233554AbiFFKGe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:06:31 -0400
+        Mon, 6 Jun 2022 06:06:34 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF26F14084B;
-        Mon,  6 Jun 2022 03:06:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625FE144786;
+        Mon,  6 Jun 2022 03:06:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509986; x=1686045986;
+  t=1654509989; x=1686045989;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7XJq3KuEwylRleSQc/kmsQM+84+gFlD9hNoKE43ukeE=;
-  b=TCDO5eVXQ+w4bw109315m9zeLTX1V5oYlmIdqAQ1zpFvvbczPfXg64Qt
-   no6tqj/1Ewwyppx8D5eZBlN7LyGvIZvKGB9pYBzjvw8PplZOP18u7Tk2Q
-   NQvj28UhVJTsiklOu2i+lKa6X8elgxIqSBptkl3vgAt2JSNK70DD5ZlXl
-   GBE/tjFsqLtd5P1NUTSAetgKi4nwAWxUbTKkf9X7WxOxMclDV9oJrz13o
-   fqOXN9rwNsGcC4eugDx/IjWQh0TJK6eESbao7mmaDDeINXAYsk0id+hqS
-   OjA7FZ1YiK6iyxNCP4YJF25HVUa/qOTQvBWC1942kgANqapc1RuD294XO
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987087"
+  bh=nkqgtQAboZnM/AAFg9v2/5Z9Uxqx4JM1lubOKwYAy7M=;
+  b=i80R34XwgvxyfzxgBQTku+Ba0lnu1S+6XBt8i08ZEyucHIKBN8+AY3z2
+   MhzKmzfKbvCGlxhjE4YyyBEukbJ17r2qnTfn7UGMq9n7M1RHZ3VnAlkZM
+   AFPX4CHvps6a11RbsWs8T7i73A44KjxDbiy/Ahr7pgUi7F0VSv8STYdzT
+   DiuAkgp/+MjwryMZm+hkYOQACBXri5ZCESYOH+lzLgG6HjMygoWqZe9wN
+   euDF6X7OqUTMYV7X9LsHa25dM7xc7qJjv/SJLfKHw9ySitlfzGLruruKr
+   KucFwOJ8QoNk9WOu4IErfYZrBDvMh2TqdOEFRVW1q0G37VvXEs2PS8nBa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987093"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987087"
+   d="scan'208";a="362987093"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:23 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:29 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523878"
+   d="scan'208";a="635523908"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:20 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:27 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 31/36] serial: imx: Remove serial_rs485 sanitization
-Date:   Mon,  6 Jun 2022 13:04:28 +0300
-Message-Id: <20220606100433.13793-32-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 33/36] serial: 8250_exar: Remove serial_rs485 assignment
+Date:   Mon,  6 Jun 2022 13:04:30 +0300
+Message-Id: <20220606100433.13793-34-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -60,30 +54,26 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver provides different rs485_supported for the case where RTS is
-not available making it unnecessary to handle it in
-imx_uart_rs485_config.
+Serial core handles serial_rs485 assignment.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/imx.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index ba853bc9b4db..1e96ddd2e262 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1913,10 +1913,6 @@ static int imx_uart_rs485_config(struct uart_port *port,
- 	struct imx_port *sport = (struct imx_port *)port;
- 	u32 ucr2;
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 11916f603a3d..528779b40049 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -427,8 +427,6 @@ static int generic_rs485_config(struct uart_port *port,
+ 	if (is_rs485)
+ 		writeb(UART_EXAR_RS485_DLY(4), p + UART_MSR);
  
--	/* RTS is required to control the transmitter */
--	if (!sport->have_rtscts && !sport->have_rtsgpio)
--		rs485conf->flags &= ~SER_RS485_ENABLED;
+-	port->rs485 = *rs485;
 -
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
- 		/* Enable receiver if low-active RTS signal is requested */
- 		if (sport->have_rtscts &&  !sport->have_rtsgpio &&
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
