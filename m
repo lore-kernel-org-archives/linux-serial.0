@@ -2,137 +2,151 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C77B8C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED43C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240372AbiFGKXa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        id S236009AbiFGKcx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240914AbiFGKX2 (ORCPT
+        with ESMTP id S238083AbiFGKcw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:23:28 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509AF52B32;
-        Tue,  7 Jun 2022 03:23:27 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id m20so34167539ejj.10;
-        Tue, 07 Jun 2022 03:23:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OukCrFCJWq9SsUmHm9/OILUsFtIRnUo2aSEz9DprVgw=;
-        b=AtgqPcm8kAiaknV8i+YKMCjp6/4+RDOT9zF+4AcqbyVIuNs0/eD+1rC19j2Nx08Uvh
-         t3/y08Mofm2FfgVMLmysPvpS5AqGE+A+UOCufdC6PFhLwBmx2rrVe8DN8Jr9HvkJgxdF
-         0cj7aJHdRuBWVDvUNXgWAExZZPd9cVBaOQ16EoWfpW72fXfQopCC1cKjLcyx55RjhoCw
-         1wK+Sr8pwCa0OaUf15NuJ4sB4HR7Irq3GpdfYSvGVDDdWQzQHiRpAJ/zrozPbuj0m7pN
-         LbI0zoAdBZEKZtZSztO+N1SHbqvhyrXCHv2+FdsyWD+nFXl/iv3TmDUP750mMCNmoJd/
-         0qVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OukCrFCJWq9SsUmHm9/OILUsFtIRnUo2aSEz9DprVgw=;
-        b=uayppVbnbpYgD8c4hHsHNB4d5+AvjppMf4X7nLeQRqGn29PwDnSnw3Lp7l2tSdoRLf
-         ErvtjaE5F18ElpCmfwEbJfXcmt9LtfQUH931BOIbU3nnGOsV2FC9GVsueVD4uC7tlYQe
-         bYOzm2Aa2wG6cAOI3oCWUN60JxuXIOAO4HFr28PqTTOfOVnfELTnsEp2sHYa4D9hfPVz
-         nITUGmzmprNC4ocO5a0ZnBzytHcWuTt+5udIOBY9i0K54cYcKKIR6E4vDtlHBy/uyFTF
-         FiuiVIhb8Ke8w2VbJQVfyujiWAQMDzT09uww3RpsOt1ywbJIjJ+zrDddYEnHCH/G5mpf
-         6m1A==
-X-Gm-Message-State: AOAM530No8yjhtRXXmMRMvnroNvzocYUKfZ5yIDOhPZP3ZqsCOb7tzgP
-        yFPkUOF1zSDaut753GWncUJ8IPSrdzybqIxaLzlRfQu37usyGQ==
-X-Google-Smtp-Source: ABdhPJydW7GF6K0z85km7pWjsn//lCcEbNe6RTaKvs4doPsBXgA/hZ865RbeQF5H/M8ogZSSTMR0VHtN68EW/0MBphU=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr20407572eja.44.1654597405812; Tue, 07
- Jun 2022 03:23:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com> <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:22:49 +0200
-Message-ID: <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] serial: 8250: Adjust misleading LSR related comment
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Tue, 7 Jun 2022 06:32:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F70ED107
+        for <linux-serial@vger.kernel.org>; Tue,  7 Jun 2022 03:32:50 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyWVk-0001z3-EL; Tue, 07 Jun 2022 12:32:32 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyWVk-006yOl-63; Tue, 07 Jun 2022 12:32:30 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nyWVh-00EkU5-OY; Tue, 07 Jun 2022 12:32:29 +0200
+Date:   Tue, 7 Jun 2022 12:32:29 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
+ read
+Message-ID: <20220607103229.f4hniwkcyfwlgem2@pengutronix.de>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+ <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
+ <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+ <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
+ <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+ <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
+ <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de>
+ <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
+ <20220607055810.szkjoitpr3vboymr@pengutronix.de>
+ <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="y6zewhn3wuwtvi3o"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 11:16 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> serial8250_rx_chars() has max_count based character limit. If it
-> triggers, the function returns old LSR value (and it has never returned
 
-the old
+--y6zewhn3wuwtvi3o
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> only flags which were not handled). Adjust the comment to match
-> behavior and warn about which flags can be depended on.
->
-> While I'd have moved LSR read before LSR read and used serial_lsr_in()
-> also here but I came across this old discussion about the topic:
+Hello,
 
->   https://www.spinics.net/lists/linux-serial/msg20555.html
+On Tue, Jun 07, 2022 at 12:09:39PM +0200, Andy Shevchenko wrote:
+> > > > > I believe you haven't preserved the authorship that way (since Fr=
+om
+> > > > > line is different), but since you have done non-trivial changes a=
+nd
+> > > > > Uwe is okay with them, the straightforward tag chain would be (wi=
+th
+> > > > > your authorship implied):
+> > > > > Co-developed-by: Uwe
+> > > > > SoB: Uwe
+> > > > > SoB: yours
+> > > >
+> > > > I don't care much, but IMHO the initial set of tags made sense to m=
+e.
+> > >
+> > > > It
+> > > > has my S-o-b because the change is (somewhat) taken from me and it =
+has
+> > > > my ack because the modification looked good to me.
+> > >
+> > > According to
+> > > https://www.kernel.org/doc/html/latest/process/submitting-patches.htm=
+l#when-to-use-acked-by-cc-and-co-developed-by
+> > > the SoB already implies that you developed that, but Ack if not. It
+> > > also clarifies Co-developed-by for cases like this.
 
-Can it be transformed to lore.kernel.org link? and maybe even moved as
-BugLink tag?
+Reading that by the letter, it doesn't say you must not use Ack if there
+is a S-o-b.
 
-> ...so I left it as it is (it works as long as the callers only use
-> a subset of the LSR flags which holds true today).
+	If a person was not directly involved in the preparation or
+	handling of a patch but wishes to signify and record their
+	approval of it then they can ask to have an Acked-by: line added
+	to the patch=E2=80=99s changelog.
 
-With comments addressed,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+It's "If" and not "Iff". Not sure if that is intended?!
 
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index a0ea048eb2ad..686891f1b2ca 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1782,9 +1782,12 @@ void serial8250_read_char(struct uart_8250_port *u=
-p, unsigned char lsr)
->  EXPORT_SYMBOL_GPL(serial8250_read_char);
->
->  /*
-> - * serial8250_rx_chars: processes according to the passed in LSR
-> - * value, and returns the remaining LSR bits not handled
-> - * by this Rx routine.
-> + * serial8250_rx_chars: Read characters. The first LSR value must be pas=
-sed
-> + * in.
+> > That's unintuitive (and wrong) in my opinion.
+>=20
+> I have the opposite opinion.
+>=20
+> > For me, Acked-by is a
+> > confirmation of the respective person, that the patch in question is ok.
+> > If I take a hunk of a random reverted patch and add the S-o-b of the big
+> > patch's author, can I really assume the original author "acks" the
+> > result? I would expect that in most cases they don't. (And if they do,
+> > there is no way to record it, because the usual way of adding an Ack is
+> > blocked as there is already a S-o-b?)
+>=20
+> It's very logical to me. If you allowed (by not NAKing) the other
+> developer to use your SoB you imply Ack for every change they made.
 
-While at it, I would do the following:
-1) keep on one line;
-2) replace : with -.
+So you assume that you notice each patch with your S-o-b in time to send
+a NAK. I don't claim that for me and I would be surprised if a major
+part of the kernel contributors did.
 
-The idea behind is to easily convert to kernel doc in the future if
-needed, or at least be consistent with kernel doc format.
-
-> + *
-> + * Returns LSR bits. The caller should rely only non-rx related LSR bits
-
-rely only on
-
-non-Rx
-
-> + * (such as THRE) because the LSR value might come from an already consu=
-med
-> + * character.
->   */
-
+Best regards
+Uwe
 
 --=20
-With Best Regards,
-Andy Shevchenko
+Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
+   |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--y6zewhn3wuwtvi3o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKfKToACgkQwfwUeK3K
+7AmWpAf+PFbmFeyedxtz9REfyynhfuR58QtPYsiSzWuf4M3cnolsHEOAANNpVHc9
+jANNDJuZ7hueulaLM6QIQlVkNwU2oTC5gYw5fBrORTIPsaUVdhzFbh+l1d5Uw2DX
+tROw9p1Junv+4RYM8ny4YaE6ASXPuXU53aLam4nNkN159dHzZ8FbHFZshYTsVj6o
+/YSaTgOf83/2AaKd+8w6QLXDsDj1TyMovGahLj8cU492FWtwJoTzo1qiOoArqRJk
+qwIFfqyfbhle+haza9cdJPLfxoSf6difwXg1/s5wy2M3MOR4eHAPUR3r7hoNANU9
+Bcf0I7MGrSqPSxSovZv16XABceAg0A==
+=0Mcm
+-----END PGP SIGNATURE-----
+
+--y6zewhn3wuwtvi3o--
