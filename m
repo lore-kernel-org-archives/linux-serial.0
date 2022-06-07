@@ -2,49 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B7AC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F337C43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347374AbiFGSsN (ORCPT
+        id S1347400AbiFGSsP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        Tue, 7 Jun 2022 14:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354405AbiFGSq7 (ORCPT
+        with ESMTP id S1354257AbiFGSqu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:46:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD34532077;
-        Tue,  7 Jun 2022 11:01:04 -0700 (PDT)
+        Tue, 7 Jun 2022 14:46:50 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EC4B55;
+        Tue,  7 Jun 2022 11:00:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73E95617B0;
-        Tue,  7 Jun 2022 18:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F18C34119;
-        Tue,  7 Jun 2022 18:01:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B0C56CE2425;
+        Tue,  7 Jun 2022 18:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574ADC34115;
+        Tue,  7 Jun 2022 18:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624863;
-        bh=OeYBXK7Vd8Z7875GdHc2vCw+10nPHVIVgJicLuUH/T0=;
+        s=k20201202; t=1654624825;
+        bh=VXl2zwaLrzJhmKisP41An05vrIbOHeLzXarsvU7kk8M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWgTDvG+bsAcVzy1/uMHQ79HI/UMC2/PcAXU/slldxUxH6aI26zkZv0GYIV9f5Nmu
-         uxITV3ARjS/JEkq2HSMoaaGFaf40krJZQzrJfCywFIAHNpxvK0+LTrY+W1qxoH+gEa
-         mq2BeSN+zup4v/5/vv0EvPq6TObVDbaaRJuIGMsra2j6FvgPRskv80m+b0cf9rposw
-         3N+mn9tNSmCUo2J1OlVPox+ek3ZDN8AuwW0NU3/fqs/S9BzdIkE8pVrfLwnCDb6IY1
-         kSJT750blUAIizxQCD0ZOTfAbp1wfdIpNBNGpg98Q9f0ToejqRerjGHvVfdYp1ve9V
-         hyvbkqUB2WBtA==
+        b=Mq1sA97T7Z7gmwckZD0T6qmJZeDRsiQ3lQBmxGbQPZ3TrHsdM3byAlrSDQWvYAh31
+         Cs01gtZaIS5EhOicAQpg08Wi43jFFFRTpDs/Wdm47YgCDBMJsYPmeIOgb+TeMpaFV1
+         ezvpx3eQzB3lfrTZnMor3Kz8jTcrysnJz0tw4hyvuYry7NVpHu2iSUrBiQWxStGgGs
+         L9tt2n2ajtPY8FI0rK4BFiIWC1sESVY8Kdj54CP7pWjkSbJr8a49ADNYOTcjW7Germ
+         MK3FYbupNMEvm2dYDaOqCug2bsbd58r0bS2+g6SEUP8sdb+Z+ezZg0tlVPo6SnBJ2H
+         7PVU2yWrteR6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
+Cc:     Huang Guobin <huangguobin4@huawei.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/34] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Tue,  7 Jun 2022 13:59:53 -0400
-Message-Id: <20220607180011.481266-18-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/34] tty: Fix a possible resource leak in icom_probe
+Date:   Tue,  7 Jun 2022 13:59:40 -0400
+Message-Id: <20220607180011.481266-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
 References: <20220607180011.481266-1-sashal@kernel.org>
@@ -56,57 +53,35 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
-
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 5129c2dfbe07..aac96659694d 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1579,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
- {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1596,6 +1597,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 624f3d541c68..d047380259b5 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1499,7 +1499,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
  
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1641,6 +1644,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
- }
- 
- static void msm_console_write(struct console *co, const char *s,
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
