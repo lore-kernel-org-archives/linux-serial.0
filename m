@@ -2,56 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D11C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 09:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8E0CCA47C
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240306AbiFGJ7g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 05:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
+        id S240506AbiFGKCZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239776AbiFGJ7f (ORCPT
+        with ESMTP id S231598AbiFGKCY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 05:59:35 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F90813EF;
-        Tue,  7 Jun 2022 02:59:34 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id m20so34042256ejj.10;
-        Tue, 07 Jun 2022 02:59:34 -0700 (PDT)
+        Tue, 7 Jun 2022 06:02:24 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012065F8A;
+        Tue,  7 Jun 2022 03:02:21 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b8so5598211edj.11;
+        Tue, 07 Jun 2022 03:02:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lxVWtgk2MYK7tyuypm6e6PUQAcCHSHou/3ZRAHbOVpk=;
-        b=VQY1loPqU6cmtCq5MRX6W0SUd2IIzjij1i4LvyyQHZO9sypUIWSaN58u3MkyhwOTCw
-         x04dCTwmvWZ5sJrbeYH36tuBLTiVpYOS1BEQAGxdfYkBNPpDQrLGHuq9wndgRgO15Api
-         DVoLIFic1x1/0akX/jkXeWT1Uzh2pcSjZfQtjf+7s17UJ/mHk56WZhLxgmDWmdQw8n9k
-         nefJSFxgYYuAUCSkY1beh4DoEyZuGCIUkeWclLr6i6E1mCaqFp3j/TPmzc1fiY1HEVwn
-         donSUzVAekTmUAK+j2Bl9IUjuUu8pZRALvbUGPDeTxi4Al+80RngkUjmtNK27mvCLuFI
-         sa0A==
+        bh=22+arTrvo1OVycmSNW1K2UlJf5Gwa3d1qjbfOB+SNko=;
+        b=cV86jW/RsJl2yp7PQbKCu9MZT5W0tt917FmbE7LQFsCFYKR/+6cET4Vpqo+25wnjgH
+         Ci5V7Bp8Up8EuYPAHO3jjHCFOBeJI7/y0JtD40tZDk70n9SRsYlWwMacFdyJcej3MuYn
+         YHa1NFtpw1UpHqmRDJa3JE3i5kgVJ3QHciWa5nTAtSXl7gRaFiBHwF4eWIhTJgRiGA/C
+         +ZBOFxeyZcCWx0n9g9uJaPaZdkng+08RtBfYgdDS8e0bch4RuB5Fzy4RQ99dxKSxDKtE
+         SknIlasik/AwzDThv+THmwyXu9IDv6Z71IpqojJstsxoNAnln7n4A1fBPYwV1yj/pa2q
+         Qz6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lxVWtgk2MYK7tyuypm6e6PUQAcCHSHou/3ZRAHbOVpk=;
-        b=hFOhhff8ynkWiSgkjD+2lwjRvC2Hx53Lob0RyP2VcXqCHVY/kNkRRHvX2s9USj4B1N
-         sOCL3lCDGvgUyqnjcqwJYLfdKOpmPG0e9Wi2UpXPz09rWtTXWkO/fyYIjQaWbWlx5O2z
-         oP6DDtee6L21L3/n+DPehKZsUdIXJ4/Ls64+YrsJ0d+gB8XEXudYp29WaLbXXWrr8l1u
-         kYEMhaPHGlnV5XVqhCTblcl1CCo65Y/qhkXZA5YQYh6b/N3gJxCfMr4ulhEqurY9Apu8
-         JxTguH7yP+Wg48kKb/q6Etnet8raQ+G40TveYPrAC7Nr2qWH8PaNvIajuUvdLPI3xBLM
-         0H7A==
-X-Gm-Message-State: AOAM5328HeDSUNwVJtiuGk5NYf5r7AZXlr1QpqGZXjgrcjt6ManKILWg
-        JFjFQcacpKB3t+KEqoLqQgm+n2b9gg/7kk1KzmItl+UBefl5FQ==
-X-Google-Smtp-Source: ABdhPJw9TTzAR820+KlxuAowdaRO/HTzzE8b4ylykIraDj7jVSMwXYdCf34or+khV/0U9tR3CzPcrTVrwlbkh1m5+ws=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr26847700ejc.497.1654595972614; Tue, 07
- Jun 2022 02:59:32 -0700 (PDT)
+        bh=22+arTrvo1OVycmSNW1K2UlJf5Gwa3d1qjbfOB+SNko=;
+        b=kF7fF8IrGnRruTDbxjpLctGz+sZFD/aWXX17GwwpcexadwC28p7xWcJbvhgR7lGF3o
+         yENTQPosTkjt1eW/LZSkAEFIwHVXDRk7PuDpfQdgYJYrXPrD4jegnuIFGBkCqcjwEVdT
+         sdhmUjCfbxQ7Qwf5EwOKA12phvfxq7EA6IVwabEleFEbY6F0/fI/gci28iEbhM2ldU6J
+         f5U3phExocZ2ZcpdXyThtozeyWq+YxiBouVs5dQwnAiywprw4dUOE4P/V9ccqGekc6d/
+         N+ccrhRjP0Sz3BbJyIM5E+rduUHCClgggUjeoSlIvhLH19WjuOp1OyenB9J8oLaVx+vY
+         xf0Q==
+X-Gm-Message-State: AOAM531DpHL4HnR19lCSpaFwhn9E9Eyi074nLzZmPg0530JQl98BA6UB
+        eyOlnZo/aDSJ7Tb+Ixei5kgql6lfZKq3m7VVJEDw9dOykjwIVQ==
+X-Google-Smtp-Source: ABdhPJxS6upelYsko+7tcj8nHvCDiiy+DHldiJIy/Cp1PC5H7P/jz3xowxK1vVGqmmk/JXNwgtJXZ91S87U3T6RKsbE=
+X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
+ b1-20020aa7d481000000b0042dd5fdf963mr32390900edr.209.1654596140504; Tue, 07
+ Jun 2022 03:02:20 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220602083128.22540-1-jslaby@suse.cz> <20220602083128.22540-2-jslaby@suse.cz>
- <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com> <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org>
-In-Reply-To: <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org>
+ <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com>
+ <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org> <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
+In-Reply-To: <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 11:58:56 +0200
-Message-ID: <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
+Date:   Tue, 7 Jun 2022 12:01:44 +0200
+Message-ID: <CAHp75VeTHUe=VCs-mq27ffk6uFXZ-vkPvb=r7S1S8-_oi1FtJw@mail.gmail.com>
 Subject: Re: [PATCH 2/2] tty/vt: Makefile, add --unicode for loadkeys invocation
 To:     Jiri Slaby <jirislaby@kernel.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -62,19 +63,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 7:42 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> On 06. 06. 22, 16:35, Andy Shevchenko wrote:
-> > On Thu, Jun 2, 2022 at 12:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
-> >>
-> >> For a long time, we generate unicode tables using loadkeys. So fix
-> >> Makefile to use that flag too.
-> >
-> > generated
+On Tue, Jun 7, 2022 at 11:58 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
 >
-> We still do, but I didn't even know there is even a rule for that ;).
+> On Tue, Jun 7, 2022 at 7:42 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 06. 06. 22, 16:35, Andy Shevchenko wrote:
+> > > On Thu, Jun 2, 2022 at 12:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
+> > >>
+> > >> For a long time, we generate unicode tables using loadkeys. So fix
+> > >> Makefile to use that flag too.
+> > >
+> > > generated
+> >
+> > We still do, but I didn't even know there is even a rule for that ;).
+>
+> I understand, but here is English stylistics like this. You need to
+> use past ind. or present perfect ("for a long time" dictates that).
 
-I understand, but here is English stylistics like this. You need to
-use past ind. or present perfect ("for a long time" dictates that).
+Okay, now even more explanation, present perfect should be used here.
+
+we have generated
+
 
 -- 
 With Best Regards,
