@@ -2,55 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3B7C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 15:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A4EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344337AbiFGPt1 (ORCPT
+        id S1343922AbiFGQdo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        Tue, 7 Jun 2022 12:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344308AbiFGPtN (ORCPT
+        with ESMTP id S237616AbiFGQdo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 11:49:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8A8F33A0;
-        Tue,  7 Jun 2022 08:49:12 -0700 (PDT)
+        Tue, 7 Jun 2022 12:33:44 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6420E140E9;
+        Tue,  7 Jun 2022 09:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654616952; x=1686152952;
+  t=1654619623; x=1686155623;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=48gb7mAGbeYhtSJ293emSdKyHKxm0Jm2EjcSJnSpD8Y=;
-  b=n5qWRIJhU/zAcNCgs027VlkEar+6FauiinVEu+bJjgrQac4JdT/6Ij9Y
-   8rX8kn0w/jizDNB2JCzYPJ6DTCMuR0oI4WBCe6qtzD4GjB4rzx1A4Bpkm
-   nRgxRlKNCwfCKCQJe2aEaMQzaxYE+f9YW/iSQgxgYJARoVvvrNiUnel2P
-   /wlBM6e9dE2S7kh1wKvQaywoPx3OwbJZC1XkWO11xOx+24H7B6dvjyIP+
-   Lty15KuytxDG//AJZ21+IFGDG9zCX9vJX30hrvxuNMeyW2W3QWGVOt3Pl
-   ozkYRFMk63u7ah9WXkVG6fSmm34jx6gmNiHljW0eTX9p8Ql7Xmlv0JOuW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277578306"
+  bh=GVRCx6VMUkvoUh4rTdpxk3rMYV/vXBx5Cs+h/nOmupc=;
+  b=eKCDwCHYMQ9NvBS0sJJtTA4/GH3FO29lKA7VPy6O9a9qQAYtR0okQs9I
+   2Ja45QlHYNOB5fJi5y23IckyfK+GSzrhsaxRUrx53l2hV+427hBikQD0T
+   E4GBtdKIwDtBBnR1m2unYm4gZSUt35iR/YTsMasHqU+WqR60KFoddTbZO
+   +E+DTTGqF2f4xGTwkUr1eFO/jPHN7OW/YUOJuAxAR9XyMoJd2ouPgLdis
+   Ly1jsScUa7BDw1CTGffZEx+bRhjyu+CAfJNEGXoHNMOsrhOBiK7KvkmBd
+   BNGynOUZ4NVgNg2gyHKIks9GO/4aVhDZJsUU7BY8sNztGFtKvW5d0+ZC3
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="265231020"
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277578306"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:58 -0700
+   d="scan'208";a="265231020"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:25:07 -0700
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584245532"
+   d="scan'208";a="636199916"
 Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:56 -0700
-Date:   Tue, 7 Jun 2022 18:31:54 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 09:25:05 -0700
+Date:   Tue, 7 Jun 2022 19:25:03 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 33/36] tty/vt: consolemap: change refcount only if needed
- in con_do_clear_unimap()
-In-Reply-To: <20220607104946.18710-33-jslaby@suse.cz>
-Message-ID: <ce9f52c5-4b46-77a8-8dd4-1de787e5b8b@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-33-jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 36/36] tty/vt: consolemap: walk the buffer only once in
+ con_set_trans_old()
+In-Reply-To: <20220607104946.18710-36-jslaby@suse.cz>
+Message-ID: <4fee5c3-bdd7-f69-d8c5-2d5610eb5c3b@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-36-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1422709916-1654615917=:1622"
+Content-Type: multipart/mixed; boundary="8323329-1117444838-1654619107=:1622"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -58,71 +57,22 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1422709916-1654615917=:1622
+--8323329-1117444838-1654619107=:1622
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> con_do_clear_unimap() currently decreases and increases refcount of old
-> dictionary in a back and forth fashion. This makes the code really hard
-> to follow. Decrease the refcount only if everything went well and we
-> really allocated a new one and decoupled from the old dictionary.
-> 
-> I sincerelly hope I did not make a mistake in this (ill) logic.
+> Fetch the user data one by one (by get_user()) and fill in the local
+> buffer simultaneously. I.e. we no longer require to walk two buffers and
+> save thus 256 B from stack (whole ubuf).
 > 
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-It seems fine:
-
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-One unrelated comment below for additional cleanup opportunity.
-
-> ---
->  drivers/tty/vt/consolemap.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index 01b7e49f1f91..4d8efe74315c 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -535,22 +535,23 @@ static int con_do_clear_unimap(struct vc_data *vc)
->  {
->  	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
->  
-> -	if (!old || --old->refcount) {
-> +	if (!old || old->refcount > 1) {
->  		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
-> -		if (!new) {
-> -			if (old)
-> -				old->refcount++;
-> +		if (!new)
->  			return -ENOMEM;
-> -		}
-> +
->  		new->refcount = 1;
->  		*vc->vc_uni_pagedir_loc = new;
-> +
-> +		if (old)
-> +			old->refcount--;
->  	} else {
->  		if (old == dflt)
->  			dflt = NULL;
-
-This seems unnecessary as con_release_unimap() already does it.
-
-> -		old->refcount++;
->  		old->sum = 0;
->  		con_release_unimap(old);
->  	}
-> +
->  	return 0;
->  }
->  
-> 
+...for this and all patches that were not commented individually.
 
 -- 
  i.
 
---8323329-1422709916-1654615917=:1622--
+--8323329-1117444838-1654619107=:1622--
