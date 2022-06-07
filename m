@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9094CC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA99C433EF
 	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbiFGKvQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
+        id S241955AbiFGKvR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242342AbiFGKuN (ORCPT
+        with ESMTP id S242321AbiFGKuK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A91F688C;
-        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+        Tue, 7 Jun 2022 06:50:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DA0F5D39;
+        Tue,  7 Jun 2022 03:49:54 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 244A01F96A;
-        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 4298721B7D;
+        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=u0OBd4FJp4rAtSJ07Ca5FRHYHuKGM4DCFcxJjBDCqZs=;
-        b=gy9PKgle/OHcalCVMv/nTn9v2SfVFbPezg5xwoe1LUyTRaZaew97mRgzVWnX24IvPqgqcI
-        HDU1OBQ7knFYhiGxpcKgKVRHau4vy5DY6y7G9ABtVPnFB7Lov8/iSMDCK4Kt8vGLl3BqMC
-        8uUdCbBiuCQVVcTj12uP4472IvED+78=
+        bh=6pM4n+yw9yyaOEqb2V/b1hd+CDwZd6lz0M7nlrv4fz0=;
+        b=Y/9z7X6nwtQ0Mze3uemYH0+Djj6DO3BBBrgnYsa5m66FGOQqXOK6oSkyG9G7CK3jbGP577
+        YdRdNiyt0RAx1hg0KjeuaM9Iy/EXmWuO9ukxQoNZuTA+xjkzF7NiqpTCg9VIIwMz1LETkD
+        T0GNo/3w0QuixCtzejPe1CNSL1ngnmY=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598995;
+        s=susede2_ed25519; t=1654598992;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=u0OBd4FJp4rAtSJ07Ca5FRHYHuKGM4DCFcxJjBDCqZs=;
-        b=EqLiFcBVr6tbMnopA5NN75TGmjUhjOIFfkJeNAmNjnUltW/wZmWxikbaNm1VtgwU6kLHW4
-        x9sncdv14Li7IQDg==
+        bh=6pM4n+yw9yyaOEqb2V/b1hd+CDwZd6lz0M7nlrv4fz0=;
+        b=zBcL/ICiZXApOemCd6Lkd9+OrrLGNVbgAcRVKvO0SSkwqj2ByKDaShNKGBr5fd5B+DJSrW
+        AT8CNKFVF5kUQWBw==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F2BBF2C142;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 1B1412C141;
+        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 27/36] tty/vt: consolemap: saner variable names in con_copy_unimap()
-Date:   Tue,  7 Jun 2022 12:49:37 +0200
-Message-Id: <20220607104946.18710-27-jslaby@suse.cz>
+Subject: [PATCH 13/36] tty/vt: consolemap: make con_set_unimap() more readable
+Date:   Tue,  7 Jun 2022 12:49:23 +0200
+Message-Id: <20220607104946.18710-13-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,48 +57,105 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
-
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
-
-This is a lot of shuffling, but the result pays off, IMO.
+The indentation was completely broken in con_set_unimap(). Reorder the
+code using 'if (!cond) continue;'s so that the code makes sense. Not
+that it is perfect now, but it can be followed at least. More cleanup to
+come. And remove all those useless whitespaces at the EOLs too.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/vt/consolemap.c | 42 ++++++++++++++++++++-----------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 255d4e92a9d0..dcbeb38a3a0a 100644
+index 79a62dcca046..3730a1c0f223 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -750,16 +750,16 @@ EXPORT_SYMBOL(con_set_default_unimap);
-  */
- int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
- {
--	struct uni_pagedict *q;
-+	struct uni_pagedict *src;
+@@ -580,23 +580,21 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
  
- 	if (!*src_vc->vc_uni_pagedir_loc)
- 		return -EINVAL;
- 	if (*dst_vc->vc_uni_pagedir_loc == *src_vc->vc_uni_pagedir_loc)
- 		return 0;
- 	con_free_unimap(dst_vc);
--	q = *src_vc->vc_uni_pagedir_loc;
--	q->refcount++;
--	*dst_vc->vc_uni_pagedir_loc = q;
-+	src = *src_vc->vc_uni_pagedir_loc;
-+	src->refcount++;
-+	*dst_vc->vc_uni_pagedir_loc = src;
- 	return 0;
- }
- EXPORT_SYMBOL(con_copy_unimap);
+ 	/* Save original vc_unipagdir_loc in case we allocate a new one */
+ 	p = *vc->vc_uni_pagedir_loc;
+-
+ 	if (!p) {
+ 		err = -EINVAL;
+-
+ 		goto out_unlock;
+ 	}
+-	
++
+ 	if (p->refcount > 1) {
+ 		int j, k;
+ 		u16 **p1, *p2, l;
+-		
++
+ 		err1 = con_do_clear_unimap(vc);
+ 		if (err1) {
+ 			err = err1;
+ 			goto out_unlock;
+ 		}
+-		
++
+ 		/*
+ 		 * Since refcount was > 1, con_clear_unimap() allocated a
+ 		 * a new uni_pagedict for this vc.  Re: p != q
+@@ -611,13 +609,26 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+ 		 */
+ 		l = 0;		/* unicode value */
+ 		for (i = 0; i < UNI_DIRS; i++) {
+-		p1 = p->uni_pgdir[i];
+-		if (p1)
++			p1 = p->uni_pgdir[i];
++			if (!p1) {
++				/* Account for empty table */
++				l += UNI_DIR_ROWS * UNI_ROW_GLYPHS;
++				continue;
++			}
++
+ 			for (j = 0; j < UNI_DIR_ROWS; j++) {
+-			p2 = p1[j];
+-			if (p2) {
+-				for (k = 0; k < UNI_ROW_GLYPHS; k++, l++)
+-				if (p2[k] != 0xffff) {
++				p2 = p1[j];
++				if (!p2) {
++					/*
++					 * Account for row of 64 empty entries
++					 */
++					l += UNI_ROW_GLYPHS;
++					continue;
++				}
++
++				for (k = 0; k < UNI_ROW_GLYPHS; k++, l++) {
++					if (p2[k] == 0xffff)
++						continue;
+ 					/*
+ 					 * Found one, copy entry for unicode
+ 					 * l with fontpos value p2[k].
+@@ -632,15 +643,8 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+ 						goto out_unlock;
+ 					}
+ 				}
+-			} else {
+-				/* Account for row of 64 empty entries */
+-				l += UNI_ROW_GLYPHS;
+ 			}
+ 		}
+-		else
+-			/* Account for empty table */
+-			l += UNI_DIR_ROWS * UNI_ROW_GLYPHS;
+-		}
+ 
+ 		/*
+ 		 * Finished copying font table, set vc_uni_pagedir to new table
+@@ -658,7 +662,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
+ 		if (err1)
+ 			err = err1;
+ 	}
+-	
++
+ 	/*
+ 	 * Merge with fontmaps of any other virtual consoles.
+ 	 */
 -- 
 2.36.1
 
