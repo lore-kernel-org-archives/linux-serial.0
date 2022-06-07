@@ -2,46 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E31C43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4108AC2BBFC
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353225AbiFGSyT (ORCPT
+        id S1352389AbiFGS6B (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
+        Tue, 7 Jun 2022 14:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353374AbiFGSwo (ORCPT
+        with ESMTP id S1353407AbiFGSx7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:52:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCA31C136;
-        Tue,  7 Jun 2022 11:03:36 -0700 (PDT)
+        Tue, 7 Jun 2022 14:53:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F5514ACB5;
+        Tue,  7 Jun 2022 11:03:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19111B82340;
-        Tue,  7 Jun 2022 18:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26B6C3411F;
-        Tue,  7 Jun 2022 18:03:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 956E66171C;
+        Tue,  7 Jun 2022 18:03:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E4BC36AFF;
+        Tue,  7 Jun 2022 18:03:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625010;
-        bh=x3KhVWC0ll/qL0hqYrVnjfMXp95Ww5ZMIt+AkkTdFUI=;
+        s=k20201202; t=1654625029;
+        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shNXiqTncmt1lcBuwgc0AJVlwleB6AdiGcpFq/twFLUc97N+JjsOnTRhX6JNsxx2u
-         on6G5ObL6S5FvN/FRkSHu8nt9+FoKg9w+GY4h9opK0nvsaOh8Pi0B0fXrLDfRn4zfL
-         /H6JWGVjyjHdeUM0LXzDOoMlEa9/uMQ7OC7vSZ3+APS8eGm3NQbcNLeQyV/2nbaO97
-         txwZbjw7dDp0o/ShavBOj4NIaLv9NfmyTZGdnokcVJn9w6VJYE+FiisvJXwlVOzu1w
-         2LpVefVI7Hh1e1ax9EjO9ly5Sh6I+7MMp9iRByiJP5jbKGA9hZu9rUlgcJjKVI3M6e
-         wI5Yt9YAyQyMg==
+        b=B8ueaBSdT9bbfvyBl6w0cUKikOjz8aomfpOUfWBZT5I4a4uHzb56K73H/AMseEeUS
+         Y+Y4O8seQA0PemojvQcyR1PhABPRTdZwgH20ZhAZXgH1Fa5ED6S6skDfjgMYNcBebQ
+         PtuV2hd4U9TALkI79Wa6T/6HYmUjxUfcOyPvjmbd4aSDe18pGrhMs9R9HCy+Wq4U9o
+         sq1lapWPPDIKlIcukwCALJR+ukV685yqlK4nflNC9S3nPm+82P7JwZ+2mmPG5Ppqc4
+         ULaKoO1leaLmSbuabDScO/DaecgLo0Zr9Lc7l8V01jIAqB02ZEhdolZ/AVdE0BDXTW
+         6o9ypRCiaFb1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/19] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 14:03:02 -0400
-Message-Id: <20220607180317.482354-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 14/19] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Tue,  7 Jun 2022 14:03:09 -0400
+Message-Id: <20220607180317.482354-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
 References: <20220607180317.482354-1-sashal@kernel.org>
@@ -53,59 +56,57 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index fd3d1329d48c..68eb1c9faa29 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -452,6 +452,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index c284e61ed4fc..33d035f9fded 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
+ {
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
-+	del_timer_sync(&sport->timer);
++	local_irq_save(flags);
 +
- 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -482,8 +484,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
- 	}
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
+ }
  
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+ static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
 
