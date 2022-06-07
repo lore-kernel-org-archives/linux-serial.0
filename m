@@ -2,106 +2,153 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED665C43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 05:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BD1C43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 05:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235849AbiFGFm3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 01:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        id S234047AbiFGF6c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 01:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236375AbiFGFm2 (ORCPT
+        with ESMTP id S229874AbiFGF6c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 01:42:28 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E22033E39;
-        Mon,  6 Jun 2022 22:42:24 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id m20so32875686ejj.10;
-        Mon, 06 Jun 2022 22:42:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jG5R0zb9PynKCeHbyahXy5XvhO7UDwbT1uGHecSuYDM=;
-        b=VwJZXtgjbVR7y96yPTdRFEvDP+LErWOBvYUW8CkY7tV/64yo1dqe5YckNhGU0U0+4m
-         IokucpmsOhx2hAJwgupLzRvZRquxyASzlgUZkoOu8PC51/X7TV5WcZ0fYOFAf1+GzSNl
-         DGjM3+8WSM+QhSzLLT2WFcgURouoA8ji5SA2MympMjaAPiVLsSHOyJAAm1Wuo7BR7lhr
-         72SYXlFIK8HR4mTUtRPGBKAVJph+jGwaMseUnZcxi9tH7tmFPPt+3BnIwArrlDr2CeYA
-         8887kRXoMLID5eY52DW96wyYM/N5Jv4AcjjyzmGplhoru/N1RMZla3CZS54Wx2hNO47u
-         JoPQ==
-X-Gm-Message-State: AOAM533ep7rCLU+Tb5JXIrA3etIK+TN90VE7k52qJs5AYg4D0TmAjINx
-        RtVHt/fT+jUQpEqvHBhMOE+na/I4+5w=
-X-Google-Smtp-Source: ABdhPJy5ogW8XnqElq0MJ4+csXjtuj6bo+OfXlM8WKgh1aJYJhrSOdGrMCWgL8a/7ihPyHouzrBI4A==
-X-Received: by 2002:a17:907:971f:b0:6ff:2d30:4b37 with SMTP id jg31-20020a170907971f00b006ff2d304b37mr24700997ejc.7.1654580542441;
-        Mon, 06 Jun 2022 22:42:22 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id x11-20020a056402414b00b0043158c608e4sm2976559eda.27.2022.06.06.22.42.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 22:42:21 -0700 (PDT)
-Message-ID: <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org>
-Date:   Tue, 7 Jun 2022 07:42:20 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] tty/vt: Makefile, add --unicode for loadkeys
- invocation
-Content-Language: en-US
+        Tue, 7 Jun 2022 01:58:32 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A9EFD3
+        for <linux-serial@vger.kernel.org>; Mon,  6 Jun 2022 22:58:30 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nySEK-000077-Ja; Tue, 07 Jun 2022 07:58:16 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nySEK-006w0z-AQ; Tue, 07 Jun 2022 07:58:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nySEI-00Ehqw-BW; Tue, 07 Jun 2022 07:58:14 +0200
+Date:   Tue, 7 Jun 2022 07:58:10 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220602083128.22540-1-jslaby@suse.cz>
- <20220602083128.22540-2-jslaby@suse.cz>
- <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
+ read
+Message-ID: <20220607055810.szkjoitpr3vboymr@pengutronix.de>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+ <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
+ <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
+ <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
+ <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+ <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
+ <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de>
+ <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="yoikwpz5xkunc5d2"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 06. 06. 22, 16:35, Andy Shevchenko wrote:
-> On Thu, Jun 2, 2022 at 12:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
->>
->> For a long time, we generate unicode tables using loadkeys. So fix
->> Makefile to use that flag too.
-> 
-> generated
 
-We still do, but I didn't even know there is even a rule for that ;).
+--yoikwpz5xkunc5d2
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Does it make sense to add the Fixes tag?
+Hello Andy,
 
-I don't think so -- I don't think anyone ran the rule in the past decade 
-:P. I.e. it'd be pre-git anyway.
+On Mon, Jun 06, 2022 at 10:38:37PM +0200, Andy Shevchenko wrote:
+> On Mon, Jun 6, 2022 at 9:40 PM Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> >
+> > On Mon, Jun 06, 2022 at 07:01:15PM +0200, Andy Shevchenko wrote:
+> > > On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=E4rvinen
+> > > <ilpo.jarvinen@linux.intel.com> wrote:
+> > > > On Mon, 6 Jun 2022, Andy Shevchenko wrote:
+> > > > > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=E4rvinen
+> > > > > <ilpo.jarvinen@linux.intel.com> wrote:
+> > >
+> > > ...
+> > >
+> > > > > But more importantly I do not see the reason for the Acked-by tag=
+ when
+> > > > > SoB of the same person is present.
+> > > >
+> > > > I just repeated what Uwe gave me. Maybe he didn't notice he was alr=
+eady
+> > > > there as SoB.
+> > > >
+> > > > This situation is anyway a bit more complex than usual. The line I =
+took
+> > > > was part of Uwe's much larger patch initially (which was fully reve=
+rted)
+> > > > so his SoB was carried over to preserve the authorship. As I made a
+> > > > non-trivial modification to his original patch by removing almost a=
+ll of
+> > > > it, I added my SoB too. Given this situation, I kind of thought he =
+Acked
+> > > > (approved) the post-modification version of it.
+> > >
+> > > I believe you haven't preserved the authorship that way (since From
+> > > line is different), but since you have done non-trivial changes and
+> > > Uwe is okay with them, the straightforward tag chain would be (with
+> > > your authorship implied):
+> > > Co-developed-by: Uwe
+> > > SoB: Uwe
+> > > SoB: yours
+> >
+> > I don't care much, but IMHO the initial set of tags made sense to me.
+>=20
+> > It
+> > has my S-o-b because the change is (somewhat) taken from me and it has
+> > my ack because the modification looked good to me.
+>=20
+> According to
+> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#wh=
+en-to-use-acked-by-cc-and-co-developed-by
+> the SoB already implies that you developed that, but Ack if not. It
+> also clarifies Co-developed-by for cases like this.
 
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> ---
->>   drivers/tty/vt/Makefile | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/vt/Makefile b/drivers/tty/vt/Makefile
->> index fe30ce512819..b3dfe9d5717e 100644
->> --- a/drivers/tty/vt/Makefile
->> +++ b/drivers/tty/vt/Makefile
->> @@ -30,6 +30,6 @@ $(obj)/defkeymap.o:  $(obj)/defkeymap.c
->>   ifdef GENERATE_KEYMAP
->>
->>   $(obj)/defkeymap.c: $(obj)/%.c: $(src)/%.map
->> -       loadkeys --mktable $< > $@
->> +       loadkeys --mktable --unicode $< > $@
->>
->>   endif
->> --
->> 2.36.1
->>
-> 
-> 
+That's unintuitive (and wrong) in my opinion. For me, Acked-by is a
+confirmation of the respective person, that the patch in question is ok.
+If I take a hunk of a random reverted patch and add the S-o-b of the big
+patch's author, can I really assume the original author "acks" the
+result? I would expect that in most cases they don't. (And if they do,
+there is no way to record it, because the usual way of adding an Ack is
+blocked as there is already a S-o-b?)
 
-thanks,
--- 
-js
-suse labs
+*shrug*
+Uwe
+=20
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--yoikwpz5xkunc5d2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKe6O8ACgkQwfwUeK3K
+7AnxLQf9FaWIQXmb5QDARg811+5KuWh8stVYNDDX6DhKBZLPZ5KE3KM7xkNx0tSQ
+dE8UcfFfKPkYjqxouy9DlsYB5N1iNk9hMVmhrh4f5Ya6XBQiUWkCvbPTrg+eFX0W
+tSpv3IDhEgXIYXd/wBsZKEUvOitb2+ZJJ/U+d6six4hjLfSPuwjX4wzyC4ga7XYu
+nTQCJCbpdsYLoXyawEiQmj1m6HI+0/YPydngicadew0KxP3sl2kafqBFwzbu/o6s
+u2dHrPyceM5Gr+/98PSO42oMp1OfHBfvesQimBOL8iCi/Nq1xjGJVcW/w1RIyQ0G
+Czw6qopsEdVz6smmyKlK73EA3CNXPw==
+=xKNt
+-----END PGP SIGNATURE-----
+
+--yoikwpz5xkunc5d2--
