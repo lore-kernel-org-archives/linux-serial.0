@@ -2,49 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B53E8CCA47C
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66484CCA47C
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346971AbiFGSsJ (ORCPT
+        id S1347336AbiFGSsL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        Tue, 7 Jun 2022 14:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353670AbiFGSp4 (ORCPT
+        with ESMTP id S1354307AbiFGSqx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:45:56 -0400
+        Tue, 7 Jun 2022 14:46:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C610119043;
-        Tue,  7 Jun 2022 10:59:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAE512699E;
+        Tue,  7 Jun 2022 11:00:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 582C7B82375;
-        Tue,  7 Jun 2022 17:59:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41BB7C34119;
-        Tue,  7 Jun 2022 17:59:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0867B82368;
+        Tue,  7 Jun 2022 18:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0130C341C4;
+        Tue,  7 Jun 2022 18:00:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624750;
-        bh=mvNu4Qn76gbVGewx4xZapsgMTrdO5EFsAIFPwRuC+0w=;
+        s=k20201202; t=1654624837;
+        bh=pqhJmF9qXFmlGCy4O3OHm8/2Lk2t6X69Xz6V9YTOae8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oQyrm9trkZ8wsPBo/T0/ebb5gQiy2tKTeiI741cKU9uCFNDB0FMOquXbFku8idMUc
-         B6zvOJLHRNHzSBMg69j2HMqn7Ee/i2DIATixYL7IZAl87LrT2hLRvO6Qf/IP8kHV5J
-         1TKAvh0RXksP3gAqZMV28BDGavnFiMKujXqhGe7cC29kS+rkBEucgvyv0e9seygndP
-         W9AbB7M2fmvaQTpJgGvvPHe2/wka1n1cnE0ibbogga64IdH674LyLZfJklkr2QRCKi
-         1Gnu5vYuBaTmmkpEzExJTOAH4e7/L7+lzdLxwzIuijkPWA6nODepe9MXzSK17hllse
-         c0u2ueLf0zwSA==
+        b=mVlZfUvWF8HWpersW3E27RGyWnGixKzy6IRdM3ElmeaWyftEYhsHN/Ppve0YW/l4H
+         WisirUQ8VyXtRp9FrA680qKIlLfpwmvGtcxCia83Mb6WcGVmpcKNVVnPRSTf79bRaZ
+         JO/UiWvD8HgHmA9eF1sgGxqk/RQwZ4BzqX/tHqbn/wXyupAxTx2gl4d0yCHUA2+5Qi
+         ixf+BliA15qFckeaatGK657mmprwRQ4IJ9SmZpLpJ/o5YSU61iwEToMrazN5p//fFD
+         hTaQmggxEFFOLoSFOslRqekhubw1RdtomucnWm6dnIQ3igtLK9s0AIHF95TQbWG+Ic
+         mDHxxrER4lA/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Duoming Zhou <duoming@zju.edu.cn>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 10/38] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 13:58:05 -0400
-Message-Id: <20220607175835.480735-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 09/34] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Tue,  7 Jun 2022 13:59:44 -0400
+Message-Id: <20220607180011.481266-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -85,10 +85,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index f5fab1dd96bc..aa1cf2ae17a9 100644
+index 8e618129e65c..ff4b44bdf6b6 100644
 --- a/drivers/tty/serial/sa1100.c
 +++ b/drivers/tty/serial/sa1100.c
-@@ -448,6 +448,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -454,6 +454,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
  	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
  	quot = uart_get_divisor(port, baud);
  
@@ -97,7 +97,7 @@ index f5fab1dd96bc..aa1cf2ae17a9 100644
  	spin_lock_irqsave(&sport->port.lock, flags);
  
  	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -478,8 +480,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -484,8 +486,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
  				UTSR1_TO_SM(UTSR1_ROR);
  	}
  
