@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA99C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F27CCA47C
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241955AbiFGKvR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
+        id S241980AbiFGKvT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242321AbiFGKuK (ORCPT
+        with ESMTP id S242304AbiFGKuK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 7 Jun 2022 06:50:10 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DA0F5D39;
-        Tue,  7 Jun 2022 03:49:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD73F5D2E;
+        Tue,  7 Jun 2022 03:49:53 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4298721B7D;
-        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 738BA21B73;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598992; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598991; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6pM4n+yw9yyaOEqb2V/b1hd+CDwZd6lz0M7nlrv4fz0=;
-        b=Y/9z7X6nwtQ0Mze3uemYH0+Djj6DO3BBBrgnYsa5m66FGOQqXOK6oSkyG9G7CK3jbGP577
-        YdRdNiyt0RAx1hg0KjeuaM9Iy/EXmWuO9ukxQoNZuTA+xjkzF7NiqpTCg9VIIwMz1LETkD
-        T0GNo/3w0QuixCtzejPe1CNSL1ngnmY=
+        bh=Dc00+v41riTVE2YjckLepBjcqVd8iCS58CfTEBLud4Y=;
+        b=aPkQU7QatxA0ndTGVmWwi98BoSWSBucHDbrdPuvKI7PHtB2itPhtsLQqRcdsPYuSw95/Yr
+        oRtVdhD26cmJ8/n+9GLH9ev0ZDOpYr5In3QNr4SpvKOOf53jDfZrEQyMsYjMte0irKP335
+        hzpbfqQjD7efrShM8tza6M5uBkzdV/c=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598992;
+        s=susede2_ed25519; t=1654598991;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6pM4n+yw9yyaOEqb2V/b1hd+CDwZd6lz0M7nlrv4fz0=;
-        b=zBcL/ICiZXApOemCd6Lkd9+OrrLGNVbgAcRVKvO0SSkwqj2ByKDaShNKGBr5fd5B+DJSrW
-        AT8CNKFVF5kUQWBw==
+        bh=Dc00+v41riTVE2YjckLepBjcqVd8iCS58CfTEBLud4Y=;
+        b=mSRdvcID3iyPhFaB8N0vRJraa2xJaq/KqjLmqV/l/V8jF7Z9SMMlnQma51Nre7z7a2DW1b
+        pcq9R3WAla78p9Cw==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1B1412C141;
-        Tue,  7 Jun 2022 10:49:52 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 4CCE92C141;
+        Tue,  7 Jun 2022 10:49:51 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 13/36] tty/vt: consolemap: make con_set_unimap() more readable
-Date:   Tue,  7 Jun 2022 12:49:23 +0200
-Message-Id: <20220607104946.18710-13-jslaby@suse.cz>
+Subject: [PATCH 09/36] tty/vt: consolemap: use | for binary addition
+Date:   Tue,  7 Jun 2022 12:49:19 +0200
+Message-Id: <20220607104946.18710-9-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,105 +57,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The indentation was completely broken in con_set_unimap(). Reorder the
-code using 'if (!cond) continue;'s so that the code makes sense. Not
-that it is perfect now, but it can be followed at least. More cleanup to
-come. And remove all those useless whitespaces at the EOLs too.
+Unicode letters are composed as a bit shifts and sums of three values.
+Use "|" and not "+" for these bit operations. The former is indeed more
+appropriate.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 42 ++++++++++++++++++++-----------------
- 1 file changed, 23 insertions(+), 19 deletions(-)
+ drivers/tty/vt/consolemap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 79a62dcca046..3730a1c0f223 100644
+index f97081e01b71..016c1a0b4290 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -580,23 +580,21 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 
- 	/* Save original vc_unipagdir_loc in case we allocate a new one */
- 	p = *vc->vc_uni_pagedir_loc;
--
- 	if (!p) {
- 		err = -EINVAL;
--
- 		goto out_unlock;
- 	}
--	
-+
- 	if (p->refcount > 1) {
- 		int j, k;
- 		u16 **p1, *p2, l;
--		
-+
- 		err1 = con_do_clear_unimap(vc);
- 		if (err1) {
- 			err = err1;
- 			goto out_unlock;
- 		}
--		
-+
- 		/*
- 		 * Since refcount was > 1, con_clear_unimap() allocated a
- 		 * a new uni_pagedict for this vc.  Re: p != q
-@@ -611,13 +609,26 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 		 */
- 		l = 0;		/* unicode value */
- 		for (i = 0; i < UNI_DIRS; i++) {
--		p1 = p->uni_pgdir[i];
--		if (p1)
-+			p1 = p->uni_pgdir[i];
-+			if (!p1) {
-+				/* Account for empty table */
-+				l += UNI_DIR_ROWS * UNI_ROW_GLYPHS;
-+				continue;
-+			}
-+
- 			for (j = 0; j < UNI_DIR_ROWS; j++) {
--			p2 = p1[j];
--			if (p2) {
--				for (k = 0; k < UNI_ROW_GLYPHS; k++, l++)
--				if (p2[k] != 0xffff) {
-+				p2 = p1[j];
-+				if (!p2) {
-+					/*
-+					 * Account for row of 64 empty entries
-+					 */
-+					l += UNI_ROW_GLYPHS;
-+					continue;
-+				}
-+
-+				for (k = 0; k < UNI_ROW_GLYPHS; k++, l++) {
-+					if (p2[k] == 0xffff)
-+						continue;
- 					/*
- 					 * Found one, copy entry for unicode
- 					 * l with fontpos value p2[k].
-@@ -632,15 +643,8 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 						goto out_unlock;
- 					}
- 				}
--			} else {
--				/* Account for row of 64 empty entries */
--				l += UNI_ROW_GLYPHS;
+@@ -265,7 +265,7 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+ 				glyph = p2[k];
+ 				if (glyph >= 0 && glyph < MAX_GLYPH
+ 					       && q[glyph] < 32)
+-		  			q[glyph] = (i << 11) + (j << 6) + k;
++					q[glyph] = (i << 11) | (j << 6) | k;
  			}
  		}
--		else
--			/* Account for empty table */
--			l += UNI_DIR_ROWS * UNI_ROW_GLYPHS;
--		}
- 
- 		/*
- 		 * Finished copying font table, set vc_uni_pagedir to new table
-@@ -658,7 +662,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 		if (err1)
- 			err = err1;
  	}
--	
-+
- 	/*
- 	 * Merge with fontmaps of any other virtual consoles.
- 	 */
+@@ -788,7 +788,7 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct uni
+ 						continue;
+ 					if (ect < ct) {
+ 						unilist[ect].unicode =
+-							(i<<11)+(j<<6)+k;
++							(i<<11) | (j<<6) | k;
+ 						unilist[ect].fontpos = *p2;
+ 					}
+ 					ect++;
 -- 
 2.36.1
 
