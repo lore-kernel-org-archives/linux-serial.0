@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 415CCC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 451DAC43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241900AbiFGKvb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S240966AbiFGKvc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242353AbiFGKuN (ORCPT
+        with ESMTP id S242296AbiFGKuK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
+        Tue, 7 Jun 2022 06:50:10 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61170F6897;
-        Tue,  7 Jun 2022 03:49:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4DC97288;
+        Tue,  7 Jun 2022 03:49:51 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id EA7031F947;
-        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id A10F81F8F6;
+        Tue,  7 Jun 2022 10:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1654598990; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TYXEgGSmBKnTAkY/V7QSuiBpgMnCA5uwfbLthPmGdqE=;
-        b=kPzm4skJqEmN1vPLn6azl3mO3qnxbvdgrLjGNiP6pZ3ifLu6o/ULXGCO1xDwwEX/cNm+0A
-        99CYrcAkBSspZhmX0yjf8mWCPkg40/Or8onKqlE1bvsKLoEAqzHNqMhgcY2Kn/NHAJHebx
-        4esLIfe73Do9VVWX4NZcV8TeUmYf8go=
+        bh=m+LjQ5CcdTzH2HTKHZ/VYIEk2ijL3cQwy6RClzMeQBU=;
+        b=ZV5EcOWXwXWhDRMGeS65xZsdseabubXKc6hCkXmWdoAgFd4rIUV35S9UZLyJiZdmBtdzp+
+        EZZIJezM22WV8zzMtzPHq5FB6q8xoz/uPTfAFRBcYBQbtW5uDyMI6e/iGofeL7buzNfDeA
+        sxYY1UDkUDbO3YMV88b6V4ssm4qtdwA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598995;
+        s=susede2_ed25519; t=1654598990;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TYXEgGSmBKnTAkY/V7QSuiBpgMnCA5uwfbLthPmGdqE=;
-        b=9Oo/5GJaotCJ/iziXWU1cJ25NGAc8pXKVPcV11LmwszO0UcrOvB/ha/A2xFGVCFQCrdvNg
-        57RCSlru58s0u5Cg==
+        bh=m+LjQ5CcdTzH2HTKHZ/VYIEk2ijL3cQwy6RClzMeQBU=;
+        b=eGjZqa5q/j/Kzya2Ykp/CcONnO2y+/ahvg+1ow6VQTEWXztnGSlKIcXTU8aEBbNDv1lfrQ
+        D9z4xsEZNBwFqBBA==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C37D62C142;
-        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 7849E2C146;
+        Tue,  7 Jun 2022 10:49:50 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 31/36] tty/vt: consolemap: make conv_uni_to_pc() more readable
-Date:   Tue,  7 Jun 2022 12:49:41 +0200
-Message-Id: <20220607104946.18710-31-jslaby@suse.cz>
+Subject: [PATCH 05/36] tty/vt: consolemap: remove extern from function decls
+Date:   Tue,  7 Jun 2022 12:49:15 +0200
+Message-Id: <20220607104946.18710-5-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
 References: <20220607104946.18710-1-jslaby@suse.cz>
@@ -57,65 +57,36 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-1) Fetch *conp->vc_uni_pagedir_loc first and do the NULL check on the local
-   variable.
-2) Decouple the large "if" into few smaller "if"s.
-3) Remove a \n from the definition line.
-
-This makes the code more readable.
+The extern keyword is not needed for function declarations. Remove it,
+so that the consolemap header conforms to other tty headers.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+ include/linux/consolemap.h | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 8abf114b6c68..a9b497ffb346 100644
---- a/drivers/tty/vt/consolemap.c
-+++ b/drivers/tty/vt/consolemap.c
-@@ -849,8 +849,7 @@ int conv_uni_to_8bit(u32 uni)
- 	return -1;
- }
+diff --git a/include/linux/consolemap.h b/include/linux/consolemap.h
+index bcfce748c9d8..abc28e4450bf 100644
+--- a/include/linux/consolemap.h
++++ b/include/linux/consolemap.h
+@@ -17,12 +17,11 @@
+ #ifdef CONFIG_CONSOLE_TRANSLATIONS
+ struct vc_data;
  
--int
--conv_uni_to_pc(struct vc_data *conp, long ucs) 
-+int conv_uni_to_pc(struct vc_data *conp, long ucs)
- {
- 	struct uni_pagedict *dict;
- 	u16 **dir, *row, glyph;
-@@ -869,17 +868,24 @@ conv_uni_to_pc(struct vc_data *conp, long ucs)
- 	 */
- 	else if ((ucs & ~UNI_DIRECT_MASK) == UNI_DIRECT_BASE)
- 		return ucs & UNI_DIRECT_MASK;
--  
--	if (!*conp->vc_uni_pagedir_loc)
--		return -3;
- 
- 	dict = *conp->vc_uni_pagedir_loc;
--	if ((dir = dict->uni_pgdir[UNI_DIR(ucs)]) &&
--	    (row = dir[UNI_ROW(ucs)]) &&
--	    (glyph = row[UNI_GLYPH(ucs)]) < MAX_GLYPH)
--		return glyph;
-+	if (!dict)
-+		return -3;
-+
-+	dir = dict->uni_pgdir[UNI_DIR(ucs)];
-+	if (!dir)
-+		return -4;
-+
-+	row = dir[UNI_ROW(ucs)];
-+	if (!row)
-+		return -4;
-+
-+	glyph = row[UNI_GLYPH(ucs)];
-+	if (glyph >= MAX_GLYPH)
-+		return -4;
- 
--	return -4;		/* not found */
-+	return glyph;
- }
- 
- /*
+-extern u16 inverse_translate(const struct vc_data *conp, int glyph,
+-		int use_unicode);
+-extern unsigned short *set_translate(int m, struct vc_data *vc);
+-extern int conv_uni_to_pc(struct vc_data *conp, long ucs);
+-extern u32 conv_8bit_to_uni(unsigned char c);
+-extern int conv_uni_to_8bit(u32 uni);
++u16 inverse_translate(const struct vc_data *conp, int glyph, int use_unicode);
++unsigned short *set_translate(int m, struct vc_data *vc);
++int conv_uni_to_pc(struct vc_data *conp, long ucs);
++u32 conv_8bit_to_uni(unsigned char c);
++int conv_uni_to_8bit(u32 uni);
+ void console_map_init(void);
+ #else
+ #define inverse_translate(conp, glyph, uni) ((uint16_t)glyph)
 -- 
 2.36.1
 
