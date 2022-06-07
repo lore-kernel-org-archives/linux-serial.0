@@ -2,92 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB558C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 14:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3B7C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 15:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343494AbiFGOqR (ORCPT
+        id S1344337AbiFGPt1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
+        Tue, 7 Jun 2022 11:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244641AbiFGOqQ (ORCPT
+        with ESMTP id S1344308AbiFGPtN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:46:16 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D5950033;
-        Tue,  7 Jun 2022 07:46:15 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="302086240"
+        Tue, 7 Jun 2022 11:49:13 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8A8F33A0;
+        Tue,  7 Jun 2022 08:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654616952; x=1686152952;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=48gb7mAGbeYhtSJ293emSdKyHKxm0Jm2EjcSJnSpD8Y=;
+  b=n5qWRIJhU/zAcNCgs027VlkEar+6FauiinVEu+bJjgrQac4JdT/6Ij9Y
+   8rX8kn0w/jizDNB2JCzYPJ6DTCMuR0oI4WBCe6qtzD4GjB4rzx1A4Bpkm
+   nRgxRlKNCwfCKCQJe2aEaMQzaxYE+f9YW/iSQgxgYJARoVvvrNiUnel2P
+   /wlBM6e9dE2S7kh1wKvQaywoPx3OwbJZC1XkWO11xOx+24H7B6dvjyIP+
+   Lty15KuytxDG//AJZ21+IFGDG9zCX9vJX30hrvxuNMeyW2W3QWGVOt3Pl
+   ozkYRFMk63u7ah9WXkVG6fSmm34jx6gmNiHljW0eTX9p8Ql7Xmlv0JOuW
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277578306"
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="302086240"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:46:15 -0700
+   d="scan'208";a="277578306"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:58 -0700
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="532634778"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:46:12 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nyaTB-000VmS-MK;
-        Tue, 07 Jun 2022 17:46:09 +0300
-Date:   Tue, 7 Jun 2022 17:46:09 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/6] serial: 8250: Adjust misleading LSR related
- comment
-Message-ID: <Yp9ksSTrFb+11d7h@smile.fi.intel.com>
-References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
- <20220607082934.7242-5-ilpo.jarvinen@linux.intel.com>
- <CAHp75VfK4v15HrBwwD9b7q6EYdcp3VnP5RGKVuPeSWk4TSyq+w@mail.gmail.com>
- <e22db21a-cfc3-b7e4-3fd9-6cee9e189213@linux.intel.com>
+   d="scan'208";a="584245532"
+Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 08:31:56 -0700
+Date:   Tue, 7 Jun 2022 18:31:54 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 33/36] tty/vt: consolemap: change refcount only if needed
+ in con_do_clear_unimap()
+In-Reply-To: <20220607104946.18710-33-jslaby@suse.cz>
+Message-ID: <ce9f52c5-4b46-77a8-8dd4-1de787e5b8b@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-33-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e22db21a-cfc3-b7e4-3fd9-6cee9e189213@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: multipart/mixed; boundary="8323329-1422709916-1654615917=:1622"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 03:11:32PM +0300, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Andy Shevchenko wrote:
-> > On Tue, Jun 7, 2022 at 11:16 AM Ilpo Järvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-...
+--8323329-1422709916-1654615917=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-> > >   https://www.spinics.net/lists/linux-serial/msg20555.html
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> > Can it be transformed to lore.kernel.org link?
+> con_do_clear_unimap() currently decreases and increases refcount of old
+> dictionary in a back and forth fashion. This makes the code really hard
+> to follow. Decrease the refcount only if everything went well and we
+> really allocated a new one and decoupled from the old dictionary.
 > 
-> Unfortunately no, AFAICT. I tried searching but I couldn't find one
-> from there (In fact, I tried even before submitting them because you
-> previously told me I should use lore links instead).
+> I sincerelly hope I did not make a mistake in this (ill) logic.
 > 
-> More importantly though, it seems that the link was not the one I was
-> supposed to use (I probably copy pasted the url from a wrong window while
-> investigating all turns of it). This is the correct link:
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+It seems fine:
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+One unrelated comment below for additional cleanup opportunity.
+
+> ---
+>  drivers/tty/vt/consolemap.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
 > 
->   https://www.spinics.net/lists/linux-serial/msg16220.html
+> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> index 01b7e49f1f91..4d8efe74315c 100644
+> --- a/drivers/tty/vt/consolemap.c
+> +++ b/drivers/tty/vt/consolemap.c
+> @@ -535,22 +535,23 @@ static int con_do_clear_unimap(struct vc_data *vc)
+>  {
+>  	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
+>  
+> -	if (!old || --old->refcount) {
+> +	if (!old || old->refcount > 1) {
+>  		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
+> -		if (!new) {
+> -			if (old)
+> -				old->refcount++;
+> +		if (!new)
+>  			return -ENOMEM;
+> -		}
+> +
+>  		new->refcount = 1;
+>  		*vc->vc_uni_pagedir_loc = new;
+> +
+> +		if (old)
+> +			old->refcount--;
+>  	} else {
+>  		if (old == dflt)
+>  			dflt = NULL;
 
-Indeed, that discussion by some reason is not in the lore archive.
+This seems unnecessary as con_release_unimap() already does it.
 
-...
-
-> I put the correct URL now into Link tag.
+> -		old->refcount++;
+>  		old->sum = 0;
+>  		con_release_unimap(old);
+>  	}
+> +
+>  	return 0;
+>  }
+>  
 > 
-> I'll resend tomorrow to give the dust some time to settle.
-
-Fine with me, thanks!
 
 -- 
-With Best Regards,
-Andy Shevchenko
+ i.
 
-
+--8323329-1422709916-1654615917=:1622--
