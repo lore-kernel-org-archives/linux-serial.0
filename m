@@ -2,136 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3DAC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9EDCCA486
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 21:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355677AbiFGTh0 (ORCPT
+        id S1379308AbiFGVLz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 15:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
+        Tue, 7 Jun 2022 17:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356311AbiFGTgG (ORCPT
+        with ESMTP id S1380111AbiFGVLa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 15:36:06 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6B1AA3FD;
-        Tue,  7 Jun 2022 11:13:20 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 925351F8AB;
-        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654625591; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
-        b=29P4yZRt6ViS62lTjFMYGu+vcbqJOiMtOfQt3lmbRTdhSWgG4r00CofYzAHbK4eVmlP3x5
-        gj7DMHTU79BCZT6dktEJw+vzV7U473tyY+GWcFoxE/qsXYuNxvreCG7fAGt1oxWHz0RqbF
-        +DoXgklCaKlR/NPhXRzOqDcB2CX3wUI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654625591;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
-        b=8bvrjGsUK6CVtP+9scEDo2jd0QG1SFNbQ7R60qz6tX74AiD8zMfzKdP1ZpHw4+fwsWCmeb
-        DbTRokH6KkfmBZDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 611DC13638;
-        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id mbF1FjeVn2KgIwAAMHmgww
-        (envelope-from <jslaby@suse.cz>); Tue, 07 Jun 2022 18:13:11 +0000
-Message-ID: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
-Date:   Tue, 7 Jun 2022 20:13:10 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead of
- sizeof(type)
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-12-jslaby@suse.cz>
- <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
-From:   Jiri Slaby <jslaby@suse.cz>
-In-Reply-To: <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 7 Jun 2022 17:11:30 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40281217890;
+        Tue,  7 Jun 2022 11:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654627994; x=1686163994;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=B/QLFtyjZWjzsp19lvnKhc+TE8eim40eLeEgUFfICJY=;
+  b=JM/CpygC8Mc8T2HvdJSdvO9m8XsMLblKotJQ/vLKK/1NBfSZZ8Un+ME3
+   UTDAdJBXaV/qEcbx0PSANR1FiLPrBaIAN5fpT6rmhXGSy78R+lYuClQL3
+   ulaZvLiHfJHKgpx6v+hgP8oJ9XQIDb0vohHtBvyQTfxtlBMaDyxNbP3+/
+   I=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jun 2022 11:53:11 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jun 2022 11:53:09 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 08 Jun 2022 00:22:53 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 957823F74; Wed,  8 Jun 2022 00:22:52 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH 2/2] tty: serial: qcom-geni-serial: Implement start_rx callback
+Date:   Wed,  8 Jun 2022 00:22:45 +0530
+Message-Id: <1654627965-1461-3-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
+References: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> 
->> It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
->> the type of the variable can change and one needs not change the former
->> (unlike the latter). Second, the latter is error-prone due to (u16),
->> (u16 *), and (u16 **) mixture here.
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> 
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
-> This seems fine but see the comments below which are not directly related
-> to the change itself.
-> 
->> ---
->>   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
->>   1 file changed, 12 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->> index 097ab7d01f8b..79a62dcca046 100644
->> --- a/drivers/tty/vt/consolemap.c
->> +++ b/drivers/tty/vt/consolemap.c
->> @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
->>   		return;
->>   	q = p->inverse_trans_unicode;
->>   	if (!q) {
->> -		q = p->inverse_trans_unicode =
->> -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
->> +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
->> +				sizeof(*q), GFP_KERNEL);
->>   		if (!q)
->>   			return;
->>   	}
->> -	memset(q, 0, MAX_GLYPH * sizeof(u16));
->> +	memset(q, 0, MAX_GLYPH * sizeof(*q));
-> 
-> Convert kmalloc_array into kcalloc and place memset() into else branch?
+In suspend sequence stop_rx will be performed only if implementation for
+start_rx callback is present.
 
-IMO, the way it is now is more obvious.
+Set qcom_geni_serial_start_rx as callback for start_rx so that stop_rx is
+performed.
 
->> @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
->>   	n = UNI_ROW(unicode);
->>   	p2 = p1[n];
->>   	if (!p2) {
->> -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
->> +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
->> +				GFP_KERNEL);
->>   		if (!p2)
->>   			return -ENOMEM;
->>   		/* No glyphs for the characters (yet) */
->> -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
->> +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
-> 
-> This could have been kcalloc'ed.
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Why would you zero it before setting it to 0xff?
-
-thanks,
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 4733a23..f8f9506 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1306,6 +1306,7 @@ static const struct uart_ops qcom_geni_console_pops = {
+ 	.stop_tx = qcom_geni_serial_stop_tx,
+ 	.start_tx = qcom_geni_serial_start_tx,
+ 	.stop_rx = qcom_geni_serial_stop_rx,
++	.start_rx = qcom_geni_serial_start_rx,
+ 	.set_termios = qcom_geni_serial_set_termios,
+ 	.startup = qcom_geni_serial_startup,
+ 	.request_port = qcom_geni_serial_request_port,
 -- 
-js
-suse labs
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
