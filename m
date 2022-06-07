@@ -2,106 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5C1CCA47F
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D626C43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241921AbiFGKsR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
+        id S241791AbiFGKut (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241695AbiFGKr4 (ORCPT
+        with ESMTP id S242344AbiFGKuN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:47:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADAFED7A9;
-        Tue,  7 Jun 2022 03:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 7 Jun 2022 06:50:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0902F6892;
+        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 53E9D1F975;
+        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654598995; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jGuyYfR3xrhwVD96qOXCK+oM3bpU5xT+JbiivgZ/87A=;
+        b=A5RebowsptA6JoT6dBBO/u2bV9uCEubqdJBBwjGMYV/nk9SPoJuRN+Vk7vuuSjo7tbkgVv
+        g2hJDHJu+DDz+FxC/r+DXqKpYat40e1qlNoK/j7ZCFCr4pYE3bNrEVpj3SV6QcaEdj4se4
+        jn8UVdWqQFx2sOAJzhofyGp2g7IYrfc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654598995;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jGuyYfR3xrhwVD96qOXCK+oM3bpU5xT+JbiivgZ/87A=;
+        b=I6VDfcbmBnTuhbfRpBI5m+M7DVAj1hl0NObf0WfgDfAPJo23WXlx/0w1+6AEBca6vALrF/
+        cKSD7VWXLSG6Q9CQ==
+Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6177B61577;
-        Tue,  7 Jun 2022 10:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D994EC34119;
-        Tue,  7 Jun 2022 10:46:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654598813;
-        bh=hlj2Yw+EG0pWKoO3cXlRjHbXss4PXj721LR0qzOjcRQ=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=lLjZE/ozDwyHnNNLv6KyRqV2xvU5uJJz9u7TCauhLkOPhBG38x6MdtEwI+8UIDQGw
-         uwtQiaJiwSNPU3upK6sgPC39kbtNdgB+CJfvt4RS1u1WkKKQpLeo6s5YlC3hEycLWK
-         DZ8Pjgv0h7TbVz5Vt1jDWfcTuWpK/D09EzsT4BVhx4hbG2e1VCKQHVGbNkyCNRk8sg
-         k6i/de3UcYlJTd5vP0lgvg+Z56k+nzRjJukId3zcOJcHo7YFPUDXs4S3klIjdIoaFE
-         QhfEG8FvKM9beX57uQhEHDZQEfg+6mZSxo/qgqEJSsXBAY9yR2jt850+wpSUTN7I+A
-         ZsaWxiF+LqPiw==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux@roeck-us.net, robh+dt@kernel.org, vkoul@kernel.org,
-        matthias.bgg@gmail.com, jic23@kernel.org,
-        srinivas.kandagatla@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        chunfeng.yun@mediatek.com, fparent@baylibre.com,
-        ulf.hansson@linaro.org, wim@linux-watchdog.org,
-        qii.wang@mediatek.com, chaotian.jing@mediatek.com
-Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org
-In-Reply-To: <20220531135026.238475-1-fparent@baylibre.com>
-References: <20220531135026.238475-1-fparent@baylibre.com>
-Subject: Re: (subset) [PATCH 00/17] Add support for MT8365 EVK board
-Message-Id: <165459880859.302078.17715085151206065145.b4-ty@kernel.org>
-Date:   Tue, 07 Jun 2022 11:46:48 +0100
+        by relay2.suse.de (Postfix) with ESMTPS id 2C5CB2C141;
+        Tue,  7 Jun 2022 10:49:55 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 28/36] tty/vt: consolemap: saner variable names in con_get_unimap()
+Date:   Tue,  7 Jun 2022 12:49:38 +0200
+Message-Id: <20220607104946.18710-28-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
+References: <20220607104946.18710-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 31 May 2022 15:50:09 +0200, Fabien Parent wrote:
-> This patch series adds support for the MT8365 EVK board.
-> 
-> This series has dependencies on the following series:
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646256
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646091
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646083
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646081
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646076
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646068
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646020
-> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646052
-> https://lore.kernel.org/r/20220504091923.2219-2-rex-bc.chen@mediatek.com
-> https://lore.kernel.org/r/20220512062622.31484-2-chunfeng.yun@mediatek.com
-> https://lore.kernel.org/r/20220512062622.31484-1-chunfeng.yun@mediatek.com
-> https://lore.kernel.org/r/20220524115019.97246-1-angelogioacchino.delregno@collabora.com
-> https://lore.kernel.org/all/20220127015857.9868-1-biao.huang@mediatek.com/
-> 
-> [...]
+The function uses too vague variable names like i, j, k for iterators, p,
+q, p1, p2 for pointers etc.
 
-Applied to
+Rename all these, so that it is clear what is going on:
+- dict: for dictionaries.
+- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
+- dir, row: for directory and row pointers.
+- glyph: for the glyph.
+- and so on...
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/vt/consolemap.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-Thanks!
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index dcbeb38a3a0a..b8f2acb6e388 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -773,11 +773,11 @@ EXPORT_SYMBOL(con_copy_unimap);
+ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+ 		struct unipair __user *list)
+ {
+-	int i, j, k, ret = 0;
+ 	ushort ect;
+-	u16 **p1, *p2;
+-	struct uni_pagedict *p;
++	struct uni_pagedict *dict;
+ 	struct unipair *unilist;
++	unsigned int d, r, g;
++	int ret = 0;
+ 
+ 	unilist = kvmalloc_array(ct, sizeof(*unilist), GFP_KERNEL);
+ 	if (!unilist)
+@@ -786,26 +786,26 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
+ 	console_lock();
+ 
+ 	ect = 0;
+-	p = *vc->vc_uni_pagedir_loc;
+-	if (!p)
++	dict = *vc->vc_uni_pagedir_loc;
++	if (!dict)
+ 		goto unlock;
+ 
+-	for (i = 0; i < UNI_DIRS; i++) {
+-		p1 = p->uni_pgdir[i];
+-		if (!p1)
++	for (d = 0; d < UNI_DIRS; d++) {
++		u16 **dir = dict->uni_pgdir[d];
++		if (!dir)
+ 			continue;
+ 
+-		for (j = 0; j < UNI_DIR_ROWS; j++, p1++) {
+-			p2 = *p1;
+-			if (!p2)
++		for (r = 0; r < UNI_DIR_ROWS; r++) {
++			u16 *row = dir[r];
++			if (!row)
+ 				continue;
+ 
+-			for (k = 0; k < UNI_ROW_GLYPHS; k++, p2++) {
+-				if (*p2 >= MAX_GLYPH)
++			for (g = 0; g < UNI_ROW_GLYPHS; g++, row++) {
++				if (*row >= MAX_GLYPH)
+ 					continue;
+ 				if (ect < ct) {
+-					unilist[ect].unicode = UNI(i, j, k);
+-					unilist[ect].fontpos = *p2;
++					unilist[ect].unicode = UNI(d, r, g);
++					unilist[ect].fontpos = *row;
+ 				}
+ 				ect++;
+ 			}
+-- 
+2.36.1
 
-[09/17] dt-bindings: spi: mt65xx: add MT8365 SoC bindings
-        commit: 901fc8e8079e401f3240006cab6629e65579701c
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
