@@ -2,92 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7231BC433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 12:36:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB58C43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 12:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243816AbiFGMgH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 08:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54286 "EHLO
+        id S244021AbiFGMhQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 08:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243821AbiFGMgF (ORCPT
+        with ESMTP id S243879AbiFGMgq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 08:36:05 -0400
+        Tue, 7 Jun 2022 08:36:46 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A01C509D;
-        Tue,  7 Jun 2022 05:36:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D746DF8E41;
+        Tue,  7 Jun 2022 05:36:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654605365; x=1686141365;
+  t=1654605394; x=1686141394;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=LKum10K4tBKordUqJVSe2dQMizH1jkij74BmVhgNhM0=;
-  b=klm4PHmKuSNJKi67IymNsGqZE2bp2tX3a7Ph5yMtDvy7S7X7Q0xcT3+G
-   TdN1qKweIfM3X23r0wCymU9duTXHXYw48+QTUd3Jy9BvZCkje3Arm3rqx
-   daDv8ba1Hl80tV1Nc8+osCUa4Cvq6wQfBiYKlRhuE1mKmrYyqn+h2TS1T
-   zRHTG72Ntn3uJcCCorbJ0RrjeUlR/gOIML0NDsMG2cr+ObkgqABOFghuQ
-   NpxKCb4wzzy/jODXJGxPMRccnkaC+T/ggIXtDqQ0X0A/R/34pkNMiY70t
-   L3cARvTeRmaQhesluyC1YNES3+5/NycGpDI5VopV+/O4UACNvu3lWPg/j
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275494800"
+  bh=MxAWmJRI3ZKU9Ny1YrqmB59EfBq+v4Nj/ZOMTKnZcU0=;
+  b=klbVSSySC5RuQ9PavFkHfuoi8w8vqibau51Rk5QFL8Jag383l19y4Uwc
+   QEGaTxHGp/m4JzkdD8R64aPzHm7eljbS3xguObTpVbKKq+wfkiJeoWZEC
+   reF+wCMXF7q6/mSToEHqRO1kQg9l75yEKAYbtxezML+Wygnk6n2uubcdQ
+   pqCJY9H6frN2dsllI2fgdF6n+fba7SJjIlsw6mhFRb2LPdTnWmBUl89B4
+   oSukVRiAvcr392uEZ7rfJgay4g2sXGzNwrFc+U1KegTFuPMRd9+L7iGP/
+   4M27DGE+w1wWCpfFkPmNn9KkT0UMEEEafYm3M5j7aqWxNGnkyHVQAgDAF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275494814"
 X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="275494800"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:04 -0700
+   d="scan'208";a="275494814"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:34 -0700
 X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="636107823"
+   d="scan'208";a="584182087"
 Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:03 -0700
-Date:   Tue, 7 Jun 2022 15:36:01 +0300 (EEST)
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 05:36:32 -0700
+Date:   Tue, 7 Jun 2022 15:36:30 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 02/36] tty/vt: consolemap: rename and document struct
- uni_pagedir
-In-Reply-To: <20220607104946.18710-2-jslaby@suse.cz>
-Message-ID: <46cbc044-5157-65d8-65f0-2ecbee908150@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-2-jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/36] tty/vt: consolemap: use ARRAY_SIZE()
+In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
+Message-ID: <594b4c3f-1ca3-9ff3-dfe5-bea02910f78e@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; boundary="8323329-849965590-1654605394=:1622"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-849965590-1654605394=:1622
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
 On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> struct uni_pagedir contains 32 unicode page directories, so the name of
-> the structure is a bit misleading. Rename the structure to uni_pagedict,
-> so it looks like this:
-> struct uni_pagedict
->   -> 32 page dirs
->      -> 32 rows
->        -> 64 glyphs
+> The code uses constants as bounds in loops. Use ARRAY_SIZE() with
+> appropriate parameters instead. This makes the loop bounds obvious.
 > 
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
 
-The rename looks incomplete:
-
->  drivers/tty/vt/consolemap.c    | 47 ++++++++++++++++++++--------------
->  drivers/video/console/vgacon.c |  4 +--
->  include/linux/console_struct.h |  6 ++---
->  3 files changed, 33 insertions(+), 24 deletions(-)
-
-vs
-
-$ git grep -l vc_uni_pagedir
-drivers/tty/vt/consolemap.c
-drivers/tty/vt/vt.c
-drivers/usb/misc/sisusbvga/sisusb_con.c
-drivers/video/console/vgacon.c
-drivers/video/fbdev/core/fbcon.c
-include/linux/console_struct.h
-$
-
-???
-
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
 
+--8323329-849965590-1654605394=:1622--
