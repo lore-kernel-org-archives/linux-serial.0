@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3F1CCA47C
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 08:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDC5C43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 08:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238241AbiFGIaR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
+        id S238250AbiFGIaS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 04:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238231AbiFGIaD (ORCPT
+        with ESMTP id S238259AbiFGIaF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:30:03 -0400
+        Tue, 7 Jun 2022 04:30:05 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D974D0292;
-        Tue,  7 Jun 2022 01:29:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA684D02AC;
+        Tue,  7 Jun 2022 01:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654590598; x=1686126598;
+  t=1654590603; x=1686126603;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MTzb+iKj/sM7duxsLn/L4rAkVV4+m6q81A4vy02OOQ8=;
-  b=IABUjfe8anyod6AsEE1mMb9GpVgCewIj0p9Zp1VC2UEOMAJQbZM3PXJo
-   KFv+UnVUZFefdahcoXL4rci0onK7CXL3sIl5d5ZL7/haXFOuRPtilEmeS
-   ZaU8oJ10UF4tQhDcr4Io2WWDQpIKf5ETsbg/Mv4LTT37RgIPsANxzMSki
-   LL8azUeXyLeIae/iXq5w2yIp0k84MKWyZ6+i06tQuQvGLQwVEGq+K7UyX
-   6F9Jwh5fcgwqp6StVHeI5y/w8Ktev0MbUZHHTzVioLhIxC+ydpPv+1ING
-   eVWOeT2GTkrfDGStEP+KtMYralN4DtMf/P6/T+bmFKr5VwPxd2LQ2lcph
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277393659"
+  bh=VptkMufomdRSrg3I6L8NzNQ9Iz/Fv8+mCnYXfJFZ6Cg=;
+  b=UuE8vZWJ61I3vsT3tUSl+ryh/41pxuXK/IF2ZoJQ4Do6P+Tr3CX011GR
+   cdubCK4Dn7bPqJ3Am5DxcFFGtDMpTtlgEa7vGvNOpjta25oPma70UGfjT
+   n6q8LgDp/a6S9Z3YuNi+j7jt/Hta5g1J6klOjd3+LaDAxbo1Oog31TDMN
+   hvg6T0MxwRYDrh/8E/3m9olinS4VM5bgw7HkNi339tpC3U3a7dsFEg7Dy
+   XWuhjuI171DYX1ZTfFBIrN8XDwKnbbX9ncjmiwfrt0Wn5pwsUhO8GR9Wf
+   tMl4vPxn4nSE7izx/pA6+ojNATasbPskqAF5wX6uWQw0cl6XrT8nrPr1R
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277393721"
 X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="277393659"
+   d="scan'208";a="277393721"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:29:56 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:30:03 -0700
 X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="584103487"
+   d="scan'208";a="584103506"
 Received: from akmessan-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:29:53 -0700
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:30:00 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -48,9 +48,9 @@ To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v3 3/6] serial: 8250: Get preserved flags using serial_lsr_in()
-Date:   Tue,  7 Jun 2022 11:29:31 +0300
-Message-Id: <20220607082934.7242-4-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v3 5/6] serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()
+Date:   Tue,  7 Jun 2022 11:29:33 +0300
+Message-Id: <20220607082934.7242-6-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
 References: <20220607082934.7242-1-ilpo.jarvinen@linux.intel.com>
@@ -61,38 +61,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-serial8250_handle_irq() assumes it's the first to read LSR register.
-However, there are 8250 drivers which perform LSR read in their own irq
-handler prior to calling serial8250_handle_irq(). As not all flags are
-preserved across LSR reads, use serial_lsr_in() helper to get all the
-preserved flags.
+dw8250_handle_irq() reads LSR under a few conditions, convert both to
+use serial_lsr_in() in order to preserve LSR flags properly across
+reads.
 
-This commit might fix other commits too besides the ones for DW UART
-mentioned below. It's just not clear to me which of the other devices
-clear some of the LSR flags on read. AFAIK, nobody has complained about
-this problem (either against DW or other devices) so it might not have
-that bad impact in the end.
-
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Phil Edworthy <phil.edworthy@renesas.com>
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>
 Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
 Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_dw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index ec5abeb638eb..a0ea048eb2ad 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1916,7 +1916,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f57bbd32ef11..1fae45991812 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -253,7 +253,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+ 	 */
+ 	if (!up->dma && rx_timeout) {
+ 		spin_lock_irqsave(&p->lock, flags);
+-		status = p->serial_in(p, UART_LSR);
++		status = serial_lsr_in(up);
  
- 	spin_lock_irqsave(&port->lock, flags);
+ 		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+ 			(void) p->serial_in(p, UART_RX);
+@@ -263,7 +263,7 @@ static int dw8250_handle_irq(struct uart_port *p)
  
--	status = serial_port_in(port, UART_LSR);
-+	status = serial_lsr_in(up);
- 
- 	/*
- 	 * If port is stopped and there are no error conditions in the
+ 	/* Manually stop the Rx DMA transfer when acting as flow controller */
+ 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
+-		status = p->serial_in(p, UART_LSR);
++		status = serial_lsr_in(up);
+ 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
+ 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
+ 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
 -- 
 2.30.2
 
