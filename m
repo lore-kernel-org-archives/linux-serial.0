@@ -2,49 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A68CCA48C
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B54EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348499AbiFGSvz (ORCPT
+        id S1346080AbiFGSxC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
+        Tue, 7 Jun 2022 14:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354527AbiFGSrG (ORCPT
+        with ESMTP id S1354678AbiFGSvT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:47:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFDC9B184;
-        Tue,  7 Jun 2022 11:01:51 -0700 (PDT)
+        Tue, 7 Jun 2022 14:51:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72DA1498D5;
+        Tue,  7 Jun 2022 11:03:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFD4C617B0;
-        Tue,  7 Jun 2022 18:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68AA9C34119;
-        Tue,  7 Jun 2022 18:01:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C46261804;
+        Tue,  7 Jun 2022 18:03:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EDA0C36AFF;
+        Tue,  7 Jun 2022 18:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624910;
-        bh=4xrCwR+dSMUMl6tf6Scxfy8ADhapePz4RrscHl0msvY=;
+        s=k20201202; t=1654625003;
+        bh=8HQm4g74yzZGpbnIQ9UppM7IGC+JDkrxAdIatCQcOfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icE/E+//1clvF6H3osUzarQHJjqqNZlmjZfMTUjMkglGCsMm2CjD0dfK2d1cmBCZ2
-         NEEZ+rffVkfN1pxkI5gua7kYz+1tlozxev2N1ztKOB0GjOWwxp9OqYM4q9fN+u+b8a
-         r2M+kSFf22qZdLWNni8rWB0kQ8a6dMOJ3pTSHwFPfZbRVi7TShk8seEymRp2awpwoz
-         J2Tr7HQj28aniVoleiFe8aWbTdfXIuqGFR7VcUBwHbHGhKcKA1a5/8Nfw2nfp6/ZmI
-         aTuuzHwhVw4aq0izws4hcn2uoKMDYn30tMYETmMl2bWdwg7XZ6R9xYEMrdAZRQ9YYs
-         megXsVzVz8l/Q==
+        b=AeXNYI0/P4T5g5/6jGXyJUJFalhIGDOTbONmjMVQYaMlPRdh7okpE6lzcj+O9XcuQ
+         2DZbec2vUg3Ngpo0pBgqtv2q5yg0DjEp6HvDwqf+F3RzKRf7SYifB1KxIZSP8qYxOr
+         ZL9Ui6beuE5bg9/ED3OZ9QZcICR8G/2PFONkck9q02iG4bIUCV7R30TXZEMPSivsBD
+         PXX9/dag+MfHnDd4hi1Oa725M+6xVV/WIzVzT34iI/o/ywIuFElgO5BermdH4Z7fMa
+         zWP6nQFjNsZ/uAEGjQbLYEN3QnfB5QgxhCrvNH6Vmrf0xI/cvv8h6GmC/wXlu89d7P
+         Ayi7nODqI1ftw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+Cc:     Huang Guobin <huangguobin4@huawei.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/27] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 14:01:12 -0400
-Message-Id: <20220607180133.481701-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 04/19] tty: Fix a possible resource leak in icom_probe
+Date:   Tue,  7 Jun 2022 14:02:59 -0400
+Message-Id: <20220607180317.482354-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180133.481701-1-sashal@kernel.org>
-References: <20220607180133.481701-1-sashal@kernel.org>
+In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
+References: <20220607180317.482354-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,59 +53,35 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index a399772be3fc..8a65fb1ce568 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -439,6 +439,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
- 
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -469,8 +471,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index c60a8d5e4020..a3e420669674 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
  	}
  
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
