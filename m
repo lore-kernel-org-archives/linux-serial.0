@@ -2,123 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C255C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 08:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D11C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 09:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238347AbiFGImO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        id S240306AbiFGJ7g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 05:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238345AbiFGImM (ORCPT
+        with ESMTP id S239776AbiFGJ7f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 04:42:12 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106CB32ED2;
-        Tue,  7 Jun 2022 01:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654591330; x=1686127330;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hue1OWpyEYvWCbIXGd1i/2Zb5JQTovT2W/Hw1M+6dDo=;
-  b=SGfLqe3OCq7743MylU0g1UbnRwkB2Nb6rN9YE4Bj+Ehflwg01JjiD2ER
-   qhgd63fesfwdkYYII3urFdLeqDuAyaaiOz2ejxKKNXS1ujLvXTNv86MaD
-   BLe2D0et5Hf3/IwOWDTp0tDWJzJ3+xjaMYPv+YwR1LDfJ2uGFwLFoE27K
-   +hFuJvXzlwH/7rKEuuBUSidiIUagm+lwrsfWaQv+ExQwlid8ls/OCl5tX
-   IUqInHBNsYTCO8enmt+5k7KRVOVzZbH6/Ne8MOc4+M15199ANEfBDBeN+
-   tnCEwUo6Cv4+kIao0J0+btdIN7aWYD+WSOelZaRFcc9P2adE+Qs5BD/cV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277398633"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="277398633"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:42:09 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="647933840"
-Received: from akmessan-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.214.146])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 01:42:07 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 2/2] serial: 8250: handle __start_tx() call in start_tx()
-Date:   Tue,  7 Jun 2022 11:41:54 +0300
-Message-Id: <20220607084154.8172-2-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220607084154.8172-1-ilpo.jarvinen@linux.intel.com>
-References: <20220607084154.8172-1-ilpo.jarvinen@linux.intel.com>
+        Tue, 7 Jun 2022 05:59:35 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F90813EF;
+        Tue,  7 Jun 2022 02:59:34 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id m20so34042256ejj.10;
+        Tue, 07 Jun 2022 02:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lxVWtgk2MYK7tyuypm6e6PUQAcCHSHou/3ZRAHbOVpk=;
+        b=VQY1loPqU6cmtCq5MRX6W0SUd2IIzjij1i4LvyyQHZO9sypUIWSaN58u3MkyhwOTCw
+         x04dCTwmvWZ5sJrbeYH36tuBLTiVpYOS1BEQAGxdfYkBNPpDQrLGHuq9wndgRgO15Api
+         DVoLIFic1x1/0akX/jkXeWT1Uzh2pcSjZfQtjf+7s17UJ/mHk56WZhLxgmDWmdQw8n9k
+         nefJSFxgYYuAUCSkY1beh4DoEyZuGCIUkeWclLr6i6E1mCaqFp3j/TPmzc1fiY1HEVwn
+         donSUzVAekTmUAK+j2Bl9IUjuUu8pZRALvbUGPDeTxi4Al+80RngkUjmtNK27mvCLuFI
+         sa0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lxVWtgk2MYK7tyuypm6e6PUQAcCHSHou/3ZRAHbOVpk=;
+        b=hFOhhff8ynkWiSgkjD+2lwjRvC2Hx53Lob0RyP2VcXqCHVY/kNkRRHvX2s9USj4B1N
+         sOCL3lCDGvgUyqnjcqwJYLfdKOpmPG0e9Wi2UpXPz09rWtTXWkO/fyYIjQaWbWlx5O2z
+         oP6DDtee6L21L3/n+DPehKZsUdIXJ4/Ls64+YrsJ0d+gB8XEXudYp29WaLbXXWrr8l1u
+         kYEMhaPHGlnV5XVqhCTblcl1CCo65Y/qhkXZA5YQYh6b/N3gJxCfMr4ulhEqurY9Apu8
+         JxTguH7yP+Wg48kKb/q6Etnet8raQ+G40TveYPrAC7Nr2qWH8PaNvIajuUvdLPI3xBLM
+         0H7A==
+X-Gm-Message-State: AOAM5328HeDSUNwVJtiuGk5NYf5r7AZXlr1QpqGZXjgrcjt6ManKILWg
+        JFjFQcacpKB3t+KEqoLqQgm+n2b9gg/7kk1KzmItl+UBefl5FQ==
+X-Google-Smtp-Source: ABdhPJw9TTzAR820+KlxuAowdaRO/HTzzE8b4ylykIraDj7jVSMwXYdCf34or+khV/0U9tR3CzPcrTVrwlbkh1m5+ws=
+X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
+ hz3-20020a1709072ce300b006ff1447d3a4mr26847700ejc.497.1654595972614; Tue, 07
+ Jun 2022 02:59:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220602083128.22540-1-jslaby@suse.cz> <20220602083128.22540-2-jslaby@suse.cz>
+ <CAHp75VfsR6sVwO9iF6RA0bhVjMF1jC1_JEkv106TubPgL_m8YA@mail.gmail.com> <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org>
+In-Reply-To: <4d4549ef-f8f8-d0cb-6d27-e6200aa14048@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 7 Jun 2022 11:58:56 +0200
+Message-ID: <CAHp75Vd4H2AOcDV-cWug+MCup5RY0udTZX2uq3rzP+czy0uiJg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] tty/vt: Makefile, add --unicode for loadkeys invocation
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As either start_tx_rs485() or start_tx() calls __start_tx() as the last
-line of their logic, it makes sense to just move that call into
-start_tx(). When start_tx_rs485() wants to defer tx using timer, return
-false so start_tx() can return based on it.
+On Tue, Jun 7, 2022 at 7:42 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> On 06. 06. 22, 16:35, Andy Shevchenko wrote:
+> > On Thu, Jun 2, 2022 at 12:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
+> >>
+> >> For a long time, we generate unicode tables using loadkeys. So fix
+> >> Makefile to use that flag too.
+> >
+> > generated
+>
+> We still do, but I didn't even know there is even a rule for that ;).
 
-Reorganize em485 code in serial8250_start_tx() so that the return can be
-shared for the cases where tx start is deferred.
+I understand, but here is English stylistics like this. You need to
+use past ind. or present perfect ("for a long time" dictates that).
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_port.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 448cfbb05f63..a3ffbdfe8fae 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1610,7 +1610,8 @@ void serial8250_em485_start_tx(struct uart_8250_port *up)
- }
- EXPORT_SYMBOL_GPL(serial8250_em485_start_tx);
- 
--static inline void start_tx_rs485(struct uart_port *port)
-+/* Returns false, if start_tx_timer was setup to defer TX start */
-+static bool start_tx_rs485(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct uart_8250_em485 *em485 = up->em485;
-@@ -1638,11 +1639,11 @@ static inline void start_tx_rs485(struct uart_port *port)
- 			em485->active_timer = &em485->start_tx_timer;
- 			start_hrtimer_ms(&em485->start_tx_timer,
- 					 up->port.rs485.delay_rts_before_send);
--			return;
-+			return false;
- 		}
- 	}
- 
--	__start_tx(port);
-+	return true;
- }
- 
- static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t)
-@@ -1672,14 +1673,12 @@ static void serial8250_start_tx(struct uart_port *port)
- 
- 	serial8250_rpm_get_tx(up);
- 
--	if (em485 &&
--	    em485->active_timer == &em485->start_tx_timer)
--		return;
--
--	if (em485)
--		start_tx_rs485(port);
--	else
--		__start_tx(port);
-+	if (em485) {
-+		if ((em485->active_timer == &em485->start_tx_timer) ||
-+		    !start_tx_rs485(port))
-+			return;
-+	}
-+	__start_tx(port);
- }
- 
- static void serial8250_throttle(struct uart_port *port)
 -- 
-2.30.2
-
+With Best Regards,
+Andy Shevchenko
