@@ -2,111 +2,136 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4108AC2BBFC
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3DAC43334
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 19:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352389AbiFGS6B (ORCPT
+        id S1355677AbiFGTh0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        Tue, 7 Jun 2022 15:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353407AbiFGSx7 (ORCPT
+        with ESMTP id S1356311AbiFGTgG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:53:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F5514ACB5;
-        Tue,  7 Jun 2022 11:03:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 7 Jun 2022 15:36:06 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6B1AA3FD;
+        Tue,  7 Jun 2022 11:13:20 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 956E66171C;
-        Tue,  7 Jun 2022 18:03:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E4BC36AFF;
-        Tue,  7 Jun 2022 18:03:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654625029;
-        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8ueaBSdT9bbfvyBl6w0cUKikOjz8aomfpOUfWBZT5I4a4uHzb56K73H/AMseEeUS
-         Y+Y4O8seQA0PemojvQcyR1PhABPRTdZwgH20ZhAZXgH1Fa5ED6S6skDfjgMYNcBebQ
-         PtuV2hd4U9TALkI79Wa6T/6HYmUjxUfcOyPvjmbd4aSDe18pGrhMs9R9HCy+Wq4U9o
-         sq1lapWPPDIKlIcukwCALJR+ukV685yqlK4nflNC9S3nPm+82P7JwZ+2mmPG5Ppqc4
-         ULaKoO1leaLmSbuabDScO/DaecgLo0Zr9Lc7l8V01jIAqB02ZEhdolZ/AVdE0BDXTW
-         6o9ypRCiaFb1A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 14/19] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Tue,  7 Jun 2022 14:03:09 -0400
-Message-Id: <20220607180317.482354-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180317.482354-1-sashal@kernel.org>
-References: <20220607180317.482354-1-sashal@kernel.org>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 925351F8AB;
+        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654625591; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
+        b=29P4yZRt6ViS62lTjFMYGu+vcbqJOiMtOfQt3lmbRTdhSWgG4r00CofYzAHbK4eVmlP3x5
+        gj7DMHTU79BCZT6dktEJw+vzV7U473tyY+GWcFoxE/qsXYuNxvreCG7fAGt1oxWHz0RqbF
+        +DoXgklCaKlR/NPhXRzOqDcB2CX3wUI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654625591;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3y9oQxsxgLQFrSB/OPrvIt+A2m61bGJ7Vng43pViMbo=;
+        b=8bvrjGsUK6CVtP+9scEDo2jd0QG1SFNbQ7R60qz6tX74AiD8zMfzKdP1ZpHw4+fwsWCmeb
+        DbTRokH6KkfmBZDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 611DC13638;
+        Tue,  7 Jun 2022 18:13:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id mbF1FjeVn2KgIwAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Tue, 07 Jun 2022 18:13:11 +0000
+Message-ID: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+Date:   Tue, 7 Jun 2022 20:13:10 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead of
+ sizeof(type)
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-12-jslaby@suse.cz>
+ <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
+> On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> 
+>> It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
+>> the type of the variable can change and one needs not change the former
+>> (unlike the latter). Second, the latter is error-prone due to (u16),
+>> (u16 *), and (u16 **) mixture here.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> This seems fine but see the comments below which are not directly related
+> to the change itself.
+> 
+>> ---
+>>   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
+>>   1 file changed, 12 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>> index 097ab7d01f8b..79a62dcca046 100644
+>> --- a/drivers/tty/vt/consolemap.c
+>> +++ b/drivers/tty/vt/consolemap.c
+>> @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
+>>   		return;
+>>   	q = p->inverse_trans_unicode;
+>>   	if (!q) {
+>> -		q = p->inverse_trans_unicode =
+>> -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
+>> +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+>> +				sizeof(*q), GFP_KERNEL);
+>>   		if (!q)
+>>   			return;
+>>   	}
+>> -	memset(q, 0, MAX_GLYPH * sizeof(u16));
+>> +	memset(q, 0, MAX_GLYPH * sizeof(*q));
+> 
+> Convert kmalloc_array into kcalloc and place memset() into else branch?
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+IMO, the way it is now is more obvious.
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+>> @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
+>>   	n = UNI_ROW(unicode);
+>>   	p2 = p1[n];
+>>   	if (!p2) {
+>> -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
+>> +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
+>> +				GFP_KERNEL);
+>>   		if (!p2)
+>>   			return -ENOMEM;
+>>   		/* No glyphs for the characters (yet) */
+>> -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+>> +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
+> 
+> This could have been kcalloc'ed.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+Why would you zero it before setting it to 0xff?
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index c284e61ed4fc..33d035f9fded 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
- {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
- 
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
- }
- 
- static void msm_console_write(struct console *co, const char *s,
+thanks,
 -- 
-2.35.1
-
+js
+suse labs
