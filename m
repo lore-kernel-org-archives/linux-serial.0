@@ -2,149 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7F0C43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44000C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239830AbiFGKKU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
+        id S240738AbiFGKPw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240663AbiFGKKS (ORCPT
+        with ESMTP id S240714AbiFGKPr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:10:18 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C6DEAD2F;
-        Tue,  7 Jun 2022 03:10:17 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id v25so22319399eda.6;
-        Tue, 07 Jun 2022 03:10:17 -0700 (PDT)
+        Tue, 7 Jun 2022 06:15:47 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2A6C9EE2;
+        Tue,  7 Jun 2022 03:15:46 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id b8so5644331edj.11;
+        Tue, 07 Jun 2022 03:15:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4j1WzrBW7EoZdlkWo244YU3ttsWs7+lWBx1HTzeeKKc=;
-        b=k23Law+syP+E6x3K0yUQxVdE/9XIFEPWysOg7j2WDeKtBx729T+2Ihex566ccY1NSW
-         /KdeoEC3hiXmTH/xeoPWb+dS/3X3gbA1UG4HPDfxlUBxYQPeDl6mJgPGK6NeyojA6Abf
-         ErtQctSEKZJLfNoSMQAqeTgWzsOMPzlcIP0+VYPspkt+S40YTGXlpT4flmrJqBQ7osXJ
-         vnd68mBSsP1IvdXNDWY+k7St9j9alQ73vVHhMmGuxcMdVjXRGzdPNASQdMlBvsBlPEA6
-         euCRwe1d5v0iFzLTuOvK2OF2P4IGQNI2IANf3P5CAIfr14hElWYUkoOsDp/pUr8axkGo
-         H78g==
+         :cc;
+        bh=U+awy/jtO8AUSyEBXiUnjG28q5KgwJhjAtwiUMCK/4w=;
+        b=L3g0r5og4iLcJkkaEnjJHC/fhgX0jgWCgjdPwNSjvuL4JmDM2PWcq+cK6d7tvMwngt
+         rk4aq2qJmnK6TrGT6S3H5o+TSva2V00FG4u6C09YxTViVZMaP/mXJpeI4hFUjdX3AMTD
+         BZXZQeJA5f2MF1rFLU3FqEyOof9t+9zhtl88KuxHRQr9+WwSKSYTv6i2RL3epictTjND
+         SSIwrFpntInEwrtWc+5RW1ry6f0lI9fAHDzt2J0LHugPhrdxaKu++qyiccv+C2Q5Z1Wk
+         3r/gxSK2dBPaHhzxasbLsBbsvvaYCLsJAZAZmDYEK6LY+sbv6f0U9X0G9mAoucthsmvj
+         qktA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4j1WzrBW7EoZdlkWo244YU3ttsWs7+lWBx1HTzeeKKc=;
-        b=wERVlqlSlihFN0mRvrWGXNsWdQnbLJ9kUaxtk1590rmG731fJ5GIn/sD8iltHT++gl
-         +z0GDdxkqp6kwdagqfA6hZvYZyzsv+Ljrmz1f9rD+5/2XmTVNcP8yrS0SWTWIN8AFGBN
-         JMcO7pbJ+FRkDSTGOlEpXsruaTG6Pt46K3AH6dg6lKLDah1r29nrJy+u9GWWAV3zWmbJ
-         PTeBGqn4hc1MU3SfxhmjX2q8uIzeqFIaQvJzzXVqzJzYgyb9DqnSMfAxQBn12H5B+iNv
-         rg3XgMu9O4O6lprZPd56FunrMl30uh85wQYXyGQ1gm30t5tYnKvc2gKeMtYgIwYPzBhw
-         bjpg==
-X-Gm-Message-State: AOAM533WB2kHed3O11e9ts3t4kMXxQGRFL+Idp9xDLhavhRvP+WFYdr5
-        hZ96yji7R47+Gf06ef0YjLWve9PfUDXyTnvC4caETAt8HG524w==
-X-Google-Smtp-Source: ABdhPJxk/YC0FG6cv/TnhxlUpyFDCXO3/z4i+jholBQGddkZmAN56cAZNS/4viDhq29uRNzogOGiMYRPy7QLSNXkEh4=
-X-Received: by 2002:aa7:d303:0:b0:42d:d192:4c41 with SMTP id
- p3-20020aa7d303000000b0042dd1924c41mr32816146edq.178.1654596616279; Tue, 07
- Jun 2022 03:10:16 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=U+awy/jtO8AUSyEBXiUnjG28q5KgwJhjAtwiUMCK/4w=;
+        b=qmoX0/ClmkAA5IsjSiw9aS6SSspUcEXlTZqlE0FU/q9lhC4+YTWQEDAQmWA9fZOOOf
+         8IhiwbCdDvM+b5nZeJq4C+JYl0TB42ZaNARcWQhS+ie1Mr9xVyYJijoAkLk+yz/tuBke
+         ZH1p7/+fEgpwvFr51Ba0QM1X5RpTLuhvtxOe77zkz5Ue5FmlRUKWRqTf/E+GV+8mURLK
+         g39b/Fv8kBvrFEjyUafF5HQf/9MUVtd38mJHZL6IsvLe7FlZ4bnj8NszSJ0QWo9vooDl
+         FqubAK/DoV1dnTmk3CR9Cpo1394ibq/y/1ZM8RadBmSKNuN5LS8Yb0zPs2jmDH+PFsl6
+         japA==
+X-Gm-Message-State: AOAM532K4Zr6ufOU/hGTKOWkX5oXApeU6RidyygdSYnbBiAIdNu3RUP/
+        mOx00+O/v/1FpxtQXTnxUqkr++hpXosUxYx5JCV2XdFTSK+4bQ==
+X-Google-Smtp-Source: ABdhPJyHYBcSP5L+e+/lCSODW1yjbbo+X5QJlKf3rSU0nvX/kDIYub8oTpUy0R8kwHX6UVI3UHMZpAE4KZY3EUJ7Iio=
+X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
+ o16-20020a056402439000b0042e0b7ee9acmr31240221edc.97.1654596944770; Tue, 07
+ Jun 2022 03:15:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
- <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
- <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
- <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com> <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
- <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de> <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
- <20220607055810.szkjoitpr3vboymr@pengutronix.de>
-In-Reply-To: <20220607055810.szkjoitpr3vboymr@pengutronix.de>
+References: <20220529134605.12881-1-trix@redhat.com>
+In-Reply-To: <20220529134605.12881-1-trix@redhat.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 7 Jun 2022 12:09:39 +0200
-Message-ID: <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
+Date:   Tue, 7 Jun 2022 12:15:08 +0200
+Message-ID: <CAHp75VeZSU5i1k6W1dgE4kOW5wfRM-jJvmPvi8wCdqQeFVtRbQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: core: check if uart_get_info succeeds before using
+To:     Tom Rix <trix@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        LKML <linux-kernel@vger.kernel.org>
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-+Cc: Jonathan (some documentation clarification might be needed)
-
-On Tue, Jun 7, 2022 at 7:58 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Mon, Jun 06, 2022 at 10:38:37PM +0200, Andy Shevchenko wrote:
-> > On Mon, Jun 6, 2022 at 9:40 PM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > >
-> > > On Mon, Jun 06, 2022 at 07:01:15PM +0200, Andy Shevchenko wrote:
-> > > > On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=C3=A4rvinen
-> > > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > > > On Mon, 6 Jun 2022, Andy Shevchenko wrote:
-> > > > > > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
-> > > > > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > >
-> > > > ...
-> > > >
-> > > > > > But more importantly I do not see the reason for the Acked-by t=
-ag when
-> > > > > > SoB of the same person is present.
-> > > > >
-> > > > > I just repeated what Uwe gave me. Maybe he didn't notice he was a=
-lready
-> > > > > there as SoB.
-> > > > >
-> > > > > This situation is anyway a bit more complex than usual. The line =
-I took
-> > > > > was part of Uwe's much larger patch initially (which was fully re=
-verted)
-> > > > > so his SoB was carried over to preserve the authorship. As I made=
- a
-> > > > > non-trivial modification to his original patch by removing almost=
- all of
-> > > > > it, I added my SoB too. Given this situation, I kind of thought h=
-e Acked
-> > > > > (approved) the post-modification version of it.
-> > > >
-> > > > I believe you haven't preserved the authorship that way (since From
-> > > > line is different), but since you have done non-trivial changes and
-> > > > Uwe is okay with them, the straightforward tag chain would be (with
-> > > > your authorship implied):
-> > > > Co-developed-by: Uwe
-> > > > SoB: Uwe
-> > > > SoB: yours
-> > >
-> > > I don't care much, but IMHO the initial set of tags made sense to me.
-> >
-> > > It
-> > > has my S-o-b because the change is (somewhat) taken from me and it ha=
-s
-> > > my ack because the modification looked good to me.
-> >
-> > According to
-> > https://www.kernel.org/doc/html/latest/process/submitting-patches.html#=
-when-to-use-acked-by-cc-and-co-developed-by
-> > the SoB already implies that you developed that, but Ack if not. It
-> > also clarifies Co-developed-by for cases like this.
+On Sun, May 29, 2022 at 4:09 PM Tom Rix <trix@redhat.com> wrote:
 >
-> That's unintuitive (and wrong) in my opinion.
+> clang static analysis reports this representative issue
+> drivers/tty/serial/serial_core.c:2818:9: warning: 3rd function call argument is an uninitialized value [core.CallAndMessage]
+>         return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
+>                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> uart_get_info() is used the *show() functions.  When uart_get_info() fails, what is reported
 
-I have the opposite opinion.
+in the ?
 
-> For me, Acked-by is a
-> confirmation of the respective person, that the patch in question is ok.
-> If I take a hunk of a random reverted patch and add the S-o-b of the big
-> patch's author, can I really assume the original author "acks" the
-> result? I would expect that in most cases they don't. (And if they do,
-> there is no way to record it, because the usual way of adding an Ack is
-> blocked as there is already a S-o-b?)
+> is garbage.  So check if uart_get_info() succeeded.
 
-It's very logical to me. If you allowed (by not NAKing) the other
-developer to use your SoB you imply Ack for every change they made.
-Otherwise you need explicitly ask for withdrawal of your SoB.
+...
 
---=20
+> -       uart_get_info(port, &tmp);
+> +       if (uart_get_info(port, &tmp))
+> +               return 0;
+
+I don't think this is correct. If something fails we need to inform the caller.
+
+I think more about
+
+int ret;
+
+ret = uart_get_info(...);
+if (ret)
+  return ret;
+
+But I haven't looked at the uart_get_info() implementation, so the
+above might be wrong.
+
+>         return sprintf(buf, "%d\n", tmp.baud_base * 16);
+
+Ditto for the rest.
+
+-- 
 With Best Regards,
 Andy Shevchenko
