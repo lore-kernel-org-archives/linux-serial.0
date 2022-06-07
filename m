@@ -2,48 +2,49 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F7DCCA48C
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 034BEC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 18:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244693AbiFGSS3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
+        id S1351378AbiFGSXP (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351936AbiFGSQs (ORCPT
+        with ESMTP id S1352560AbiFGSVO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 14:16:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3191836B;
-        Tue,  7 Jun 2022 10:50:11 -0700 (PDT)
+        Tue, 7 Jun 2022 14:21:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F4F43EE7;
+        Tue,  7 Jun 2022 10:53:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC561B82340;
-        Tue,  7 Jun 2022 17:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F88C34115;
-        Tue,  7 Jun 2022 17:50:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 487B5B82372;
+        Tue,  7 Jun 2022 17:53:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 371B7C36B00;
+        Tue,  7 Jun 2022 17:53:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624208;
-        bh=FW/I7BVkoeE8In3t2dtd44ke8+0eARmdPhzZXUroxaY=;
+        s=k20201202; t=1654624418;
+        bh=KPi+PDnXetNqe8k0T50PiyVPHdsSkTnx9m4diIFuL3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOOYsZzUBG5Pgh87JkDbxxVXkKTUrVe31FngsvunXOBKYrKWDWToPIeoov7bnoagK
-         JWjbks8ki+zi0Zb/AfIgGXP2vtzuSUqbho1pfJZUABl/nm7hzxxWY9O+vkeVlJH/PZ
-         oIPIrQAGsVV7eaHKR3QIp6BPLUGZWWsZqJQpyukBA1FIdfxCYjfSpHPLFF/ynyv/JR
-         eP4CuyaUUHpOonz67q9+QNUqugydsCygnGaOq8utsXf2amVJV3gs+xIjlBSd3Z8KO1
-         ffm8C0fF3IrdseN+IV/b7Ulhg7gCvuavJRT+rDhFh4T6MlreTHILgPoXoHWqVsf4uN
-         jmLgTmXWSPoTA==
+        b=OwTHk1Pu5TYAxERGqeq6A7DwPmpTMCXStWbZKHEabU6c2RLXufl4Mya3nlVk+znCl
+         hWoCLm5Ev5R5pSh9PmDy3ERC9w0JlDVN8UVsNe2CVtS68po76/vv2KYYRtFJcGgjbh
+         YbAuNs3by9S8EcyhCjMd8Oumm+rNS97tCQQByp7PeBzZZ2UWyqpTG1WKjPlZ9bIfaq
+         UW61/r8oJwcX+yw0UizHevDplLq37hS1NbsrllOw/SC+ZMXFTKlWJ4fMkCgB6hvY0K
+         Y2niemE8IrgumkgCeRQQrrVTsWPS2H+m6wGHLxipC6WOdUEtIOpOLD5USNL75vnvMN
+         VcGE5HmZ3ldSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Duoming Zhou <duoming@zju.edu.cn>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 14/68] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Tue,  7 Jun 2022 13:47:40 -0400
-Message-Id: <20220607174846.477972-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 13/60] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Tue,  7 Jun 2022 13:52:10 -0400
+Message-Id: <20220607175259.478835-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -84,7 +85,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 5fe6cccfc1ae..e64e42a19d1a 100644
+index 697b6a002a16..4ddcc985621a 100644
 --- a/drivers/tty/serial/sa1100.c
 +++ b/drivers/tty/serial/sa1100.c
 @@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
