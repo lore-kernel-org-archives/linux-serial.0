@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E3FC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 14:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEDDC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 14:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245040AbiFGOA4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 10:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34136 "EHLO
+        id S245124AbiFGOLM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 10:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243974AbiFGOAy (ORCPT
+        with ESMTP id S245123AbiFGOLL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 10:00:54 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75FCC1EC0;
-        Tue,  7 Jun 2022 07:00:53 -0700 (PDT)
+        Tue, 7 Jun 2022 10:11:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13D2A3C23;
+        Tue,  7 Jun 2022 07:11:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654610454; x=1686146454;
+  t=1654611070; x=1686147070;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=D7BshuRzvKV/lcPeklXlMOIDPXC7Yjkcl9zS17XOQrM=;
-  b=BQky4QjXbPkXbxFPUgKtoiJo7V5vrYX3fMpIrsKTyxSqRI5eTHZRw4ya
-   UHI66FvwamSe7GsVR+rgLx83vwaF5QZo3aG6AdQn5I/x+fWJ1+1KzwGZD
-   kXpx6+JVjxK7myf5P5h+a9nltLbfIaiJjY54L3q2tnnHx0DuCN7HelvD8
-   k1m8ylgmC677vuBoywVxmdWiSi6n0DNrJdKZiWz+yanofpiIlkdDdu8Gu
-   oYx77GheRvTcgPHx4XgNF5eo+PiS3Kan3eBfU9RihaukuY6GaJ8hZZyas
-   ja6+5PeFQIrf5SWMw6xTCZI2+K5CInxyeS0nE3oI56RPaTj4YJmJTX5kG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277526544"
+  bh=6nyYrRsld2hYKi7Jf8o10LvQWJ7y4xctI5lUl7RnMpY=;
+  b=Vg4BHTbVhkF9B7UHieHaCzuZmOlNMBeUs337FZJwFUuLLV9jmJNxYZdE
+   B0CA6GYTO7wrHzpeC+1/BtZ32AR4Fb7+WMLOzjd73unTMUj6oG9RR1g2R
+   1QSLobDcSDFSodB/sVqSYhm4llTx7GfqA+PbDOK1hCs41moz9PIVMhB+r
+   Yl23ET51d4DHImkLqIYUlptdRpVHiSA4Iw4meMhXXaCXvFvgD+uGwDOvB
+   wSh763uvJiwhoFySXT/Ct9/QkNUgpEhg0A06OKzPRro+esMLl4e/rVcGy
+   BO9Xv36A7wh55zhShi06HXEnJfxJ9cefaQ1UrqIpNEScn7vufzN7Vp+RW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="276763667"
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="277526544"
+   d="scan'208";a="276763667"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:00:50 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:11:09 -0700
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584208831"
+   d="scan'208";a="584211974"
 Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:00:48 -0700
-Date:   Tue, 7 Jun 2022 17:00:45 +0300 (EEST)
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 07:11:07 -0700
+Date:   Tue, 7 Jun 2022 17:11:05 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead
- of sizeof(type)
-In-Reply-To: <20220607104946.18710-12-jslaby@suse.cz>
-Message-ID: <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-12-jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 14/36] tty/vt: consolemap: make con_get_unimap() more
+ readable
+In-Reply-To: <20220607104946.18710-14-jslaby@suse.cz>
+Message-ID: <10b17051-fec-7b2-aee2-f62cbe8e9a14@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-14-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-420996245-1654610449=:1622"
+Content-Type: multipart/mixed; boundary="8323329-1347469348-1654611069=:1622"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -57,87 +56,23 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-420996245-1654610449=:1622
+--8323329-1347469348-1654611069=:1622
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
-> the type of the variable can change and one needs not change the former
-> (unlike the latter). Second, the latter is error-prone due to (u16),
-> (u16 *), and (u16 **) mixture here.
+> The indentation is completely broken in con_get_unimap(). Reorder the
+> code using "if (!cond) continue;"s so that the code makes sense. Switch
+> also the "p" assignment and add a short path using goto. This makes the
+> code readable again.
 > 
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-This seems fine but see the comments below which are not directly related 
-to the change itself.
-
-> ---
->  drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
->  1 file changed, 12 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index 097ab7d01f8b..79a62dcca046 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data *conp,
->  		return;
->  	q = p->inverse_trans_unicode;
->  	if (!q) {
-> -		q = p->inverse_trans_unicode =
-> -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
-> +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
-> +				sizeof(*q), GFP_KERNEL);
->  		if (!q)
->  			return;
->  	}
-> -	memset(q, 0, MAX_GLYPH * sizeof(u16));
-> +	memset(q, 0, MAX_GLYPH * sizeof(*q));
-
-Convert kmalloc_array into kcalloc and place memset() into else branch?
-
->  	for (i = 0; i < UNI_DIRS; i++) {
->  		p1 = p->uni_pgdir[i];
-> @@ -478,8 +478,8 @@ static int con_unify_unimap(struct vc_data *conp, struct uni_pagedict *p)
->  					continue;
->  				if (!p1[k] || !q1[k])
->  					break;
-> -				if (memcmp(p1[k], q1[k],
-> -						UNI_ROW_GLYPHS * sizeof(u16)))
-> +				if (memcmp(p1[k], q1[k], UNI_ROW_GLYPHS *
-> +							sizeof(*p1[k])))
->  					break;
->  			}
->  			if (k < UNI_DIR_ROWS)
-> @@ -505,7 +505,7 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
->  	n = UNI_DIR(unicode);
->  	p1 = p->uni_pgdir[n];
->  	if (!p1) {
-> -		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(u16 *),
-> +		p1 = p->uni_pgdir[n] = kcalloc(UNI_DIR_ROWS, sizeof(*p1),
->  				GFP_KERNEL);
->  		if (!p1)
->  			return -ENOMEM;
-> @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
->  	n = UNI_ROW(unicode);
->  	p2 = p1[n];
->  	if (!p2) {
-> -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16), GFP_KERNEL);
-> +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
-> +				GFP_KERNEL);
->  		if (!p2)
->  			return -ENOMEM;
->  		/* No glyphs for the characters (yet) */
-> -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
-> +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
-
-This could have been kcalloc'ed.
-
 
 -- 
  i.
 
---8323329-420996245-1654610449=:1622--
+--8323329-1347469348-1654611069=:1622--
