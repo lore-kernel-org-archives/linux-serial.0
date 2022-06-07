@@ -2,119 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966E2C43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E83CC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241898AbiFGKvL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S241908AbiFGKvM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242340AbiFGKuN (ORCPT
+        with ESMTP id S242288AbiFGKuK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:50:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AD8F688D;
-        Tue,  7 Jun 2022 03:49:56 -0700 (PDT)
+        Tue, 7 Jun 2022 06:50:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2142D92733;
+        Tue,  7 Jun 2022 03:49:51 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 82AD61F920;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id C956221AE4;
+        Tue,  7 Jun 2022 10:49:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654598994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KN17otLLjbmzRJPKwWD60VkplKJ5RSo6F6tvRibcLnE=;
-        b=Zw9jPq8OlYJgDXk9SvjrORkD9B5CluTSYxUD4IYhYe+qIzw+cQyvctU4J3DVttXPbuU8oF
-        9V/71+Xa7qpFOzQGCpQuaLYREIP8e+HlB9Ce6aD9IYyNswJOIRGm0E1d+nm+9QZr672BEP
-        MgEivPQvlnXCc2hOZVF1YZulHAg3Rq8=
+        t=1654598989; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=ikkBKC1KqNjVSYGH4msAtxXZ42KrWWeGQjeVqqAJZ3w=;
+        b=ny7dsd0GhKQHInyo7aIJPf85+8bsmwgrBA0y0F6lnveKOGHVgG80AZbpPMVZ3RI+FTOQpg
+        UYMcbItPTEv1+9C1Y2ObAWHQYq6u5xEmk27KBDz+CjGytfrodzEZLozyknwtNq4LN4YEwe
+        1guFnOEgXfgV53AeoUApZPiklfjfF9E=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654598994;
+        s=susede2_ed25519; t=1654598989;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KN17otLLjbmzRJPKwWD60VkplKJ5RSo6F6tvRibcLnE=;
-        b=vM2NrsQBjPYjslEnSIf3bv0mLGhI815c4DMJD5r83yU7hJa4t7f87L5lXgVdXd/m4r8ulg
-        U+swfLAmaeb6DrDg==
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=ikkBKC1KqNjVSYGH4msAtxXZ42KrWWeGQjeVqqAJZ3w=;
+        b=oJ8bWNBPeLhBNXo0PP4ehaysRdZzgb7JU5AfvUlaIcwaL7I8ayeFSavKgrLpEG0OG8jFbg
+        LCh0MwUqYKb9ZPDg==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5AE832C141;
-        Tue,  7 Jun 2022 10:49:54 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id A0DC12C141;
+        Tue,  7 Jun 2022 10:49:49 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 24/36] tty/vt: consolemap: saner variable names in con_do_clear_unimap()
-Date:   Tue,  7 Jun 2022 12:49:34 +0200
-Message-Id: <20220607104946.18710-24-jslaby@suse.cz>
+Subject: [PATCH 01/36] tty/vt: consolemap: use ARRAY_SIZE()
+Date:   Tue,  7 Jun 2022 12:49:11 +0200
+Message-Id: <20220607104946.18710-1-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220607104946.18710-1-jslaby@suse.cz>
-References: <20220607104946.18710-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
-
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
-
-This is a lot of shuffling, but the result pays off, IMO.
+The code uses constants as bounds in loops. Use ARRAY_SIZE() with
+appropriate parameters instead. This makes the loop bounds obvious.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/tty/vt/consolemap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index cbdc73605148..456aed3f717c 100644
+index d815ac98b39e..839d75d1a6c0 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -531,24 +531,23 @@ con_insert_unipair(struct uni_pagedict *p, u_short unicode, u_short fontpos)
- /* Caller must hold the lock */
- static int con_do_clear_unimap(struct vc_data *vc)
- {
--	struct uni_pagedict *p, *q;
-+	struct uni_pagedict *old = *vc->vc_uni_pagedir_loc;
- 
--	p = *vc->vc_uni_pagedir_loc;
--	if (!p || --p->refcount) {
--		q = kzalloc(sizeof(*p), GFP_KERNEL);
--		if (!q) {
--			if (p)
--				p->refcount++;
-+	if (!old || --old->refcount) {
-+		struct uni_pagedict *new = kzalloc(sizeof(*new), GFP_KERNEL);
-+		if (!new) {
-+			if (old)
-+				old->refcount++;
- 			return -ENOMEM;
+@@ -408,7 +408,7 @@ static void con_release_unimap(struct uni_pagedir *p)
  		}
--		q->refcount=1;
--		*vc->vc_uni_pagedir_loc = q;
-+		new->refcount = 1;
-+		*vc->vc_uni_pagedir_loc = new;
- 	} else {
--		if (p == dflt)
-+		if (old == dflt)
- 			dflt = NULL;
--		p->refcount++;
--		p->sum = 0;
--		con_release_unimap(p);
-+		old->refcount++;
-+		old->sum = 0;
-+		con_release_unimap(old);
+ 		p->uni_pgdir[i] = NULL;
  	}
- 	return 0;
- }
+-	for (i = 0; i < 4; i++) {
++	for (i = 0; i < ARRAY_SIZE(p->inverse_translations); i++) {
+ 		kfree(p->inverse_translations[i]);
+ 		p->inverse_translations[i] = NULL;
+ 	}
+@@ -798,7 +798,7 @@ u32 conv_8bit_to_uni(unsigned char c)
+ int conv_uni_to_8bit(u32 uni)
+ {
+ 	int c;
+-	for (c = 0; c < 0x100; c++)
++	for (c = 0; c < ARRAY_SIZE(translations[USER_MAP]); c++)
+ 		if (translations[USER_MAP][c] == uni ||
+ 		   (translations[USER_MAP][c] == (c | 0xf000) && uni == c))
+ 			return c;
 -- 
 2.36.1
 
