@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A48CDC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 13:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990AFC433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 13:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243648AbiFGNcl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 09:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38172 "EHLO
+        id S242522AbiFGNeh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 09:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244738AbiFGNck (ORCPT
+        with ESMTP id S234431AbiFGNeh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 09:32:40 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7846A27B19;
-        Tue,  7 Jun 2022 06:32:37 -0700 (PDT)
+        Tue, 7 Jun 2022 09:34:37 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB56C0E36;
+        Tue,  7 Jun 2022 06:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654608757; x=1686144757;
+  t=1654608876; x=1686144876;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=535L1jI1nPmXoCMEC1TyzG0h9F+iwaHcjFYWul2Vn3w=;
-  b=ViiGPncK1J2bURoJRLwAVJwYeQmisFepc/dqw5/axtuvDHfH0ZI+/QlL
-   rrRKkg3kYnvTt2NpaR2vZkdNyp0n2nEsLZ+sFyXxdX+VgTQtdVbXo70r+
-   YOQ/HZscmqqbWisT8147oJv2qcRPCaRfCdg6Recgf2i5rVNwkqSoxQwg1
-   yXAS1BX4/MvJSvdYuUB32NSxePjooXoz5C+DMAJAR5mgZXnDmaEfpgvJO
-   Q3bOmvc6xvf/izaXEQfQACQfOvWqvFNkDWJjzGjM7Hs6EqAjL9zwQ5tHH
-   u0g33Gda6X/kOJmpT97NLn0RdzE2Z/PYVzUkUeOmlyJN7wY0N2GM9a+ix
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="276762499"
+  bh=3zCSg2piam2X4diNokposYw0qSR7ja+acziGOwRIYoM=;
+  b=MmoDxjXC3rj9EQSoRBpaDef6Lz+az7mOGu7Fe4rqLdyMFMBumqJeJc/u
+   0JgEHnS3Wi9jz836ImJO0X/+/DZGe0BVLEPBp5bSThS9hTnFhSHSKRQNJ
+   +BvCZtHyX645nm6ZyF61gHZwDtmEspXWbn03/nKtxC24EwgcAM4rUVWji
+   Ytmy43h2tzMB3OEwJ8vjiK5SIJWfZePCGrT+D0WZdS6YrTQa8XnqZuUK4
+   TyeT3CKnEq/rzluqmwnSK4TMvu/E2H2lJIaUmb8TlQT+M69E+E9b+Ig8n
+   WJyYj1d6tmXGAdXN4RyWo6AWGw8EGQwxGrgYCZYFP7mT7TecrXtY3XDdU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277514868"
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="276762499"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:32:37 -0700
+   d="scan'208";a="277514868"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:34:00 -0700
 X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
-   d="scan'208";a="584199696"
+   d="scan'208";a="826358269"
 Received: from akmessan-mobl1.amr.corp.intel.com ([10.251.214.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:32:35 -0700
-Date:   Tue, 7 Jun 2022 16:32:33 +0300 (EEST)
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 06:33:58 -0700
+Date:   Tue, 7 Jun 2022 16:33:56 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 07/36] tty/vt: consolemap: make parameters of
- inverse_translate() saner
-In-Reply-To: <20220607104946.18710-7-jslaby@suse.cz>
-Message-ID: <83d6e90-c9f4-883c-285f-9ba7f85e937b@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-7-jslaby@suse.cz>
+cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 05/36] tty/vt: consolemap: remove extern from function
+ decls
+In-Reply-To: <20220607104946.18710-5-jslaby@suse.cz>
+Message-ID: <b74b3f59-a955-a1b1-9310-415c4c9992c@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-5-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1506534093-1654608756=:1622"
+Content-Type: multipart/mixed; boundary="8323329-1852436768-1654608839=:1622"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -57,17 +56,14 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1506534093-1654608756=:1622
+--8323329-1852436768-1654608839=:1622
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
 
 On Tue, 7 Jun 2022, Jiri Slaby wrote:
 
-> - int use_unicode -> bool: it's used as bool at some places already, so
->   make it explicit.
-> - int glyph -> u16: every caller passes a u16 in. So make it explicit
->   too. And remove a negative check from inverse_translate() as it never
->   could be negative.
+> The extern keyword is not needed for function declarations. Remove it,
+> so that the consolemap header conforms to other tty headers.
 > 
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
@@ -77,4 +73,4 @@ Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 -- 
  i.
 
---8323329-1506534093-1654608756=:1622--
+--8323329-1852436768-1654608839=:1622--
