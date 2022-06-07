@@ -2,151 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED43C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5C1CCA47F
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jun 2022 10:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236009AbiFGKcx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
+        id S241921AbiFGKsR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238083AbiFGKcw (ORCPT
+        with ESMTP id S241695AbiFGKr4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Jun 2022 06:32:52 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F70ED107
-        for <linux-serial@vger.kernel.org>; Tue,  7 Jun 2022 03:32:50 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nyWVk-0001z3-EL; Tue, 07 Jun 2022 12:32:32 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nyWVk-006yOl-63; Tue, 07 Jun 2022 12:32:30 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nyWVh-00EkU5-OY; Tue, 07 Jun 2022 12:32:29 +0200
-Date:   Tue, 7 Jun 2022 12:32:29 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
- read
-Message-ID: <20220607103229.f4hniwkcyfwlgem2@pengutronix.de>
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
- <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com>
- <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
- <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
- <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
- <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
- <20220606194046.gbt4ghz2yvazsfo4@pengutronix.de>
- <CAHp75VdiJFtLnEJfW6KXwaVFsKWSSTSMgKQLvikSEQj7x3tgLA@mail.gmail.com>
- <20220607055810.szkjoitpr3vboymr@pengutronix.de>
- <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
+        Tue, 7 Jun 2022 06:47:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADAFED7A9;
+        Tue,  7 Jun 2022 03:46:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6177B61577;
+        Tue,  7 Jun 2022 10:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D994EC34119;
+        Tue,  7 Jun 2022 10:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654598813;
+        bh=hlj2Yw+EG0pWKoO3cXlRjHbXss4PXj721LR0qzOjcRQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=lLjZE/ozDwyHnNNLv6KyRqV2xvU5uJJz9u7TCauhLkOPhBG38x6MdtEwI+8UIDQGw
+         uwtQiaJiwSNPU3upK6sgPC39kbtNdgB+CJfvt4RS1u1WkKKQpLeo6s5YlC3hEycLWK
+         DZ8Pjgv0h7TbVz5Vt1jDWfcTuWpK/D09EzsT4BVhx4hbG2e1VCKQHVGbNkyCNRk8sg
+         k6i/de3UcYlJTd5vP0lgvg+Z56k+nzRjJukId3zcOJcHo7YFPUDXs4S3klIjdIoaFE
+         QhfEG8FvKM9beX57uQhEHDZQEfg+6mZSxo/qgqEJSsXBAY9yR2jt850+wpSUTN7I+A
+         ZsaWxiF+LqPiw==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux@roeck-us.net, robh+dt@kernel.org, vkoul@kernel.org,
+        matthias.bgg@gmail.com, jic23@kernel.org,
+        srinivas.kandagatla@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        chunfeng.yun@mediatek.com, fparent@baylibre.com,
+        ulf.hansson@linaro.org, wim@linux-watchdog.org,
+        qii.wang@mediatek.com, chaotian.jing@mediatek.com
+Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org
+In-Reply-To: <20220531135026.238475-1-fparent@baylibre.com>
+References: <20220531135026.238475-1-fparent@baylibre.com>
+Subject: Re: (subset) [PATCH 00/17] Add support for MT8365 EVK board
+Message-Id: <165459880859.302078.17715085151206065145.b4-ty@kernel.org>
+Date:   Tue, 07 Jun 2022 11:46:48 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y6zewhn3wuwtvi3o"
-Content-Disposition: inline
-In-Reply-To: <CAHp75VcUBOcz_UAx9tVER8cBb8h8NF+NivUH00-B39wwH6ObUQ@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Tue, 31 May 2022 15:50:09 +0200, Fabien Parent wrote:
+> This patch series adds support for the MT8365 EVK board.
+> 
+> This series has dependencies on the following series:
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646256
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646091
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646083
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646081
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646076
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646068
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646020
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646052
+> https://lore.kernel.org/r/20220504091923.2219-2-rex-bc.chen@mediatek.com
+> https://lore.kernel.org/r/20220512062622.31484-2-chunfeng.yun@mediatek.com
+> https://lore.kernel.org/r/20220512062622.31484-1-chunfeng.yun@mediatek.com
+> https://lore.kernel.org/r/20220524115019.97246-1-angelogioacchino.delregno@collabora.com
+> https://lore.kernel.org/all/20220127015857.9868-1-biao.huang@mediatek.com/
+> 
+> [...]
 
---y6zewhn3wuwtvi3o
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied to
 
-Hello,
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-On Tue, Jun 07, 2022 at 12:09:39PM +0200, Andy Shevchenko wrote:
-> > > > > I believe you haven't preserved the authorship that way (since Fr=
-om
-> > > > > line is different), but since you have done non-trivial changes a=
-nd
-> > > > > Uwe is okay with them, the straightforward tag chain would be (wi=
-th
-> > > > > your authorship implied):
-> > > > > Co-developed-by: Uwe
-> > > > > SoB: Uwe
-> > > > > SoB: yours
-> > > >
-> > > > I don't care much, but IMHO the initial set of tags made sense to m=
-e.
-> > >
-> > > > It
-> > > > has my S-o-b because the change is (somewhat) taken from me and it =
-has
-> > > > my ack because the modification looked good to me.
-> > >
-> > > According to
-> > > https://www.kernel.org/doc/html/latest/process/submitting-patches.htm=
-l#when-to-use-acked-by-cc-and-co-developed-by
-> > > the SoB already implies that you developed that, but Ack if not. It
-> > > also clarifies Co-developed-by for cases like this.
+Thanks!
 
-Reading that by the letter, it doesn't say you must not use Ack if there
-is a S-o-b.
+[09/17] dt-bindings: spi: mt65xx: add MT8365 SoC bindings
+        commit: 901fc8e8079e401f3240006cab6629e65579701c
 
-	If a person was not directly involved in the preparation or
-	handling of a patch but wishes to signify and record their
-	approval of it then they can ask to have an Acked-by: line added
-	to the patch=E2=80=99s changelog.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-It's "If" and not "Iff". Not sure if that is intended?!
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-> > That's unintuitive (and wrong) in my opinion.
->=20
-> I have the opposite opinion.
->=20
-> > For me, Acked-by is a
-> > confirmation of the respective person, that the patch in question is ok.
-> > If I take a hunk of a random reverted patch and add the S-o-b of the big
-> > patch's author, can I really assume the original author "acks" the
-> > result? I would expect that in most cases they don't. (And if they do,
-> > there is no way to record it, because the usual way of adding an Ack is
-> > blocked as there is already a S-o-b?)
->=20
-> It's very logical to me. If you allowed (by not NAKing) the other
-> developer to use your SoB you imply Ack for every change they made.
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-So you assume that you notice each patch with your S-o-b in time to send
-a NAK. I don't claim that for me and I would be surprised if a major
-part of the kernel contributors did.
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=C3=B6nig         =
-   |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---y6zewhn3wuwtvi3o
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKfKToACgkQwfwUeK3K
-7AmWpAf+PFbmFeyedxtz9REfyynhfuR58QtPYsiSzWuf4M3cnolsHEOAANNpVHc9
-jANNDJuZ7hueulaLM6QIQlVkNwU2oTC5gYw5fBrORTIPsaUVdhzFbh+l1d5Uw2DX
-tROw9p1Junv+4RYM8ny4YaE6ASXPuXU53aLam4nNkN159dHzZ8FbHFZshYTsVj6o
-/YSaTgOf83/2AaKd+8w6QLXDsDj1TyMovGahLj8cU492FWtwJoTzo1qiOoArqRJk
-qwIFfqyfbhle+haza9cdJPLfxoSf6difwXg1/s5wy2M3MOR4eHAPUR3r7hoNANU9
-Bcf0I7MGrSqPSxSovZv16XABceAg0A==
-=0Mcm
------END PGP SIGNATURE-----
-
---y6zewhn3wuwtvi3o--
+Thanks,
+Mark
