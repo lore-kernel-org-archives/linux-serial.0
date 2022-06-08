@@ -2,103 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B2CC43334
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C219FCCA47E
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236025AbiFHKKk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S236526AbiFHKQZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235990AbiFHKJq (ORCPT
+        with ESMTP id S236516AbiFHKPY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:46 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426D51D9B48;
-        Wed,  8 Jun 2022 02:55:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682102; x=1686218102;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MWcjADPcy+1mXPm4mR4npKVQZi0EcX9q8P+2uwttuo0=;
-  b=MS2HQudP9ukVgRgGItxRZ3TTgcdgrRNQbIX9A6vQCDoDypIDcBoCWqf0
-   tXkypFDLe+rcSI8J6i/ZDyo/zm1Q7qbJj8ETvjq9b8jv27P4OWS+p6oH5
-   vdh0foN4OtPOo6M7fmgQPrV4zmNmeYQStL3Y1+1A78TPHemX8t+wecUhp
-   nhmS+wB8moXpwUnkLgc+Vsxo3aJHx3IzRLWZoLWGl/85z4Is/7j8qnqQ4
-   IUd5pTWGX8t/pnSoXcdMthas68yd4wFVLGAZkfCjpS2XP+/ZTRX9kVECQ
-   GgFnnU10vBiJiNaI9X4W7bw/gu1/UljOQ7wUh12/9klALHE9KfcnBdo9h
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019577"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="278019577"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:55:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="584783570"
-Received: from bmichals-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.131])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:58 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 5/6] serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()
-Date:   Wed,  8 Jun 2022 12:54:30 +0300
-Message-Id: <20220608095431.18376-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
-References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
+        Wed, 8 Jun 2022 06:15:24 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16994254471
+        for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 03:03:04 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id v1so29739818ejg.13
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jun 2022 03:03:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NKyyO0R/DNBe59uojHSKmle13FrO8LlGaKpDZKb02gw=;
+        b=OvE5wtNhJO0yn86Zz3zu3mzyNkKn7fTbPsleOrROptyar67lYp7iBvV0A8rhvLMK0g
+         XecsXNhpS5zPcG2cwpy+7acWRYTjicHPWf4iuaFDyd/nF3ooShNIRtRISnJ5IbZNA6Oz
+         SH5IG7yCc5V5JU5IBa/7F8VbwwR43osXPnkxCDbO/LK9O6AFNLMTcsV+EjlF32SKGu8j
+         43tItwuTySQFLekPq8+NRO3h0frN2k+vqaEJC5O7OsD7nkyd1nahx3PLK6IyFPglpOr2
+         bDtEagFdRPBZcDvu5V7V61WrK20ghbDX/Bs6KW5qDYu9qscfSAUGJSFmDP2ytDKQvfiS
+         JAXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NKyyO0R/DNBe59uojHSKmle13FrO8LlGaKpDZKb02gw=;
+        b=74ZsKFc+db6PGVCORw/NINPGPKZRLE0AMuf9OW4hoEZN9mQvSl5tudlsxflvzT4A9A
+         20M1VKLFyIuZArm3MAe7yLrw3QVv8TdCHfpp3alepCWpi9IiL65n0sCAYRNl85aVpfvw
+         FYxkOnpFHjBI0P4L9Cx8al7+3ucwP07F4wrtX03Ghe85J/6sV1eaK5R3M6ZvD47PLvpb
+         ZFxckQVodp7dJg9RohEshYJgyx61TDpH5ogcWVyM6Hit54c93rSpfmMfvAv2iM4AO/pd
+         DsbPWE2FJY9238yf1V+nL2/o1nF9k9NvBmW3LAbUfo2a0fjVIKwqxYXuq/7NC/AI303J
+         QBog==
+X-Gm-Message-State: AOAM530+H4dJsShMfRxJKk1WBJnnxZTQ0JsfUW9yd4Uoh6YJiyYmA7XD
+        nkNVU/2S+1oRobPpIjnYefSWmA==
+X-Google-Smtp-Source: ABdhPJzV0KH21jeek+JIQQNjs8yfpPCv0lnb9LX8dRez4j3ORgyTDpTexd8DT7y+4Qfu8ickVNGoXQ==
+X-Received: by 2002:a17:906:9753:b0:6fe:dece:982a with SMTP id o19-20020a170906975300b006fedece982amr31180089ejy.560.1654682583385;
+        Wed, 08 Jun 2022 03:03:03 -0700 (PDT)
+Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h1-20020a170906590100b006fe97996423sm8869782ejq.219.2022.06.08.03.03.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jun 2022 03:03:02 -0700 (PDT)
+Message-ID: <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
+Date:   Wed, 8 Jun 2022 12:03:00 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 06/20] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220608095623.22327-1-tmaimon77@gmail.com>
+ <20220608095623.22327-7-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220608095623.22327-7-tmaimon77@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-dw8250_handle_irq() reads LSR under a few conditions, convert both to
-use serial_lsr_in() in order to preserve LSR flags properly across
-reads.
+On 08/06/2022 11:56, Tomer Maimon wrote:
+> Add binding for the Arbel BMC NPCM8XX Clock controller.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 63 +++++++++++++++++++
+>  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 50 +++++++++++++++
+>  2 files changed, 113 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+>  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> new file mode 100644
+> index 000000000000..e1f375716bc5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton NPCM8XX Clock Controller Binding
+> +
+> +maintainers:
+> +  - Tomer Maimon <tmaimon77@gmail.com>
+> +
+> +description: |
+> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
+> +  generates and supplies clocks to all modules within the BMC.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - nuvoton,npcm845-clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: 25M reference clock
+> +      - description: CPU reference clock
+> +      - description: MC reference clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: refclk
+> +      - const: sysbypck
+> +      - const: mcbypck
+> +
 
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Phil Edworthy <phil.edworthy@renesas.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I asked what is the suffix about and you replied "ck"... ok, so let's
+make clear. This should be:
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f57bbd32ef11..1fae45991812 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -253,7 +253,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	 */
- 	if (!up->dma && rx_timeout) {
- 		spin_lock_irqsave(&p->lock, flags);
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
- 
- 		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
- 			(void) p->serial_in(p, UART_RX);
-@@ -263,7 +263,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 
- 	/* Manually stop the Rx DMA transfer when acting as flow controller */
- 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
--		status = p->serial_in(p, UART_LSR);
-+		status = serial_lsr_in(up);
- 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
- 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
--- 
-2.30.2
+    items:
+      - const: ref
+      - const: sysbyp
+      - const: mcbyp
 
+or something similar, without the same suffix all over.
+
+> diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> new file mode 100644
+> index 000000000000..229915a254a5
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+
+Same comment as before. No changes here...
+
+
+
+Best regards,
+Krzysztof
