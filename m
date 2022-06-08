@@ -2,105 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21932C43334
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FD9C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbiFHKJr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        id S235827AbiFHKK0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236991AbiFHKJ3 (ORCPT
+        with ESMTP id S235934AbiFHKJk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C356FA3B;
-        Wed,  8 Jun 2022 02:54:05 -0700 (PDT)
+        Wed, 8 Jun 2022 06:09:40 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B839B1D5AA1;
+        Wed,  8 Jun 2022 02:54:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682045; x=1686218045;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=Cd8pbVH0sEmGPZUUgfp1h3i8osc5+Du509bEtizTrWg=;
-  b=C6Vcdb/fAd1MkkkHeMs5rlUzdUA//45Ev6PFlA1XtAg+l4swdsR7fn0Z
-   vNIifRFcf/pInw/bhcKXBGRa/Uu+Icz9t20PhndfYZ5GbjHmwg1s/Mcpf
-   8CEAQBPAp+VoUQeWEl+6Tkh2R5KQQYx4QUTw5AFVJ7QfOH499Gxv8EccA
-   FrrpZqrK3UH65JZbmX4nxhf3a/O/hj3oCPEnNzAFFLo7zz2B710Owt/vs
-   va502N7B0MlXdVYVk4HuhEVTSrGnWQXuLNXcl45F+bGqJBQ+oerRQ7bgh
-   L5GMnLP7YzAu3Z4SwrBf7USpd9U4gSkFSIBr5RAEpYPqznsFe+tdbNuNJ
+  t=1654682097; x=1686218097;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GeRNMr3HZUhOZVt9G+fJ5knQmLzUpmCXYoXf8y44tOw=;
+  b=kIEEuK7Pan80vXJZcuJOPUKJx1i5WI59IuQ3/7cmDI20kxqwIfIpq4lu
+   6bK8/KS0RI52eg30KvTIsvsQd7Dbj3O1z+xQaB9b9AyrfGP+Ngn8tjDTf
+   HEg5Xiiy30NlON2Z7JmpQ59AJ+QOv+se5TbqMblLA+Ciun3TwkXigQYFz
+   9/0/wK/6PLHNd8JF4EUczmwGcE8TVVAGBLBeprvS3DqenDQRYOPxhDZOQ
+   qyzPKEUWeG8NKoSkfyC+34F2DNu+/9dKXl++Rz2GL4+TwieOgsSdlLUFG
+   2LrmmjiECoF2Ndx6Br2nd77BFppx7tmFaf3FbbU+EMsI3J1JgppSFbbYF
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="276866313"
-X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
-   d="scan'208";a="276866313"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:04 -0700
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019533"
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="636721443"
-Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:03 -0700
-Date:   Wed, 8 Jun 2022 12:54:01 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/36] tty/vt: consolemap: define UNI_* macros for
- constants
-In-Reply-To: <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
-Message-ID: <dd7830f1-be51-29a-b77-64a5f4c34a6a@linux.intel.com>
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-3-jslaby@suse.cz> <59e0ae93-c7b-2087-75f8-4da0de918250@linux.intel.com> <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
+   d="scan'208";a="278019533"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="584783446"
+Received: from bmichals-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.131])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:47 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v4 2/6] serial: 8250: Create serial_lsr_in()
+Date:   Wed,  8 Jun 2022 12:54:27 +0300
+Message-Id: <20220608095431.18376-3-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
+References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1421660256-1654678483=:1676"
-Content-ID: <9d3b502f-879d-19b7-99db-1cce7bf934c@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+LSR register readers need to be careful in order to not lose bits that
+are not preserved across reads. Create a helper that takes care of
+storing the non-preserved bits into lsr_save_flags.
 
---8323329-1421660256-1654678483=:1676
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <94ebc639-5988-436d-3f10-ca604d4f30eb@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250.h      | 20 ++++++++++++++++++++
+ drivers/tty/serial/8250/8250_core.c |  3 +--
+ drivers/tty/serial/8250/8250_port.c | 15 ++++-----------
+ 3 files changed, 25 insertions(+), 13 deletions(-)
 
-On Wed, 8 Jun 2022, Jiri Slaby wrote:
-
-> On 07. 06. 22, 15:21, Ilpo Järvinen wrote:
-> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> > 
-> > > The code uses constants for sizes of dictionary substructures on many
-> > > places. Define 3 macros and use them in the code, so that loop bounds,
-> > > local variables and the dictionary always match. (And the loop bounds
-> > > are obvious now too.)
-> > > 
-> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> > 
-> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > 
-> > > -			for (k = 0; k < 64; k++) {
-> > > +			for (k = 0; k < UNI_ROW_GLYPHS; k++) {
-> > >   				glyph = p2[k];
-> > >   				if (glyph >= 0 && glyph < MAX_GLYPH
-> > >   					       && q[glyph] < 32)
-> > 
-> > Probably unrelated to this change but what's that < 32? It seems to appear
-> > twice related to the inverse mapping (and you didn't end up naming it).
-> 
-> That's ascii C0 test _IMO_.
-
-Ok, that's what I though it must be. But then this code seems even more 
-odd to me, why it sets the inverse again but only if it's a control 
-character...
-
-Maybe this gives some hint why but it's unintelligible to me:
-			/* prefer '-' above SHY etc. */
-Both that quoted - and soft hyphen (SHY) are >= 32. So it kind of matches 
-to what the if does, but it completely fails to explain why preference is 
-the different way around with the control chars.
-
-Btw, for set_inverse_transl(), q -> inv rename would still be useful on 
-top of the other variable renames.
-
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 3d9a7e539dea..b120da57c61f 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -123,6 +123,26 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
+ 	up->port.serial_out(&up->port, offset, value);
+ }
+ 
++/**
++ *	serial_lsr_in - Read LSR register and preserve flags across reads
++ *	@up:	uart 8250 port
++ *
++ *	Read LSR register and handle saving non-preserved flags across reads.
++ *	The flags that are not preserved across reads are stored into
++ *	up->lsr_saved_flags.
++ *
++ *	Returns LSR value or'ed with the preserved flags (if any).
++ */
++static inline unsigned int serial_lsr_in(struct uart_8250_port *up)
++{
++	unsigned int lsr = up->lsr_saved_flags;
++
++	lsr |= serial_in(up, UART_LSR);
++	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
++
++	return lsr;
++}
++
+ /*
+  * For the 16C950
+  */
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 12c5e5d0ce6d..90ddc8924811 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -276,8 +276,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
+ 	 * the "Diva" UART used on the management processor on many HP
+ 	 * ia64 and parisc boxes.
+ 	 */
+-	lsr = serial_in(up, UART_LSR);
+-	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++	lsr = serial_lsr_in(up);
+ 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
+ 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
+ 	    (lsr & UART_LSR_THRE)) {
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index c5e0f925f4b6..ec5abeb638eb 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1508,11 +1508,9 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 	struct uart_8250_em485 *em485 = p->em485;
+ 
+ 	if (em485) {
+-		unsigned char lsr = serial_in(p, UART_LSR);
++		unsigned char lsr = serial_lsr_in(p);
+ 		u64 stop_delay = 0;
+ 
+-		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+-
+ 		if (!(lsr & UART_LSR_THRE))
+ 			return;
+ 		/*
+@@ -1567,10 +1565,8 @@ static inline void __start_tx(struct uart_port *port)
+ 
+ 	if (serial8250_set_THRI(up)) {
+ 		if (up->bugs & UART_BUG_TXEN) {
+-			unsigned char lsr;
++			unsigned char lsr = serial_lsr_in(up);
+ 
+-			lsr = serial_in(up, UART_LSR);
+-			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
+ 			if (lsr & UART_LSR_THRE)
+ 				serial8250_tx_chars(up);
+ 		}
+@@ -2001,8 +1997,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
+ 	serial8250_rpm_get(up);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	lsr = serial_port_in(port, UART_LSR);
+-	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++	lsr = serial_lsr_in(up);
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	serial8250_rpm_put(up);
+@@ -2078,9 +2073,7 @@ static void wait_for_lsr(struct uart_8250_port *up, int bits)
+ 
+ 	/* Wait up to 10ms for the character(s) to be sent. */
+ 	for (;;) {
+-		status = serial_in(up, UART_LSR);
+-
+-		up->lsr_saved_flags |= status & LSR_SAVE_FLAGS;
++		status = serial_lsr_in(up);
+ 
+ 		if ((status & bits) == bits)
+ 			break;
 -- 
- i.
---8323329-1421660256-1654678483=:1676--
+2.30.2
+
