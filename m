@@ -2,117 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFE8C43334
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D731CCA47F
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 12:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237372AbiFHKrG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S238351AbiFHMBD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 08:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237400AbiFHKrF (ORCPT
+        with ESMTP id S230107AbiFHMBC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:47:05 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23DF1AADBB;
-        Wed,  8 Jun 2022 03:46:54 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id d14so950793eda.12;
-        Wed, 08 Jun 2022 03:46:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Kxz5ukf9NuI7QZhGGJCWt/BEcAXXCXhyATQAn1S8OfY=;
-        b=lEKWusknJIsFlBgjh/ZtAuJt7WzzdwGtj4Zes031YbUPipF8pjOgw2iYGN5WpQQtDs
-         /82k4YWJVq8swIXEaOFdpWTT6vALJv6QZT3ly3cDeHDljA1DwCvPFM3LzAZeQVcjUevs
-         FZH0AVPc9R+P3mPtAhbJ0Vw/IDVYW8mkU1VRBkEX6oGUC9VVWD6yDqGa+J6xEZIJVNd+
-         wuqkmxeNUYWEmAAV9egAYnnjA/e9YIIv91DiuLWYwRWHSik/Kqdlwow7E1+oBUiZ2dz8
-         CEAthNQatLMDp5BqFdhuLSoiLhf6um9pLYvJ/4J/fCykHyCosYfMC3DPly13lR2AqoeU
-         QZqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Kxz5ukf9NuI7QZhGGJCWt/BEcAXXCXhyATQAn1S8OfY=;
-        b=j8IsSPXtJ3CFtVJ8Qa9JVgM+3Gx6OZiF7NEJ8p3Zz11W/pDib3c3tnkwyMzJXeUiZW
-         xVPf1ypFhvV2929QEsJqzEkugk34ZKqOCLWkRpaK0TWJGKTTIlIzgFdfh50sbNevcpqG
-         6ULpWv+chi2oIwhWmfvxT5twvGnbFyxMX2GhDg8/uDMl1rXRxeb8TCT7JVJgJ4bGU3WW
-         pM70kyM12eiF2rENx72bUi+nmyywx76+vBYz6qfeniObusJWkOqclHuk0xDSpO95t31D
-         /63Xhc/IYbEYmPY8Rjcpgx+THox+uFeP1gn9zotT2KNHai3p1jwvUNVQXyrqF7I5S0SB
-         syHQ==
-X-Gm-Message-State: AOAM530HTzbSjxrsep9HVS4JOM5PpRFow5hOZmzFv2ofkngQdfChq6Xa
-        3kHIS4DZYeHtfmvaooAuJMZ7WNxP9C+k6N0a944=
-X-Google-Smtp-Source: ABdhPJxb00KVhaz+i/HhJ7kC+AwJ9qmD+KBhwD4rUhO9CXne2kPv3/FMPKggPu/znLNrvqUfRgQn1KRQWP8Pp2gL5kI=
-X-Received: by 2002:aa7:c396:0:b0:42d:8b86:a8dc with SMTP id
- k22-20020aa7c396000000b0042d8b86a8dcmr37765076edq.54.1654685212994; Wed, 08
- Jun 2022 03:46:52 -0700 (PDT)
+        Wed, 8 Jun 2022 08:01:02 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59915C888;
+        Wed,  8 Jun 2022 05:01:00 -0700 (PDT)
+Received: from mail-ot1-f45.google.com ([209.85.210.45]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mf0Jg-1nWjHU3Kck-00gZ9B; Wed, 08 Jun 2022 14:00:59 +0200
+Received: by mail-ot1-f45.google.com with SMTP id y16-20020a9d5190000000b0060c1292a5b9so1986959otg.3;
+        Wed, 08 Jun 2022 05:00:58 -0700 (PDT)
+X-Gm-Message-State: AOAM533i8sFw0DRQnT7qY1cZnfXRnBzcjCpnQv96WS+A+V4f/W0aKYlX
+        dg+cjTFKixlRP4VoLDIg6bbUcaGqWZA3w/ah2YY=
+X-Google-Smtp-Source: ABdhPJzpBRQHOrOjRCxL6NgH9iKMT4129LgubmWT2Bck+iPxdLoQ6gKC8EUoy0gPKu/hz3e4skCIDgwhp1qkekViG9Y=
+X-Received: by 2002:a81:190f:0:b0:313:43b8:155c with SMTP id
+ 15-20020a81190f000000b0031343b8155cmr7988991ywz.495.1654689646278; Wed, 08
+ Jun 2022 05:00:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com> <20220608095431.18376-2-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220608095431.18376-2-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 8 Jun 2022 12:46:16 +0200
-Message-ID: <CAHp75Vd+6NiqLgCQkdhCX2Ai==txmxsW2DO+aS53bdsean1nPQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/6] serial: 8250: Store to lsr_save_flags after lsr read
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-2-tmaimon77@gmail.com>
+In-Reply-To: <20220608095623.22327-2-tmaimon77@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 8 Jun 2022 14:00:28 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0mHk80oN_uLSif7wSY7x1ZN3bUkfz2xkdqmkxTqqXjeg@mail.gmail.com>
+Message-ID: <CAK8P3a0mHk80oN_uLSif7wSY7x1ZN3bUkfz2xkdqmkxTqqXjeg@mail.gmail.com>
+Subject: Re: [PATCH v2 01/20] clocksource: timer-npcm7xx: Add NPCM845 timer
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        robert.hancock@calian.com,
+        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:fpV+MFHVMv+0qZsZKGS/bEt/xhfSvy85PA/AFG7pA5pz/Mm0ReK
+ 1ulAyq86BrsIMPTYf3AGZiTGzcBdl/7sFjvMGjccovyst8Z4hwHQDwHuPsfLfTKLbbuXjKM
+ obYG92npLl/v2iPVClyPLK3gmczkZgMh3geLYY3rhu9TC9CATvT54bfWeLbUOTms1kHYYYF
+ iJkgb7teeMxd2VBAQZSlw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dLM3wY8LwP4=:JVyRRfBpXk4DUqhq96euV6
+ EUKFs+4BMnFBFjJieQWYWRixotk7ZGBxJa3mcoaVWdmNE532ibuqQsX9in+LLwDa2PjOtxQEt
+ ujKnlfIXn+0izewupSxWESUNkXG9lXS9iYbRUBofZTOefz32tPBOUb6yzNVRrSeIv2VloMaGA
+ 5t+pSl5CqRv9O9eVVTn7yjEpUCLuSlHovHNmEXJnY0DsLhDxxA1VHwW+HZHkzfnRJ5ffUfX74
+ QMVThzj/j1FbMu3+7vlGcdpKm/pRy8aU0tZpFmDv217od6jNyPYe7loi+18BwyjlM8Ezazj6Y
+ Sd3dTQTj6YPJf+WOu5z0TGizrTMP/wnNjwb/ttTSpnO39jBuoE0ZLNFpGqlbRK5a/beib6hlh
+ Vj4REmF3XUM+Ot9psGqi0B/s7OvCVUUIdDWsLj7HmNiTnXkXfy7hLx6wusuGoagKmvsjquNqo
+ hsli+dS8umasDQ3oYWdQDyZK93ZcbTpfmYme55li3iD5bg5eKN4ex9yLN2UOJYMs2LYo4BCwJ
+ DmbNHEWliMrZzu6GjbCGJf/wbnR1LJBXxvmVWOFr8n1+ZMKm1rUFWtOkqdakc18Id9Mj0j/nC
+ twVhTu6OfXvUjYdKYzdqP0l3LPG0+cPf8Q1v5/NC+Lv6xYT+9bIKYYP6J7hAMRa+pQ9Wl4XV+
+ 6xNOtr8AcDlVNn6HTkFpF5fIDFpega5mupRxt2OwLj3aKKIMuinHmgjBe95fD7lpbIIWj0qt4
+ mhcugyqB/Bfej1POBdHgy8xQLnEEESgnd6EXbtodbwYAjPZpxIKZuJq+T+ujANvFG5xn1TfpP
+ vexk/SPerAaC27CfYcTOXS455w0SQZDy6msSSgD1chQUKBk8xEanlxXm0ENoJVG2kW+rV5CrD
+ e3xIbQuwezxwxRhugxlQ==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 12:44 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
+On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
 >
-> Not all LSR register flags are preserved across reads. Therefore, LSR
-> readers must store the non-preserved bits into lsr_save_flags.
+> Add Nuvoton BMC NPCM845 timer support.
+> The NPCM845 uses the same timer controller as the NPCM750.
 >
-> This fix was initially mixed into feature commit f6f586102add ("serial:
-> 8250: Handle UART without interrupt on TEMT using em485"). However,
-> that feature change had a flaw and it was reverted to make room for
-> simpler approach providing the same feature. The embedded fix got
-> reverted with the feature change.
->
-> Re-add the lsr_save_flags fix and properly mark it's a fix.
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-> Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linu=
-x.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
-> Co-developed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 4998799abae2..c5e0f925f4b6 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1511,6 +1511,8 @@ static inline void __stop_tx(struct uart_8250_port =
-*p)
->                 unsigned char lsr =3D serial_in(p, UART_LSR);
->                 u64 stop_delay =3D 0;
->
-> +               p->lsr_saved_flags |=3D lsr & LSR_SAVE_FLAGS;
-> +
->                 if (!(lsr & UART_LSR_THRE))
->                         return;
->                 /*
-> --
-> 2.30.2
->
+>  drivers/clocksource/timer-npcm7xx.c | 1 +
 
+This one should no longer be needed if the timers are compatible with the
+old ones and correctly described in the DT.
 
---=20
-With Best Regards,
-Andy Shevchenko
+      Arnd
