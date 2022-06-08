@@ -2,52 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF501C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D89EC43334
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235968AbiFHKKd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S236138AbiFHKKf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235916AbiFHKJq (ORCPT
+        with ESMTP id S236099AbiFHKJs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:46 -0400
+        Wed, 8 Jun 2022 06:09:48 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233521D64D4;
-        Wed,  8 Jun 2022 02:54:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A471E5625;
+        Wed,  8 Jun 2022 02:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682099; x=1686218099;
+  t=1654682106; x=1686218106;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2XjZxocqKI/F6BP18bnSiMtmDN1Frg8bfTKfJL0h0oc=;
-  b=FLfhYLM6MncyOKMHaqI31k6erjb1mm/T1vD1VxPIrphSRAoaxspOoS9c
-   mkzAU52t+IBy/xQ6xMK6H3yiQOog+w+yE23SSPFVrt0aUcMGoTuw8AElB
-   hHl+LQRQyTDp8AykWzt7uBcpnzCLMBo8l2IoAGCiJ/de1oPL/3oQGwT6k
-   S3XywPN9VzQn2IRVvFwNiNXdBOax4kh+cq7TVGlST43MkvOwOdScJneTX
-   EWk26hqa4ef9jCE5eilq6d/b6r7D7T7VnW1uiAC8a6OxuDqo5s1OeVWOw
-   PveshcMWv04reJq+9hllYk8+a9wGgG5ykARjljfGYehI36UDGeB9FdJgY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019560"
+  bh=xGiV4Dyz188tpSDB6OSpg9bEf4JcjUiSfo0VaZJLS34=;
+  b=Qbzow1PsbZ0e13xgy3P+SkHGOeRi4ok/Ob+MyPM0wBqL4+0tMUz9c4wx
+   /atq1uoJmgiPJhRI+K3NWh+nJhDtt3PL+KE7SmSyXbzZUtFBPYkromoeu
+   b9xayTUToEiS5EQhd6BhCm2SdwgtAavhLmLMu85vFoAkp9I1jWoC4GPTQ
+   k5+PjYgkARyc5TneXQLQGo2jX+P/iTDKjCFeq8PDkL4/vKQBG3voU+QJS
+   QdrRUEVbtaQ4d9uE+7XNa6ZtCzfqbmFJLVR42p1fH1AY617ntYO23ftH+
+   dlyL1eg8DZNvgGiJX7cLVHnrHvDAE6v+OM/CZS9H8TCohyOW3U7fvg142
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019588"
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="278019560"
+   d="scan'208";a="278019588"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:56 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:55:06 -0700
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="584783515"
+   d="scan'208";a="584783619"
 Received: from bmichals-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.131])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:54 -0700
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:55:03 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org
+        <u.kleine-koenig@pengutronix.de>,
+        Joshua Scott <joshua.scott@alliedtelesis.co.nz>,
+        linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 4/6] serial: 8250: Adjust misleading LSR related comment
-Date:   Wed,  8 Jun 2022 12:54:29 +0300
-Message-Id: <20220608095431.18376-5-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v4 6/6] serial: 8250_dw: Store LSR into lsr_saved_flags in dw8250_tx_wait_empty()
+Date:   Wed,  8 Jun 2022 12:54:31 +0300
+Message-Id: <20220608095431.18376-7-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
 References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
@@ -58,44 +60,41 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-serial8250_rx_chars() has max_count based character limit. If it
-triggers, the function returns the old LSR value (and it has never
-returned only flags which were not handled). Adjust the comment to
-match behavior and warn about which flags can be depended on.
+Make sure LSR flags are preserved in dw8250_tx_wait_empty(). This
+function is called from a low-level out function and therefore cannot
+call serial_lsr_in() as it would lead to infinite recursion.
 
-I'd have moved LSR read before LSR read and used serial_lsr_in() also
-here but I came across an old discussion about the topic. That
-discussion generated commit d22f8f10683c ("serial: 8250: Fix lost rx
-state") so I left the code as it is (it works as long as the callers
-only use a subset of the LSR flags which holds true today) and changed
-the comment instead.
+It is borderline if the flags need to be saved here at all since this
+code relates to writing LCR register which usually implies no important
+characters should be arriving.
 
-Link: https://www.spinics.net/lists/linux-serial/msg16220.html
+Fixes: 914eaf935ec7 ("serial: 8250_dw: Allow TX FIFO to drain before writing to UART_LCR")
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index a0ea048eb2ad..c860f5964138 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1782,9 +1782,11 @@ void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr)
- EXPORT_SYMBOL_GPL(serial8250_read_char);
- 
- /*
-- * serial8250_rx_chars: processes according to the passed in LSR
-- * value, and returns the remaining LSR bits not handled
-- * by this Rx routine.
-+ * serial8250_rx_chars - Read characters. The first LSR value must be passed in.
-+ *
-+ * Returns LSR bits. The caller should rely only on non-Rx related LSR bits
-+ * (such as THRE) because the LSR value might come from an already consumed
-+ * character.
-  */
- unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 1fae45991812..4cc69bb612ab 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -122,12 +122,15 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
+ /* Returns once the transmitter is empty or we run out of retries */
+ static void dw8250_tx_wait_empty(struct uart_port *p)
  {
++	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned int tries = 20000;
+ 	unsigned int delay_threshold = tries - 1000;
+ 	unsigned int lsr;
+ 
+ 	while (tries--) {
+ 		lsr = readb (p->membase + (UART_LSR << p->regshift));
++		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++
+ 		if (lsr & UART_LSR_TEMT)
+ 			break;
+ 
 -- 
 2.30.2
 
