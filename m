@@ -2,100 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C849CCA47B
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 07:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F70EC43334
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 07:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbiFHHpP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 03:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S232580AbiFHH4N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 03:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237476AbiFHHhr (ORCPT
+        with ESMTP id S233022AbiFHHzZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 03:37:47 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7821A8982;
-        Tue,  7 Jun 2022 23:59:26 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id q1so39553094ejz.9;
-        Tue, 07 Jun 2022 23:59:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6L+/2EIAxea4kViaA/IdkacEwVmHWh6HS95u1xeSr+U=;
-        b=Gko/HYitHiW/i/0v4abJmnStDx9U7mqCECwOXh6r/sxKlVtox5FMWkgwz3Dr8bB+ko
-         Va8Ks2+CGIQa0gMAB0ybfI3cdFn6vzV9h0ihjwx1yLXZmFgT/MXOjEmGIjJdZdNq6/VH
-         zz7/gT5G4ctaCiw8vf3OzH31hliRk8Ju+NXpDSOL8uNHaMBzUUmpRf4pdvO/5XaGdtyL
-         hgO2Um4aCSCyNiRzUZiNDqZ5qfUQ7O4yo/jqVr1giyMaAYQ2ySFtKYq4lnPYUvBNxYY7
-         cdS9Ghi4GLQM9O/w7/YCn8sDbKeioLGfPFBNwtqNwtjcGBjdnoOr7zvgdx9+m1hOvft1
-         nkyQ==
-X-Gm-Message-State: AOAM532maShtQ6fT/5ewGeKLdbJXPIsT4i2WCSrS0PNBH68N/Suv6WxZ
-        TYL10hM4jDh1brb9M3+t9WX9qU9lWeb0bQ==
-X-Google-Smtp-Source: ABdhPJxcSMgcDfu8TlWaOXJ0PI9FIP2DBFbiPC/rOvMaoR7eLQN2qrUz87r5hG+1yt4oLohcrRFknA==
-X-Received: by 2002:a17:907:7f91:b0:6ff:c1a:2e8e with SMTP id qk17-20020a1709077f9100b006ff0c1a2e8emr28995921ejc.70.1654671564953;
-        Tue, 07 Jun 2022 23:59:24 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id nd28-20020a170907629c00b00706c50870a0sm207013ejc.194.2022.06.07.23.59.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 23:59:24 -0700 (PDT)
-Message-ID: <54049291-db20-a536-0615-cc3b56ceb3a3@kernel.org>
-Date:   Wed, 8 Jun 2022 08:59:23 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 10/36] tty/vt: consolemap: introduce UNI_*() macros
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 8 Jun 2022 03:55:25 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65B11A048A;
+        Wed,  8 Jun 2022 00:24:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654673068; x=1686209068;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=n6ZzcLPLeuptMeqjzTvwmiJodh+6qVPTBoekvS/R3Pk=;
+  b=B/41e0HX++2sRmVG/e8GUSATjv4wZQ5Mdtts7lXDOnHZwYoqWBsRkvrD
+   uSuhfzlFnOIjcilvvtiFrKWAwSqBC3vXI7J2VZ5+B/k7tv0t3HhQS+H7d
+   LIoqXX2y/8WE6IOthXOVo+as5VtPoguFj5+brLUqACyBhbLBEvgNI6F++
+   opsjKQ36WSGkTPZU21QIO0SG15ODm5w12Qmk4joN3qSBAN6LUxnbpURZC
+   fGmFfXYKhNWb9CYQO9Xhkt1MfqUch4gnL4VOQpqOcqrk/fKHGnkQyp7JA
+   UpvSYagR1KZfWnNtFeh4yIlYVr7+wm9ps/Ltx9raHbr0LF6D34YiOq9qG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="277632430"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="277632430"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:53 -0700
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="636636736"
+Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 00:23:52 -0700
+Date:   Wed, 8 Jun 2022 10:23:45 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-10-jslaby@suse.cz>
- <2e2623a0-4b9f-f15d-78e0-d6e335bdcdff@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <2e2623a0-4b9f-f15d-78e0-d6e335bdcdff@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 12/36] tty/vt: consolemap: use sizeof(*pointer) instead
+ of sizeof(type)
+In-Reply-To: <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+Message-ID: <b2df9240-2b47-6fe3-4a65-3bdfcb961e4@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-12-jslaby@suse.cz> <8c809bd0-552d-8027-a1a7-96b77369d06e@linux.intel.com> <37ced336-ac77-4c8f-1142-1f55c01383ca@suse.cz>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1026436096-1654673033=:1676"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 06. 22, 15:47, Ilpo Järvinen wrote:
-> On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> 
->> The code currently does shift, OR, and AND logic directly in the code.
->> It is not much obvious what happens there. Therefore define four macros
->> for that purpose and use them in the code. We use GENMASK() so that it
->> is clear which bits serve what purpose:
->> - UNI_GLYPH: bits  0.. 5
->> - UNI_ROW:   bits  6..10
->> - UNI_DIR:   bits 11..31
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> ---
->>   drivers/tty/vt/consolemap.c | 21 +++++++++++++--------
->>   1 file changed, 13 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->> index 016c1a0b4290..e5fd225e87bd 100644
->> --- a/drivers/tty/vt/consolemap.c
->> +++ b/drivers/tty/vt/consolemap.c
->> @@ -190,6 +190,11 @@ static int inv_translate[MAX_NR_CONSOLES];
->>   #define UNI_DIR_ROWS	32U
->>   #define UNI_ROW_GLYPHS	64U
->>   
->> +#define UNI_DIR(uni)		( (uni)                   >> 11)
->> +#define UNI_ROW(uni)		(((uni) & GENMASK(10, 6)) >>  6)
-> 
-> This is opencoding what FIELD_GET() does. Maybe just define these as
-> masks and use FIELD_GET in the code below.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Ah, great -- I was thinking there should be something for that purpose 
-already, but didn't find this. But let's define these UNI_* macros using 
-appropriate FIELD_GET(). (And not using FIELD_GET() in the code.)
+--8323329-1026436096-1654673033=:1676
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
->> +#define UNI_GLYPH(uni)		( (uni) & GENMASK( 5, 0))
-thanks,
+On Tue, 7 Jun 2022, Jiri Slaby wrote:
+
+> On 07. 06. 22, 16:00, Ilpo Järvinen wrote:
+> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> > 
+> > > It is preferred to use sizeof(*pointer) instead of sizeof(type). First,
+> > > the type of the variable can change and one needs not change the former
+> > > (unlike the latter). Second, the latter is error-prone due to (u16),
+> > > (u16 *), and (u16 **) mixture here.
+> > > 
+> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> > 
+> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > 
+> > This seems fine but see the comments below which are not directly related
+> > to the change itself.
+> > 
+> > > ---
+> > >   drivers/tty/vt/consolemap.c | 23 ++++++++++++-----------
+> > >   1 file changed, 12 insertions(+), 11 deletions(-)
+> > > 
+> > > diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> > > index 097ab7d01f8b..79a62dcca046 100644
+> > > --- a/drivers/tty/vt/consolemap.c
+> > > +++ b/drivers/tty/vt/consolemap.c
+> > > @@ -251,12 +251,12 @@ static void set_inverse_trans_unicode(struct vc_data
+> > > *conp,
+> > >   		return;
+> > >   	q = p->inverse_trans_unicode;
+> > >   	if (!q) {
+> > > -		q = p->inverse_trans_unicode =
+> > > -			kmalloc_array(MAX_GLYPH, sizeof(u16), GFP_KERNEL);
+> > > +		q = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+> > > +				sizeof(*q), GFP_KERNEL);
+> > >   		if (!q)
+> > >   			return;
+> > >   	}
+> > > -	memset(q, 0, MAX_GLYPH * sizeof(u16));
+> > > +	memset(q, 0, MAX_GLYPH * sizeof(*q));
+> > 
+> > Convert kmalloc_array into kcalloc and place memset() into else branch?
+> 
+> IMO, the way it is now is more obvious.
+
+Fair enough.
+
+> > > @@ -514,11 +514,12 @@ con_insert_unipair(struct uni_pagedict *p, u_short
+> > > unicode, u_short fontpos)
+> > >   	n = UNI_ROW(unicode);
+> > >   	p2 = p1[n];
+> > >   	if (!p2) {
+> > > -		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(u16),
+> > > GFP_KERNEL);
+> > > +		p2 = p1[n] = kmalloc_array(UNI_ROW_GLYPHS, sizeof(*p2),
+> > > +				GFP_KERNEL);
+> > >   		if (!p2)
+> > >   			return -ENOMEM;
+> > >   		/* No glyphs for the characters (yet) */
+> > > -		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(u16));
+> > > +		memset(p2, 0xff, UNI_ROW_GLYPHS * sizeof(*p2));
+> > 
+> > This could have been kcalloc'ed.
+> 
+> Why would you zero it before setting it to 0xff?
+
+Yes, nevermind that. I obviously completely missed the fact it wasn't 
+memsetting to zero.
+
 -- 
-js
-suse labs
+ i.
+
+--8323329-1026436096-1654673033=:1676--
