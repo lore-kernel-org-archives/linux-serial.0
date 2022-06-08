@@ -2,55 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FD9C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1380EC43334
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235827AbiFHKK0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        id S236366AbiFHKKb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235934AbiFHKJk (ORCPT
+        with ESMTP id S235957AbiFHKJn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:09:40 -0400
+        Wed, 8 Jun 2022 06:09:43 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B839B1D5AA1;
-        Wed,  8 Jun 2022 02:54:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540DF1D30D1
+        for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 02:54:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654682097; x=1686218097;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GeRNMr3HZUhOZVt9G+fJ5knQmLzUpmCXYoXf8y44tOw=;
-  b=kIEEuK7Pan80vXJZcuJOPUKJx1i5WI59IuQ3/7cmDI20kxqwIfIpq4lu
-   6bK8/KS0RI52eg30KvTIsvsQd7Dbj3O1z+xQaB9b9AyrfGP+Ngn8tjDTf
-   HEg5Xiiy30NlON2Z7JmpQ59AJ+QOv+se5TbqMblLA+Ciun3TwkXigQYFz
-   9/0/wK/6PLHNd8JF4EUczmwGcE8TVVAGBLBeprvS3DqenDQRYOPxhDZOQ
-   qyzPKEUWeG8NKoSkfyC+34F2DNu+/9dKXl++Rz2GL4+TwieOgsSdlLUFG
-   2LrmmjiECoF2Ndx6Br2nd77BFppx7tmFaf3FbbU+EMsI3J1JgppSFbbYF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019533"
+  t=1654682096; x=1686218096;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HaN30WmjFXq77C7E5SYx2o/YQmDl/1sd14eIJVTbEGw=;
+  b=e0JjFl6RqivjDNVUaUbBuguiKUxWpRpuXm2OqC27TZ0WtIL9Mv6F1dAA
+   fpL1mw7aySSGQdG4N9oOwuuTTFhVS4Ur6vhIGScjv09pM52EiSJ1+FsA4
+   dp02oJLcCaBLG3oxqdmJCRan5orsY9bW041+BKvEaDL3bRnaX9Qnzn8Io
+   g/3lnvaD8OQnqgnM50kHoy7hEKXTO74N5+m3rEkW/UPUPRGK5fB9baxAX
+   4L0cM2CeyTtmCtH0pw6fJyzxU6eMFG+/BMD5WZr9KO1dVGH6FA0gS4dX9
+   oPchldXcVixRFYw/EhqRj8bqiggNvqrT4kEMAWY0MAuTSUGCh3DSx6o2s
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="278019503"
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="278019533"
+   d="scan'208";a="278019503"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:49 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="584783446"
+   d="scan'208";a="584783415"
 Received: from bmichals-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.131])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:47 -0700
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:39 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v4 2/6] serial: 8250: Create serial_lsr_in()
-Date:   Wed,  8 Jun 2022 12:54:27 +0300
-Message-Id: <20220608095431.18376-3-ilpo.jarvinen@linux.intel.com>
+        <u.kleine-koenig@pengutronix.de>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v4 0/6] LSR flag preservation improvements
+Date:   Wed,  8 Jun 2022 12:54:25 +0300
+Message-Id: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
-References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,113 +55,46 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-LSR register readers need to be careful in order to not lose bits that
-are not preserved across reads. Create a helper that takes care of
-storing the non-preserved bits into lsr_save_flags.
+Improve LSR flag preservation. Not all devices preserve all LSR flags
+on read. Therefore, the non-permanent flags must be stored until
+consumed. 8250_port has handled this for some of the reads (but not
+all). Drivers not so much but it's unclear to me which of the devices
+actually clear flags on read so this series only does per driver fixes
+for DW.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
+I've just put Uwe as Co-dev-by and SoB according to Andy's suggestion
+in order to allow forward progress (Uwe indicated he's OK with any
+sensible combination of tags anyway). I agree with Uwe's position
+though that it would be nice to be able to record Acked-by in some
+(probably quite rare) cases even if the person is already SoB but I
+don't want to keep dragging this issue on and on over a single line
+patch :-).
+
+v2:
+- Added more patches
+
+v3:
+- Fix Uwe's email and convert it to Co-developed-by
+
+v4:
+- Tweak comments
+- Fix URL link to earlier discussion & improve changelog
+
+Ilpo Järvinen (6):
+  serial: 8250: Store to lsr_save_flags after lsr read
+  serial: 8250: Create serial_lsr_in()
+  serial: 8250: Get preserved flags using serial_lsr_in()
+  serial: 8250: Adjust misleading LSR related comment
+  serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()
+  serial: 8250_dw: Store LSR into lsr_saved_flags in
+    dw8250_tx_wait_empty()
+
  drivers/tty/serial/8250/8250.h      | 20 ++++++++++++++++++++
  drivers/tty/serial/8250/8250_core.c |  3 +--
- drivers/tty/serial/8250/8250_port.c | 15 ++++-----------
- 3 files changed, 25 insertions(+), 13 deletions(-)
+ drivers/tty/serial/8250/8250_dw.c   |  7 +++++--
+ drivers/tty/serial/8250/8250_port.c | 23 ++++++++++-------------
+ 4 files changed, 36 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 3d9a7e539dea..b120da57c61f 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -123,6 +123,26 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
- 	up->port.serial_out(&up->port, offset, value);
- }
- 
-+/**
-+ *	serial_lsr_in - Read LSR register and preserve flags across reads
-+ *	@up:	uart 8250 port
-+ *
-+ *	Read LSR register and handle saving non-preserved flags across reads.
-+ *	The flags that are not preserved across reads are stored into
-+ *	up->lsr_saved_flags.
-+ *
-+ *	Returns LSR value or'ed with the preserved flags (if any).
-+ */
-+static inline unsigned int serial_lsr_in(struct uart_8250_port *up)
-+{
-+	unsigned int lsr = up->lsr_saved_flags;
-+
-+	lsr |= serial_in(up, UART_LSR);
-+	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
-+
-+	return lsr;
-+}
-+
- /*
-  * For the 16C950
-  */
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 12c5e5d0ce6d..90ddc8924811 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -276,8 +276,7 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 	 * the "Diva" UART used on the management processor on many HP
- 	 * ia64 and parisc boxes.
- 	 */
--	lsr = serial_in(up, UART_LSR);
--	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+	lsr = serial_lsr_in(up);
- 	if ((iir & UART_IIR_NO_INT) && (up->ier & UART_IER_THRI) &&
- 	    (!uart_circ_empty(&up->port.state->xmit) || up->port.x_char) &&
- 	    (lsr & UART_LSR_THRE)) {
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index c5e0f925f4b6..ec5abeb638eb 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1508,11 +1508,9 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 	struct uart_8250_em485 *em485 = p->em485;
- 
- 	if (em485) {
--		unsigned char lsr = serial_in(p, UART_LSR);
-+		unsigned char lsr = serial_lsr_in(p);
- 		u64 stop_delay = 0;
- 
--		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
--
- 		if (!(lsr & UART_LSR_THRE))
- 			return;
- 		/*
-@@ -1567,10 +1565,8 @@ static inline void __start_tx(struct uart_port *port)
- 
- 	if (serial8250_set_THRI(up)) {
- 		if (up->bugs & UART_BUG_TXEN) {
--			unsigned char lsr;
-+			unsigned char lsr = serial_lsr_in(up);
- 
--			lsr = serial_in(up, UART_LSR);
--			up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
- 			if (lsr & UART_LSR_THRE)
- 				serial8250_tx_chars(up);
- 		}
-@@ -2001,8 +1997,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 	serial8250_rpm_get(up);
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	lsr = serial_port_in(port, UART_LSR);
--	up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+	lsr = serial_lsr_in(up);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
- 	serial8250_rpm_put(up);
-@@ -2078,9 +2073,7 @@ static void wait_for_lsr(struct uart_8250_port *up, int bits)
- 
- 	/* Wait up to 10ms for the character(s) to be sent. */
- 	for (;;) {
--		status = serial_in(up, UART_LSR);
--
--		up->lsr_saved_flags |= status & LSR_SAVE_FLAGS;
-+		status = serial_lsr_in(up);
- 
- 		if ((status & bits) == bits)
- 			break;
 -- 
 2.30.2
 
