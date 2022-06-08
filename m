@@ -2,98 +2,228 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EDFCCA47E
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 15:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F6EC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 18:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244451AbiFHPjy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 11:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S234400AbiFHSeI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 14:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244236AbiFHPju (ORCPT
+        with ESMTP id S234378AbiFHSeH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 11:39:50 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D522C6858
-        for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 08:39:48 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id bg6so22427153ejb.0
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jun 2022 08:39:48 -0700 (PDT)
+        Wed, 8 Jun 2022 14:34:07 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C4052B38;
+        Wed,  8 Jun 2022 11:34:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u1KDk/axUVp21+cddhdnk3LSPy6qbxF3WGn2a8z1Emg=;
-        b=FUuw+7ZM3/XXnrhhGij7vnuxOiK6TrpBZ/GHgI9xei+CGe2dYATAna7tls+lZ7pfii
-         WvErUgiHuJq5JqU6UfFNSbQJ9Bvw15qeVyFlvEyQb9ydHtbTdswChqeIRvs1iXQqQHd5
-         ZXX4rFy8gGNKqDKSUdebNORdv8iYOQNYzcUHg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u1KDk/axUVp21+cddhdnk3LSPy6qbxF3WGn2a8z1Emg=;
-        b=JUzYJaxDaZ1HPGd3b7HohT49QNXZpJ4XGY87wBOvE1BNcDaEQeLI17rCoPd/VICQVU
-         m1nat3G8yBdZS6xWRVi7Z9rhYXmcwC+sKtbLnx1LHnGwD6eX9HMUKUMSKNI+98lDq7y4
-         dPSFu1w5Wg+Infl8Qr5Hetoht1WzSbJV3fRp/rV5L2SpmvdqNnKbDCCyYRsgSsv/mf2J
-         RK9D8xm3HEJO03BiEGxSfv1KrHXocVLDQpgh5BUbO3AYAEEQ3hifrHXYC+scSKunnf2M
-         9DyXbQ9v33McupysaxDBPRWZopJOnshN+ErQOCfOIqv7bbT2XqIOvIvwJ++Nh8Vo6AQV
-         wQHA==
-X-Gm-Message-State: AOAM532Jv+wA/XEBriHoUhU78a37czrF8ihGPkeaW2kiz7AMk3cF1MFW
-        7Bz8WaI37AxNMNg5lMflhqY+VsigHFRGoVnCbHM=
-X-Google-Smtp-Source: ABdhPJyiIF08vWEjUVX1tsGs347PPidtqfIHYvHyVc0jYIVamp/E9MzSc0azIadGsBh+tAtOGQX8hA==
-X-Received: by 2002:a17:907:d0d:b0:711:d554:1c8f with SMTP id gn13-20020a1709070d0d00b00711d5541c8fmr13581069ejc.223.1654702786802;
-        Wed, 08 Jun 2022 08:39:46 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id o2-20020aa7dd42000000b0042dc460bda6sm12504928edw.18.2022.06.08.08.39.46
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 08:39:46 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id s1so5781121wra.9
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jun 2022 08:39:46 -0700 (PDT)
-X-Received: by 2002:a5d:608d:0:b0:218:3cfa:afe9 with SMTP id
- w13-20020a5d608d000000b002183cfaafe9mr17795611wrt.422.1654702785594; Wed, 08
- Jun 2022 08:39:45 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654713246; x=1686249246;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TCHgKfGL6SwdtEXF9yG6KExDLDWVpIA58RokKr10mL0=;
+  b=tVFl/y9WU73XvMSJl+kAyiqEcdNbFM2I0aLnZGKiR1NMybwApY7RR2mj
+   eg0xFHYMJEzRchym7sfhickvHicZ9TSEYNwwo1xt4u9OrobWFySWT3dFP
+   x46BZAYzzEcENg77p26TwycHjcBdO7is/3Fad3fQgu9ZhQij+lLcfu6Jx
+   0=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 08 Jun 2022 11:34:05 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 11:34:05 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 8 Jun 2022 11:34:05 -0700
+Received: from [10.216.5.137] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 8 Jun 2022
+ 11:34:01 -0700
+Message-ID: <765a170c-d335-d626-0609-7d0f3967b71d@quicinc.com>
+Date:   Thu, 9 Jun 2022 00:03:57 +0530
 MIME-Version: 1.0
-References: <1654627965-1461-1-git-send-email-quic_vnivarth@quicinc.com> <1654627965-1461-3-git-send-email-quic_vnivarth@quicinc.com>
-In-Reply-To: <1654627965-1461-3-git-send-email-quic_vnivarth@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 8 Jun 2022 08:39:31 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U1oD60yRvoZohG07Pd62ki32DCGuCrG0R6bPXM=NpY=A@mail.gmail.com>
-Message-ID: <CAD=FV=U1oD60yRvoZohG07Pd62ki32DCGuCrG0R6bPXM=NpY=A@mail.gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: qcom-geni-serial: Implement start_rx callback
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
+ get_clk_div_rate()
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>
+CC:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        quic_msavaliy@quicinc.com, Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>
+References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+ <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
+ <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
+ <ad393ad2-a247-3c61-5033-185d39b5596d@quicinc.com>
+ <CAD=FV=XD+LozhkJZp0C7RUO01T-XuqBA-SJ0EQeyvGk0CxC3JQ@mail.gmail.com>
+ <e677fd02-011f-4f4e-fa73-17dc96aea7d0@quicinc.com>
+ <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
+ <da18c508-f32e-fece-6392-e6a95f7c7968@quicinc.com>
+ <CAD=FV=Wytm9EYu=4ndN+En2AFEgPK9NjrUMbFPA_h6TwyxGCYA@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=Wytm9EYu=4ndN+En2AFEgPK9NjrUMbFPA_h6TwyxGCYA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi,
 
-On Tue, Jun 7, 2022 at 11:53 AM Vijaya Krishna Nivarthi
-<quic_vnivarth@quicinc.com> wrote:
->
-> In suspend sequence stop_rx will be performed only if implementation for
-> start_rx callback is present.
->
-> Set qcom_geni_serial_start_rx as callback for start_rx so that stop_rx is
-> performed.
->
-> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 1 +
->  1 file changed, 1 insertion(+)
 
-I think you also want a Fixes tag here, right? ...because if only the
-first patch is taken then it can actually regress Qualcomm devices.
-Thus:
+On 6/8/2022 12:55 AM, Doug Anderson wrote:
+> Hi,
+>
+> On Tue, Jun 7, 2022 at 10:40 AM Vijaya Krishna Nivarthi
+> <quic_vnivarth@quicinc.com> wrote:
+>> Hi,
+>>
+>> On 6/7/2022 1:29 AM, Doug Anderson wrote:
+>>
+>> My only concern continues to be...
+>>
+>> Given ser_clk is the final frequency that this function is going to
+>> return and best_div is going to be the clk_divider, is it ok if the
+>> divider cant divide the frequency exactly?
+>>
+>> In other words, Can this function output combinations like (402,4)
+>> (501,5) ?
+>>
+>> If ok, then we can go ahead with this patch or even previous perhaps.
+> I don't see why not. You're basically just getting a resulting clock
+> that's not an integral "Hz", right?
+>
+> So if "baud" is 9600 and sampling_rate is 16 then desired_clk is (9600
+> * 16) = 153600
+>
+> Let's imagine that we do all the math and we finally decide that our
+> best bet is with the rate 922000 and a divider of 6. That means that
+> the actual clock we'll make is 153666.67 when we _wanted_ 153600.
+> There's no reason it needs to be integral, though, and 153666.67 would
+> still be better than making 160000.
+>
+Thank you for clarification.
+>>> power?)
+>> Actually power saving was the anticipation behind returning first
+>> frequency in original patch, when we cant find exact frequency.
+> Right, except that if you just pick the first clock you find it would
+> be _wildly_ off. I guess if you really want to do this the right way,
+> you need to set a maximum tolerance and pick the first rate you find
+> that meets that tolerance. Random web search for "uart baud rate
+> tolerance" makes me believe that +/- 5% deviation is OK, but to be
+> safe you probably want something lower. Maybe 2%? So if the desired
+> clock is within 2% of a clock you can make, can you just pick that
+> one?
+Ok, 2% seems good.
+>
+>>>> Please note that we go past cases when we have an divider that can
+>>>> exactly divide the frequency(105/1, 204/2, 303/3) and end up with one
+>>>> that doesn't.
+>>> Ah, good point. Luckily that's a 1-line fix, right?
+>> Apologies, I could not figure out how.
+> Ah, sorry. Not quite 1 line, but this (untested)
+>
+>
+> freq = clk_round_rate(clk, mult);
+>
+> if (freq % desired_clk == 0) {
+>   ser_clk = freq;
+>   best_div = freq / desired_clk;
+>   break;
+> }
+>
+> candidate_div = max(1, DIV_ROUND_CLOSEST(freq, desired_clk));
+> candidate_freq = freq / candidate_div;
+> diff = abs((long)desired_clk - candidate_freq);
+> if (diff < best_diff) {
+>    best_diff = diff;
+>    ser_clk = freq;
+>    best_div = candidate_div;
+> }
 
-Fixes: c9d2325cdb92 ("serial: core: Do stop_rx in suspend path for
-console if console_suspend is disabled")
+But then once again, we would likely need 2 loops because while we are 
+ok with giving up on search for best_div on finding something within 2% 
+tolerance, we may not want to give up on exact match (freq % desired_clk 
+== 0 )
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+So how about something like this with 2 loops (more optimised than 
+previous version with 2 loops)? (untested)
+
+
+     maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+     prev = 0;
+
+     /* run through quicker loop anticipating to find an exact match */
+     for (div = 1; div <= maxdiv; div++) {
+         mult = (unsigned long long)div * desired_clk;
+         if (mult > ULONG_MAX)
+             break;
+
+         freq = clk_round_rate(clk, max((unsigned long)mult, prev+1));
+         if (!(freq % desired_clk)) {
+             *clk_div = freq / desired_clk;
+             return freq;
+         }
+
+         if (prev && prev == freq)
+             break;
+
+         prev = freq;
+     }
+
+     pr_warn("Can't find exact match frequency and divider\n");
+
+     freq = 0;
+     best_diff = ULONG_MAX;
+     prev_candidate_div = -1;
+     while (true) {
+         prev = freq;
+         freq = clk_round_rate(clk, freq+1);
+
+         if (freq == prev)
+             break; /* end of table */
+
+         candidate_div = DIV_ROUND_CLOSEST(freq, desired_clk);
+         /*
+          * Since the frequencies are increasing, previous is better
+          * if we have same divider, proceed to next in table
+          */
+         if (prev_candidate_div == candidate_div)
+             continue;
+         prev_candidate_div = candidate_div;
+
+         if (candidate_div)
+             candidate_freq = freq / candidate_div;
+         else
+             candidate_freq = freq;
+
+         diff = abs((long)desired_clk - candidate_freq);
+         if (diff < best_diff) {
+             best_diff = diff;
+             ser_clk = freq;
+             *clk_div = candidate_div;
+             if (diff * 50 < ser_clk) {
+                 two_percent_tolerance = true;
+                 break;
+             }
+         }
+     }
+
+     if (!two_percent_tolerance) {
+         pr_warn("Can't find frequency within 2 percent tolerance\n");
+     }
+
+     return ser_clk;
+}
+
+Thank you.
+
