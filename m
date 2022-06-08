@@ -2,74 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F642C433EF
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFE8C43334
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236812AbiFHKnO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S237372AbiFHKrG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236591AbiFHKnN (ORCPT
+        with ESMTP id S237400AbiFHKrF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:43:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1923BF8;
-        Wed,  8 Jun 2022 03:43:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 89EAFCE2788;
-        Wed,  8 Jun 2022 10:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7744EC34116;
-        Wed,  8 Jun 2022 10:43:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654684988;
-        bh=hIFwJKRqtr0PqOyjIt5Wcaczq5LJLzov/k92/HzuLY0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BU4C8kMyh8XB2Ct5R5cjwIoc9SSwwU5RYTNmHuohfUp//YOak3azYq13ZUgeDAfyT
-         NS9863Sqh51gg3e9brI0TcTaViz93oj2JpqAqHj52qGW/wzkOUYe4GLYpHOk53hCBa
-         Lo+tBf71RV4QW2VDEQ6MqEtVt+RcMe1hYhuSHYYM=
-Date:   Wed, 8 Jun 2022 12:43:06 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
- con_get_unimap()
-Message-ID: <YqB9OvE+5SXKXbS1@kroah.com>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-16-jslaby@suse.cz>
- <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com>
- <e9f35a26-8f5b-f585-2e8c-19690bf3c770@kernel.org>
- <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
+        Wed, 8 Jun 2022 06:47:05 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23DF1AADBB;
+        Wed,  8 Jun 2022 03:46:54 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id d14so950793eda.12;
+        Wed, 08 Jun 2022 03:46:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Kxz5ukf9NuI7QZhGGJCWt/BEcAXXCXhyATQAn1S8OfY=;
+        b=lEKWusknJIsFlBgjh/ZtAuJt7WzzdwGtj4Zes031YbUPipF8pjOgw2iYGN5WpQQtDs
+         /82k4YWJVq8swIXEaOFdpWTT6vALJv6QZT3ly3cDeHDljA1DwCvPFM3LzAZeQVcjUevs
+         FZH0AVPc9R+P3mPtAhbJ0Vw/IDVYW8mkU1VRBkEX6oGUC9VVWD6yDqGa+J6xEZIJVNd+
+         wuqkmxeNUYWEmAAV9egAYnnjA/e9YIIv91DiuLWYwRWHSik/Kqdlwow7E1+oBUiZ2dz8
+         CEAthNQatLMDp5BqFdhuLSoiLhf6um9pLYvJ/4J/fCykHyCosYfMC3DPly13lR2AqoeU
+         QZqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Kxz5ukf9NuI7QZhGGJCWt/BEcAXXCXhyATQAn1S8OfY=;
+        b=j8IsSPXtJ3CFtVJ8Qa9JVgM+3Gx6OZiF7NEJ8p3Zz11W/pDib3c3tnkwyMzJXeUiZW
+         xVPf1ypFhvV2929QEsJqzEkugk34ZKqOCLWkRpaK0TWJGKTTIlIzgFdfh50sbNevcpqG
+         6ULpWv+chi2oIwhWmfvxT5twvGnbFyxMX2GhDg8/uDMl1rXRxeb8TCT7JVJgJ4bGU3WW
+         pM70kyM12eiF2rENx72bUi+nmyywx76+vBYz6qfeniObusJWkOqclHuk0xDSpO95t31D
+         /63Xhc/IYbEYmPY8Rjcpgx+THox+uFeP1gn9zotT2KNHai3p1jwvUNVQXyrqF7I5S0SB
+         syHQ==
+X-Gm-Message-State: AOAM530HTzbSjxrsep9HVS4JOM5PpRFow5hOZmzFv2ofkngQdfChq6Xa
+        3kHIS4DZYeHtfmvaooAuJMZ7WNxP9C+k6N0a944=
+X-Google-Smtp-Source: ABdhPJxb00KVhaz+i/HhJ7kC+AwJ9qmD+KBhwD4rUhO9CXne2kPv3/FMPKggPu/znLNrvqUfRgQn1KRQWP8Pp2gL5kI=
+X-Received: by 2002:aa7:c396:0:b0:42d:8b86:a8dc with SMTP id
+ k22-20020aa7c396000000b0042d8b86a8dcmr37765076edq.54.1654685212994; Wed, 08
+ Jun 2022 03:46:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
+References: <20220608095431.18376-1-ilpo.jarvinen@linux.intel.com> <20220608095431.18376-2-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220608095431.18376-2-ilpo.jarvinen@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 8 Jun 2022 12:46:16 +0200
+Message-ID: <CAHp75Vd+6NiqLgCQkdhCX2Ai==txmxsW2DO+aS53bdsean1nPQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/6] serial: 8250: Store to lsr_save_flags after lsr read
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 12:38:49PM +0200, Andy Shevchenko wrote:
-> On Wed, Jun 8, 2022 at 10:56 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> > On 07. 06. 22, 16:19, Ilpo Järvinen wrote:
-> > > On Tue, 7 Jun 2022, Jiri Slaby wrote:
-> 
-> ...
-> 
-> > > Doesn't this fix something?
-> >
-> > If you mean a Fixes tag, this is pre-git.
-> 
-> You may use history.git [1] for pregit SHAs.
-> 
-> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/
+On Wed, Jun 8, 2022 at 12:44 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> Not all LSR register flags are preserved across reads. Therefore, LSR
+> readers must store the non-preserved bits into lsr_save_flags.
+>
+> This fix was initially mixed into feature commit f6f586102add ("serial:
+> 8250: Handle UART without interrupt on TEMT using em485"). However,
+> that feature change had a flaw and it was reverted to make room for
+> simpler approach providing the same feature. The embedded fix got
+> reverted with the feature change.
+>
+> Re-add the lsr_save_flags fix and properly mark it's a fix.
 
-Please don't, it just does not matter.
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-thanks,
+> Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+> Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linu=
+x.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
+> Co-developed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 4998799abae2..c5e0f925f4b6 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -1511,6 +1511,8 @@ static inline void __stop_tx(struct uart_8250_port =
+*p)
+>                 unsigned char lsr =3D serial_in(p, UART_LSR);
+>                 u64 stop_delay =3D 0;
+>
+> +               p->lsr_saved_flags |=3D lsr & LSR_SAVE_FLAGS;
+> +
+>                 if (!(lsr & UART_LSR_THRE))
+>                         return;
+>                 /*
+> --
+> 2.30.2
+>
 
-greg k-h
+
+--=20
+With Best Regards,
+Andy Shevchenko
