@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D731CCA47F
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 12:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 780C9CCA47E
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 13:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238351AbiFHMBD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 08:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S240005AbiFHNIu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 09:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiFHMBC (ORCPT
+        with ESMTP id S239923AbiFHNIt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 08:01:02 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59915C888;
-        Wed,  8 Jun 2022 05:01:00 -0700 (PDT)
-Received: from mail-ot1-f45.google.com ([209.85.210.45]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mf0Jg-1nWjHU3Kck-00gZ9B; Wed, 08 Jun 2022 14:00:59 +0200
-Received: by mail-ot1-f45.google.com with SMTP id y16-20020a9d5190000000b0060c1292a5b9so1986959otg.3;
-        Wed, 08 Jun 2022 05:00:58 -0700 (PDT)
-X-Gm-Message-State: AOAM533i8sFw0DRQnT7qY1cZnfXRnBzcjCpnQv96WS+A+V4f/W0aKYlX
-        dg+cjTFKixlRP4VoLDIg6bbUcaGqWZA3w/ah2YY=
-X-Google-Smtp-Source: ABdhPJzpBRQHOrOjRCxL6NgH9iKMT4129LgubmWT2Bck+iPxdLoQ6gKC8EUoy0gPKu/hz3e4skCIDgwhp1qkekViG9Y=
-X-Received: by 2002:a81:190f:0:b0:313:43b8:155c with SMTP id
- 15-20020a81190f000000b0031343b8155cmr7988991ywz.495.1654689646278; Wed, 08
- Jun 2022 05:00:46 -0700 (PDT)
+        Wed, 8 Jun 2022 09:08:49 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC3525BFA4;
+        Wed,  8 Jun 2022 06:08:48 -0700 (PDT)
+Received: from mail-yb1-f180.google.com ([209.85.219.180]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MXGSU-1oG2q01o7C-00YfIY; Wed, 08 Jun 2022 15:08:46 +0200
+Received: by mail-yb1-f180.google.com with SMTP id w2so36420406ybi.7;
+        Wed, 08 Jun 2022 06:08:45 -0700 (PDT)
+X-Gm-Message-State: AOAM533ZETNMkz5kNb8uj6zF3dcDVXFL3w0SnsqoL3TDjybL+jWOeF73
+        yX0rqwjJzK+rsy8o8/S3rrWnBo4D2FJMad+zVcs=
+X-Google-Smtp-Source: ABdhPJyPAr6agm+ybv42a6+IQG9YtkbGrrN61pdQKlRReOgHwkoxQctAgFm4ahpz9ijG+yWaGNlDD7K9UznYhi7Yq18=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr34051688ybx.472.1654689712767; Wed, 08
+ Jun 2022 05:01:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-2-tmaimon77@gmail.com>
-In-Reply-To: <20220608095623.22327-2-tmaimon77@gmail.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-6-tmaimon77@gmail.com>
+In-Reply-To: <20220608095623.22327-6-tmaimon77@gmail.com>
 From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 8 Jun 2022 14:00:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0mHk80oN_uLSif7wSY7x1ZN3bUkfz2xkdqmkxTqqXjeg@mail.gmail.com>
-Message-ID: <CAK8P3a0mHk80oN_uLSif7wSY7x1ZN3bUkfz2xkdqmkxTqqXjeg@mail.gmail.com>
-Subject: Re: [PATCH v2 01/20] clocksource: timer-npcm7xx: Add NPCM845 timer
+Date:   Wed, 8 Jun 2022 14:01:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+Message-ID: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+Subject: Re: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
 To:     Tomer Maimon <tmaimon77@gmail.com>
 Cc:     Avi Fishman <avifishman70@gmail.com>,
         Tali Perry <tali.perry1@gmail.com>,
@@ -72,36 +72,34 @@ Cc:     Avi Fishman <avifishman70@gmail.com>,
         LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:fpV+MFHVMv+0qZsZKGS/bEt/xhfSvy85PA/AFG7pA5pz/Mm0ReK
- 1ulAyq86BrsIMPTYf3AGZiTGzcBdl/7sFjvMGjccovyst8Z4hwHQDwHuPsfLfTKLbbuXjKM
- obYG92npLl/v2iPVClyPLK3gmczkZgMh3geLYY3rhu9TC9CATvT54bfWeLbUOTms1kHYYYF
- iJkgb7teeMxd2VBAQZSlw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dLM3wY8LwP4=:JVyRRfBpXk4DUqhq96euV6
- EUKFs+4BMnFBFjJieQWYWRixotk7ZGBxJa3mcoaVWdmNE532ibuqQsX9in+LLwDa2PjOtxQEt
- ujKnlfIXn+0izewupSxWESUNkXG9lXS9iYbRUBofZTOefz32tPBOUb6yzNVRrSeIv2VloMaGA
- 5t+pSl5CqRv9O9eVVTn7yjEpUCLuSlHovHNmEXJnY0DsLhDxxA1VHwW+HZHkzfnRJ5ffUfX74
- QMVThzj/j1FbMu3+7vlGcdpKm/pRy8aU0tZpFmDv217od6jNyPYe7loi+18BwyjlM8Ezazj6Y
- Sd3dTQTj6YPJf+WOu5z0TGizrTMP/wnNjwb/ttTSpnO39jBuoE0ZLNFpGqlbRK5a/beib6hlh
- Vj4REmF3XUM+Ot9psGqi0B/s7OvCVUUIdDWsLj7HmNiTnXkXfy7hLx6wusuGoagKmvsjquNqo
- hsli+dS8umasDQ3oYWdQDyZK93ZcbTpfmYme55li3iD5bg5eKN4ex9yLN2UOJYMs2LYo4BCwJ
- DmbNHEWliMrZzu6GjbCGJf/wbnR1LJBXxvmVWOFr8n1+ZMKm1rUFWtOkqdakc18Id9Mj0j/nC
- twVhTu6OfXvUjYdKYzdqP0l3LPG0+cPf8Q1v5/NC+Lv6xYT+9bIKYYP6J7hAMRa+pQ9Wl4XV+
- 6xNOtr8AcDlVNn6HTkFpF5fIDFpega5mupRxt2OwLj3aKKIMuinHmgjBe95fD7lpbIIWj0qt4
- mhcugyqB/Bfej1POBdHgy8xQLnEEESgnd6EXbtodbwYAjPZpxIKZuJq+T+ujANvFG5xn1TfpP
- vexk/SPerAaC27CfYcTOXS455w0SQZDy6msSSgD1chQUKBk8xEanlxXm0ENoJVG2kW+rV5CrD
- e3xIbQuwezxwxRhugxlQ==
+X-Provags-ID: V03:K1:huBQqQStfZDdfCBwbAntxePlQBHuJuWlkIZEOXlTP+7cMnlLO25
+ QAMIlVpdSccZ+G82I6yJyjCmLa3Gor2QBmUiUbyGtKXR39UkX9fPoGaOd6/vDT8lnHbdvf4
+ mSzK14ChIv50ilSFpQnhD7AswcFgckpo9rc2LK/sNviu9hIysCmaTop7LsDHvPNP/sJcg9P
+ cdkVF8Dgnx7FPfPsrjZnw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:I6qJE0q2QEA=:+coisMcRzU0apWjkEGabQB
+ OXvLYzXe3ZFAsN4DYqYQ57hM7KO1LdLWX/fU46tcnZK28u844j3gs3dDH5QpHgV8UMfAYZbvE
+ dlLzDMlp1y3i3k6Jg+UozDM2BfTm5uh2nZP/fiYY+5NeygDL8d6FMVKsmC6bep0FiamkDb4It
+ lfvgx04Ol/eSVlnzLJH2INyccaCFugYJ2MBlgoBjQuqncmgtFccVfzQJAM51UJOVgjlEKF7nV
+ NYy4Eva43/bkI3tZ8d6wA+tTyMVg4k15vGQiUTTLdc/OfjNIycoylysgio3xi3KQsHd3BXd06
+ IAJZ8DqfHrOf727g7jyfIlVffJiq4glNRokD2Xa9gktgrcVkVEz25Uu8u0vqzRkJ4lN2C8QjF
+ xzFmHQ+GAr+hPaC6B5SiwMKL6ryrACKuZ79slKebmc9oPU6pGYvqUOtqAg3epHB830q0ZTfMT
+ S2GfXnq1e5uueX0NHHH347ulpsnyprWUbz7iFpNf1ZiBJtzuBOVsvvrkwBvAF/oPAUM/enIAQ
+ EbLR545Y0F2f3uUA/ya/bHbdHxz9yY6fnvbSaU22H9BJYAyAbRZF0f77LNb0odlzyG0fJ8hCI
+ eFFdwNLx7uRyhcrdhewGTthUYDcSucBB/5vr0zc2IqRP6N+MQ8J7SCOmQs0A6/v8gZILHy//x
+ e/AGcsKdxjqKlElhU8P7KgkKh+1K3MU/e/4nn6irGFwAvWNzlL0b4QkcU+horeTvP1I1y8orB
+ sxUNiJ/rX+6i9Siwjx6o3DMeWDZ7KkbJpp95KQ3euz1MxuqpbqZrZTomz+wHhH7zkpQottSau
+ 4Wu+Ulb2EgeHc75UyLlzGMVkwbs14x/J8OzRioWbhD0+aIp7IGeoAxlmQJAlCiBu5nzl58/1d
+ Lq6egdyK1iDCGFoVrTm5ZV6DKjGEJRHfM2QeYYpeY=
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
 >
-> Add Nuvoton BMC NPCM845 timer support.
-> The NPCM845 uses the same timer controller as the NPCM750.
+> Add Nuvoton BMC NPCM845 watchdog support.
+> The NPCM845 uses the same watchdog as the NPCM750.
 >
 > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  drivers/clocksource/timer-npcm7xx.c | 1 +
 
 This one should no longer be needed if the timers are compatible with the
 old ones and correctly described in the DT.
