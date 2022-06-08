@@ -2,220 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42662CCA47E
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 193CBCCA47B
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237195AbiFHKak (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        id S237222AbiFHKal (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238141AbiFHK3x (ORCPT
+        with ESMTP id S238214AbiFHK35 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:29:53 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15889192C42
-        for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 03:21:58 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id o7so7218140eja.1
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jun 2022 03:21:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+bPvkCIqs6A3Lw8cRRemx4/EkW0G1asPn8kHboHtVJY=;
-        b=wDIlVKTWdiWhZ8wBWJY6cKiaQFw8rDj207bvbTp/h11ey3tP6nET1Ax/CdHjZfLIEV
-         bWnJx67yUwmZnAjjjd5Pnmh8VhMfnKk9ZGg+xoCyY9GLA3nn7mGO8lVMAqq0oiDn/3Gb
-         RdEmlcoDLk/NATza/gALLbwlAadFQrZRy9MfXKJk8j2q4AuOEEZ+zY7bealsPyXM8b4Y
-         ih+WRBDp4jQzRDyApQ0uO+L54w+TGVWPyUYM9CH3Ot8Y/Q0bHkVx4jxyiDXFnpuvcBiT
-         7waY/rXX63WmY9xsunaYaDRWKXRiJMMbWedZPkAKAn6m/lwDnhiKftwSsfbgmiXgBvuN
-         pGIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+bPvkCIqs6A3Lw8cRRemx4/EkW0G1asPn8kHboHtVJY=;
-        b=jh6BMiddVLs8C62IZXWrwtJr4rwx6wMV9JMM+PO7lOKCyjm3Ff1r0Eiol+5Y4WfBjA
-         sVCXb849FR7nBxnBXRBv0c2nyuq8XwFHK5Isb6LcIu8N940KIdNAJuCsYWM+CQM7Fkdo
-         sGqvw6suRZyQObN9IJFvXSrDgSi4Abg8R11grtV8mPUkq7D9d2xKZ/iwFkSoihBqDFg4
-         ATfIj2zZZ64xOQsV+Gmqe9QeWml6dYgMSvCPpR8TFXn68Bu8B7g5/W+r1y6pXfR4eQVS
-         Qyc4rzdk/Oeo63ZqG4prYkAPUjBVJKi5T2eXiOVvck6BDELCYCiTPi1e4aBrifxCeVu3
-         4gNg==
-X-Gm-Message-State: AOAM531FlRPYqFODtoAIvCLhcF2hHX0mKY/D6czEGkUQz3vxzUkq79QS
-        gCYRu6+2dc3wI26Le/mUARec+Q==
-X-Google-Smtp-Source: ABdhPJw4saSPhMUohzNzjdscZN0KDbM9WKgE0UI3Y2mk91NtDGFQsXLJsTcltgv6Da2VMwekYNeMFA==
-X-Received: by 2002:a17:906:8416:b0:705:6a1b:e8ef with SMTP id n22-20020a170906841600b007056a1be8efmr30244309ejx.614.1654683716491;
-        Wed, 08 Jun 2022 03:21:56 -0700 (PDT)
-Received: from [192.168.0.191] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g3-20020aa7dd83000000b0042bc5a536edsm11883683edv.28.2022.06.08.03.21.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 03:21:55 -0700 (PDT)
-Message-ID: <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org>
-Date:   Wed, 8 Jun 2022 12:21:54 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device
- tree
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+        Wed, 8 Jun 2022 06:29:57 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E34613CA3C;
+        Wed,  8 Jun 2022 03:22:10 -0700 (PDT)
+Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 34AFD1C811A1;
+        Wed,  8 Jun 2022 17:56:34 +0800 (CST)
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS01.nuvoton.com
+ (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 8 Jun 2022
+ 17:56:33 +0800
+Received: from taln60.nuvoton.com (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Wed, 8 Jun 2022 17:56:33 +0800
+Received: by taln60.nuvoton.com (Postfix, from userid 10070)
+        id 1292362EFD; Wed,  8 Jun 2022 12:56:33 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
+Date:   Wed, 8 Jun 2022 12:56:08 +0300
+Message-ID: <20220608095623.22327-6-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220608095623.22327-1-tmaimon77@gmail.com>
 References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-19-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220608095623.22327-19-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08/06/2022 11:56, Tomer Maimon wrote:
-> This adds initial device tree support for the
-> Nuvoton NPCM845 Board Management controller (BMC) SoC family.
-> 
-> The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
-> have various peripheral IPs.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  arch/arm64/boot/dts/Makefile                  |   1 +
->  .../dts/nuvoton/nuvoton-common-npcm8xx.dtsi   | 197 ++++++++++++++++++
->  .../boot/dts/nuvoton/nuvoton-npcm845.dtsi     |  76 +++++++
->  3 files changed, 274 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
->  create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-> index 1ba04e31a438..7b107fa7414b 100644
-> --- a/arch/arm64/boot/dts/Makefile
-> +++ b/arch/arm64/boot/dts/Makefile
-> @@ -19,6 +19,7 @@ subdir-y += lg
->  subdir-y += marvell
->  subdir-y += mediatek
->  subdir-y += microchip
-> +subdir-y += nuvoton
->  subdir-y += nvidia
->  subdir-y += qcom
->  subdir-y += realtek
-> diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-> new file mode 100644
-> index 000000000000..97e108c50760
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-> @@ -0,0 +1,197 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
-> +
-> +#include <dt-bindings/clock/nuvoton,npcm8xx-clock.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +/ {
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +	interrupt-parent = <&gic>;
-> +
-> +	/* external reference clock */
-> +	clk_refclk: clk-refclk {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <25000000>;
+Add Nuvoton BMC NPCM845 watchdog support.
+The NPCM845 uses the same watchdog as the NPCM750.
 
-Ignored comment.
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+---
+ drivers/watchdog/npcm_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +		clock-output-names = "refclk";
-> +	};
-> +
-> +	/* external reference clock for cpu. float in normal operation */
-> +	clk_sysbypck: clk-sysbypck {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <1000000000>;
+diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
+index 28a24caa2627..0b91a3fbec09 100644
+--- a/drivers/watchdog/npcm_wdt.c
++++ b/drivers/watchdog/npcm_wdt.c
+@@ -231,6 +231,7 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+ static const struct of_device_id npcm_wdt_match[] = {
+ 	{.compatible = "nuvoton,wpcm450-wdt"},
+ 	{.compatible = "nuvoton,npcm750-wdt"},
++	{.compatible = "nuvoton,npcm845-wdt"},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, npcm_wdt_match);
+-- 
+2.33.0
 
-Ignored comment.
-
-> +		clock-output-names = "sysbypck";
-> +	};
-> +
-> +	/* external reference clock for MC. float in normal operation */
-> +	clk_mcbypck: clk-mcbypck {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <1050000000>;
-> +		clock-output-names = "mcbypck";
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		interrupt-parent = <&gic>;
-> +		ranges;
-> +
-> +		gcr: gcr@f0800000 {
-
-Ignored comment.
-
-> +			compatible = "nuvoton,npcm845-gcr", "syscon",
-> +				"simple-mfd";
-
-This is not a simple-mfd... I see original bindings defined it that way,
-but why? I think they should be corrected - remove simple-mfd from the
-bindings and DTS.
-
-
-> +			reg = <0x0 0xf0800000 0x0 0x1000>;
-> +		};
-> +
-> +		gic: interrupt-controller@dfff9000 {
-> +			compatible = "arm,gic-400";
-> +			reg = <0x0 0xdfff9000 0x0 0x1000>,
-> +			      <0x0 0xdfffa000 0x0 0x2000>,
-> +			      <0x0 0xdfffc000 0x0 0x2000>,
-> +			      <0x0 0xdfffe000 0x0 0x2000>;
-> +			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-> +			#interrupt-cells = <3>;
-> +			interrupt-controller;
-> +			#address-cells = <0>;
-> +			ppi-partitions {
-> +				ppi_cluster0: interrupt-partition-0 {
-> +					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-> +				};
-> +			};
-> +		};
-> +	};
-> +
-> +	ahb {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		interrupt-parent = <&gic>;
-> +		ranges;
-> +
-> +		rstc: rstc@f0801000 {
-
-Ignored comment.
-
-Four comments from v1 ignored in this patch alone.
-
-I'll stop reviewing, it is a waste of my time.
-
-NAK for this change.
-
-Best regards,
-Krzysztof
