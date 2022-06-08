@@ -2,58 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCFAC43334
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 09:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21932C43334
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235055AbiFHJXK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 05:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S236061AbiFHKJr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234779AbiFHJWb (ORCPT
+        with ESMTP id S236991AbiFHKJ3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 05:22:31 -0400
-X-Greylist: delayed 2204 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 01:43:19 PDT
-Received: from mail.puregrowthonline.pl (mail.puregrowthonline.pl [51.38.124.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CFC2898F
-        for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 01:43:18 -0700 (PDT)
-Received: by mail.puregrowthonline.pl (Postfix, from userid 1002)
-        id C79C9A2B59; Wed,  8 Jun 2022 08:05:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puregrowthonline.pl;
-        s=mail; t=1654675561;
-        bh=CSKXLMgcdpWkXuTgJn5+jsCVobtU9JEF4vCnS5z6McM=;
-        h=Date:From:To:Subject:From;
-        b=WFb9TVddyBORB2lm5a2s6yQrf2dM4s8ZhN8WJMqn6n+k2Lulv5RlWFU3TcBaYrbWv
-         bzLc0V1BxSNwh9MYejjClcalPgjtYrzYGlf1CV78F7dt1CVExHNjGNOFKE8SPNjIP4
-         DisxNDsHTVPuDjxkqXN6zVPLdOMI1KoxXGL5vg9hO4wBlRmnsVutwwOfdGMkoxNdnt
-         eeXvaJc0JUfpgiUUi7CJLJffGicbp2PJU97XOYPU/b9i0uA4Na398S3c6Cpx1KK5R8
-         bpIWXT49jIHHsz3uW6s8bLuuYkRWxgyQhgw/2WjIMZ2d+nvwQgrZD8Wja/NhiblXJe
-         AO49yZhSu8wiQ==
-Received: by mail.puregrowthonline.pl for <linux-serial@vger.kernel.org>; Wed,  8 Jun 2022 08:05:19 GMT
-Message-ID: <20220608064500-0.1.41.cy4e.0.ok8qbkqvno@puregrowthonline.pl>
-Date:   Wed,  8 Jun 2022 08:05:19 GMT
-From:   "Wiktor Nurek" <wiktor.nurek@puregrowthonline.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: =?UTF-8?Q?Nap=C5=82yw_Klient=C3=B3w_ze_strony?=
-X-Mailer: mail.puregrowthonline.pl
+        Wed, 8 Jun 2022 06:09:29 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C356FA3B;
+        Wed,  8 Jun 2022 02:54:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654682045; x=1686218045;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=Cd8pbVH0sEmGPZUUgfp1h3i8osc5+Du509bEtizTrWg=;
+  b=C6Vcdb/fAd1MkkkHeMs5rlUzdUA//45Ev6PFlA1XtAg+l4swdsR7fn0Z
+   vNIifRFcf/pInw/bhcKXBGRa/Uu+Icz9t20PhndfYZ5GbjHmwg1s/Mcpf
+   8CEAQBPAp+VoUQeWEl+6Tkh2R5KQQYx4QUTw5AFVJ7QfOH499Gxv8EccA
+   FrrpZqrK3UH65JZbmX4nxhf3a/O/hj3oCPEnNzAFFLo7zz2B710Owt/vs
+   va502N7B0MlXdVYVk4HuhEVTSrGnWQXuLNXcl45F+bGqJBQ+oerRQ7bgh
+   L5GMnLP7YzAu3Z4SwrBf7USpd9U4gSkFSIBr5RAEpYPqznsFe+tdbNuNJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="276866313"
+X-IronPort-AV: E=Sophos;i="5.91,285,1647327600"; 
+   d="scan'208";a="276866313"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="636721443"
+Received: from bmichals-mobl.ger.corp.intel.com ([10.252.57.131])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 02:54:03 -0700
+Date:   Wed, 8 Jun 2022 12:54:01 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 03/36] tty/vt: consolemap: define UNI_* macros for
+ constants
+In-Reply-To: <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
+Message-ID: <dd7830f1-be51-29a-b77-64a5f4c34a6a@linux.intel.com>
+References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-3-jslaby@suse.cz> <59e0ae93-c7b-2087-75f8-4da0de918250@linux.intel.com> <ab9bf4c2-48ed-1a14-9788-8a1672e29849@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; BOUNDARY="8323329-1421660256-1654678483=:1676"
+Content-ID: <9d3b502f-879d-19b7-99db-1cce7bf934c@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-chcia=C5=82bym poinformowa=C4=87 Pa=C5=84stwa o mo=C5=BCliwo=C5=9Bci pozy=
-skania nowych zlece=C5=84 ze strony www.
+--8323329-1421660256-1654678483=:1676
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <94ebc639-5988-436d-3f10-ca604d4f30eb@linux.intel.com>
 
-Widzimy zainteresowanie potencjalnych Klient=C3=B3w Pa=C5=84stwa firm=C4=85=
-, dlatego ch=C4=99tnie pomo=C5=BCemy Pa=C5=84stwu dotrze=C4=87 z ofert=C4=
-=85 do wi=C4=99kszego grona odbiorc=C3=B3w poprzez efektywne metody pozyc=
-jonowania strony w Google.
+On Wed, 8 Jun 2022, Jiri Slaby wrote:
 
-Czy m=C3=B3g=C5=82bym liczy=C4=87 na kontakt zwrotny?
+> On 07. 06. 22, 15:21, Ilpo Järvinen wrote:
+> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> > 
+> > > The code uses constants for sizes of dictionary substructures on many
+> > > places. Define 3 macros and use them in the code, so that loop bounds,
+> > > local variables and the dictionary always match. (And the loop bounds
+> > > are obvious now too.)
+> > > 
+> > > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> > 
+> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > 
+> > > -			for (k = 0; k < 64; k++) {
+> > > +			for (k = 0; k < UNI_ROW_GLYPHS; k++) {
+> > >   				glyph = p2[k];
+> > >   				if (glyph >= 0 && glyph < MAX_GLYPH
+> > >   					       && q[glyph] < 32)
+> > 
+> > Probably unrelated to this change but what's that < 32? It seems to appear
+> > twice related to the inverse mapping (and you didn't end up naming it).
+> 
+> That's ascii C0 test _IMO_.
 
+Ok, that's what I though it must be. But then this code seems even more 
+odd to me, why it sets the inverse again but only if it's a control 
+character...
 
-Pozdrawiam serdecznie,
-Wiktor Nurek
+Maybe this gives some hint why but it's unintelligible to me:
+			/* prefer '-' above SHY etc. */
+Both that quoted - and soft hyphen (SHY) are >= 32. So it kind of matches 
+to what the if does, but it completely fails to explain why preference is 
+the different way around with the control chars.
+
+Btw, for set_inverse_transl(), q -> inv rename would still be useful on 
+top of the other variable renames.
+
+-- 
+ i.
+--8323329-1421660256-1654678483=:1676--
