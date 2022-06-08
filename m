@@ -2,82 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E5A9C43334
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F642C433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Jun 2022 10:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbiFHKjj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Jun 2022 06:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        id S236812AbiFHKnO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 8 Jun 2022 06:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238391AbiFHKj3 (ORCPT
+        with ESMTP id S236591AbiFHKnN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Jun 2022 06:39:29 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DA222C467;
-        Wed,  8 Jun 2022 03:39:28 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id c2so26455754edf.5;
-        Wed, 08 Jun 2022 03:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=AflYLC9Cqj0Sh7IAAdBilAnuAv8TaAYj4Q3b9HGi3LI=;
-        b=j80tuK+ahAaKf2tOnjexak08mW2qPcSawqmqvdmh+AR+svs/ocLKqPxSN8BoX6dDHq
-         93ky+2yLNg6R0jRT9oYrITbukQBudgVPuUQ8ag9dJc/JXXhX2rCDoJRCnigmAsvNN1CH
-         MQkYtRtpkk7nAjy2SOQZrK4I1kot9x5ahABLvvhbuHFauZD6hbDZ6d+fOPh6kvktILIp
-         eUysQSMsfgpKiLhhJW4Fs7chnLhbUhVDSgh2Zx11L41LsHJ4g7BhDF1/+v/mm9OK9l4V
-         WKy5dkR7hBvo35NUv5Q9xZL6fU0p47buYzKSmrF0W46Pv/XAUCpBXiRlNBp/CPbhJXJ5
-         +AoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AflYLC9Cqj0Sh7IAAdBilAnuAv8TaAYj4Q3b9HGi3LI=;
-        b=of2+3tFH05YgDrR65xNw7aTcbHzqJdREsSncrL4LHDjwQDnCykCTFGp11YTkbJWrgQ
-         FSlNQgs5ExXplw4CEPT4IiJNwsvLpwUgscAdb9HWUVTIGR+cRwsn1ELW3m097vnldo3L
-         E+eAbuijRVsdKoHqBd6GirhQO8NVsJgBkdbp5obxqHLpAY77G3IsHPn45xx3f7OOjufr
-         JwGarQhR7JSgZ9CZtxxID/3ttjGogkIToquiLp/1uuotCDoqmKN7Kkju3+hrDMd936if
-         6uaYbdl8ygkMKzZMXmzXMHHRvoT6PPcSFEGcRykgFy/WDVq8B3mFYf7sfvynCgO84out
-         nODw==
-X-Gm-Message-State: AOAM532ybEPDyoYRdm7jfNiJy1lT9UOsXRz3gEwF0BqPlzRf567DsG5g
-        gDDan6j6WDAwkwymSv2OTeHIXgcIdObUN8zhMWw=
-X-Google-Smtp-Source: ABdhPJz2XGURaDipUizHRf/IKPdud1SXAXIGH0SRdGA8M/4H7Tuqy/0lPrVk9C7d7d+wAy+2tc9EIjvnrFHnWXMcu4k=
-X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
- b1-20020aa7d481000000b0042dd5fdf963mr38552340edr.209.1654684766428; Wed, 08
- Jun 2022 03:39:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607104946.18710-1-jslaby@suse.cz> <20220607104946.18710-16-jslaby@suse.cz>
- <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com> <e9f35a26-8f5b-f585-2e8c-19690bf3c770@kernel.org>
-In-Reply-To: <e9f35a26-8f5b-f585-2e8c-19690bf3c770@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 8 Jun 2022 12:38:49 +0200
-Message-ID: <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
-Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in con_get_unimap()
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 8 Jun 2022 06:43:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1923BF8;
+        Wed,  8 Jun 2022 03:43:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89EAFCE2788;
+        Wed,  8 Jun 2022 10:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7744EC34116;
+        Wed,  8 Jun 2022 10:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654684988;
+        bh=hIFwJKRqtr0PqOyjIt5Wcaczq5LJLzov/k92/HzuLY0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BU4C8kMyh8XB2Ct5R5cjwIoc9SSwwU5RYTNmHuohfUp//YOak3azYq13ZUgeDAfyT
+         NS9863Sqh51gg3e9brI0TcTaViz93oj2JpqAqHj52qGW/wzkOUYe4GLYpHOk53hCBa
+         Lo+tBf71RV4QW2VDEQ6MqEtVt+RcMe1hYhuSHYYM=
+Date:   Wed, 8 Jun 2022 12:43:06 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+Message-ID: <YqB9OvE+5SXKXbS1@kroah.com>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-16-jslaby@suse.cz>
+ <8ad44d3b-449f-4a30-1a4c-dffd43bbbd1@linux.intel.com>
+ <e9f35a26-8f5b-f585-2e8c-19690bf3c770@kernel.org>
+ <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VfPi=BMzw4x2tTv2S5Wa0y6vvB3HUY6GyF3t_ddg_YUGA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 10:56 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> On 07. 06. 22, 16:19, Ilpo J=C3=A4rvinen wrote:
-> > On Tue, 7 Jun 2022, Jiri Slaby wrote:
+On Wed, Jun 08, 2022 at 12:38:49PM +0200, Andy Shevchenko wrote:
+> On Wed, Jun 8, 2022 at 10:56 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 07. 06. 22, 16:19, Ilpo Järvinen wrote:
+> > > On Tue, 7 Jun 2022, Jiri Slaby wrote:
+> 
+> ...
+> 
+> > > Doesn't this fix something?
+> >
+> > If you mean a Fixes tag, this is pre-git.
+> 
+> You may use history.git [1] for pregit SHAs.
+> 
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/
 
-...
+Please don't, it just does not matter.
 
-> > Doesn't this fix something?
->
-> If you mean a Fixes tag, this is pre-git.
+thanks,
 
-You may use history.git [1] for pregit SHAs.
-
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/
-
---=20
-With Best Regards,
-Andy Shevchenko
+greg k-h
