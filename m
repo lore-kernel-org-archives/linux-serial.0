@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 182F9C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 17:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7A5C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 18:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245686AbiFIRsp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S241582AbiFISIa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Jun 2022 14:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245571AbiFIRso (ORCPT
+        with ESMTP id S1345230AbiFISI2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:48:44 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65D02A3066;
-        Thu,  9 Jun 2022 10:48:35 -0700 (PDT)
+        Thu, 9 Jun 2022 14:08:28 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8EB194BFC;
+        Thu,  9 Jun 2022 11:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654796920; x=1686332920;
+  t=1654798102; x=1686334102;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Y0YWfsoXm8MyZJdKzimfLr0Dx1X/zqHi53vcs1gWGYo=;
-  b=fS/0UExbqyuIHRHjrV0L9hjCWrw+kRhXUpBWqJYZPNnOS6l3SvwX9EE1
-   odPAG4VVRvFBejAvHBGOYeFOEiNrQnNhn7srHgfAUYbFNcljbRPUwWvbl
-   dqAQifWNiSgGBe8PdL1NS/r6oqto8/CJDRE7l8WKF6kr/ndncAGtQhujh
-   s=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 09 Jun 2022 10:48:35 -0700
+  bh=RlBNIvoycybee5OdSn9wESzBDW5U1rv7sgD4z0EOSQo=;
+  b=WrJocN5G+JzbP1cE6y7MBSahzUVNDWubHp1pd58D4WXytIWs0uTROH9+
+   ezzjNjIZwQAPfddnhRU7ZuB4e48/nnD7kZPDmCVtnO6MoMteif6Mql1UP
+   Sx1wgXgPC75suURTrvduCLImr46Q4EQPr2LkG9b9LaooI3s1txdYgUO7L
+   M=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Jun 2022 11:08:20 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:48:34 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 11:08:20 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 9 Jun 2022 10:48:20 -0700
+ 15.2.986.22; Thu, 9 Jun 2022 11:08:19 -0700
 Received: from [10.216.5.137] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
- 10:48:16 -0700
-Message-ID: <95ea79d2-2059-a559-4b5a-d13a3d26ba2e@quicinc.com>
-Date:   Thu, 9 Jun 2022 23:18:11 +0530
+ 11:08:15 -0700
+Message-ID: <349a6a9b-28a9-e859-0db2-d216553d8ad5@quicinc.com>
+Date:   Thu, 9 Jun 2022 23:38:12 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
@@ -81,6 +81,8 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi,
 
+Re-sending as my earlier message bounced.
+
 
 On 6/9/2022 4:07 AM, Doug Anderson wrote:
 > Hi,
@@ -95,7 +97,52 @@ On 6/9/2022 4:07 AM, Doug Anderson wrote:
 >>>
 >>> On Tue, Jun 7, 2022 at 10:40 AM Vijaya Krishna Nivarthi
 >>> <quic_vnivarth@quicinc.com> wrote:
->>> Ah, sorry. Not quite 1 line, but this (untested) 
+>>>> Hi,
+>>>>
+>>>> On 6/7/2022 1:29 AM, Doug Anderson wrote:
+>>>>
+>>>> My only concern continues to be...
+>>>>
+>>>> Given ser_clk is the final frequency that this function is going to
+>>>> return and best_div is going to be the clk_divider, is it ok if the
+>>>> divider cant divide the frequency exactly?
+>>>>
+>>>> In other words, Can this function output combinations like (402,4)
+>>>> (501,5) ?
+>>>>
+>>>> If ok, then we can go ahead with this patch or even previous perhaps.
+>>> I don't see why not. You're basically just getting a resulting clock
+>>> that's not an integral "Hz", right?
+>>>
+>>> So if "baud" is 9600 and sampling_rate is 16 then desired_clk is (9600
+>>> * 16) = 153600
+>>>
+>>> Let's imagine that we do all the math and we finally decide that our
+>>> best bet is with the rate 922000 and a divider of 6. That means that
+>>> the actual clock we'll make is 153666.67 when we _wanted_ 153600.
+>>> There's no reason it needs to be integral, though, and 153666.67 would
+>>> still be better than making 160000.
+>>>
+>> Thank you for clarification.
+>>>>> power?)
+>>>> Actually power saving was the anticipation behind returning first
+>>>> frequency in original patch, when we cant find exact frequency.
+>>> Right, except that if you just pick the first clock you find it would
+>>> be _wildly_ off. I guess if you really want to do this the right way,
+>>> you need to set a maximum tolerance and pick the first rate you find
+>>> that meets that tolerance. Random web search for "uart baud rate
+>>> tolerance" makes me believe that +/- 5% deviation is OK, but to be
+>>> safe you probably want something lower. Maybe 2%? So if the desired
+>>> clock is within 2% of a clock you can make, can you just pick that
+>>> one?
+>> Ok, 2% seems good.
+>>>>>> Please note that we go past cases when we have an divider that can
+>>>>>> exactly divide the frequency(105/1, 204/2, 303/3) and end up with one
+>>>>>> that doesn't.
+>>>>> Ah, good point. Luckily that's a 1-line fix, right?
+>>>> Apologies, I could not figure out how.
+>>> Ah, sorry. Not quite 1 line, but this (untested)
+>>>
 >>>
 >>> freq = clk_round_rate(clk, mult);
 >>>
@@ -127,9 +174,7 @@ On 6/9/2022 4:07 AM, Doug Anderson wrote:
 >      maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
 >      div = 1;
 >      while (div < maxdiv) {
-
 div <= maxdiv ?
-
 >          mult = (unsigned long long)div * desired_clk;
 >          if (mult != (unsigned long)mult)
 >              break;
@@ -174,7 +219,6 @@ div <= maxdiv ?
 >                  ser_clk = freq;
 >                  *clk_div = div;
 >              }
-
 My last concern is with search happening only within 2% tolerance.
 
 Do we fail otherwise?
@@ -187,7 +231,6 @@ This real case has best tolerance of 1.9%.
 Seems close.
 
 Thank you.
-
 >
 >              /*
 >               * If we already rounded up past mult then this will
