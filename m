@@ -2,161 +2,208 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5DFC43334
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 17:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182F9C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 17:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345075AbiFIRpr (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
+        id S245686AbiFIRsp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Jun 2022 13:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345073AbiFIRpm (ORCPT
+        with ESMTP id S245571AbiFIRso (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:45:42 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CC52A1D65;
-        Thu,  9 Jun 2022 10:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654796682;
-        bh=aAGWS5nsEjumC36D8Oj4xKJFjI8cDGKi0mv38ijyKvU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=iglfxQwW7H2DsRtidTWRvPFWgQlqhaWIYH9JVcg4gFlV+XkI4j8PLqDe+uFhmyIyY
-         EKCS0Jgd553PG8W8DZfmU8/QU93j6q1OvbQreIlh7MapLt/UmddRKb1PmDiHYAwXAd
-         OWnxDsMfQhsyusJEXGHD7w2NsIGCtBq3LTQdnVfk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N3se8-1nZ8A54288-00zqaM; Thu, 09
- Jun 2022 19:44:42 +0200
-Date:   Thu, 9 Jun 2022 19:44:37 +0200
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 06/20] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-Message-ID: <YqIxhWeUbEAo3Jam@latitude>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-7-tmaimon77@gmail.com>
- <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
+        Thu, 9 Jun 2022 13:48:44 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65D02A3066;
+        Thu,  9 Jun 2022 10:48:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654796920; x=1686332920;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Y0YWfsoXm8MyZJdKzimfLr0Dx1X/zqHi53vcs1gWGYo=;
+  b=fS/0UExbqyuIHRHjrV0L9hjCWrw+kRhXUpBWqJYZPNnOS6l3SvwX9EE1
+   odPAG4VVRvFBejAvHBGOYeFOEiNrQnNhn7srHgfAUYbFNcljbRPUwWvbl
+   dqAQifWNiSgGBe8PdL1NS/r6oqto8/CJDRE7l8WKF6kr/ndncAGtQhujh
+   s=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 09 Jun 2022 10:48:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:48:34 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 9 Jun 2022 10:48:20 -0700
+Received: from [10.216.5.137] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 9 Jun 2022
+ 10:48:16 -0700
+Message-ID: <95ea79d2-2059-a559-4b5a-d13a3d26ba2e@quicinc.com>
+Date:   Thu, 9 Jun 2022 23:18:11 +0530
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="32Ze5EV+vj+4NHJh"
-Content-Disposition: inline
-In-Reply-To: <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
-X-Provags-ID: V03:K1:jzzTW8LVcmmU+9aQiJW2YIJKQAtbyON9+tJYiHXjrPQeLMigfIM
- 6Z40D5jT0qAvqfZZWiSelFOZwlcmtKRJAbAIzd4yNVVJ87qwrLiUr7zCoG9bi9LI5DEkChj
- M6R/8AlnrbtbrhVB3r/5UAtTOEkAR9TFpi1jXVbbZBeJJ/A7oMYRyWVb9CwlhiegbIxF+LT
- DzFzENR5xVvura4eu0iew==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3dUJcptKLkA=:IbJCdExBzHM+v+boTuHr85
- BShd2H0KfY7rw9/BR1QVjRpCffF84AUGG9XgGajnpXxfFBQVxs0aRHhYRFSGziJqrXJ+hGDlr
- yWM+w5ZPnlR3Te1mMLW33eCQIR11kK9/t0xB0uABoQUsR+bRjiZmPNC26NJcp5WlQhnvuJmR3
- ywN6iueU7pGt9jMpDTKO9pvQKQ4xxL6xd1u7FYVihI3ee77JrFn45QQujsA88iaeTBzvOw+Yt
- mXavbUEs1rjR/JZUukIp4Fi/mWsYo7iFIbnEKAFuMHa7JSWv2XB4Y6hxzl8j4uvnQcAvIS5af
- NhnTWutnnxdiATBFoJGLqlmePx8Xy8ysQDaImMp+/REDBlH6wFTwYC1v9IA0gsZMbSQ/gBDZq
- Wrz1/e5lhi/WtgqSWALIJNLVA61D1Vo76S0Jr7m2k5fPemguTW+GRe91zNXwm4n282LbucxLw
- vNxT26OsoTGlNjhguMIiNSsPSJmCIDdabs/S8Sr0V0gtZmdcxIT+TJTbR/+VbB/dHU/dD3FbW
- rpVgmCRMRnBorK1F0GCv3LxaxiI29AjON7yo78RF3vfxRGhf8sIT8KJmvTWvrBdLUZEgiY9MJ
- 9jaWw0OBwl81G49BNxsAsUnPr9PM6Fyfa8Qa+cHQN32RXMmnzdyokFm2fsnyTTmQrIyVlImwg
- fIhjYlZsXPbR6U47PtcS3wjfcE6V76RKxizu8PaS29UVVg00OYhZyk6QgBzgdUM5rDL33s6qu
- acYIfZX1e/zMRZ4evGbwZdF0QUqEdCTo9IeqnzWYbZyD8q7GDpRM8+2QQYeLEEg8e5Kfyih5s
- 6ndecLwf/kRWkxn9wKnuaukmKrP6KmqzMlPXjQNI2FfYid8enDFPiDeRckBdk5XmLh9R9Rw3F
- KotEMyJ0xZ4QlgU+QqqzicJC27JznOO/10tZZxB21qxDWii5KP+4evEvVksEijFshL9jCt5U3
- J7/icxxq2HS1X0Rs1tfhUq4NuHHaIKXUDfxJYRQ3432fsND5ra90dX6Sax+m8WDUrJWtysnwZ
- befrBiVXRduCh4iudct1R0Xz9mKcSTdVwxpFkZoLr/ihh2m9wh3FCxJIWEkZxJZseBGSfIJUu
- KjJSGnqwWs+ZrUY6r4UUJmcNrWLd2RwMb6h2q1CO/xT5z86e2NliQx3Qg==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
+ get_clk_div_rate()
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>
+References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+ <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
+ <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
+ <ad393ad2-a247-3c61-5033-185d39b5596d@quicinc.com>
+ <CAD=FV=XD+LozhkJZp0C7RUO01T-XuqBA-SJ0EQeyvGk0CxC3JQ@mail.gmail.com>
+ <e677fd02-011f-4f4e-fa73-17dc96aea7d0@quicinc.com>
+ <CAD=FV=UzjnEjMTLTRVXTrz6aoiBymJtnJ1o8dzPN9hn0Be3tng@mail.gmail.com>
+ <da18c508-f32e-fece-6392-e6a95f7c7968@quicinc.com>
+ <CAD=FV=Wytm9EYu=4ndN+En2AFEgPK9NjrUMbFPA_h6TwyxGCYA@mail.gmail.com>
+ <765a170c-d335-d626-0609-7d0f3967b71d@quicinc.com>
+ <CAD=FV=X2wTUH50MqFu=4WifvbTG+df-oYqQBRWeSPES7M2fxNw@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=X2wTUH50MqFu=4WifvbTG+df-oYqQBRWeSPES7M2fxNw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
---32Ze5EV+vj+4NHJh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Tomer and Krzysztof,
-
-On Wed, Jun 08, 2022 at 12:03:00PM +0200, Krzysztof Kozlowski wrote:
-> On 08/06/2022 11:56, Tomer Maimon wrote:
-> > Add binding for the Arbel BMC NPCM8XX Clock controller.
-> >=20
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-[...]
-> > +  clocks:
-> > +    items:
-> > +      - description: 25M reference clock
-> > +      - description: CPU reference clock
-> > +      - description: MC reference clock
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: refclk
-> > +      - const: sysbypck
-> > +      - const: mcbypck
-> > +
->=20
-> I asked what is the suffix about and you replied "ck"... ok, so let's
-> make clear. This should be:
->=20
->     items:
->       - const: ref
->       - const: sysbyp
->       - const: mcbyp
->=20
-> or something similar, without the same suffix all over.
-
-A bit of a side note on these names:
-
-To make the binding as easy to understand as possible, I think it would
-help to have every part of the clock-names reflected in corresponding
-clock description:
-
-- sysbypck:  presumably means system bypass clock
-- mcbypck:   presumably means memory controller bypass clock
+Hi,
 
 
-As it currently is in the patch, the "byp" part stays unexplained and
-unmentioned in the descriptions.
+On 6/9/2022 4:07 AM, Doug Anderson wrote:
+> Hi,
+>
+> On Wed, Jun 8, 2022 at 11:34 AM Vijaya Krishna Nivarthi
+> <quic_vnivarth@quicinc.com> wrote:
+>> Hi,
+>>
+>>
+>> On 6/8/2022 12:55 AM, Doug Anderson wrote:
+>>> Hi,
+>>>
+>>> On Tue, Jun 7, 2022 at 10:40 AM Vijaya Krishna Nivarthi
+>>> <quic_vnivarth@quicinc.com> wrote:
+>>> Ah, sorry. Not quite 1 line, but this (untested) 
+>>>
+>>> freq = clk_round_rate(clk, mult);
+>>>
+>>> if (freq % desired_clk == 0) {
+>>>    ser_clk = freq;
+>>>    best_div = freq / desired_clk;
+>>>    break;
+>>> }
+>>>
+>>> candidate_div = max(1, DIV_ROUND_CLOSEST(freq, desired_clk));
+>>> candidate_freq = freq / candidate_div;
+>>> diff = abs((long)desired_clk - candidate_freq);
+>>> if (diff < best_diff) {
+>>>     best_diff = diff;
+>>>     ser_clk = freq;
+>>>     best_div = candidate_div;
+>>> }
+>> But then once again, we would likely need 2 loops because while we are
+>> ok with giving up on search for best_div on finding something within 2%
+>> tolerance, we may not want to give up on exact match (freq % desired_clk
+>> == 0 )
+> Ah, it took me a while to understand why two loops. It's because in
+> one case you're trying multiplies and in the other you're bumping up
+> to the next closest clock rate. I don't think you really need to do
+> that. Just test the (rate - 2%) and the rate. How about this (only
+> lightly tested):
+>
+>      ser_clk = 0;
+>      maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+>      div = 1;
+>      while (div < maxdiv) {
 
+div <= maxdiv ?
 
+>          mult = (unsigned long long)div * desired_clk;
+>          if (mult != (unsigned long)mult)
+>              break;
+>
+>          two_percent = mult / 50;
+>
+>          /*
+>           * Loop requesting (freq - 2%) and possibly (freq).
+>           *
+>           * We'll keep track of the lowest freq inexact match we found
+>           * but always try to find a perfect match. NOTE: this algorithm
+>           * could miss a slightly better freq if there's more than one
+>           * freq between (freq - 2%) and (freq) but (freq) can't be made
+>           * exactly, but that's OK.
+>           *
+>           * This absolutely relies on the fact that the Qualcomm clock
+>           * driver always rounds up.
+>           */
+>          test_freq = mult - two_percent;
+>          while (test_freq <= mult) {
+>              freq = clk_round_rate(clk, test_freq);
+>
+>              /*
+>               * A dead-on freq is an insta-win. This implicitly
+>               * handles when "freq == mult"
+>               */
+>              if (!(freq % desired_clk)) {
+>                  *clk_div = freq / desired_clk;
+>                  return freq;
+>              }
+>
+>              /*
+>               * Only time clock framework doesn't round up is if
+>               * we're past the max clock rate. We're done searching
+>               * if that's the case.
+>               */
+>              if (freq < test_freq)
+>                  return ser_clk;
+>
+>              /* Save the first (lowest freq) within 2% */
+>              if (!ser_clk && freq <= mult + two_percent) {
+>                  ser_clk = freq;
+>                  *clk_div = div;
+>              }
 
-Thanks,
-Jonathan
+My last concern is with search happening only within 2% tolerance.
 
---32Ze5EV+vj+4NHJh
-Content-Type: application/pgp-signature; name="signature.asc"
+Do we fail otherwise?
 
------BEGIN PGP SIGNATURE-----
+This real case has best tolerance of 1.9%.
 
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAmKiMWIACgkQCDBEmo7z
-X9vEyw//UyXHHGnZqNSCU2vjJVfqb3xYR+6PkcHcT0S8zAQhF+r49qZjx2NHgU7M
-UK49lMtTgrU3NtU+6zjY49TDUtBqImQtjshiTi1Ny8pk1EeILBOAtfs37Woh0RT0
-/L0z/8MSiYSEiEFwMMQju9y0op3cBs+/7FraPBx/LlZiWvxmKi3U9+dYjKQnlzE6
-i33Um6sHshnWKc3GUHRmhZcipbc06kgST4+iTJPGqip9l5p/HusyWfTB3HBHwV48
-5oc4+0yPM3RksA2jkfwyPHSv5jaQ+Vli88tZC7NRQYGzVpMhrgjJ6tMszip//wsA
-tIaIbAr2KBNOWsirnLya9y2lV/OHkaauS/wqn+WH+oliAu9NA0u4Wly8espADuVu
-VeIa3jy1Lm1pYI+UmGJljRKDOWE07KMtwIsQ0XqloLXdYCAlCRLM3sQO6vztUPKl
-eaLBbX2Oh2F5WLh9bkKzTg1vDusL/7YkAopmy9nejnayevRhpD1yApfQFAuOJTCO
-1qvWxfbgzAMa2Ask0kaW7AIJ3L0KPJhRDVDVBqsGlQ4+gww7qoEeh6tOTGayfpXE
-5QpbQzZNrHIpATf4nH+s+fyK9BgXftuoFQQBzi0FyxaIedlegtLymSFCxrhwY74E
-5a7VDITbr+qiBNCkuH94zj0onqdpx8/4uWaraM3vvh3xf/z1C3I=
-=CY1G
------END PGP SIGNATURE-----
+[   17.963672] 20220530 desired_clk-51200000
+[   21.193550] 20220530 returning ser_clk-52174000, div-1, diff-974000
 
---32Ze5EV+vj+4NHJh--
+Seems close.
+
+Thank you.
+
+>
+>              /*
+>               * If we already rounded up past mult then this will
+>               * cause the loop to exit. If not then this will run
+>               * the loop a second time with exactly mult.
+>               */
+>              test_freq = max(freq + 1, mult);
+>          }
+>
+>          /*
+>           * test_freq will always be bigger than mult by at least 1.
+>           * That means we can get the next divider with a DIV_ROUND_UP.
+>           * This has the advantage of skipping by a whole bunch of divs
+>           * If the clock framework already bypassed them.
+>           */
+>          div = DIV_ROUND_UP(test_freq, desired_clk);
+>          }
+>
+>      return ser_clk;
