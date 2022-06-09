@@ -2,71 +2,126 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD56BC433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 05:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14002C433EF
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 08:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238799AbiFIF6q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jun 2022 01:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
+        id S230348AbiFIIxp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiFIF6k (ORCPT
+        with ESMTP id S242484AbiFIIxA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jun 2022 01:58:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6F736B7D;
-        Wed,  8 Jun 2022 22:58:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E723161D5A;
-        Thu,  9 Jun 2022 05:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5841FC34114;
-        Thu,  9 Jun 2022 05:58:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654754288;
-        bh=wxhS37iA9AJMgWUEVwHHfukO1BCczUN2/ZYuUq9Ar/k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hqJLw4phQClKtl4+2ZplQU8hPrYIg4FxKrhoRp97zppzIf8jgUJ8Ab2oI3kvhEaDj
-         4lx4mI0FDsGS7aEYWaS595raHsHgZreqsJfI14nU+K7n4Gcnu1X55SHhzi54jLdsYV
-         P+34lQepioNGFSu88IzI0hBgmwiRDSiS45RUZarBtX7C76UU1hQD8ssPwWqq0hiU6v
-         i8BX09LEoEbO6khb75x3zwB0SNhxQCgq1wsx1bpJT0fUa6EcndFKg1rU12dhrKAPEj
-         EMGHCVdVkfnM7jzllcUTWnfDzC3Q72+UKgGSN13AWoSI7bBYUplIf/rdjQbhAxbldn
-         RVtP5mThZFFBQ==
-Date:   Thu, 9 Jun 2022 11:28:03 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Fabien Parent <fparent@baylibre.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        qii.wang@mediatek.com, matthias.bgg@gmail.com, jic23@kernel.org,
-        chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
-        srinivas.kandagatla@linaro.org, chunfeng.yun@mediatek.com,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 11/17] dt-bindings: phy: mediatek,dsi-phy: Add MT8365 SoC
- bindings
-Message-ID: <YqGL6/JztR6J7w8y@matsya>
-References: <20220531135026.238475-1-fparent@baylibre.com>
- <20220531135026.238475-12-fparent@baylibre.com>
+        Thu, 9 Jun 2022 04:53:00 -0400
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FEB1447A6;
+        Thu,  9 Jun 2022 01:51:47 -0700 (PDT)
+Received: by mail-ej1-f44.google.com with SMTP id s12so38888307ejx.3;
+        Thu, 09 Jun 2022 01:51:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=SXRFuRSOer0UTWqXklwZQzcqdPi/nxqTmlZiGWPV4ZU=;
+        b=GYMHiulDbcN3cmGz4FKnX9FSbT75uZLGViASYny1A722tIGFEEL36aEleXraPN4uJr
+         tNqPH3oGiJS0pA6vrdkyrKMIKWUoxQQqQ9vuEjh6EiNVwv5/xQz1GmBK+PkKSgP/h1x3
+         g+W84kya6l0P9v4e6k3yNJZPNi7VMLzRuQwwkUf6bYOkZf1ZNoKZuyaXMbA2ev4KO1xm
+         4Xrp57z9JHYR2wPjpEu5DGiw8Y+fu8ktnHFs4MBpqH31dxFOwB4Uj9nO2RJwAOtkLWOh
+         XEyeU02HkBO0GWAhz7rjowdjOTmLulzZxrJz7F1yP6w1nofZzPb2T2AJNDQgana4Zs10
+         KUpg==
+X-Gm-Message-State: AOAM533jqAJRCcn1L1JNMe3KefB4NmWo4gfouYpYyNqqEgRZaHPUbbSk
+        fnCDUiTs9XxQL5aE9G61MgWNFmK2z8li9g==
+X-Google-Smtp-Source: ABdhPJy24B6wAVUvxzfMFJIXDhUQZl1sg3OvoUK9EjDNt5l4YigCWvxb8gag30hbyoDGFGvTAlku1g==
+X-Received: by 2002:a17:906:4787:b0:711:d085:88a3 with SMTP id cw7-20020a170906478700b00711d08588a3mr17209001ejc.118.1654764706280;
+        Thu, 09 Jun 2022 01:51:46 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id w2-20020a056402268200b0042ddd08d5f8sm14680854edd.2.2022.06.09.01.51.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 01:51:45 -0700 (PDT)
+Message-ID: <926a95c0-3d0b-4dec-4894-3fd756d565a4@kernel.org>
+Date:   Thu, 9 Jun 2022 10:51:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531135026.238475-12-fparent@baylibre.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
+ con_get_unimap()
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220607104946.18710-1-jslaby@suse.cz>
+ <20220607104946.18710-16-jslaby@suse.cz>
+ <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
+ <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
+In-Reply-To: <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 31-05-22, 15:50, Fabien Parent wrote:
-> Add binding documentation for the MT8365 SoC.
+On 08. 06. 22, 10:11, Jiri Slaby wrote:
+> On 08. 06. 22, 10:02, David Laight wrote:
+>> From: Jiri Slaby
+>>> Sent: 07 June 2022 11:49
+>>>
+>>> Only the return value of copy_to_user() is checked in con_get_unimap().
+>>> Do the same for put_user() of the count too.
+>>>
+>>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>>> ---
+>>>   drivers/tty/vt/consolemap.c | 3 ++-
+>>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>>> index 831450f2bfd1..92b5dddb00d9 100644
+>>> --- a/drivers/tty/vt/consolemap.c
+>>> +++ b/drivers/tty/vt/consolemap.c
+>>> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, 
+>>> ushort __user *uct,
+>>>       console_unlock();
+>>>       if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
+>>>           ret = -EFAULT;
+>>> -    put_user(ect, uct);
+>>> +    if (put_user(ect, uct))
+>>> +        ret = -EFAULT;
+>>>       kvfree(unilist);
+>>>       return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
+>>>   }
+>>
+>> How is the user expected to check the result of this code?
+>>
+>> AFAICT -ENOMEM is returned if either kmalloc() fails or
+>> the user buffer is too short?
+>> Looks pretty hard to detect which.
+> 
+> Agreed. The code is far from perfect. We might try to return ENOSPC and 
+> watch what breaks.
 
-Applied 11, 12 to phy-next, thanks
+brltty and kbd (see below) would break at least:
+https://sources.debian.org/src/brltty/6.4-6/Drivers/Screen/Linux/screen.c/#L875
 
+brltty apparently relies exactly on ENOMEM, increases buffer if that 
+error is returned, and retries.
+
+So I don't think we can change that ENOMEM to anything else.
+
+>> I've not looked at the effect of all the patches, but setting
+>> 'ret = -ENOMEM' and breaking the loop when the array is too
+>> small would simplify things.
+
+That would break kbd for example:
+https://sources.debian.org/src/kbd/2.3.0-3/src/libkfont/kdmapop.c/?hl=154#L159
+
+GIO_UNIMAP is called with zero count to actually find out the count...
+
+So apart from the original patch which checks the return value of 
+put_user, we cannot do anything else. (Except decoupling the "?:" to 
+make it more readable.)
+
+thanks,
 -- 
-~Vinod
+js
+suse labs
