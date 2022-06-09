@@ -2,126 +2,202 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14002C433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 08:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B8CC43334
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 13:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbiFIIxp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
+        id S1343679AbiFINSE (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242484AbiFIIxA (ORCPT
+        with ESMTP id S245534AbiFINSC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:53:00 -0400
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FEB1447A6;
-        Thu,  9 Jun 2022 01:51:47 -0700 (PDT)
-Received: by mail-ej1-f44.google.com with SMTP id s12so38888307ejx.3;
-        Thu, 09 Jun 2022 01:51:47 -0700 (PDT)
+        Thu, 9 Jun 2022 09:18:02 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FCF3CBE2A;
+        Thu,  9 Jun 2022 06:18:00 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id a2so31821507lfg.5;
+        Thu, 09 Jun 2022 06:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9H4dOb7IaIcY52Tw6WWiljInSfJiOJbeD3ghXohKUWk=;
+        b=bxQvhZiJyJvGenAgd1C3qiVyZH4ml/Vnom25DFpoC731mCeBREubO4jUNTENKxajXI
+         MR7U3ddjUCoMlr94nBmzEpBeJvuDXEB4HnnaYJ4xnZrR2sPFuLgxOuqrN4kkfkES6Iiw
+         ti9BmmUPpa3hFl3+Zc/z/bPGNz3VCCT15NGOCugqxHdTW/AkKBAfV76k9CiaScYOKqHP
+         KbgKcr377DEMvYCj0FOCu+WyDp6YuJOl1YptRleIGyBJJMESsuQX3KcpfOkmYJ/lzpku
+         emeAUmFuDjlnZfTYGGf7DPIXv1uMZqHlgj1QLdeFtC+2zieBgGMkxqJejaLhPLJi/Efl
+         q5qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=SXRFuRSOer0UTWqXklwZQzcqdPi/nxqTmlZiGWPV4ZU=;
-        b=GYMHiulDbcN3cmGz4FKnX9FSbT75uZLGViASYny1A722tIGFEEL36aEleXraPN4uJr
-         tNqPH3oGiJS0pA6vrdkyrKMIKWUoxQQqQ9vuEjh6EiNVwv5/xQz1GmBK+PkKSgP/h1x3
-         g+W84kya6l0P9v4e6k3yNJZPNi7VMLzRuQwwkUf6bYOkZf1ZNoKZuyaXMbA2ev4KO1xm
-         4Xrp57z9JHYR2wPjpEu5DGiw8Y+fu8ktnHFs4MBpqH31dxFOwB4Uj9nO2RJwAOtkLWOh
-         XEyeU02HkBO0GWAhz7rjowdjOTmLulzZxrJz7F1yP6w1nofZzPb2T2AJNDQgana4Zs10
-         KUpg==
-X-Gm-Message-State: AOAM533jqAJRCcn1L1JNMe3KefB4NmWo4gfouYpYyNqqEgRZaHPUbbSk
-        fnCDUiTs9XxQL5aE9G61MgWNFmK2z8li9g==
-X-Google-Smtp-Source: ABdhPJy24B6wAVUvxzfMFJIXDhUQZl1sg3OvoUK9EjDNt5l4YigCWvxb8gag30hbyoDGFGvTAlku1g==
-X-Received: by 2002:a17:906:4787:b0:711:d085:88a3 with SMTP id cw7-20020a170906478700b00711d08588a3mr17209001ejc.118.1654764706280;
-        Thu, 09 Jun 2022 01:51:46 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id w2-20020a056402268200b0042ddd08d5f8sm14680854edd.2.2022.06.09.01.51.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 01:51:45 -0700 (PDT)
-Message-ID: <926a95c0-3d0b-4dec-4894-3fd756d565a4@kernel.org>
-Date:   Thu, 9 Jun 2022 10:51:44 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9H4dOb7IaIcY52Tw6WWiljInSfJiOJbeD3ghXohKUWk=;
+        b=IsI8jgiNFNrkpBfZYaIq8P1FRHzm6EihbzZjOeOfIF+khwvJ1ppeumno3LLujJZevU
+         IuFD256g9pFeoNxc2YitZm0O9pNVHNeV9t673TrDQVIQvZq9DJf5mi0/7rQAH2FScHoE
+         /WQuUQgbfks+yMhHkivYaq9LGXX1oyy14gvYsv6IfmYESlAJkIyeeiro6/+Mz6Qs07Fq
+         cxUnenC11rtDvIUlCm6aBMvIx3EeS2RK17bNCCIVCoz9j7YvQHClGurQ4GvHkUpvyeTg
+         9Q91ZszDCYM4lAZ+8RL5uj4evZUkkIHN2tBecn/l3ydTeCpI5OV1nG7ZZmqPUMrwIwcp
+         U6jQ==
+X-Gm-Message-State: AOAM531DHiiK68nmwC5t8bX2ipXFMeVsFWi1b3UYuqFbVbWM/NSXZ8lL
+        fbUv0e6JGGiOxAUVKGi/aQ8t3NXgkKGE9glmijo=
+X-Google-Smtp-Source: ABdhPJxz9i9pVE0BdHMV70Vwi186ROVaHboigU3uL+CKro67Q69etkqlQSJOajfipTkSsc8z60rVUCQteSPARaV4mpI=
+X-Received: by 2002:a05:6512:703:b0:479:157a:c18d with SMTP id
+ b3-20020a056512070300b00479157ac18dmr21665529lfs.639.1654780678706; Thu, 09
+ Jun 2022 06:17:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 16/36] tty/vt: consolemap: check put_user() in
- con_get_unimap()
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220607104946.18710-1-jslaby@suse.cz>
- <20220607104946.18710-16-jslaby@suse.cz>
- <5bf366cc45334bb9a9c3d186ef8d6933@AcuMS.aculab.com>
- <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
-In-Reply-To: <9780cd63-5cf3-7ee0-4866-160b9de0a3e8@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-7-tmaimon77@gmail.com>
+ <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
+In-Reply-To: <f4899b6d-fec3-5940-709a-f5fbc7ae6233@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Thu, 9 Jun 2022 16:17:47 +0300
+Message-ID: <CAP6Zq1geJyaDrP2CBY3FHe5y-L=bCptX1pzAkNypY+TS5vXzMA@mail.gmail.com>
+Subject: Re: [PATCH v2 06/20] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 08. 06. 22, 10:11, Jiri Slaby wrote:
-> On 08. 06. 22, 10:02, David Laight wrote:
->> From: Jiri Slaby
->>> Sent: 07 June 2022 11:49
->>>
->>> Only the return value of copy_to_user() is checked in con_get_unimap().
->>> Do the same for put_user() of the count too.
->>>
->>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->>> ---
->>>   drivers/tty/vt/consolemap.c | 3 ++-
->>>   1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
->>> index 831450f2bfd1..92b5dddb00d9 100644
->>> --- a/drivers/tty/vt/consolemap.c
->>> +++ b/drivers/tty/vt/consolemap.c
->>> @@ -813,7 +813,8 @@ int con_get_unimap(struct vc_data *vc, ushort ct, 
->>> ushort __user *uct,
->>>       console_unlock();
->>>       if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
->>>           ret = -EFAULT;
->>> -    put_user(ect, uct);
->>> +    if (put_user(ect, uct))
->>> +        ret = -EFAULT;
->>>       kvfree(unilist);
->>>       return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
->>>   }
->>
->> How is the user expected to check the result of this code?
->>
->> AFAICT -ENOMEM is returned if either kmalloc() fails or
->> the user buffer is too short?
->> Looks pretty hard to detect which.
-> 
-> Agreed. The code is far from perfect. We might try to return ENOSPC and 
-> watch what breaks.
+Hi Krzysztof,
 
-brltty and kbd (see below) would break at least:
-https://sources.debian.org/src/brltty/6.4-6/Drivers/Screen/Linux/screen.c/#L875
+Thanks for your comments.
 
-brltty apparently relies exactly on ENOMEM, increases buffer if that 
-error is returned, and retries.
+On Wed, 8 Jun 2022 at 13:03, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 08/06/2022 11:56, Tomer Maimon wrote:
+> > Add binding for the Arbel BMC NPCM8XX Clock controller.
+> >
+> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> > ---
+> >  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 63 +++++++++++++++++++
+> >  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 50 +++++++++++++++
+> >  2 files changed, 113 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> >  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> >
+> > diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > new file mode 100644
+> > index 000000000000..e1f375716bc5
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > @@ -0,0 +1,63 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Nuvoton NPCM8XX Clock Controller Binding
+> > +
+> > +maintainers:
+> > +  - Tomer Maimon <tmaimon77@gmail.com>
+> > +
+> > +description: |
+> > +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
+> > +  generates and supplies clocks to all modules within the BMC.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - nuvoton,npcm845-clk
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: 25M reference clock
+> > +      - description: CPU reference clock
+> > +      - description: MC reference clock
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: refclk
+> > +      - const: sysbypck
+> > +      - const: mcbypck
+> > +
+>
+> I asked what is the suffix about and you replied "ck"... ok, so let's
+> make clear. This should be:
+>
+>     items:
+>       - const: ref
+>       - const: sysbyp
+>       - const: mcbyp
+>
+> or something similar, without the same suffix all over.
+The clock names are the same clock name in our spec, this why we
+prefer to leave the clock names as is.
+>
+> > diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> > new file mode 100644
+> > index 000000000000..229915a254a5
+> > --- /dev/null
+> > +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+>
+> Same comment as before. No changes here...
+>
+about the comments from V1::
+- Krzysztof: Filename - same as bindings, so nuvoton,npcm845-clk.h
+In NPCM7XX we use the same include file and clock source
+dt-binding
+https://elixir.bootlin.com/linux/v5.19-rc1/source/Documentation/devicetree/bindings/clock/nuvoton,npcm750-clk.txt
+dt-binding include
+https://elixir.bootlin.com/linux/v5.19-rc1/source/include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
+we prefer to be align with our older BMC version
 
-So I don't think we can change that ENOMEM to anything else.
+- Krzysztof: Dual license, same as bindings.
+modified in the file * SPDX-License-Identifier: (GPL-2.0-only OR
+BSD-2-Clause) */
+the same license approved in en7523-clk include file and pushed to
+Linux kernel 5.19 :
+https://elixir.bootlin.com/linux/v5.19-rc1/source/include/dt-bindings/clock/en7523-clk.h
 
->> I've not looked at the effect of all the patches, but setting
->> 'ret = -ENOMEM' and breaking the loop when the array is too
->> small would simplify things.
+>
+>
+> Best regards,
+> Krzysztof
 
-That would break kbd for example:
-https://sources.debian.org/src/kbd/2.3.0-3/src/libkfont/kdmapop.c/?hl=154#L159
+Best regards,
 
-GIO_UNIMAP is called with zero count to actually find out the count...
-
-So apart from the original patch which checks the return value of 
-put_user, we cannot do anything else. (Except decoupling the "?:" to 
-make it more readable.)
-
-thanks,
--- 
-js
-suse labs
+Tomer
