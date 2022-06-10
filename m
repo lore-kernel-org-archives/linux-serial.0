@@ -2,132 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36400CCA47B
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 09:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1973DC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 11:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347120AbiFJJ7y (ORCPT
+        id S1345339AbiFJL4A (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
+        Fri, 10 Jun 2022 07:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347741AbiFJJ7x (ORCPT
+        with ESMTP id S1345305AbiFJLz7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:59:53 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8053BB0A5A
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:59:51 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id fu3so50975139ejc.7
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gDHlNqBe4kROE4J7/F3QmWesLzxh4ZBvnILe171UGCs=;
-        b=oDUOaXR7FzLMWZm3OxcWJ7MJl+lrNYx7qQfEIjW1VPEtcXwKo22y8LG3qxZERYh5D2
-         1/6bktCkaRTFXhZRPn+Tr2xjLHk2tsGAHz227PSTLTEStq6e1c1EnxqsgfASf8KpXtOL
-         ytT4IB96hjk9kQwUL0DYslPXSmrvavbvoAF1Aasp8dsm4RIq3Ofqr0TaG8jKkL6LZoVh
-         HlxckmQQNlM1L/ErpqkpH83MwvKjpne9sdZWGkBHCzSl4/7ohRIBcMy9tzktRd7LIJSw
-         2JXTjIkbSQqyAI9pB5aFcmeh+Wg5uXoi0GnkvRpd5dxQhHR8MuDnOSDfcYiOPFCbQNqo
-         4jYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gDHlNqBe4kROE4J7/F3QmWesLzxh4ZBvnILe171UGCs=;
-        b=bgdRmigTz/GS4gAslSNqi+3KZedt3rkmQBTsrIDpmsFDv4CexqQeSUGYf62Fp+WLAi
-         9UETkCOzOoQkxZWmfRlo1MB3ftpLdc6hfoa4VNTTBXESnh1nynhWvmFO/pU+kFzR8Y3l
-         owcA9k5vvog5gRffq2WFhTDKT3kj3NlxEsVC2g90YDw7Of1/+hI7PRlWTz3EJ1flWfAO
-         WV7I/byhScumvs2gd+uTGvLY5FOzzmUgMM3AmJ8XxVCpfgPjyXuyDP1hF6x6pqBkMXkq
-         hLNeeU5VRQq2H1pTrSP+Zmtop//pOTCxZIZfimKk5+gBrEdCWFKg7b9USkQU1566kyUp
-         to4A==
-X-Gm-Message-State: AOAM531Vm0g5D2RF1hMHIplggkUevZZuuqTFLzijraIJCedVU43OHn5U
-        59oOpPz3OIiAh+Gc8UCous3E8g==
-X-Google-Smtp-Source: ABdhPJwhGh4TDi4lutZR0Redc77UMHZsElUmLjFEgzgCSTtr0oq2PlTyBwfzFCkOUwxt2ruFoM26kA==
-X-Received: by 2002:a17:906:3087:b0:6f4:2901:608a with SMTP id 7-20020a170906308700b006f42901608amr40752732ejv.646.1654855189985;
-        Fri, 10 Jun 2022 02:59:49 -0700 (PDT)
-Received: from [192.168.0.201] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id en22-20020a056402529600b0043120d5f3dcsm11051751edb.14.2022.06.10.02.59.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 02:59:49 -0700 (PDT)
-Message-ID: <2f386fc3-d496-62e3-20b0-ac962169e7a1@linaro.org>
-Date:   Fri, 10 Jun 2022 11:59:47 +0200
+        Fri, 10 Jun 2022 07:55:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4479F301;
+        Fri, 10 Jun 2022 04:55:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB52DB834DC;
+        Fri, 10 Jun 2022 11:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F31CC34114;
+        Fri, 10 Jun 2022 11:55:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654862155;
+        bh=q7IRaOcR5N0y4hQ7ul3oj3HKBb/4yIpXXBgpN69y+P0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MzwmgEiZFFNA+TrqjBWL6C5BfOw2x+48EXK1lfJkATaemiSWtRAK+5cQb/K4YrJj9
+         16J6dYCEDwinAucQcLLiZL1k3XqBlcwmkBcYJNHGrTVnZJQJPTdUxhy1DOmlvQJNbZ
+         DomPsKZ9OJckCguljg5yLWxzaEmOMZd3rp4VrPHc=
+Date:   Fri, 10 Jun 2022 13:55:53 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
+ outgoing data path
+Message-ID: <YqMxSQIvHbl/ofWB@kroah.com>
+References: <20220530144512.2731-1-daniel.starke@siemens.com>
+ <20220530144512.2731-6-daniel.starke@siemens.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device
- tree
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-19-tmaimon77@gmail.com>
- <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org>
- <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
- <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530144512.2731-6-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 10/06/2022 09:57, Geert Uytterhoeven wrote:
->>  "+             cpu0: cpu@0 {
->>  +                     device_type = "cpu";
->>  +                     compatible = "arm,cortex-a35";
->>  +                     clocks = <&clk NPCM8XX_CLK_CPU>;
->>  +                     reg = <0x0 0x0>;
->> Why do you have two address cells? A bit more complicated and not
->> necessary, I think."
->> the arm,cortex-a35 is 64 Bit this is why we use  #address-cells = <2>;
->> and therefore reg = <0x0 0x0>;
+On Mon, May 30, 2022 at 04:45:09PM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> These addresses are not addresses on the main memory bus (which
-> is indeed 64-bit), but on the logical CPU bus.
-> Now, Documentation/devicetree/bindings/arm/cpus.yaml says you can
-> have #address-cells = <2> if you have non-zero MPIDR_EL1 high bits.
+> The current implementation queues up new control and user packets as needed
+> and processes this queue down to the ldisc in the same code path.
+> That means that the upper and the lower layer are hard coupled in the code.
+> Due to this deadlocks can happen as seen below while transmitting data,
+> especially during ldisc congestion. Furthermore, the data channels starve
+> the control channel on high transmission load on the ldisc.
 > 
+> Introduce an additional control channel data queue to prevent timeouts and
+> link hangups during ldisc congestion. This is being processed before the
+> user channel data queue in gsm_data_kick(), i.e. with the highest priority.
+> Put the queue to ldisc data path into a workqueue and trigger it whenever
+> new data has been put into the transmission queue. Change
+> gsm_dlci_data_sweep() accordingly to fill up the transmission queue until
+> TX_THRESH_HI. This solves the locking issue, keeps latency low and provides
+> good performance on high data load.
+> Note that now all packets from a DLCI are removed from the internal queue
+> if the associated DLCI was closed. This ensures that no data is sent by the
+> introduced write task to an already closed DLCI.
+> 
+> BUG: spinlock recursion on CPU#0, test_v24_loop/124
+>  lock: serial8250_ports+0x3a8/0x7500, .magic: dead4ead, .owner: test_v24_loop/124, .owner_cpu: 0
+> CPU: 0 PID: 124 Comm: test_v24_loop Tainted: G           O      5.18.0-rc2 #3
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  dump_stack_lvl+0x34/0x44
+>  do_raw_spin_lock+0x76/0xa0
+>  _raw_spin_lock_irqsave+0x72/0x80
+>  uart_write_room+0x3b/0xc0
+>  gsm_data_kick+0x14b/0x240 [n_gsm]
+>  gsmld_write_wakeup+0x35/0x70 [n_gsm]
+>  tty_wakeup+0x53/0x60
+>  tty_port_default_wakeup+0x1b/0x30
+>  serial8250_tx_chars+0x12f/0x220
+>  serial8250_handle_irq.part.0+0xfe/0x150
+>  serial8250_default_handle_irq+0x48/0x80
+>  serial8250_interrupt+0x56/0xa0
+>  __handle_irq_event_percpu+0x78/0x1f0
+>  handle_irq_event+0x34/0x70
+>  handle_fasteoi_irq+0x90/0x1e0
+>  __common_interrupt+0x69/0x100
+>  common_interrupt+0x48/0xc0
+>  asm_common_interrupt+0x1e/0x40
+> RIP: 0010:__do_softirq+0x83/0x34e
+> Code: 2a 0a ff 0f b7 ed c7 44 24 10 0a 00 00 00 48 c7 c7 51 2a 64 82 e8 2d
+> e2 d5 ff 65 66 c7 05 83 af 1e 7e 00 00 fb b8 ff ff ff ff <49> c7 c2 40 61
+> 80 82 0f bc c5 41 89 c4 41 83 c4 01 0f 84 e6 00 00
+> RSP: 0018:ffffc90000003f98 EFLAGS: 00000286
+> RAX: 00000000ffffffff RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: ffffffff82642a51 RDI: ffffffff825bb5e7
+> RBP: 0000000000000200 R08: 00000008de3271a8 R09: 0000000000000000
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000030 R14: 0000000000000000 R15: 0000000000000000
+>  ? __do_softirq+0x73/0x34e
+>  irq_exit_rcu+0xb5/0x100
+>  common_interrupt+0xa4/0xc0
+>  </IRQ>
+>  <TASK>
+>  asm_common_interrupt+0x1e/0x40
+> RIP: 0010:_raw_spin_unlock_irqrestore+0x2e/0x50
+> Code: 00 55 48 89 fd 48 83 c7 18 53 48 89 f3 48 8b 74 24 10 e8 85 28 36 ff
+> 48 89 ef e8 cd 58 36 ff 80 e7 02 74 01 fb bf 01 00 00 00 <e8> 3d 97 33 ff
+> 65 8b 05 96 23 2b 7e 85 c0 74 03 5b 5d c3 0f 1f 44
+> RSP: 0018:ffffc9000020fd08 EFLAGS: 00000202
+> RAX: 0000000000000000 RBX: 0000000000000246 RCX: 0000000000000000
+> RDX: 0000000000000004 RSI: ffffffff8257fd74 RDI: 0000000000000001
+> RBP: ffff8880057de3a0 R08: 00000008de233000 R09: 0000000000000000
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000100 R14: 0000000000000202 R15: ffff8880057df0b8
+>  ? _raw_spin_unlock_irqrestore+0x23/0x50
+>  gsmtty_write+0x65/0x80 [n_gsm]
+>  n_tty_write+0x33f/0x530
+>  ? swake_up_all+0xe0/0xe0
+>  file_tty_write.constprop.0+0x1b1/0x320
+>  ? n_tty_flush_buffer+0xb0/0xb0
+>  new_sync_write+0x10c/0x190
+>  vfs_write+0x282/0x310
+>  ksys_write+0x68/0xe0
+>  do_syscall_64+0x3b/0x90
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f3e5e35c15c
+> Code: 8b 7c 24 08 89 c5 e8 c5 ff ff ff 89 ef 89 44 24 08 e8 58 bc 02 00 8b
+> 44 24 08 48 83 c4 10 5d c3 48 63 ff b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff
+> ff 76 10 48 8b 15 fd fc 05 00 f7 d8 64 89 02 48 83
+> RSP: 002b:00007ffcee77cd18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00007ffcee77cd70 RCX: 00007f3e5e35c15c
+> RDX: 0000000000000100 RSI: 00007ffcee77cd90 RDI: 0000000000000003
+> RBP: 0000000000000100 R08: 0000000000000000 R09: 7efefefefefefeff
+> R10: 00007f3e5e3bddeb R11: 0000000000000246 R12: 00007ffcee77ce8f
+> R13: 0000000000000001 R14: 000056214404e010 R15: 00007ffcee77cd90
+>  </TASK>
+> 
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
+>  1 file changed, 280 insertions(+), 130 deletions(-)
 
-Thanks Tomer and Geert for explanation. OK for me.
+This is a bit huge for stable backports, especially given that a huge
+number of the previous stable backports have totally failed and no one
+has submitted new versions.
 
+So why is this needed for stable?  Same for all of these in the
+series...
 
-Best regards,
-Krzysztof
+thanks,
+
+greg k-h
