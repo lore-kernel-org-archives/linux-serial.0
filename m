@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D9EC43334
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 09:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E870CCA47B
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 09:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347398AbiFJJvo (ORCPT
+        id S1347868AbiFJJxy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        Fri, 10 Jun 2022 05:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347164AbiFJJvn (ORCPT
+        with ESMTP id S237172AbiFJJxx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:51:43 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E8CAEE19
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:51:42 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id v19so34535620edd.4
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:51:42 -0700 (PDT)
+        Fri, 10 Jun 2022 05:53:53 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E38D1CB1A
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:53:52 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id n28so34559075edb.9
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jun 2022 02:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Su/vdY6lGj+Pr3dmdikt3VdGnrhvMFnJcFP72Ow7dC4=;
-        b=zgRwcmTAgD0viyAxwBer3iPOUi0MEbyLAPXlWR/pLQzcQhksejfo8DVt5Rp8mk8mkA
-         mWFDWHE1c6WTvhN81Xke8gzP9TCiZyoJPZc+rwPr0H1yzVpPx88rLkPWHn8jRAqgvvuE
-         2d17ZSiKC1ioFftJYlL+dL7TfeEfjY7PLCSdMuuSKxvSxPXAn/kYPRlfOmktVPXgNAu2
-         InKcNJ9OgyscXNdxac+SDgTm8uQeGyJrdF5GqYQjWSjXhy8TMAkCriZwItIKBlMNuGm0
-         Spjfvoscvy/uBhozkRybtDbBFL2Ws+ZfSlvv7KB3+OOOeTCh6eC4W85byY1xuRUIASIC
-         TkDw==
+        bh=zKEy3pvm/pZJfBDk6QzX0XhSCgP4GJCuIuAN1XuMp8Y=;
+        b=Dk8nh5ItfXVaDGkTMVMrgJtXWV7hhEYlNnF/DG3Vjli8AWb6Plu9bDZcd4LQ5DfPhB
+         VW/TLF+gEFlW4nYdXFMqQfQhpwawvfWuvwF6+k3tH9mDFg29qBcFSaISOWxtWWPJ8tRM
+         Kqd2NDHm2l90HH6RuWsmYaqPI4nQnd7vCkJyKwWcYMgQsaV8XcSI9QaHxw+bRYFxW+t6
+         MWGfKROqUUTYEJ3cinAj62e4n0WQXIbemTYPvHnlMwXyEl7c6+PcsN9kJshykSA/XTaW
+         CKOkayCgxjPOO3cGnpqIIAI8euu9cNatMwDDSMjwHcOStdxGffPBGbREVe44BfUJW703
+         30Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Su/vdY6lGj+Pr3dmdikt3VdGnrhvMFnJcFP72Ow7dC4=;
-        b=dVs1dDK+Oix+z9yqN+ULaK85evCsieQeSD6djLspqybb4enqQdvdrHljDKSLmo5J7T
-         3z8zSfge1/vYe9mDB72NE12qZGIz5JIfqNYI3bqswAb1tZvoT+BoJIMPqalSU3N9djJK
-         32rGlF6DKMIkua4gXIvEtri/SNauzgqBwl9RfxDDHLZDYvLyCPBkOX/jdigGVBUkUh07
-         4ePN/5AyD/M3VlmeRfw+Mbi4r8Ca/QwJetoSjOnGUG4V5TgiCBO+gqxbvhFicVKwATLi
-         HBVWi2/2dHiWllmqFGCuyLMwpFj8uw+Aq8aMKz+fdnGm4aJRg7oyuv0Zii5xKaLeEPfZ
-         ZQDQ==
-X-Gm-Message-State: AOAM533mJv6ZOIt42tg/exQfQWlirwidZqLF2ABoFaKZdEOX69BK64ZN
-        GP60R4lzX/RcC0iqL5OFJ7+qBg==
-X-Google-Smtp-Source: ABdhPJyj6TklRqD3zDYQVccZ7hzIqwXHNLa/IvjlZmFFmrZBmG/TM9HKYw08cXo1RRXjvutTxqKtgA==
-X-Received: by 2002:a05:6402:1907:b0:42d:e90e:337 with SMTP id e7-20020a056402190700b0042de90e0337mr51038751edz.405.1654854701058;
-        Fri, 10 Jun 2022 02:51:41 -0700 (PDT)
+        bh=zKEy3pvm/pZJfBDk6QzX0XhSCgP4GJCuIuAN1XuMp8Y=;
+        b=xhweEw6PqA0faWs/ErklD2WaEz/FDkT3QEFGcxvTuvVXTU52IkNxC56Usuuy7VWkCc
+         4QHtv15tpjF/nN8DQ9yalgfizrL01i/WEIfJQ6yIEdaygf3EFEc57+kpOZaUjd6sLfjD
+         WIhwPPxCAu3jcGRpK8M3hwUbPUVssxLU5+br56hn+6u0lzwevhDABo8h0Wm2VTSzxPIi
+         268qyTY3PY3kkqLamVqxu/VWBYGMqDdy7B6ESh/zDdzLKZJ4sk0vmj3c+y2/L94oxfpr
+         WuHC5AgB0Ny8l2k9yHknTt6/c9wvf0CTnzVL5lPX0qKvrBj631ENW+DkTVrkVl5IZNJ+
+         BF9w==
+X-Gm-Message-State: AOAM53312Rhe8n3Uihnc7QTC7uwWGP7f8kuQBVqzC51xayTh7Mx0Oz3n
+        1K1L3pr0iHBNal2CXGtoAqa2ag==
+X-Google-Smtp-Source: ABdhPJxHSpa5HKTZBSli/12ysLX0DJEMxvYMgmsT2QEBLzerIrZdBBwZC8Mv3rH2J8Vn0jsupErFoQ==
+X-Received: by 2002:a05:6402:2706:b0:430:6238:78d5 with SMTP id y6-20020a056402270600b00430623878d5mr37918961edd.413.1654854830713;
+        Fri, 10 Jun 2022 02:53:50 -0700 (PDT)
 Received: from [192.168.0.201] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id de46-20020a1709069bee00b0070f6855b90bsm9492759ejc.170.2022.06.10.02.51.39
+        by smtp.gmail.com with ESMTPSA id g9-20020aa7c849000000b0042a2d9af0f8sm15876033edt.79.2022.06.10.02.53.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 02:51:40 -0700 (PDT)
-Message-ID: <80f9c2d5-52d9-b03d-c272-ac475ae8c69e@linaro.org>
-Date:   Fri, 10 Jun 2022 11:51:39 +0200
+        Fri, 10 Jun 2022 02:53:50 -0700 (PDT)
+Message-ID: <8e02ad54-5dad-aee7-6fa8-70c72f93bf5e@linaro.org>
+Date:   Fri, 10 Jun 2022 11:53:48 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 10/20] ARM: dts: nuvoton: add reset syscon property
+Subject: Re: [PATCH v2 11/20] reset: npcm: using syscon instead of device data
 Content-Language: en-US
 To:     Tomer Maimon <tmaimon77@gmail.com>
 Cc:     Avi Fishman <avifishman70@gmail.com>,
@@ -95,44 +95,35 @@ Cc:     Avi Fishman <avifishman70@gmail.com>,
         LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>
 References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-11-tmaimon77@gmail.com>
- <3aa70c91-d6d7-e2eb-9c45-a1fb0a5751ca@linaro.org>
- <CAP6Zq1iCJO3AzHnG7RSQ1pyVwayxs+X3iVM4U=6j2k0EgR7psg@mail.gmail.com>
+ <20220608095623.22327-12-tmaimon77@gmail.com>
+ <91549b70-08fc-ed6f-c48e-5bcb70ea63d0@linaro.org>
+ <CAP6Zq1j2VZno4w4w0QCYwHnRaVqiM=DnNSmND1vOGDs_wfi2zw@mail.gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAP6Zq1iCJO3AzHnG7RSQ1pyVwayxs+X3iVM4U=6j2k0EgR7psg@mail.gmail.com>
+In-Reply-To: <CAP6Zq1j2VZno4w4w0QCYwHnRaVqiM=DnNSmND1vOGDs_wfi2zw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 09/06/2022 23:30, Tomer Maimon wrote:
-> Hi Krzysztof,
+On 09/06/2022 23:37, Tomer Maimon wrote:
+> Hi Krzysztof
 > 
-> Thanks for your comments
+> Sorry but I didn't ignore your comment.
 > 
-> On Wed, 8 Jun 2022 at 13:07, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 08/06/2022 11:56, Tomer Maimon wrote:
->>> Add nuvoton,sysgcr syscon property to the reset
->>> node to handle the general control registers.
->>
->> Wrong wrapping.
-> it will be very helpful if you could point me what wrong wrapped in
-> the commit message, is it the explanation or the header? or something
-> else?
+> For not breaking exciting boards I add the following patch in V2
+> https://lore.kernel.org/linux-arm-kernel/20220608095623.22327-11-tmaimon77@gmail.com/
 
-I pointed you last time. I pointed the exact line, exact rule you need
-to follow. I pointed it three times already and three times I said
-wrapping is wrong:
-https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst#L586
+No, it does not solve it.
+1. Patchset goes via separate trees (DTS are always separate), so it is
+not bisectable. One of the branches/trees will have broken DTS.
 
-"The body of the explanation, line wrapped at 75 columns, which will be
-copied to the permanent changelog to describe this patch."
+2. All out of tree DTSes are broken. This is expressed as ABI and - with
+some reasonable exceptions - you should not break it.
+https://elixir.bootlin.com/linux/v5.19-rc1/source/Documentation/devicetree/bindings/ABI.rst
 
-Your wrapping is not at 75 columns and it causes the commit to be less
-readable, without any reason. Please follow Linux kernel coding style/rules.
+You have to keep backwards compatibility, so parse/handle both versions
+of DTS.
 
 
 Best regards,
