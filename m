@@ -2,65 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D01CCA47B
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jun 2022 23:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E479C43334
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 07:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237914AbiFIXWi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jun 2022 19:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        id S1347070AbiFJH5w (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 10 Jun 2022 03:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236496AbiFIXWh (ORCPT
+        with ESMTP id S1347055AbiFJH5o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jun 2022 19:22:37 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC2A156B6D;
-        Thu,  9 Jun 2022 16:22:36 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id be31so40307151lfb.10;
-        Thu, 09 Jun 2022 16:22:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pNn5m4Xk26zmjjZWaXx9gc+yTuD5ZU/xEKvPldY9urA=;
-        b=O2nWaeF/P16IAO05RYFD1FqECAJEYzwHKWQzhUb8Wl1SUnpVfCesfyBI8CG7HR77pl
-         oqHf7sj6TzPra19Ot9mNHCGB2/PTFHzBupaYcAbtDz+X1psql3wsD5ZfUrU3tzX+zA8Y
-         uPSnpAhB+TR7CKbTHRTMJcI+jb21lw45/DKQEQ2yD8HbD8XJ7e5UVidhpdfyqcvYe/bh
-         jk1O6NFP7R4mOLVW6O53rhFaXIATQnFrrQNifZqIjBowAeo9EGUrvqKOOld2JV2aa9Sp
-         3t3nXamQxUKVmfm66CniAOsKfwdxZiiKr3ZlqAyrjtrMbWJf3xcPxn8OeXYn2ug4zY/t
-         b5vg==
+        Fri, 10 Jun 2022 03:57:44 -0400
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C0C1CAD2C;
+        Fri, 10 Jun 2022 00:57:42 -0700 (PDT)
+Received: by mail-vs1-f52.google.com with SMTP id i186so24749692vsc.9;
+        Fri, 10 Jun 2022 00:57:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pNn5m4Xk26zmjjZWaXx9gc+yTuD5ZU/xEKvPldY9urA=;
-        b=2wGnH6wloE51k0kqfDs34IBGaJgU5XQnfMJn00WZZlAiVkGwU7+bLiFQniYifHAcVO
-         kWvFaFqDolGDMr36gNb+nVuq9Q6XT+gjpki4ewsLiIORmq5lNUWGjtsHLZuwsb5juUIV
-         DWsrVhgP6TtTCLkaKyEbKUM/M3OJBQBEXAS0GalhWlKI9Wlz93qkfFLpbXxg5qY7jUJQ
-         R+kWZGryBYNPXqVABPKsLFsqkpvNW16Yd1LsHRyXe6bmK42Cp4XlCFZpVh6BhSYP+EC8
-         JsUlMvK31mXedl/sEaAvRx5A0qaM9ZfZRVvUTkASZHgZ5MOYh5B+W85vo89p32JMz25K
-         lThg==
-X-Gm-Message-State: AOAM532vC867lZocxjX296mkNmvWvd4wk6WnIJhCKewu0trK6KSbmmeM
-        rgu8Y1Y2QMgh8SpDRP8pmvY6SmET7WYFsFqIjII=
-X-Google-Smtp-Source: ABdhPJyj9vLZaljPbA3gWFChXewcit6cy+/TcGFC1IlSTHaMze9MSYP47sdEYio3WJMrJ2QRRDoGLm17Rd36wGtKv88=
-X-Received: by 2002:a05:6512:31cf:b0:479:3fd4:420e with SMTP id
- j15-20020a05651231cf00b004793fd4420emr15845925lfe.364.1654816954651; Thu, 09
- Jun 2022 16:22:34 -0700 (PDT)
+        bh=rhFLG17+HSZFIUtjJ3pglwpyIrcDVcUBh/MHVe0DumU=;
+        b=sY+B+Vk3nEHM3jVdCGYB1HFl5A0SJV4gPxHsHVRKsrDWTNEzCfijgBTVDhOC/zGW85
+         HIDz9LFiwNmYTAKwp4cuCrKp7E8kaMPtOlKIp9lKPqS9w0UMYTmJ6UIkqhz+a75ODmqz
+         ewwDzrr7BYPRJOdaw9fYIFftYMQy/ZfYMjJPojeIw78WONFkgOe0ntfwyk4/defD+mtf
+         kuc+xcEKJ+1lZiHAMSYadiVo8iXvq7w0G3tr7++GTgVGsfILWLzbB8s7s73uSdz65VCj
+         eq+oO4JyMoMoXRO8MnFDy+VqWRmrYYOckSn9LyW+5Bf1sJVwFEcbVJDtNTYFH48aR4/4
+         9xCQ==
+X-Gm-Message-State: AOAM530s5kzeX79Di1g6I+bgliuYH3OkKrWEnDaOoDSNrgSi1BccAmZm
+        yCP3TsVV6uQFg7RkAR3Lgpk6GXOwDLcsvw==
+X-Google-Smtp-Source: ABdhPJx5OLkgVosgsi10qkThxp3GNADF4JBKRaEwg/zDa3CaUkT4XldFhyw3BA65RicH3NjlDY+utQ==
+X-Received: by 2002:a05:6102:3f0f:b0:32a:46dd:a908 with SMTP id k15-20020a0561023f0f00b0032a46dda908mr18912577vsv.48.1654847861764;
+        Fri, 10 Jun 2022 00:57:41 -0700 (PDT)
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
+        by smtp.gmail.com with ESMTPSA id s20-20020a67efd4000000b003483282cf47sm2798674vsp.26.2022.06.10.00.57.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 00:57:41 -0700 (PDT)
+Received: by mail-ua1-f43.google.com with SMTP id r9so8800287uaf.13;
+        Fri, 10 Jun 2022 00:57:41 -0700 (PDT)
+X-Received: by 2002:a81:1dd2:0:b0:30f:a4fc:315e with SMTP id
+ d201-20020a811dd2000000b0030fa4fc315emr49092228ywd.383.1654847850764; Fri, 10
+ Jun 2022 00:57:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-11-tmaimon77@gmail.com>
- <3aa70c91-d6d7-e2eb-9c45-a1fb0a5751ca@linaro.org> <CAP6Zq1iCJO3AzHnG7RSQ1pyVwayxs+X3iVM4U=6j2k0EgR7psg@mail.gmail.com>
- <CADKL2t523rdOnm=iUNXcw06Soq3NjbJEsEiPwCXdSx3Np-rNDQ@mail.gmail.com>
-In-Reply-To: <CADKL2t523rdOnm=iUNXcw06Soq3NjbJEsEiPwCXdSx3Np-rNDQ@mail.gmail.com>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Fri, 10 Jun 2022 02:22:23 +0300
-Message-ID: <CAP6Zq1g6XoWmdHPfB+7-EjqRaMfhQD7Zt0J+ChCPTZKykkogsg@mail.gmail.com>
-Subject: Re: [PATCH v2 10/20] ARM: dts: nuvoton: add reset syscon property
-To:     Benjamin Fair <benjaminfair@google.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-19-tmaimon77@gmail.com>
+ <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org> <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
+In-Reply-To: <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 10 Jun 2022 09:57:18 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
+Message-ID: <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
+Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device tree
+To:     Tomer Maimon <tmaimon77@gmail.com>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Avi Fishman <avifishman70@gmail.com>,
         Tali Perry <tali.perry1@gmail.com>,
         Joel Stanley <joel@jms.id.au>,
         Patrick Venture <venture@google.com>,
         Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -96,48 +95,96 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Benjamin,
+Hi Tomer,
 
-Thanks a lot for your explanation.
-
-will be applied in next patch set
-
-Best regards,
-
-Tomer
-
-On Fri, 10 Jun 2022 at 01:11, Benjamin Fair <benjaminfair@google.com> wrote:
->
-> Hi Tomer,
->
-> On Thu, 9 Jun 2022 at 14:30, Tomer Maimon <tmaimon77@gmail.com> wrote:
-> >
-> > Hi Krzysztof,
-> >
-> > Thanks for your comments
-> >
-> > On Wed, 8 Jun 2022 at 13:07, Krzysztof Kozlowski
-> > <krzysztof.kozlowski@linaro.org> wrote:
+On Fri, Jun 10, 2022 at 12:30 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
+> On Wed, 8 Jun 2022 at 13:21, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+> > On 08/06/2022 11:56, Tomer Maimon wrote:
+> > > This adds initial device tree support for the
+> > > Nuvoton NPCM845 Board Management controller (BMC) SoC family.
 > > >
-> > > On 08/06/2022 11:56, Tomer Maimon wrote:
-> > > > Add nuvoton,sysgcr syscon property to the reset
-> > > > node to handle the general control registers.
+> > > The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
+> > > have various peripheral IPs.
 > > >
-> > > Wrong wrapping.
-> > it will be very helpful if you could point me what wrong wrapped in
-> > the commit message, is it the explanation or the header? or something
-> > else?
->
-> The commit message body should be wrapped at 72 chars. You can fit
-> more on the first line if you reflow:
->
-> Add nuvoton,sysgcr syscon property to the reset node to handle the
-> general control registers.
->
-> > >
-> > > Best regards,
-> > > Krzysztof
+> > > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+
+> > > --- /dev/null
+> > > +++ b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
+> > > @@ -0,0 +1,197 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
+> > > +
+> > > +#include <dt-bindings/clock/nuvoton,npcm8xx-clock.h>
+> > > +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> > > +#include <dt-bindings/interrupt-controller/irq.h>
+> > > +
+> > > +/ {
+> > > +     #address-cells = <2>;
+> > > +     #size-cells = <2>;
+> > > +     interrupt-parent = <&gic>;
+> > > +
+> > > +     /* external reference clock */
+> > > +     clk_refclk: clk-refclk {
+> > > +             compatible = "fixed-clock";
+> > > +             #clock-cells = <0>;
+> > > +             clock-frequency = <25000000>;
 > >
-> > Best regards,
+> > Ignored comment.
+> Could we use it as a default clock-frequency?
+
+If the oscillator is present on the board, and not an SoC builtin, its
+clock frequency should be described in the board DTS.
+Some clocks may be optional, and left unpopulated.
+Others clocks may be fed with different frequencies than the default.
+
 > >
-> > Tomer
+> > > +             clock-output-names = "refclk";
+> > > +     };
+> > > +
+> > > +     /* external reference clock for cpu. float in normal operation */
+> > > +     clk_sysbypck: clk-sysbypck {
+> > > +             compatible = "fixed-clock";
+> > > +             #clock-cells = <0>;
+> > > +             clock-frequency = <1000000000>;
+> >
+> > Ignored comment.
+> same as above
+> >
+> > > +             clock-output-names = "sysbypck";
+> > > +     };
+> > > +
+> > > +     /* external reference clock for MC. float in normal operation */
+> > > +     clk_mcbypck: clk-mcbypck {
+> > > +             compatible = "fixed-clock";
+> > > +             #clock-cells = <0>;
+> > > +             clock-frequency = <1050000000>;
+> same as above
+> > > +             clock-output-names = "mcbypck";
+> > > +     };
+
+>  "+             cpu0: cpu@0 {
+>  +                     device_type = "cpu";
+>  +                     compatible = "arm,cortex-a35";
+>  +                     clocks = <&clk NPCM8XX_CLK_CPU>;
+>  +                     reg = <0x0 0x0>;
+> Why do you have two address cells? A bit more complicated and not
+> necessary, I think."
+> the arm,cortex-a35 is 64 Bit this is why we use  #address-cells = <2>;
+> and therefore reg = <0x0 0x0>;
+
+These addresses are not addresses on the main memory bus (which
+is indeed 64-bit), but on the logical CPU bus.
+Now, Documentation/devicetree/bindings/arm/cpus.yaml says you can
+have #address-cells = <2> if you have non-zero MPIDR_EL1 high bits.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
