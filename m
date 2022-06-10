@@ -2,161 +2,268 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1973DC433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 11:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9EAC43334
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jun 2022 13:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345339AbiFJL4A (ORCPT
+        id S1347510AbiFJNnV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jun 2022 07:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        Fri, 10 Jun 2022 09:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345305AbiFJLz7 (ORCPT
+        with ESMTP id S1347988AbiFJNnU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jun 2022 07:55:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4479F301;
-        Fri, 10 Jun 2022 04:55:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB52DB834DC;
-        Fri, 10 Jun 2022 11:55:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F31CC34114;
-        Fri, 10 Jun 2022 11:55:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654862155;
-        bh=q7IRaOcR5N0y4hQ7ul3oj3HKBb/4yIpXXBgpN69y+P0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MzwmgEiZFFNA+TrqjBWL6C5BfOw2x+48EXK1lfJkATaemiSWtRAK+5cQb/K4YrJj9
-         16J6dYCEDwinAucQcLLiZL1k3XqBlcwmkBcYJNHGrTVnZJQJPTdUxhy1DOmlvQJNbZ
-         DomPsKZ9OJckCguljg5yLWxzaEmOMZd3rp4VrPHc=
-Date:   Fri, 10 Jun 2022 13:55:53 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "D. Starke" <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
- outgoing data path
-Message-ID: <YqMxSQIvHbl/ofWB@kroah.com>
-References: <20220530144512.2731-1-daniel.starke@siemens.com>
- <20220530144512.2731-6-daniel.starke@siemens.com>
+        Fri, 10 Jun 2022 09:43:20 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9053B017;
+        Fri, 10 Jun 2022 06:43:18 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id c21so3490260wrb.1;
+        Fri, 10 Jun 2022 06:43:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MUhIkPArPHIPy06gz4cSE3aTOOxY2nSP5WV+XoCfzRk=;
+        b=gfEantf23UcbfjS8pXanrdVio9fVjQjgt2UwdfPJxIu8MnoMYfTfDEx2DaaKfE//wp
+         eMI/uB72kj0DwmR527jsT2ngw1guB6kcJ0KAXW+9z1P0HLo0LyEVQIT7NJwpf9FTqGDI
+         CUfeLlawkfomFRlCGp03nHLu+g31TiSeZvDoh2trJNtU/Bn371/PjHgwG6eG8n1ctDxB
+         w6aKoLPIgZQCIy0iDGvbYzDUGTWhpisZXZy9RG0Gts/AQ2YMN19hPptomhtZE1tofr8k
+         NjzsXOqQSRBuLZlXE8oqlkwo8mQh71BSu/Tq4gYi+XKNaHx66Y3MNSPJ1MMvs0vZgukU
+         BI3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MUhIkPArPHIPy06gz4cSE3aTOOxY2nSP5WV+XoCfzRk=;
+        b=1AgN/VPtSaCPhVt3yp/HxUns+4oc1A5Gmoklbn/x9+jag3/zNyE1IY2N6ibPG33JPf
+         90OyA+JFh5lz4sCe8vWrQ9pbQfqPzZTzHBYzzX6ZkvArj4CmaneV6Eu7ae5B9jb/iGKC
+         ZMhHDrwB3g7wCd33n3OcDokJeXeJJ72qso4RC6n7bMZKRmEStF/Z7AGrhCTSrtSsUhJ8
+         7iDjs84RnM08W42g3HZJzggqkQTy5GiF+Qx4bQLQOFpZmAF+Y+X/9tM3X+YQz2jF1NQS
+         oqGTiXJAUuPwDFd18fHs6XdOCwBh0+0CpAmHsiRnzi9qin6+8JtBgw+VbcSf+9qA6g/c
+         sowQ==
+X-Gm-Message-State: AOAM531m6JDS3jNgvTtJNHbnbP19Nu4rjODL8oHViY2fA89QjiqrwC+j
+        5QQdns8iVVWEF5NiGwqfB6w=
+X-Google-Smtp-Source: ABdhPJx4aZn9694mJK4XN6HyC801doDfIPOi9jbg69UBn5J6e6C9uw4xjG7rsstJPoeOdA7qMBTgvw==
+X-Received: by 2002:adf:e488:0:b0:20f:d981:4b42 with SMTP id i8-20020adfe488000000b0020fd9814b42mr44429368wrm.455.1654868596987;
+        Fri, 10 Jun 2022 06:43:16 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
+        by smtp.gmail.com with ESMTPSA id s13-20020a5d6a8d000000b0020c5253d8f7sm27652541wru.67.2022.06.10.06.43.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 06:43:16 -0700 (PDT)
+Message-ID: <a46eec81-aa2c-74c0-210d-4d28ba46e815@gmail.com>
+Date:   Fri, 10 Jun 2022 15:43:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530144512.2731-6-daniel.starke@siemens.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/3] tty: serial: atmel: improve clock management
+Content-Language: en-US
+To:     Claudiu.Beznea@microchip.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, patrice.chotard@foss.st.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220525133733.1051714-1-claudiu.beznea@microchip.com>
+ <20220525133733.1051714-3-claudiu.beznea@microchip.com>
+ <5dae58ca-487a-cbd8-00f8-9951a425f70e@gmail.com>
+ <4a189186-9871-09ab-d7e1-9346f7af0bfe@microchip.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <4a189186-9871-09ab-d7e1-9346f7af0bfe@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:45:09PM +0200, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
+Hi,
+Le 08/06/2022 à 10:18, Claudiu.Beznea@microchip.com a écrit :
+> Hi,
 > 
-> The current implementation queues up new control and user packets as needed
-> and processes this queue down to the ldisc in the same code path.
-> That means that the upper and the lower layer are hard coupled in the code.
-> Due to this deadlocks can happen as seen below while transmitting data,
-> especially during ldisc congestion. Furthermore, the data channels starve
-> the control channel on high transmission load on the ldisc.
+> On 02.06.2022 12:29, Richard Genoud wrote:
+>>
+>> Hi,
+>>
+>> Le 25/05/2022 à 15:37, Claudiu Beznea a écrit :
+>>> atmel_port->clk was requested in atmel_init_port() (which is called only
+>>> on probe path) only if atmel_port->clk was NULL. But atmel_port->clk is
+>>> NULL on probing path. Thus don't check this. Along with this the clock is
+>>> now requested with devm_clk_get() and the clock request has been moved in
+>>> atmel_serial_probe() function to avoid disabling/re-enabling it on probe
+>>> path for multiple times. All the checks of atmel_port->clk were removed
+>>> along with clk_put() and atmel_port->clk = NULL. Now, on probing time the
+>>> clock is enabled at the beginning and disabled at the end of probe. As
+>>> atmel_console_setup() is called in the middle of probe and clock is
+>>> already enabled at that time the clk_prepare_enable() in
+>>> atmel_console_setup() has also been removed.
+>> Could you split this patch into smaller steps ?
+>> I think it will be easier to read and review.
 > 
-> Introduce an additional control channel data queue to prevent timeouts and
-> link hangups during ldisc congestion. This is being processed before the
-> user channel data queue in gsm_data_kick(), i.e. with the highest priority.
-> Put the queue to ldisc data path into a workqueue and trigger it whenever
-> new data has been put into the transmission queue. Change
-> gsm_dlci_data_sweep() accordingly to fill up the transmission queue until
-> TX_THRESH_HI. This solves the locking issue, keeps latency low and provides
-> good performance on high data load.
-> Note that now all packets from a DLCI are removed from the internal queue
-> if the associated DLCI was closed. This ensures that no data is sent by the
-> introduced write task to an already closed DLCI.
+> I kept it as a single patch as it is all related to clock management.
 > 
-> BUG: spinlock recursion on CPU#0, test_v24_loop/124
->  lock: serial8250_ports+0x3a8/0x7500, .magic: dead4ead, .owner: test_v24_loop/124, .owner_cpu: 0
-> CPU: 0 PID: 124 Comm: test_v24_loop Tainted: G           O      5.18.0-rc2 #3
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-> Call Trace:
->  <IRQ>
->  dump_stack_lvl+0x34/0x44
->  do_raw_spin_lock+0x76/0xa0
->  _raw_spin_lock_irqsave+0x72/0x80
->  uart_write_room+0x3b/0xc0
->  gsm_data_kick+0x14b/0x240 [n_gsm]
->  gsmld_write_wakeup+0x35/0x70 [n_gsm]
->  tty_wakeup+0x53/0x60
->  tty_port_default_wakeup+0x1b/0x30
->  serial8250_tx_chars+0x12f/0x220
->  serial8250_handle_irq.part.0+0xfe/0x150
->  serial8250_default_handle_irq+0x48/0x80
->  serial8250_interrupt+0x56/0xa0
->  __handle_irq_event_percpu+0x78/0x1f0
->  handle_irq_event+0x34/0x70
->  handle_fasteoi_irq+0x90/0x1e0
->  __common_interrupt+0x69/0x100
->  common_interrupt+0x48/0xc0
->  asm_common_interrupt+0x1e/0x40
-> RIP: 0010:__do_softirq+0x83/0x34e
-> Code: 2a 0a ff 0f b7 ed c7 44 24 10 0a 00 00 00 48 c7 c7 51 2a 64 82 e8 2d
-> e2 d5 ff 65 66 c7 05 83 af 1e 7e 00 00 fb b8 ff ff ff ff <49> c7 c2 40 61
-> 80 82 0f bc c5 41 89 c4 41 83 c4 01 0f 84 e6 00 00
-> RSP: 0018:ffffc90000003f98 EFLAGS: 00000286
-> RAX: 00000000ffffffff RBX: 0000000000000000 RCX: 0000000000000000
-> RDX: 0000000000000000 RSI: ffffffff82642a51 RDI: ffffffff825bb5e7
-> RBP: 0000000000000200 R08: 00000008de3271a8 R09: 0000000000000000
-> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000030 R14: 0000000000000000 R15: 0000000000000000
->  ? __do_softirq+0x73/0x34e
->  irq_exit_rcu+0xb5/0x100
->  common_interrupt+0xa4/0xc0
->  </IRQ>
->  <TASK>
->  asm_common_interrupt+0x1e/0x40
-> RIP: 0010:_raw_spin_unlock_irqrestore+0x2e/0x50
-> Code: 00 55 48 89 fd 48 83 c7 18 53 48 89 f3 48 8b 74 24 10 e8 85 28 36 ff
-> 48 89 ef e8 cd 58 36 ff 80 e7 02 74 01 fb bf 01 00 00 00 <e8> 3d 97 33 ff
-> 65 8b 05 96 23 2b 7e 85 c0 74 03 5b 5d c3 0f 1f 44
-> RSP: 0018:ffffc9000020fd08 EFLAGS: 00000202
-> RAX: 0000000000000000 RBX: 0000000000000246 RCX: 0000000000000000
-> RDX: 0000000000000004 RSI: ffffffff8257fd74 RDI: 0000000000000001
-> RBP: ffff8880057de3a0 R08: 00000008de233000 R09: 0000000000000000
-> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000100 R14: 0000000000000202 R15: ffff8880057df0b8
->  ? _raw_spin_unlock_irqrestore+0x23/0x50
->  gsmtty_write+0x65/0x80 [n_gsm]
->  n_tty_write+0x33f/0x530
->  ? swake_up_all+0xe0/0xe0
->  file_tty_write.constprop.0+0x1b1/0x320
->  ? n_tty_flush_buffer+0xb0/0xb0
->  new_sync_write+0x10c/0x190
->  vfs_write+0x282/0x310
->  ksys_write+0x68/0xe0
->  do_syscall_64+0x3b/0x90
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f3e5e35c15c
-> Code: 8b 7c 24 08 89 c5 e8 c5 ff ff ff 89 ef 89 44 24 08 e8 58 bc 02 00 8b
-> 44 24 08 48 83 c4 10 5d c3 48 63 ff b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff
-> ff 76 10 48 8b 15 fd fc 05 00 f7 d8 64 89 02 48 83
-> RSP: 002b:00007ffcee77cd18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 00007ffcee77cd70 RCX: 00007f3e5e35c15c
-> RDX: 0000000000000100 RSI: 00007ffcee77cd90 RDI: 0000000000000003
-> RBP: 0000000000000100 R08: 0000000000000000 R09: 7efefefefefefeff
-> R10: 00007f3e5e3bddeb R11: 0000000000000246 R12: 00007ffcee77ce8f
-> R13: 0000000000000001 R14: 000056214404e010 R15: 00007ffcee77cd90
->  </TASK>
+> Having the clock enabled only at the beginning of probe and disabled at the
+> end of probe lead to removing the code in atmel_init_port(), also removing
+> the code under CONFIG_SERIAL_ATMEL_CONSOLE in probe. Same for the rest of
+> the removed code.
 > 
-> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->  drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
->  1 file changed, 280 insertions(+), 130 deletions(-)
+> With this, would you still want to split it in multiple patches?
 
-This is a bit huge for stable backports, especially given that a huge
-number of the previous stable backports have totally failed and no one
-has submitted new versions.
+I think that, at least, the switch from clk_get() to devm_clk_get() can 
+be in a separate patch.
+But in general, I prefer when patches are self-explaining rather than a 
+bigger patch with a longer explanation of what it does in the commit 
+message.
 
-So why is this needed for stable?  Same for all of these in the
-series...
+Regards,
+Richard
 
-thanks,
-
-greg k-h
+> 
+> Thank you,
+> Claudiu Beznea
+>>>
+>>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>>> ---
+>>>    drivers/tty/serial/atmel_serial.c | 65 +++++++------------------------
+>>>    1 file changed, 15 insertions(+), 50 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/atmel_serial.c
+>>> b/drivers/tty/serial/atmel_serial.c
+>>> index 5c793a23dc54..2955b1012014 100644
+>>> --- a/drivers/tty/serial/atmel_serial.c
+>>> +++ b/drivers/tty/serial/atmel_serial.c
+>>> @@ -2501,24 +2501,7 @@ static int atmel_init_port(struct atmel_uart_port
+>>> *atmel_port,
+>>>        if (ret)
+>>>                return ret;
+>>>
+>>> -     /* for console, the clock could already be configured */
+>>> -     if (!atmel_port->clk) {
+>>> -             atmel_port->clk = clk_get(&mpdev->dev, "usart");
+>>> -             if (IS_ERR(atmel_port->clk)) {
+>>> -                     ret = PTR_ERR(atmel_port->clk);
+>>> -                     atmel_port->clk = NULL;
+>>> -                     return ret;
+>>> -             }
+>>> -             ret = clk_prepare_enable(atmel_port->clk);
+>>> -             if (ret) {
+>>> -                     clk_put(atmel_port->clk);
+>>> -                     atmel_port->clk = NULL;
+>>> -                     return ret;
+>>> -             }
+>>> -             port->uartclk = clk_get_rate(atmel_port->clk);
+>>> -             clk_disable_unprepare(atmel_port->clk);
+>>> -             /* only enable clock when USART is in use */
+>>> -     }
+>>> +     port->uartclk = clk_get_rate(atmel_port->clk);
+>>>
+>>>        /*
+>>>         * Use TXEMPTY for interrupt when rs485 or ISO7816 else TXRDY or
+>>> @@ -2640,10 +2623,6 @@ static int __init atmel_console_setup(struct
+>>> console *co, char *options)
+>>>                return -ENODEV;
+>>>        }
+>>>
+>>> -     ret = clk_prepare_enable(atmel_ports[co->index].clk);
+>>> -     if (ret)
+>>> -             return ret;
+>>> -
+>> Now, "int ret;" is unused, you can remove it.
+>>
+>>>        atmel_uart_writel(port, ATMEL_US_IDR, -1);
+>>>        atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA |
+>>> ATMEL_US_RSTRX);
+>>>        atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+>>> @@ -2889,14 +2868,23 @@ static int atmel_serial_probe(struct
+>>> platform_device *pdev)
+>>>        atomic_set(&atmel_port->tasklet_shutdown, 0);
+>>>        spin_lock_init(&atmel_port->lock_suspended);
+>>>
+>>> +     atmel_port->clk = devm_clk_get(&pdev->dev, "usart");
+>>> +     if (IS_ERR(atmel_port->clk)) {
+>>> +             ret = PTR_ERR(atmel_port->clk);
+>>> +             goto err;
+>>> +     }
+>>> +     ret = clk_prepare_enable(atmel_port->clk);
+>>> +     if (ret)
+>>> +             goto err;
+>>> +
+>>>        ret = atmel_init_port(atmel_port, pdev);
+>>>        if (ret)
+>>> -             goto err_clear_bit;
+>>> +             goto err_clk_disable_unprepare;
+>>>
+>>>        atmel_port->gpios = mctrl_gpio_init(&atmel_port->uart, 0);
+>>>        if (IS_ERR(atmel_port->gpios)) {
+>>>                ret = PTR_ERR(atmel_port->gpios);
+>>> -             goto err_clear_bit;
+>>> +             goto err_clk_disable_unprepare;
+>>>        }
+>>>
+>>>        if (!atmel_use_pdc_rx(&atmel_port->uart)) {
+>>> @@ -2905,7 +2893,7 @@ static int atmel_serial_probe(struct
+>>> platform_device *pdev)
+>>>                                     sizeof(struct atmel_uart_char),
+>>>                                     GFP_KERNEL);
+>>>                if (!data)
+>>> -                     goto err_alloc_ring;
+>>> +                     goto err_clk_disable_unprepare;
+>>>                atmel_port->rx_ring.buf = data;
+>>>        }
+>>>
+>>> @@ -2915,26 +2903,9 @@ static int atmel_serial_probe(struct
+>>> platform_device *pdev)
+>>>        if (ret)
+>>>                goto err_add_port;
+>>>
+>>> -#ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+>>> -     if (uart_console(&atmel_port->uart)
+>>> -                     && ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
+>>> -             /*
+>>> -              * The serial core enabled the clock for us, so undo
+>>> -              * the clk_prepare_enable() in atmel_console_setup()
+>>> -              */
+>>> -             clk_disable_unprepare(atmel_port->clk);
+>>> -     }
+>>> -#endif
+>>> -
+>>>        device_init_wakeup(&pdev->dev, 1);
+>>>        platform_set_drvdata(pdev, atmel_port);
+>>>
+>>> -     /*
+>>> -      * The peripheral clock has been disabled by atmel_init_port():
+>>> -      * enable it before accessing I/O registers
+>>> -      */
+>>> -     clk_prepare_enable(atmel_port->clk);
+>>> -
+>>>        if (rs485_enabled) {
+>>>                atmel_uart_writel(&atmel_port->uart, ATMEL_US_MR,
+>>>                                  ATMEL_US_USMODE_NORMAL);
+>>> @@ -2958,12 +2929,8 @@ static int atmel_serial_probe(struct
+>>> platform_device *pdev)
+>>>    err_add_port:
+>>>        kfree(atmel_port->rx_ring.buf);
+>>>        atmel_port->rx_ring.buf = NULL;
+>>> -err_alloc_ring:
+>>> -     if (!uart_console(&atmel_port->uart)) {
+>>> -             clk_put(atmel_port->clk);
+>>> -             atmel_port->clk = NULL;
+>>> -     }
+>>> -err_clear_bit:
+>>> +err_clk_disable_unprepare:
+>>> +     clk_disable_unprepare(atmel_port->clk);
+>>>        clear_bit(atmel_port->uart.line, atmel_ports_in_use);
+>>>    err:
+>>>        return ret;
+>>> @@ -2997,8 +2964,6 @@ static int atmel_serial_remove(struct
+>>> platform_device *pdev)
+>>>
+>>>        clear_bit(port->line, atmel_ports_in_use);
+>>>
+>>> -     clk_put(atmel_port->clk);
+>>> -     atmel_port->clk = NULL;
+>>>        pdev->dev.of_node = NULL;
+>>>
+>>>        return ret;
+>> Thanks !
+>>
+>> Regards,
+>> Richard
+> 
