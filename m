@@ -2,155 +2,184 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8C2C43334
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jun 2022 07:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20CAC433EF
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Jun 2022 07:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiFKHYL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Jun 2022 03:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
+        id S230095AbiFKHcc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 11 Jun 2022 03:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbiFKHYK (ORCPT
+        with ESMTP id S230079AbiFKHcc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Jun 2022 03:24:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C8B5DE77
-        for <linux-serial@vger.kernel.org>; Sat, 11 Jun 2022 00:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654932248; x=1686468248;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jKOkElJu12qjJNOyjjOrKJPOYS8N/6LrKX/Aw9R32vo=;
-  b=hM+xK+ugq6kmlxzCFPTRJBMUB/F5mLh/WgmXqBgzoOLoo8zC8cnHPmSy
-   JnPpcvMWTWelyoLweiFP+g0jThABRjp0e1zlxctzsVMrOQYsT6wOWM7Da
-   nT+cUivGRgpFcenClot0UzhzdJ+LH56lRwKXUAbEYKGW3O0XYWH8a8zSe
-   DgWKiXe61DATUtJwR5XpwllnU7s9LqXIUtINEnkbddNqLIuzKkdNnfFnl
-   2c2BDKZFgwLevby/7YHBMuWivUJ7K95tQUHog9zPVNKdHh+91SZbLyg5l
-   TeoXYfeLTYRC/ZQG8olYSVLcdU5azPd7KFF+orCc97WGG5TW5Htfa1Pz0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="257676161"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="257676161"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 00:24:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="586636742"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Jun 2022 00:24:07 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzvTa-000IgX-E6;
-        Sat, 11 Jun 2022 07:24:06 +0000
-Date:   Sat, 11 Jun 2022 15:23:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 65534736d9a5cab5340ae8819e1394b6325e8390
-Message-ID: <62a44306.Lf2edVlPuoKkt9WH%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sat, 11 Jun 2022 03:32:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7E03A736
+        for <linux-serial@vger.kernel.org>; Sat, 11 Jun 2022 00:32:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB8A5B836C0
+        for <linux-serial@vger.kernel.org>; Sat, 11 Jun 2022 07:32:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC286C34116;
+        Sat, 11 Jun 2022 07:32:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654932746;
+        bh=fnwET/gjBl/grWYuvbexNHt+zdbR/7V7Xz2Jrs9hV5M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=miaMbcyzVkWOXDXR5iQFEPo8lx1IA+AGMIj2m96V/RSr48XwhmhHXUceX+p2GADhm
+         Plmo6XhiLkkwBZ17WjZdnUQSh8cZWjWAIOFly8XrAUnw7nOU3PmWS9x6UFWRpgBqjP
+         zsg4GwiHKD9f/TXxflAyW/D+PUWvA+Tqr9U692Xc=
+Date:   Sat, 11 Jun 2022 09:32:20 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     cael <juanfengpy@gmail.com>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: tty: fix a possible hang on tty device
+Message-ID: <YqRFBMXz7/9SkL5F@kroah.com>
+References: <CAPmgiU+HucpCLvEyre9GHj7S1K0smnUfbhG2HLCQb8x1LpVr_Q@mail.gmail.com>
+ <YpczhMOT5BvxqL/P@kroah.com>
+ <CAPmgiULBpWvPV4WzBFY1JMcijg_EkP+w7q6rAWVgdp196WGKXQ@mail.gmail.com>
+ <318878-5fd6-36cd-2670-8ac871b6e2c6@linux.intel.com>
+ <CAPmgiUL4XU7qeLvCdTe=G0AWMStKVu78GjmdPMzakLqgEei9yQ@mail.gmail.com>
+ <Yp4Sh8pMVhwBKUzU@kroah.com>
+ <CAPmgiUJzTg7YMuVp=wmZnoDKAjcig7Uw2O-qRxtWc7RU2mP+YA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <CAPmgiUJzTg7YMuVp=wmZnoDKAjcig7Uw2O-qRxtWc7RU2mP+YA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 65534736d9a5cab5340ae8819e1394b6325e8390  tty: Use flow-control char function on closing path
+On Sat, Jun 11, 2022 at 02:50:54PM +0800, cael wrote:
+> From: cael <juanfengpy@gmail.com>
+> Subject: [PATCH] [PATCH v3] tty: fix a possible hang on tty device
+> 
+> We have met a hang on pty device, the reader was blocking
+> at epoll on master side, the writer was sleeping at wait_woken
+> inside n_tty_write on slave side, and the write buffer on
+> tty_port was full, we found that the reader and writer would
+> never be woken again and block forever.
+> 
+> The problem was caused by a race between reader and kworker:
+> n_tty_read(reader):  n_tty_receive_buf_common(kworker):
+>                     |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
+>                     |room <= 0
+> copy_from_read_buf()|
+> n_tty_kick_worker() |
+>                     |ldata->no_room = true
+> 
+> After writing to slave device, writer wakes up kworker to flush
+> data on tty_port to reader, and the kworker finds that reader
+> has no room to store data so room <= 0 is met. At this moment,
+> reader consumes all the data on reader buffer and call
+> n_tty_kick_worker to check ldata->no_room which is false and
+> reader quits reading. Then kworker sets ldata->no_room=true
+> and quits too.
+> 
+> If write buffer is not full, writer will wake kworker to flush data
+> again after following writes, but if writer buffer is full and writer
+> goes to sleep, kworker will never be woken again and tty device is
+> blocked.
+> 
+> This problem can be solved with a check for read buffer size inside
+> n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
+> is true, a call to n_tty_kick_worker is necessary to keep flushing
+> data to reader.
+> 
+> Signed-off-by: cael <juanfengpy@gmail.com>
+> 
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index efc72104c840..544f782b9a11 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
+>         struct n_tty_data *ldata = tty->disc_data;
+> 
+>         /* Did the input worker stop? Restart it */
+> -       if (unlikely(ldata->no_room)) {
+> -               ldata->no_room = 0;
+> +       if (unlikely(READ_ONCE(ldata->no_room))) {
+> +               WRITE_ONCE(ldata->no_room, 0);
+> 
+>                 WARN_RATELIMIT(tty->port->itty == NULL,
+>                                 "scheduling with invalid itty\n");
+> @@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty,
+> const unsigned char *cp,
+>                         if (overflow && room < 0)
+>                                 ldata->read_head--;
+>                         room = overflow;
+> -                       ldata->no_room = flow && !room;
+> +                       WRITE_ONCE(ldata->no_room, flow && !room);
+>                 } else
+>                         overflow = 0;
+> 
+> @@ -1663,6 +1663,24 @@ n_tty_receive_buf_common(struct tty_struct
+> *tty, const unsigned char *cp,
+>         } else
+>                 n_tty_check_throttle(tty);
+> 
+> +       if (unlikely(ldata->no_room)) {
+> +               /*
+> +                * Barrier here is to ensure to read the latest read_tail in
+> +                * chars_in_buffer() and to make sure that read_tail
+> is not loaded
+> +                * before ldata->no_room is set, otherwise, following
+> race may occur:
+> +                * n_tty_receive_buf_common() |n_tty_read()
+> +                * chars_in_buffer() > 0      |
+> +                *
+> |copy_from_read_buf()->chars_in_buffer()==0
+> +                *                            |if (ldata->no_room)
+> +                * ldata->no_room = 1         |
+> +                * Then both kworker and reader will fail to kick
+> n_tty_kick_worker(),
+> +                * smp_mb is paired with smp_mb() in n_tty_read().
+> +                */
+> +               smp_mb();
+> +               if (!chars_in_buffer(tty))
+> +                       n_tty_kick_worker(tty);
+> +       }
+> +
+>         up_read(&tty->termios_rwsem);
+> 
+>         return rcvd;
+> @@ -2180,8 +2198,23 @@ static ssize_t n_tty_read(struct tty_struct
+> *tty, struct file *file,
+>                 if (time)
+>                         timeout = time;
+>         }
+> -       if (tail != ldata->read_tail)
+> +       if (tail != ldata->read_tail) {
+> +               /*
+> +                * Make sure no_room is not read before setting read_tail,
+> +                * otherwise, following race may occur:
+> +                * n_tty_read()
+> |n_tty_receive_buf_common()
+> +                * if(ldata->no_room)->false            |
+> +                *                                      |ldata->no_room = 1
+> +                *                                      |char_in_buffer() > 0
+> +                * ldata->read_tail = ldata->commit_head|
+> +                * Then copy_from_read_buf() in reader consumes all the data
+> +                * in read buffer, both reader and kworker will fail to kick
+> +                * tty_buffer_restart_work().
+> +                * smp_mb is paired with smp_mb() in n_tty_receive_buf_common().
+> +                */
+> +               smp_mb();
+>                 n_tty_kick_worker(tty);
+> +       }
+>         up_read(&tty->termios_rwsem);
+> 
+>         remove_wait_queue(&tty->read_wait, &wait);
+> -- 
+> 2.27.0
 
-elapsed time: 1155m
+Is there any specific reason you ignored all of the recommendations from
+my previous email as to what needs to be changed in order for this patch
+to be accepted?  It doesn't make any sense for me to just keep sending
+the same information again :(
 
-configs tested: 79
-configs skipped: 3
+thanks,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-ia64                         bigsur_defconfig
-m68k                        m5272c3_defconfig
-sh                            titan_defconfig
-powerpc                 mpc837x_mds_defconfig
-mips                         tb0226_defconfig
-powerpc64                           defconfig
-sh                          rsk7201_defconfig
-powerpc                 canyonlands_defconfig
-sh                          lboxre2_defconfig
-powerpc                      ep88xc_defconfig
-um                           x86_64_defconfig
-sh                   sh7770_generic_defconfig
-arc                    vdk_hs38_smp_defconfig
-ia64                                defconfig
-riscv                             allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                            allmodconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-powerpc                    socrates_defconfig
-powerpc                     ppa8548_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                             mxs_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
