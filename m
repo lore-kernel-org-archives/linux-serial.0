@@ -2,188 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3929CC43334
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jun 2022 14:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3395CCA47B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 07:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235563AbiFKOiU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Jun 2022 10:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
+        id S239121AbiFMHPg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235441AbiFKOiT (ORCPT
+        with ESMTP id S239061AbiFMHPb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Jun 2022 10:38:19 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C072763B5
-        for <linux-serial@vger.kernel.org>; Sat, 11 Jun 2022 07:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654958298; x=1686494298;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=z78fEKbs/bMlPlpDjXeyWThmgX4eS4IK2jPlprOlNXE=;
-  b=NINCZ/9u4m8qM9yFuNC0aunhrheOJP0zR0MEvqwtQc0aRfsNXN2eqSs/
-   S9Cpn/2qrAeGJ01HVj0S2duJ8IeaNlFavySxFh1Jb3+uNLlUaF2EBlJdb
-   9Cgq7jo4kCSLvotMqpOwcX+hmZP398wpzDPpfyyPOO+HUwEAltL8ndQV6
-   Cu/aIHlkTkyY3cBWmsRwklHinsYGF1WALSBxFPcuNaCqmGn31FFxU3J9w
-   c0d1ekPaSAqqEiv2xlYzb3Wrz8kKJm0crP49Wa2SNB3qLaj2TKF1CNGi8
-   MrvUb07EEi8HfMtEumDzM/rC78ggdmhWl1py3+zfLC1pdzQlGJyXt3rrd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="266638943"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="266638943"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 07:38:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="650424210"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Jun 2022 07:38:16 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o02Fk-000IyL-5V;
-        Sat, 11 Jun 2022 14:38:16 +0000
-Date:   Sat, 11 Jun 2022 22:37:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- be03b0651ffd8bab69dfd574c6818b446c0753ce
-Message-ID: <62a4a8c6.7CBf75Keo5LFf0Zj%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 13 Jun 2022 03:15:31 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC891A3B4;
+        Mon, 13 Jun 2022 00:15:30 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id g25so5207942ljm.2;
+        Mon, 13 Jun 2022 00:15:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5kDMrKjn7SCHPQD491sQRcFVfX76w23aBw8JLkLjVRw=;
+        b=Srj6D23H2EK6Wly58iQ/6pMCI5jMFeUy0YYc6wNBAJ1DayAFQ+5HvraX4qfPNpjsIu
+         GBoggQwERhEbqrl28la62ywOc2RiJGmAMuldFhf3r9387hgpCbOyv/BZz2Fy3GQFjFxf
+         yqKAUX4SMlnsqjiFTHGmpBu0ZuYnW7nt9ZeCN4cIxs+LRus8sZ48hE0o2avpuyr30gHk
+         vML4jOcS/dCzSiqfjAB+JSXgdPn7AmOohUjoGs9lgFekvEs9t3sJYDn+fDsIQG02LFKT
+         gRKci10Ty9tbl9o+ISKT8DErQ80qQ8EPVYdXGFR9TUEdbFMQ/fUlkuyJwlRFv6Q1DpNC
+         cSYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5kDMrKjn7SCHPQD491sQRcFVfX76w23aBw8JLkLjVRw=;
+        b=cCF9hPDDuorcj2KfYpIayRjkYfWuPE8kKeDMV4tNVUEZ+dKPcxAIegRVPyI/1qJFmT
+         d/1+rsNUfrzREdaYDHvsW7jIRO/FaxK2ydG9549rAFRVYxsazaZxjs8cGtlFZOCQgDzZ
+         RMiiiCaUfaOtjTesdjlcr65qFOZqLnml7kGwTCw2o4Thd3O75ZQ+k7AIu6YiM2dMATLB
+         07Gk83/R+29xnhT+Fpkq9ivwCudj8wR1EcoRFdUaGbxuaaOvZv5POs3RUJwvJ7vw1Su+
+         QJzoNN19L4wJgSQC4Y/+cLaaE5/dDg62xTIy1gYOr8Z4FyeQyvrrmnn4WVnhoXekec5y
+         3Tkg==
+X-Gm-Message-State: AOAM533tpYR7P6RFV35Pi3sUYkEs7ZrycEI8Sdkf+jobONZz73w5Ak7I
+        E/wOvyBqa34QPJoBQ/2ivpSj2l4sRhMX9Xzn3X0=
+X-Google-Smtp-Source: ABdhPJxMeAPZdjsh21T3CQmhRApXL+7ZnGLDleQGDR/hSUYszbzLKYdlJuCY6SHZXqdQTIYtuyFXaeFXeSI+aIcq30g=
+X-Received: by 2002:a2e:bf27:0:b0:246:7ed6:33b0 with SMTP id
+ c39-20020a2ebf27000000b002467ed633b0mr69455983ljr.167.1655104528727; Mon, 13
+ Jun 2022 00:15:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-11-tmaimon77@gmail.com>
+ <3aa70c91-d6d7-e2eb-9c45-a1fb0a5751ca@linaro.org> <CAP6Zq1iCJO3AzHnG7RSQ1pyVwayxs+X3iVM4U=6j2k0EgR7psg@mail.gmail.com>
+ <80f9c2d5-52d9-b03d-c272-ac475ae8c69e@linaro.org>
+In-Reply-To: <80f9c2d5-52d9-b03d-c272-ac475ae8c69e@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Mon, 13 Jun 2022 10:15:17 +0300
+Message-ID: <CAP6Zq1g40QFSehUiTevaf6pw-Ti+Q-GU3z5pM_tn9X7eChU-hA@mail.gmail.com>
+Subject: Re: [PATCH v2 10/20] ARM: dts: nuvoton: add reset syscon property
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: be03b0651ffd8bab69dfd574c6818b446c0753ce  serial: 8250: Store to lsr_save_flags after lsr read
+Hi Krzysztof,
 
-elapsed time: 1590m
+Thanks for the clarifications, will update the next version.
 
-configs tested: 112
-configs skipped: 3
+Best regards,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Tomer
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-ia64                         bigsur_defconfig
-m68k                        m5272c3_defconfig
-sh                            titan_defconfig
-powerpc                 mpc837x_mds_defconfig
-mips                         tb0226_defconfig
-powerpc64                           defconfig
-sh                          rsk7201_defconfig
-powerpc                 canyonlands_defconfig
-sh                          lboxre2_defconfig
-powerpc                      makalu_defconfig
-powerpc                        cell_defconfig
-s390                          debug_defconfig
-powerpc                      tqm8xx_defconfig
-h8300                            allyesconfig
-arm                           h5000_defconfig
-mips                       capcella_defconfig
-riscv             nommu_k210_sdcard_defconfig
-sh                   secureedge5410_defconfig
-powerpc                      ep88xc_defconfig
-powerpc                       maple_defconfig
-sh                     magicpanelr2_defconfig
-arm                          badge4_defconfig
-powerpc                     ep8248e_defconfig
-powerpc                      mgcoge_defconfig
-nios2                               defconfig
-m68k                          amiga_defconfig
-arm                            pleb_defconfig
-sh                ecovec24-romimage_defconfig
-powerpc                     taishan_defconfig
-powerpc                     sequoia_defconfig
-um                           x86_64_defconfig
-sh                   sh7770_generic_defconfig
-arc                    vdk_hs38_smp_defconfig
-arm                             pxa_defconfig
-powerpc                      ppc40x_defconfig
-xtensa                           alldefconfig
-mips                          rb532_defconfig
-ia64                                defconfig
-riscv                             allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-arc                              allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a006
-x86_64                        randconfig-a002
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                randconfig-r042-20220611
-arc                  randconfig-r043-20220611
-s390                 randconfig-r044-20220611
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
-
-clang tested configs:
-powerpc                    socrates_defconfig
-powerpc                     ppa8548_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                             mxs_defconfig
-arm                        magician_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On Fri, 10 Jun 2022 at 12:51, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 09/06/2022 23:30, Tomer Maimon wrote:
+> > Hi Krzysztof,
+> >
+> > Thanks for your comments
+> >
+> > On Wed, 8 Jun 2022 at 13:07, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 08/06/2022 11:56, Tomer Maimon wrote:
+> >>> Add nuvoton,sysgcr syscon property to the reset
+> >>> node to handle the general control registers.
+> >>
+> >> Wrong wrapping.
+> > it will be very helpful if you could point me what wrong wrapped in
+> > the commit message, is it the explanation or the header? or something
+> > else?
+>
+> I pointed you last time. I pointed the exact line, exact rule you need
+> to follow. I pointed it three times already and three times I said
+> wrapping is wrong:
+> https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst#L586
+>
+> "The body of the explanation, line wrapped at 75 columns, which will be
+> copied to the permanent changelog to describe this patch."
+>
+> Your wrapping is not at 75 columns and it causes the commit to be less
+> readable, without any reason. Please follow Linux kernel coding style/rules.
+>
+>
+> Best regards,
+> Krzysztof
