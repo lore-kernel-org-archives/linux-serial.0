@@ -2,88 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27950C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 08:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58707CCA47B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 09:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiFMI3D (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
+        id S239751AbiFMJZT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240110AbiFMI3B (ORCPT
+        with ESMTP id S229577AbiFMJZS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:29:01 -0400
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371D013D1A;
-        Mon, 13 Jun 2022 01:28:58 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so4149706wmq.0;
-        Mon, 13 Jun 2022 01:28:58 -0700 (PDT)
+        Mon, 13 Jun 2022 05:25:18 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEB12AC1;
+        Mon, 13 Jun 2022 02:25:17 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id a29so7885267lfk.2;
+        Mon, 13 Jun 2022 02:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xUYF6Y1hCqd5t8WxA/+uJZZHaISwa+qUcLkVEX3FDtY=;
+        b=OZRK4j4GfMvvujegmLuiiyQfatSbywM4kRdRc1tMAOzluF9+R3ROjAPU3l7ABr8vnN
+         jYtnDvoHI2bSR7Kn4LK8/ztorjpVQXZ2uSDdgpxBZhlEi2T9raelsgwGWpgrCmVTF1ng
+         +jtfpdHxAxBWbneZjvuPphDXeVMYqaI7GuHnfR/C9zsLfnkFjud27cobWdzB8VQCmmf7
+         CUqYCzZDZac86aaP53eZzM6opXQBwDLw0lkE/+JhAnd0rjVfdtJLXqWYI/7dX/nxVL7B
+         6oAE7Xd3AmopNE8kT4f8CY9HGoy/EEkLZuu4y4iGct6vRqeb8A+Agl+ljt2/6CRdvDGF
+         W5cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tupb+riFWiaYOqmvblkOLc8FOdhvfJSmDVJxPFdpfFw=;
-        b=D7q9B49maHG/g/rDV1D0fCV4zc6EUQQmzaNwypno6swPFm+W+F/zsu6VihGcDl8wvm
-         PoIA5+JmOViA57MpefW7q/A/NKECl5P7ihHcT7gaRFKOcWRNoIcNFFJ9HiNDXfUXoPlY
-         MlNtXiJLJqiqii94JSBYoSAmbQJke3fqDOh22vEg28LVWEZ7XqIvL1JqXXBhK5Hb0SEi
-         of/82otH0Fptz/iB+udVHZI0Sikhg5RoOVBUFzKmx/K4uu3Q2OY+SJIgSoWAyYxkiCaQ
-         UyuPWeWiSxb2GjHV1ltTswROJ7H+UoAjY/o8bnP6wWPB/zV3r0THjp4xL00mKDBUq7Su
-         DcvQ==
-X-Gm-Message-State: AOAM533gU5VOuGACzUH6KlB9eB0YpwofrqMcERWNyns3s0VgxLB36615
-        7I0iNdepmQh27vjEsg6NZyQ=
-X-Google-Smtp-Source: ABdhPJxKW1KENykCcEwHU01gimMOS636bAvWJHU2vfwvyXcq0N2q+DOyBPfPadf44AN/eXnbf3c8cA==
-X-Received: by 2002:a05:600c:354a:b0:39c:4ebf:fb4c with SMTP id i10-20020a05600c354a00b0039c4ebffb4cmr13200867wmq.142.1655108936843;
-        Mon, 13 Jun 2022 01:28:56 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id m7-20020a5d4a07000000b00213abce60e4sm7564269wrq.111.2022.06.13.01.28.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 01:28:56 -0700 (PDT)
-Message-ID: <e722f97b-cb18-2d8c-b3f1-38eca21f6a3f@kernel.org>
-Date:   Mon, 13 Jun 2022 10:28:55 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xUYF6Y1hCqd5t8WxA/+uJZZHaISwa+qUcLkVEX3FDtY=;
+        b=jCfGaR9EhmtmrGq19XLLS2LQymZPC9QkkvQwyzmTmszJ7aOvm04dsmUt/lYG2dpHDF
+         ACoqEZmr34IDvsexmDrvLt0IFTmKU12aCkskwF7w+ab1Tp2ABAhF3jmT21vcMZad66zu
+         BTKtg6PKcpm7U2jX/u9m1zl2MZ0EC+p3WdQvwn6HgnVEqazrn4kyse0+3CJfuw94cuFn
+         94bJtCYyimjNhfNtGDYUDiuhEGUibgSxFcIs6LymLtXtDDVb7r4lBTxJ867tku+5kSyP
+         h42E43hHXfoARWdpi8kDfRBMDnwYIrcMew6qqJX/yCMkEn0QBOOVINKkpY7XSbAmrL2l
+         u7Sw==
+X-Gm-Message-State: AOAM532FpcBbl+Rs6UmKKv1kfIhbruI1OqPMEM0+kMEePEU1icOV70wl
+        PgJC71w7jNMWxE+p2oim2X8pNgGCRzJ113vZx0o=
+X-Google-Smtp-Source: ABdhPJxXc679feoHAf2D/GisUYLrlv1MVhsVhMMqlkvsfBNlHHdqjK5/eafARXLQjX3HPF+NV1BKVh2veyAWJgShjls=
+X-Received: by 2002:a05:6512:1052:b0:479:1f92:13b4 with SMTP id
+ c18-20020a056512105200b004791f9213b4mr27864941lfb.200.1655112316061; Mon, 13
+ Jun 2022 02:25:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] serial: 8250_pericom: Use UART_LCR_DLAB
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220613075736.12283-1-ilpo.jarvinen@linux.intel.com>
- <20220613075736.12283-2-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220613075736.12283-2-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-13-tmaimon77@gmail.com>
+ <add025b6-c622-b204-d39e-67b31878d37f@linaro.org> <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
+ <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
+In-Reply-To: <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Mon, 13 Jun 2022 12:25:05 +0300
+Message-ID: <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
+Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for NPCM8XX
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13. 06. 22, 9:57, Ilpo Järvinen wrote:
-> Use UART_LCR_DLAB instead of literal.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Hi Krzysztof,
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Thanks for your clarification.
 
-> ---
->   drivers/tty/serial/8250/8250_pericom.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pericom.c b/drivers/tty/serial/8250/8250_pericom.c
-> index 95ff10f25d58..b8d5b7714a9d 100644
-> --- a/drivers/tty/serial/8250/8250_pericom.c
-> +++ b/drivers/tty/serial/8250/8250_pericom.c
-> @@ -73,7 +73,7 @@ static void pericom_do_set_divisor(struct uart_port *port, unsigned int baud,
->   			struct uart_8250_port *up = up_to_u8250p(port);
->   			int lcr = serial_port_in(port, UART_LCR);
->   
-> -			serial_port_out(port, UART_LCR, lcr | 0x80);
-> +			serial_port_out(port, UART_LCR, lcr | UART_LCR_DLAB);
->   			serial_dl_write(up, divisor);
->   			serial_port_out(port, 2, 16 - scr);
->   			serial_port_out(port, UART_LCR, lcr);
+We can remove the dt-binding file and use numbers in the DTS,
+appreciate if you can answer few additional questions:
+1. Do you suggest adding all NPCM reset values to the NPCM reset
+document or the reset values should describe in the module
+documentation that uses it?
+2. Some of the NPCM7XX document modules describe the reset value they
+use from the dt-binding for example:
+https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
+If we remove the NPCM8XX dt-binding file should we describe the
+NPCM8XX values in the NPCM-ADC document file?
 
+Best regards,
 
--- 
-js
-suse labs
+Tomer
+
+On Fri, 10 Jun 2022 at 12:55, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 10/06/2022 00:05, Tomer Maimon wrote:
+> > Hi Krzysztof,
+> >
+> > Sorry, but I thought the fix is only to add an explanation to the
+> > dt-binding file as was done in V2.
+> >
+> > The NPCM8XX binding is done in the same way as the NPCM7XX and both
+> > use the same reset driver and use the same reset method in upstreamed
+> > NPCM reset driver.
+> >
+> > Can you please explain again what you suggest to do?
+>
+> If you want abstract IDs, they must be abstract, so not representing
+> hardware registers. Then they start at 1 and are incremented by 1.
+>
+> Other option is to skip such IDs entirely and use register
+> offsets/addresses directly, like Arnd suggested in linked documents. I
+> think he expressed it clearly, so please read his answers which I linked
+> in previous discussion.
+>
+> There is no single reason to store register addresses/values/offsets as
+> binding headers. These are not bindings.
+>
+> Best regards,
+> Krzysztof
