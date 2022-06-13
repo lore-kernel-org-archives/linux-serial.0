@@ -2,144 +2,130 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58707CCA47B
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 09:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8A4C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 09:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239751AbiFMJZT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
+        id S238903AbiFMJZh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiFMJZS (ORCPT
+        with ESMTP id S240833AbiFMJZg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:25:18 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEB12AC1;
-        Mon, 13 Jun 2022 02:25:17 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id a29so7885267lfk.2;
-        Mon, 13 Jun 2022 02:25:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xUYF6Y1hCqd5t8WxA/+uJZZHaISwa+qUcLkVEX3FDtY=;
-        b=OZRK4j4GfMvvujegmLuiiyQfatSbywM4kRdRc1tMAOzluF9+R3ROjAPU3l7ABr8vnN
-         jYtnDvoHI2bSR7Kn4LK8/ztorjpVQXZ2uSDdgpxBZhlEi2T9raelsgwGWpgrCmVTF1ng
-         +jtfpdHxAxBWbneZjvuPphDXeVMYqaI7GuHnfR/C9zsLfnkFjud27cobWdzB8VQCmmf7
-         CUqYCzZDZac86aaP53eZzM6opXQBwDLw0lkE/+JhAnd0rjVfdtJLXqWYI/7dX/nxVL7B
-         6oAE7Xd3AmopNE8kT4f8CY9HGoy/EEkLZuu4y4iGct6vRqeb8A+Agl+ljt2/6CRdvDGF
-         W5cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xUYF6Y1hCqd5t8WxA/+uJZZHaISwa+qUcLkVEX3FDtY=;
-        b=jCfGaR9EhmtmrGq19XLLS2LQymZPC9QkkvQwyzmTmszJ7aOvm04dsmUt/lYG2dpHDF
-         ACoqEZmr34IDvsexmDrvLt0IFTmKU12aCkskwF7w+ab1Tp2ABAhF3jmT21vcMZad66zu
-         BTKtg6PKcpm7U2jX/u9m1zl2MZ0EC+p3WdQvwn6HgnVEqazrn4kyse0+3CJfuw94cuFn
-         94bJtCYyimjNhfNtGDYUDiuhEGUibgSxFcIs6LymLtXtDDVb7r4lBTxJ867tku+5kSyP
-         h42E43hHXfoARWdpi8kDfRBMDnwYIrcMew6qqJX/yCMkEn0QBOOVINKkpY7XSbAmrL2l
-         u7Sw==
-X-Gm-Message-State: AOAM532FpcBbl+Rs6UmKKv1kfIhbruI1OqPMEM0+kMEePEU1icOV70wl
-        PgJC71w7jNMWxE+p2oim2X8pNgGCRzJ113vZx0o=
-X-Google-Smtp-Source: ABdhPJxXc679feoHAf2D/GisUYLrlv1MVhsVhMMqlkvsfBNlHHdqjK5/eafARXLQjX3HPF+NV1BKVh2veyAWJgShjls=
-X-Received: by 2002:a05:6512:1052:b0:479:1f92:13b4 with SMTP id
- c18-20020a056512105200b004791f9213b4mr27864941lfb.200.1655112316061; Mon, 13
- Jun 2022 02:25:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-13-tmaimon77@gmail.com>
- <add025b6-c622-b204-d39e-67b31878d37f@linaro.org> <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
- <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
-In-Reply-To: <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 13 Jun 2022 12:25:05 +0300
-Message-ID: <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
-Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for NPCM8XX
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mon, 13 Jun 2022 05:25:36 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DB0193E3;
+        Mon, 13 Jun 2022 02:25:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655112334; x=1686648334;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=9W8UBL8GQK1i8P7k7h9skaKJIvKeSxs0mGTdDoAxlas=;
+  b=fqMhrCKaoqC18aJhxKIlakXRGms7GbxdKM1A/CwyiOfup9s5DZRKbjBb
+   p0si3DRNncvKkKvGcNN5Z+nweA9ptJpBKGKLaAsnvdNF0H5xvztOzLuDD
+   hdfEvXCxGjaSo+W4mypSFf5mPCR7COAuLPbF7yJkServD+pT3BHTHvzTL
+   nrdWq29LNE5Fj9VPfS4PMH316kI2/RIVhoZqhJJJFwu81gCNq9Eq0OHtt
+   qq5PkNWjmQoMsDXLoU0KAk7psxSuw4HFU0ZH54dASNtZ96Y+MbvWvq5Sz
+   4ETvIq+gjeMG9R6A/nYT7oGKd7JcR1WsqyTx/3o9CuRNYDrV5Y6VCEbp8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="339898381"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="339898381"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 02:25:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="639635137"
+Received: from fnechitx-mobl.ger.corp.intel.com ([10.249.40.115])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 02:25:30 -0700
+Date:   Mon, 13 Jun 2022 12:25:24 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Paul Cercueil <paul@crapouillou.net>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mips@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas.wunner@intel.com>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 1/6] serial: 8250: make saved LSR larger
+In-Reply-To: <670010a1-7727-f2d9-87ad-18ddbeb0cbef@kernel.org>
+Message-ID: <cd812b3-393-79be-d7bf-ce79376d9f@linux.intel.com>
+References: <20220613075227.10394-1-ilpo.jarvinen@linux.intel.com> <20220613075227.10394-2-ilpo.jarvinen@linux.intel.com> <670010a1-7727-f2d9-87ad-18ddbeb0cbef@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-657426468-1655112332=:2044"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Thanks for your clarification.
+--8323329-657426468-1655112332=:2044
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-We can remove the dt-binding file and use numbers in the DTS,
-appreciate if you can answer few additional questions:
-1. Do you suggest adding all NPCM reset values to the NPCM reset
-document or the reset values should describe in the module
-documentation that uses it?
-2. Some of the NPCM7XX document modules describe the reset value they
-use from the dt-binding for example:
-https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
-If we remove the NPCM8XX dt-binding file should we describe the
-NPCM8XX values in the NPCM-ADC document file?
+On Mon, 13 Jun 2022, Jiri Slaby wrote:
 
-Best regards,
+> On 13. 06. 22, 9:52, Ilpo Järvinen wrote:
+> > DW flags address received as BIT(8) in LSR. In order to not lose that
+> > on read, enlarge lsr_saved_flags to u16.
+> > 
+> > Adjust lsr/status variables and related call chains which used unsigned
+> > char type previously to unsigned int. Technically, some of these type
+> > conversion would not be needed but it doesn't hurt to be consistent.
+> > 
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ...
+> > --- a/include/linux/serial_8250.h
+> > +++ b/include/linux/serial_8250.h
+> > @@ -119,7 +119,7 @@ struct uart_8250_port {
+> >   	 * be immediately processed.
+> >   	 */
+> >   #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
+> > -	unsigned char		lsr_saved_flags;
+> > +	u16			lsr_saved_flags;
+> >   #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+> >   	unsigned char		msr_saved_flags;
+> >   @@ -170,8 +170,8 @@ extern void serial8250_do_set_divisor(struct uart_port
+> > *port, unsigned int baud,
+> >   				      unsigned int quot_frac);
+> >   extern int fsl8250_handle_irq(struct uart_port *port);
+> >   int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
+> > -unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char
+> > lsr);
+> > -void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr);
+> > +unsigned int serial8250_rx_chars(struct uart_8250_port *up, unsigned int
+> > lsr);
+> > +void serial8250_read_char(struct uart_8250_port *up, unsigned int lsr);
+> 
+> It looks odd to have
+>   u16 lsr_saved_flags
+> in the struct and
+>   unsigned int lsr
+> here and there. You wrote:
+>   Technically, some of these type conversion would not be needed
+>   but it doesn't hurt to be consistent
+> But it looks like you actually made them a bit inconsistent.
 
-Tomer
+Those were actually meant to discuss on different things. u16 is the 
+oldest part of change and the reason why it is only u16 is that I
+didn't need more than that to store the bits used for the mask.
 
-On Fri, 10 Jun 2022 at 12:55, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 10/06/2022 00:05, Tomer Maimon wrote:
-> > Hi Krzysztof,
-> >
-> > Sorry, but I thought the fix is only to add an explanation to the
-> > dt-binding file as was done in V2.
-> >
-> > The NPCM8XX binding is done in the same way as the NPCM7XX and both
-> > use the same reset driver and use the same reset method in upstreamed
-> > NPCM reset driver.
-> >
-> > Can you please explain again what you suggest to do?
->
-> If you want abstract IDs, they must be abstract, so not representing
-> hardware registers. Then they start at 1 and are incremented by 1.
->
-> Other option is to skip such IDs entirely and use register
-> offsets/addresses directly, like Arnd suggested in linked documents. I
-> think he expressed it clearly, so please read his answers which I linked
-> in previous discussion.
->
-> There is no single reason to store register addresses/values/offsets as
-> binding headers. These are not bindings.
->
-> Best regards,
-> Krzysztof
+That "consistent" part was written to note that there are case which check 
+only e.g. TEMT flag. As TEMT is within first 8 bits, it doesn't absolutely 
+need more than unsigned char but I enlarged those types regardless.
+I agree with you though the wording doesn't convey meaning exclusive to 
+those cases.
+
+> So why not use u16 for everyone?
+
+If that consistency is necessary, I'd be more inclined to make the ones in 
+the uart_8250_port unsigned int instead. The reason is that it would then 
+align better to read/ignore_status_mask that are already unsigned int. 
+Would it be ok or do you still prefer u16?
+
+-- 
+ i.
+
+--8323329-657426468-1655112332=:2044--
