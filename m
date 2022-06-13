@@ -2,210 +2,184 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FBAC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 14:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A16C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 17:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380833AbiFMOHB (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        id S240902AbiFMRRy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381431AbiFMOEU (ORCPT
+        with ESMTP id S241346AbiFMRRk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:20 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D892BB2D;
-        Mon, 13 Jun 2022 04:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655120361; x=1686656361;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=G7QQ+WW3LOvtPCdg1OVAOqL6XRPidEyJLiCpfLWTSgM=;
-  b=kyomMcxqDR2f7EPFb4BtDU7kLOMwDtShk0FJQPRM0nJv+caCXuAy82lc
-   ql6MXXyf+stufw6+y7iKaKMBN9v5+nRn5MgJpkiM16vaORqGKaodqrqpu
-   Tsl80wHfFls7BLZtSGtQTstNiXVGg1fxS/pdm20GGqLYJ9KXLdi12/vB1
-   l9VQRXS0uOKfp7ESQ8Qqr9kGRe6ZeT2/Kj9EJJV3jjtjZDWuuyExvNDyP
-   lMv/2Fv5MwU6hpjbSywZtjrH1IsC5ubTMZjItPfcI8sT1r6DXFNBhWIj9
-   DYYAciYbF0nWcZNT5iFBPx+EvQ9RAweOQlwevgqCvGEMft8fmWTYU+pHJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342227628"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="342227628"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:39:16 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="639685879"
-Received: from fnechitx-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.40.115])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:39:13 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] serial: Drop timeout from uart_port
-Date:   Mon, 13 Jun 2022 14:39:05 +0300
-Message-Id: <20220613113905.22962-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 13:17:40 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1782F688B
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jun 2022 05:32:01 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id c196so5637081pfb.1
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jun 2022 05:32:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=TZ5VZzsljkigqioi3VWFd7hz7DH2WAUyfbFhcQhQd9I=;
+        b=l1QV1QzOl7MGqLLJVz1k67s1ICsnqMpbuk0dasqMvLTFzOOPxTolOu7H30rOi2LSM5
+         TMVxTNj+z1N9W9J00k7FJyr07WcZNFyRMN4PBkLCfnGenVXGD1E7GJHFFmBrWWGIxR11
+         PB/HjVhrjcTu8ecGeIbk5ESNI0RtVjB/QMQgxv4IyoJbJIyhkULr73D1PUPhw9xHOpa8
+         KaAr3qA3w4cBM6xQ9nRl8l2yFAylF8Q4JsBMbyWEAk6SbCGsTU8X/1ygbYsKg32Ez8iJ
+         +O71vKbbxIuyJFPbdjdBKqYjAqxPqs+PIQB9KMcwYy83KBy45bFaJb2j8WHz/jrp1wAr
+         jIKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=TZ5VZzsljkigqioi3VWFd7hz7DH2WAUyfbFhcQhQd9I=;
+        b=CIb8iX+XWCrkMzhg5cylgFw9n9G/y/EgjAI72Ob34hfkGZ5o7KmiLbu9V7wjIqpgqv
+         /TXKQwgu3zC7Nxeob1TJ6QFMiN6ed+8v/ja5lgHe8XkB6w1y1i7J+o8TdsJyTC4zREaE
+         KebJIwwGuMGrgRTr00bPhrA44aTK74rOKJ2febLfCXV/nJZTtEziA969LZs/efbGKoAi
+         diI1LwRxM0xA6dG/UcGqYEBPKohLOrb4jHGPS2btKAWqeJfBwhQWJlzdkiyHqaHfepj+
+         ce79aOoNRdMa720GsBYV321RoK9wxluOQL7Ymk8170QGflcAvQew/BWtqehEjqyCIFiW
+         94WA==
+X-Gm-Message-State: AOAM533aFAltYVkIUUGStK5vsQu96Ug8y3+TKlsp5vBug+eT5+jHiHEo
+        b29UlDySNOzsrGw2MLj5OLM=
+X-Google-Smtp-Source: ABdhPJzaPPhIO+OEHXxysHesoacyWTz4Y6WBy99IM/usq/Kf6e1zB88S4fzt8o5jvrhEh5YawCQlRA==
+X-Received: by 2002:a05:6a00:16c1:b0:520:6ede:24fb with SMTP id l1-20020a056a0016c100b005206ede24fbmr15516342pfc.7.1655123514173;
+        Mon, 13 Jun 2022 05:31:54 -0700 (PDT)
+Received: from localhost.localdomain ([43.155.90.222])
+        by smtp.googlemail.com with ESMTPSA id c14-20020a170902848e00b001678ce9080dsm4966223plo.258.2022.06.13.05.31.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 13 Jun 2022 05:31:53 -0700 (PDT)
+From:   juanfengpy@gmail.com
+X-Google-Original-From: caelli@tencent.com
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        benbjiang@tencent.com, robinlai@tencent.com,
+        linux-serial@vger.kernel.org, caelli <caelli@tencent.com>
+Subject: [PATCH v3] tty: fix hang on tty device with no_room set
+Date:   Mon, 13 Jun 2022 20:30:29 +0800
+Message-Id: <1655123429-15376-1-git-send-email-caelli@tencent.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <YqRFBMXz7/9SkL5F@kroah.com>
+References: <YqRFBMXz7/9SkL5F@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since commit 31f6bd7fad3b ("serial: Store character timing information
-to uart_port"), per frame timing information is available on uart_port.
-Uart port's timeout can be derived from frame_time by multiplying with
-fifosize.
+From: caelli <caelli@tencent.com>
 
-Most callers of uart_poll_timeout are not made under port's lock. To be
-on the safe side, make sure frame_time is only accessed once. As
-fifo_size is effectively a constant, it shouldn't cause any issues.
+We have met a hang on pty device, the reader was blocking
+at epoll on master side, the writer was sleeping at wait_woken
+inside n_tty_write on slave side, and the write buffer on
+tty_port was full, we found that the reader and writer would
+never be woken again and blocked forever.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+The problem was caused by a race between reader and kworker:
+n_tty_read(reader):  n_tty_receive_buf_common(kworker):
+                    |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
+                    |room <= 0
+copy_from_read_buf()|
+n_tty_kick_worker() |
+                    |ldata->no_room = true
 
+After writing to slave device, writer wakes up kworker to flush
+data on tty_port to reader, and the kworker finds that reader
+has no room to store data so room <= 0 is met. At this moment,
+reader consumes all the data on reader buffer and call
+n_tty_kick_worker to check ldata->no_room which is false and
+reader quits reading. Then kworker sets ldata->no_room=true
+and quits too.
+
+If write buffer is not full, writer will wake kworker to flush data
+again after following writes, but if write buffer is full and writer
+goes to sleep, kworker will never be woken again and tty device is
+blocked.
+
+This problem can be solved with a check for read buffer size inside
+n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
+is true, a call to n_tty_kick_worker is necessary to keep flushing
+data to reader.
+
+Signed-off-by: caelli <caelli@tencent.com>
 ---
- Documentation/driver-api/serial/driver.rst |  5 +++--
- drivers/tty/serial/mux.c                   |  6 ------
- drivers/tty/serial/serial_core.c           | 25 ++++++++++---------------
- include/linux/serial_core.h                | 16 ++++++++++++++--
- 4 files changed, 27 insertions(+), 25 deletions(-)
+Previous threads:
+https://lore.kernel.org/all/CAPmgiULo4h8bOrzL+XJ5Pndw0kz80fBPfH_KNLx3c5j-Yj04SA@mail.gmail.com/t/
 
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index 7ef83fd3917b..1e7ab4142d49 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -422,8 +422,9 @@ Other functions
- ---------------
+I corrected some format problems as recommended and switched client to git send-email,
+which may be ok. And subject is changed from 'tty: fix a possible hang on tty device' to
+'tty: fix hang on tty device with no_room set' to make subject more obvious.
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index efc72104c840..544f782b9a11 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
+ 	struct n_tty_data *ldata = tty->disc_data;
  
- uart_update_timeout(port,cflag,baud)
--	Update the FIFO drain timeout, port->timeout, according to the
--	number of bits, parity, stop bits and baud rate.
-+	Update the frame timing information according to the number of bits,
-+	parity, stop bits and baud rate. The FIFO drain timeout is derived
-+	from the frame timing information.
+ 	/* Did the input worker stop? Restart it */
+-	if (unlikely(ldata->no_room)) {
+-		ldata->no_room = 0;
++	if (unlikely(READ_ONCE(ldata->no_room))) {
++		WRITE_ONCE(ldata->no_room, 0);
  
- 	Locking: caller is expected to take port->lock
+ 		WARN_RATELIMIT(tty->port->itty == NULL,
+ 				"scheduling with invalid itty\n");
+@@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+ 			if (overflow && room < 0)
+ 				ldata->read_head--;
+ 			room = overflow;
+-			ldata->no_room = flow && !room;
++			WRITE_ONCE(ldata->no_room, flow && !room);
+ 		} else
+ 			overflow = 0;
  
-diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
-index 643dfbcc43f9..0ba0f4d9459d 100644
---- a/drivers/tty/serial/mux.c
-+++ b/drivers/tty/serial/mux.c
-@@ -481,12 +481,6 @@ static int __init mux_probe(struct parisc_device *dev)
- 		port->line	= port_cnt;
- 		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MUX_CONSOLE);
+@@ -1663,6 +1663,24 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
+ 	} else
+ 		n_tty_check_throttle(tty);
  
--		/* The port->timeout needs to match what is present in
--		 * uart_wait_until_sent in serial_core.c.  Otherwise
--		 * the time spent in msleep_interruptable will be very
--		 * long, causing the appearance of a console hang.
--		 */
--		port->timeout   = HZ / 50;
- 		spin_lock_init(&port->lock);
++	if (unlikely(ldata->no_room)) {
++		/*
++		 * Barrier here is to ensure to read the latest read_tail in
++		 * chars_in_buffer() and to make sure that read_tail is not loaded
++		 * before ldata->no_room is set, otherwise, following race may occur:
++		 * n_tty_receive_buf_common() |n_tty_read()
++		 * chars_in_buffer() > 0      |
++		 *                            |copy_from_read_buf()->chars_in_buffer()==0
++		 *                            |if (ldata->no_room)
++		 * ldata->no_room = 1         |
++		 * Then both kworker and reader will fail to kick n_tty_kick_worker(),
++		 * smp_mb is paired with smp_mb() in n_tty_read().
++		 */
++		smp_mb();
++		if (!chars_in_buffer(tty))
++			n_tty_kick_worker(tty);
++	}
++
+ 	up_read(&tty->termios_rwsem);
  
- 		status = uart_add_one_port(&mux_driver, port);
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 621fc15e2e54..e068b16d770d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -327,13 +327,14 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- }
- 
- /**
-- *	uart_update_timeout - update per-port FIFO timeout.
-+ *	uart_update_timeout - update per-port frame timing information.
-  *	@port:  uart_port structure describing the port
-  *	@cflag: termios cflag value
-  *	@baud:  speed of the port
-  *
-- *	Set the port FIFO timeout value.  The @cflag value should
-- *	reflect the actual hardware settings.
-+ *	Set the port frame timing information from which the FIFO timeout
-+ *	value is derived. The @cflag value should reflect the actual hardware
-+ *	settings.
-  */
- void
- uart_update_timeout(struct uart_port *port, unsigned int cflag,
-@@ -343,13 +344,6 @@ uart_update_timeout(struct uart_port *port, unsigned int cflag,
- 	u64 frame_time;
- 
- 	frame_time = (u64)size * NSEC_PER_SEC;
--	size *= port->fifosize;
--
--	/*
--	 * Figure the timeout to send the above number of bits.
--	 * Add .02 seconds of slop
--	 */
--	port->timeout = (HZ * size) / baud + HZ/50;
- 	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
- }
- EXPORT_SYMBOL(uart_update_timeout);
-@@ -1698,7 +1692,7 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- {
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port;
--	unsigned long char_time, expire;
-+	unsigned long char_time, expire, fifo_timeout;
- 
- 	port = uart_port_ref(state);
- 	if (!port)
-@@ -1728,12 +1722,13 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- 		 * amount of time to send the entire FIFO, it probably won't
- 		 * ever clear.  This assumes the UART isn't doing flow
- 		 * control, which is currently the case.  Hence, if it ever
--		 * takes longer than port->timeout, this is probably due to a
-+		 * takes longer than FIFO timeout, this is probably due to a
- 		 * UART bug of some kind.  So, we clamp the timeout parameter at
--		 * 2*port->timeout.
-+		 * 2 * FIFO timeout.
- 		 */
--		if (timeout == 0 || timeout > 2 * port->timeout)
--			timeout = 2 * port->timeout;
-+		fifo_timeout = uart_fifo_timeout(port);
-+		if (timeout == 0 || timeout > 2 * fifo_timeout)
-+			timeout = 2 * fifo_timeout;
+ 	return rcvd;
+@@ -2180,8 +2198,23 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 		if (time)
+ 			timeout = time;
  	}
+-	if (tail != ldata->read_tail)
++	if (tail != ldata->read_tail) {
++		/*
++		 * Make sure no_room is not read before setting read_tail,
++		 * otherwise, following race may occur:
++		 * n_tty_read()		                |n_tty_receive_buf_common()
++		 * if(ldata->no_room)->false            |
++		 *			                |ldata->no_room = 1
++		 *                                      |char_in_buffer() > 0
++		 * ldata->read_tail = ldata->commit_head|
++		 * Then copy_from_read_buf() in reader consumes all the data
++		 * in read buffer, both reader and kworker will fail to kick
++		 * tty_buffer_restart_work().
++		 * smp_mb is paired with smp_mb() in n_tty_receive_buf_common().
++		 */
++		smp_mb();
+ 		n_tty_kick_worker(tty);
++	}
+ 	up_read(&tty->termios_rwsem);
  
- 	expire = jiffies + timeout;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 5518b70177b3..373783487b2e 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -231,7 +231,6 @@ struct uart_port {
- 
- 	int			hw_stopped;		/* sw-assisted CTS flow state */
- 	unsigned int		mctrl;			/* current modem ctrl settings */
--	unsigned int		timeout;		/* character-based timeout */
- 	unsigned int		frame_time;		/* frame timing in ns */
- 	unsigned int		type;			/* port type */
- 	const struct uart_ops	*ops;
-@@ -334,10 +333,23 @@ unsigned int uart_get_baud_rate(struct uart_port *port, struct ktermios *termios
- 				unsigned int max);
- unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
- 
-+/*
-+ * Calculates FIFO drain time.
-+ */
-+static inline unsigned long uart_fifo_timeout(struct uart_port *port)
-+{
-+	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
-+
-+	/* Add .02 seconds of slop */
-+	fifo_timeout += 20 * NSEC_PER_MSEC;
-+
-+	return max(nsecs_to_jiffies(fifo_timeout), 1UL);
-+}
-+
- /* Base timer interval for polling */
- static inline int uart_poll_timeout(struct uart_port *port)
- {
--	int timeout = port->timeout;
-+	int timeout = uart_fifo_timeout(port);
- 
- 	return timeout > 6 ? (timeout / 2 - 2) : 1;
- }
-
+ 	remove_wait_queue(&tty->read_wait, &wait);
 -- 
-tg: (65534736d9a5..) serial/drop-timeout (depends on: tty-next)
+2.27.0
+
