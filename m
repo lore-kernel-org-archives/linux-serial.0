@@ -2,91 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D1AC43334
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 09:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF37FCCA483
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 12:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242621AbiFNJFr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
+        id S1356582AbiFNMKa (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240296AbiFNJFo (ORCPT
+        with ESMTP id S1356483AbiFNMK0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:05:44 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8076A3D48F;
-        Tue, 14 Jun 2022 02:05:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4042D1F94F;
-        Tue, 14 Jun 2022 09:05:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655197542; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yZZHmjhrJiQpv4SvnpRP8nBUz+8q+DKt4Vtv5xSIPMY=;
-        b=W9DumSvj+Oi7kOJvwgG6i/KNHWwXVedD2tbZyLE18z5VAny6CxgQ61tXiCszHFlc+6sVDJ
-        CmTPKn7AuFkkb6RZEEPBKann4kJ8pVLqzoNi4KD6gdoTOuto8N/wOiIjr9BDTiUqrROrzM
-        gcjNWfGAcATzYiGJDsMBf/sQ1M3D4gY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655197542;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yZZHmjhrJiQpv4SvnpRP8nBUz+8q+DKt4Vtv5xSIPMY=;
-        b=Upk70MvuG5Mj50kTe4qNTzNHKANEVpoyb4YpqOmWXByc72dEAW+Cnpqmxecy2TQIcm8gy7
-        Msg6+Gj69HzzwSBQ==
-Received: from localhost.localdomain (unknown [10.100.201.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0D6092C141;
-        Tue, 14 Jun 2022 09:05:42 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 8/8] tty/vt: consolemap: use E_TABSZ for the translations size
-Date:   Tue, 14 Jun 2022 11:05:37 +0200
-Message-Id: <20220614090537.15557-8-jslaby@suse.cz>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614090537.15557-1-jslaby@suse.cz>
-References: <20220614075713.32767-1-jslaby@suse.cz>
- <20220614090537.15557-1-jslaby@suse.cz>
+        Tue, 14 Jun 2022 08:10:26 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93F748E7B;
+        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id s37so5708824pfg.11;
+        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
+        b=IdHqyEQ5ZxrIpPpcXsfUe9kU0utW++E7PzruvcWj2bH+qq5j1rOoA/Zs4KRgJVDPJB
+         FwZEQH8gRuSUbEkeKH2O+CdzNYuYbC+yWsBpHAF3CuF5mTw231bjPkiuSq8dPiGJ8cRw
+         9C9qIkH6p3LbKyEVfCuH1mg6kttUOxvHFG1IBoCip6r/l6GK0U4YY65FjfOsnfvWY2qt
+         cVdRNmNhAH6OAxTV4+xu4PWGbKHX/qMoVIwVf3CC79ULH5BhY14zUz3Ory00Dc8wGq+v
+         v+OBeshLEcU0L5wQeEXDBuLURFZEhz4LFh4jkntnUVKau4UJaYHuzJJT2I67n4eL3qYm
+         yXtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
+        b=6Qyp9tJ9D22Np8w1GIGhJbfZ9tnTskJwEDUqnhVCMXA9/VMcztepSyAYtY4jMP97Go
+         O4vpA59MKwpmN+/oq16+jHT8BBazRNykT/YGC558iTGyDFwqrn02QN5A8ovdqQjPlyAq
+         5nHJaha9O+jwdXikfbtT8tyia4AO377ZKO4ovGuqVhh0b0WdBjiD/XgLEctNjcQaienA
+         9AdAnJNajIj34OPLi9RyB2Y26++sEL9W2LUYlJHhzesFHGhPyWPJ8bFGqjTIdPNn/1RM
+         nq2/H2pOHHLBImW/NMVhKH1mUHPogT02yhwq3NvqkXOCRojatQLg4QODTk11Vpd+4NBQ
+         WDSQ==
+X-Gm-Message-State: AOAM533Ubjkg6VqXN+dNOJG2Efyzwfr5y/PBceac9ESwVEL3w6CtjDbp
+        JQ/pN8CewUZuRCsMY1EY6Kw=
+X-Google-Smtp-Source: ABdhPJw4eED7I9ElEerUgaqmPKpAQIi60hKd1blZwLF8Y8+rUFNbj0QxxKpNqFpkHgkfj5dWcsQQZA==
+X-Received: by 2002:a05:6a00:9a7:b0:51c:3e28:1501 with SMTP id u39-20020a056a0009a700b0051c3e281501mr4414402pfg.86.1655208624312;
+        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
+Received: from localhost (subs02-180-214-232-21.three.co.id. [180.214.232.21])
+        by smtp.gmail.com with ESMTPSA id f125-20020a62db83000000b0051be7a8c008sm7435411pfg.30.2022.06.14.05.10.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 05:10:23 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 19:10:20 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH] tty: Add closing marker into comment in tty_ldisc.h
+Message-ID: <Yqh6rL7nNvR3B5Ix@debian.me>
+References: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The code expects "translations" to have 256 (E_TABSZ) values. Use the
-macro instead of the constant to be explicit about this.
+On Tue, Jun 14, 2022 at 10:50:54AM +0300, Ilpo Järvinen wrote:
+> The closing `` is missing. Add it.
+> 
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
 
-Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
+Hi Ilpo,
 
-Notes:
-    [v2]
-    - this is new in this series
+I have already posted the same fix at [1]. Thanks anyway.
 
- drivers/tty/vt/consolemap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[1]: https://lore.kernel.org/linux-doc/20220614091214.511791-1-bagasdotme@gmail.com/
 
-diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 5f3e58165b98..f02d21e2a96e 100644
---- a/drivers/tty/vt/consolemap.c
-+++ b/drivers/tty/vt/consolemap.c
-@@ -38,7 +38,7 @@
- #include <linux/vt_kern.h>
- #include <linux/string.h>
- 
--static unsigned short translations[][256] = {
-+static unsigned short translations[][E_TABSZ] = {
-   /* 8-bit Latin-1 mapped to Unicode -- trivial mapping */
-   [LAT1_MAP] = {
-     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
 -- 
-2.36.1
-
+An old man doll... just what I always wanted! - Clara
