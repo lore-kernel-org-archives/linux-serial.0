@@ -2,75 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ED9CCA47C
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 874C8C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355696AbiFNIlT (ORCPT
+        id S1352827AbiFNIm0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
+        Tue, 14 Jun 2022 04:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354765AbiFNIlA (ORCPT
+        with ESMTP id S1353729AbiFNImI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:41:00 -0400
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BF6427C4;
-        Tue, 14 Jun 2022 01:40:42 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id m16-20020a7bca50000000b0039c8a224c95so3480281wml.2;
-        Tue, 14 Jun 2022 01:40:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=egrbdk2IabQIuuxLf1d/OXrpwvtBMyPeKMUwkWUojjA=;
-        b=IHaUyypNNkRpPaC1PS1rjfqgIghSbsLxIPTs8oFg92tOEG0//W1HzkTwS/xGiIJQCT
-         3jXRQXlK8M1UgsCB1xuA7AVxrYV52TqLvRfB3C1IoYVCLEqxM2nej/4V9ReRvxihXkSw
-         PiJCgE6tbp+2GNc/YsvXSQFNpiUhheqZJA2zKLpxjxtoT3+IH8OAsdjbRq+Vp0svu62a
-         jmgQppxa8t3/1L/+T311JRKhmXkCl39sN0YXQcZkyE/ueMmbHAwdvzKde4Pd4IkFiKyB
-         v47Q5PtVBhtgVWmMcoUGynNzsq2+65cc6YH099gEqfznkjmU3yVjny5qe7YoLzFFJxXr
-         LztA==
-X-Gm-Message-State: AOAM5321sKqNkrIO5c/o+Ff3YqX+goZ6ckZWPTfAUgkJnuPMMl0G9wzn
-        5646fhbiAWawzl4Qj31WYRA=
-X-Google-Smtp-Source: ABdhPJyGYD48YyiiCOeYK5bqdQNCr1LIpgO77tHGaFTqWs//zdbb2nBIN3T39WUtVPx41JgYfygqVw==
-X-Received: by 2002:a05:600c:b51:b0:39d:b58f:67bf with SMTP id k17-20020a05600c0b5100b0039db58f67bfmr340044wmr.195.1655196040839;
-        Tue, 14 Jun 2022 01:40:40 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id bd17-20020a05600c1f1100b0039c975aa553sm5006591wmb.25.2022.06.14.01.40.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 01:40:39 -0700 (PDT)
-Message-ID: <bb349247-1f2b-1c2e-decb-77f4008a7563@kernel.org>
-Date:   Tue, 14 Jun 2022 10:40:38 +0200
+        Tue, 14 Jun 2022 04:42:08 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE9442ECD;
+        Tue, 14 Jun 2022 01:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655196111; x=1686732111;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=sTFaVrkqoKJ+RPXYHxWrHGVjnxcIndtOcGxPl0yyczw=;
+  b=lKtbDuvGYd5JXcBnLMpgWmRHG8rK6FOV1YiWr4YiCEzDSvdLQcp8hxW8
+   dtuzf6tbiM5AXcMy4ZWcke41Q5sPEPZoSkq8cZRnErPTUXobpHs/0tj3b
+   G9jSms7xme40dl2BcDY92D9sR+Xjw9IlX7xR67BVNXBxIkDHwkxWtGO1U
+   F0CL18j9Yc7ApooYXD8+PbeLzaATd1VS2Vmp+LGNPzgVuNwPSlr5KVprU
+   3v/RLDCEQjDElynm7rIrBnB9Aq7PzbbYp3Yavl7PJXWGckkWHkYWlcMC1
+   mV0L60rAFpuzGt0A+54Q09DNuETAQ7pr0ZAH6jGNqYpvxkZ3GaTU+Nr1u
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="364889284"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="364889284"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:41:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="910883959"
+Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:41:45 -0700
+Date:   Tue, 14 Jun 2022 11:41:43 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 7/7] tty/vt: consolemap: remove dflt reset from
+ con_do_clear_unimap()
+In-Reply-To: <20220614075713.32767-7-jslaby@suse.cz>
+Message-ID: <baaff049-cb36-9468-3b53-2b7d14441d@linux.intel.com>
+References: <20220614075713.32767-1-jslaby@suse.cz> <20220614075713.32767-7-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 4/7] tty/vt: consolemap: saner variable names in
- set_inverse_transl()
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220614075713.32767-1-jslaby@suse.cz>
- <20220614075713.32767-4-jslaby@suse.cz>
- <74fc76bf-a7f-be34-10cd-412234990f1@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <74fc76bf-a7f-be34-10cd-412234990f1@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-49823128-1655196080=:1605"
+Content-ID: <77e94118-9dfb-c78e-4492-c4d9fa02cfd@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 14. 06. 22, 10:35, Ilpo JÃ¤rvinen wrote:
->> +	for (unsigned int ch = 0; ch < ARRAY_SIZE(translations[m]); ch++) {
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-49823128-1655196080=:1605
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <b7fe41f8-bfb-d422-6c6d-769d52f9eec9@linux.intel.com>
+
+On Tue, 14 Jun 2022, Jiri Slaby wrote:
+
+> con_do_clear_unimap() sets dflt to NULL and then calls
+> con_release_unimap() which does the very same as the first thing. So
+> remove the former as it is apparently superfluous.
 > 
-> This removes the compile error you introduced earlier. Other than that:
+> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-Bah, let me fix that up. It's an error coming from a rebase -- I rebased 
-this on the current tty-next as this was part of v2 of the previous 
-series which Greg already applied 8-).
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-thanks,
+...to all patches in this series that weren't individually replied to.
+
 -- 
-js
-suse labs
+ i.
+--8323329-49823128-1655196080=:1605--
