@@ -2,85 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABD6C43334
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ED9CCA47C
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355105AbiFNIki (ORCPT
+        id S1355696AbiFNIlT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
+        Tue, 14 Jun 2022 04:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355343AbiFNIkS (ORCPT
+        with ESMTP id S1354765AbiFNIlA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:40:18 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5747145500;
-        Tue, 14 Jun 2022 01:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655195933; x=1686731933;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=zpBin9PRcIpD5gHfe2/4AZHi5R2ZDJXHpDpHe7E1fzQ=;
-  b=fQXUngRX1tQWyaTSjqyB1bM2Fk/tTpeCx+8A7ULSXB7PTCAIZWwZ2hkV
-   +3mWZp6fCCqssvFkHNZ6iG5kcMGyyHKooyAVVjaHfnxCCpBtUkiViXwOU
-   +PQ9+xAbxQObZ1gl06WltXtWmSzoBa4QavM0OOWkv5IZIiqBxWBF6bIsQ
-   pPYCXOdLv3Cu90YfJykRfYudZyXSSOHcpuW6Q0tuzC+qjA6pgZsBSGnbi
-   Ww7z3XjQ2986QVvDuFYv0HFBFdjtJlmasafXjjs7ZB9tiX/gWapFQHLdw
-   ++5yKfv8TGZMHPu7DkxjSEhxs+fQLX4yCNLX2tBmPpbQugMjruxjS9OfJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279270600"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="279270600"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:38:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="640221150"
-Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:38:50 -0700
-Date:   Tue, 14 Jun 2022 11:38:47 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5/7] tty/vt: consolemap: rename struct
- vc_data::vc_uni_pagedir*
-In-Reply-To: <20220614075713.32767-5-jslaby@suse.cz>
-Message-ID: <5bf9a7b-7e41-8a3c-769a-9b7bc3dc04d@linux.intel.com>
-References: <20220614075713.32767-1-jslaby@suse.cz> <20220614075713.32767-5-jslaby@suse.cz>
+        Tue, 14 Jun 2022 04:41:00 -0400
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BF6427C4;
+        Tue, 14 Jun 2022 01:40:42 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id m16-20020a7bca50000000b0039c8a224c95so3480281wml.2;
+        Tue, 14 Jun 2022 01:40:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=egrbdk2IabQIuuxLf1d/OXrpwvtBMyPeKMUwkWUojjA=;
+        b=IHaUyypNNkRpPaC1PS1rjfqgIghSbsLxIPTs8oFg92tOEG0//W1HzkTwS/xGiIJQCT
+         3jXRQXlK8M1UgsCB1xuA7AVxrYV52TqLvRfB3C1IoYVCLEqxM2nej/4V9ReRvxihXkSw
+         PiJCgE6tbp+2GNc/YsvXSQFNpiUhheqZJA2zKLpxjxtoT3+IH8OAsdjbRq+Vp0svu62a
+         jmgQppxa8t3/1L/+T311JRKhmXkCl39sN0YXQcZkyE/ueMmbHAwdvzKde4Pd4IkFiKyB
+         v47Q5PtVBhtgVWmMcoUGynNzsq2+65cc6YH099gEqfznkjmU3yVjny5qe7YoLzFFJxXr
+         LztA==
+X-Gm-Message-State: AOAM5321sKqNkrIO5c/o+Ff3YqX+goZ6ckZWPTfAUgkJnuPMMl0G9wzn
+        5646fhbiAWawzl4Qj31WYRA=
+X-Google-Smtp-Source: ABdhPJyGYD48YyiiCOeYK5bqdQNCr1LIpgO77tHGaFTqWs//zdbb2nBIN3T39WUtVPx41JgYfygqVw==
+X-Received: by 2002:a05:600c:b51:b0:39d:b58f:67bf with SMTP id k17-20020a05600c0b5100b0039db58f67bfmr340044wmr.195.1655196040839;
+        Tue, 14 Jun 2022 01:40:40 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id bd17-20020a05600c1f1100b0039c975aa553sm5006591wmb.25.2022.06.14.01.40.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 01:40:39 -0700 (PDT)
+Message-ID: <bb349247-1f2b-1c2e-decb-77f4008a7563@kernel.org>
+Date:   Tue, 14 Jun 2022 10:40:38 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-546787174-1655195931=:1605"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 4/7] tty/vt: consolemap: saner variable names in
+ set_inverse_transl()
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220614075713.32767-1-jslaby@suse.cz>
+ <20220614075713.32767-4-jslaby@suse.cz>
+ <74fc76bf-a7f-be34-10cd-412234990f1@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <74fc76bf-a7f-be34-10cd-412234990f1@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-546787174-1655195931=:1605
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 14 Jun 2022, Jiri Slaby wrote:
-
-> As a follow-up to the commit 4173f018aae1 (tty/vt: consolemap: rename
-> and document struct uni_pagedir), rename also the members of struct
-> vc_data. I.e. pagedir -> pagedict. And while touching all the places,
-> remove also the unnecessary vc_ prefix.
+On 14. 06. 22, 10:35, Ilpo Järvinen wrote:
+>> +	for (unsigned int ch = 0; ch < ARRAY_SIZE(translations[m]); ch++) {
 > 
-> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> This removes the compile error you introduced earlier. Other than that:
 
-Look fine,
+Bah, let me fix that up. It's an error coming from a rebase -- I rebased 
+this on the current tty-next as this was part of v2 of the previous 
+series which Greg already applied 8-).
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-
-You might want to rename vgacon_uni_pagedir too. :-)
-
-
+thanks,
 -- 
- i.
-
---8323329-546787174-1655195931=:1605--
+js
+suse labs
