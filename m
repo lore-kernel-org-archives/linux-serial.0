@@ -2,87 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E64C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 12:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAF8C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 15:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiFNMVY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
+        id S242095AbiFNP3d (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 11:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiFNMVY (ORCPT
+        with ESMTP id S239987AbiFNP33 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:21:24 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF72442EE2;
-        Tue, 14 Jun 2022 05:21:23 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h5so11094700wrb.0;
-        Tue, 14 Jun 2022 05:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iyzNzaJXP91l5FIyZDK4PPDuE0Ei4eLyZwjrp3SBn90=;
-        b=n+PhOQb9QpANLPQynTA6HfmtZ390POiHnkSYtPee5PfkFYuNnJYz+kYB4lpva+2Zca
-         41jHCZ7diMJjKAPF38BpaJqUx8q+xhwY99uggRE/OAjUHhZYcluxK9I907Nq/0XHegvu
-         FTjO+6vE4aB7iUPuDAAiXxt83LsYzcDUCTdWHeaXYBh31hdPJtc23WOxJAOlAdC7KyFz
-         WQzG2h/5+kCwm/L2FIxY0NbLZQc0Sh7fr94v96kjI/AsSrTpQq8VBDfH6qJdeGQo2Geq
-         N7Im13I87a4+sa/hBJ/Wt0uaSwVdLouvurfNiqZLXdjH6dTaRo9F/g7zNReDZQNX7CxP
-         Kl5g==
+        Tue, 14 Jun 2022 11:29:29 -0400
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD02377D5;
+        Tue, 14 Jun 2022 08:29:28 -0700 (PDT)
+Received: by mail-qt1-f177.google.com with SMTP id l3so5003722qtp.1;
+        Tue, 14 Jun 2022 08:29:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iyzNzaJXP91l5FIyZDK4PPDuE0Ei4eLyZwjrp3SBn90=;
-        b=td5gPdqp27LeXiurszKlLRryxAIE0X3TQRixnbzf46Ey4XIDyRmVJherFyMSihkcLC
-         yKm+s4CF2S43IYoozq/+pEY15GYIXO1YQNyieFeNwTWnerHshM5l8zc9puOgKufVFuHC
-         +OfJS7h4uaheH9R79pLZxKgysYYJqtbKMukO63EMyWRuatEaOcNugMRVXKzDHa0Wip/N
-         39ErXNKXkDufQYDCIxgT5bAg3JLpsqo71TSUSXF0siz5T+2ehH7Hzh6aHnZ8r9CdiRlS
-         L/kGlR/sKebc6S6hLEXgkCbSGMrCvJOoLsnFSZ+VlKuGjnT2OFPNgSAAI49DnHE5po9B
-         T0WQ==
-X-Gm-Message-State: AJIora/mwLSSaHGioxB8Y0e7hU3Pvfaqgo9tXc2mZbSeeoTJ2P4qof9u
-        B41U4RH0vTDdcOr2OtMnnd/PdFSBk5OBkc6f7021JWV8ssE=
-X-Google-Smtp-Source: AGRyM1uatepoZ71SN30wRVMaE20HdgRu9qjgCggfiz/JwP1rRsEawuOSVzmgQzSz5M2S3mMACWKBYmIupLNWDQp/ql8=
-X-Received: by 2002:adf:fb82:0:b0:219:af0c:489a with SMTP id
- a2-20020adffb82000000b00219af0c489amr4598120wrr.212.1655209282368; Tue, 14
- Jun 2022 05:21:22 -0700 (PDT)
+        bh=xMlrFysL6NER0BlZN8jiCoV2LFdvTf/MmGUlZKHHukw=;
+        b=ojbXCcKkbOHdD1xyrpe/zmRzfC8qA/YWYdgc/3bxEOAbaO6/eC/vr4WFzsVndFWZZR
+         fuV2ItycLhzUWv4mr1hUGiTHX6OR54p7DToSgeUHfX9fyuqmFfQDecKOQBp5pLBvoC+q
+         pl/UFmKdR6sR8YVo7bhbTxpTvzmBzWuqhEfgMzdW9/lp7UaCxfDnv4e/DraAzYTj0hqL
+         lWl6TI3TdPE00//ojKvp9qwBzSXpqLQw5zRrt8a3VGuLsCH/e2Av8eCSdd2LX9TeqJPW
+         JPBCcQDea69krqZQwSOYPv/hHBLic7GlgUoZL8LKpQJd4GB0DJN75P8wfFKpWf3dU1rV
+         gK1Q==
+X-Gm-Message-State: AOAM532cbRxWf9RCPB6JZPsgiyodzXS8f0iatwZCtH5ZfXVmHGPHvHHd
+        ADA556l9gpkOb33kdd/00/zhM+0wBqZmIQ==
+X-Google-Smtp-Source: ABdhPJxBBhea0ODzbRw9JZ69ent/Hrzi+3mK0sBTDk/5UchPN+9CFzfIqEX7AmRVkvBWmqMJrEGRTA==
+X-Received: by 2002:ac8:67c8:0:b0:305:e4e:43db with SMTP id r8-20020ac867c8000000b003050e4e43dbmr4793499qtp.562.1655220567126;
+        Tue, 14 Jun 2022 08:29:27 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id 7-20020a370507000000b006a725432959sm9257393qkf.37.2022.06.14.08.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 08:29:26 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id p13so15790209ybm.1;
+        Tue, 14 Jun 2022 08:29:26 -0700 (PDT)
+X-Received: by 2002:a25:7307:0:b0:65c:b98a:f592 with SMTP id
+ o7-20020a257307000000b0065cb98af592mr5524851ybc.380.1655220566545; Tue, 14
+ Jun 2022 08:29:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1637061057.git.shubhrajyoti.datta@xilinx.com>
- <e1d6913bfe5ce023d7f6ea106d0359142063e694.1637061057.git.shubhrajyoti.datta@xilinx.com>
- <YaVPYiGmDsqY+1at@robh.at.kernel.org> <DM6PR02MB663589B3489C53A34DC25A31AA719@DM6PR02MB6635.namprd02.prod.outlook.com>
- <MN2PR02MB6640017950EFB0FD21D2AD91AA339@MN2PR02MB6640.namprd02.prod.outlook.com>
- <DM6PR02MB66352597DBF172ACC5307274AA179@DM6PR02MB6635.namprd02.prod.outlook.com>
- <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
-In-Reply-To: <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
-Date:   Tue, 14 Jun 2022 17:51:11 +0530
-Message-ID: <CAKfKVtGrdh-iQP7YKUBe37HVeZcU-UV3A3BHKjcnggBFR94eNA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: pl011: Add 'arm,xlnx-uart'
-To:     Rob Herring <robh@kernel.org>
-Cc:     Shubhrajyoti Datta <shubhraj@xilinx.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Srinivas Goud <sgoud@xilinx.com>
+References: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jun 2022 17:29:14 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUaSi_cnmVSARVsSpB_J=-rLwgg9+5+B3Qj1-+LccDGtg@mail.gmail.com>
+Message-ID: <CAMuHMdUaSi_cnmVSARVsSpB_J=-rLwgg9+5+B3Qj1-+LccDGtg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: renesas,hscif: Document r8a779f0 bindings
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> >
- <snip>
+On Mon, Jun 13, 2022 at 3:10 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
->
-> No, I don't know what the differences are in your h/w. You have ID
-> registers, but changed the IP and didn't change the ID registers? How
-> has the IP changed?
->
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-The IP is not changed and the ID registers are not updated.
-The limitation is coming from the AXI  port that the IP is connected to.
-The axi port is allowing only the 32 bit access.
-The same information will be updated in the Versal TRM.
+Gr{oetje,eeting}s,
 
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
-> Rob
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
