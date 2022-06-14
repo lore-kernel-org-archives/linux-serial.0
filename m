@@ -2,87 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B6AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 07:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1989C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 07:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355528AbiFNH5f (ORCPT
+        id S1355646AbiFNH6R (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49210 "EHLO
+        Tue, 14 Jun 2022 03:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355427AbiFNH50 (ORCPT
+        with ESMTP id S1355700AbiFNH6J (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:57:26 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76493FBC8;
-        Tue, 14 Jun 2022 00:57:19 -0700 (PDT)
+        Tue, 14 Jun 2022 03:58:09 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14193FBEA;
+        Tue, 14 Jun 2022 00:57:39 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 581A121B80;
-        Tue, 14 Jun 2022 07:57:16 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 422CA1F929;
+        Tue, 14 Jun 2022 07:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655193436; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        t=1655193435; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5qoKbvJC0REg3jVh12YPL0trFwv8mfDnBd9bswtjvBs=;
-        b=bl38xbcpyZBj4wetIAx46gc7MZt5NIJSYLg6eZsmI5o+0Ny58c2R9q9duldysWZshd2eW/
-        dAFiDKIUPtlG+TRcs9T+zEYXu7IvhhdT80NKG6jndLOGIlyfHIDEAyZuDxfwCMbByPU9ih
-        HFGLejjwPeUDcUfqEasb9pHYcsfyCgE=
+        bh=eT7LmTn7OJ2NKmXWsimUkp6REt30L893JqiHOWuDEj4=;
+        b=aAIgh2T1rKe5Pd5QHYwQFTEaW3EHpBZXm2HkNJRIkzNalFJvrLL5/Uhtqkk20P9TOUq1Ju
+        LBaiulmsungNbgc6tES/gk1Znor1lG/7dnpTGjUCbEYaCDZtoa9EA7x90m7IQehZYzGhR4
+        pSJ01P+Bcng/mx/1U+skq6/FqhFA7E8=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655193436;
+        s=susede2_ed25519; t=1655193435;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+         mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5qoKbvJC0REg3jVh12YPL0trFwv8mfDnBd9bswtjvBs=;
-        b=34srPxoO6kuKMBDVksSdwFOO+XMwbuUiEEw5Hd9LZq1FQELOoVKG1p/I2IRXFickiGdVc3
-        qczpZqnBhpbDVNAg==
+        bh=eT7LmTn7OJ2NKmXWsimUkp6REt30L893JqiHOWuDEj4=;
+        b=0hzZA8+8ZaQF1lKdwzTlsfdVngCJJDlQF/xxTRawIJj0+WhD0e3RTfjSfFDheZ9FRgwezc
+        npGessqlsngJ/SDQ==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2BED42C141;
-        Tue, 14 Jun 2022 07:57:16 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 1ACDE2C142;
+        Tue, 14 Jun 2022 07:57:15 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 7/7] tty/vt: consolemap: remove dflt reset from con_do_clear_unimap()
-Date:   Tue, 14 Jun 2022 09:57:13 +0200
-Message-Id: <20220614075713.32767-7-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 3/7] tty/vt: consolemap: saner variable names in set_inverse_trans_unicode()
+Date:   Tue, 14 Jun 2022 09:57:09 +0200
+Message-Id: <20220614075713.32767-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614075713.32767-1-jslaby@suse.cz>
 References: <20220614075713.32767-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-con_do_clear_unimap() sets dflt to NULL and then calls
-con_release_unimap() which does the very same as the first thing. So
-remove the former as it is apparently superfluous.
+The function still uses too vague parameter name after commit
+50c92a1b2d50 (tty/vt: consolemap: saner variable names in
+set_inverse_trans_unicode()).
 
-Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+So use "dict" instead of "p" for that parameter too.
+
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/vt/consolemap.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 9e94ec0e0f83..5f3e58165b98 100644
+index a7507c5c3154..a69dfda8e3d0 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -563,8 +563,6 @@ static int con_do_clear_unimap(struct vc_data *vc)
- 	if (!old || old->refcount > 1)
- 		return con_allocate_new(vc);
+@@ -241,17 +241,17 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
+ 	}
+ }
  
--	if (old == dflt)
--		dflt = NULL;
- 	old->sum = 0;
- 	con_release_unimap(old);
+-static void set_inverse_trans_unicode(struct uni_pagedict *p)
++static void set_inverse_trans_unicode(struct uni_pagedict *dict)
+ {
+ 	unsigned int d, r, g;
+ 	u16 *inv;
  
+-	if (!p)
++	if (!dict)
+ 		return;
+ 
+-	inv = p->inverse_trans_unicode;
++	inv = dict->inverse_trans_unicode;
+ 	if (!inv) {
+-		inv = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
++		inv = dict->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+ 				sizeof(*inv), GFP_KERNEL);
+ 		if (!inv)
+ 			return;
+@@ -259,7 +259,7 @@ static void set_inverse_trans_unicode(struct uni_pagedict *p)
+ 	memset(inv, 0, MAX_GLYPH * sizeof(*inv));
+ 
+ 	for (d = 0; d < UNI_DIRS; d++) {
+-		u16 **dir = p->uni_pgdir[d];
++		u16 **dir = dict->uni_pgdir[d];
+ 		if (!dir)
+ 			continue;
+ 		for (r = 0; r < UNI_DIR_ROWS; r++) {
 -- 
 2.36.1
 
