@@ -2,153 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78830C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Jun 2022 22:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85091C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 06:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239018AbiFMWWq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
+        id S230405AbiFNG7P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 02:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236264AbiFMWWo (ORCPT
+        with ESMTP id S238418AbiFNG7N (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:22:44 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87F96342;
-        Mon, 13 Jun 2022 15:22:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655158932;
-        bh=/K38MCAmHWxqyV1M9IU8mCPprustLYV8uXAeCmwAeEQ=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=bqJRkVrfmrxiWp4dHM+lZQYZYWy4oUodCG5GQOBxWKeiD9v2xehtL/oXUA92CTC5u
-         UEwDXKvqlCKD6fcpx2lBqW2I+mUBDxkmW6IxjRVZgunZZMgc2QHLBjjMDs8hJns0gd
-         UsD2FP3cG2SEpgE3Fp8kSsDtrtvAMLfSAdKXk4XE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.3.220]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MhlKs-1nVvLI0TwG-00drMA; Tue, 14
- Jun 2022 00:22:12 +0200
-Subject: Re: [PATCH v6 5/6] serial: Support for RS-485 multipoint addresses
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas.wunner@intel.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-api@vger.kernel.org
-References: <20220613075227.10394-1-ilpo.jarvinen@linux.intel.com>
- <20220613075227.10394-6-ilpo.jarvinen@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <cd72151d-b087-0fdf-2775-6068999f7d05@gmx.de>
-Date:   Tue, 14 Jun 2022 00:22:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 14 Jun 2022 02:59:13 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6675C3B028
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jun 2022 23:59:11 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id x5so10247526edi.2
+        for <linux-serial@vger.kernel.org>; Mon, 13 Jun 2022 23:59:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+7WMD7g2wZYb5dSwiAnQZIEJ3VeyDCmAN8KFzddYOp4=;
+        b=Qn+BB8Jz4dOSSuyrdIFx7KsYfWlcB8w5h84FMz8xUnGUKIl0tBzLcfDhfc+d6PDKPt
+         RTlvUsK+T+XW28X34a1fP+V8SjNa7E8lxQdHCRx8hmrlEKGiC/utx/jrYPpLM46D3Z8D
+         TzKlHvtIbtxTD5G3b9NWNMNC7EnmdNaBF2vxFKYrS13WsrVJmmoT80kvrASk7didPM/u
+         pw6ygfC5WGtZUU83nXq78KqTpRjn9kLyBYr/UQjuIxzvGGdSZ5QSGwtcSp7mwj8/0Kim
+         sG9vp6Uc18tm4iRsKkKEboJLKGl/KD5WXJsdFMRlsbcQPu8Un9YporcV1/6eqzVz0FR0
+         O0zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+7WMD7g2wZYb5dSwiAnQZIEJ3VeyDCmAN8KFzddYOp4=;
+        b=W7nOqZRql6TIFxmanUkIRPWpqp2Dfm7cQCzW/kQifXV7Xhv/et16VGwO7WA8I5tFK+
+         lHk4XsfYynlJH84bnffQxjFXBtxFe0UR79yKzeBHamfDuXj9DV7cTXEmnTbVcgNsVqUc
+         IOdzn7UGsMWZdomActgaOvJVcbe5ZJHp4PjkaRg2bpSsbBx2ULc/pbN4x6q6sIde1hk9
+         wYWwLThryd4x+iOxgxK2QB4c0Lwl1W/ux8DCOgc06C+Kl7pEG/GpwHz5ODS3nFVxbnGo
+         qx7laZfEbfAzovIhmqZMI0e0CjKp5EXJMQczOu807cxWsudYUB8Fd0aHOdxD9UkooIyZ
+         cqYw==
+X-Gm-Message-State: AOAM532PhMvovInAhFXNS1jYZATO7IO+EnNTP9ckJFt5kDpjUbodxgGg
+        EBv1heU5RnYsX4ZX69XYjxqWLXwJCwZQJajFjjQ=
+X-Google-Smtp-Source: ABdhPJyosQaddnqZu4pZ1jXy8rUawFTRJhK2QoJYXQYTf9rowbQkT68XZOL23Z85o8JvfmRgqjKO5rY6WtiPdWsewNc=
+X-Received: by 2002:a05:6402:1453:b0:431:503f:a2ce with SMTP id
+ d19-20020a056402145300b00431503fa2cemr4088117edx.234.1655189949713; Mon, 13
+ Jun 2022 23:59:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220613075227.10394-6-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+References: <45e1eac1-1818-1f8c-6168-cff6be6427af@linux.intel.com>
+ <CAEXMXLRrysT_+RUZ4sg6DGT8Hzdv2jrzX2eZ2Z0mPu39y3-m7g@mail.gmail.com> <ea30fbc2-6535-9fdd-6691-9bb7baa56ec2@linux.intel.com>
+In-Reply-To: <ea30fbc2-6535-9fdd-6691-9bb7baa56ec2@linux.intel.com>
+From:   =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunojpg@gmail.com>
+Date:   Tue, 14 Jun 2022 07:58:58 +0100
+Message-ID: <CAEXMXLTTefeVh3otDL1R0jV0dQh5+S4tfV_zKhZ985V-w1hFLw@mail.gmail.com>
+Subject: Re: [PATCH] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Tomasz Mon <tomasz.mon@camlingroup.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        linux-serial <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:qnVCycgo6Woco+A3lDsqIOO1oP7H1X4CPI8yz97JmGIl88WWKr0
- w9veZfbN+pE+xEqp+BlWuETwaVnzMVZDlca/2HiEABVfIsJC4cTm8uNC+2s445Ze6HGOFXH
- V78VCdX4v523Sy487dlPg1XVplazwhZ/fR0yxSu0CQOCaYnp4cQk5WSlashwrv2xjUJJyD9
- 36uU5KhofP6iYfTGwyFgQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MVjJOMYMOwE=:7gX1hIQ2xDO46urdrI1QL9
- Bsm1JLAJtVtr1qB/BAypHnrYt+3H+E9FYQkuaBg1FF0egLYxWGXXFnJbz0WZSBOYTNKHiAIQM
- 7PuDrugoiJcK/TFBJZ+47jVlxRVJneOo8FgDUhRR1AJutoezw6lOZzkAjQ6NWKGsopqgOq8cO
- 7Ya8DQfdAoPRg68Uyklj6rRI6Y9bADWP5CNuB2XMMoq2GSuGmJUQU2RLPP+Vm6jGjPUDYHxFT
- EY8z1IEwEbbhD1TOK4PXU1glK1UhSv3xyW4shxyt+L1nBn31I5e3O3njPOBmhAMiiToScmVm9
- e9h9O/QByjhcYSlxs5/yO+kACi7r/8EZXUKWbtRoNZ4euq2wT59nz+zIy8a9Ej5YTiA7/j+WE
- vEIFUvpZEWB3yqHkRt9h+uxoVs47PI7aOUqfkg3SbQtKTTNNzlM+dVG/6B30kBMWcY9lfIlIg
- b3/uTr8Bh8anwgbKgQNgofQ4dfrjwJDIdETka0s15Pz0t6PNO2Uh4vHIxCiezv/1jJru5TDW6
- op1G1WNieZNoGZLImWXZC7P0CEov8TsxCrx99rTujMXj0RADh57F79aItcj6lzWxliry4kGs/
- c+waCLTx0wnrYxxHLFw8D72/bVwnT03ZJMaar7kWIX3hvor7uRqSKvYB5uG6sQe3Fr9iz9/b1
- baUPbtMASGfljpmSafxOaUzX5l7e6NxgnxO++e+qSpETu4n+DIXfOz/U3R/TWR1scj9dthZKa
- ojE6iy7vdiGvL8Z/v4kOCDg13HOw4bLdNCf+XHcEYzKs9uByllHPbgClKjbymuAVIsg/fScVW
- HeKcG4cVv6Ap+93IlfKZAvijJZOrcCvETnC0r4zOnVgk8YYSJITmQk580zUnPfGtDXKDAKq/a
- yFLMZ1y+/Kp9+UpudB7SJM53zXfz3PJxh9tncVCTOgE/hU63f2HD8UNIdApMbvqyc/+NT+y0k
- zgHocbKY2VqXmOT3t5pJwlIshrk6fJ0z6UBUE5PRQoPremSjFmmy94XE0ik/w0T44eSjO60aj
- 1+Ox5B2+lEySItRi0xhtv9k6vaxeuoqVpZgL1lHerbLRxVXQI/UGOLUd/xnl2s7kQGXbNBube
- 61VGT7urLlqHAQadzgyz0Xfn5f1digeRTQ9fXNiXKGSjUXiGvzCxJUXag==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-Hi,
-
-there are some typos in the documentation and comments (see below).
-
-
-On 13.06.22 at 09:52, Ilpo J=C3=A4rvinen wrote:
-
-> -5. References
-> +5. Multipoint Addressing
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-> +
-> +   The Linux kernel provides addressiong mode for multipoint RS-485 ser=
-ial
-
-addressiong -> addressing
-
-> +   communications line. The addressing mode is enabled with SER_RS485_A=
-DDRB
-> +   flag in serial_rs485. Struct serial_rs485 fhas two additional flags =
-and
-
-fhas -> has
-
-> +   fields for enabling reveive and destination addresses.
-
-reveive -> receive
-
-> +
-> +   Address mode flags:
-> +	- SER_RS485_ADDRB: Enabled addressing mode (sets also ADDRB in termios=
-).
-> +	- SER_RS485_ADDR_RECV: Receive (filter) address enabled.
-> +	- SER_RS485_ADDR_DEST: Set destination address.
-> +
-> +   Address fields (enabled with corresponding SER_RS485_ADDR_* flag):
-> +	- addr_recv: Receive address.
-> +	- addr_dest: Destination address.
-> +
-> +   Once a receive address is set, the communication can occur only with=
- the
-> +   particular device and other peers are filtered out. It is left up to=
- the
-> +   receiver side to enforce the filtering. Receive address will be clea=
-red
-> +   if SER_RS485_ADDR_RECV is not set.
-> +
-> +   Note: not all devices supporting RS485 support multipoint addressing=
-.
-> +
-> +6. References
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+On Wed, Jun 8, 2022 at 11:04 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> Hi Nuno,
 >
->   [1]	include/uapi/linux/serial.h
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seria=
-l_core.c
-> index 76bb1b77b06e..bc18018e8d4b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1294,6 +1294,17 @@ static int uart_check_rs485_flags(struct uart_por=
-t *port, struct serial_rs485 *r
->  	if (flags & ~port->rs485_supported->flags)
->  		return -EINVAL;
+> It seems I managed to put the .throttle and .unthrottle into the wrong
+> ops within amba-pl011.c. I'm sorry about the extra trouble. This patch ha=
+s
+> a bit higher likelihood of doing something useful to the problem:
 >
-> +	/* Asking for address w/o addressing mode? */
-> +	if (!(rs485->flags & SER_RS485_ADDRB) &&
-> +	    (rs485->flags & (SER_RS485_ADDR_RECV|SER_RS485_ADDR_DEST)))
-> +		return -EINVAL;
+> From: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> [PATCH v3] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
+>
+> The driver must provide throttle and unthrottle in uart_ops when it
+> sets UPSTAT_AUTORTS. Add them using existing stop_rx &
+> enable_interrupts functions.
+>
+> Reported-by: Nuno Gon=C3=A7alves <nunojpg@gmail.com>
+> Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS =
+status)
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+>
+> ---
+>  drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++--
+>  1 file changed, 21 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl=
+011.c
+> index 97ef41cb2721..16a21422ddce 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -1367,6 +1367,15 @@ static void pl011_stop_rx(struct uart_port *port)
+>         pl011_dma_rx_stop(uap);
+>  }
+>
+> +static void pl011_throttle_rx(struct uart_port *port)
+> +{
+> +       unsigned long flags;
 > +
-> +	/* Address gived but not enabled? */
+> +       spin_lock_irqsave(&port->lock, flags);
+> +       pl011_stop_rx(port);
+> +       spin_unlock_irqrestore(&port->lock, flags);
+> +}
+> +
+>  static void pl011_enable_ms(struct uart_port *port)
+>  {
+>         struct uart_amba_port *uap =3D
+> @@ -1788,9 +1797,10 @@ static int pl011_allocate_irq(struct uart_amba_por=
+t *uap)
+>   */
+>  static void pl011_enable_interrupts(struct uart_amba_port *uap)
+>  {
+> +       unsigned long flags;
+>         unsigned int i;
+>
+> -       spin_lock_irq(&uap->port.lock);
+> +       spin_lock_irqsave(&uap->port.lock, flags);
+>
+>         /* Clear out any spuriously appearing RX interrupts */
+>         pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
+> @@ -1812,7 +1822,14 @@ static void pl011_enable_interrupts(struct uart_am=
+ba_port *uap)
+>         if (!pl011_dma_rx_running(uap))
+>                 uap->im |=3D UART011_RXIM;
+>         pl011_write(uap->im, uap, REG_IMSC);
+> -       spin_unlock_irq(&uap->port.lock);
+> +       spin_unlock_irqrestore(&uap->port.lock, flags);
+> +}
+> +
+> +static void pl011_unthrottle_rx(struct uart_port *port)
+> +{
+> +       struct uart_amba_port *uap =3D container_of(port, struct uart_amb=
+a_port, port);
+> +
+> +       pl011_enable_interrupts(uap);
+>  }
+>
+>  static int pl011_startup(struct uart_port *port)
+> @@ -2225,6 +2242,8 @@ static const struct uart_ops amba_pl011_pops =3D {
+>         .stop_tx        =3D pl011_stop_tx,
+>         .start_tx       =3D pl011_start_tx,
+>         .stop_rx        =3D pl011_stop_rx,
+> +       .throttle       =3D pl011_throttle_rx,
+> +       .unthrottle     =3D pl011_unthrottle_rx,
+>         .enable_ms      =3D pl011_enable_ms,
+>         .break_ctl      =3D pl011_break_ctl,
+>         .startup        =3D pl011_startup,
+>
+> --
+> tg: (f2906aa86338..) pl011/add-throttle (depends on: tty-next)
 
-gived -> given
+Works great, thanks.
 
+Tested-by: Nuno Gon=C3=A7alves <nunojpg@gmail.com>
 
-
-Regards,
-Lino
+Thanks,
+Nuno
