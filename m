@@ -2,88 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF37FCCA483
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 12:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E64C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 12:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356582AbiFNMKa (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        id S230286AbiFNMVY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356483AbiFNMK0 (ORCPT
+        with ESMTP id S229472AbiFNMVY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:10:26 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93F748E7B;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id s37so5708824pfg.11;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
+        Tue, 14 Jun 2022 08:21:24 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF72442EE2;
+        Tue, 14 Jun 2022 05:21:23 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id h5so11094700wrb.0;
+        Tue, 14 Jun 2022 05:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
-        b=IdHqyEQ5ZxrIpPpcXsfUe9kU0utW++E7PzruvcWj2bH+qq5j1rOoA/Zs4KRgJVDPJB
-         FwZEQH8gRuSUbEkeKH2O+CdzNYuYbC+yWsBpHAF3CuF5mTw231bjPkiuSq8dPiGJ8cRw
-         9C9qIkH6p3LbKyEVfCuH1mg6kttUOxvHFG1IBoCip6r/l6GK0U4YY65FjfOsnfvWY2qt
-         cVdRNmNhAH6OAxTV4+xu4PWGbKHX/qMoVIwVf3CC79ULH5BhY14zUz3Ory00Dc8wGq+v
-         v+OBeshLEcU0L5wQeEXDBuLURFZEhz4LFh4jkntnUVKau4UJaYHuzJJT2I67n4eL3qYm
-         yXtA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iyzNzaJXP91l5FIyZDK4PPDuE0Ei4eLyZwjrp3SBn90=;
+        b=n+PhOQb9QpANLPQynTA6HfmtZ390POiHnkSYtPee5PfkFYuNnJYz+kYB4lpva+2Zca
+         41jHCZ7diMJjKAPF38BpaJqUx8q+xhwY99uggRE/OAjUHhZYcluxK9I907Nq/0XHegvu
+         FTjO+6vE4aB7iUPuDAAiXxt83LsYzcDUCTdWHeaXYBh31hdPJtc23WOxJAOlAdC7KyFz
+         WQzG2h/5+kCwm/L2FIxY0NbLZQc0Sh7fr94v96kjI/AsSrTpQq8VBDfH6qJdeGQo2Geq
+         N7Im13I87a4+sa/hBJ/Wt0uaSwVdLouvurfNiqZLXdjH6dTaRo9F/g7zNReDZQNX7CxP
+         Kl5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
-        b=6Qyp9tJ9D22Np8w1GIGhJbfZ9tnTskJwEDUqnhVCMXA9/VMcztepSyAYtY4jMP97Go
-         O4vpA59MKwpmN+/oq16+jHT8BBazRNykT/YGC558iTGyDFwqrn02QN5A8ovdqQjPlyAq
-         5nHJaha9O+jwdXikfbtT8tyia4AO377ZKO4ovGuqVhh0b0WdBjiD/XgLEctNjcQaienA
-         9AdAnJNajIj34OPLi9RyB2Y26++sEL9W2LUYlJHhzesFHGhPyWPJ8bFGqjTIdPNn/1RM
-         nq2/H2pOHHLBImW/NMVhKH1mUHPogT02yhwq3NvqkXOCRojatQLg4QODTk11Vpd+4NBQ
-         WDSQ==
-X-Gm-Message-State: AOAM533Ubjkg6VqXN+dNOJG2Efyzwfr5y/PBceac9ESwVEL3w6CtjDbp
-        JQ/pN8CewUZuRCsMY1EY6Kw=
-X-Google-Smtp-Source: ABdhPJw4eED7I9ElEerUgaqmPKpAQIi60hKd1blZwLF8Y8+rUFNbj0QxxKpNqFpkHgkfj5dWcsQQZA==
-X-Received: by 2002:a05:6a00:9a7:b0:51c:3e28:1501 with SMTP id u39-20020a056a0009a700b0051c3e281501mr4414402pfg.86.1655208624312;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
-Received: from localhost (subs02-180-214-232-21.three.co.id. [180.214.232.21])
-        by smtp.gmail.com with ESMTPSA id f125-20020a62db83000000b0051be7a8c008sm7435411pfg.30.2022.06.14.05.10.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:10:23 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 19:10:20 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: Add closing marker into comment in tty_ldisc.h
-Message-ID: <Yqh6rL7nNvR3B5Ix@debian.me>
-References: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iyzNzaJXP91l5FIyZDK4PPDuE0Ei4eLyZwjrp3SBn90=;
+        b=td5gPdqp27LeXiurszKlLRryxAIE0X3TQRixnbzf46Ey4XIDyRmVJherFyMSihkcLC
+         yKm+s4CF2S43IYoozq/+pEY15GYIXO1YQNyieFeNwTWnerHshM5l8zc9puOgKufVFuHC
+         +OfJS7h4uaheH9R79pLZxKgysYYJqtbKMukO63EMyWRuatEaOcNugMRVXKzDHa0Wip/N
+         39ErXNKXkDufQYDCIxgT5bAg3JLpsqo71TSUSXF0siz5T+2ehH7Hzh6aHnZ8r9CdiRlS
+         L/kGlR/sKebc6S6hLEXgkCbSGMrCvJOoLsnFSZ+VlKuGjnT2OFPNgSAAI49DnHE5po9B
+         T0WQ==
+X-Gm-Message-State: AJIora/mwLSSaHGioxB8Y0e7hU3Pvfaqgo9tXc2mZbSeeoTJ2P4qof9u
+        B41U4RH0vTDdcOr2OtMnnd/PdFSBk5OBkc6f7021JWV8ssE=
+X-Google-Smtp-Source: AGRyM1uatepoZ71SN30wRVMaE20HdgRu9qjgCggfiz/JwP1rRsEawuOSVzmgQzSz5M2S3mMACWKBYmIupLNWDQp/ql8=
+X-Received: by 2002:adf:fb82:0:b0:219:af0c:489a with SMTP id
+ a2-20020adffb82000000b00219af0c489amr4598120wrr.212.1655209282368; Tue, 14
+ Jun 2022 05:21:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
+References: <cover.1637061057.git.shubhrajyoti.datta@xilinx.com>
+ <e1d6913bfe5ce023d7f6ea106d0359142063e694.1637061057.git.shubhrajyoti.datta@xilinx.com>
+ <YaVPYiGmDsqY+1at@robh.at.kernel.org> <DM6PR02MB663589B3489C53A34DC25A31AA719@DM6PR02MB6635.namprd02.prod.outlook.com>
+ <MN2PR02MB6640017950EFB0FD21D2AD91AA339@MN2PR02MB6640.namprd02.prod.outlook.com>
+ <DM6PR02MB66352597DBF172ACC5307274AA179@DM6PR02MB6635.namprd02.prod.outlook.com>
+ <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
+In-Reply-To: <CAL_JsqLV3De0O2WDq=w_CQbvAiJVvQ-=V9XuC1tJyZNLyneDZw@mail.gmail.com>
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Date:   Tue, 14 Jun 2022 17:51:11 +0530
+Message-ID: <CAKfKVtGrdh-iQP7YKUBe37HVeZcU-UV3A3BHKjcnggBFR94eNA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: pl011: Add 'arm,xlnx-uart'
+To:     Rob Herring <robh@kernel.org>
+Cc:     Shubhrajyoti Datta <shubhraj@xilinx.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Srinivas Goud <sgoud@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:50:54AM +0300, Ilpo Järvinen wrote:
-> The closing `` is missing. Add it.
-> 
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
+> >
+ <snip>
 
-Hi Ilpo,
+>
+> No, I don't know what the differences are in your h/w. You have ID
+> registers, but changed the IP and didn't change the ID registers? How
+> has the IP changed?
+>
 
-I have already posted the same fix at [1]. Thanks anyway.
+The IP is not changed and the ID registers are not updated.
+The limitation is coming from the AXI  port that the IP is connected to.
+The axi port is allowing only the 32 bit access.
+The same information will be updated in the Versal TRM.
 
-[1]: https://lore.kernel.org/linux-doc/20220614091214.511791-1-bagasdotme@gmail.com/
 
--- 
-An old man doll... just what I always wanted! - Clara
+
+
+> Rob
