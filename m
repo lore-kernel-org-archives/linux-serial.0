@@ -2,131 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FDBCCA47A
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 07:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1C6C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 07:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiFNHyS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        id S237580AbiFNHzR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 03:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356003AbiFNHxr (ORCPT
+        with ESMTP id S236277AbiFNHzO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:53:47 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA202BD7;
-        Tue, 14 Jun 2022 00:53:44 -0700 (PDT)
+        Tue, 14 Jun 2022 03:55:14 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936035F78
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jun 2022 00:55:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655193224; x=1686729224;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wANyQz1SPCw25Wuqev/1fBXire9ICHZa91oCiUyQF5A=;
-  b=TrPjapOHMkAQNZ7xiM+9D4q+Rnve0sex+SOvKWJrdlyNTLZ4Spflyun2
-   siB+dS6pxIF3yPVBCgqzKBpkjOabg63XroZGsXvkIIYfdUZHjTpDnXbGq
-   do4tfUdj6YsdOlFS/4R6pnrh+2nsUQYkErOyyUSfwo8BjsfzjoKNuAMVa
-   rIN3RT6AhqYvtw96t4S8srC5xFXCW5qBOOPzDaFJ7Hi12ejIgvJbwHYU9
-   EGYTSh/4dm64+zcmDi+YZbz9jIMf3B5bs0+uUrggt27Mfimmg1f4DY4e2
-   jSDyPLOs1glCIXfljyiYo4RYrr0kAc0qAmTMBhWMehtcCKCvoeOxgogAe
+  t=1655193313; x=1686729313;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=dWXzZMG7eRYLZLUHynIbDZOE5AhRi6UdvLnLlXcyUuQ=;
+  b=EX2OdDdBBAL/PYxPQIrCmiQ+9CbjedX4EkB0heA/vi/30oAbS8ohoM7k
+   L/tlPU5L1Ib+G4ZNCGWua5G4enhlOU8IyZZ98VXD88KpZErnkpwARbK4K
+   9aBbzak23i+IRu9I85j3nh0iUgQgwFTftPa5CpNjh01dQoPrRfwwmmnvV
+   Rt+LqSTBCGW3GO9r4Wgdtcx2ZAFn5VDW66UiPqOA6eRWbEiGN9MKIiRa/
+   qrI4laQ5ltoCnHPrgy79mm7HfuZZpgOYoaGdv6NDikBy9nS3Vt41nSIvB
+   aVVxUSVuY+/A8j8ER3aAEGDbclKGe22xOfg4Dr2r7awJ4FKIvmgCZ+rf3
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279260583"
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="277323038"
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="279260583"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:53:43 -0700
+   d="scan'208";a="277323038"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:55:13 -0700
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="588305944"
-Received: from jlaghzal-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.32.175])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:53:41 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>
-Subject: [PATCH] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
-Date:   Tue, 14 Jun 2022 10:53:33 +0300
-Message-Id: <20220614075333.8382-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+   d="scan'208";a="640204425"
+Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:55:11 -0700
+Date:   Tue, 14 Jun 2022 10:55:09 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     =?ISO-8859-15?Q?Nuno_Gon=E7alves?= <nunojpg@gmail.com>
+cc:     Tomasz Mon <tomasz.mon@camlingroup.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: pl011: UPSTAT_AUTORTS requires
+ .throttle/unthrottle
+In-Reply-To: <CAEXMXLTTefeVh3otDL1R0jV0dQh5+S4tfV_zKhZ985V-w1hFLw@mail.gmail.com>
+Message-ID: <3b62aed8-7476-2ac8-21a4-1bd3b857851@linux.intel.com>
+References: <45e1eac1-1818-1f8c-6168-cff6be6427af@linux.intel.com> <CAEXMXLRrysT_+RUZ4sg6DGT8Hzdv2jrzX2eZ2Z0mPu39y3-m7g@mail.gmail.com> <ea30fbc2-6535-9fdd-6691-9bb7baa56ec2@linux.intel.com>
+ <CAEXMXLTTefeVh3otDL1R0jV0dQh5+S4tfV_zKhZ985V-w1hFLw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1082420513-1655193312=:1605"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The driver must provide throttle and unthrottle in uart_ops when it
-sets UPSTAT_AUTORTS. Add them using existing stop_rx &
-enable_interrupts functions.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
-Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
-Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+--8323329-1082420513-1655193312=:1605
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
----
- drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+On Tue, 14 Jun 2022, Nuno Gonçalves wrote:
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 97ef41cb2721..16a21422ddce 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1367,6 +1367,15 @@ static void pl011_stop_rx(struct uart_port *port)
- 	pl011_dma_rx_stop(uap);
- }
- 
-+static void pl011_throttle_rx(struct uart_port *port)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pl011_stop_rx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- static void pl011_enable_ms(struct uart_port *port)
- {
- 	struct uart_amba_port *uap =
-@@ -1788,9 +1797,10 @@ static int pl011_allocate_irq(struct uart_amba_port *uap)
-  */
- static void pl011_enable_interrupts(struct uart_amba_port *uap)
- {
-+	unsigned long flags;
- 	unsigned int i;
- 
--	spin_lock_irq(&uap->port.lock);
-+	spin_lock_irqsave(&uap->port.lock, flags);
- 
- 	/* Clear out any spuriously appearing RX interrupts */
- 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-@@ -1812,7 +1822,14 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
- 	if (!pl011_dma_rx_running(uap))
- 		uap->im |= UART011_RXIM;
- 	pl011_write(uap->im, uap, REG_IMSC);
--	spin_unlock_irq(&uap->port.lock);
-+	spin_unlock_irqrestore(&uap->port.lock, flags);
-+}
-+
-+static void pl011_unthrottle_rx(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-+
-+	pl011_enable_interrupts(uap);
- }
- 
- static int pl011_startup(struct uart_port *port)
-@@ -2225,6 +2242,8 @@ static const struct uart_ops amba_pl011_pops = {
- 	.stop_tx	= pl011_stop_tx,
- 	.start_tx	= pl011_start_tx,
- 	.stop_rx	= pl011_stop_rx,
-+	.throttle	= pl011_throttle_rx,
-+	.unthrottle	= pl011_unthrottle_rx,
- 	.enable_ms	= pl011_enable_ms,
- 	.break_ctl	= pl011_break_ctl,
- 	.startup	= pl011_startup,
+> > [PATCH v3] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
+> >
+> > The driver must provide throttle and unthrottle in uart_ops when it
+> > sets UPSTAT_AUTORTS. Add them using existing stop_rx &
+> > enable_interrupts functions.
+> >
+> > Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
+> > Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
+> > Cc: Lukas Wunner <lukas@wunner.de>
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> >
+> > ---
+> >  drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++--
+> >  1 file changed, 21 insertions(+), 2 deletions(-)
+> >
+> 
+> Works great, thanks.
+> 
+> Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
+
+Thanks a lot for testing!
 
 -- 
-tg: (f2906aa86338..) pl011/add-throttle (depends on: tty-next)
+ i.
+
+--8323329-1082420513-1655193312=:1605--
