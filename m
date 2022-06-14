@@ -2,81 +2,108 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874C8C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC3BC43334
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 09:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352827AbiFNIm0 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S233058AbiFNJDk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353729AbiFNImI (ORCPT
+        with ESMTP id S237318AbiFNJDT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:42:08 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE9442ECD;
-        Tue, 14 Jun 2022 01:41:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655196111; x=1686732111;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=sTFaVrkqoKJ+RPXYHxWrHGVjnxcIndtOcGxPl0yyczw=;
-  b=lKtbDuvGYd5JXcBnLMpgWmRHG8rK6FOV1YiWr4YiCEzDSvdLQcp8hxW8
-   dtuzf6tbiM5AXcMy4ZWcke41Q5sPEPZoSkq8cZRnErPTUXobpHs/0tj3b
-   G9jSms7xme40dl2BcDY92D9sR+Xjw9IlX7xR67BVNXBxIkDHwkxWtGO1U
-   F0CL18j9Yc7ApooYXD8+PbeLzaATd1VS2Vmp+LGNPzgVuNwPSlr5KVprU
-   3v/RLDCEQjDElynm7rIrBnB9Aq7PzbbYp3Yavl7PJXWGckkWHkYWlcMC1
-   mV0L60rAFpuzGt0A+54Q09DNuETAQ7pr0ZAH6jGNqYpvxkZ3GaTU+Nr1u
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="364889284"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="364889284"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:41:46 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="910883959"
-Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:41:45 -0700
-Date:   Tue, 14 Jun 2022 11:41:43 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 14 Jun 2022 05:03:19 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCF736E20;
+        Tue, 14 Jun 2022 02:03:17 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 47F0021AC5;
+        Tue, 14 Jun 2022 09:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655197396; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZalrUwXcMUE8CIDPQn8NdTkEdaFMvMEgN/XeVrNXZ54=;
+        b=H7ybuSDCf8e0hmfQK2WI5YmfH1VAdK1zuap9bliQFVToyLNx2tyG/UGOoDkwY2rmXzDbKH
+        xMo+ngCJ2iiZBDppg5SNOju6qKCbLI1tIw495VFtvpJBWlf26AhDP9tIoI0iMlXQl87gaE
+        tc1GmTAYTHhopoVOApkKn2DweLavBfw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655197396;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZalrUwXcMUE8CIDPQn8NdTkEdaFMvMEgN/XeVrNXZ54=;
+        b=zE9wIcsFY8YElhYssHhnnLbNj1hkES6wI39NEgL1ci9S9GOc3SILn0+9BulTLsQrPfEP+i
+        tXukehRbrfREo4Cg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 15E07139EC;
+        Tue, 14 Jun 2022 09:03:16 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Hv/OA9ROqGKiLgAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Tue, 14 Jun 2022 09:03:16 +0000
+Message-ID: <3681d7dd-94f0-5b40-85ec-5fa5e22d213f@suse.cz>
+Date:   Tue, 14 Jun 2022 11:03:15 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/7] tty/vt: consolemap: use ARRAY_SIZE(), part II.
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 7/7] tty/vt: consolemap: remove dflt reset from
- con_do_clear_unimap()
-In-Reply-To: <20220614075713.32767-7-jslaby@suse.cz>
-Message-ID: <baaff049-cb36-9468-3b53-2b7d14441d@linux.intel.com>
-References: <20220614075713.32767-1-jslaby@suse.cz> <20220614075713.32767-7-jslaby@suse.cz>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-49823128-1655196080=:1605"
-Content-ID: <77e94118-9dfb-c78e-4492-c4d9fa02cfd@linux.intel.com>
+References: <20220614075713.32767-1-jslaby@suse.cz>
+ <68107f11-58bb-5c55-8f45-891717d08d33@linux.intel.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <68107f11-58bb-5c55-8f45-891717d08d33@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-49823128-1655196080=:1605
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <b7fe41f8-bfb-d422-6c6d-769d52f9eec9@linux.intel.com>
-
-On Tue, 14 Jun 2022, Jiri Slaby wrote:
-
-> con_do_clear_unimap() sets dflt to NULL and then calls
-> con_release_unimap() which does the very same as the first thing. So
-> remove the former as it is apparently superfluous.
+On 14. 06. 22, 10:17, Ilpo JÃ¤rvinen wrote:
+> On Tue, 14 Jun 2022, Jiri Slaby wrote:
 > 
-> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> The code still uses constants (macros) as bounds in loops after commit
+>> 17945d317a52 (tty/vt: consolemap: use ARRAY_SIZE()). The contants are at
+>> least macros used also in the definition of the arrays. But use
+>> ARRAY_SIZE() on two more places to ensure the loops never run out of
+>> bounds even if the array definition change.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   drivers/tty/vt/consolemap.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+>> index fff97ae87e00..8aa7a48b3647 100644
+>> --- a/drivers/tty/vt/consolemap.c
+>> +++ b/drivers/tty/vt/consolemap.c
+>> @@ -232,7 +232,7 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
+>>   	}
+>>   	memset(q, 0, MAX_GLYPH);
+>>   
+>> -	for (j = 0; j < E_TABSZ; j++) {
+>> +	for (j = 0; j < ARRAY_SIZE(translations[i]); j++) {
+> 
+> Any particular reason why you left its definition to have 256 instead of
+> E_TABSZ (even after the patch series I mean):
+> 
+> static unsigned short translations[][256] = {
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+I will. (Only if it wasn't so badly chosen name. And even exported to 
+userspace.)
 
-...to all patches in this series that weren't individually replied to.
-
+thanks,
 -- 
- i.
---8323329-49823128-1655196080=:1605--
+js
+suse labs
