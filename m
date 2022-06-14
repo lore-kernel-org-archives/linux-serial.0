@@ -2,53 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA85FC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABD6C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jun 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232464AbiFNIfY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
+        id S1355105AbiFNIki (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbiFNIfW (ORCPT
+        with ESMTP id S1355343AbiFNIkS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:35:22 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428803CA52;
-        Tue, 14 Jun 2022 01:35:22 -0700 (PDT)
+        Tue, 14 Jun 2022 04:40:18 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5747145500;
+        Tue, 14 Jun 2022 01:38:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655195722; x=1686731722;
+  t=1655195933; x=1686731933;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=u3sRGLAkfFL/sgBy0Sm3AS3ifOZuCvaq5rzaaEC09fk=;
-  b=hgw8ruxFotowZLI4pSWH/GU2qdQI36j7brMb2DQIfnrJfGXl+LslhJD9
-   tzpj9xTlk6BbF8YwopgS+pbyuE2pH/cMjWFwhATcueRUHf1xBypmgYjrj
-   EfyR32TBVO6SrkhzZuxmCqFMqd1KErJafWHyUQ6Jfai3L7vupEt1oXum8
-   iBOwHMbKRY3Zt5xUU1IUn0K+yFpDTrjhGQr5QzDOx6v3PY+WrRGzutPQh
-   w+rmrMbKYqYFL064/uAVgj1XABlC2NdP6/5OQGVeEjjhKpNcuAzm5G+JG
-   YdKcPKaXhNGHyNXdgeEMr9lirqdIftFejEMUisBrkjWyS6lNSP5bdZM4u
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278589233"
+  bh=zpBin9PRcIpD5gHfe2/4AZHi5R2ZDJXHpDpHe7E1fzQ=;
+  b=fQXUngRX1tQWyaTSjqyB1bM2Fk/tTpeCx+8A7ULSXB7PTCAIZWwZ2hkV
+   +3mWZp6fCCqssvFkHNZ6iG5kcMGyyHKooyAVVjaHfnxCCpBtUkiViXwOU
+   +PQ9+xAbxQObZ1gl06WltXtWmSzoBa4QavM0OOWkv5IZIiqBxWBF6bIsQ
+   pPYCXOdLv3Cu90YfJykRfYudZyXSSOHcpuW6Q0tuzC+qjA6pgZsBSGnbi
+   Ww7z3XjQ2986QVvDuFYv0HFBFdjtJlmasafXjjs7ZB9tiX/gWapFQHLdw
+   ++5yKfv8TGZMHPu7DkxjSEhxs+fQLX4yCNLX2tBmPpbQugMjruxjS9OfJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279270600"
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="278589233"
+   d="scan'208";a="279270600"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:35:21 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:38:51 -0700
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="640219457"
+   d="scan'208";a="640221150"
 Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:35:20 -0700
-Date:   Tue, 14 Jun 2022 11:35:18 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:38:50 -0700
+Date:   Tue, 14 Jun 2022 11:38:47 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Jiri Slaby <jslaby@suse.cz>
-cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/7] tty/vt: consolemap: saner variable names in
- set_inverse_transl()
-In-Reply-To: <20220614075713.32767-4-jslaby@suse.cz>
-Message-ID: <74fc76bf-a7f-be34-10cd-412234990f1@linux.intel.com>
-References: <20220614075713.32767-1-jslaby@suse.cz> <20220614075713.32767-4-jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/7] tty/vt: consolemap: rename struct
+ vc_data::vc_uni_pagedir*
+In-Reply-To: <20220614075713.32767-5-jslaby@suse.cz>
+Message-ID: <5bf9a7b-7e41-8a3c-769a-9b7bc3dc04d@linux.intel.com>
+References: <20220614075713.32767-1-jslaby@suse.cz> <20220614075713.32767-5-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1912782543-1655195721=:1605"
+Content-Type: multipart/mixed; boundary="8323329-546787174-1655195931=:1605"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -56,84 +58,29 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1912782543-1655195721=:1605
-Content-Type: text/plain; charset=ISO-8859-15
+--8323329-546787174-1655195931=:1605
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
 
 On Tue, 14 Jun 2022, Jiri Slaby wrote:
 
-> The function uses too vague variable names like i, j, k for iterators, p,
-> q, p1, p2 for pointers etc.
+> As a follow-up to the commit 4173f018aae1 (tty/vt: consolemap: rename
+> and document struct uni_pagedir), rename also the members of struct
+> vc_data. I.e. pagedir -> pagedict. And while touching all the places,
+> remove also the unnecessary vc_ prefix.
 > 
-> Rename all these, so that it is clear what is going on:
-> - dict: for dictionaries.
-> - d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-> - dir, row: for directory and row pointers.
-> - glyph: for the glyph.
-> - and so on...
-> 
-> This is a lot of shuffling, but the result pays off, IMO.
-> 
+> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
->  drivers/tty/vt/consolemap.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-> index a69dfda8e3d0..3d0e10dac6d9 100644
-> --- a/drivers/tty/vt/consolemap.c
-> +++ b/drivers/tty/vt/consolemap.c
-> @@ -214,29 +214,29 @@ struct uni_pagedict {
->  
->  static struct uni_pagedict *dflt;
->  
-> -static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
-> +static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *dict,
->  	       enum translation_map m)
->  {
-> -	int j, glyph;
->  	unsigned short *t = translations[m];
-> -	unsigned char *q;
-> +	unsigned char *inv;
->  
-> -	if (!p)
-> +	if (!dict)
->  		return;
-> -	q = p->inverse_translations[m];
-> +	inv = dict->inverse_translations[m];
->  
-> -	if (!q) {
-> -		q = p->inverse_translations[m] = kmalloc(MAX_GLYPH, GFP_KERNEL);
-> -		if (!q)
-> +	if (!inv) {
-> +		inv = dict->inverse_translations[m] = kmalloc(MAX_GLYPH,
-> +				GFP_KERNEL);
-> +		if (!inv)
->  			return;
->  	}
-> -	memset(q, 0, MAX_GLYPH);
-> +	memset(inv, 0, MAX_GLYPH);
->  
-> -	for (j = 0; j < ARRAY_SIZE(translations[i]); j++) {
-> -		glyph = conv_uni_to_pc(conp, t[j]);
-> -		if (glyph >= 0 && glyph < MAX_GLYPH && q[glyph] < 32) {
-> +	for (unsigned int ch = 0; ch < ARRAY_SIZE(translations[m]); ch++) {
 
-This removes the compile error you introduced earlier. Other than that:
+Look fine,
 
-Reviewed-by: Ilpo J�rvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-> +		int glyph = conv_uni_to_pc(conp, t[ch]);
-> +		if (glyph >= 0 && glyph < MAX_GLYPH && inv[glyph] < 32) {
->  			/* prefer '-' above SHY etc. */
-> -			q[glyph] = j;
-> +			inv[glyph] = ch;
->  		}
->  	}
->  }
-> 
+
+You might want to rename vgacon_uni_pagedir too. :-)
+
 
 -- 
  i.
 
---8323329-1912782543-1655195721=:1605--
+--8323329-546787174-1655195931=:1605--
