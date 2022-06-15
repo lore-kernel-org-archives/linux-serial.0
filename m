@@ -2,192 +2,360 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7B5C43334
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 03:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAA7C43334
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 06:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbiFODpd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S1352630AbiFOGZL (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Jun 2022 02:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbiFODpc (ORCPT
+        with ESMTP id S1352299AbiFOGZL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:45:32 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7154F9C8
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jun 2022 20:45:31 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id cx11so10125972pjb.1
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jun 2022 20:45:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7Ij0HeSRkan/+wey0vwv6gSX6CvJy1hzGRjbCjEEi0Q=;
-        b=qjCUrFHlnegDisybMGm1kPk0yBV8sPt4VgivPoRadfTH2hN9Z/I9ac3qqER/NAhZpD
-         wVlwLa9lrR/s+FC+ScKiz5BrgySbWS4cO0w4YpKAH08ZEzLnGlclsw+QAQUkDB3/fHlC
-         XD0Ffzo2aBH5TTSoaCXX0cq9reHMChFZEQ9x2SUVCbh4F0R957GKjMU5+LsTB0H1LEEQ
-         r1YMwKpYdd/3fgFzY83WCiOu8K8o4nBhKok4dwe7sX9FNYSEo6fnQTf3vdPNipCBt4dZ
-         r7bYnRNaLTZR9buufKOkZ8XtuXvRo71bDYMoGui6p2WReBtMs5UJLNVPYF6MKT776Xyw
-         Ihew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7Ij0HeSRkan/+wey0vwv6gSX6CvJy1hzGRjbCjEEi0Q=;
-        b=IhAE+RpZBqbCwDmroyfVu9zeGcgh3Q3WGTgomJRAMf8BAIGab+3dlxyElzKzg+aHsy
-         kJESM1AA7YpRXXdUAxWkoiAAhs2gpeYewDBUr0ORrnPoBh5bWXgf83RAbM/VqEoy/p3S
-         4zQv5arw2eNdiUo1hAvGz8rwFi4oi22NmhZIGLrMfsbqGuQVy9jQCzwoe9UCiSTHczqJ
-         vWzmsErrKhGq6/WLYVx+LsJobe0t+JEKdSlyEZJF8W1cwAeRmp69oC2AbcR4hT/1WXa+
-         y+q3uw8fO9zZKILH8gcMGA8NYPFE0f51KKxbK5hyG35ltWcrXV4tUmNpRBtQEgr5n9e6
-         gtKQ==
-X-Gm-Message-State: AJIora8AhYkSOh2l4NZijeMhrVQFb7fN6KU1TeNgmWvfF6Vd+EGJk3Lk
-        MxaKd/hTekqBeVEn1cCByD4=
-X-Google-Smtp-Source: AGRyM1tP9cLBvxoQyB5wuk5m4Amb+DVQKPeggzt4UYjXDUvK2DCXUGqGHsaOkqcMwcX741j5yb1PFg==
-X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id s11-20020a17090302cb00b0014f4fb62fb0mr7512290plk.172.1655264731426;
-        Tue, 14 Jun 2022 20:45:31 -0700 (PDT)
-Received: from localhost.localdomain ([43.155.90.222])
-        by smtp.googlemail.com with ESMTPSA id t4-20020a1709027fc400b00163fa4b7c12sm8077585plb.34.2022.06.14.20.45.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Jun 2022 20:45:30 -0700 (PDT)
-From:   cael <juanfengpy@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        benbjiang@tencent.com, robinlai@tencent.com,
-        linux-serial@vger.kernel.org, juanfengpy@gmail.com
-Subject: [PATCH v4] tty: fix hang on tty device with no_room set
-Date:   Wed, 15 Jun 2022 11:45:10 +0800
-Message-Id: <1655264710-26055-1-git-send-email-juanfengpy@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <Yqdx0W8HhvT5qZlP@kroah.com>
-References: <Yqdx0W8HhvT5qZlP@kroah.com>
+        Wed, 15 Jun 2022 02:25:11 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 646ED2873A;
+        Tue, 14 Jun 2022 23:25:07 -0700 (PDT)
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 218F180F1;
+        Wed, 15 Jun 2022 06:20:19 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/1] serial: core: Start managing serial controllers to enable runtime PM
+Date:   Wed, 15 Jun 2022 09:24:55 +0300
+Message-Id: <20220615062455.15490-1-tony@atomide.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We have met a hang on pty device, the reader was blocking
-at epoll on master side, the writer was sleeping at wait_woken
-inside n_tty_write on slave side, and the write buffer on
-tty_port was full, we found that the reader and writer would
-never be woken again and blocked forever.
+We want to enable runtime PM for serial port device drivers in a generic
+way. To do this, we want to have the serial core layer manage the
+registered serial port controllers. For runtime PM, we need a way to find
+the serial ports for each serial port controller device.
 
-The problem was caused by a race between reader and kworker:
-n_tty_read(reader):  n_tty_receive_buf_common(kworker):
-                    |room = N_TTY_BUF_SIZE - (ldata->read_head - tail)
-                    |room <= 0
-copy_from_read_buf()|
-n_tty_kick_worker() |
-                    |ldata->no_room = true
+The serial core manages ports. Each serial controller can have multiple
+ports. As serial core has no struct device, and the serial port device
+drivers have their own driver data, we cannot currently start making
+use of serial core generic data easily without changing all the serial
+port device drivers.
 
-After writing to slave device, writer wakes up kworker to flush
-data on tty_port to reader, and the kworker finds that reader
-has no room to store data so room <= 0 is met. At this moment,
-reader consumes all the data on reader buffer and calls
-n_tty_kick_worker to check ldata->no_room which is false and
-reader quits reading. Then kworker sets ldata->no_room=true
-and quits too.
+We could consider adding a serial core specific struct device. It would
+be a child of the serial port device, and would allow us eventually to use
+device_links to add generic runtime PM calls for example. But as the serial
+core layer is not a device driver, driver specific features would need to
+be added, and are probably not justified for a virtual device.
 
-If write buffer is not full, writer will wake kworker to flush data
-again after following writes, but if write buffer is full and writer
-goes to sleep, kworker will never be woken again and tty device is
-blocked.
+Considering the above, let's improve the serial core layer so we can
+manage the serial port controllers better. Let's register the controllers
+with the serial core layer in addition to the serial ports.
 
-This problem can be solved with a check for read buffer size inside
-n_tty_receive_buf_common, if read buffer is empty and ldata->no_room
-is true, a call to n_tty_kick_worker is necessary to keep flushing
-data to reader.
+To find the serial ports for a controller based on struct device, let's
+add a new data structure for a serial_controller. Let's add the registered
+devices into a radix_tree so we can look up the controller easily even
+with many controllers registered. This allows us to keep track of the
+runtime PM state for each serial port controller device.
 
-Signed-off-by: cael <juanfengpy@gmail.com>
+As some serial port device drivers enable runtime PM in their probe before
+registering with the serial core layer, and some do not enable runtime PM
+at all currently, we need check the state in the serial core layer on
+uart_port_startup(). We need to also consider that a serial port device
+may have multiple ports.
+
+Initially we just want to enable runtime PM for all the serial port
+controller devices. This allows us to add runtime PM calls and properly
+handle any errors without a need for serial layer specific runtime PM
+wrapper functions.
+
+After this patch no functional changes for the serial port device drivers
+are intended. For most cases, we just enable runtime PM and keep the
+runtime PM usage count until all the serial controller ports are
+unregistered. For drivers implementing runtime PM, we just keep track of
+the configuration.
+
+The serial core layer has the following use cases to deal with:
+
+- If a serial port device driver does not implement runtime PM, the
+  device state is set to active state, and the runtime PM usage count
+  is kept until the last port for a device is unregistered
+
+- If a serial port device driver implements runtime PM, the runtime PM
+  usage count is kept until the last port for the device is unregistered
+
+- If a serial port device driver implements runtime PM autosuspend,
+  autosuspend is not prevented. This currently gets set only for the
+  8250_omap driver to keep runtime PM working for it
+
+For system suspend, things should be mostly detached from the runtime PM.
+The serial port device drivers may call pm_runtime_force_suspend() and
+pm_runtime_force_resume() as needed.
+
+Suggested-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
-Patch changelogs between v1 and v2:
-	-add barrier inside n_tty_read and n_tty_receive_buf_common;
-	-comment why barrier is needed;
-	-access to ldata->no_room is changed with READ_ONCE and WRITE_ONCE;
-Patch changelogs between v2 and v3:
-	-in function n_tty_receive_buf_common, add unlikely to check
-	 ldata->no_room, eg: if (unlikely(ldata->no_room)), and READ_ONCE
-	 is removed here to get locality;
-	-change comment for barrier to show the race condition to make
-	 comment easier to understand;
-Patch changelogs between v3 and v4:
-	-change subject from 'tty: fix a possible hang on tty device' to
-	 'tty: fix hang on tty device with no_room set' to make subject 
-	 more obvious.
 
- drivers/tty/n_tty.c | 41 +++++++++++++++++++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 4 deletions(-)
+Changes since v1:
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index efc72104c840..544f782b9a11 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -201,8 +201,8 @@ static void n_tty_kick_worker(struct tty_struct *tty)
- 	struct n_tty_data *ldata = tty->disc_data;
+- Use kref as suggested by Andy
+
+- Fix memory leak on error as noted by Andy
+
+- Use use unsigned char for supports_autosuspend as suggested by Andy
+
+- Coding style improvments as suggested by Andy
+
+---
+ drivers/tty/serial/8250/8250_core.c |   1 +
+ drivers/tty/serial/8250/8250_omap.c |   1 +
+ drivers/tty/serial/serial_core.c    | 148 ++++++++++++++++++++++++++++
+ include/linux/serial_core.h         |   3 +
+ 4 files changed, 153 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -995,6 +995,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		uart->port.regshift     = up->port.regshift;
+ 		uart->port.iotype       = up->port.iotype;
+ 		uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
++		uart->port.supports_autosuspend = up->port.supports_autosuspend;
+ 		uart->bugs		= up->bugs;
+ 		uart->port.mapbase      = up->port.mapbase;
+ 		uart->port.mapsize      = up->port.mapsize;
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1338,6 +1338,7 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	up.rs485_start_tx = serial8250_em485_start_tx;
+ 	up.rs485_stop_tx = serial8250_em485_stop_tx;
+ 	up.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
++	up.port.supports_autosuspend = 1;
  
- 	/* Did the input worker stop? Restart it */
--	if (unlikely(ldata->no_room)) {
--		ldata->no_room = 0;
-+	if (unlikely(READ_ONCE(ldata->no_room))) {
-+		WRITE_ONCE(ldata->no_room, 0);
+ 	ret = of_alias_get_id(np, "serial");
+ 	if (ret < 0) {
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -16,7 +16,9 @@
+ #include <linux/console.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/of.h>
++#include <linux/pm_runtime.h>
+ #include <linux/proc_fs.h>
++#include <linux/radix-tree.h>
+ #include <linux/seq_file.h>
+ #include <linux/device.h>
+ #include <linux/serial.h> /* for serial_state and serial_icounter_struct */
+@@ -30,6 +32,25 @@
+ #include <linux/irq.h>
+ #include <linux/uaccess.h>
  
- 		WARN_RATELIMIT(tty->port->itty == NULL,
- 				"scheduling with invalid itty\n");
-@@ -1632,7 +1632,7 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 			if (overflow && room < 0)
- 				ldata->read_head--;
- 			room = overflow;
--			ldata->no_room = flow && !room;
-+			WRITE_ONCE(ldata->no_room, flow && !room);
- 		} else
- 			overflow = 0;
++/*
++ * Serial port device specific data for serial core.
++ *
++ * Each port device can have multiple ports with struct uart_state allocated
++ * for each port. The array of ports is kept in struct uart_driver.
++ */
++struct serial_controller {
++	struct device *dev;			/* Serial port device */
++	struct uart_driver *drv;		/* For port specific uart_state */
++	struct kref ref;			/* Enable count for runtime PM */
++	unsigned long implements_pm_runtime:1;
++	unsigned long supports_autosuspend:1;
++};
++
++/*
++ * Serial core port device instances. Update protected by port_mutex.
++ */
++static RADIX_TREE(serial_core_devices, GFP_NOWAIT);
++
+ /*
+  * This is used to lock changes in serial line configuration.
+  */
+@@ -175,6 +196,125 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
+ 		uart_clear_mctrl(uport, TIOCM_DTR | TIOCM_RTS);
+ }
  
-@@ -1663,6 +1663,24 @@ n_tty_receive_buf_common(struct tty_struct *tty, const unsigned char *cp,
- 	} else
- 		n_tty_check_throttle(tty);
- 
-+	if (unlikely(ldata->no_room)) {
-+		/*
-+		 * Barrier here is to ensure to read the latest read_tail in
-+		 * chars_in_buffer() and to make sure that read_tail is not loaded
-+		 * before ldata->no_room is set, otherwise, following race may occur:
-+		 * n_tty_receive_buf_common() |n_tty_read()
-+		 * chars_in_buffer() > 0      |
-+		 *                            |copy_from_read_buf()->chars_in_buffer()==0
-+		 *                            |if (ldata->no_room)
-+		 * ldata->no_room = 1         |
-+		 * Then both kworker and reader will fail to kick n_tty_kick_worker(),
-+		 * smp_mb is paired with smp_mb() in n_tty_read().
-+		 */
-+		smp_mb();
-+		if (!chars_in_buffer(tty))
-+			n_tty_kick_worker(tty);
++/* Called from uart_add_one_port() with port_mutex held */
++static int serial_core_pm_runtime_start(struct uart_port *port)
++{
++	struct uart_state *state = port->state;
++	struct serial_controller *controller = state->controller;
++	struct device *dev = port->dev;
++	int ret = 0;
++
++	if (kref_get_unless_zero(&controller->ref))
++		return 0;
++
++	/* Init controller device on first reference */
++	kref_init(&controller->ref);
++
++	/* Always enable autosuspend and consider child devices for serdev */
++	pm_runtime_use_autosuspend(dev);
++	pm_suspend_ignore_children(dev, false);
++
++	/*
++	 * If the port driver did not enable runtime PM in probe, do it now.
++	 * Devices that did not enable runtime PM get set active so we can
++	 * properly handle the returned errors for runtime PM calls.
++	 */
++	if (!pm_runtime_enabled(dev)) {
++		pm_runtime_set_active(dev);
++		pm_runtime_enable(dev);
++	} else {
++		controller->implements_pm_runtime = 1;
 +	}
 +
- 	up_read(&tty->termios_rwsem);
- 
- 	return rcvd;
-@@ -2180,8 +2198,23 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 		if (time)
- 			timeout = time;
- 	}
--	if (tail != ldata->read_tail)
-+	if (tail != ldata->read_tail) {
-+		/*
-+		 * Make sure no_room is not read before setting read_tail,
-+		 * otherwise, following race may occur:
-+		 * n_tty_read()		                |n_tty_receive_buf_common()
-+		 * if(ldata->no_room)->false            |
-+		 *			                |ldata->no_room = 1
-+		 *                                      |char_in_buffer() > 0
-+		 * ldata->read_tail = ldata->commit_head|
-+		 * Then copy_from_read_buf() in reader consumes all the data
-+		 * in read buffer, both reader and kworker will fail to kick
-+		 * tty_buffer_restart_work().
-+		 * smp_mb is paired with smp_mb() in n_tty_receive_buf_common().
-+		 */
-+		smp_mb();
- 		n_tty_kick_worker(tty);
++	/*
++	 * Keep the port device enabled unless autosuspend is supported.
++	 * Released on port shutdown.
++	 */
++	if (!controller->supports_autosuspend) {
++		ret = pm_runtime_resume_and_get(dev);
++		if (ret < 0) {
++			pm_runtime_dont_use_autosuspend(dev);
++			pm_runtime_disable(dev);
++		}
 +	}
- 	up_read(&tty->termios_rwsem);
++
++	return ret;
++}
++
++/* Clean up the runtime PM settings done on serial_core_register_port() */
++static void serial_core_pm_runtime_cleanup(struct kref *ref)
++{
++	struct serial_controller *controller =
++		 container_of(ref, struct serial_controller, ref);
++	struct device *dev = controller->dev;
++
++	pm_runtime_dont_use_autosuspend(dev);
++	pm_suspend_ignore_children(dev, true);
++	if (!controller->supports_autosuspend)
++		pm_runtime_put_sync(dev);
++	if (!controller->implements_pm_runtime) {
++		pm_runtime_set_suspended(dev);
++		pm_runtime_disable(dev);
++	}
++}
++
++/* Called from uart_remove_one_port() and on error path with port_mutex held */
++static void serial_core_unregister_port(struct uart_port *port)
++{
++	unsigned long idx = (unsigned long)port->dev;
++	struct serial_controller *controller;
++
++	/* Check for a registered controller, no struct device early on */
++	controller = radix_tree_lookup(&serial_core_devices, idx);
++	if (!controller)
++		return;
++
++	kref_put(&controller->ref, serial_core_pm_runtime_cleanup);
++
++	controller = radix_tree_delete(&serial_core_devices, idx);
++	kfree(controller);
++}
++
++/* Called from uart_add_one_port() with port_mutex held */
++static int serial_core_register_port(struct uart_port *port,
++				     struct uart_driver *drv)
++{
++	unsigned long idx = (unsigned long)port->dev;
++	struct serial_controller *controller;
++	int ret;
++
++	if (!idx)
++		return 0;
++
++	controller = radix_tree_lookup(&serial_core_devices, idx);
++	if (controller) {
++		port->state->controller = controller;
++		WARN_ON(port->supports_autosuspend != controller->supports_autosuspend);
++		return serial_core_pm_runtime_start(port);
++	}
++
++	controller = kzalloc(sizeof(*controller), GFP_KERNEL);
++	if (!controller)
++		return -ENOMEM;
++
++	controller->drv = drv;
++	controller->dev = port->dev;
++	controller->supports_autosuspend = port->supports_autosuspend;
++	port->state->controller = controller;
++
++	ret = radix_tree_insert(&serial_core_devices, idx, controller);
++	if (ret) {
++		kfree(controller);
++		return ret;
++	}
++
++	ret = serial_core_pm_runtime_start(port);
++	if (ret < 0)
++		serial_core_unregister_port(port);
++
++	return ret;
++}
++
+ /*
+  * Startup the port.  This will be called once per open.  All calls
+  * will be serialised by the per-port mutex.
+@@ -2956,6 +3096,10 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 		goto out;
+ 	}
  
- 	remove_wait_queue(&tty->read_wait, &wait);
++	ret = serial_core_register_port(uport, drv);
++	if (ret)
++		goto out;
++
+ 	/*
+ 	 * If this port is in use as a console then the spinlock is already
+ 	 * initialised.
+@@ -2979,6 +3123,7 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 				    GFP_KERNEL);
+ 	if (!uport->tty_groups) {
+ 		ret = -ENOMEM;
++		serial_core_unregister_port(uport);
+ 		goto out;
+ 	}
+ 	uport->tty_groups[0] = &tty_dev_attr_group;
+@@ -3048,6 +3193,9 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ 		goto out;
+ 	}
+ 	uport->flags |= UPF_DEAD;
++
++	serial_core_unregister_port(uport);
++
+ 	mutex_unlock(&port->mutex);
+ 
+ 	/*
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -250,6 +250,7 @@ struct uart_port {
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+ 	unsigned char		suspended;
+ 	unsigned char		console_reinit;
++	unsigned char		supports_autosuspend;
+ 	const char		*name;			/* port name */
+ 	struct attribute_group	*attr_group;		/* port specific attributes */
+ 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+@@ -285,6 +286,8 @@ enum uart_pm_state {
+  * This is the state information which is persistent across opens.
+  */
+ struct uart_state {
++	struct serial_controller *controller;
++
+ 	struct tty_port		port;
+ 
+ 	enum uart_pm_state	pm_state;
 -- 
-2.27.0
-
+2.36.1
