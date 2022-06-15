@@ -2,50 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F581C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 09:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289ACC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 09:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345951AbiFOJIA (ORCPT
+        id S1346355AbiFOJIF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        Wed, 15 Jun 2022 05:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343660AbiFOJHr (ORCPT
+        with ESMTP id S1344115AbiFOJHs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:07:47 -0400
+        Wed, 15 Jun 2022 05:07:48 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7F93D1D1
-        for <linux-serial@vger.kernel.org>; Wed, 15 Jun 2022 02:07:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D61318;
+        Wed, 15 Jun 2022 02:07:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655284041; x=1686820041;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=VUQ6LzZzY9wCNv+jUIBtpgLafWcqy4m6v9mDKXVWANg=;
-  b=Qo6w0zQxEFUZlEVizySN7CWJg3wyAph1xFQVGD0Daq1hgJ8Ss3evBLW1
-   CDSIT8MBqfUzIkHTHv/TBADHsfymRmVGsR5h6Xe2dQufV2PovS6SHTU5x
-   eJkOwLjXCLxWlbB5giz7jSs1Bh4N4kifOOd3zV4FcA7tB7sjsY8G5LRMA
-   JXXgK89LJBG8W72Rcy1pmx7wIYesO8tg1i+G4go1xb+6qVAFzeHBMe0xI
-   X0OOXiavsGJnLRI1jpgtEb4hc5fV88idgHaCcocCb0AWqqLCpWhUP7T/G
-   1PeoT+Fwi4cCzPNtcOaJwrMflmKmAhXgSltVmvdeoe8rkechGtqXI2BHF
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="276464673"
+  t=1655284045; x=1686820045;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=HAnzpIYqjQ6/BJ8qJrY4ssrEeQWRAxVZqY91Bj00quk=;
+  b=UbyCqL0kst1AJK10Ey8C94DyQUx9HHEr3s2j6v31SS2FlH9zf8Rh3z/s
+   S19f6FpFr/4jm/BHYBrL+i2kRW/n+0pWMO89SssTv1XAxGzCRhTLnwKXG
+   jNxwJfxt2KBeJydwHM7qTyxrq2jq55WDkNf046WrUxwfuex6QborXl1sT
+   8KkPS+qyxisBEIOH3/+oqEy3aXa5SmsYZEquauILJk8tGBDJsMMrAVB7T
+   QIHxhk283Qe0lRaMXzLAwqVeaPKme3kA1cYIuTzQsievj8xju8IFAYDO0
+   Q5bJK165t/4sNb9DT+GoQSUGBL86VwDmgQET3jhWJnOyKy1xlMhVZYdAE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="276464684"
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="276464673"
+   d="scan'208";a="276464684"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:21 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:25 -0700
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="830934147"
+   d="scan'208";a="830934154"
 Received: from mgrymel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.41.34])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:19 -0700
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:23 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 0/3] Serial: Two concurrency fixes & one related cleanup
-Date:   Wed, 15 Jun 2022 12:06:48 +0300
-Message-Id: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] serial: 8250: Fix __stop_tx() & DMA Tx restart races
+Date:   Wed, 15 Jun 2022 12:06:49 +0300
+Message-Id: <20220615090651.15340-2-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
+References: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,20 +56,74 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Here are two fixes to problem that have been introduced by recent
-changes. In addition, one cleanup patch to the related code (to keep
-the fix change strictly a fix).
+Commit e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with
+DMA") changed __dma_tx_complete() to enable THRI that is cleared in
+__stop_tx() once THRE is asserted as UART runs out bits to transmit. It
+is possible, however, that more data arrives in between in which case
+serial8250_tx_dma() resumes Tx. THRI is not supposed to be on during
+DMA Tx because DMA is based on completion handler, therefore THRI must
+be cleared unconditionally in serial8250_tx_dma().
 
-Ilpo Järvinen (3):
-  serial: 8250: fix __stop_tx() & DMA Tx restart races
-  serial: 8250_dw: Take port lock while accessing LSR
-  serial: 8250_dma: No need for if (dma->tx_err)
+When Tx is about to start, another race window exists with
+serial8250_handle_irq() leading to a call into __stop_tx() while the
+Tx has already been resumed:
 
- drivers/tty/serial/8250/8250_dma.c  | 7 +++----
- drivers/tty/serial/8250/8250_dw.c   | 3 +++
+__tx_complete():
+  -> spin_lock(port->lock)
+  -> dma->tx_running = 0
+  -> serial8250_set_THRI()
+  -> spin_unlock(port->lock)
+
+uart_start():
+				serial8250_handle_irq():
+  -> spin_lock(port->lock)
+  -> serial8250_tx_dma():
+    -> dma->tx_running = 1
+  -> spin_unlock(port->lock)
+				  -> spin_lock(port->lock)
+				  -> __stop_tx()
+
+Close this race by checking !dma->tx_running before calling into
+__stop_tx().
+
+Fixes: e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with DMA")
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dma.c  | 6 +++---
  drivers/tty/serial/8250/8250_port.c | 2 +-
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 7133fceed35e..a8dba4a0a8fb 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -106,10 +106,10 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 				   UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+ 	dma_async_issue_pending(dma->txchan);
+-	if (dma->tx_err) {
++	serial8250_clear_THRI(p);
++	if (dma->tx_err)
+ 		dma->tx_err = 0;
+-		serial8250_clear_THRI(p);
+-	}
++
+ 	return 0;
+ err:
+ 	dma->tx_err = 1;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 953b0fadfd4c..684a1f1fd686 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1936,7 +1936,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	if ((status & UART_LSR_THRE) && (up->ier & UART_IER_THRI)) {
+ 		if (!up->dma || up->dma->tx_err)
+ 			serial8250_tx_chars(up);
+-		else
++		else if (!up->dma->tx_running)
+ 			__stop_tx(up);
+ 	}
+ 
 -- 
 2.30.2
 
