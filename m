@@ -2,44 +2,44 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7ACCCA473
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 08:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D13F4C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 08:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343686AbiFOIbX (ORCPT
+        id S1343801AbiFOIbY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
+        Wed, 15 Jun 2022 04:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345942AbiFOI3d (ORCPT
+        with ESMTP id S1346051AbiFOI3f (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:29:33 -0400
+        Wed, 15 Jun 2022 04:29:35 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB3333E10;
-        Wed, 15 Jun 2022 01:29:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF32D33890;
+        Wed, 15 Jun 2022 01:29:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655281772; x=1686817772;
+  t=1655281774; x=1686817774;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ju4A9HIwXXampZCizRhHHBmfACjludeE+ouDKRJsveQ=;
-  b=T+rgdJvLfYLmmw+twRt5Ck2IBdZzsBuJ0bghsI2kVjU54AW+ecCZkxlg
-   gQWC7QS2IsFaMeDvNWhUijNFsdvhnZUWNr3Pz6MTHw5hrMpVj18Eg6QuA
-   9c0DacgU0Ezc8unTAU6K6rW/+WAnIiz1GQ5hzMX/8o0ayD5bymMCHjIBZ
-   AOcV4NteDfl3VindUNZ9YgoOKOh/4f30bC5ckzLwsHd2BSm62vZyZEkf9
-   PWIyxsMH71108LJuFegPFUcyZsVCZWFQoNRRwyER9fobxrT4gds1UdKa4
-   pj4cam3fSdn2CAg7YyzRZaTx+Lugu4bDjLBxYVhlGRwomdND+Woo00fVI
-   A==;
+  bh=D/GW/lXKpR6TmmSVXUJ9+ZueanAvikeiMgT1O9er88U=;
+  b=uIdqJ3tASw+Ve3aMjtPMs23rW0qwPUe5R7H52BdxSASvZ8o/gY8/Jl2M
+   1dsVfoakRclW5D73YCNBe9Cum5xO62mHS/Qqq8mCVqIKk186y7uQcBN/P
+   WeLeKpv7HM07Mbpe7b8BVCU3WcjB+ova4kh8AahIlVU5B95fQpTnrmNuF
+   ZwK3tzd2nF3q6JFWR1VcKUCGWi8b8gXZN7ERAitSKJoMHxVM3gmccV5rM
+   RzNrOTOeSF8drM8Sn8kMY5Xsx8gSzD/yw3r+kRQz+/se7MEARrIckeKyv
+   9tYJoraEb9PlQ6pd/2jf6RlMQ9Zemp6CfxJ2Rknw57N3ly9r/mGkdeglF
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="178025223"
+   d="scan'208";a="178025240"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 01:29:32 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 01:29:34 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 15 Jun 2022 01:29:23 -0700
+ 15.1.2375.17; Wed, 15 Jun 2022 01:29:29 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 01:29:21 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 01:29:26 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
         <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
@@ -48,9 +48,9 @@ CC:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 2/4] tty: serial: atmel: use devm_clk_get()
-Date:   Wed, 15 Jun 2022 11:31:42 +0300
-Message-ID: <20220615083144.1882142-3-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 4/4] serial: st-asc: remove include of pm_runtime.h
+Date:   Wed, 15 Jun 2022 11:31:44 +0300
+Message-ID: <20220615083144.1882142-5-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
 References: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
@@ -61,116 +61,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use devm_clk_get() for serial clock instead of clk_get()/clk_put().
-With this move the clk_get in driver's probe function.
+st-asc driver doesn't use helpers from pm_runtime.h thus remove its
+include.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 ---
- drivers/tty/serial/atmel_serial.c | 50 ++++++++++---------------------
- 1 file changed, 15 insertions(+), 35 deletions(-)
+ drivers/tty/serial/st-asc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index c618d7e93058..4cec97fd7241 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2508,24 +2508,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
- 	if (ret)
- 		return ret;
- 
--	/* for console, the clock could already be configured */
--	if (!atmel_port->clk) {
--		atmel_port->clk = clk_get(&mpdev->dev, "usart");
--		if (IS_ERR(atmel_port->clk)) {
--			ret = PTR_ERR(atmel_port->clk);
--			atmel_port->clk = NULL;
--			return ret;
--		}
--		ret = clk_prepare_enable(atmel_port->clk);
--		if (ret) {
--			clk_put(atmel_port->clk);
--			atmel_port->clk = NULL;
--			return ret;
--		}
--		port->uartclk = clk_get_rate(atmel_port->clk);
--		clk_disable_unprepare(atmel_port->clk);
--		/* only enable clock when USART is in use */
--	}
-+	port->uartclk = clk_get_rate(atmel_port->clk);
- 
- 	/*
- 	 * Use TXEMPTY for interrupt when rs485 or ISO7816 else TXRDY or
-@@ -2896,14 +2879,23 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	atomic_set(&atmel_port->tasklet_shutdown, 0);
- 	spin_lock_init(&atmel_port->lock_suspended);
- 
-+	atmel_port->clk = devm_clk_get(&pdev->dev, "usart");
-+	if (IS_ERR(atmel_port->clk)) {
-+		ret = PTR_ERR(atmel_port->clk);
-+		goto err;
-+	}
-+	ret = clk_prepare_enable(atmel_port->clk);
-+	if (ret)
-+		goto err;
-+
- 	ret = atmel_init_port(atmel_port, pdev);
- 	if (ret)
--		goto err_clear_bit;
-+		goto err_clk_disable_unprepare;
- 
- 	atmel_port->gpios = mctrl_gpio_init(&atmel_port->uart, 0);
- 	if (IS_ERR(atmel_port->gpios)) {
- 		ret = PTR_ERR(atmel_port->gpios);
--		goto err_clear_bit;
-+		goto err_clk_disable_unprepare;
- 	}
- 
- 	if (!atmel_use_pdc_rx(&atmel_port->uart)) {
-@@ -2912,7 +2904,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 				     sizeof(struct atmel_uart_char),
- 				     GFP_KERNEL);
- 		if (!data)
--			goto err_alloc_ring;
-+			goto err_clk_disable_unprepare;
- 		atmel_port->rx_ring.buf = data;
- 	}
- 
-@@ -2936,12 +2928,6 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	device_init_wakeup(&pdev->dev, 1);
- 	platform_set_drvdata(pdev, atmel_port);
- 
--	/*
--	 * The peripheral clock has been disabled by atmel_init_port():
--	 * enable it before accessing I/O registers
--	 */
--	clk_prepare_enable(atmel_port->clk);
--
- 	if (rs485_enabled) {
- 		atmel_uart_writel(&atmel_port->uart, ATMEL_US_MR,
- 				  ATMEL_US_USMODE_NORMAL);
-@@ -2965,12 +2951,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
- err_add_port:
- 	kfree(atmel_port->rx_ring.buf);
- 	atmel_port->rx_ring.buf = NULL;
--err_alloc_ring:
--	if (!uart_console(&atmel_port->uart)) {
--		clk_put(atmel_port->clk);
--		atmel_port->clk = NULL;
--	}
--err_clear_bit:
-+err_clk_disable_unprepare:
-+	clk_disable_unprepare(atmel_port->clk);
- 	clear_bit(atmel_port->uart.line, atmel_ports_in_use);
- err:
- 	return ret;
-@@ -3004,8 +2986,6 @@ static int atmel_serial_remove(struct platform_device *pdev)
- 
- 	clear_bit(port->line, atmel_ports_in_use);
- 
--	clk_put(atmel_port->clk);
--	atmel_port->clk = NULL;
- 	pdev->dev.of_node = NULL;
- 
- 	return ret;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 1b0da603ab54..cce42f4c9bc2 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -17,7 +17,6 @@
+ #include <linux/tty_flip.h>
+ #include <linux/delay.h>
+ #include <linux/spinlock.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/serial_core.h>
 -- 
 2.34.1
 
