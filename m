@@ -2,118 +2,139 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24436CCA47E
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 14:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9136DC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 17:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236979AbiFOOOX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
+        id S237198AbiFORDx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Jun 2022 13:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346085AbiFOONr (ORCPT
+        with ESMTP id S243417AbiFORDv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:13:47 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA65128E34;
-        Wed, 15 Jun 2022 07:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655302426; x=1686838426;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=B8TiHIv5Q07n74NXSDQu97TnsKK0fjGHsjxfyj1wpiY=;
-  b=j7s2LQCiH9CKxMSDH7iK001hej/is0TvhiFUsIDii4844ClqkgD1K5Sq
-   T4JY0+935qE90NBYUmLzfqYjlIO5JNE98WaI4s3lDMn0hAJwcTaQFiEc5
-   8fBNXHG13OPkxqDx8PpnQ1H+se38knaOYn0TmrqnktyzhsFZVxDBBvYan
-   KL+KWnQnVkPeXSyGJzSWiKmwilaIzvbYv2Sae4+o1sfZo4S8c6j4ozWsc
-   CcwcPBnB8XmwG50cUr7zMApYucDAXYomLHS5WSAfENO48NOi5EOqbEOYC
-   bkus4cvuDpCxnar1o/PHXpgl+LGtzl5aNgx8w1THZAr0ae9KLYD5RAxpO
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="267662562"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="267662562"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:13:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="536053581"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:13:17 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o1Tlh-000dUY-Vg;
-        Wed, 15 Jun 2022 17:13:13 +0300
-Date:   Wed, 15 Jun 2022 17:13:13 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH v7 5/6] serial: Support for RS-485 multipoint addresses
-Message-ID: <Yqno+b/+W2RP8rnh@smile.fi.intel.com>
-References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
- <20220615124829.34516-6-ilpo.jarvinen@linux.intel.com>
+        Wed, 15 Jun 2022 13:03:51 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830DA4EA11
+        for <linux-serial@vger.kernel.org>; Wed, 15 Jun 2022 10:03:49 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id l4so10854697pgh.13
+        for <linux-serial@vger.kernel.org>; Wed, 15 Jun 2022 10:03:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jm8MXeLlqii/5FydlD1v6Lz5nQdsR6MGCoUfpwdjuNk=;
+        b=nJ7IBklLOjSLfSLdY4vTZXUDIYuZj/tb2ZQ6grZIWomT9q+Y0cfAHg8MuwR1zW66Di
+         9sWtqG8qOKOpNHtF5fFCqEgdehoqdQYcjEkuoMRk28hhxdGcVk5NTSTlTpiPwsubMzE3
+         xJuHLjAtQXc+MP/UEBzdS+0u18cszg5Q2NIrTUxm+2JSckbgTGvyCxGgW55/s+NObRcf
+         +gg2jvj8mdR1Kjm+kitaTa2wqMrstENtJ3xcAR8eBEe4/TwfI57AtUzWFKtQDRATq3KS
+         PGfLU9F8i/ygnIIluwOQjLi88kopb048g6yzFYgSMrqw8tl/lsfUu/CV8jp3Jrj7vjH9
+         p7xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jm8MXeLlqii/5FydlD1v6Lz5nQdsR6MGCoUfpwdjuNk=;
+        b=GXVZrXxVDpx2NxqkhDIK2m7uAU6PQm4Z4zamru2yY+S6Pcb0+oSDfn/zVYhsw7Ttru
+         NySTVowPYC+G/Nl5merJT3APebo7YKK+gaHVIN2+QV2WuKIkmh4YmS152LhQThLG1M7C
+         CsVPg0mHjlfDnU2h+UUOfsPD3XC5dHLZxWPAmtsPp+igHAiD7XZPzCmrgSEL2O6IWkUF
+         vUi3l5/M4FAhHAWQGd/xF+OuT19WWBN79czQuMBeBClUgEn75En/N4FiNFA6S+Dhk5cP
+         IbFGfvHKu029NL6npwxI+xQIkoJzFj76JMpFX9FB8sMdCipD8la21Cp3XUSxreGNtfnc
+         m4Vg==
+X-Gm-Message-State: AJIora8Z6TEaaSJOJJ1AtjD7ABxNEkp8owlazf2LiyjxR26Cgx1mlRp6
+        qAzjT2xDDQf2d0xlh/h6quhbeg==
+X-Google-Smtp-Source: AGRyM1seg5navj/ZgOXJ4HUS+Haip8l+eCz7SNp77yxaZukUbdDEw7wI4SvjvZRO87I5ID1vQOtNQA==
+X-Received: by 2002:a05:6a00:1344:b0:51b:e3b5:54e2 with SMTP id k4-20020a056a00134400b0051be3b554e2mr588044pfu.6.1655312628981;
+        Wed, 15 Jun 2022 10:03:48 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id v8-20020a17090a778800b001eab0a27d92sm2002742pjk.51.2022.06.15.10.03.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 10:03:48 -0700 (PDT)
+Message-ID: <e6e478a5-9080-fb2f-9ccd-2490cdfab4c7@linaro.org>
+Date:   Wed, 15 Jun 2022 10:03:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615124829.34516-6-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for
+ NPCM8XX
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20220608095623.22327-1-tmaimon77@gmail.com>
+ <20220608095623.22327-13-tmaimon77@gmail.com>
+ <add025b6-c622-b204-d39e-67b31878d37f@linaro.org>
+ <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
+ <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
+ <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:48:28PM +0300, Ilpo Järvinen wrote:
-> Add support for RS-485 multipoint addressing using 9th bit [*]. The
-> addressing mode is configured through .rs485_config().
+On 13/06/2022 02:25, Tomer Maimon wrote:
+> Hi Krzysztof,
 > 
-> ADDRB in termios indicates 9th bit addressing mode is enabled. In this
-> mode, 9th bit is used to indicate an address (byte) within the
-> communication line. ADDRB can only be enabled/disabled through
-> .rs485_config() that is also responsible for setting the destination and
-> receiver (filter) addresses.
+> Thanks for your clarification.
 > 
-> [*] Technically, RS485 is just an electronic spec and does not itself
-> specify the 9th bit addressing mode but 9th bit seems at least
-> "semi-standard" way to do addressing with RS485.
-> 
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: linux-api@vger.kernel.org
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-arch@vger.kernel.org
+> We can remove the dt-binding file and use numbers in the DTS,
+> appreciate if you can answer few additional questions:
+> 1. Do you suggest adding all NPCM reset values to the NPCM reset
+> document or the reset values should describe in the module
+> documentation that uses it?
 
-Hmm... In order to reduce commit messages you can move these Cc:s after the
-cutter line ('---').
+What is "NPCM reset document"? Are these reset values anyhow different
+than interrupts or pins?
 
-...
+> 2. Some of the NPCM7XX document modules describe the reset value they
+> use from the dt-binding for example:
+> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
 
-> -	__u32	padding[5];		/* Memory is cheap, new structs
-> -					   are a royal PITA .. */
-> +	__u8	addr_recv;
-> +	__u8	addr_dest;
-> +	__u8	padding[2 + 4 * sizeof(__u32)];		/* Memory is cheap, new structs
-> +							 * are a royal PITA .. */
+This is NPCM750
 
-I'm not sure it's an equivalent. I would leave u32 members  untouched, so
-something like
+> If we remove the NPCM8XX dt-binding file should we describe the
+> NPCM8XX values in the NPCM-ADC document file?
 
-	__u8	addr_recv;
-	__u8	addr_dest;
-	__u8	padding0[2];		/* Memory is cheap, new structs
-	__u32	padding1[4];		 * are a royal PITA .. */
-
-And repeating about `pahole` tool which may be useful here to check for ABI
-potential changes.
-
--- 
-With Best Regards,
-Andy Shevchenko
+What is NPCM-ADC document file? What do you want to describe there?
+Again - how is it different than interrupts?
 
 
+
+Best regards,
+Krzysztof
