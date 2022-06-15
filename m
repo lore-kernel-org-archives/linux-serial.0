@@ -2,43 +2,44 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 235E6C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 08:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5833BC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 08:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235339AbiFOI3m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        id S1343943AbiFOI3q (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345028AbiFOI3T (ORCPT
+        with ESMTP id S1345203AbiFOI32 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:29:19 -0400
+        Wed, 15 Jun 2022 04:29:28 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB6133E10;
-        Wed, 15 Jun 2022 01:29:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C85B33890;
+        Wed, 15 Jun 2022 01:29:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655281758; x=1686817758;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zOK8QFqvftAZi3/z0cv6PPWHLAU9HWQJ53pRU+8Ya2w=;
-  b=Agrd8VYS71SLQi9NvbiBi3gg19fOd6FwTV2zTs5frQWZgETKkX4G/pK+
-   +dFNi44+tQdE00RFW+bvq1V/InZ7/xi0E1lVGGnNjKpY/h4C4V//u46SM
-   HkjC6Wn7JZ1PXyHp/Cy+dhbl/iRlmsSbeAd8wnjINf6KmDcDoGIfGe/In
-   uMRvWRt18yy365wrSPyVNO/N6Pekl6deiZwWkN9iiFbzFkmjlzPc8Hz6b
-   9NtQWRmV4BY8Wfr3Gkcn1Qkb6uq79Yhj5vJ40KHv1U2WZA8kEv5SirP1S
-   M5y8XU84JCjsHMWpPysbzKZMNGGsrAo63Sox21rqVLoXBCqB98dpQe+xA
-   g==;
+  t=1655281767; x=1686817767;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=s2w3cZlQKmR9BHINpZiLGIOhcN/Hegit5K57L5jWoHw=;
+  b=TwI7J4P071lI25QoVlsJr+jxcPyjsqx5hBWMfdjD8VKj6hlpN3BAlejC
+   XAhWSrSh/ezujWWXtc8yGqvogTDrpmtdULNjsq/4t7K2+T/Q15k6nFS80
+   vDrrIueNi45fQwyC92ZwBwhnzHXkdS5sqOWzgtTBxJZzONapcQUGEX5Yi
+   b3RMoHps3K2c0RUvbB6CNv5Vi79BP2i0QfM0RtvxSGwVTnJxoQBKe2o59
+   MNVJvBq0GyOaL/Y35XTVsDP+7/npwhdcZIJ2R966zEYurfriuERr1BeaP
+   nZ2rGrmG+5f0aNXxMA67kU7A5Qeu/QHXXGBrz5TSyhPa1o/Po57xhb29f
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="178025144"
+   d="scan'208";a="168487083"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 01:29:18 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 01:29:27 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 15 Jun 2022 01:29:18 -0700
+ 15.1.2375.17; Wed, 15 Jun 2022 01:29:26 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 01:29:15 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 01:29:24 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
         <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
@@ -47,10 +48,12 @@ CC:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 0/4] serial: atmel: cleanup code
-Date:   Wed, 15 Jun 2022 11:31:40 +0300
-Message-ID: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 3/4] tty: serial: atmel: remove enable/disable clock due to atmel_console_setup()
+Date:   Wed, 15 Jun 2022 11:31:43 +0300
+Message-ID: <20220615083144.1882142-4-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
+References: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -58,32 +61,50 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+There is no need for clk_prepare_enable() at the beginning of
+atmel_console_setup() and clk_disable_unprepare() at the end of
+atmel_console_setup() as the clock is already enabled when calling
+atmel_console_setup() and its disablement is done at the end
+of probe.
 
-The following patches does some cleanup for atmel_serial driver by
-switching to dev_pm_ops and improving clock management code. Along with
-it I took the chance and introduced a patch for st-asc which removes the
-include of pm_runtime.h.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/tty/serial/atmel_serial.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-Thank you,
-Claudiu Beznea
-
-Changes in v2:
-- split patch 2/3 from v1 in patch 2/4 and patch 3/4 in this
-  series
-- collected tags
-
-Claudiu Beznea (4):
-  tty: serial: atmel: stop using legacy pm ops
-  tty: serial: atmel: use devm_clk_get()
-  tty: serial: atmel: remove enable/disable clock due to
-    atmel_console_setup()
-  serial: st-asc: remove include of pm_runtime.h
-
- drivers/tty/serial/atmel_serial.c | 93 +++++++++----------------------
- drivers/tty/serial/st-asc.c       |  1 -
- 2 files changed, 26 insertions(+), 68 deletions(-)
-
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 4cec97fd7241..51835c7ce827 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2630,10 +2630,6 @@ static int __init atmel_console_setup(struct console *co, char *options)
+ 		return -ENODEV;
+ 	}
+ 
+-	ret = clk_prepare_enable(atmel_ports[co->index].clk);
+-	if (ret)
+-		return ret;
+-
+ 	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+ 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+ 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+@@ -2914,17 +2910,6 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_add_port;
+ 
+-#ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+-	if (uart_console(&atmel_port->uart)
+-			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
+-		/*
+-		 * The serial core enabled the clock for us, so undo
+-		 * the clk_prepare_enable() in atmel_console_setup()
+-		 */
+-		clk_disable_unprepare(atmel_port->clk);
+-	}
+-#endif
+-
+ 	device_init_wakeup(&pdev->dev, 1);
+ 	platform_set_drvdata(pdev, atmel_port);
+ 
 -- 
 2.34.1
 
