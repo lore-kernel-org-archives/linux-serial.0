@@ -2,75 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D591AC43334
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 11:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7FCCCA473
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 12:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245507AbiFOLts (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
+        id S1348826AbiFOMtB (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Jun 2022 08:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237723AbiFOLtr (ORCPT
+        with ESMTP id S1345882AbiFOMs7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:49:47 -0400
-X-Greylist: delayed 1877 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 04:49:45 PDT
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D03248331;
-        Wed, 15 Jun 2022 04:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=QqKPV
-        BGfow1c4ZMlx0YSYTPT8kkKDZgzEU0kwf4SuA4=; b=iU8zznYKuLyz1drshpTqO
-        UeX4dBnETWilJ5oDPVg0IeQWmZAK+TVvp30JV3ZVerG0n6Zoeu5AmWPz1U9zy5pb
-        Qg3zT4bGYEhCYL9FDGlt1No38v/GeusGfJMRkDlqjwTRaDvN58dOr2r7tSni71L2
-        a+8ilkCnwIJdhU8q9+6h1M=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowAD3Jifbv6liZhOoEQ--.58335S2;
-        Wed, 15 Jun 2022 19:17:47 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     ldewangan@nvidia.com, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, p.zabel@pengutronix.de,
-        sumit.semwal@linaro.org, christian.koenig@amd.com
-Cc:     linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, windhl@126.com
-Subject: [PATCH] drivers: tty: serial: Add missing of_node_put() in serial-tegra.c
-Date:   Wed, 15 Jun 2022 19:17:47 +0800
-Message-Id: <20220615111747.3963930-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 08:48:59 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A7618388;
+        Wed, 15 Jun 2022 05:48:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655297338; x=1686833338;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1LeS1Y26/DPWMeFDEpo81CHFZxsFn7K1q5Nm4vENnvY=;
+  b=aHAIcPEmBSwj6wthbLSY4XRgTSRSZbWkh2McHCdtfd2aGGeMRV4vFzDc
+   1KQu/UlwfOP1ov4RnZIjAzi9A5qWmtZtZNZXJK7NEa3FDJPMn7VJQ1QLU
+   FJ7CNnbquoQmGPf185AbgjqZwoTQAnszWwMVUMlC2r7w+76wuaxE64y8A
+   O8A7duGoLOjlNRTXen71dLkVsCXU8vbjts4mjjzhNmS1Zx+RKKnSTmCEf
+   yKd2oQAFb/ncSOGg0iy/anyN94JDVkcEIPTJol0z9pLmV4kDONpsfcdt9
+   oI60Fh1e+c9XsFFI99fl8kty7qjaGohEnK9AICVowXvbgAQUosdzvmK+F
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261973569"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="261973569"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 05:48:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="687288095"
+Received: from mgrymel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.41.34])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 05:48:43 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH v7 0/6] Add RS485 9th bit addressing mode support to DW UART
+Date:   Wed, 15 Jun 2022 15:48:23 +0300
+Message-Id: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAD3Jifbv6liZhOoEQ--.58335S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrurW3KFyUCryDCw13JFWrZrb_yoW3CFb_Ww
-        nrW3s7Zr4j9FsYqanavry3ur9IvFn8WFnYqF92qas7W345ZF4DJrWqqrn7A3sF93y7CrW3
-        CrsrWFsrAr1DXjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRimhFDUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhwhF18RPTCjAAAAsE
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In tegra_uart_init(), of_find_matching_node() will return a node
-pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+This patchset adds RS-485 9th bit addressing mode support to the DW
+UART driver and the necessary serial core bits to handle it. The
+addressing mode is configured through .rs485_config() as was requested
+during the review of the earlier versions. The line configuration
+related ADDRB is still kept in ktermios->c_cflag to be able to take
+account the extra addressing bit while calculating timing, etc. but it
+is set/cleared by .rs485_config().
 
-Signed-off-by: Liang He <windhl@126.com>
----
- drivers/tty/serial/serial-tegra.c | 1 +
- 1 file changed, 1 insertion(+)
+PLEASE CHECK that the serial_rs485 .padding change looks OK (mainly
+that it won't add hole under some odd condition which would alter
+serial_rs485's sizeof)!
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index d942ab152f5a..5c4850a3762c 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1667,6 +1667,7 @@ static int __init tegra_uart_init(void)
- 	node = of_find_matching_node(NULL, tegra_uart_of_match);
- 	if (node)
- 		match = of_match_node(tegra_uart_of_match, node);
-+	of_node_put(node);
- 	if (match)
- 		cdata = match->data;
- 	if (cdata)
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-api@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+
+v6 -> v7:
+- Fixed typos in documentation & comment
+- Changes lsr typing from unsigned int to u16
+
+v5 -> v6:
+- Reorder remaining patches
+- LSR changes are simpler due to helper added by LSR fix series
+- Depend on rs485_struct sanitization on catching much of invalid config
+- In order to be able to alter ADDRB in termios .c_cflag within
+  .rs485_config(), take termios_rwsem and pass ktermios to it.
+- Moved addressing mode setup entirely into .rs485_config()
+- Use ndelay() instead of udelay() (uart_port->frame_time is in nsecs)
+
+
+Ilpo Järvinen (6):
+  serial: 8250: make saved LSR larger
+  serial: 8250: create lsr_save_mask
+  serial: 8250_lpss: Use 32-bit reads
+  serial: take termios_rwsem for .rs485_config() & pass termios as param
+  serial: Support for RS-485 multipoint addresses
+  serial: 8250_dwlib: Support for 9th bit multipoint addressing
+
+ Documentation/driver-api/serial/driver.rst    |   2 +
+ .../driver-api/serial/serial-rs485.rst        |  26 ++++-
+ drivers/tty/serial/8250/8250.h                |   9 +-
+ drivers/tty/serial/8250/8250_core.c           |   4 +
+ drivers/tty/serial/8250/8250_dw.c             |   2 +-
+ drivers/tty/serial/8250/8250_dwlib.c          | 105 +++++++++++++++++-
+ drivers/tty/serial/8250/8250_exar.c           |  11 +-
+ drivers/tty/serial/8250/8250_fintek.c         |   2 +-
+ drivers/tty/serial/8250/8250_fsl.c            |   2 +-
+ drivers/tty/serial/8250/8250_ingenic.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpss.c           |   2 +-
+ drivers/tty/serial/8250/8250_omap.c           |   7 +-
+ drivers/tty/serial/8250/8250_pci.c            |   2 +-
+ drivers/tty/serial/8250/8250_port.c           |  20 ++--
+ drivers/tty/serial/amba-pl011.c               |   2 +-
+ drivers/tty/serial/ar933x_uart.c              |   2 +-
+ drivers/tty/serial/atmel_serial.c             |   2 +-
+ drivers/tty/serial/fsl_lpuart.c               |   4 +-
+ drivers/tty/serial/imx.c                      |   2 +-
+ drivers/tty/serial/max310x.c                  |   2 +-
+ drivers/tty/serial/mcf.c                      |   3 +-
+ drivers/tty/serial/omap-serial.c              |   3 +-
+ drivers/tty/serial/sc16is7xx.c                |   2 +-
+ drivers/tty/serial/serial_core.c              |  26 ++++-
+ drivers/tty/serial/stm32-usart.c              |   2 +-
+ drivers/tty/tty_ioctl.c                       |   4 +
+ include/linux/serial_8250.h                   |   7 +-
+ include/linux/serial_core.h                   |   3 +-
+ include/uapi/asm-generic/termbits-common.h    |   1 +
+ include/uapi/linux/serial.h                   |  12 +-
+ 31 files changed, 222 insertions(+), 53 deletions(-)
+
 -- 
-2.25.1
+2.30.2
 
