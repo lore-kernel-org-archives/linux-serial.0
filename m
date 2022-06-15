@@ -2,139 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9136DC43334
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 17:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7086BC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Jun 2022 20:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237198AbiFORDx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
+        id S235304AbiFOUXk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 15 Jun 2022 16:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243417AbiFORDv (ORCPT
+        with ESMTP id S231317AbiFOUXk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:03:51 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830DA4EA11
-        for <linux-serial@vger.kernel.org>; Wed, 15 Jun 2022 10:03:49 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id l4so10854697pgh.13
-        for <linux-serial@vger.kernel.org>; Wed, 15 Jun 2022 10:03:49 -0700 (PDT)
+        Wed, 15 Jun 2022 16:23:40 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262BF4FC43;
+        Wed, 15 Jun 2022 13:23:39 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id 25so17772489edw.8;
+        Wed, 15 Jun 2022 13:23:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jm8MXeLlqii/5FydlD1v6Lz5nQdsR6MGCoUfpwdjuNk=;
-        b=nJ7IBklLOjSLfSLdY4vTZXUDIYuZj/tb2ZQ6grZIWomT9q+Y0cfAHg8MuwR1zW66Di
-         9sWtqG8qOKOpNHtF5fFCqEgdehoqdQYcjEkuoMRk28hhxdGcVk5NTSTlTpiPwsubMzE3
-         xJuHLjAtQXc+MP/UEBzdS+0u18cszg5Q2NIrTUxm+2JSckbgTGvyCxGgW55/s+NObRcf
-         +gg2jvj8mdR1Kjm+kitaTa2wqMrstENtJ3xcAR8eBEe4/TwfI57AtUzWFKtQDRATq3KS
-         PGfLU9F8i/ygnIIluwOQjLi88kopb048g6yzFYgSMrqw8tl/lsfUu/CV8jp3Jrj7vjH9
-         p7xA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PXt3RdHLeGINg4yxXorienYktyDgObMjDMbWVl7BWsk=;
+        b=KXZ2+v4pB+2qbAYGzjRzDzf5N/FIVRKhj96xYwE1vF5kUN0OtkFe9xaDGtDanFONLy
+         hTPZE9BYpcQdjTudH/oFniRh8iBYS/c4UeqaUYPwh2lfS22ODF3u97tyELRsJAEAD6RQ
+         XzWUflxaDj9Iu61DuaeDp+azVZ6V13cNbqU61orL81dExdC116TjkX33GuszgTOcEEvU
+         GzVSKpsmN9Ed5bYW34e8z5P5bSZUO3hseQ9JF3OB2VQmBTRpr4mRhHHoSIsAF/FCWDuG
+         kBQq6IcC9BM5Dg/ILKxnsITQERCqOt1fO9wBv0c6m5vvEQHDWieBkMh2OPDFrT40CG/E
+         Gg5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jm8MXeLlqii/5FydlD1v6Lz5nQdsR6MGCoUfpwdjuNk=;
-        b=GXVZrXxVDpx2NxqkhDIK2m7uAU6PQm4Z4zamru2yY+S6Pcb0+oSDfn/zVYhsw7Ttru
-         NySTVowPYC+G/Nl5merJT3APebo7YKK+gaHVIN2+QV2WuKIkmh4YmS152LhQThLG1M7C
-         CsVPg0mHjlfDnU2h+UUOfsPD3XC5dHLZxWPAmtsPp+igHAiD7XZPzCmrgSEL2O6IWkUF
-         vUi3l5/M4FAhHAWQGd/xF+OuT19WWBN79czQuMBeBClUgEn75En/N4FiNFA6S+Dhk5cP
-         IbFGfvHKu029NL6npwxI+xQIkoJzFj76JMpFX9FB8sMdCipD8la21Cp3XUSxreGNtfnc
-         m4Vg==
-X-Gm-Message-State: AJIora8Z6TEaaSJOJJ1AtjD7ABxNEkp8owlazf2LiyjxR26Cgx1mlRp6
-        qAzjT2xDDQf2d0xlh/h6quhbeg==
-X-Google-Smtp-Source: AGRyM1seg5navj/ZgOXJ4HUS+Haip8l+eCz7SNp77yxaZukUbdDEw7wI4SvjvZRO87I5ID1vQOtNQA==
-X-Received: by 2002:a05:6a00:1344:b0:51b:e3b5:54e2 with SMTP id k4-20020a056a00134400b0051be3b554e2mr588044pfu.6.1655312628981;
-        Wed, 15 Jun 2022 10:03:48 -0700 (PDT)
-Received: from [172.22.33.138] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id v8-20020a17090a778800b001eab0a27d92sm2002742pjk.51.2022.06.15.10.03.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 10:03:48 -0700 (PDT)
-Message-ID: <e6e478a5-9080-fb2f-9ccd-2490cdfab4c7@linaro.org>
-Date:   Wed, 15 Jun 2022 10:03:46 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PXt3RdHLeGINg4yxXorienYktyDgObMjDMbWVl7BWsk=;
+        b=foRJR4Z5O1Xn5NaUZ+zwvqUnHWCUQAYkiS0+3B4TRJkCcjijeH9VAfd46s8dPgByKC
+         VYJW6Ooblfc/0ow9ul+XxiH1QNyDcmUAznibiSnagW0k7vVXhqT0NAI+v19fWOYAiiui
+         QDc5i4YAjt6wmXXUMPHujkxZ5Fvd9kcjTjOidas4lEuH7z6xDya0RQ8RcbOtq7woOMCO
+         TNqBluKDFjTDpxtKO7fYznyLuVUD5GH5DGxmFPdcVAH0yvCIdW6RBOqQ3gwgVqX1gi39
+         9e7Sf97gkb0Q90KO+vYWsPXtaQePvZngDCHinKoMe5UWGEFm3hqFdXcDOEVIb1mgbhgT
+         qThQ==
+X-Gm-Message-State: AJIora/cw7V1qS/IP5j6UKWX0yqUDarjJxwypp3SSqGju42WvbHKKQ3D
+        CZuJaPVI1kc0x2fd8rf+y9YQQHeyGT3pe+KRw8A=
+X-Google-Smtp-Source: AGRyM1ttWT68UgN+Rc46Ac5PG1YpNjzWfiePHBmGn7NJyquiZSoFYih8qcY3rjMrbDxNpWSQCqulgS89b6u9UPfVJg8=
+X-Received: by 2002:a05:6402:3325:b0:42d:e1d8:99e9 with SMTP id
+ e37-20020a056402332500b0042de1d899e9mr1927169eda.87.1655324617605; Wed, 15
+ Jun 2022 13:23:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for
- NPCM8XX
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-13-tmaimon77@gmail.com>
- <add025b6-c622-b204-d39e-67b31878d37f@linaro.org>
- <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
- <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
- <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220615104833.3963552-1-windhl@126.com> <Yqm6LvDGqaRMaUHa@kroah.com>
+In-Reply-To: <Yqm6LvDGqaRMaUHa@kroah.com>
+From:   Dave Airlie <airlied@gmail.com>
+Date:   Thu, 16 Jun 2022 06:23:26 +1000
+Message-ID: <CAPM=9twCiqyakgPLz0v=7-abUhzLb8ZZH7-U65PV8qtQOP7Xww@mail.gmail.com>
+Subject: Re: [Linaro-mm-sig] Re: [PATCH] drivers: tty: serial: Add missing
+ of_node_put() in serial-tegra.c
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     heliang <windhl@126.com>, linux-serial@vger.kernel.org,
+        linux-tegra@vger.kernel.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 13/06/2022 02:25, Tomer Maimon wrote:
-> Hi Krzysztof,
-> 
-> Thanks for your clarification.
-> 
-> We can remove the dt-binding file and use numbers in the DTS,
-> appreciate if you can answer few additional questions:
-> 1. Do you suggest adding all NPCM reset values to the NPCM reset
-> document or the reset values should describe in the module
-> documentation that uses it?
+On Wed, 15 Jun 2022 at 20:53, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Jun 15, 2022 at 06:48:33PM +0800, heliang wrote:
+> > In tegra_uart_init(), of_find_matching_node() will return a node
+> > pointer with refcount incremented. We should use of_node_put()
+> > when it is not used anymore.
+> >
+> > Signed-off-by: heliang <windhl@126.com>
+>
+> We need a real name please, one you sign documents with.
 
-What is "NPCM reset document"? Are these reset values anyhow different
-than interrupts or pins?
+How do we enforce that? What if Wong, Adele or Beyonce submit a patch?
 
-> 2. Some of the NPCM7XX document modules describe the reset value they
-> use from the dt-binding for example:
-> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
+What happens if that patch gets reposted, with S-o-b: He Liang
+<windhl@126.com> or Hel Iang, Heli Ang? Do you know any of those are
+real names? What happens if they post a real name in
+Mandarin/Thai/Cyrillic, can you validate it?
 
-This is NPCM750
+Really we require you have an identity attached to an email. If there
+is a problem in the future, we'd prefer the email continues to work so
+that you are contactable. If you are submitting a small amount of
+changes it's probably never going to matter. If you are submitting
+larger bodies of work of course it would be good to have a company or
+larger org attached to track things down legally later, but again that
+isn't always possible.
 
-> If we remove the NPCM8XX dt-binding file should we describe the
-> NPCM8XX values in the NPCM-ADC document file?
+I don't think alienating the numerous developers who no longer use
+their legal names are identified by one name, but haven't changed
+their legal one yet people who get married and change their legal name
+but don't change their contribution name and I could run this sentence
+on forever.
 
-What is NPCM-ADC document file? What do you want to describe there?
-Again - how is it different than interrupts?
-
-
-
-Best regards,
-Krzysztof
+Dave.
