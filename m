@@ -2,85 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6676FC43334
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 13:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1B5CCA481
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 18:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231897AbiFPN7R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
+        id S233725AbiFPSBA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Jun 2022 14:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377285AbiFPN6N (ORCPT
+        with ESMTP id S229561AbiFPSA6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:58:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19A126132;
-        Thu, 16 Jun 2022 06:58:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655387890; x=1686923890;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=D/GW/lXKpR6TmmSVXUJ9+ZueanAvikeiMgT1O9er88U=;
-  b=IiZKzGYVXd8/CF7JtP0hWT0f0GiqzvrDIgXL/3I1m9HAd7iASuGeOKQV
-   mnZ+LjMa9cZfky2Z/C+kYJMjvCqJXKQbY6NQq1R14XsVMejaocgonnnGs
-   xfsyZDp/6MYdYJY0lvFmbW0L7DuZaVYTr0T0sJx4I4GHgVoqq5AKiOj1m
-   LmxkM7aV+ozUC6opIqL23+W22RyAmV6LDipDq332XZet+/tgJDQTeknht
-   dccXNb5IbegN7ueqgoPbYtIUJsypTGVEe2g79HYlOhV/n7xGstydWUyGY
-   +16ElDZvG5bQX0rLkXYQ8J/IxjZDl1lbj+LwVNN2DTeX6MBIPV4fKERyP
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="168685559"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jun 2022 06:58:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 16 Jun 2022 06:58:09 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 16 Jun 2022 06:58:07 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 4/4] serial: st-asc: remove include of pm_runtime.h
-Date:   Thu, 16 Jun 2022 17:00:24 +0300
-Message-ID: <20220616140024.2081238-5-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
-References: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
+        Thu, 16 Jun 2022 14:00:58 -0400
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EFF13F44;
+        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
+Received: by mail-io1-f53.google.com with SMTP id a10so2249450ioe.9;
+        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fQXZSJhht4X5yNvw03hLRu3BZWLlJCfLhF7rU9SmcRw=;
+        b=SBDuUIjY3V9QWdkZKbh/lMHW/CKxuk9YPjIQ+0wyD0H2Pq3wQA3BIljWG4eU4hU42U
+         vuN1cP6Vge93K9x+1axw9YeKyMz3aOtOtBBbZp39N7xDDsqnZFJ6OJ/XRJqfI7Pgst/K
+         g88Jf5BJyhp0grG+ZP2z6I/mo/lWghnC2C+8n1bF0ogeQ/Gm176HIM47IITFJ7dAje6p
+         7iFOt9OVF1RJ2wpvDU9DP7xMoyBfOhtZ2i9YbMyhdHiWFp4dJ1QJ9ywfP2tgMsoeLIi5
+         4Oa+tTaTHmpXQWx2fytKf5oNYNvSL+5/13Vz0STCiBJOstG4lLaHTTuOI0zJTsyP5Rfl
+         JnYg==
+X-Gm-Message-State: AJIora/JK/aPjNXZfiKvSUxpaeBwUVHWaTWZjlaSeF1VpCkjgCVy9m93
+        UUfj9RKnoSFz+R8+d9t8FQ==
+X-Google-Smtp-Source: AGRyM1spQJ7T8UrCvJ5pQYvBWRSSImqT+IRmKQ5FRE4451GZSxPWdZRJu8178mpfIlKesP0Ydg80uw==
+X-Received: by 2002:a05:6602:2c4c:b0:64f:a897:80cb with SMTP id x12-20020a0566022c4c00b0064fa89780cbmr3138193iov.139.1655402457088;
+        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id y203-20020a6bc8d4000000b00669c07fbcb5sm1457589iof.5.2022.06.16.11.00.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 11:00:56 -0700 (PDT)
+Received: (nullmailer pid 3729785 invoked by uid 1000);
+        Thu, 16 Jun 2022 18:00:54 -0000
+Date:   Thu, 16 Jun 2022 12:00:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-spi@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH] dt-bindings: efm32: remove bindings for deleted platform
+Message-ID: <20220616180054.GA3728782-robh@kernel.org>
+References: <20220615210720.6363-1-wsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615210720.6363-1-wsa@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-st-asc driver doesn't use helpers from pm_runtime.h thus remove its
-include.
+On Wed, 15 Jun 2022 23:07:19 +0200, Wolfram Sang wrote:
+> Commit cc6111375cec ("ARM: drop efm32 platform") removed the platform,
+> so no need to still carry the bindings.
+> 
+> Signed-off-by: Wolfram Sang <wsa@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/efm32-clock.txt | 11 -----
+>  .../devicetree/bindings/i2c/i2c-efm32.txt     | 33 --------------
+>  .../devicetree/bindings/serial/efm32-uart.txt | 20 ---------
+>  .../devicetree/bindings/spi/efm32-spi.txt     | 39 -----------------
+>  include/dt-bindings/clock/efm32-cmu.h         | 43 -------------------
+>  5 files changed, 146 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/clock/efm32-clock.txt
+>  delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-efm32.txt
+>  delete mode 100644 Documentation/devicetree/bindings/serial/efm32-uart.txt
+>  delete mode 100644 Documentation/devicetree/bindings/spi/efm32-spi.txt
+>  delete mode 100644 include/dt-bindings/clock/efm32-cmu.h
+> 
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
----
- drivers/tty/serial/st-asc.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 1b0da603ab54..cce42f4c9bc2 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -17,7 +17,6 @@
- #include <linux/tty_flip.h>
- #include <linux/delay.h>
- #include <linux/spinlock.h>
--#include <linux/pm_runtime.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
- #include <linux/serial_core.h>
--- 
-2.34.1
-
+Deletions are automatically applied, thanks! ;)
