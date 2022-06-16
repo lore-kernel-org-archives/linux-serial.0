@@ -2,62 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CBECCA47A
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 05:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6410C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 05:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357782AbiFPFE0 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 01:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
+        id S229742AbiFPFPi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Jun 2022 01:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349153AbiFPFE0 (ORCPT
+        with ESMTP id S229547AbiFPFPh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 01:04:26 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B536A5A154;
-        Wed, 15 Jun 2022 22:04:21 -0700 (PDT)
+        Thu, 16 Jun 2022 01:15:37 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08F92AE09;
+        Wed, 15 Jun 2022 22:15:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655355861; x=1686891861;
+  t=1655356536; x=1686892536;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=BLWxLUoPpHR0Mx/K28WEXQm09XW/3QsGGK6+7EjrGps=;
-  b=YqicQFhf27pgy/EYaHH4rHemWejTPzjOvhddlF0K2tfvUNmCkR3wyJRW
-   I5bxU9kEnKsh5y8U4wMZ/AjYnCgOnBcnGqBCU2bnXpNyDWQAfuWts62DV
-   yYSDhaz8mvtJSpYG5UwW8FhexNAhKwg6t2Dhd+tyCVBtCuQZwzVVsgXyt
-   A01PeGN6WZv3ZvqWMf9lJpNjobklYg2md8FOGfbAQFAgksDj4MNUsg3Co
-   dlyyIAvlHKV66nZ8SqR3BVKs1ccffKqe2APsmszX7t4xGXkdtk0qdw/dd
-   8pGJIw1Qfsx/0tW0Nj2joOIOC1l1noz4zGgQPyVies1ZwjcdP4U4dAJNg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="277963358"
+  bh=w5f/uRo7VAfu2ZSH1O1BKsd51bCmWG6WWb8H4rj04YI=;
+  b=b9P2E6xJnjVob+ppGGsv+/BVWwNuTOloIEJsFO/ZTu1Ndtf1puD8dihn
+   ZaAbRqL7EAMQCOEqBv4RyEbsBWNWs0ddxW+en3cUWiib9zRC7qfQZY9Up
+   Bo94U6TLSa7Iqh2G8LCJRDE4z+jYpNNWrQ5uiEfYdiL8XBJyz+yDHy3t6
+   enZKaTygFn75VISN/T1KJ4buUxgfVarEEPwWWYixypl61yqcpsGf2F+WK
+   jS5HL89XzVBp98ZWUz1pTlnI6KY2Pdrg8y7p/K0Tr45tMNv1qjKIFYVOa
+   gyFR7HfOeCBECJYTwCgLSYDd4kkXsRkOcQ9xSdhx8EBhEazc2Dp++Zv5U
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279883644"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="277963358"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 22:04:21 -0700
+   d="scan'208";a="279883644"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 22:15:26 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="589477564"
+   d="scan'208";a="641366171"
 Received: from mngueron-mobl1.amr.corp.intel.com ([10.252.60.248])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 22:04:16 -0700
-Date:   Thu, 16 Jun 2022 08:04:09 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 22:15:19 -0700
+Date:   Thu, 16 Jun 2022 08:15:16 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 cc:     linux-serial <linux-serial@vger.kernel.org>,
         Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-arch@vger.kernel.org,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
         Lukas Wunner <lukas@wunner.de>,
         =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH v7 5/6] serial: Support for RS-485 multipoint addresses
-In-Reply-To: <Yqno+b/+W2RP8rnh@smile.fi.intel.com>
-Message-ID: <ae5c2e50-1a19-7a8f-7dbf-d7ef84128be6@linux.intel.com>
-References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com> <20220615124829.34516-6-ilpo.jarvinen@linux.intel.com> <Yqno+b/+W2RP8rnh@smile.fi.intel.com>
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH v7 4/6] serial: take termios_rwsem for .rs485_config()
+ & pass termios as param
+In-Reply-To: <YqnnKQYAnqORpdBJ@smile.fi.intel.com>
+Message-ID: <ddc178b-1292-248c-21a1-4cf990d0b1c@linux.intel.com>
+References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com> <20220615124829.34516-5-ilpo.jarvinen@linux.intel.com> <YqnnKQYAnqORpdBJ@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1441432405-1655355860=:1693"
+Content-Type: multipart/mixed; boundary="8323329-1748112325-1655356526=:1693"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -65,75 +77,46 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-1441432405-1655355860=:1693
+--8323329-1748112325-1655356526=:1693
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
 
 On Wed, 15 Jun 2022, Andy Shevchenko wrote:
 
-> On Wed, Jun 15, 2022 at 03:48:28PM +0300, Ilpo Järvinen wrote:
-> > Add support for RS-485 multipoint addressing using 9th bit [*]. The
-> > addressing mode is configured through .rs485_config().
-> > 
-> > ADDRB in termios indicates 9th bit addressing mode is enabled. In this
-> > mode, 9th bit is used to indicate an address (byte) within the
-> > communication line. ADDRB can only be enabled/disabled through
-> > .rs485_config() that is also responsible for setting the destination and
-> > receiver (filter) addresses.
-> > 
-> > [*] Technically, RS485 is just an electronic spec and does not itself
-> > specify the 9th bit addressing mode but 9th bit seems at least
-> > "semi-standard" way to do addressing with RS485.
-> > 
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Jonathan Corbet <corbet@lwn.net>
-> > Cc: linux-api@vger.kernel.org
-> > Cc: linux-doc@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-arch@vger.kernel.org
+> On Wed, Jun 15, 2022 at 03:48:27PM +0300, Ilpo Järvinen wrote:
+> > To be able to alter ADDRB within .rs485_config(), take termios_rwsem
+> > before calling .rs485_config() and pass termios.
 > 
-> Hmm... In order to reduce commit messages you can move these Cc:s after the
-> cutter line ('---').
-
-Ok, although the toolchain I use didn't support preserving --- content
-so I had to create hack to preserve them, hopefully nothing backfires due 
-to the hack. :-)
-
-> > -	__u32	padding[5];		/* Memory is cheap, new structs
-> > -					   are a royal PITA .. */
-> > +	__u8	addr_recv;
-> > +	__u8	addr_dest;
-> > +	__u8	padding[2 + 4 * sizeof(__u32)];		/* Memory is cheap, new structs
-> > +							 * are a royal PITA .. */
+> I would use ->rs485_config() as a reference to the callback.
 > 
-> I'm not sure it's an equivalent. I would leave u32 members  untouched, so
-> something like
+> ...
 > 
-> 	__u8	addr_recv;
-> 	__u8	addr_dest;
-> 	__u8	padding0[2];		/* Memory is cheap, new structs
-> 	__u32	padding1[4];		 * are a royal PITA .. */
+> > -	ret = port->rs485_config(port, rs485);
+> > +	ret = port->rs485_config(port, rs485, NULL);
 > 
-> And repeating about `pahole` tool which may be useful here to check for ABI
-> potential changes.
+> > +
+> 
+> Stray change?
 
-I cannot take __u32 padding[] away like that, this is an uapi header. Or 
-do you mean I should create anonymous union? ...I'm skeptical that can be 
-pulled off w/o breaking user-space compile in some circumstances. Anon 
-unions were only introduced by C11 but is it ok to rely on C11 in uapi/ 
-headers?
+Yes it was.
 
-Even making padding smaller has some unwanted consequences if somebody is 
-clearing just .padding. In retrospect, having padding as a direct member 
-doesn't seem a good idea. That padding[5] should have been within an union 
-right from the start to make this easily extendable.
+> >  	if (ret)
+> >  		memset(rs485, 0, sizeof(*rs485));
+> 
+> ...
+> 
+> >  	void			(*handle_break)(struct uart_port *);
+> >  	int			(*rs485_config)(struct uart_port *,
+> > -						struct serial_rs485 *rs485);
+> > +						struct serial_rs485 *rs485,
+> > +						struct ktermios *termios);
+> 
+> Dunno if termios has to be second parameter. The idea is to pass input data
+> followed by (auxiliary) output as usual pattern.
 
-Maybe create a copy of that struct under another name which is just equal 
-sized, that would give more freedom on member naming. But can I change 
-ioctl's param type to another struct (in _IOR/_IOWR) w/o breaking 
-something?
+I guess I can make termios 2nd param.
 
 -- 
  i.
 
---8323329-1441432405-1655355860=:1693--
+--8323329-1748112325-1655356526=:1693--
