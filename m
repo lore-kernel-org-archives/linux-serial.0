@@ -2,88 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DE0CCA481
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 08:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B56C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 08:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359374AbiFPIR5 (ORCPT
+        id S1359377AbiFPIXj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
+        Thu, 16 Jun 2022 04:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiFPIRz (ORCPT
+        with ESMTP id S1359738AbiFPIXf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:17:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C2713CE7;
-        Thu, 16 Jun 2022 01:17:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE3BA61D29;
-        Thu, 16 Jun 2022 08:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68449C34114;
-        Thu, 16 Jun 2022 08:17:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655367473;
-        bh=XoJ4+rFkSAX4O5qYIqK5h8B/dlR8CbRJGdER6wLYAg8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VeSUTIggYN810w8JCA1g7TGpTRWOa9WbH3c5dRxNFna+XrzdVydsFSgYQyONOaxEt
-         w9W+YGVqVi/i8tGuiOpPx73ynWAJipXxXg6B70UfFGD4o/kjGwym+kW3V6qdOpoX+/
-         NKI58usFqFmnOzEbhzrxEqpIxwWMB29P8vTmO93RP9bXrnJ3jJEes9IlSSUGHiXUBm
-         11RkFhYK9BCSZxBfA9SRdLH3gLkRYA6Jt8ZJa1vPBoVG+PZmSF/BkBlKY08Wwd4dUh
-         opgk7Xw5Ci5jvRY3svNJ7tfZHg7SyoAk0Ml2NRnaEDteGr21MNVqASZ7aahFB7W2cm
-         W0NyF6YInU/wg==
-Date:   Thu, 16 Jun 2022 09:17:46 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     linux-doc@vger.kernel.org,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: efm32: remove bindings for deleted platform
-Message-ID: <YqrnKtkm4Xdl8vTy@sirena.org.uk>
-References: <20220615210720.6363-1-wsa@kernel.org>
+        Thu, 16 Jun 2022 04:23:35 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15CB224598;
+        Thu, 16 Jun 2022 01:23:34 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 5E738812F;
+        Thu, 16 Jun 2022 08:18:46 +0000 (UTC)
+Date:   Thu, 16 Jun 2022 11:23:32 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <YqrohD8FZJS5aBo+@atomide.com>
+References: <20220615062455.15490-1-tony@atomide.com>
+ <YqmjnaawQ2gye/pe@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gF7RWUCch1/TUW4O"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220615210720.6363-1-wsa@kernel.org>
-X-Cookie: Pass with care.
+In-Reply-To: <YqmjnaawQ2gye/pe@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [220615 09:12]:
+> On Wed, Jun 15, 2022 at 09:24:55AM +0300, Tony Lindgren wrote:
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -30,6 +32,25 @@
+> >  #include <linux/irq.h>
+> >  #include <linux/uaccess.h>
+> >  
+> > +/*
+> > + * Serial port device specific data for serial core.
+> > + *
+> > + * Each port device can have multiple ports with struct uart_state allocated
+> > + * for each port. The array of ports is kept in struct uart_driver.
+> > + */
+> > +struct serial_controller {
+> > +	struct device *dev;			/* Serial port device */
+> 
+> Serial port device is a bit unclear for non-prepared reader. Perhaps add
+> the word "physical" or another to specify the nature of the device (because
+> to me "serial port device" sounds like a duplication of something in struct
+> uart_port, but I have doubts).
 
---gF7RWUCch1/TUW4O
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hmm so we could add a list of all the registered struct uart_port or
+uart_state to struct serial_controller. Then looking up struct device would
+be just looking at the first list entry. We need to take port_mutex, but
+that should be mostly when the device does runtime PM. We'll be needing that
+list anyways later on to flush pending TX on runtime PM resume for each
+port associated with the device.
 
-On Wed, Jun 15, 2022 at 11:07:19PM +0200, Wolfram Sang wrote:
-> Commit cc6111375cec ("ARM: drop efm32 platform") removed the platform,
-> so no need to still carry the bindings.
+> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> > --- a/include/linux/serial_core.h
+> > +++ b/include/linux/serial_core.h
+> > @@ -250,6 +250,7 @@ struct uart_port {
+> >  	unsigned char		hub6;			/* this should be in the 8250 driver */
+> >  	unsigned char		suspended;
+> >  	unsigned char		console_reinit;
+> > +	unsigned char		supports_autosuspend;
+> >  	const char		*name;			/* port name */
+> >  	struct attribute_group	*attr_group;		/* port specific attributes */
+> >  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
+> > @@ -285,6 +286,8 @@ enum uart_pm_state {
+> >   * This is the state information which is persistent across opens.
+> >   */
+> >  struct uart_state {
+> > +	struct serial_controller *controller;
+> 
+> While good looking here, I believe resource wise is better to leave @port to be
+> the first member. The rationale is to get rid of pointer arithmetics at compile
+> time (and I believe the port is used much more and in more critical places).
+> However, I dunno if it will get a lot of benefit, would be nice to see
+> bloat-o-meter output for your variant and my proposal.
 
-Acked-by: Mark Brown <broonie@kernel.org>
+OK makes sense. And thanks for reviewing again :)
 
---gF7RWUCch1/TUW4O
-Content-Type: application/pgp-signature; name="signature.asc"
+Regards,
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKq5yoACgkQJNaLcl1U
-h9D6Bgf9FsWZbqfrpPz05MqsAP5L5zXrH6+wVnlkfyL60hVYPRq4/YkegM0Ttbjm
-uU+opIQjjzpOCx7uPPqovy+19nZ1WXEk7oL8yHmjp35I9wzEAflDpj2VhJqROabZ
-hJSF+yEWSSh3mIhD4AkvMtz/Jo4unndHxzC/sRsRWdQJLVsX6d9etfXNHOPKVmc+
-XNiD+z27IMfgqM5f6Ax1AziQwVKPMtu/FszTUWQt1UIPNLq2hv/R5MdF13of/gM6
-gwwGJJuLTaPNhvHF0b1T8RdyyWzJnc3KPO5zED3DpHhKGDz6u8OBAHDrQXLQeeEc
-aufEoFD8GNwShKIK9ai+ouZEkFscHQ==
-=DN3x
------END PGP SIGNATURE-----
-
---gF7RWUCch1/TUW4O--
+Tony
