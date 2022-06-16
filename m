@@ -2,84 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1B5CCA481
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 18:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F20C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 21:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbiFPSBA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S1379104AbiFPVHX (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 16 Jun 2022 17:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiFPSA6 (ORCPT
+        with ESMTP id S1379084AbiFPVHM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:00:58 -0400
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EFF13F44;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id a10so2249450ioe.9;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
+        Thu, 16 Jun 2022 17:07:12 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC7E61291;
+        Thu, 16 Jun 2022 14:06:52 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id h23so4007521lfe.4;
+        Thu, 16 Jun 2022 14:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tXQDZ/38qZYh6K2LSUfy/ZlT8ca4F2f6CeQBxW8J2Rw=;
+        b=YDDhbkaybl0y166vNMC1zU/AMyxZSa1wcvpawfckZDS+0veCRECtb+eHxdFvjVPT7P
+         wO1LRRPLOuoTjxwgD5VEXxLr+NZ+EgeUi9NDjZRH01fXPmipDyk7/uF1wJN3kvtwk3/U
+         JfrA6OSvZfqAbZVajthuEb2rpTZia9iycWK7jiahkz0avp1ktbYECFxKartVglBoZgh1
+         0BHOZuj9t8wzYpytbCSWWNGDp036jHPTc1BBUjwa2vf1WDBcrD8kU3us7vSCzA4N+joz
+         1uysTJkCI43qnFz7mpV0Wqkai0Kz9yNHLfyqhrfzf/ymN3sVDjRqF1KRLJsSyvfovGZd
+         iZAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fQXZSJhht4X5yNvw03hLRu3BZWLlJCfLhF7rU9SmcRw=;
-        b=SBDuUIjY3V9QWdkZKbh/lMHW/CKxuk9YPjIQ+0wyD0H2Pq3wQA3BIljWG4eU4hU42U
-         vuN1cP6Vge93K9x+1axw9YeKyMz3aOtOtBBbZp39N7xDDsqnZFJ6OJ/XRJqfI7Pgst/K
-         g88Jf5BJyhp0grG+ZP2z6I/mo/lWghnC2C+8n1bF0ogeQ/Gm176HIM47IITFJ7dAje6p
-         7iFOt9OVF1RJ2wpvDU9DP7xMoyBfOhtZ2i9YbMyhdHiWFp4dJ1QJ9ywfP2tgMsoeLIi5
-         4Oa+tTaTHmpXQWx2fytKf5oNYNvSL+5/13Vz0STCiBJOstG4lLaHTTuOI0zJTsyP5Rfl
-         JnYg==
-X-Gm-Message-State: AJIora/JK/aPjNXZfiKvSUxpaeBwUVHWaTWZjlaSeF1VpCkjgCVy9m93
-        UUfj9RKnoSFz+R8+d9t8FQ==
-X-Google-Smtp-Source: AGRyM1spQJ7T8UrCvJ5pQYvBWRSSImqT+IRmKQ5FRE4451GZSxPWdZRJu8178mpfIlKesP0Ydg80uw==
-X-Received: by 2002:a05:6602:2c4c:b0:64f:a897:80cb with SMTP id x12-20020a0566022c4c00b0064fa89780cbmr3138193iov.139.1655402457088;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id y203-20020a6bc8d4000000b00669c07fbcb5sm1457589iof.5.2022.06.16.11.00.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 11:00:56 -0700 (PDT)
-Received: (nullmailer pid 3729785 invoked by uid 1000);
-        Thu, 16 Jun 2022 18:00:54 -0000
-Date:   Thu, 16 Jun 2022 12:00:54 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-spi@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH] dt-bindings: efm32: remove bindings for deleted platform
-Message-ID: <20220616180054.GA3728782-robh@kernel.org>
-References: <20220615210720.6363-1-wsa@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tXQDZ/38qZYh6K2LSUfy/ZlT8ca4F2f6CeQBxW8J2Rw=;
+        b=z5VRDKCIk3GcVX4bXobZi1Atvby7AnMZQ0nNl8eyT4WWINdO3Bl65BQrGaBuFwcaGe
+         B/Cg82udQgMFanOl6kL3zb/Cz31eRx6bQN9Gk+PNS6+wXPSG7RXm2BCwnW7YBe6cRyGN
+         vgtUYI5P46TxVEE8uPo++QdvgB2o5fR/OVkYtyzU9/N7NU2JlykD2i3NAzV2mT8feiCK
+         u8477DM11j8tuTqcxIZwnb5xyrarOCVNM1DX7Ho/GdgS3yivWJTefDdH0q1XrBa/Kapr
+         OgJFk6MRL3N+TufGVz3Xkelk05EWflm80Vviy+g2L4yWl+WyXrzZ1ENrL5uLBQW7WyYN
+         KPTg==
+X-Gm-Message-State: AJIora9wnR9leR0QSRS6zu/Xa3TgxN7uzsxYoX/A7GaW8z7Nhw4DjPlx
+        OFduCXY7s2fqexwuW6yORBQhYa27nOxWJhuPEuU=
+X-Google-Smtp-Source: AGRyM1tunwARBCrCvdwXIujxrW/QSjMvLQ9m2XGDJxT+oiqV5+SW8+0Z9kjKeE1FSlj8rczzvaUAiVUFzlL41fLDXk0=
+X-Received: by 2002:a05:6512:1052:b0:479:1f92:13b4 with SMTP id
+ c18-20020a056512105200b004791f9213b4mr3606425lfb.200.1655413610945; Thu, 16
+ Jun 2022 14:06:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615210720.6363-1-wsa@kernel.org>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-6-tmaimon77@gmail.com>
+ <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+In-Reply-To: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Fri, 17 Jun 2022 00:06:40 +0300
+Message-ID: <CAP6Zq1h+PzkD1vjx787F_tbk30rAZHEkZp9uNUOmrFSd4gLO=g@mail.gmail.com>
+Subject: Re: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 15 Jun 2022 23:07:19 +0200, Wolfram Sang wrote:
-> Commit cc6111375cec ("ARM: drop efm32 platform") removed the platform,
-> so no need to still carry the bindings.
-> 
-> Signed-off-by: Wolfram Sang <wsa@kernel.org>
-> ---
->  .../devicetree/bindings/clock/efm32-clock.txt | 11 -----
->  .../devicetree/bindings/i2c/i2c-efm32.txt     | 33 --------------
->  .../devicetree/bindings/serial/efm32-uart.txt | 20 ---------
->  .../devicetree/bindings/spi/efm32-spi.txt     | 39 -----------------
->  include/dt-bindings/clock/efm32-cmu.h         | 43 -------------------
->  5 files changed, 146 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/efm32-clock.txt
->  delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-efm32.txt
->  delete mode 100644 Documentation/devicetree/bindings/serial/efm32-uart.txt
->  delete mode 100644 Documentation/devicetree/bindings/spi/efm32-spi.txt
->  delete mode 100644 include/dt-bindings/clock/efm32-cmu.h
-> 
+Hi Arnd,
 
-Deletions are automatically applied, thanks! ;)
+On Wed, 8 Jun 2022 at 16:05, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
+> >
+> > Add Nuvoton BMC NPCM845 watchdog support.
+> > The NPCM845 uses the same watchdog as the NPCM750.
+> >
+> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+>
+> This one should no longer be needed if the timers are compatible with the
+> old ones and correctly described in the DT.
+by timers do you mean clocks?
+>
+>       Arnd
+
+Best regards,
+
+Tomer
