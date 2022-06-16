@@ -2,63 +2,62 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D76EBC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 13:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5159BC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jun 2022 13:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377154AbiFPNjE (ORCPT
+        id S1377129AbiFPNlj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        Thu, 16 Jun 2022 09:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377151AbiFPNjC (ORCPT
+        with ESMTP id S1376928AbiFPNli (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:39:02 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B052C10A
-        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2022 06:39:00 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id x138so1529975pfc.12
-        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2022 06:39:00 -0700 (PDT)
+        Thu, 16 Jun 2022 09:41:38 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD4B2CDF2;
+        Thu, 16 Jun 2022 06:41:37 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id c2so2328855lfk.0;
+        Thu, 16 Jun 2022 06:41:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=tZJ0udOOwaCxWMXlTkBG0pv6kYWe5fFc5cXr8AFWGxw=;
-        b=IwB4vF+O7bkw0gmnipzROvuYX3jurvUS9fS3KCU/sdTK5DVzRyzIRSso7yMWQoR4XB
-         +Ly595kBXCxhOfpHUDyAuLED/Td18kNYUEs6tzy2QG/BQb9uh5ederuqiMvkM0hVkDPx
-         SfKvDeJfQDtbX0O0Mt57c/vkA5TO+7QYEtpRHBUcqW8tNQ9p0cgQt7NNm69X5UgNvq0b
-         ZqK7E7hlY9kvnStImocycSZF3pBAgUAqcgarP02SUIQS3uM4BQFX8Jg7sBxjf8W53zxB
-         YCPn7MuPyS4SMinubCY6953K6Qe+2cYsTo6UuP4BkvGxHlfxc9stUYIJFUq72+T/2o0Y
-         TFKA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XnC/bn4zCDRVtxGAXcuOdFyiM3OcQ+RFU6fn2CEQYEQ=;
+        b=TtMVX1VLo5vsivX4rnR7hdNC/WiFF6rf5FY+MRkwb0kvFHYUzlHoOhwg5TTgUUGQll
+         SE7kQXSWU31CPtm0Vv4e9lQo9PU3MWLWgM60oM2i4k+R4oEByNQ5cai/d1ERWACQtXDM
+         xMY7/ig/TAVcVVOBe9q6kRNPg4qWH4y0n6yb4tXjSv+3TyRzXyBi4WOXJbRv9JAFTbsO
+         /1cPkMg+4tYWIPrVNz96R2E5CvgdpRXX3IHyyB4FvHyFTbNU8pk4/EYVxqtbbgIOJjQs
+         nix/qd2GA8c46pfGmBA/Jrg9ExTGqVNUwbVyhmMRm2yaZKa/ksKnAhO0VsFAzmEqWjMY
+         DT+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tZJ0udOOwaCxWMXlTkBG0pv6kYWe5fFc5cXr8AFWGxw=;
-        b=Bg5gdqksyb3zw8Uy2yKrUowHYgPh0rbW7CAhQqqVdGyEVYGd/0PkGj04mn8KA1g4fE
-         3bZcd1viC0J0U5BQhBDT3yvk+pPdpdznsOtMyx4ALcZvnJgbr3pOrjeF9fVEvWs2KcXN
-         +bkbETxr8ZLiReRw+7A5FKfyJgtuGUpcwxDGVk6QKrBV0RsBe1iFt1R8mZT9SvMeVCax
-         siLRLFsl5V+G1KPFjMBMzSXHQ2eXyH/RV5hbMsCaDQ4TSVIR+HNAWXA0zSWylagoP0Pb
-         cmZMy7Cfukr/Qk75L6mhO0p8L0qEGFr5Obgehh0rLFs2ImYbGP8K92o1JKgxDCL4ksTP
-         SJhA==
-X-Gm-Message-State: AJIora+8EkEN2yi+2tUSp7HNPDP4bveGuAmxF0ZHarXqdIZClG4IuBoG
-        xAVTjqCcumHW6p75pmc1FJvHTw==
-X-Google-Smtp-Source: AGRyM1s1cA2evr96a50L5BABFDORqGyFaQ17SBTfpLNuKCJK5lJgbJW8qW9c08KC/QyKvvh+ZdCv8w==
-X-Received: by 2002:a63:3e0b:0:b0:40c:42db:6601 with SMTP id l11-20020a633e0b000000b0040c42db6601mr161415pga.586.1655386740360;
-        Thu, 16 Jun 2022 06:39:00 -0700 (PDT)
-Received: from [172.20.0.255] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id x16-20020a17090a165000b001e667f932cdsm3822017pje.53.2022.06.16.06.38.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 06:39:00 -0700 (PDT)
-Message-ID: <d3432cce-079e-3d6d-91df-6da10bd69d08@linaro.org>
-Date:   Thu, 16 Jun 2022 06:38:56 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XnC/bn4zCDRVtxGAXcuOdFyiM3OcQ+RFU6fn2CEQYEQ=;
+        b=QJ5VFaV5yWqZRmLFmjTyha6s2zq+YLEAnY2pTzEj58G0I5SIwBKGc+mS/n7DcXtDrd
+         z7vL+Q450JtavQxsMheTLAdPsb6p82ez4fpjO77w3EYbcHXR8NEPO7aOY1H1aJXC1wM0
+         4uxY7C7pu5UTBabIoR9TKvSBVfwSSeQ7ICqyJfdm6pXUqF3oGtUB2gtiyxCLVw4KmEOv
+         Tx+FkOKJGK1fEnxpHu93h92of53+fyyVayLPa04aETeSvwlAgDYSTM5ulXGYbrn+2D9C
+         4Dih9N1+ogANXdU3/mg6uCA2J7/32+aesyTWyDVkLe8Jw8iIAmeAJds+EzB7wmFGo3Jz
+         krKw==
+X-Gm-Message-State: AJIora+ziHEfDrP9Mt1dNR6uoZFvnnPSFUIIVA8mLUjSAw9f6vpkX/ZI
+        dfYoocnhFmduLeqtN6yP47nrZWuiFpAzwVd40a0=
+X-Google-Smtp-Source: AGRyM1s/Dh6yb9xotZBJUCK7BE+lDY27S0mfWoIr8Ej/Tbl1Ityqd1e+MbFpp7JtPxXsp7GsnULEMIn5+25S9rTiTpM=
+X-Received: by 2002:a05:6512:3d8c:b0:479:51be:727f with SMTP id
+ k12-20020a0565123d8c00b0047951be727fmr2762721lfv.289.1655386896126; Thu, 16
+ Jun 2022 06:41:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for
- NPCM8XX
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>
+References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-13-tmaimon77@gmail.com>
+ <add025b6-c622-b204-d39e-67b31878d37f@linaro.org> <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
+ <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org> <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
+ <e6e478a5-9080-fb2f-9ccd-2490cdfab4c7@linaro.org> <CAP6Zq1gy=rj-wyqqNQF+Pt1dtHsf+90AnTGTqt-v9madj8tfGA@mail.gmail.com>
+ <d3432cce-079e-3d6d-91df-6da10bd69d08@linaro.org>
+In-Reply-To: <d3432cce-079e-3d6d-91df-6da10bd69d08@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Thu, 16 Jun 2022 16:41:25 +0300
+Message-ID: <CAP6Zq1jdMN_vB1Uoi6rb_E1DydS7+-A0sWMRNUhDPF4pzkr2kA@mail.gmail.com>
+Subject: Re: [PATCH v2 12/20] dt-bindings: reset: npcm: Add support for NPCM8XX
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     Avi Fishman <avifishman70@gmail.com>,
         Tali Perry <tali.perry1@gmail.com>,
         Joel Stanley <joel@jms.id.au>,
@@ -87,7 +86,7 @@ Cc:     Avi Fishman <avifishman70@gmail.com>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
         Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         Lubomir Rintel <lkundrak@v3.sk>,
         devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -95,65 +94,60 @@ Cc:     Avi Fishman <avifishman70@gmail.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-13-tmaimon77@gmail.com>
- <add025b6-c622-b204-d39e-67b31878d37f@linaro.org>
- <CAP6Zq1iDbB+X5QPE4Nsqk4nV41bZiVzQZExS1pQTuKEBz-iYew@mail.gmail.com>
- <381ff739-e898-8812-d549-df7101f0eaa2@linaro.org>
- <CAP6Zq1j=x3OcOPSOjJJmOcze7ziM=oWcKdbYzoHhGnvZipu_UQ@mail.gmail.com>
- <e6e478a5-9080-fb2f-9ccd-2490cdfab4c7@linaro.org>
- <CAP6Zq1gy=rj-wyqqNQF+Pt1dtHsf+90AnTGTqt-v9madj8tfGA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAP6Zq1gy=rj-wyqqNQF+Pt1dtHsf+90AnTGTqt-v9madj8tfGA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16/06/2022 06:24, Tomer Maimon wrote:
-> Hi Krzysztof,
-> 
-> On Wed, 15 Jun 2022 at 20:03, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 13/06/2022 02:25, Tomer Maimon wrote:
->>> Hi Krzysztof,
->>>
->>> Thanks for your clarification.
->>>
->>> We can remove the dt-binding file and use numbers in the DTS,
->>> appreciate if you can answer few additional questions:
->>> 1. Do you suggest adding all NPCM reset values to the NPCM reset
->>> document or the reset values should describe in the module
->>> documentation that uses it?
->>
->> What is "NPCM reset document"? Are these reset values anyhow different
->> than interrupts or pins?
-> No, they represent the same values.
+Hi Krzysztof,
 
-
-We do not document in the bindings actual pin or interrupt numbers...
-
->>
->>> 2. Some of the NPCM7XX document modules describe the reset value they
->>> use from the dt-binding for example:
->>> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
->>
->> This is NPCM750
->>
->>> If we remove the NPCM8XX dt-binding file should we describe the
->>> NPCM8XX values in the NPCM-ADC document file?
->>
->> What is NPCM-ADC document file? What do you want to describe there?
->> Again - how is it different than interrupts?
-> It is not different from the interrupts.
-> I will remove the dt-binding reset include file, the reset property
-> will use numbers and not macro's.
-
-I have no clue what are you referring now... This is NPCM8xx and it has
-no binding header with reset values. What to remove then?
-
-
-Best regards,
-Krzysztof
+On Thu, 16 Jun 2022 at 16:39, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 16/06/2022 06:24, Tomer Maimon wrote:
+> > Hi Krzysztof,
+> >
+> > On Wed, 15 Jun 2022 at 20:03, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 13/06/2022 02:25, Tomer Maimon wrote:
+> >>> Hi Krzysztof,
+> >>>
+> >>> Thanks for your clarification.
+> >>>
+> >>> We can remove the dt-binding file and use numbers in the DTS,
+> >>> appreciate if you can answer few additional questions:
+> >>> 1. Do you suggest adding all NPCM reset values to the NPCM reset
+> >>> document or the reset values should describe in the module
+> >>> documentation that uses it?
+> >>
+> >> What is "NPCM reset document"? Are these reset values anyhow different
+> >> than interrupts or pins?
+> > No, they represent the same values.
+>
+>
+> We do not document in the bindings actual pin or interrupt numbers...
+>
+> >>
+> >>> 2. Some of the NPCM7XX document modules describe the reset value they
+> >>> use from the dt-binding for example:
+> >>> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/iio/adc/nuvoton%2Cnpcm750-adc.yaml#L61
+> >>
+> >> This is NPCM750
+> >>
+> >>> If we remove the NPCM8XX dt-binding file should we describe the
+> >>> NPCM8XX values in the NPCM-ADC document file?
+> >>
+> >> What is NPCM-ADC document file? What do you want to describe there?
+> >> Again - how is it different than interrupts?
+> > It is not different from the interrupts.
+> > I will remove the dt-binding reset include file, the reset property
+> > will use numbers and not macro's.
+>
+> I have no clue what are you referring now... This is NPCM8xx and it has
+> no binding header with reset values. What to remove then?
+I refer nuvoton,npcm8xx-reset.h file, we don't need it.
+>
+>
+> Best regards,
+> Krzysztof
