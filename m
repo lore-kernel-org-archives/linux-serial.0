@@ -2,96 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C74CC43334
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 08:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C1DC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 09:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380327AbiFQIPB (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
+        id S235673AbiFQJjo (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Jun 2022 05:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380002AbiFQIPA (ORCPT
+        with ESMTP id S1380297AbiFQJjn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:15:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B395567D36;
-        Fri, 17 Jun 2022 01:14:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ED6161FA8;
-        Fri, 17 Jun 2022 08:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555DEC3411B;
-        Fri, 17 Jun 2022 08:14:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655453698;
-        bh=BcesR8rZSyM4ByqxVA2X7+5nZ1ydk3/oB9XEIqKmikU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=bAFIjonXE/UkzMqxJTJnxJE6DsWRB4Xp5Nwbw5hzhNo2pNPzZBhM9x2t69CRSOoo+
-         CL3Vvkpu2pRFrjB32ajpgxiGlaeDiRAkuiR2byJQDpe8fhJ6fYJiIMnDcZkCfRL4Vj
-         HJPn8ad5IVMPe0n6CbYTNT7Py7yuLqzBLLxhkmvo=
-Date:   Fri, 17 Jun 2022 10:14:56 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.19-rc3
-Message-ID: <Yqw4AJGmhTSfzc97@kroah.com>
+        Fri, 17 Jun 2022 05:39:43 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D0F6899F;
+        Fri, 17 Jun 2022 02:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655458783; x=1686994783;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pjGPnmtr0TEkG61G5nnq7wf+ldeKjCmAuajMs62W8ps=;
+  b=Oluwt18SHzy4KCPV36DMY2ovkdo4L95MAjxHHw0uhzT4ln+0/Idna8se
+   3c8awuEIpHtpf10WW4mNjaJPvEfPPeWfeph39RifPCHFT1MeUBGUU2xj7
+   f9pJzFOk2ugsNuchMsbr/0C8DXEj5hkUR+Z1OhZyaeLOiU7eQBjLgAV3g
+   flw16tP2+EhC3QvT17UZLNUHjCPojiDta3RWz8z6/crHkFvNUjKdTxdqu
+   OhycNEOVIosj9vwtNk89B+YIHM80dwvgeLXqzLwNqKJETsTZ/azeSuJHR
+   0qikThsbCcKnwAtn0C8XdUkpBB1RP+F5kz/76a3aa69O1140BgNnajyed
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280177532"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280177532"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 02:39:42 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="641970175"
+Received: from ssinisal-mobl.ger.corp.intel.com ([10.249.40.194])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 02:39:36 -0700
+Date:   Fri, 17 Jun 2022 12:39:29 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
+Message-ID: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-878701769-1655458778=:1822"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+--8323329-878701769-1655458778=:1822
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-are available in the Git repository at:
+Add myself as maintainer for DW 8250 UART and up it to Supported.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.19-rc3
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-for you to fetch changes up to be03b0651ffd8bab69dfd574c6818b446c0753ce:
+---
+ MAINTAINERS | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-  serial: 8250: Store to lsr_save_flags after lsr read (2022-06-10 13:52:19 +0200)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..6c90484f395b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19230,8 +19230,9 @@ F:	Documentation/devicetree/bindings/gpio/snps,creg-gpio.txt
+ F:	drivers/gpio/gpio-creg-snps.c
+ 
+ SYNOPSYS DESIGNWARE 8250 UART DRIVER
++M:	Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+ R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+-S:	Maintained
++S:	Supported
+ F:	drivers/tty/serial/8250/8250_dw.c
+ F:	drivers/tty/serial/8250/8250_dwlib.*
+ F:	drivers/tty/serial/8250/8250_lpss.c
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 5.19-rc3
-
-Here are some small tty and serial driver fixes for 5.19-rc3 to resolve
-some reported problems:
-	- 8250 lsr read bugfix
-	- n_gsm line discipline allocation fix
-	- qcom serial driver fix for reported lockups that happened in
-	  -rc1
-	- goldfish tty driver fix
-
-All have been in linux-next for a while now with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Ilpo Järvinen (1):
-      serial: 8250: Store to lsr_save_flags after lsr read
-
-Tony Lindgren (1):
-      tty: n_gsm: Debug output allocation must use GFP_ATOMIC
-
-Vijaya Krishna Nivarthi (2):
-      serial: core: Introduce callback for start_rx and do stop_rx in suspend only if this callback implementation is present.
-      tty: serial: qcom-geni-serial: Implement start_rx callback
-
-Vincent Whitchurch (1):
-      tty: goldfish: Fix free_irq() on remove
-
- drivers/tty/goldfish.c                | 2 +-
- drivers/tty/n_gsm.c                   | 2 +-
- drivers/tty/serial/8250/8250_port.c   | 2 ++
- drivers/tty/serial/qcom_geni_serial.c | 1 +
- drivers/tty/serial/serial_core.c      | 9 ++++++---
- include/linux/serial_core.h           | 1 +
- 6 files changed, 12 insertions(+), 5 deletions(-)
+-- 
+tg: (f2906aa86338..) dw/maintainer (depends on: tty-next)
+--8323329-878701769-1655458778=:1822--
