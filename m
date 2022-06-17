@@ -2,77 +2,70 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0B5C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 20:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7629C43334
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 22:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233265AbiFQUYX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
+        id S237578AbiFQWsk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Jun 2022 18:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234545AbiFQUYW (ORCPT
+        with ESMTP id S1378699AbiFQWsh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:24:22 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 13:24:22 PDT
-Received: from relay.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76C51308
-        for <linux-serial@vger.kernel.org>; Fri, 17 Jun 2022 13:24:22 -0700 (PDT)
-Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id 16DC835035;
-        Fri, 17 Jun 2022 20:17:40 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 8E8DD20028;
-        Fri, 17 Jun 2022 20:17:38 +0000 (UTC)
-Message-ID: <7690845ccf9597e8cdc560a674a1b8e79a10f680.camel@perches.com>
-Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
-From:   Joe Perches <joe@perches.com>
-To:     kernel test robot <lkp@intel.com>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Fri, 17 Jun 2022 18:48:37 -0400
+Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CA959956;
+        Fri, 17 Jun 2022 15:48:35 -0700 (PDT)
+Received: by mail-io1-f47.google.com with SMTP id q11so5899118iod.8;
+        Fri, 17 Jun 2022 15:48:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bo+VS2/FgKbFAhxMturh6GXboxGeeCzAc9Y8o4zwJDo=;
+        b=3khUcC0l81JRL84td9Ohu9NtxoSqriJZJPUNgcZ9IBIk3PD13tZTHMLcBC+fYAw6WJ
+         ou8s6UVb3txKy5MKjpjFLDDpM5wjZ3CK0NReLdzYwDmiLcxb8gJovp+ut7NNaF2vzAkm
+         bksxdWDTbI/LYQDb5pZKISPZhB45LZHMFXJxSC91dO0O6uks/6+5wParddNrE+iehA8H
+         UWH47YKCbt+1FZ+BIvvV0/NR7jJlx0kuhQaPVNo6JTjlAipiqeASP6QIz4mbqx5bawSm
+         XhpX8j0gHNN92KcUSFvDdrrBZH0Ylb34b4jiNIdr2HIn4x10P+nQT/kbiITeEg7i0SE/
+         RxpA==
+X-Gm-Message-State: AJIora8BPAlOJSakyPQkZnYlKNl6sCBPM1FbymqSzkRwdcqkhiAJJuXU
+        AaIzguR87T0Su7+3BSOoSw==
+X-Google-Smtp-Source: AGRyM1t31k5wSJ9zBcj+tHjNiuF/jzQCLnGNBqtiS53l9BwLc6cEERMVCsJl31o7Vg6oOVUfNs2NhQ==
+X-Received: by 2002:a05:6638:19c3:b0:335:be36:36ba with SMTP id bi3-20020a05663819c300b00335be3636bamr6572686jab.28.1655506114456;
+        Fri, 17 Jun 2022 15:48:34 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id t4-20020a02c904000000b003318614511bsm2740467jao.161.2022.06.17.15.48.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 15:48:34 -0700 (PDT)
+Received: (nullmailer pid 2581654 invoked by uid 1000);
+        Fri, 17 Jun 2022 22:48:32 -0000
+Date:   Fri, 17 Jun 2022 16:48:32 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>
-Date:   Fri, 17 Jun 2022 13:17:37 -0700
-In-Reply-To: <202206180451.ZfYLcA43-lkp@intel.com>
-References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
-         <202206180451.ZfYLcA43-lkp@intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        linux-renesas-soc@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: serial: renesas,hscif: Document r8a779f0
+ bindings
+Message-ID: <20220617224832.GA2581596-robh@kernel.org>
+References: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-X-Stat-Signature: pbog3x85gq1cobzmnqoha4o9cmj7co9g
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 8E8DD20028
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/nGVMfHLzejJeiYLF6cqjyZLYVB9hcTkg=
-X-HE-Tag: 1655497058-955313
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 2022-06-18 at 04:09 +0800, kernel test robot wrote:
-> Hi "Ilpo,
+On Mon, 13 Jun 2022 15:10:07 +0200, Wolfram Sang wrote:
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on linus/master]
-> [also build test ERROR on v5.19-rc2 next-20220617]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/MAINTAINERS-Update-DW-8250-UART-maintainership/20220617-174145
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 47700948a4abb4a5ae13ef943ff682a7f327547a
-> reproduce: make htmldocs
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> > > 'utf-8' codec can't decode byte 0xe4 in position 1396: invalid continuation byte
 
-?
-
-false positive?
-
+Acked-by: Rob Herring <robh@kernel.org>
