@@ -2,105 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC491C43334
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 09:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE03C43334
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 10:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiFQJsS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
+        id S1381167AbiFQKVw (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Jun 2022 06:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232310AbiFQJsR (ORCPT
+        with ESMTP id S235077AbiFQKVu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:48:17 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F33457B2;
-        Fri, 17 Jun 2022 02:48:16 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x5so5488459edi.2;
-        Fri, 17 Jun 2022 02:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wD2kpKzJqFUX67y53Ka9TC3u1l6m/HfRCHZEF9+P7LY=;
-        b=O3oJ7EBa1DSYeSpPAl2pwHKAAIzqbPtTv2ruY4dJURFxUWkylGAOtt1Nzx/4Co1l/p
-         qZD1unk8hoGYMxLOI3HBtWnp/KbI6TxpXQSplt7cgBmRuiZYF1qG9eO1Y9H1JF78nYvD
-         02sUN3pSjcCiBGmKyoWqwhiXELO/e3rajJ9N1y74na1jHkb1OARIPTKFEIN06npNihbb
-         /F2WvaDOVAbBG/8bebnVJLyHO0HH+O2pIvNo3v3fQX3wv01pdrqnKOk39RGmsayLYrBU
-         yNm1P/qcrFCBqu1tiVF8+cMc/xprN+NsbOUoSptWxNkELNtC4JpXykXIN84fao/jWUnk
-         bnCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wD2kpKzJqFUX67y53Ka9TC3u1l6m/HfRCHZEF9+P7LY=;
-        b=WGlGooKCt9+ngo6NI9EHENyemEJR9XrT0YmO00NkNJBFKI30JK6hJmaS4psN5T7JpS
-         PvNRmNT5dvT4HSHbvQM+4PVTFaXJKKjNTWvX8kyznQOeKA6dAztuPbb9Y0aWkoz0pRFa
-         pxq8VVbvXyEAvyxvGEK9lTPtF0K/peMYJRaxWBWX8bjNWnlvWgOTHHeZiAMJe+/CG82E
-         xYEcPyyA/dfwpNxCjhIGvk1315MZd1nQhUQcTN0/wbuSC6rNtShZaHhacv/SwBLlFvmm
-         ZG3w9jtVscTkEdPGbPmspt+UfThh6B0ivkV3Ul3/+Rr7/tbiZ7NMgM//aFCZPjG5dvAb
-         FItw==
-X-Gm-Message-State: AJIora+W+0guPVR9eOs6ISGL5JLAQfimJkMSMhv9gVf5j495zleHDg2B
-        FHAJZbehzdC4kPoP+nZPGqtg6GRupZjwwO+RiNQ=
-X-Google-Smtp-Source: AGRyM1uqFe/JXStvN3glFnviA4pS3N3gxtDC5EfBtKciin5PrqBbU8kQk1XiTEG3zneSSb/vnLFf+3CRhVTZ94qZ+tU=
-X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
- o16-20020a056402439000b0042e0b7ee9acmr11329544edc.97.1655459294822; Fri, 17
- Jun 2022 02:48:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
-In-Reply-To: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 17 Jun 2022 11:47:37 +0200
-Message-ID: <CAHp75VcRgCjD578XrDeuz6WWqMCtS6k-BE7pa4iMfGFkUnhdbg@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 17 Jun 2022 06:21:50 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E5B6A405;
+        Fri, 17 Jun 2022 03:21:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655461310; x=1686997310;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=9630itfmTE2oQKIg/VF8dscV4gSxkZdc73h/4g/mwqg=;
+  b=CJYkm2NlIq4d9ZUDORk7b0AmyodHYf0XTMh7er83spYeVOqO9Gmqr+9j
+   2EsC4Lrn64bc70QgHPJJZgms6QEq43KENowIL6vsf1NnHJCO8aPN7eJUK
+   eUEZPTQw1/71IOV+IHJ8cwDjGe/a9ERXEJbhjHJ9G5D3ASZNQduKlvr14
+   pAnnn2ffIpEPoG/cz2TgJr7tNAldd1iRIc4ZkMiUVd5OS+HdWiObcICHK
+   xY8GOxN04z9FA61n04y7I9hi7RxohpOpbO78yyVH+f06lz/VSodl1cOZX
+   Vyq1qoAfJV+kuDr98nmSGjs4cDSM3JeL7Pua23fHzP36w25gUe0sxbQAF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280186031"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280186031"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 03:21:49 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="831984894"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 03:21:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o296n-000eyc-GZ;
+        Fri, 17 Jun 2022 13:21:45 +0300
+Date:   Fri, 17 Jun 2022 13:21:45 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jiri Slaby <jirislaby@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
+Message-ID: <YqxVuaCeT+TH7co0@smile.fi.intel.com>
+References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+ <YqxNHJ5mGA1tJamh@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YqxNHJ5mGA1tJamh@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 11:41 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> Add myself as maintainer for DW 8250 UART and up it to Supported.
+On Fri, Jun 17, 2022 at 11:45:00AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jun 17, 2022 at 12:39:29PM +0300, Ilpo Järvinen wrote:
+> > Add myself as maintainer for DW 8250 UART and up it to Supported.
+> > 
+> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> Obviously I need an ack from Andy too.
 
-Thanks!
+I just gave my Rb, but just in case
+Acked-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> And thanks for doing this and
+> all the work you have already done so far, it's appreciated.
 
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->
-> ---
->  MAINTAINERS | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a6d3bd9d2a8d..6c90484f395b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19230,8 +19230,9 @@ F:      Documentation/devicetree/bindings/gpio/sn=
-ps,creg-gpio.txt
->  F:     drivers/gpio/gpio-creg-snps.c
->
->  SYNOPSYS DESIGNWARE 8250 UART DRIVER
-> +M:     Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->  R:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> -S:     Maintained
-> +S:     Supported
->  F:     drivers/tty/serial/8250/8250_dw.c
->  F:     drivers/tty/serial/8250/8250_dwlib.*
->  F:     drivers/tty/serial/8250/8250_lpss.c
->
-> --
-> tg: (f2906aa86338..) dw/maintainer (depends on: tty-next)
++1 and many, thanks, Ilpo!
 
-
-
---=20
+-- 
 With Best Regards,
 Andy Shevchenko
+
+
