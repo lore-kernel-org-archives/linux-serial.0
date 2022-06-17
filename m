@@ -2,86 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88650C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 20:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0B5C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 20:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234142AbiFQUKA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        id S233265AbiFQUYX convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 17 Jun 2022 16:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiFQUKA (ORCPT
+        with ESMTP id S234545AbiFQUYW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:10:00 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD261AD8D;
-        Fri, 17 Jun 2022 13:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655496599; x=1687032599;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xb2qKksZtxth+AQPUIEOHoGSTsD3UILWaYW3YtMLhHU=;
-  b=j0BHY+acxGmVyZZcvoCDZgI9ZcwfvJzdMxmleqTKP2Xe5qI9zB0Sq3Wt
-   IWmsci0vce6PVugkI25hXODJ9kLkEditKacNYnogJBP6wBk7sM0dw3HoC
-   L4LcNuwrjHrW2A0D1JfLO6gLc1/EYi/iIqqlPHBVahvbYDdf9md3zQacP
-   yi8QtdANC3iMNKnxWs7usz00BhJS5JpUUlnsxH333m5i1FekOB96ELG0m
-   fBgv2RueHS/6+joh3XZXYVv4VVz4exfyEvl09UjU/QdEEdBMmhAppSzEj
-   VZLEh2vRQzl7MD9uWFnDq5W5+jW8qsWH9N4BRflGfKKWua3wqijpmEP+s
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277127484"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="277127484"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 13:09:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="536942462"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 17 Jun 2022 13:09:54 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2IHx-000Pj7-Un;
-        Fri, 17 Jun 2022 20:09:53 +0000
-Date:   Sat, 18 Jun 2022 04:09:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Fri, 17 Jun 2022 16:24:22 -0400
+X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 13:24:22 PDT
+Received: from relay.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B76C51308
+        for <linux-serial@vger.kernel.org>; Fri, 17 Jun 2022 13:24:22 -0700 (PDT)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay02.hostedemail.com (Postfix) with ESMTP id 16DC835035;
+        Fri, 17 Jun 2022 20:17:40 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 8E8DD20028;
+        Fri, 17 Jun 2022 20:17:38 +0000 (UTC)
+Message-ID: <7690845ccf9597e8cdc560a674a1b8e79a10f680.camel@perches.com>
+Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
+From:   Joe Perches <joe@perches.com>
+To:     kernel test robot <lkp@intel.com>,
+        Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
-Message-ID: <202206180451.ZfYLcA43-lkp@intel.com>
+Date:   Fri, 17 Jun 2022 13:17:37 -0700
+In-Reply-To: <202206180451.ZfYLcA43-lkp@intel.com>
 References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+         <202206180451.ZfYLcA43-lkp@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+X-Stat-Signature: pbog3x85gq1cobzmnqoha4o9cmj7co9g
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 8E8DD20028
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/nGVMfHLzejJeiYLF6cqjyZLYVB9hcTkg=
+X-HE-Tag: 1655497058-955313
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi "Ilpo,
+On Sat, 2022-06-18 at 04:09 +0800, kernel test robot wrote:
+> Hi "Ilpo,
+> 
+> Thank you for the patch! Yet something to improve:
+> 
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v5.19-rc2 next-20220617]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/MAINTAINERS-Update-DW-8250-UART-maintainership/20220617-174145
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 47700948a4abb4a5ae13ef943ff682a7f327547a
+> reproduce: make htmldocs
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> > > 'utf-8' codec can't decode byte 0xe4 in position 1396: invalid continuation byte
 
-Thank you for the patch! Yet something to improve:
+?
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc2 next-20220617]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+false positive?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/MAINTAINERS-Update-DW-8250-UART-maintainership/20220617-174145
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 47700948a4abb4a5ae13ef943ff682a7f327547a
-reproduce: make htmldocs
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> 'utf-8' codec can't decode byte 0xe4 in position 1396: invalid continuation byte
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
