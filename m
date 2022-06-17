@@ -2,80 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA33C43334
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 03:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE914CCA47E
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jun 2022 05:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379748AbiFQDET (ORCPT
+        id S1380202AbiFQF5m (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        Fri, 17 Jun 2022 01:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379503AbiFQDES (ORCPT
+        with ESMTP id S1380201AbiFQF5l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:04:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2B466226;
-        Thu, 16 Jun 2022 20:04:18 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPP1h3ztSzSgxV;
-        Fri, 17 Jun 2022 11:00:56 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 11:04:09 +0800
-Received: from huawei.com (10.175.112.208) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
- 2022 11:04:08 +0800
-From:   Guo Mengqi <guomengqi3@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <f.fainelli@gmail.com>, <rjui@broadcom.com>,
-        <sbranden@broadcom.com>, <bcm-kernel-feedback-list@broadcom.com>,
-        <nsaenz@kernel.org>, <athierry@redhat.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <xuqiang36@huawei.com>
-Subject: [PATCH -next] drivers/tty/serial: Add missing clk_disable_unprepare()
-Date:   Fri, 17 Jun 2022 10:58:27 +0800
-Message-ID: <20220617025827.130497-1-guomengqi3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 17 Jun 2022 01:57:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1F86307
+        for <linux-serial@vger.kernel.org>; Thu, 16 Jun 2022 22:57:40 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o24yq-0001Mj-TF; Fri, 17 Jun 2022 07:57:16 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o24yn-00109t-8f; Fri, 17 Jun 2022 07:57:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o24yo-00GttI-0N; Fri, 17 Jun 2022 07:57:14 +0200
+Date:   Fri, 17 Jun 2022 07:57:10 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     linux-doc@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: efm32: remove bindings for deleted platform
+Message-ID: <20220617055710.d4wnya5aclskpqjg@pengutronix.de>
+References: <20220615210720.6363-1-wsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="olp76qajcz2msgae"
+Content-Disposition: inline
+In-Reply-To: <20220615210720.6363-1-wsa@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add missing clk_disable_unprepare() when get clk rate fails.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
----
- drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+--olp76qajcz2msgae
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-index 2a1226a78a0c..21939bb44613 100644
---- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-+++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-@@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 	uartclk = clk_get_rate(data->clk);
- 	if (!uartclk) {
- 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
--		if (ret)
--			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+		if (ret) {
-+			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
-+			goto dis_clk;
-+		}
- 	}
- 
- 	/* the HW-clock divider for bcm2835aux is 8,
--- 
-2.17.1
+On Wed, Jun 15, 2022 at 11:07:19PM +0200, Wolfram Sang wrote:
+> Commit cc6111375cec ("ARM: drop efm32 platform") removed the platform,
+> so no need to still carry the bindings.
+>=20
+> Signed-off-by: Wolfram Sang <wsa@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/efm32-clock.txt | 11 -----
+>  .../devicetree/bindings/i2c/i2c-efm32.txt     | 33 --------------
+>  .../devicetree/bindings/serial/efm32-uart.txt | 20 ---------
+>  .../devicetree/bindings/spi/efm32-spi.txt     | 39 -----------------
+>  include/dt-bindings/clock/efm32-cmu.h         | 43 -------------------
+>  5 files changed, 146 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/clock/efm32-clock.t=
+xt
+>  delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-efm32.txt
+>  delete mode 100644 Documentation/devicetree/bindings/serial/efm32-uart.t=
+xt
+>  delete mode 100644 Documentation/devicetree/bindings/spi/efm32-spi.txt
+>  delete mode 100644 include/dt-bindings/clock/efm32-cmu.h
 
+I didn't do that back then wondering if the bindings are sensible to
+keep even for removed arch (or more general drivers). In this case the
+chip isn't old and unavailable, but just too small for sensible Linux
+usage.
+
+OTOH I'm not aware of any dtb usage on efm32.
+
+No hard feelings here, if you consider it not useful to keep the binding
+around, go on and remove them.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--olp76qajcz2msgae
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKsF7IACgkQwfwUeK3K
+7AmlkAgAkeP7ubk1SId4jZw5jRCgEtryr8uSSJbLjLngkCCk9Tk4niLiq7RE9svU
+ogytTFnt0i4WSXrORBidg644EcgoWZrpUDA1ULORe/EbRS3k6bupHQneGP7BkXgo
+GiNgDvJ+ufdcLrI0Nj+jH/C5PxNqOa1sH7GnRE5viYXpbpB6kwyqR18v6G2CAUin
+E3b2QRB32jCAXTYlitLmbjLweY/Qz0pW8yTY4pwhLoG3w+wDshQVwRqSt778yqZN
+dLwli2Zv0+zs2EBKBZgST0hruHpcZ3HJXQy/6UhnXTCdHbxm2pI0AdQo5nIxrYe6
+/oWYm+u40EbHnR0PPhQFCKeOW1OExg==
+=4gVo
+-----END PGP SIGNATURE-----
+
+--olp76qajcz2msgae--
