@@ -2,115 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CA8C43334
-	for <linux-serial@archiver.kernel.org>; Sun, 19 Jun 2022 07:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FBBCCA47A
+	for <linux-serial@archiver.kernel.org>; Sun, 19 Jun 2022 15:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234733AbiFSHk7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 19 Jun 2022 03:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55768 "EHLO
+        id S234692AbiFSPMz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 19 Jun 2022 11:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiFSHk6 (ORCPT
+        with ESMTP id S234559AbiFSPMr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 19 Jun 2022 03:40:58 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27422E039
-        for <linux-serial@vger.kernel.org>; Sun, 19 Jun 2022 00:40:57 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id s14so2073678ljs.3
-        for <linux-serial@vger.kernel.org>; Sun, 19 Jun 2022 00:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SijtfyVKmKZ61VgfgYPFK0haQYdmhgE2KuP17MEIvzY=;
-        b=i/JdKT25OBXNk009zoIAjdJ2zMdGJS0OWHK5gXVeft63f/tB3nZYHhhG9wRfTaRP0a
-         zPGE1m5//7qxkZwVP6fV/kaiJks8+ZQ52JWjuRR6kUuNx4i8tgMLruV6tDM0ZJcbQpnX
-         WZYXe0U36AQJgWj+vEM1PoWBEEFtUsQpnF9QTrKdxc/JCUWRhTcrL28uvY94YQPjB7fn
-         sGjv65HoLAY1LXRWIQHAbngEgqkOUcac/FNP07faXhXmU1vs6Ynwyt5pKd6aTJziddub
-         emFY3b1lKvGh4SXHCbM6vNt8eVrNjOFt/l76ZsY/G6FvklGvAZHBmh6qO+mUBGK6FyFQ
-         DWYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SijtfyVKmKZ61VgfgYPFK0haQYdmhgE2KuP17MEIvzY=;
-        b=QaxxigGuF28fwEbeu1b27LTaDMu9rXDTqG7AhDzSM+7S6uZOgWVTi0WhJZWTZ6mgFT
-         6VDOIxB5oHhLmWt3sbxVfkKZkdAJZwGYDHij3dT9vv3qVw5o7KdMJTNqiWLJ2vZw7rmH
-         7Z6EMlhtwuKfdwjK90ubnhYDWMmHL8aWzR/O26gpFgbhv1Xhwm4DGQnzerDf01vO3BSA
-         DO0tCsbwCx1S7kJEUSmlrMpnDQEYLGBYQmgRMRp+fnbxBK2vqNfTCS7mQrbJBSgupdty
-         B5rIgsAaZf/XE9zI3HpMoKGM6UZLR8jUsvbPsH4eOAnsk/mIuhHy28Gx7McO4P/Ceubl
-         p+Dw==
-X-Gm-Message-State: AJIora+JPrDsSedyeUfGHS4zxQUI6RKPgVHo58sW6Z7sA+tt90rfo/0Y
-        H5ChVwbTil6bxTZHTW2o7XN/Mg==
-X-Google-Smtp-Source: AGRyM1uArWeunq1mpXu0ABwBTWouCfr8aZh86/rGC1mBwSmmuoRGZYQU4h/4XVK0b24G/JqpjHpQfw==
-X-Received: by 2002:a05:651c:1025:b0:25a:672b:92dc with SMTP id w5-20020a05651c102500b0025a672b92dcmr1792714ljm.118.1655624455382;
-        Sun, 19 Jun 2022 00:40:55 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id w25-20020a197b19000000b0047f67dbb533sm209242lfc.70.2022.06.19.00.40.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 00:40:54 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        jirislaby@kernel.org, miquel.raynal@bootlin.com, mw@semihalf.com,
-        jaz@semihalf.com, upstream@semihalf.com
-Subject: [PATCH] serial: 8250: dw: enable using pdata with ACPI
-Date:   Sun, 19 Jun 2022 09:40:30 +0200
-Message-Id: <20220619074030.1154429-1-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
+        Sun, 19 Jun 2022 11:12:47 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78221DF74;
+        Sun, 19 Jun 2022 08:12:39 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 701F91C81206;
+        Sun, 19 Jun 2022 23:12:29 +0800 (CST)
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 19
+ Jun 2022 23:12:29 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Sun, 19 Jun 2022 23:12:29 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id 9AB1663A4E; Sun, 19 Jun 2022 18:12:27 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 12/18] dt-bindings: arm: npcm: Add maintainer
+Date:   Sun, 19 Jun 2022 18:12:19 +0300
+Message-ID: <20220619151225.209029-13-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220619151225.209029-1-tmaimon77@gmail.com>
+References: <20220619151225.209029-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-caused NULL-pointer dereference when booting with ACPI by unconditional
-usage of the recently added pdata.
+Add Tomer Maimon to the maintainers list.
 
-In order to fix that and prevent similar issues in future, hook the
-default version of this structure in dw8250_acpi_match table.
-
-Fixes: 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/tty/serial/8250/8250_dw.c | 24 ++++++++++----------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/arm/npcm/npcm.yaml        | 1 +
+ Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f57bbd32ef11..3b79bd5c9c9d 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -773,18 +773,18 @@ static const struct of_device_id dw8250_of_match[] = {
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
+diff --git a/Documentation/devicetree/bindings/arm/npcm/npcm.yaml b/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
+index 95e51378089c..ea9c3103761d 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
+@@ -8,6 +8,7 @@ title: NPCM Platforms Device Tree Bindings
  
- static const struct acpi_device_id dw8250_acpi_match[] = {
--	{ "INT33C4", 0 },
--	{ "INT33C5", 0 },
--	{ "INT3434", 0 },
--	{ "INT3435", 0 },
--	{ "80860F0A", 0 },
--	{ "8086228A", 0 },
--	{ "APMC0D08", 0},
--	{ "AMD0020", 0 },
--	{ "AMDI0020", 0 },
--	{ "AMDI0022", 0 },
--	{ "BRCM2032", 0 },
--	{ "HISI0031", 0 },
-+	{ "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "INT33C5", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
-+	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
+ 
+ properties:
+   $nodename:
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+index fcb211add7d3..aad7c85e787f 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -8,6 +8,7 @@ title: Global Control Registers block in Nuvoton SoCs
+ 
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
+ 
+ description:
+   The Global Control Registers (GCR) are a block of registers in Nuvoton SoCs
 -- 
-2.29.0
+2.33.0
 
