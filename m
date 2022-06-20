@@ -2,291 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B49CCA47A
-	for <linux-serial@archiver.kernel.org>; Sun, 19 Jun 2022 17:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6DEC43334
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 03:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236653AbiFSROr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 19 Jun 2022 13:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48298 "EHLO
+        id S234714AbiFTDRw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 19 Jun 2022 23:17:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236779AbiFSROp (ORCPT
+        with ESMTP id S231530AbiFTDRv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 19 Jun 2022 13:14:45 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1AE5593
-        for <linux-serial@vger.kernel.org>; Sun, 19 Jun 2022 10:14:42 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 2yVLo6VoTIaWO2yVLoEfJC; Sun, 19 Jun 2022 19:14:40 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 19 Jun 2022 19:14:40 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <6566c16c-f36f-6806-3879-3e6b40713e5e@wanadoo.fr>
-Date:   Sun, 19 Jun 2022 19:14:31 +0200
+        Sun, 19 Jun 2022 23:17:51 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF9DB7E4;
+        Sun, 19 Jun 2022 20:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655695068; x=1687231068;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=HtnVNnCFeWuLegFWoyC4DW3f9gm1/vIoPOy+u1841pc=;
+  b=SztMylHtEuWl4ZEmNcr6mQsYsi8ZINNra7H+uq0gi6cXjDJ55aFFCpI/
+   aBl8zxQVVR+86GWzR0c5Bztm0DGiqCh5H79xvsp/VFND5HHiIQ5uQJ2nQ
+   oAWZRQjYjnIcZ0slv+wN3Ek1tMBbspves/YleyE6G4NvEGGnooG+iwTdt
+   TSyd06+4c47w5MrKI5/aFLqvmXE+97sIJPbDVjttBxzGYWVNjUeRpdO4J
+   CKNaHPE0kpQ7UuUS8/IOdKmClteQsEkIlg+KxJBs7L7mSKlJ+CLCV5T1n
+   IPKnawBv2etkEZns0OlwE0Z+jfl+iGBUlFB/Iw3pf+9IJQfLhDzcmnJ/j
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280848311"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280848311"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 20:17:47 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="642902088"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.30.150]) ([10.255.30.150])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 20:17:45 -0700
+Subject: Re: [kbuild-all] Re: [PATCH] MAINTAINERS: Update DW 8250 UART
+ maintainership
+To:     Joe Perches <joe@perches.com>, kernel test robot <lkp@intel.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>
+References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+ <202206180451.ZfYLcA43-lkp@intel.com>
+ <7690845ccf9597e8cdc560a674a1b8e79a10f680.camel@perches.com>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <7c01c4f8-1826-8769-c3d3-309a9d23f113@intel.com>
+Date:   Mon, 20 Jun 2022 11:17:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 06/18] clk: npcm8xx: add clock controller
-Content-Language: fr
-To:     tmaimon77@gmail.com
-Cc:     arnd@arndb.de, avifishman70@gmail.com, benjaminfair@google.com,
-        biju.das.jz@bp.renesas.com, bjorn.andersson@linaro.org,
-        catalin.marinas@arm.com, daniel.lezcano@linaro.org,
-        devicetree@vger.kernel.org, geert+renesas@glider.be,
-        gregkh@linuxfoundation.org, j.neuschaefer@gmx.net,
-        jirislaby@kernel.org, joel@jms.id.au,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux@roeck-us.net, lkundrak@v3.sk,
-        marcel.ziswiler@toradex.com, mturquette@baylibre.com,
-        nobuhiro1.iwamatsu@toshiba.co.jp, olof@lixom.net,
-        p.zabel@pengutronix.de, robert.hancock@calian.com,
-        robh+dt@kernel.org, sboyd@kernel.org, shawnguo@kernel.org,
-        tali.perry1@gmail.com, tglx@linutronix.de, venture@google.com,
-        vkoul@kernel.org, will@kernel.org, wim@linux-watchdog.org,
-        yuenn@google.com
-References: <20220619151225.209029-1-tmaimon77@gmail.com>
- <20220619151225.209029-7-tmaimon77@gmail.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220619151225.209029-7-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <7690845ccf9597e8cdc560a674a1b8e79a10f680.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 19/06/2022 à 17:12, Tomer Maimon a écrit :
-> Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller which
-> generates and supplies clocks to all modules within the BMC.
+
+
+On 6/18/2022 4:17 AM, Joe Perches wrote:
+> On Sat, 2022-06-18 at 04:09 +0800, kernel test robot wrote:
+>> Hi "Ilpo,
+>>
+>> Thank you for the patch! Yet something to improve:
+>>
+>> [auto build test ERROR on linus/master]
+>> [also build test ERROR on v5.19-rc2 next-20220617]
+>> [If your patch is applied to the wrong git tree, kindly drop us a note.
+>> And when submitting patch, we suggest to use '--base' as documented in
+>> https://git-scm.com/docs/git-format-patch]
+>>
+>> url:    https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/MAINTAINERS-Update-DW-8250-UART-maintainership/20220617-174145
+>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 47700948a4abb4a5ae13ef943ff682a7f327547a
+>> reproduce: make htmldocs
+>>
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All errors (new ones prefixed by >>):
+>>
+>>>> 'utf-8' codec can't decode byte 0xe4 in position 1396: invalid continuation byte
 > 
-> Signed-off-by: Tomer Maimon <tmaimon77-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->   drivers/clk/Kconfig       |   6 +
->   drivers/clk/Makefile      |   1 +
->   drivers/clk/clk-npcm8xx.c | 760 ++++++++++++++++++++++++++++++++++++++
->   3 files changed, 767 insertions(+)
->   create mode 100644 drivers/clk/clk-npcm8xx.c
+> ?
 > 
-
-[...]
-
-Hi, below a few comments related to error handling and possible 
-dev_err_probe() usage to savec a few LoC.
-
-CJ
-
-> +static struct clk_hw *
-> +npcm8xx_clk_register_pll(struct device *dev, void __iomem *pllcon,
-> +			 const char *name, const char *parent_name,
-> +			 unsigned long flags)
-> +{
-> +	struct npcm8xx_clk_pll *pll;
-> +	struct clk_init_data init;
-> +	struct clk_hw *hw;
-> +	int ret;
-> +
-> +	pll = kzalloc(sizeof(*pll), GFP_KERNEL);
-> +	if (!pll)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	pr_debug("%s reg, name=%s, p=%s\n", __func__, name, parent_name);
-> +
-> +	init.name = name;
-> +	init.ops = &npcm8xx_clk_pll_ops;
-> +	init.parent_names = &parent_name;
-> +	init.num_parents = 1;
-> +	init.flags = flags;
-> +
-> +	pll->pllcon = pllcon;
-> +	pll->hw.init = &init;
-> +
-> +	hw = &pll->hw;
-> +
-> +	ret = devm_clk_hw_register(dev, hw);
-> +	if (ret) {
-> +		kfree(pll);
+> false positive?
 
 Hi,
 
-there is no other kfree(() in this patch. It is handled by the framework 
-once the clk is registered or should there be another kfree() somewhere 
-or should pll be devm_alloc()'ed?
+I tried to apply the patch, and I can reproduce the error by 'make 
+htmldocs':
 
+$ wget -q -O - 
+https://lore.kernel.org/lkml/be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com/raw 
+| git apply -v
+$ git --no-pager diff
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f52543aedd61e..3d64756814f09 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19247,8 +19247,9 @@ F: 
+Documentation/devicetree/bindings/gpio/snps,creg-gpio.txt
+  F:     drivers/gpio/gpio-creg-snps.c
 
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return hw;
-> +}
-> +
+  SYNOPSYS DESIGNWARE 8250 UART DRIVER
++M:     Ilpo Jrvinen <ilpo.jarvinen@linux.intel.com>
+  R:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+-S:     Maintained
++S:     Supported
+  F:     drivers/tty/serial/8250/8250_dw.c
+  F:     drivers/tty/serial/8250/8250_dwlib.*
+  F:     drivers/tty/serial/8250/8250_lpss.c
 
-[...]
+It seems the special character 'ä' in name 'Ilpo Järvinen' was parsed 
+wrongly.
 
-> +static int npcm8xx_clk_probe(struct platform_device *pdev)
-> +{
-> +	struct clk_hw_onecell_data *npcm8xx_clk_data;
-> +	struct device *dev = &pdev->dev;
-> +	void __iomem *clk_base;
-> +	struct clk_hw *hw;
-> +	int i;
-> +
-> +	npcm8xx_clk_data = devm_kzalloc(dev, struct_size(npcm8xx_clk_data, hws,
-> +							 NPCM8XX_NUM_CLOCKS),
-> +					GFP_KERNEL);
-> +	if (!npcm8xx_clk_data)
-> +		return -ENOMEM;
-> +
-> +	clk_base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(clk_base))
-> +		return PTR_ERR(clk_base);
-> +
-> +	npcm8xx_clk_data->num = NPCM8XX_NUM_CLOCKS;
-> +
-> +	for (i = 0; i < NPCM8XX_NUM_CLOCKS; i++)
-> +		npcm8xx_clk_data->hws[i] = ERR_PTR(-EPROBE_DEFER);
-> +
-> +	/* Reference 25MHz clock */
-> +	hw = clk_hw_register_fixed_rate(dev, "refclk", NULL, 0, NPCM8XX_REF_CLK);
-
-Other resoruces are managed, but not this one.
-Is it on purpose?
-Is an error handling path needed or a devm_add_action_or_reset()?
-
-> +	if (IS_ERR(hw))
-> +		return PTR_ERR(hw);
-> +	npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK] = hw;
-> +
-> +	/* Register plls */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_plls); i++) {
-> +		const struct npcm8xx_clk_pll_data *pll_data = &npcm8xx_plls[i];
-> +
-> +		hw = npcm8xx_clk_register_pll(dev, clk_base + pll_data->reg,
-> +					      pll_data->name,
-> +					      pll_data->parent_name,
-> +					      pll_data->flags);
-> +		if (IS_ERR(hw)) {
-> +			dev_err(dev, "npcm8xx_clk: Can't register pll\n");
-> +			return PTR_ERR(hw);
-> +		}
-> +
-> +		if (pll_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[pll_data->onecell_idx] = hw;
-> +	}
-> +
-> +	/* Register fixed dividers */
-> +	hw = devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL1_DIV2,
-> +					       NPCM8XX_CLK_S_PLL1, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		dev_err(dev, "npcm8xx_clk: Can't register fixed div\n");
-> +		return PTR_ERR(hw);
-
-return dev_err_probe()?
-
-> +	}
-> +
-> +	hw = devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL2_DIV2,
-> +					       NPCM8XX_CLK_S_PLL2, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		dev_err(dev, "npcm8xx_clk: Can't register pll div2\n");
-> +		return PTR_ERR(hw);
-
-Same here and in other calls below.
-
-> +	}
-> +
-> +	hw = devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PRE_CLK,
-> +					       NPCM8XX_CLK_S_CPU_MUX, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		dev_err(dev, "npcm8xx_clk: Can't register ckclk div2\n");
-> +		return PTR_ERR(hw);
-> +	}
-> +
-> +	hw = devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_AXI,
-> +					       NPCM8XX_CLK_S_TH, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		dev_err(dev, "npcm8xx_clk: Can't register axi div2\n");
-> +		return PTR_ERR(hw);
-> +	}
-> +
-> +	hw = devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_ATB,
-> +					       NPCM8XX_CLK_S_AXI, 0, 1, 2);
-> +	if (IS_ERR(hw)) {
-> +		dev_err(dev, "npcm8xx_clk: Can't register atb div2\n");
-> +		return PTR_ERR(hw);
-> +	}
-> +
-> +	/* Register muxes */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_muxes); i++) {
-> +		const struct npcm8xx_clk_mux_data *mux_data = &npcm8xx_muxes[i];
-> +
-> +		hw = clk_hw_register_mux_table(dev, mux_data->name,
-> +					       mux_data->parent_names,
-> +					       mux_data->num_parents,
-> +					       mux_data->flags,
-> +					       clk_base + NPCM8XX_CLKSEL,
-> +					       mux_data->shift,
-> +					       mux_data->mask, 0,
-> +					       mux_data->table,
-> +					       &npcm8xx_clk_lock);
-> +
-Same here. Error handling?
-
-> +		if (IS_ERR(hw)) {
-> +			dev_err(dev, "npcm8xx_clk: Can't register mux\n");
-> +			return PTR_ERR(hw);
-> +		}
-> +
-> +		if (mux_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[mux_data->onecell_idx] = hw;
-> +	}
-> +
-> +	/* Register clock dividers specified in npcm8xx_divs */
-> +	for (i = 0; i < ARRAY_SIZE(npcm8xx_divs); i++) {
-> +		const struct npcm8xx_clk_div_data *div_data = &npcm8xx_divs[i];
-> +
-> +		hw = clk_hw_register_divider(dev, div_data->name,
-> +					     div_data->parent_name,
-> +					     div_data->flags,
-> +					     clk_base + div_data->reg,
-> +					     div_data->shift, div_data->width,
-> +					     div_data->clk_divider_flags,
-> +					     &npcm8xx_clk_lock);
-
-devm_clk_hw_register_divider()?
-
-> +		if (IS_ERR(hw)) {
-> +			dev_err(dev, "npcm8xx_clk: Can't register div table\n");
-> +			return PTR_ERR(hw);
-> +		}
-> +
-> +		if (div_data->onecell_idx >= 0)
-> +			npcm8xx_clk_data->hws[div_data->onecell_idx] = hw;
-> +	}
-> +
-> +	return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get,
-> +					   npcm8xx_clk_data);
-> +}
-> +
-> +static const struct of_device_id npcm8xx_clk_dt_ids[] = {
-> +	{ .compatible = "nuvoton,npcm845-clk", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, npcm8xx_clk_dt_ids);
-> +
-> +static struct platform_driver npcm8xx_clk_driver = {
-> +	.probe  = npcm8xx_clk_probe,
-> +	.driver = {
-> +		.name = "npcm8xx_clk",
-> +		.of_match_table = npcm8xx_clk_dt_ids,
-> +	},
-> +};
-> +
-> +static int __init npcm8xx_clk_driver_init(void)
-> +{
-> +	return platform_driver_register(&npcm8xx_clk_driver);
-> +}
-> +arch_initcall(npcm8xx_clk_driver_init);
-> +
-
+Best Regards,
+Rong Chen
