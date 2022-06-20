@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1964C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94B3C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239314AbiFTIVO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S239826AbiFTIWk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239128AbiFTIVL (ORCPT
+        with ESMTP id S239557AbiFTIWj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:21:11 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAB112096
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:21:10 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id me5so19565184ejb.2
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:21:10 -0700 (PDT)
+        Mon, 20 Jun 2022 04:22:39 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A37C120A9
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:22:34 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id eo8so14069905edb.0
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:22:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=H2+1Br+WPxKlr7rhA9GfS8O/m05TRKE7h+ScGuyJAog=;
-        b=JC5OvhqSI3YDLB4ulNcwLiuwrq3174cHPyMi4JeV8uCx84M4SI/6pAzWSwwGIAmo9i
-         p6t9Ivqkdqui3xsiy3Ee0xUhCcJ6w6+jOOIte/Ii6tUtK/BAsuBJ911XGEpGvt1aqiYK
-         QTB7y+CxG1pWhpmx+BPbgHhnHz3voafRZyRc6YsvqsKPdcyWzXQRLQbkHOigs0ZlkeFH
-         UL50DeYMUcOj2rjwGCiX7h9nrnJgw2WRLPQIjCZFjqUqjMVmYlDyNEZWlZCUo4E9gHJJ
-         IdoUff+QZ89fSbkrQWHgF2KZiJcF2i2h9l+lVFA3pPJTh+u+icUmTajeydSWfkGyDcCv
-         +fHQ==
+        bh=yJTL9VsdOv2E21Dkt8BTO3+Qw07qwGtDXpvjpRBhc5g=;
+        b=h6HdvNM3ah/gsRVjcr5JsUh3O7E9bjvNwmVZT89qSD4sHbUmKLzFsHkxunCVjXmhrs
+         iF8X+A4LHt+9zazui0cKN8wY/dVdHGTccWqjENsC5aW8NNBOxDrNhqqOgqlKeIhhOnGb
+         j/YTRw3L+/WAuNymjP0OpFNGEWGiuzwEVD89PilcSlb6f3QMAFVE+tQVSTXlFE8b4Bsf
+         wW8yMWZa+xkIWmo1BXcuZg66pGczoI19J/3l2e7DjVG6XlVCh/gUuzlP2k/1fr2q3Dlm
+         B/9oTmpkCXLedzgZms0RuJYJaAYtCBrwqwM2crb4ZGlxbhmRkxqggS2/c6RLHuRh7u3l
+         fVOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=H2+1Br+WPxKlr7rhA9GfS8O/m05TRKE7h+ScGuyJAog=;
-        b=HkskhQb0D9c6CtLmhjXYU7RtaTatBYNVsW9aBHSsn7eYesWCnoRQa7xdb5S07tdAtN
-         PHbQw1SQdKRpZIMCLbXOR3K+SidsozXQUI/aPy/AhxKJSxP7f0YHUMvxQVwK3GSK/acn
-         OHK4rLMARy+VBAQQZ8OEA/XaE4zjMXv+q6UZxcraflXmJWPHDf2DdkLqLDl9Frt9PNsp
-         RBpK0tLagz75WwJ5p++9jB2hMTnpTmWWmvpg4ZpsHqUhH3gOtzDuRkAgqYLfwbvg3RSy
-         I4+F67ahyNANY4opHCKspvCDHz3BPhORtRA5U6AbZ8IbO8UmAGuR3vQlHOLVYx7BcSdX
-         hUzw==
-X-Gm-Message-State: AJIora+ZOc4sgwxnW9i/lv0q2+0M2LoXDYHxbBr5ZSXOC2fFsWsHxcHA
-        nQ41OPU+BFvez85DO0Nd1bO6Mg==
-X-Google-Smtp-Source: AGRyM1vUUFN5yFrpsDyCCDudDRBU4X7vKD37ZJhGh+DJw/CUxCKNVKu2v2/I8EJ7euaQXqIHibedZQ==
-X-Received: by 2002:a17:906:72de:b0:711:f8c8:ba00 with SMTP id m30-20020a17090672de00b00711f8c8ba00mr20299153ejl.586.1655713268738;
-        Mon, 20 Jun 2022 01:21:08 -0700 (PDT)
+        bh=yJTL9VsdOv2E21Dkt8BTO3+Qw07qwGtDXpvjpRBhc5g=;
+        b=Yms+1tYFgjqDNOYtrgjBo/yjXTR2cRhk4WsPY7xLG4MWHnalSNsV1yr0KQr43W1acZ
+         v/Oh0+ViQC6Gz81gAFp00Z/Oc9eilUj1XuBjeAOcaaY/Fos/EzpEwgF9jTYUGzJOeioe
+         wMdpGbP/cBnhF2LURV9rFxIXA57SeuwJUfSOINJQg4BeQ7C2Hu+8XlKF2k3tdeTuKN+y
+         AG3Hu7YYSEdzerxmClMafeXEeeZMgtfMC+p7/nSsVOtHTKSiJMcEriheqHUz8IsDajDD
+         EBiT13jdlpdSQ9HXtgmNiTRQ+ArBVEh7mVmv0SRsME4KkPwxCwQVjL7DTX+HS7EbrMm1
+         XFNA==
+X-Gm-Message-State: AJIora/WiaVxSTOGrCs+dfq021TCQtU34q/WO5MoF2VjZoNjYiRcosHw
+        2fSo4/PXSAk/zX+KjaSevGm8Ow==
+X-Google-Smtp-Source: AGRyM1uzcZsqQhCIoAQ1YkKeyAKAqGksNoYWgRmpMgaQIpLaG9BX11BZQzCejDAF/kpDoNvbzDxbqw==
+X-Received: by 2002:a05:6402:4301:b0:42d:e8fb:66f7 with SMTP id m1-20020a056402430100b0042de8fb66f7mr28394069edc.229.1655713352841;
+        Mon, 20 Jun 2022 01:22:32 -0700 (PDT)
 Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h20-20020a1709070b1400b006fe7d269db8sm5469823ejl.104.2022.06.20.01.21.07
+        by smtp.gmail.com with ESMTPSA id ht16-20020a170907609000b00711c7cca428sm5519146ejc.155.2022.06.20.01.22.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 01:21:08 -0700 (PDT)
-Message-ID: <040f149b-c441-c778-6d4f-f3b2b2afaf4e@linaro.org>
-Date:   Mon, 20 Jun 2022 10:21:06 +0200
+        Mon, 20 Jun 2022 01:22:32 -0700 (PDT)
+Message-ID: <36b12f00-a7cb-9f94-d1c3-e04f7861b08e@linaro.org>
+Date:   Mon, 20 Jun 2022 10:22:30 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v3 05/18] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
+Subject: Re: [PATCH v3 07/18] dt-bindings: reset: npcm: add GCR syscon
+ property
 Content-Language: en-US
 To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
         tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
@@ -75,9 +75,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20220619151225.209029-1-tmaimon77@gmail.com>
- <20220619151225.209029-6-tmaimon77@gmail.com>
+ <20220619151225.209029-8-tmaimon77@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220619151225.209029-6-tmaimon77@gmail.com>
+In-Reply-To: <20220619151225.209029-8-tmaimon77@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -85,88 +85,27 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 19/06/2022 17:12, Tomer Maimon wrote:
-> Add binding for the Arbel BMC NPCM8XX Clock controller.
+> Describe syscon property that handles general control registers (GCR) in
+> Nuvoton BMC NPCM reset driver.
 > 
 > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > ---
->  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
->  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 49 +++++++++++++++++++
->  2 files changed, 98 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
->  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+>  .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml     | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> new file mode 100644
-> index 000000000000..3d4fddc090ca
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Nuvoton NPCM8XX Clock Controller Binding
-> +
-> +maintainers:
-> +  - Tomer Maimon <tmaimon77@gmail.com>
-> +
-> +description: |
-> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-> +  generates and supplies clocks to all modules within the BMC.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - nuvoton,npcm845-clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +    description:
-> +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
-> +      list of NPCM8XX clock IDs.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#clock-cells"
+> diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+> index fa5e4ea6400e..7ba3a6ff82ed 100644
+> --- a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+> +++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+> @@ -19,6 +19,9 @@ properties:
+>    '#reset-cells':
+>      const: 2
+>  
+> +  nuvoton,sysgcr:
+> +    description: a phandle to access GCR registers.
 
-Use same quotes through your patchset - either " or '. Do not mix.
-
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    ahb {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        clock-controller@f0801000 {
-> +            compatible = "nuvoton,npcm845-clk";
-> +            reg = <0x0 0xf0801000 0x0 0x1000>;
-> +            #clock-cells = <1>;
-> +        };
-> +    };
-> +...
-> diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> new file mode 100644
-> index 000000000000..e5cce08b00e1
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> @@ -0,0 +1,49 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-
-My comment about filename is still waiting to be resolved. I asked for
-same filename as bindings in v1.
-
-https://lore.kernel.org/all/CAP6Zq1gXEqqquKzxTHoxYnvh2LCGt-ES+k=aX61FKyHW5WB62w@mail.gmail.com/
-
-I am still going to NAK it if it is not implemented.
+That's not valid. You miss here ref. My comment was to skip quotes and
+you removed entire ref.
 
 Best regards,
 Krzysztof
