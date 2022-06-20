@@ -2,87 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 504F4C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 09:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF489C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 10:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235073AbiFTJSw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S240453AbiFTKeT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240698AbiFTJSg (ORCPT
+        with ESMTP id S239977AbiFTKeT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:18:36 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1536452;
-        Mon, 20 Jun 2022 02:18:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id um5so4870951ejb.5;
-        Mon, 20 Jun 2022 02:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OBDb8+EHsywC1sWORQkwWBvQ5vhlilwVW0bHJD11CSM=;
-        b=GX99+7R2JbJOWlg09LQWo6ERil78LgaO9beLsUg4fzM2vZKXqRI3oCvD8U9NhDaxEO
-         mL3MNlFAnxeh5K6Sy97so7+2/s4VoDpBk6CqLaACGxgvEKanXZhAOxx9Z6Q6r+hxnCiK
-         BwPTBYeZzOTZ/9L3sxlPRsAw8WXksC5NPEcYM2MhytADZZJapDC6n+MRbScZBVUf82KV
-         Y6NoSEXmce0I97uGLu67ER2gAsgqwwbNI1/1gKT+Oj/+HMZ7unTqUcFdl26ENxEpUwru
-         PP048S7yfYkdnEggUp7jDIHZ4RSYneaObTd+gcC8iJm00LwNnQdYyQZDQCe463tDNDGj
-         2GLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OBDb8+EHsywC1sWORQkwWBvQ5vhlilwVW0bHJD11CSM=;
-        b=XVtbLCwP4pGcxfsw+q3KbBHCKEqOIYyULmslh7kq/pS2bNYE+8OFvCdG7B4tQGwBJ1
-         8Nzd9QQGise4f9z5+/WdbuVG2yJOme9Y5tpETMzQJGRTfpgxvhYLhs22deWgcu0htcWk
-         L4tVEtMZcSG2nBRdVlgYug53fKYj3w88fT4CKockAXou8TyktYfT7CnAhDpxTe7UyV+D
-         VdJHh82UwLkPV6L4OQVUG+fPQaB7oMAPRcVkhAkIa/5XAxiwYdFkUhZkyNWAKIg7jw8e
-         8QVFp7DHvsFO7+EtEP+9j0uP3yv24xveQczAC4QtKRyZbrEuokVPLTLbbD94CP3568Y5
-         0lZA==
-X-Gm-Message-State: AJIora8PTNpKlsQBXahgR1vbhGD7LWZ/8zF38jkUBVG8koOrjjwe91kG
-        VApAZDoHb/LsthV9yL9gConXIjzG0nFQTch1RrNJMQudHz/D6Q==
-X-Google-Smtp-Source: AGRyM1vQMS1QkqFB+UUmS4kuMMjw928dXIoulZwgezgIYW9ID81N9dO7dqSOiWTPiv+3g7W50IXDLj1oDqKErEWPewM=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr20209192eja.44.1655716713463; Mon, 20
- Jun 2022 02:18:33 -0700 (PDT)
+        Mon, 20 Jun 2022 06:34:19 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032CF14009;
+        Mon, 20 Jun 2022 03:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655721258; x=1687257258;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zmxbLYlnkxBAQmR/2fS0geh0ltLbCws9XW57e8DibYw=;
+  b=CnnPLy+VcS45pThZbH+pcmb+ICd0uVKBNrha3lgkGMeUGvO1Jtd39+QZ
+   uqc3QaUQWGvMH0RkrMkqMliNkFn/iDLWzu5ol7M0Ef2DEcAj0/KXPjyQb
+   VCz2Aj1WNVTu5JZ1R6CawehygiYnBwgw1H6i2Tel3siR00hJLnIAp8zxQ
+   Qw+UyR8gz4wYl0tf4k9NjvfSKkjkN83CGK8MIM4HsAKXyuMMSHUpzBXte
+   coHQqWiKUpqp//AbbKr9urfqFvwTMJ9weY/V2uaVDzTc4LonAvyiodGpz
+   w2xPd68L+i9ozDTCq1qgjBelcPXwyT6ibohWzYwbUIbZ6rqNv/WW0mxoG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341543238"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="341543238"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:34:17 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="643055478"
+Received: from lspinell-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.215.169])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:34:15 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/6] serial: A few cleanups
+Date:   Mon, 20 Jun 2022 13:34:02 +0300
+Message-Id: <20220620103408.37454-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220619074030.1154429-1-mw@semihalf.com> <CAHp75VdmtFJe5k_6biofS0HtgqC7HQuNzrM=9cMhM1uz1p5Eng@mail.gmail.com>
- <CAPv3WKeR+iVE5KObWHmsSxDZtCqCbcCkoLWksmwhiu9E=ZcOxQ@mail.gmail.com>
-In-Reply-To: <CAPv3WKeR+iVE5KObWHmsSxDZtCqCbcCkoLWksmwhiu9E=ZcOxQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 20 Jun 2022 11:17:57 +0200
-Message-ID: <CAHp75VfpNkADuzo_-99bm4Lh-wJ3Dro9+oOszc=1oG4FQheHOQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: dw: enable using pdata with ACPI
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 11:14 AM Marcin Wojtas <mw@semihalf.com> wrote:
-> pon., 20 cze 2022 o 10:01 Andy Shevchenko <andy.shevchenko@gmail.com>
-> napisa=C5=82(a):
-> > On Sun, Jun 19, 2022 at 9:43 AM Marcin Wojtas <mw@semihalf.com> wrote:
+Here are a few cleanup to semi-random things I've come across while
+reading the code.
 
-...
+The series had initially only patches 3-6 but then msm_serial exploded
+during build because of redefining UART_SCR so I had to resolve the
+namespace conflict. It would have probably being avoided if there would
+have been linux/serial_reg.h but it was recently ruled out:
 
-> > Since you are touching all of them, please keep the order
-> > alphanumerically sorted by the HID.
->
-> Sure.
+  https://lore.kernel.org/lkml/CAPDyKFqHLQ8YTc3wzaFOdAA7Ay9RBEfdQC5uN574=oMavi6iCQ@mail.gmail.com/t/
 
-With that addressed,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+(Now there would 3 items already in serial_reg.h already but it would
+leave only async_icount into serial.h so the same problem in other
+file).
 
+Ilpo Järvinen (6):
+  serial: msm: Convert container_of UART_TO_MSM to static inline
+  serial: msm: Rename UART_* defines to MSM_UART_*
+  serial: Use bits for UART_LSR_BRK_ERROR_BITS/MSR_ANY_DELTA
+  serial: 8250: Use C99 array initializer & define UART_REG_UNMAPPED
+  cleanup: Use UART_XMIT_SIZE
+  serial: Consolidate BOTH_EMPTY use
 
---=20
-With Best Regards,
-Andy Shevchenko
+ arch/mips/ath79/early_printk.c           |   9 +-
+ drivers/accessibility/speakup/serialio.h |   3 +-
+ drivers/tty/amiserial.c                  |  18 +-
+ drivers/tty/mips_ejtag_fdc.c             |   2 +-
+ drivers/tty/serial/8250/8250_early.c     |   4 +-
+ drivers/tty/serial/8250/8250_port.c      |  50 +--
+ drivers/tty/serial/meson_uart.c          |   2 +-
+ drivers/tty/serial/msm_serial.c          | 550 ++++++++++++-----------
+ drivers/tty/serial/omap-serial.c         |   7 +-
+ drivers/tty/serial/owl-uart.c            |   2 +-
+ drivers/tty/serial/pch_uart.c            |   7 +-
+ drivers/tty/serial/pxa.c                 |   5 +-
+ drivers/tty/serial/rda-uart.c            |   2 +-
+ drivers/tty/serial/sunsu.c               |   4 +-
+ drivers/tty/serial/vr41xx_siu.c          |   4 +-
+ include/linux/serial.h                   |  15 +-
+ include/linux/serial_core.h              |   1 +
+ include/uapi/linux/serial_reg.h          |   4 +-
+ 18 files changed, 343 insertions(+), 346 deletions(-)
+
+-- 
+2.30.2
+
