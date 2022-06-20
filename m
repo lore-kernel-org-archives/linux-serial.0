@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2039DC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E34EBC43334
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239814AbiFTIXx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        id S234674AbiFTI0M (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239743AbiFTIXw (ORCPT
+        with ESMTP id S232112AbiFTI0L (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:23:52 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1953F59
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:23:48 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id kq6so19521827ejb.11
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:23:48 -0700 (PDT)
+        Mon, 20 Jun 2022 04:26:11 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BC6218
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:09 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id fu3so19572449ejc.7
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3Ros44lxzdc9H034iRq9XjLHdkZr6Zmv5Tm2gUHzb4k=;
-        b=F85Durofj7HACsatoRDfeiLEib0a64WUvlROiLKAKCR23NLMEShsxw9VNc2reTh5B6
-         nEn4sUrddK9p57eJkJ26U8cXd0w5NdmweBPdoopqjZbsTVRGQiudD2dcC36iMk2tVD81
-         yl8EcvBRXwKvfnhlm/ofgKE4Jm0m4c54ZNdmwlTjxrw4+VQLs8hQlBL4T4COv8K7yJ1Z
-         7Y/eQmFlnxlpM3hNHnKwpldLgxG2BQH+d2eSM0EhR3Rqd2QNnuFwIuDQp5/j4LWWCiM1
-         nlu3ZFcIaiHq94YrBwbOcIc1BrdBeH1N17YfmPP5oJYEiTYLn54nPBLdg+BECWfqs0Bw
-         OZYQ==
+        bh=feqxyD++ZNyntOrZZnmNSSht705UCVtD7ApY5yH0Mvs=;
+        b=gNxb44il+HQYrhBnShvzucZXX6Gwi4FVkDiqeRAqpYwudwpb5N5mV+m2h3Zm8v5mr2
+         o9bBSO0oTZgdjnMekuBrSGxllkOicFAVUoFYplLcTQh9HbUL8b/oWfAMiXZYHx09+qa+
+         xBdfnwQni1Q90PgBXwc1Xcr916eO5OTtLhdRBz3sU/sjAXw1Qb0Kg+mp8YzEJYhtDsA/
+         FFQOcO2x/z6WjKFPywRuS3xAKttjDaPz6GH9cc2XSlqkg8JlGr4cvhRmdutVDbRN2kIB
+         zmfFkZIxPlUpEROwZcnUMMWN0YqEmAEad/hF1PX33dWuE314Hkhs4skaPtGGXvGsufZ1
+         PeGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=3Ros44lxzdc9H034iRq9XjLHdkZr6Zmv5Tm2gUHzb4k=;
-        b=Shf4YgvlimG4xjEgDolxlBXghOMYAm+zNKahpO1zP/uU/0dZqsEUYZ8+5ojay9emfw
-         7r/sjZQ1c1r3r1JWbSIAi/xbqirTbD7mjLDfIzb7qQ8imvqXXxFiefgtxY7hFpfOTopj
-         H+EM0Tkj7lhwM+wA92h5YtDauDrrpQKipVG0OsCOSFvfsTutobhvbrIaO7GVgbOBwxUn
-         3INY/p7gDdoXrsma/bCTlutUybDHKTFGwjsuwllGOCvs6ypKr9RDyHGjdDXBoPg3rHwI
-         ptFHWto42pkv8TPqQEuMrcLAi0/ekg7E+iTZQA0tvrEkUjZhcsdWjnwnAhHLOOAv2aUP
-         5jVQ==
-X-Gm-Message-State: AJIora+jjqs/StlIyO2haL7lXYrvOrQPW2+O4UMO4dAlxakXu3/Flrq0
-        09/tfsc0y9jhVOdf63Y0YR99mQ==
-X-Google-Smtp-Source: AGRyM1vAjBf1TjIa/EZdSqh6SpnZpGgdVyfpMQp7XUD/Ztd8tGugtH+zYZB5r7Hj++TdtJOvMarXZw==
-X-Received: by 2002:a17:906:778b:b0:712:e477:8f33 with SMTP id s11-20020a170906778b00b00712e4778f33mr19958626ejm.42.1655713427224;
-        Mon, 20 Jun 2022 01:23:47 -0700 (PDT)
+        bh=feqxyD++ZNyntOrZZnmNSSht705UCVtD7ApY5yH0Mvs=;
+        b=gSr2npR/VYk3vR62YQePugeSQv9aw7Ll/sC02h41uM6BD7g+hIBGEMBzPmxMR01oU4
+         gxxOGxx5gEUH+PqQfrGT9SlQZzbhRGnD7Mb6ipCqmibalKb4q6wiM9IHQC+nY8TQYlGF
+         yqV26YNr21Tt40Klwinkgs86pWd078MipIk6fisAA0hsx486RHkpxvHX6yY3gswK+wKP
+         Lc4waoc8QRoQ8XQJwFjRL3LPmqSCzq9BDtAHcha50USyzRQBR1Wrr5bZGL2fdCIjvK/J
+         6J9JlCRRl+eVUcIVkCZ/28s1dsvQ5MVNfag4hpgCpQrou6f2d29GKBCxoaZjqR7wBV97
+         wRPw==
+X-Gm-Message-State: AJIora+sy+OFvWMKp+fWqngwSUM+OQxSRV6mWNKZYMQI1QSsuMEIm52q
+        zo+HDPtCjHJJUO3RENhLcvAtIw==
+X-Google-Smtp-Source: AGRyM1sjFzk8/oI1yQ/uy+RG3TYabiaCKsMY8TD99fc+s3KjWuVK4O2rvV5My5XgAjgX+UfNlgDSVw==
+X-Received: by 2002:a17:906:a858:b0:70e:a4d8:1c45 with SMTP id dx24-20020a170906a85800b0070ea4d81c45mr19232866ejb.213.1655713567929;
+        Mon, 20 Jun 2022 01:26:07 -0700 (PDT)
 Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id n9-20020a170906840900b006fec56a80a8sm5452387ejx.115.2022.06.20.01.23.45
+        by smtp.gmail.com with ESMTPSA id u9-20020a1709061da900b006fef557bb7asm5530127ejh.80.2022.06.20.01.26.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 01:23:46 -0700 (PDT)
-Message-ID: <14fe8f15-e91f-45e0-39e2-7ae0d5f2ea64@linaro.org>
-Date:   Mon, 20 Jun 2022 10:23:44 +0200
+        Mon, 20 Jun 2022 01:26:07 -0700 (PDT)
+Message-ID: <95249574-d12b-92ad-5e1f-89fa4e7e42b9@linaro.org>
+Date:   Mon, 20 Jun 2022 10:26:05 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v3 10/18] dt-bindings: reset: npcm: Add support for
- NPCM8XX
+Subject: Re: [PATCH v3 16/18] arm64: dts: nuvoton: Add initial NPCM8XX device
+ tree
 Content-Language: en-US
 To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
         tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
@@ -75,9 +75,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20220619151225.209029-1-tmaimon77@gmail.com>
- <20220619151225.209029-11-tmaimon77@gmail.com>
+ <20220619151225.209029-17-tmaimon77@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220619151225.209029-11-tmaimon77@gmail.com>
+In-Reply-To: <20220619151225.209029-17-tmaimon77@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -85,13 +85,16 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 19/06/2022 17:12, Tomer Maimon wrote:
-> Add binding document and device tree binding constants for Nuvoton BMC
-> NPCM8XX reset controller.
+> This adds initial device tree support for the Nuvoton NPCM845 Board
+> Management controller (BMC) SoC family.
+> 
+> The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and have
+> various peripheral IPs.
 > 
 > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
