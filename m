@@ -2,115 +2,171 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD3DC43334
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1964C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239704AbiFTIBN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
+        id S239314AbiFTIVO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239707AbiFTIBK (ORCPT
+        with ESMTP id S239128AbiFTIVL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:01:10 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399EB11466;
-        Mon, 20 Jun 2022 01:01:09 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id eo8so13993219edb.0;
-        Mon, 20 Jun 2022 01:01:09 -0700 (PDT)
+        Mon, 20 Jun 2022 04:21:11 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAB112096
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:21:10 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id me5so19565184ejb.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:21:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OcVNrdlKP0GzMJkVBTzuRwNNS1pphGPVCvGxdcsqxXM=;
-        b=ZucKaM0hl9UaeOsS2jAiYrP7lYP/mB4+nF/VfhP40XaBJyQu0CaKHFqZpZN+ZTwjY4
-         8W7/FAju6FiP8pSfaWpFFgPmVFANIh6OTyvDr2KKgmEAXA0U5NUb01d38Gk8bZ9FGSxE
-         ASBpeHYELSSAKBCHbEs6aE2J/bkHh9Dmrgntylfs+5k+F1rJb0ylTTbx34mxyZpq2atr
-         Os+KZL3lriMqh+4Jp3EyAHbcIqn6aEYJtHriXF2h7mGM3b3hePnw5wR1ZlUSmkllLO/Y
-         a3zINgixA1yks1eRLy2xSp3C2hZ1yb5BLJ3qeAKJOUqKiMjdZiTLH7EDEVnWtprL0R4n
-         kCQA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=H2+1Br+WPxKlr7rhA9GfS8O/m05TRKE7h+ScGuyJAog=;
+        b=JC5OvhqSI3YDLB4ulNcwLiuwrq3174cHPyMi4JeV8uCx84M4SI/6pAzWSwwGIAmo9i
+         p6t9Ivqkdqui3xsiy3Ee0xUhCcJ6w6+jOOIte/Ii6tUtK/BAsuBJ911XGEpGvt1aqiYK
+         QTB7y+CxG1pWhpmx+BPbgHhnHz3voafRZyRc6YsvqsKPdcyWzXQRLQbkHOigs0ZlkeFH
+         UL50DeYMUcOj2rjwGCiX7h9nrnJgw2WRLPQIjCZFjqUqjMVmYlDyNEZWlZCUo4E9gHJJ
+         IdoUff+QZ89fSbkrQWHgF2KZiJcF2i2h9l+lVFA3pPJTh+u+icUmTajeydSWfkGyDcCv
+         +fHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OcVNrdlKP0GzMJkVBTzuRwNNS1pphGPVCvGxdcsqxXM=;
-        b=CfB0A453cI9kLSrBlCFInt+KCwCutJJoJtdOaIiHuMx+kjWkDvjhACiYEY1FTsxBhH
-         nSeCRwsongwhtPj6D5VBFBTGQaOM4SYTPVY1OM4VS589sTXenZ+WvfSWLiC6ahrbPkr6
-         pUD8nHTlEz9nH1BTw5O4RKaWh4Q7I8mMgM3GglGbHCk43CLketXInKmtp+Q3HfRgyLtZ
-         RdBvNXpW/Wy9mOiYfKs+FveRZV6hNTZgJGGfe20UKuwGkX1l38u0GGCGH0VTCAgwZ9Y1
-         79TJbdHT2GK/5GvXyRBBKvrx8KHomrIURnHLFmhI/0NfdcHZjzmvo6bN6ZtIw90TqFlS
-         ZVXA==
-X-Gm-Message-State: AJIora/TnuwZjKg7tR/ktiMRcRk3vlX2gatAF2jSUQiPtt7WRCcJE2OT
-        Wlc0odT0UW+z9mV+SayqT8LxPX40npiUdpYuRPY=
-X-Google-Smtp-Source: AGRyM1tA6kLSMzKCwH9JDPtey2pJ1C/MO5M13HPYA86Vm/MJKxqvE2quxGRMO2o0vPxLw/3eZP316rKgVBj7IxInrn0=
-X-Received: by 2002:a05:6402:249e:b0:42d:bb88:865b with SMTP id
- q30-20020a056402249e00b0042dbb88865bmr27299794eda.141.1655712067695; Mon, 20
- Jun 2022 01:01:07 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=H2+1Br+WPxKlr7rhA9GfS8O/m05TRKE7h+ScGuyJAog=;
+        b=HkskhQb0D9c6CtLmhjXYU7RtaTatBYNVsW9aBHSsn7eYesWCnoRQa7xdb5S07tdAtN
+         PHbQw1SQdKRpZIMCLbXOR3K+SidsozXQUI/aPy/AhxKJSxP7f0YHUMvxQVwK3GSK/acn
+         OHK4rLMARy+VBAQQZ8OEA/XaE4zjMXv+q6UZxcraflXmJWPHDf2DdkLqLDl9Frt9PNsp
+         RBpK0tLagz75WwJ5p++9jB2hMTnpTmWWmvpg4ZpsHqUhH3gOtzDuRkAgqYLfwbvg3RSy
+         I4+F67ahyNANY4opHCKspvCDHz3BPhORtRA5U6AbZ8IbO8UmAGuR3vQlHOLVYx7BcSdX
+         hUzw==
+X-Gm-Message-State: AJIora+ZOc4sgwxnW9i/lv0q2+0M2LoXDYHxbBr5ZSXOC2fFsWsHxcHA
+        nQ41OPU+BFvez85DO0Nd1bO6Mg==
+X-Google-Smtp-Source: AGRyM1vUUFN5yFrpsDyCCDudDRBU4X7vKD37ZJhGh+DJw/CUxCKNVKu2v2/I8EJ7euaQXqIHibedZQ==
+X-Received: by 2002:a17:906:72de:b0:711:f8c8:ba00 with SMTP id m30-20020a17090672de00b00711f8c8ba00mr20299153ejl.586.1655713268738;
+        Mon, 20 Jun 2022 01:21:08 -0700 (PDT)
+Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h20-20020a1709070b1400b006fe7d269db8sm5469823ejl.104.2022.06.20.01.21.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 01:21:08 -0700 (PDT)
+Message-ID: <040f149b-c441-c778-6d4f-f3b2b2afaf4e@linaro.org>
+Date:   Mon, 20 Jun 2022 10:21:06 +0200
 MIME-Version: 1.0
-References: <20220619074030.1154429-1-mw@semihalf.com>
-In-Reply-To: <20220619074030.1154429-1-mw@semihalf.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 20 Jun 2022 10:00:31 +0200
-Message-ID: <CAHp75VdmtFJe5k_6biofS0HtgqC7HQuNzrM=9cMhM1uz1p5Eng@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: dw: enable using pdata with ACPI
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 05/18] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220619151225.209029-1-tmaimon77@gmail.com>
+ <20220619151225.209029-6-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220619151225.209029-6-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jun 19, 2022 at 9:43 AM Marcin Wojtas <mw@semihalf.com> wrote:
->
-> Commit 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-> caused NULL-pointer dereference when booting with ACPI by unconditional
-> usage of the recently added pdata.
->
-> In order to fix that and prevent similar issues in future, hook the
-> default version of this structure in dw8250_acpi_match table.
+On 19/06/2022 17:12, Tomer Maimon wrote:
+> Add binding for the Arbel BMC NPCM8XX Clock controller.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
+>  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 49 +++++++++++++++++++
+>  2 files changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+>  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> new file mode 100644
+> index 000000000000..3d4fddc090ca
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton NPCM8XX Clock Controller Binding
+> +
+> +maintainers:
+> +  - Tomer Maimon <tmaimon77@gmail.com>
+> +
+> +description: |
+> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
+> +  generates and supplies clocks to all modules within the BMC.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - nuvoton,npcm845-clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#clock-cells':
+> +    const: 1
+> +    description:
+> +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
+> +      list of NPCM8XX clock IDs.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#clock-cells"
 
-Thanks for the report and fix! One proposal below.
+Use same quotes through your patchset - either " or '. Do not mix.
 
-...
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    ahb {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        clock-controller@f0801000 {
+> +            compatible = "nuvoton,npcm845-clk";
+> +            reg = <0x0 0xf0801000 0x0 0x1000>;
+> +            #clock-cells = <1>;
+> +        };
+> +    };
+> +...
+> diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> new file mode 100644
+> index 000000000000..e5cce08b00e1
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+> @@ -0,0 +1,49 @@
+> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 
->  static const struct acpi_device_id dw8250_acpi_match[] = {
-> -       { "INT33C4", 0 },
-> -       { "INT33C5", 0 },
-> -       { "INT3434", 0 },
-> -       { "INT3435", 0 },
-> -       { "80860F0A", 0 },
-> -       { "8086228A", 0 },
-> -       { "APMC0D08", 0},
-> -       { "AMD0020", 0 },
-> -       { "AMDI0020", 0 },
-> -       { "AMDI0022", 0 },
-> -       { "BRCM2032", 0 },
-> -       { "HISI0031", 0 },
-> +       { "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT33C5", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
-> +       { "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
+My comment about filename is still waiting to be resolved. I asked for
+same filename as bindings in v1.
 
-Since you are touching all of them, please keep the order
-alphanumerically sorted by the HID.
+https://lore.kernel.org/all/CAP6Zq1gXEqqquKzxTHoxYnvh2LCGt-ES+k=aX61FKyHW5WB62w@mail.gmail.com/
 
->         { },
->  };
+I am still going to NAK it if it is not implemented.
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+Best regards,
+Krzysztof
