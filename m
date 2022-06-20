@@ -2,60 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB013C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B7ACCA480
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 08:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235866AbiFTI0e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        id S237456AbiFTI0r (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236984AbiFTI0a (ORCPT
+        with ESMTP id S238745AbiFTI0l (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:26:30 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DACAB12
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:28 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id u12so19556266eja.8
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:28 -0700 (PDT)
+        Mon, 20 Jun 2022 04:26:41 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E6712778
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:40 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id o10so14036747edi.1
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 01:26:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DYYyM5jMBzjreF2OSFmEkD6QKzHvv6pVwOrtPLBwZpY=;
-        b=vmfy+ZrmNbK0XE2EaZyojsO2+CUnBj0SXR2c8Vmmd8+LK4xYa7JJHU25upiQexeO3Q
-         keU1Tm4zhG70ASx3s7k8IgAgT89E/ITflHHSYugIOQPG7itMkBe1yIy9T4WY7Xx7aRMX
-         FiKoND3wpuIkHk8vNAPqdzheoqFNRh9qwV2BUuyKjmhKjPMHNQ2No4nmygjAQ1qWvv0H
-         h/S1qhcDFECuNjpDRSiAvU+Gr/L396yqO16qZ0elFcnwS/bKlEd/Sxgl+lV7rQPwmIu0
-         AGyQuT8KFK0+lDl7na7XnZo1J/i+mm3Yjf+DaBeSDoFqQZh5xeMSLjJEmURNGjPerrFk
-         LCQA==
+        bh=gYcJsXbtPe6Q4z2hXl+LOz24b35LyYtN2cxYQ4ReWvE=;
+        b=WvfiBerB2IA7VNRquJT6usEMj8OQGX7kp7+2ts7eKakktFr+bRs4aXDPCDEcPe1esr
+         4jYVZizxFGykJ2pt3UAfiRmcRAJpYeUtxmd8TE+kgTsO3Jr0NwQrLs8La27jwG//efrA
+         ykR7LJeCb/8PrBs341ZzTwzhA+GZHGB/5EC73Te4Kjah6wEus0rLqaRSbCDHpxVGGxu2
+         8QE2oznKGBKus/EOx/mMHqQw7yvHrF5g1Crn1hL3EHlTH463yzF/rHzV+lOU87SiUrTQ
+         2iwDsNWKS/IhRPUXvC6uN/Us16RYR31X4nf2BuLC2t1ncbMAbxApPdj5ZkHLu4WZhYro
+         +NhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=DYYyM5jMBzjreF2OSFmEkD6QKzHvv6pVwOrtPLBwZpY=;
-        b=CyIPAzM30m9oR/SotZhk4e//yXBydASIeSyjDHNHMmiMDTqEYC0M6ElVOqAmcmSofJ
-         U+7HZ16Z17LouzIgznK2o1ZSktlg3eIgqg2gc4d+s6EcN+S5opK/r/s+XYhlzwDr6Wnb
-         9v0y97n0gtWoK56+IncxtMPL16Ffi339zgpjpvzL4ImAYuZG0uKRaW47esYv5+GcWHdy
-         cWWM2CZ3ZlNIsblMlFbTfBWYG8dKQvhfqDr8Qx0BkpHcBsKIyEXDnTXU+hTT4GnnJlIa
-         QHECCfS2RNEvK1oQc47bUVi107ptzVTohNJfjLZ7Yd96iJOM0vt6SdTQR3dCHaukHh0t
-         5SkA==
-X-Gm-Message-State: AJIora9adC3cC9Uu6bKCk1sHenaYj1K0ma+N+tvsxE0TqYaGuPODJJJB
-        88PtchI4pnTWWw35sWWk7LsKuQ==
-X-Google-Smtp-Source: AGRyM1vjeieZNc+Q0qRsOCvm3+jeMlF7gjngYmSV9EYUjMQ9pSEL8NxVmqcS1y+HktEDq38LVJiO0g==
-X-Received: by 2002:a17:907:7f8f:b0:711:623e:b344 with SMTP id qk15-20020a1709077f8f00b00711623eb344mr20237480ejc.230.1655713586624;
-        Mon, 20 Jun 2022 01:26:26 -0700 (PDT)
+        bh=gYcJsXbtPe6Q4z2hXl+LOz24b35LyYtN2cxYQ4ReWvE=;
+        b=thHCIMj+WVcssEZr7jMccp2rvnGkQ4AFazs7KaF4IAoesx7LvX2y0KlkfdXNtbXZd1
+         5RZwetwiyhlK2RBJNP5UHiRvjZc4HLCtr9MoGRn4M2KFQuk9KO/ikBv4wHbrV2JDT5WE
+         7WMKPrB2UpYwAgQtBBKPVx+Ms9qdHDOeWo4jbLpCrY3rVDulmLAI2dONVTc7cixEIzM0
+         0ctuGSPpg9Hnrb1H4vyfx4S4asi2EpAK/KdYtFnjbVH4WJwu5gsorU9A2vesB1pABde2
+         0QkhVAlKBNDMDZl2A8Lk06wqOw0wrzhAQT7A2amojpXzlUBx4ZVUUkU2TnmSLG5hhv87
+         HQwA==
+X-Gm-Message-State: AJIora+IWOvOMWWtl87Ou0/zCOPYcnAzY4sNYa3//Wa4stHBzAVwcdGQ
+        CF9SXinS+zSqTCdbrrmkuhQz+A==
+X-Google-Smtp-Source: AGRyM1vVfYItng0TrV1J56CleF0CESEd9s+Dap+GJz+/bi1koCvGM+SNOLDZS+2b7m9hb8OtYM1oRA==
+X-Received: by 2002:a05:6402:3807:b0:435:20fb:318d with SMTP id es7-20020a056402380700b0043520fb318dmr28306542edb.272.1655713598651;
+        Mon, 20 Jun 2022 01:26:38 -0700 (PDT)
 Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id a12-20020a50858c000000b0042617ba638esm9651123edh.24.2022.06.20.01.26.24
+        by smtp.gmail.com with ESMTPSA id c10-20020a170906924a00b006ff045d7c9bsm5598629ejx.173.2022.06.20.01.26.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 01:26:26 -0700 (PDT)
-Message-ID: <bfff9a73-0758-e996-91bf-f9b83047f1a8@linaro.org>
-Date:   Mon, 20 Jun 2022 10:26:24 +0200
+        Mon, 20 Jun 2022 01:26:38 -0700 (PDT)
+Message-ID: <0a1315f2-2b19-6c1f-a746-79d197ad67a5@linaro.org>
+Date:   Mon, 20 Jun 2022 10:26:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v3 17/18] arm64: dts: nuvoton: Add initial NPCM845 EVB
- device tree
+Subject: Re: [PATCH v3 18/18] arm64: defconfig: Add Nuvoton NPCM family
+ support
 Content-Language: en-US
 To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
         tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
@@ -75,9 +75,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 References: <20220619151225.209029-1-tmaimon77@gmail.com>
- <20220619151225.209029-18-tmaimon77@gmail.com>
+ <20220619151225.209029-19-tmaimon77@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220619151225.209029-18-tmaimon77@gmail.com>
+In-Reply-To: <20220619151225.209029-19-tmaimon77@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -85,15 +85,10 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 19/06/2022 17:12, Tomer Maimon wrote:
-> Add initial Nuvoton NPCM845 evaluation board device tree.
+> Enable basic drivers for NPCM8XX booting up support: Architecture, Clock,
+> and WD.
 > 
 > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  arch/arm64/boot/dts/nuvoton/Makefile          |  2 ++
->  .../boot/dts/nuvoton/nuvoton-npcm845-evb.dts  | 30 +++++++++++++++++++
->  2 files changed, 32 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/nuvoton/Makefile
->  create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts
 
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
