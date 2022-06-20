@@ -2,387 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0722C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 10:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEB7C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 10:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240853AbiFTKfZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
+        id S240956AbiFTKj7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240739AbiFTKfJ (ORCPT
+        with ESMTP id S240321AbiFTKj6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:35:09 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F2C14D2C;
-        Mon, 20 Jun 2022 03:34:55 -0700 (PDT)
+        Mon, 20 Jun 2022 06:39:58 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7771403F;
+        Mon, 20 Jun 2022 03:39:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655721295; x=1687257295;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jphQvuNWUDLk1nLZ5YpCob7RfIIJgmVazyGz6XAGpTk=;
-  b=mhgiuMZcofhIYG76O3XJCkBrzNZEPUuRHUbC3iHpFi1o4IGokMf/hchU
-   ZBq5MCu9FJNcnsFnbPst6Ip4Ygycu7DEKIvQvmXPyKnT95XGW4qcHbyql
-   Xv/x59tUxKPcvvJvYfY6juwHogF0DgLRmqWG4dEq8Tok+k01b/OJRH9kc
-   EZH6BXhZQyMoLvwMAMbs0eZ8X7q47BUgTeqYdrztrHu9gWUdluZsLtrmD
-   j3tSd1iltuFN9OubSbDs79Q9h7MJqeTNfPZxdYd6TRor2BdDH706nQapX
-   qCFF9wEC6AiRG+SU79DobT4yRgeqWOrURU057zfY6zRE8IB2ftUSwU9qN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="305297335"
+  t=1655721597; x=1687257597;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=LeRkSVDTT0Yb76jEsTjO7SM/+tjqpDRALlVCJn6AsZE=;
+  b=hlWiyWIijUeKbsV1iMXUWXvcN9YykSsTY/qm/ufJKU5ByYHjLRVwO1Qb
+   IsZhIh5xOpW9yOhM5Is6bp7gCVAQQbcS3BnU9iuzjQFzUN699hzWiyB50
+   eypIhhH1EoR/0mbWwVr6KMJlTv1FYmuc7AmNbKe7tX9hUDqvBUS7QTt1b
+   oIW6WFmFCTdGzGMKKG55XjXkEt0PgLQ85mHnsNRfHMbK1FtAq02FpLe7V
+   k1JWNlJrmFP+L+o0R5SmufE+Tpkju94wyHDDs5SzoeTc0wXSGjWTNQtEy
+   hFKviBZyHdY+n58kW1eJITefCVTuM2ghY/IlmE067unjshJjS1LCahXzA
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="279911587"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="305297335"
+   d="scan'208";a="279911587"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:34:54 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:39:57 -0700
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="643055543"
-Received: from lspinell-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:34:43 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+   d="scan'208";a="643056879"
+Received: from lspinell-mobl1.ger.corp.intel.com ([10.251.215.169])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:39:54 -0700
+Date:   Mon, 20 Jun 2022 13:39:52 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial <linux-serial@vger.kernel.org>
+cc:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        speakup@linux-speakup.org, sparclinux@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 6/6] serial: Consolidate BOTH_EMPTY use
-Date:   Mon, 20 Jun 2022 13:34:08 +0300
-Message-Id: <20220620103408.37454-7-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220620103408.37454-1-ilpo.jarvinen@linux.intel.com>
-References: <20220620103408.37454-1-ilpo.jarvinen@linux.intel.com>
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
+Subject: Re: [PATCH 5/6] cleanup: Use UART_XMIT_SIZE
+In-Reply-To: <20220620103408.37454-6-ilpo.jarvinen@linux.intel.com>
+Message-ID: <aa117e1a-7ec-149b-2337-db4ead968aa@linux.intel.com>
+References: <20220620103408.37454-1-ilpo.jarvinen@linux.intel.com> <20220620103408.37454-6-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1889180693-1655721597=:2433"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Per file BOTH_EMPTY defines are littering our source code here and
-there. Define once in serial.h and create helper for the check
-too.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- arch/mips/ath79/early_printk.c           |  9 +++++----
- drivers/accessibility/speakup/serialio.h |  3 +--
- drivers/tty/serial/8250/8250_early.c     |  4 +---
- drivers/tty/serial/8250/8250_port.c      | 12 +++++-------
- drivers/tty/serial/omap-serial.c         |  7 +++----
- drivers/tty/serial/pch_uart.c            |  7 +++----
- drivers/tty/serial/pxa.c                 |  5 ++---
- drivers/tty/serial/sunsu.c               |  4 +---
- drivers/tty/serial/vr41xx_siu.c          |  4 +---
- include/linux/serial.h                   |  9 +++++++++
- 10 files changed, 31 insertions(+), 33 deletions(-)
+--8323329-1889180693-1655721597=:2433
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/arch/mips/ath79/early_printk.c b/arch/mips/ath79/early_printk.c
-index 8751d067f98f..f6d02b425a10 100644
---- a/arch/mips/ath79/early_printk.c
-+++ b/arch/mips/ath79/early_printk.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/io.h>
- #include <linux/errno.h>
-+#include <linux/serial.h>
- #include <linux/serial_reg.h>
- #include <asm/addrspace.h>
- #include <asm/setup.h>
-@@ -29,15 +30,15 @@ static inline void prom_putchar_wait(void __iomem *reg, u32 mask, u32 val)
- 	} while (1);
- }
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- static void prom_putchar_ar71xx(char ch)
- {
- 	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
- 
--	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
-+	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
-+			  UART_LSR_BOTH_EMPTY);
- 	__raw_writel((unsigned char)ch, base + UART_TX * 4);
--	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
-+	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
-+			  UART_LSR_BOTH_EMPTY);
- }
- 
- static void prom_putchar_ar933x(char ch)
-diff --git a/drivers/accessibility/speakup/serialio.h b/drivers/accessibility/speakup/serialio.h
-index 6f8f86f161bb..b4f9a1925b81 100644
---- a/drivers/accessibility/speakup/serialio.h
-+++ b/drivers/accessibility/speakup/serialio.h
-@@ -33,9 +33,8 @@ struct old_serial_port {
- #define NUM_DISABLE_TIMEOUTS 3
- /* buffer timeout in ms */
- #define SPK_TIMEOUT 100
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
- 
- #define spk_serial_tx_busy() \
--	((inb(speakup_info.port_tts + UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
-+	(!uart_lsr_tx_empty(inb(speakup_info.port_tts + UART_LSR)))
- 
- #endif
-diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
-index e52585064565..f271becfc46c 100644
---- a/drivers/tty/serial/8250/8250_early.c
-+++ b/drivers/tty/serial/8250/8250_early.c
-@@ -84,8 +84,6 @@ static void serial8250_early_out(struct uart_port *port, int offset, int value)
- 	}
- }
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- static void serial_putc(struct uart_port *port, unsigned char c)
- {
- 	unsigned int status;
-@@ -94,7 +92,7 @@ static void serial_putc(struct uart_port *port, unsigned char c)
- 
- 	for (;;) {
- 		status = serial8250_early_in(port, UART_LSR);
--		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
-+		if (uart_lsr_tx_empty(status))
- 			break;
- 		cpu_relax();
- 	}
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 432742a567b6..647bd351e611 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -50,8 +50,6 @@
- #define DEBUG_AUTOCONF(fmt...)	do { } while (0)
- #endif
- 
--#define BOTH_EMPTY	(UART_LSR_TEMT | UART_LSR_THRE)
--
- /*
-  * Here we define the default xmit fifo size used for each type of UART.
-  */
-@@ -1841,7 +1839,7 @@ void serial8250_tx_chars(struct uart_8250_port *up)
- 		if (uart_circ_empty(xmit))
- 			break;
- 		if ((up->capabilities & UART_CAP_HFIFO) &&
--		    (serial_in(up, UART_LSR) & BOTH_EMPTY) != BOTH_EMPTY)
-+		    !uart_lsr_tx_empty(serial_in(up, UART_LSR)))
- 			break;
- 		/* The BCM2835 MINI UART THRE bit is really a not-full bit. */
- 		if ((up->capabilities & UART_CAP_MINI) &&
-@@ -2001,7 +1999,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- 
- 	serial8250_rpm_put(up);
- 
--	return (lsr & BOTH_EMPTY) == BOTH_EMPTY ? TIOCSER_TEMT : 0;
-+	return uart_lsr_tx_empty(lsr) ? TIOCSER_TEMT : 0;
- }
- 
- unsigned int serial8250_do_get_mctrl(struct uart_port *port)
-@@ -2149,7 +2147,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 	else
- 		serial_port_out(port, UART_IER, 0);
- 
--	wait_for_xmitr(up, BOTH_EMPTY);
-+	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
- 	/*
- 	 *	Send the character out.
- 	 */
-@@ -2159,7 +2157,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 	 *	Finally, wait for transmitter to become empty
- 	 *	and restore the IER
- 	 */
--	wait_for_xmitr(up, BOTH_EMPTY);
-+	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
- 	serial_port_out(port, UART_IER, ier);
- 	serial8250_rpm_put(up);
- }
-@@ -3429,7 +3427,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	 *	Finally, wait for transmitter to become empty
- 	 *	and restore the IER
- 	 */
--	wait_for_xmitr(up, BOTH_EMPTY);
-+	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
- 
- 	if (em485) {
- 		mdelay(port->rs485.delay_rts_after_send);
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 98622c35d896..52cb1a68b053 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -19,6 +19,7 @@
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/console.h>
-+#include <linux/serial.h>
- #include <linux/serial_reg.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
-@@ -1102,8 +1103,6 @@ serial_omap_type(struct uart_port *port)
- 	return up->name;
- }
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- static void __maybe_unused wait_for_xmitr(struct uart_omap_port *up)
- {
- 	unsigned int status, tmout = 10000;
-@@ -1118,7 +1117,7 @@ static void __maybe_unused wait_for_xmitr(struct uart_omap_port *up)
- 		if (--tmout == 0)
- 			break;
- 		udelay(1);
--	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
-+	} while (!uart_lsr_tx_empty(status));
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
-@@ -1186,7 +1185,7 @@ static void omap_serial_early_putc(struct uart_port *port, unsigned char c)
- 
- 	for (;;) {
- 		status = omap_serial_early_in(port, UART_LSR);
--		if ((status & BOTH_EMPTY) == BOTH_EMPTY)
-+		if (uart_lsr_tx_empty(status))
- 			break;
- 		cpu_relax();
- 	}
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 3b26524d48e3..8a9065e4a903 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -3,6 +3,7 @@
-  *Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
-  */
- #include <linux/kernel.h>
-+#include <linux/serial.h>
- #include <linux/serial_reg.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -189,8 +190,6 @@ enum {
- #define PCH_UART_HAL_LOOP		(PCH_UART_MCR_LOOP)
- #define PCH_UART_HAL_AFE		(PCH_UART_MCR_AFE)
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- #define DEFAULT_UARTCLK   1843200 /*   1.8432 MHz */
- #define CMITC_UARTCLK   192000000 /* 192.0000 MHz */
- #define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
-@@ -1516,7 +1515,7 @@ static void pch_uart_put_poll_char(struct uart_port *port,
- 	 * Finally, wait for transmitter to become empty
- 	 * and restore the IER
- 	 */
--	wait_for_xmitr(priv, BOTH_EMPTY);
-+	wait_for_xmitr(priv, UART_LSR_BOTH_EMPTY);
- 	iowrite8(ier, priv->membase + UART_IER);
- }
- #endif /* CONFIG_CONSOLE_POLL */
-@@ -1602,7 +1601,7 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
- 	 *	Finally, wait for transmitter to become empty
- 	 *	and restore the IER
- 	 */
--	wait_for_xmitr(priv, BOTH_EMPTY);
-+	wait_for_xmitr(priv, UART_LSR_BOTH_EMPTY);
- 	iowrite8(ier, priv->membase + UART_IER);
- 
- 	if (port_locked)
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index e80ba8e10407..9309ffd87c8e 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -23,6 +23,7 @@
- #include <linux/init.h>
- #include <linux/console.h>
- #include <linux/sysrq.h>
-+#include <linux/serial.h>
- #include <linux/serial_reg.h>
- #include <linux/circ_buf.h>
- #include <linux/delay.h>
-@@ -575,8 +576,6 @@ static struct uart_driver serial_pxa_reg;
- 
- #ifdef CONFIG_SERIAL_PXA_CONSOLE
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- /*
-  *	Wait for transmitter & holding register to empty
-  */
-@@ -594,7 +593,7 @@ static void wait_for_xmitr(struct uart_pxa_port *up)
- 		if (--tmout == 0)
- 			break;
- 		udelay(1);
--	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
-+	} while (!uart_lsr_tx_empty(status));
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index fff50b5b82eb..84d545e5a8c7 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1249,8 +1249,6 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
- 
- #ifdef CONFIG_SERIAL_SUNSU_CONSOLE
- 
--#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
--
- /*
-  *	Wait for transmitter & holding register to empty
-  */
-@@ -1268,7 +1266,7 @@ static void wait_for_xmitr(struct uart_sunsu_port *up)
- 		if (--tmout == 0)
- 			break;
- 		udelay(1);
--	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
-+	} while (!uart_lsr_tx_empty(status));
- 
- 	/* Wait up to 1s for flow control if necessary */
- 	if (up->port.flags & UPF_CONS_FLOW) {
-diff --git a/drivers/tty/serial/vr41xx_siu.c b/drivers/tty/serial/vr41xx_siu.c
-index e0bf003ca3a1..1ba689a81abd 100644
---- a/drivers/tty/serial/vr41xx_siu.c
-+++ b/drivers/tty/serial/vr41xx_siu.c
-@@ -703,8 +703,6 @@ static int siu_init_ports(struct platform_device *pdev)
- 
- #ifdef CONFIG_SERIAL_VR41XX_CONSOLE
- 
--#define BOTH_EMPTY	(UART_LSR_TEMT | UART_LSR_THRE)
--
- static void wait_for_xmitr(struct uart_port *port)
- {
- 	int timeout = 10000;
-@@ -715,7 +713,7 @@ static void wait_for_xmitr(struct uart_port *port)
- 		if (lsr & UART_LSR_BI)
- 			lsr_break_flag[port->line] = UART_LSR_BI;
- 
--		if ((lsr & BOTH_EMPTY) == BOTH_EMPTY)
-+		if (uart_lsr_tx_empty(lsr))
- 			break;
- 	} while (timeout-- > 0);
- 
-diff --git a/include/linux/serial.h b/include/linux/serial.h
-index 70a9866e4abb..3d6fe3ef92cf 100644
---- a/include/linux/serial.h
-+++ b/include/linux/serial.h
-@@ -10,10 +10,19 @@
- #define _LINUX_SERIAL_H
- 
- #include <uapi/linux/serial.h>
-+#include <uapi/linux/serial_reg.h>
- 
- /* Helper for dealing with UART_LCR_WLEN* defines */
- #define UART_LCR_WLEN(x)	((x) - 5)
- 
-+/* FIFO and shifting register empty */
-+#define UART_LSR_BOTH_EMPTY	(UART_LSR_TEMT | UART_LSR_THRE)
-+
-+static inline bool uart_lsr_tx_empty(u16 lsr)
-+{
-+	return (lsr & UART_LSR_BOTH_EMPTY) == UART_LSR_BOTH_EMPTY;
-+}
-+
- /*
-  * Counters of the input lines (CTS, DSR, RI, CD) interrupts
-  */
+On Mon, 20 Jun 2022, Ilpo Järvinen wrote:
+
+> Both UART_XMIT_SIZE and SERIAL_XMIT_SIZE are defined. Make them all
+> UART_XMIT_SIZE.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+Grr, it seems that my internal naming to organize patches managed to leak 
+into that summary on subject line. It should have been serial: obviously 
+and I only noticed while git send-email was sending the bits out. :-(
+
 -- 
-2.30.2
+ i.
 
+--8323329-1889180693-1655721597=:2433--
