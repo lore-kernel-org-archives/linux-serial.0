@@ -2,126 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B02C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 07:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CBFC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 07:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239176AbiFTHa5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 03:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
+        id S239493AbiFTHxh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 03:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239105AbiFTHa5 (ORCPT
+        with ESMTP id S238483AbiFTHxh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 03:30:57 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4F6BF7B;
-        Mon, 20 Jun 2022 00:30:56 -0700 (PDT)
+        Mon, 20 Jun 2022 03:53:37 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B89E0E4;
+        Mon, 20 Jun 2022 00:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655710256; x=1687246256;
+  t=1655711616; x=1687247616;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=mhv8xk0rZVx/HkTij8ilPzWj/N5QCpIiNO5whtqVVio=;
-  b=likvlEBqyaQATRtx9v/S/9mCwvG2HM/gzRfR7NJV9OD15CqMiH++IX6a
-   8isEINrg5g4UXVtWqFJiAI5BddHy3pJWr7x2C5OSlKXd0GMQkvODgPtRl
-   tvPCVIZOqybSATnHlRuBU4c3IZzOXErWFjSH16Wshyhsy2Vfu3IZG6RZ0
-   HYJSigwE8Ay6XdyyLZdtEOcWlh3rHq87ro/QZC2hZBRJrh76lHs8Y7SCX
-   eXUshQulAz7m4tWx5PTN0D2EhDlK21Ggk17u2RTk5GayLsJaS/rqv2Ef3
-   +HENW7IGwxDT/x+O08+xfooZgFfggFheYo5utPCRQXMgIczH+xeRhD3Mm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259649705"
+  bh=WmXXD82WDY2lb/RJx0DI6EQgl775Y4vH/1ER9y50VeE=;
+  b=nT1yFDOCm+cxlwf2xpdLn8DKzuPesCGcgbkEZc17ZxIzzUiooxndibJY
+   641u2VR2Qb/x8D6ff1SCnbAj2J2UP0xbqy+pi9OJ5TJ81EUtkYO50v8nX
+   oDMex+mnfZF4N84T+A/yKJ4uqsoGGxQR7FSA6Ki/vp3LdTUZ07XQRprPS
+   +xaZpv5ha2sv9Ge3x4qZyqKp6iJtqMA0SHq9OaOT+7phXilUBwOmVqbwy
+   Q50gsIQ2hNImt5lLfoKKl+4CAXyuTiDmULTqS5omtuqLJEYwxt3VLb8IJ
+   L6pXq2VSmrNUQXQxLuri4YKx8eL1Ab7qRY7Q0XEtquhs3fJGXyO9MBOuk
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="262866792"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="259649705"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 00:30:46 -0700
+   d="scan'208";a="262866792"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 00:53:28 -0700
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642988988"
+   d="scan'208";a="591060446"
 Received: from lspinell-mobl1.ger.corp.intel.com ([10.251.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 00:30:43 -0700
-Date:   Mon, 20 Jun 2022 10:30:41 +0300 (EEST)
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 00:53:26 -0700
+Date:   Mon, 20 Jun 2022 10:53:24 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-cc:     LKML <linux-kernel@vger.kernel.org>,
+To:     Yi Yang <yiyang13@huawei.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, andy.shevchenko@gmail.com,
         linux-serial <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>, miquel.raynal@bootlin.com,
-        jaz@semihalf.com, upstream@semihalf.com
-Subject: Re: [PATCH] serial: 8250: dw: enable using pdata with ACPI
-In-Reply-To: <20220619074030.1154429-1-mw@semihalf.com>
-Message-ID: <4dcc3bb4-ea76-527d-701b-289d1d24d73c@linux.intel.com>
-References: <20220619074030.1154429-1-mw@semihalf.com>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] serial: 8250: fix return error code in
+ serial8250_request_std_resource()
+In-Reply-To: <20220620072025.172088-1-yiyang13@huawei.com>
+Message-ID: <fe25cbe3-3cc3-45c3-d6d0-e867ee372b7@linux.intel.com>
+References: <20220620072025.172088-1-yiyang13@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-7461550-1655710245=:2433"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, 20 Jun 2022, Yi Yang wrote:
 
---8323329-7461550-1655710245=:2433
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Sun, 19 Jun 2022, Marcin Wojtas wrote:
-
-> Commit 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-
-That commit id is not correct, please fix.
-
-Other than that,
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-> caused NULL-pointer dereference when booting with ACPI by unconditional
-> usage of the recently added pdata.
+> If port->mapbase = NULL in serial8250_request_std_resource() , it need
+> return a error code instead of 0. If uart_set_info() fail to request new
+> regions by serial8250_request_std_resource() but the return value of
+> serial8250_request_std_resource() is 0, that The system will mistakenly
+> considers that port resources are successfully applied for. A null
+> pointer reference is triggered when the port resource is later invoked.
 > 
-> In order to fix that and prevent similar issues in future, hook the
-> default version of this structure in dw8250_acpi_match table.
+> The problem can also be triggered with the following simple program:
+> ----------
+>   #include <stdio.h>
+>   #include <sys/types.h>
+>   #include <sys/stat.h>
+>   #include <fcntl.h>
+>   #include <sys/ioctl.h>
+>   #include <unistd.h>
+>   #include <errno.h>
 > 
-> Fixes: 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+>   struct serial_struct {
+>       int type;
+>       int line;
+>       unsigned int    port;
+>       int irq;
+>       int flags;
+>       int xmit_fifo_size;
+>       int custom_divisor;
+>       int baud_base;
+>       unsigned short  close_delay;
+>       char    io_type;
+>       char    reserved_char[1];
+>       int hub6;
+>       unsigned short  closing_wait; /* time to wait before closing */
+>       unsigned short  closing_wait2; /* no longer used... */
+>       unsigned char   *iomem_base;
+>       unsigned short  iomem_reg_shift;
+>       unsigned int    port_high;
+>       unsigned long   iomap_base; /* cookie passed into ioremap */
+>   };
+> 
+>   struct serial_struct str;
+> 
+>   int main(void)
+>   {
+>       open("/dev/ttyS0", O_RDWR);
+>       ioctl(fd, TIOCGSERIAL, &str);
+>       str.iomem_base = 0;
+>       ioctl(fd, TIOCSSERIAL, str);
+>       return 0;
+>   }
+
+With admin priviledges I guess?
+
+> ----------
+> 
+> Signed-off-by: Yi Yang <yiyang13@huawei.com>
 > ---
->  drivers/tty/serial/8250/8250_dw.c | 24 ++++++++++----------
->  1 file changed, 12 insertions(+), 12 deletions(-)
+>  drivers/tty/serial/8250/8250_port.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index f57bbd32ef11..3b79bd5c9c9d 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -773,18 +773,18 @@ static const struct of_device_id dw8250_of_match[] = {
->  MODULE_DEVICE_TABLE(of, dw8250_of_match);
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 3e3d784aa628..e1cefa97bdeb 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2961,8 +2961,10 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+>  	case UPIO_MEM32BE:
+>  	case UPIO_MEM16:
+>  	case UPIO_MEM:
+> -		if (!port->mapbase)
+> +		if (!port->mapbase) {
+> +			ret = -EFAULT;
+>  			break;
+> +		}
 >  
->  static const struct acpi_device_id dw8250_acpi_match[] = {
-> -	{ "INT33C4", 0 },
-> -	{ "INT33C5", 0 },
-> -	{ "INT3434", 0 },
-> -	{ "INT3435", 0 },
-> -	{ "80860F0A", 0 },
-> -	{ "8086228A", 0 },
-> -	{ "APMC0D08", 0},
-> -	{ "AMD0020", 0 },
-> -	{ "AMDI0020", 0 },
-> -	{ "AMDI0022", 0 },
-> -	{ "BRCM2032", 0 },
-> -	{ "HISI0031", 0 },
-> +	{ "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "INT33C5", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
-> +	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
-> +	{ "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+>  		if (!request_mem_region(port->mapbase, size, "serial")) {
+>  			ret = -EBUSY;
 > 
+
+I recall reading somewhere that somebody more knowledgeful than me noted 
+that this interface has many ways to shoot oneself in the foot if one 
+really wants to which is why some things are limited to admin only.
+I cannot seem to find that a reference to that now though.
+
 
 -- 
  i.
 
---8323329-7461550-1655710245=:2433--
