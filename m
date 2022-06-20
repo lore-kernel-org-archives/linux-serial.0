@@ -2,175 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791BBC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 06:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA95CCA479
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 06:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238370AbiFTGMR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 02:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        id S238703AbiFTGks (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 02:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbiFTGMR (ORCPT
+        with ESMTP id S238194AbiFTGks (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 02:12:17 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1D1BF48;
-        Sun, 19 Jun 2022 23:12:15 -0700 (PDT)
+        Mon, 20 Jun 2022 02:40:48 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1B4DF27;
+        Sun, 19 Jun 2022 23:40:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655705536; x=1687241536;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=XtxJpqDbFVcRPpaU+TI9RnGpqfSj+zLbBO02iyij09E=;
-  b=cl3/J1/XrmKoN/Bbmkow1FHZMQUJ+mdjD/jL5sOaEsGLhX01CJEM3y0X
-   Ssvc0p7Dlm28O0PA40pPDUckXEHmWDzBbhVrVqIHmTN2JQ9ih9efuURmg
-   DxXEHpMedSPqkh26KnTWQZqYWplA6x0FnyqnWXcX9vH07xFLFfeu+b9tE
-   RwHM3X5GoT02FiZSlFrF8YDJPHva1KP85F1S8EE80wza9Ynjdw6VGMoXg
-   79hnnfwTCUs+15S5jL29hITvcf7pZ1+kBubEKl+lhufwTBeOHJxhvE922
-   4r+M0d1yy5R47cza9vO6rxoVY1uRNzRat1vCC8mxbnkkhzBcApcUcKuh7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278585159"
+  t=1655707247; x=1687243247;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5mekSjBkORCxAhZcYvy+hMLNNPOvdep66Hj/tNUgE/k=;
+  b=FBpUActGS8lWEsiBnj4bghdd3tVr3oNlpAzdwh96C/hY4waEZiacwNYN
+   DccvMXuIxKadziw+qSXJpz2X4isheWv1c7gAf1eFERUvNuwGUhJnuD6Cr
+   J0vZyO2QcT5rD4KhvzVgseIZbOml0LOIMEE7/gkoR2264GF2nusXeWB1+
+   K/aeFQ1zik2sJJoUckWADKSt0hSzUvymi1er2IWzKLNM/azjDvj+ncFP3
+   5dikE6xDDtTtKzDm3TzqdDdg/vWNyde4edDBWlpcsdIwJH5m63d2apS5L
+   TkMLKwiRohZfHA51Sts90PV1Gr3sKriYVDr2ho1X0sWp9S8fLtIS1RoX1
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277365649"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278585159"
+   d="scan'208";a="277365649"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:12:15 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:40:46 -0700
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642958459"
-Received: from lspinell-mobl1.ger.corp.intel.com ([10.251.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:12:12 -0700
-Date:   Mon, 20 Jun 2022 09:12:06 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Chen, Rong A" <rong.a.chen@intel.com>
-cc:     Joe Perches <joe@perches.com>, kernel test robot <lkp@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        kbuild-all@lists.01.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [kbuild-all] Re: [PATCH] MAINTAINERS: Update DW 8250 UART
- maintainership
-In-Reply-To: <7c01c4f8-1826-8769-c3d3-309a9d23f113@intel.com>
-Message-ID: <e87a53b4-6fd1-f4a5-76c-37d8e61bf087@linux.intel.com>
-References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com> <202206180451.ZfYLcA43-lkp@intel.com> <7690845ccf9597e8cdc560a674a1b8e79a10f680.camel@perches.com> <7c01c4f8-1826-8769-c3d3-309a9d23f113@intel.com>
+   d="scan'208";a="642967684"
+Received: from lspinell-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.215.169])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:40:43 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH v8 0/6] Add RS485 9th bit addressing mode support to DW UART
+Date:   Mon, 20 Jun 2022 09:40:24 +0300
+Message-Id: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1334455863-1655703831=:2433"
-Content-ID: <f54532f8-7340-26d9-5cbd-c152b6c7aab0@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This patchset adds RS-485 9th bit addressing mode support to the DW
+UART driver and the necessary serial core bits to handle it. The
+addressing mode is configured through ->rs485_config() as was requested
+during the review of the earlier versions. The line configuration
+related ADDRB is still kept in ktermios->c_cflag to be able to take
+account the extra addressing bit while calculating timing, etc. but it
+is set/cleared by ->rs485_config().
 
---8323329-1334455863-1655703831=:2433
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <634e449a-1471-c9d5-fd5-9b2a9087c286@linux.intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-api@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
 
-On Mon, 20 Jun 2022, Chen, Rong A wrote:
-> On 6/18/2022 4:17 AM, Joe Perches wrote:
-> > On Sat, 2022-06-18 at 04:09 +0800, kernel test robot wrote:
-> > > Hi "Ilpo,
-> > > 
-> > > Thank you for the patch! Yet something to improve:
-> > > 
-> > > [auto build test ERROR on linus/master]
-> > > [also build test ERROR on v5.19-rc2 next-20220617]
-> > > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > > And when submitting patch, we suggest to use '--base' as documented in
-> > > https://git-scm.com/docs/git-format-patch]
-> > > 
-> > > url:
-> > > https://github.com/intel-lab-lkp/linux/commits/Ilpo-J-rvinen/MAINTAINERS-Update-DW-8250-UART-maintainership/20220617-174145
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > > 47700948a4abb4a5ae13ef943ff682a7f327547a
-> > > reproduce: make htmldocs
-> > > 
-> > > If you fix the issue, kindly add following tag where applicable
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > 
-> > > All errors (new ones prefixed by >>):
-> > > 
-> > > > > 'utf-8' codec can't decode byte 0xe4 in position 1396: invalid
-> > > > > continuation byte
-> > 
-> > ?
-> > 
-> > false positive?
+v7 -> v8:
+- Use anonymous union/struct in serial_rs485 to create "v2" of it
+- Remove a stray newline change
+- Reorder local var declarations
+- Put ktermios param before serial_rs485 for rs485_config
 
-This is correctly identified problem, however, the problem is lkp's end.
-It seemingly fails to handle non-UTF8 encoded emails correctly and just 
-goes to assume the input is UTF8 encoded (w/o checking the Content-Type 
-header).
+v6 -> v7:
+- Fixed typos in documentation & comment
+- Changes lsr typing from unsigned int to u16
 
-> I tried to apply the patch, and I can reproduce the error by 'make htmldocs':
-> 
-> $ wget -q -O -
-> https://lore.kernel.org/lkml/be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com/raw
-> | git apply -v
-> $ git --no-pager diff
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f52543aedd61e..3d64756814f09 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19247,8 +19247,9 @@ F:
-> Documentation/devicetree/bindings/gpio/snps,creg-gpio.txt
->  F:     drivers/gpio/gpio-creg-snps.c
-> 
->  SYNOPSYS DESIGNWARE 8250 UART DRIVER
-> +M:     Ilpo Jrvinen <ilpo.jarvinen@linux.intel.com>
->  R:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> -S:     Maintained
-> +S:     Supported
->  F:     drivers/tty/serial/8250/8250_dw.c
->  F:     drivers/tty/serial/8250/8250_dwlib.*
->  F:     drivers/tty/serial/8250/8250_lpss.c
-> 
-> It seems the special character 'ä' in name 'Ilpo Järvinen' was parsed wrongly.
+v5 -> v6:
+- Reorder remaining patches
+- LSR changes are simpler due to helper added by LSR fix series
+- Depend on rs485_struct sanitization on catching much of invalid config
+- In order to be able to alter ADDRB in termios .c_cflag within
+  .rs485_config(), take termios_rwsem and pass ktermios to it.
+- Moved addressing mode setup entirely into .rs485_config()
+- Use ndelay() instead of udelay() (uart_port->frame_time is in nsecs)
 
-The original file was UTF-8 (0xc3 0xa4). The email is correctly encoded 
-ISO 8859-15 as can be see e.g. by downloading this (with a single 0xe4 
-char):
-  https://marc.info/?l=linux-kernel&m=165545870203513&q=raw
 
-When saving patch/exporting email, MUA/exporter should do ISO 8859-15 -> 
-UTF-8 conversion. If I export email I sent, I get it back to UTF-8 just 
-fine (as per the locale I've in use).
+Ilpo JÃ¤rvinen (6):
+  serial: 8250: make saved LSR larger
+  serial: 8250: create lsr_save_mask
+  serial: 8250_lpss: Use 32-bit reads
+  serial: take termios_rwsem for ->rs485_config() & pass termios as
+    param
+  serial: Support for RS-485 multipoint addresses
+  serial: 8250_dwlib: Support for 9th bit multipoint addressing
 
-Just in case, I've attached the original patch file.
-
-I thought git's toolchain these days handles these things fine but 
-it seems not.
-
+ Documentation/driver-api/serial/driver.rst    |   2 +
+ .../driver-api/serial/serial-rs485.rst        |  26 ++++-
+ drivers/tty/serial/8250/8250.h                |   9 +-
+ drivers/tty/serial/8250/8250_core.c           |   4 +
+ drivers/tty/serial/8250/8250_dw.c             |   2 +-
+ drivers/tty/serial/8250/8250_dwlib.c          | 105 +++++++++++++++++-
+ drivers/tty/serial/8250/8250_exar.c           |  11 +-
+ drivers/tty/serial/8250/8250_fintek.c         |   2 +-
+ drivers/tty/serial/8250/8250_fsl.c            |   2 +-
+ drivers/tty/serial/8250/8250_ingenic.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpss.c           |   2 +-
+ drivers/tty/serial/8250/8250_omap.c           |   7 +-
+ drivers/tty/serial/8250/8250_pci.c            |   2 +-
+ drivers/tty/serial/8250/8250_port.c           |  20 ++--
+ drivers/tty/serial/amba-pl011.c               |   2 +-
+ drivers/tty/serial/ar933x_uart.c              |   2 +-
+ drivers/tty/serial/atmel_serial.c             |   2 +-
+ drivers/tty/serial/fsl_lpuart.c               |   4 +-
+ drivers/tty/serial/imx.c                      |   2 +-
+ drivers/tty/serial/max310x.c                  |   2 +-
+ drivers/tty/serial/mcf.c                      |   3 +-
+ drivers/tty/serial/omap-serial.c              |   3 +-
+ drivers/tty/serial/sc16is7xx.c                |   2 +-
+ drivers/tty/serial/serial_core.c              |  28 ++++-
+ drivers/tty/serial/stm32-usart.c              |   2 +-
+ drivers/tty/tty_ioctl.c                       |   4 +
+ include/linux/serial_8250.h                   |   7 +-
+ include/linux/serial_core.h                   |   1 +
+ include/uapi/asm-generic/termbits-common.h    |   1 +
+ include/uapi/linux/serial.h                   |  20 +++-
+ 31 files changed, 230 insertions(+), 53 deletions(-)
 
 -- 
- i.
---8323329-1334455863-1655703831=:2433
-Content-Type: text/x-diff; NAME=maint.patch
-Content-Transfer-Encoding: BASE64
-Content-ID: <f57e3f35-a418-9262-d9e4-18a18ec84dc@linux.intel.com>
-Content-Description: 
-Content-Disposition: ATTACHMENT; FILENAME=maint.patch
+2.30.2
 
-RnJvbTogSWxwbyBKw6RydmluZW4gPGlscG8uamFydmluZW5AbGludXguaW50
-ZWwuY29tPg0KU3ViamVjdDogW1BBVENIXSBNQUlOVEFJTkVSUzogVXBkYXRl
-IERXIDgyNTAgVUFSVCBtYWludGFpbmVyc2hpcA0KDQpBZGQgbXlzZWxmIGFz
-IG1haW50YWluZXIgZm9yIERXIDgyNTAgVUFSVCBhbmQgdXAgaXQgdG8gU3Vw
-cG9ydGVkLg0KDQpTaWduZWQtb2ZmLWJ5OiBJbHBvIErDpHJ2aW5lbiA8aWxw
-by5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+DQoNCi0tLQ0KIE1BSU5UQUlO
-RVJTIHwgMyArKy0NCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCsp
-LCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9NQUlOVEFJTkVSUyBi
-L01BSU5UQUlORVJTDQppbmRleCBhNmQzYmQ5ZDJhOGQuLjZjOTA0ODRmMzk1
-YiAxMDA2NDQNCi0tLSBhL01BSU5UQUlORVJTDQorKysgYi9NQUlOVEFJTkVS
-Uw0KQEAgLTE5MjMwLDggKzE5MjMwLDkgQEAgRjoJRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL2dwaW8vc25wcyxjcmVnLWdwaW8udHh0DQog
-RjoJZHJpdmVycy9ncGlvL2dwaW8tY3JlZy1zbnBzLmMNCiANCiBTWU5PUFNZ
-UyBERVNJR05XQVJFIDgyNTAgVUFSVCBEUklWRVINCitNOglJbHBvIErDpHJ2
-aW5lbiA8aWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+DQogUjoJQW5k
-eSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5j
-b20+DQotUzoJTWFpbnRhaW5lZA0KK1M6CVN1cHBvcnRlZA0KIEY6CWRyaXZl
-cnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZHcuYw0KIEY6CWRyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfZHdsaWIuKg0KIEY6CWRyaXZlcnMvdHR5L3Nl
-cmlhbC84MjUwLzgyNTBfbHBzcy5jDQoNCi0tIA0KdGc6ICg2NTUzNDczNmQ5
-YTUuLikgZHcvbWFpbnRhaW5lciAoZGVwZW5kcyBvbjogdHR5LW5leHQpDQo=
-
---8323329-1334455863-1655703831=:2433--
