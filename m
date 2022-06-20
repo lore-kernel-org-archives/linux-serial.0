@@ -2,128 +2,127 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 911ECC43334
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 11:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADECDCCA479
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jun 2022 12:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241654AbiFTLsm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37230 "EHLO
+        id S242541AbiFTMNE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242052AbiFTLsi (ORCPT
+        with ESMTP id S242536AbiFTMMh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:48:38 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9DE17057;
-        Mon, 20 Jun 2022 04:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655725717; x=1687261717;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Fg8wToUgzOMv1MBkkI+JlUdgqqTH6ag3Hnfhb3mXbJs=;
-  b=H0dXDi4NhcfC1Ih6+wo1mI+6tHgKG2fNeHFvK8slsiYvMgmVP2VlYiED
-   p0ex7U7XyLtaufSc8mT2Lcoe3yJTW8ANH6EJf9TiKAeZvbdrJLc85XR4d
-   qcTPdpt5g53Y0R6oJBXFCp9N3KYwJxf7SAV30/MAxazvOaLhOPTsX+JiH
-   Lq5+Xx3u3pOGVUoZSLWlimVT1QBV1uM5HrhoQk8ac27PcqvvMyfUqwJxb
-   FfWER7Xf+FNnUZg8+QT4FfeSbVPEZSO8TcHgMk+dHi+ZmTCkQr/jfTWT1
-   +Hvl5sISBEZ+E8nAjlCGib/TcMvPlzSrmtvpkyQ21Xl/pX88WINg7FASL
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280605064"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="280605064"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 04:48:37 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="833079546"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 04:48:33 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o3FtO-000kLC-P2;
-        Mon, 20 Jun 2022 14:48:30 +0300
-Date:   Mon, 20 Jun 2022 14:48:30 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-arch@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-api@vger.kernel.org
-Subject: Re: [PATCH v8 5/6] serial: Support for RS-485 multipoint addresses
-Message-ID: <YrBejkxeZfpQ35iG@smile.fi.intel.com>
-References: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
- <20220620064030.7938-6-ilpo.jarvinen@linux.intel.com>
- <YrBS03ymAWVajy7e@smile.fi.intel.com>
- <a9b8ec3a-4f40-c0f5-e1a-bb577d5937ff@linux.intel.com>
+        Mon, 20 Jun 2022 08:12:37 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF75B18E34
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 05:12:19 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id a13so7072631lfr.10
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jun 2022 05:12:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uab/2HO4VZKS1xT506icMdtE4fNwoDlTTwoN0m1b7PY=;
+        b=ey0kfhCEuOTLZdukxlfLw+Ij23qOFjvay6zcA4VgG0LK9+f5awx4v7C9VlCJHHRmff
+         lBc164wfYx7L0R8ofjF1dNEQlPk83qSSTLKt6FjsAEfI+eCETWwTlpTxlynkdIC1vZB4
+         39/WCMsqUvT3rdlJ61p6oNURhAyVl9DrD+9qCWslTaYzSuPcqQB/83DmVrZbK1gRFqwB
+         eKRTsQHEHHIlLrB9xf47kqMxkllUv7q/ol//3V3b8+E7WR/pavpV7ErnRmxFqd4ckpaS
+         rN8cKeNZ4B9vwGTMvgFIggrsb5OJrTvr0+KZLMrNI/ItCGiZqQ0Pq6BshfbiZ5Pn35QQ
+         hDvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uab/2HO4VZKS1xT506icMdtE4fNwoDlTTwoN0m1b7PY=;
+        b=jEATsnNu8V96cnadRMPWqbtFokMjaftnSjBAe7m6PD2X9FBZ/WChYVgM8wFpmB7J7m
+         oMeI3df6tLhMBNxyADu38cqiE8jOgBFvc6iJc6xrfUnn1cw1eCiLyNuxbxlJfYkjCong
+         wfdGmPXYvGTuYpvbtUSyLdsQajcssCYovlMQ2mcWWAQ70VeIuD0BWCfqAEhlyVRe2CKO
+         SQ4+xXl2jeHJJSrfOYlK5mGGJIuXjjNlT4XhsvAldA7INnm/saU/a6hWHbYbYvo5rR+7
+         CdJo+1p+TlVRFsxvoasoJFLwroEQcgfUwhUafYJBOt8UiOe4xp30AjSAA7L20pBGvhuM
+         5BfA==
+X-Gm-Message-State: AJIora+enyDgC6FcunxoNHUAIC0Vijgaldpv4GN3UXtBj7CxHhJp51yI
+        +EgKLpFPe51b/P8agrH4uqtC4A==
+X-Google-Smtp-Source: AGRyM1tBYuf4F4p5cA9ECpQSeqMK+UoNTzDgMsHfYvx/ecuvA836+ueq/saRrTHwBRN3ZPPxa7mbCw==
+X-Received: by 2002:ac2:442d:0:b0:478:ed89:927f with SMTP id w13-20020ac2442d000000b00478ed89927fmr13898482lfl.545.1655727128462;
+        Mon, 20 Jun 2022 05:12:08 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id v13-20020a05651203ad00b00478f3ecd062sm1745074lfp.167.2022.06.20.05.12.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 05:12:07 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
+        jirislaby@kernel.org, miquel.raynal@bootlin.com, mw@semihalf.com,
+        jaz@semihalf.com, upstream@semihalf.com,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2] serial: 8250: dw: enable using pdata with ACPI
+Date:   Mon, 20 Jun 2022 14:10:46 +0200
+Message-Id: <20220620121046.1307412-1-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <a9b8ec3a-4f40-c0f5-e1a-bb577d5937ff@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 02:26:17PM +0300, Ilpo Järvinen wrote:
-> On Mon, 20 Jun 2022, Andy Shevchenko wrote:
-> > On Mon, Jun 20, 2022 at 09:40:29AM +0300, Ilpo Järvinen wrote:
+Commit ffd381445eac ("serial: 8250: dw: Move the USR register to pdata")
+caused NULL-pointer dereference when booting with ACPI by unconditional
+usage of the recently added pdata.
 
-...
+In order to fix that and prevent similar issues in future, hook the
+default version of this structure in dw8250_acpi_match table.
+While at it, sort all entries alphabetically.
 
-> > > The changes to serial_rs485 struct were test built with a few traps to
-> > > detect mislayouting on archs lkp/0day builts for (all went fine):
-> > >   BUILD_BUG_ON(((&rs485.delay_rts_after_send) + 1) != &rs485.padding[0]);
-> > >   BUILD_BUG_ON(&rs485.padding[1] != &rs485.padding1[0]);
-> > >   BUILD_BUG_ON(sizeof(rs485) != ((u8 *)(&rs485.padding[4]) -
-> > > 				 ((u8 *)&rs485.flags) + sizeof(__u32)));
-> > 
-> > You may add static_asserts() for the above mentioned cases.
-> 
-> I'll add into the end of serial_core.h but in a cleaned up form
-> using offsetof(). Those above look rather ugly :-).
+Fixes: ffd381445eac ("serial: 8250: dw: Move the USR register to pdata")
+Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+Changelog v1->v2
+* Sort all dw8250_acpi_match entries alphabetically,
+* fix commit id in the log,
+* Add R-B of Ilpo and Andy
 
-Agree!
 
-...
+ drivers/tty/serial/8250/8250_dw.c | 24 ++++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-> > > -	__u32	padding[5];		/* Memory is cheap, new structs
-> > > -					   are a royal PITA .. */
-> > > +	union {
-> > > +		/* v1 */
-> > > +		__u32	padding[5];		/* Memory is cheap, new structs are a pain */
-> > > +
-> > > +		/* v2 (adds addressing mode fields) */
-> > 
-> > How user space will inform a kernel that it's trying v2?
-> >
-> > Usually when we have a union, it should be accompanied with the enum or version
-> > or something to tell which part of it is in use. I can imagine that in this case
-> > it's implied by the IOCTL parameters that never should be used on a garbage.
-> > 
-> > Either add a commit message / UAPI comment or add a version field or ...?
-> > 
-> > > +		struct {
-> > > +			__u8	addr_recv;
-> > > +			__u8	addr_dest;
-> 
-> The flags in .flags indicate when these two new fields are in use. Do you 
-> think I need something beyond that. Maybe I should remove those comments 
-> so they don't mislead you to think it's a "version" for real?
-
-Yes, either drop this versioning, or replace with a comment on top of a union
-like:
-
-	/* The fields are defined by flags */
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f57bbd32ef11..b1ab088fbe6e 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -773,18 +773,18 @@ static const struct of_device_id dw8250_of_match[] = {
+ MODULE_DEVICE_TABLE(of, dw8250_of_match);
+ 
+ static const struct acpi_device_id dw8250_acpi_match[] = {
+-	{ "INT33C4", 0 },
+-	{ "INT33C5", 0 },
+-	{ "INT3434", 0 },
+-	{ "INT3435", 0 },
+-	{ "80860F0A", 0 },
+-	{ "8086228A", 0 },
+-	{ "APMC0D08", 0},
+-	{ "AMD0020", 0 },
+-	{ "AMDI0020", 0 },
+-	{ "AMDI0022", 0 },
+-	{ "BRCM2032", 0 },
+-	{ "HISI0031", 0 },
++	{ "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
++	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "INT33C5", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
++	{ "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.29.0
 
