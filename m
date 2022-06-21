@@ -2,101 +2,167 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2E7C43334
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jun 2022 15:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFAAC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jun 2022 16:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353192AbiFUPl7 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52736 "EHLO
+        id S232950AbiFUQu3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Jun 2022 12:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352995AbiFUPlx (ORCPT
+        with ESMTP id S230491AbiFUQu2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:41:53 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602A32CDF6
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jun 2022 08:41:51 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id u15so691553ejc.10
-        for <linux-serial@vger.kernel.org>; Tue, 21 Jun 2022 08:41:51 -0700 (PDT)
+        Tue, 21 Jun 2022 12:50:28 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A115925E88;
+        Tue, 21 Jun 2022 09:50:27 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id s21so12817091lfs.13;
+        Tue, 21 Jun 2022 09:50:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RMRIR+HgYGPk4kqlGjQLW42tNRD3LRift0BoWoXmUl4=;
-        b=PJhWavQQw1jz0WHXyX0ZMJ8eR94uUvT1OrTkOanzF8eCB9cRoiHlLFkzlXwgvLP1n3
-         V+w0eQKQSencR01efMvM+CLx2hpLOKijSklYzMrRkzLvX77UTUutFGU6uJfiZB1pc98e
-         VgYJdmbvnx1PUtVmTp+5NFI05o1TbHCDlbCQjnkikoTILqTKd6MV8Ho+yBGn8ZPN8hEJ
-         sCMUvZdkn9wipxnotVkWIriVN5jdQ2mYy29rx649+igSQ202WUBmFIWDarvr2HGs4tJm
-         xwmC6Jif32cg5AO1lfdsSE8Kh6DFfzyaj9s8iJixRwkpwtevMnkmSpC2/G3dP/aFLb1B
-         NT0g==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TI9vr7TQPqxwZb2z/IMuFAGZ9nSwT2vz/9F9w7eTiWQ=;
+        b=TDZvDdbimBZ9N0fLFWDfy5OD6MDoKJOihMspOG15unZ0NEuqew7BxxnIchsQ+PhHgO
+         T6BOw+9I5o+nWV8GHYUlnmqC+25cRk2bRt31Sc+I1WeaCzEkH27k1pFQkjegG+u6RUbZ
+         NYshk6amV0oCvL+VLUH1aUrGk9ZXlGqO+qWVXg53sWiZVL5HWjoBFEeycbez/tIBgMXp
+         gPMQYSRgl1EKHv1J59+lDXS6L7p2YrxryNavQDhzbaRxJggnIGMpKyV34oEeJAKcBART
+         5POeFytTtnDoXGngY+PeLZdWFYmIpr54Nka/grGGjwy4k7+rI8Sb84PX+aE1vwNeKS/K
+         kzhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RMRIR+HgYGPk4kqlGjQLW42tNRD3LRift0BoWoXmUl4=;
-        b=YlL+uv2C8cdYF+RlohwIfmx+C4abNkJ2RA5mDl+OwNDe/XHn45GTFWxYizxxsCCSPg
-         Wqs7LxRrpwQGZW1qLBSheJJpWZFWFnebT4BSgEy5rleeky46PQ/aKIDJ1+K7vxPcYV7H
-         bIMWHjld/q6vbO+2yzgLkmXbmHXJQ2liRd9jaQKMGaV6svC5cEf0j1HGeIwW4Mu1a+dI
-         CTx9xVO/gjJ6bJb2BdjjG5HYcljVA3Im2ZVB23PaCWJn/qorsHINOB6Py2FW2JgS9rc1
-         /Z2Wada6NV7p5yp87QJ0R/cCSW65TDFzPWUIrHTeb8iBak0hmUOA9kt/wOCjWqjzQI92
-         Ce5Q==
-X-Gm-Message-State: AJIora9G8vIHJJF3DVS3sVojulZEUwXILEghr6V+4udMmZhhofe0ve0h
-        oUD5O1GpNMwZO/UQkB58oxAUXA==
-X-Google-Smtp-Source: AGRyM1ukaYxWxV49I7X4K/AxawnLaQ11uVqfavd6zhGXdlYd80VACHz45P5IFtZP8yM2ASJC8c4z9Q==
-X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr26593417ejc.644.1655826109691;
-        Tue, 21 Jun 2022 08:41:49 -0700 (PDT)
-Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056402124200b004357738e04esm6977188edw.21.2022.06.21.08.41.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 08:41:49 -0700 (PDT)
-Message-ID: <b1472a38-75e5-9711-3e25-7ca9a74109e2@linaro.org>
-Date:   Tue, 21 Jun 2022 17:41:47 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TI9vr7TQPqxwZb2z/IMuFAGZ9nSwT2vz/9F9w7eTiWQ=;
+        b=RtQve16AUsYx0IxlGUW/iDksdi9wQPUCq52Yrv7WK7eoucTTfJ6ZFruIzggg2Clp4a
+         w5XNfJrv0FeAr6yQyK8ZKE0PvJrpiqGOwHvfn/FVN/qdlSttWswOb1l8oC2vPVquKUpW
+         FAk9hcpEWXZp5X/QXJWbVYkX9G4CkomPB1woPApfJ2guEdkUfEaze/taqQdjV6lVQ2Dl
+         7pUCOYT4Uc24KX7yFB6wEU097gMggkK57TbZFH/prq+a6GJZNUO7XkjMwfbojBjwIkXr
+         xAZrt0iBKAAfGzOhvSh6GM3YwuwixbvLfuxQ0Kk+sdEiDacIrXgkzkpFNM4ZSR5kZ9x6
+         COhQ==
+X-Gm-Message-State: AJIora9Wu2TjHLm+kAotpNNmeP5PcKknxiBoa+1iJSL/Jprpck0+P/JE
+        b5jGhbKIlkGN53XzmIugepJX7/0vsLdPaxvBCLlN1agV2gSIlA==
+X-Google-Smtp-Source: AGRyM1skPQQLpMHGrrtCYFJIKwZltL1tW6qpkSB1j4XHK/bat+sYAi+niUvvWjRNyH+0E//6sHWS5YsdxF42Ge3teJA=
+X-Received: by 2002:a05:6512:3d1a:b0:47f:79df:2ea8 with SMTP id
+ d26-20020a0565123d1a00b0047f79df2ea8mr3853154lfv.610.1655830225857; Tue, 21
+ Jun 2022 09:50:25 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 07/18] dt-bindings: reset: npcm: add GCR syscon
- property
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220621131424.162355-1-tmaimon77@gmail.com>
- <20220621131424.162355-8-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220621131424.162355-8-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220621131424.162355-1-tmaimon77@gmail.com> <20220621131424.162355-6-tmaimon77@gmail.com>
+ <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
+In-Reply-To: <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Tue, 21 Jun 2022 19:50:14 +0300
+Message-ID: <CAP6Zq1itHGFw9ZV9cMr-9Fhx8fqYVGYXhmTOiLbGVjoV7TQ5hA@mail.gmail.com>
+Subject: Re: [PATCH v4 05/18] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21/06/2022 15:14, Tomer Maimon wrote:
-> Describe syscon property that handles general control registers (GCR) in
-> Nuvoton BMC NPCM reset driver.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml    | 6 ++++++
->  1 file changed, 6 insertions(+)
+Hi Krzysztof,
 
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+On Tue, 21 Jun 2022 at 18:40, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 21/06/2022 15:14, Tomer Maimon wrote:
+> > Add binding for the Arbel BMC NPCM8XX Clock controller.
+> >
+> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> > ---
+> >  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
+> >  .../dt-bindings/clock/nuvoton,npcm845-clk.h   | 49 +++++++++++++++++++
+> >  2 files changed, 98 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> >  create mode 100644 include/dt-bindings/clock/nuvoton,npcm845-clk.h
+> >
+> > diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > new file mode 100644
+> > index 000000000000..3d4fddc090ca
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > @@ -0,0 +1,49 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Nuvoton NPCM8XX Clock Controller Binding
+> > +
+> > +maintainers:
+> > +  - Tomer Maimon <tmaimon77@gmail.com>
+> > +
+> > +description: |
+> > +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
+> > +  generates and supplies clocks to all modules within the BMC.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - nuvoton,npcm845-clk
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  '#clock-cells':
+> > +    const: 1
+> > +    description:
+> > +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
+> > +      list of NPCM8XX clock IDs.
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - "#clock-cells"
+>
+> You fixed one comment and ignore second. The same was with v3.
+Sorry, I missed the quotes comment, will be addressed next version.
+>
+> This is still no. Implement all the comments you received. I have to
+> double check your patchsets every time because I cannot trust that you
+> implemented what I asked for.
+>
+>
+> Best regards,
+> Krzysztof
 
 Best regards,
-Krzysztof
+
+Tomer
