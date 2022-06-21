@@ -2,167 +2,237 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFAAC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jun 2022 16:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD362C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jun 2022 17:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232950AbiFUQu3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
+        id S241663AbiFUR5n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 21 Jun 2022 13:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiFUQu2 (ORCPT
+        with ESMTP id S233529AbiFUR5m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:50:28 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A115925E88;
-        Tue, 21 Jun 2022 09:50:27 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id s21so12817091lfs.13;
-        Tue, 21 Jun 2022 09:50:27 -0700 (PDT)
+        Tue, 21 Jun 2022 13:57:42 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2301D0D9;
+        Tue, 21 Jun 2022 10:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TI9vr7TQPqxwZb2z/IMuFAGZ9nSwT2vz/9F9w7eTiWQ=;
-        b=TDZvDdbimBZ9N0fLFWDfy5OD6MDoKJOihMspOG15unZ0NEuqew7BxxnIchsQ+PhHgO
-         T6BOw+9I5o+nWV8GHYUlnmqC+25cRk2bRt31Sc+I1WeaCzEkH27k1pFQkjegG+u6RUbZ
-         NYshk6amV0oCvL+VLUH1aUrGk9ZXlGqO+qWVXg53sWiZVL5HWjoBFEeycbez/tIBgMXp
-         gPMQYSRgl1EKHv1J59+lDXS6L7p2YrxryNavQDhzbaRxJggnIGMpKyV34oEeJAKcBART
-         5POeFytTtnDoXGngY+PeLZdWFYmIpr54Nka/grGGjwy4k7+rI8Sb84PX+aE1vwNeKS/K
-         kzhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TI9vr7TQPqxwZb2z/IMuFAGZ9nSwT2vz/9F9w7eTiWQ=;
-        b=RtQve16AUsYx0IxlGUW/iDksdi9wQPUCq52Yrv7WK7eoucTTfJ6ZFruIzggg2Clp4a
-         w5XNfJrv0FeAr6yQyK8ZKE0PvJrpiqGOwHvfn/FVN/qdlSttWswOb1l8oC2vPVquKUpW
-         FAk9hcpEWXZp5X/QXJWbVYkX9G4CkomPB1woPApfJ2guEdkUfEaze/taqQdjV6lVQ2Dl
-         7pUCOYT4Uc24KX7yFB6wEU097gMggkK57TbZFH/prq+a6GJZNUO7XkjMwfbojBjwIkXr
-         xAZrt0iBKAAfGzOhvSh6GM3YwuwixbvLfuxQ0Kk+sdEiDacIrXgkzkpFNM4ZSR5kZ9x6
-         COhQ==
-X-Gm-Message-State: AJIora9Wu2TjHLm+kAotpNNmeP5PcKknxiBoa+1iJSL/Jprpck0+P/JE
-        b5jGhbKIlkGN53XzmIugepJX7/0vsLdPaxvBCLlN1agV2gSIlA==
-X-Google-Smtp-Source: AGRyM1skPQQLpMHGrrtCYFJIKwZltL1tW6qpkSB1j4XHK/bat+sYAi+niUvvWjRNyH+0E//6sHWS5YsdxF42Ge3teJA=
-X-Received: by 2002:a05:6512:3d1a:b0:47f:79df:2ea8 with SMTP id
- d26-20020a0565123d1a00b0047f79df2ea8mr3853154lfv.610.1655830225857; Tue, 21
- Jun 2022 09:50:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220621131424.162355-1-tmaimon77@gmail.com> <20220621131424.162355-6-tmaimon77@gmail.com>
- <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
-In-Reply-To: <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Tue, 21 Jun 2022 19:50:14 +0300
-Message-ID: <CAP6Zq1itHGFw9ZV9cMr-9Fhx8fqYVGYXhmTOiLbGVjoV7TQ5hA@mail.gmail.com>
-Subject: Re: [PATCH v4 05/18] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655834261; x=1687370261;
+  h=from:to:cc:subject:date:message-id;
+  bh=IhpY0nvaFsgCuREHN0wAidroPYiiZ/Yc0RCBikSIN8s=;
+  b=etvoddiJDCTrhIgWEkaNs69M+e61z8BxA4yNlEYGTGp1tdhTk4l7azNy
+   OTGtZwsxR0xjJ49yqOn+l9foW2+rm/It25w4wlEneTeInRlQUEJWnemnJ
+   dP/RQF70ip8yt/4ILOG2swgaZW0/YX/ah9gFr0GP9YdJIilMw9vG3Q61z
+   Y=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 10:57:41 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Jun 2022 10:57:39 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Jun 2022 23:27:24 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 641833FF1; Tue, 21 Jun 2022 23:27:23 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Tue, 21 Jun 2022 23:27:19 +0530
+Message-Id: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+In the logic around call to clk_round_rate, for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-On Tue, 21 Jun 2022 at 18:40, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 21/06/2022 15:14, Tomer Maimon wrote:
-> > Add binding for the Arbel BMC NPCM8XX Clock controller.
-> >
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-> >  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
-> >  .../dt-bindings/clock/nuvoton,npcm845-clk.h   | 49 +++++++++++++++++++
-> >  2 files changed, 98 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> >  create mode 100644 include/dt-bindings/clock/nuvoton,npcm845-clk.h
-> >
-> > diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> > new file mode 100644
-> > index 000000000000..3d4fddc090ca
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> > @@ -0,0 +1,49 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Nuvoton NPCM8XX Clock Controller Binding
-> > +
-> > +maintainers:
-> > +  - Tomer Maimon <tmaimon77@gmail.com>
-> > +
-> > +description: |
-> > +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-> > +  generates and supplies clocks to all modules within the BMC.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - nuvoton,npcm845-clk
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  '#clock-cells':
-> > +    const: 1
-> > +    description:
-> > +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
-> > +      list of NPCM8XX clock IDs.
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - "#clock-cells"
->
-> You fixed one comment and ignore second. The same was with v3.
-Sorry, I missed the quotes comment, will be addressed next version.
->
-> This is still no. Implement all the comments you received. I have to
-> double check your patchsets every time because I cannot trust that you
-> implemented what I asked for.
->
->
-> Best regards,
-> Krzysztof
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-Best regards,
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 134 ++++++++++++++++++++++++++--------
+ 1 file changed, 102 insertions(+), 32 deletions(-)
 
-Tomer
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2e23b65..8d247c1 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -943,52 +943,123 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol, bool *exact_match)
+ {
++	unsigned long freq;
++	unsigned long div, maxdiv, new_div;
++	unsigned long long mult;
+ 	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
+-	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	unsigned long test_freq, offset, new_freq;
+ 
++	ser_clk = 0;
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
++	div = 1;
+ 
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	while (div <= maxdiv) {
++		mult = (unsigned long long)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
+-		if (!(freq % desired_clk)) {
+-			ser_clk = freq;
+-			break;
++		/*
++		 * Loop requesting a freq within tolerance and possibly exact freq.
++		 *
++		 * We'll keep track of the lowest freq inexact match we found
++		 * but always try to find a perfect match. NOTE: this algorithm
++		 * could miss a slightly better freq if there's more than one
++		 * freq between (freq - offset) and (freq) but (freq) can't be made
++		 * exactly, but that's OK.
++		 *
++		 * This absolutely relies on the fact that the Qualcomm clock
++		 * driver always rounds up.
++		 * We make use of exact_match as an I/O param.
++		 */
++
++		/* look only for exact match if within tolerance is already found */
++		if (ser_clk)
++			offset = 0;
++		else
++			offset = (mult * percent_tol) / 100;
++
++		test_freq = mult - offset;
++		freq = clk_round_rate(clk, test_freq);
++
++		/*
++		 * A dead-on freq is an insta-win, look for it only in 1st run
++		 */
++		if (*exact_match) {
++			if (!(freq % desired_clk)) {
++				ser_clk = freq;
++				*clk_div = freq / desired_clk;
++				return ser_clk;
++			}
++		}
++
++		if (!ser_clk) {
++			new_div = DIV_ROUND_CLOSEST(freq, desired_clk);
++			new_freq = new_div * desired_clk;
++			offset = (new_freq * percent_tol) / 100;
++
++			if (new_freq - offset <= freq && freq <= new_freq + offset) {
++				/* Save the first (lowest freq) within tolerance */
++				ser_clk = freq;
++				*clk_div = new_div;
++				/* no more search for exact match required in 2nd run */
++				if (!(*exact_match))
++					break;
++			}
+ 		}
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
++		div = freq / desired_clk + 1;
++
++		/*
++		 * Only time clock framework doesn't round up is if
++		 * we're past the max clock rate. We're done searching
++		 * if that's the case.
++		 */
++		if (freq < test_freq)
+ 			break;
++	}
++
++	*exact_match = false;
++	return ser_clk;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
++			unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++	unsigned long desired_tol;
++	bool exact_match;
+ 
+-		prev = freq;
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk) {
++		pr_err("%s: Invalid frequency\n", __func__);
++		return 0;
+ 	}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
++	/* try to find exact clock rate or within 2% tolerance */
++	ser_clk = 0;
++	exact_match = true;
++	desired_tol = 2;
++
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, desired_tol, &exact_match);
++	if (ser_clk) {
++		if (!exact_match)
++			pr_warn("Cannot find exact match clk_rate, using one within 2 percent tolerance\n");
+ 		return ser_clk;
+ 	}
+ 
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	/* try within 5% tolerance now, no need to look for exact match */
++	exact_match = false;
++	desired_tol = 5;
++
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, desired_tol, &exact_match);
++	if (ser_clk)
++		pr_warn("Cannot find exact match clk_rate, using one within 5 percent tolerance\n");
++	else
++		pr_err("Cannot find suitable clk_rate, giving up\n");
+ 
+ 	return ser_clk;
+ }
+@@ -1021,8 +1092,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+-	clk_rate = get_clk_div_rate(port->se.clk, baud,
+-		sampling_rate, &clk_div);
++	clk_rate = get_clk_div_rate(port->se.clk, baud, sampling_rate, &clk_div);
+ 	if (!clk_rate)
+ 		goto out_restart_rx;
+ 
+-- 
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
