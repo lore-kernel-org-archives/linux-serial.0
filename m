@@ -2,112 +2,272 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22975C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 02:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B360CCA47C
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 06:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377397AbiFWCEL (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jun 2022 22:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        id S229490AbiFWGII (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 02:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbiFWCEK (ORCPT
+        with ESMTP id S229730AbiFWGID (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:04:10 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D7D21E17;
-        Wed, 22 Jun 2022 19:04:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655949824;
-        bh=rL6VxwOlcQhp3wySuLV2AVqCnX+m+t3FXl4nhTKJ5ws=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=ZZwmaEkfEIryCj9VqC7uZKxRfBg1xVaL+Asbg5SQZSd2PKLffCEJAyA7+6d5DPPEy
-         SHKQ8Jcb+ke+izHiwfZaeGCZI04sSEFZVNQBXaiZkVxsSYwH5cVUGGGt3shBXkY3QM
-         igo9R5ZiOHICwehDeIhdxupqsmYf4Ep2x+E5m/00=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.181]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MNKhs-1oIzDR3xIg-00OstY; Thu, 23
- Jun 2022 04:03:44 +0200
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lukas@wunner.de, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-3-LinoSanfilippo@gmx.de>
- <YrNMMQUYdgDz45Jc@smile.fi.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <7f502ad0-8c86-5029-8801-238402c48d0e@gmx.de>
-Date:   Thu, 23 Jun 2022 04:03:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Thu, 23 Jun 2022 02:08:03 -0400
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3085E44A1C;
+        Wed, 22 Jun 2022 23:07:51 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id t5so6298509eje.1;
+        Wed, 22 Jun 2022 23:07:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=t6P+OEr0vrvpoPfUHObsMCgB6b3hmJkinrDt6rRS438=;
+        b=8BUgWMSfTAhLk4L1Ji+3kgabm7zr1yzHrTGc00QxJqGGJZkysZhkbfbNQQcFBMdFi3
+         1uSAglJXg9UbNjg3JRd/6MXT49vN2JrEm+W+dUvN8kyu61+LMVBnnK5e+UulMLOwLAbZ
+         K9L+mJNflekphxNqy1WQ+cJcbA2esR1hM90kThCPWIdNoT9h1ipA1P2qiZYrwllDQCxf
+         zN9ryX83xN9rRZ9qyvpsLc2BYS9KCIoUDlhcE+RLQmL8fGgRBmNcQ3sLkULGSvOijijc
+         u6F+176UrxPRsr6e/cXkKxH86OiOV44JKlkasJg8ILJrphed2HzBw1Y+u3MThTqSjUP8
+         +7zg==
+X-Gm-Message-State: AJIora+cwpAapQaPGoGIMtat7sz8+WhDmeHE4WECVdpqYch8sQH+aqBs
+        z087ckBFjrs+eCRHf3grWOw=
+X-Google-Smtp-Source: AGRyM1tn6B67l/KiBQ/N+kEIHBz4CdfpAEFNHBqKz02petrPe74UxMGHsnlG2ds/8MuCKUkLJu1t9A==
+X-Received: by 2002:a17:906:dc8f:b0:723:a62a:cd0e with SMTP id cs15-20020a170906dc8f00b00723a62acd0emr2420289ejc.444.1655964469427;
+        Wed, 22 Jun 2022 23:07:49 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id d21-20020a056402517500b00435640c141esm13717890ede.93.2022.06.22.23.07.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 23:07:48 -0700 (PDT)
+Message-ID: <9284b3dd-3da5-1a52-1e92-a434cfe2e1e1@kernel.org>
+Date:   Thu, 23 Jun 2022 08:07:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <YrNMMQUYdgDz45Jc@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate()
+ which otherwise could return a sub-optimal clock rate.
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BHxZUtz7aL7d4oKsWy5vYNIC67j+odc8NKypfMy1GloZQ3bEmOb
- ThmaeUBb1M4nT3ehnOa/eJ0ynUyqQwiSPkZxaHMn4NOlADvT2+9BBBYd/F/hIicZgJWcvQq
- RVV8l/6cGIQ7SwC7vP5L5lfB0mhgKhZnEmN3Dj/Xjg0aODb+pAYzhwoziO/sPfbVHpaPhiY
- ndFlH5HGRFb54+BCrIZrg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EtEHicE+FI8=:yUFwRsuReLOQVavO9hKK1d
- uvdYBUGK8F3iZi6GoL+aNxZkFYun6mOL3Ub+zJBbwxSxTzxH1Fd/KmTfmoGspV+CR1EZYsJBo
- 4yduTQQBprc5gAzmGLlifyhCw3nZ8qCUPlLMAgDX2aJkB6e6ckGaBZhvBMaHKFnqY3+037+fc
- ilc4eIfEtzWvfDP5lF+DLQs7pT5XaB0adr8hzRAqa5d01hY9xwPO9BdwA/vTgJFTnsfC6a3BL
- OLnLOJCiec2wPB3j0qYgv04D1nnp6hs6vNvixo4rGXF48rO6dG9evq/1afG0YWe80ju3EV4eJ
- nSr5kkGVuEaK8xmTPpd8QVFq0T6I96ivchOTSPFK/KA5LLloNnaIiKVN8MnLpNluk0R6zR5AT
- vCx9YCUCAYQHzr8ynJeJFDeteP1NiRSpULmnO50j03axY3zXXRJxtD2wmG5t83uSAn+v/qngO
- ZOMExJ+n7YFcF3gmpKiouSwfyakxPQP8eSx6mezq2VIELAqRyxYLcGywX9nsbkEUCncTQVDv2
- sB7o2wyMUdPw89ZSqKxLYIMeW5Glk0Dy2nj1LSEkwQjhk8np1+KKmfN2egkFBUYDqc+/tz2TC
- crQz7N9nEjiQBK4tDRY0c2gRU9/Dijh5fjqzhFuXb43V5Y0cCn9YIml50D+TNXG/YPzyiT6k4
- pEeP+l/d3XvjuO+j/vztY+hRNwb/xG+Ng7xJ1G7eg+8z8mqgMnIpIFvcgQwukaOJAbDMSW3ba
- QN+kXOOLYAk1xZzXytuHjfMO33GmIBrVsy0HmUL18CsYxxSDKLCo+rZK9uOjs1mE70DnKNr92
- btitCvr8ZLzpV7pSwJEww23hcBqQDk2pgMGSxdKJ8xt6Yuyehr3Bz4XRD7169vh+C5y0KALl9
- ckXFnRYuY0RcKv9GODEdtYfiSRFltT9ZI07LJaCS1gUO3IYGlrZDfNgvhucKTS0g2jrszyZ0J
- A8FB+1Q9i3QpEDPrr2Sc9OzyDKOCFIW5KU7D+cNKJbR8yTHpBCuQKqAy5T/c7zpJCq/kMBJ3/
- R69HGuocmsFmh+OIip9HnKQJKnBi9F/CxIYa35/RDhv6VRTk4ZF5/mHLvMdaHcolZ73nBGZdW
- tgODXSbx1j4Fd3EelYHn0gXiQlI5Vi7pH/QMNHsblr+m+XQDQuuuLtrQw==
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org
+References: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22.06.22 at 19:06, Andy Shevchenko wrote:
-> On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> In serial8250_em485_config() the termination GPIO is set with the uart_=
-port
->> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
-.
->> since the concerning GPIO expander is connected via SPI or I2C).
->>
->> Fix this by setting the termination line outside of the uart_port spinl=
-ock
->> in the serial core.
->
-> This doesn't describe that this patch is actually changing GPIO to suppo=
-rt
-> sleep mode. So, it doesn't fix anything. Please rephrase the commit mess=
-age
-> accordingly.
+On 21. 06. 22, 19:57, Vijaya Krishna Nivarthi wrote:
+> In the logic around call to clk_round_rate, for some corner conditions,
+> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+> exact clock rate was not found lowest clock was being returned.
+> 
+> Search for suitable clock rate in 2 steps
+> a) exact match or within 2% tolerance
+> b) within 5% tolerance
+> This also takes care of corner conditions.
+> 
+> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
 
-Good point, I will adjust the commit message in the next version.
+Hmm, provided the complexity, was this worth it -- how many typos/bugs 
+can be in such complex and twisted functions?
 
->> This also makes setting the termination GPIO generic for all uart drive=
-rs.
->
-> UART
->
+The original intention was not to touch the driver when new HW arrives. 
+Now it looks like you'd be chasing corner cases like these for quite 
+some releases.
 
-Right, upper letters should be used.
+So going back in time, reconsidering the whole thing: how often do you 
+expect the original rate table would need to be updated?
 
-Thanks a lot for the review!
+NACK
 
-Regards,
-Lino
+in any way -- see my comment below -- if you really want to go this 
+path, you'd need to split this.
 
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+>   drivers/tty/serial/qcom_geni_serial.c | 134 ++++++++++++++++++++++++++--------
+>   1 file changed, 102 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 2e23b65..8d247c1 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -943,52 +943,123 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>   	return 0;
+>   }
+>   
+> -static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+> -			unsigned int sampling_rate, unsigned int *clk_div)
+> +static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
+> +			unsigned int *clk_div, unsigned int percent_tol, bool *exact_match)
+>   {
+> +	unsigned long freq;
+> +	unsigned long div, maxdiv, new_div;
+> +	unsigned long long mult;
+>   	unsigned long ser_clk;
+> -	unsigned long desired_clk;
+> -	unsigned long freq, prev;
+> -	unsigned long div, maxdiv;
+> -	int64_t mult;
+> -
+> -	desired_clk = baud * sampling_rate;
+> -	if (!desired_clk) {
+> -		pr_err("%s: Invalid frequency\n", __func__);
+> -		return 0;
+> -	}
+> +	unsigned long test_freq, offset, new_freq;
+>   
+> +	ser_clk = 0;
+>   	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+> -	prev = 0;
+> +	div = 1;
+>   
+> -	for (div = 1; div <= maxdiv; div++) {
+> -		mult = div * desired_clk;
+> -		if (mult > ULONG_MAX)
+> +	while (div <= maxdiv) {
+> +		mult = (unsigned long long)div * desired_clk;
+> +		if (mult != (unsigned long)mult)
+>   			break;
+>   
+> -		freq = clk_round_rate(clk, (unsigned long)mult);
+> -		if (!(freq % desired_clk)) {
+> -			ser_clk = freq;
+> -			break;
+> +		/*
+> +		 * Loop requesting a freq within tolerance and possibly exact freq.
+> +		 *
+> +		 * We'll keep track of the lowest freq inexact match we found
+> +		 * but always try to find a perfect match. NOTE: this algorithm
+> +		 * could miss a slightly better freq if there's more than one
+> +		 * freq between (freq - offset) and (freq) but (freq) can't be made
+> +		 * exactly, but that's OK.
+> +		 *
+> +		 * This absolutely relies on the fact that the Qualcomm clock
+> +		 * driver always rounds up.
+> +		 * We make use of exact_match as an I/O param.
+> +		 */
+> +
+> +		/* look only for exact match if within tolerance is already found */
+> +		if (ser_clk)
+> +			offset = 0;
+> +		else
+> +			offset = (mult * percent_tol) / 100;
+> +
+> +		test_freq = mult - offset;
+> +		freq = clk_round_rate(clk, test_freq);
+> +
+> +		/*
+> +		 * A dead-on freq is an insta-win, look for it only in 1st run
+> +		 */
+> +		if (*exact_match) {
+> +			if (!(freq % desired_clk)) {
+> +				ser_clk = freq;
+> +				*clk_div = freq / desired_clk;
+> +				return ser_clk;
+> +			}
+> +		}
+> +
+> +		if (!ser_clk) {
+> +			new_div = DIV_ROUND_CLOSEST(freq, desired_clk);
+> +			new_freq = new_div * desired_clk;
+> +			offset = (new_freq * percent_tol) / 100;
+> +
+> +			if (new_freq - offset <= freq && freq <= new_freq + offset) {
+> +				/* Save the first (lowest freq) within tolerance */
+> +				ser_clk = freq;
+> +				*clk_div = new_div;
+> +				/* no more search for exact match required in 2nd run */
+> +				if (!(*exact_match))
+> +					break;
+> +			}
+>   		}
+>   
+> -		if (!prev)
+> -			ser_clk = freq;
+> -		else if (prev == freq)
+> +		div = freq / desired_clk + 1;
+> +
+> +		/*
+> +		 * Only time clock framework doesn't round up is if
+> +		 * we're past the max clock rate. We're done searching
+> +		 * if that's the case.
+> +		 */
+> +		if (freq < test_freq)
+>   			break;
+> +	}
+> +
+> +	*exact_match = false;
+> +	return ser_clk;
+> +}
+> +
+> +static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+> +			unsigned int sampling_rate, unsigned int *clk_div)
 
+This cannot be reviewed properly. Care to split this into 2-3 patches? 
+Looks at the nesting and the complexity, it also looks like you need 
+more helper functions.
+
+> +{
+> +	unsigned long ser_clk;
+> +	unsigned long desired_clk;
+> +	unsigned long desired_tol;
+> +	bool exact_match;
+>   
+> -		prev = freq;
+> +	desired_clk = baud * sampling_rate;
+> +	if (!desired_clk) {
+> +		pr_err("%s: Invalid frequency\n", __func__);
+> +		return 0;
+>   	}
+>   
+> -	if (!ser_clk) {
+> -		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+> -								__func__, baud);
+> +	/* try to find exact clock rate or within 2% tolerance */
+> +	ser_clk = 0;
+> +	exact_match = true;
+> +	desired_tol = 2;
+> +
+> +	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, desired_tol, &exact_match);
+> +	if (ser_clk) {
+> +		if (!exact_match)
+> +			pr_warn("Cannot find exact match clk_rate, using one within 2 percent tolerance\n");
+>   		return ser_clk;
+>   	}
+>   
+> -	*clk_div = ser_clk / desired_clk;
+> -	if (!(*clk_div))
+> -		*clk_div = 1;
+> +	/* try within 5% tolerance now, no need to look for exact match */
+> +	exact_match = false;
+> +	desired_tol = 5;
+> +
+> +	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, desired_tol, &exact_match);
+> +	if (ser_clk)
+> +		pr_warn("Cannot find exact match clk_rate, using one within 5 percent tolerance\n");
+> +	else
+> +		pr_err("Cannot find suitable clk_rate, giving up\n");
+>   
+>   	return ser_clk;
+>   }
+> @@ -1021,8 +1092,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>   	if (ver >= QUP_SE_VERSION_2_5)
+>   		sampling_rate /= 2;
+>   
+> -	clk_rate = get_clk_div_rate(port->se.clk, baud,
+> -		sampling_rate, &clk_div);
+> +	clk_rate = get_clk_div_rate(port->se.clk, baud, sampling_rate, &clk_div);
+>   	if (!clk_rate)
+>   		goto out_restart_rx;
+>   
+
+thanks,
+-- 
+js
+suse labs
