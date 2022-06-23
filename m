@@ -2,114 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4DACCA47C
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 16:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FA2C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 20:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiFWQcp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S229498AbiFWURt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 16:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiFWQco (ORCPT
+        with ESMTP id S229451AbiFWURs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:32:44 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D49473AC;
-        Thu, 23 Jun 2022 09:32:43 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="261202126"
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="261202126"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 09:32:42 -0700
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="834712996"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 09:32:39 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1o4Pky-000tDG-6n;
-        Thu, 23 Jun 2022 19:32:36 +0300
-Date:   Thu, 23 Jun 2022 19:32:35 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Thu, 23 Jun 2022 16:17:48 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22CE527E1;
+        Thu, 23 Jun 2022 13:17:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656015429;
+        bh=nY3T1c4qM2yuOPGpKm22MzL3Dp3XOLAxfo8t3uAnMW0=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=JhLO6qnJxCl0lmcSHO6IKOx03XJ3Fz7SXGOquKNagpFHTkwZGNUyXJ3dy11kr2JPC
+         vpxOEePRoXsleVtG3vIldIcF42WgH1HLdkYkjwcbMGnhbDQIyZ59ctm9kH8IR9BNcU
+         2zQTa3x1v/49WlIr+r1OC8WNrUkELMq1V4h22P64=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.3.134]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MqJqN-1nIoS62r3r-00nRIC; Thu, 23
+ Jun 2022 22:17:09 +0200
+Subject: Re: [PATCH 5/8] dt_bindings: rs485: Correct delay values
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
- supported
-Message-ID: <YrSVozxvPZtJdQL5@smile.fi.intel.com>
 References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-2-LinoSanfilippo@gmx.de>
- <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
- <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
- <CAHp75Vd_ix=bJs9k6bYM8S+3f_Pw7Tvs9DhPcZxu1=33T=mQ7A@mail.gmail.com>
- <52ea773c-b5b0-fc4d-9b85-022676778af7@gmx.de>
+ <20220622154659.8710-6-LinoSanfilippo@gmx.de>
+ <YrSU4eL9hgISg3Y1@smile.fi.intel.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
+Date:   Thu, 23 Jun 2022 22:17:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <52ea773c-b5b0-fc4d-9b85-022676778af7@gmx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <YrSU4eL9hgISg3Y1@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Xk8oEt/xNT1GDPlq/rAOTCmrF9KpcAvXJypRogcgblZ/lBlQDNG
+ V5hmtsdw9JALPfQi8KdnUe/KpwuzryvlCwVJpHDFvUkVxS0uhU41KsyCVGCt5EqA8aeJmEq
+ Ih42FbW9f4g3j4M256sHtglAbrRZNAZt7yFCFmY8fh4aQ+bqZGfxmHKYkpEKk+WesuSIx/f
+ 6uc2PaZZhGloIUoIoqsyQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Y6DaKaIxa2Y=:CVrHPL9qHm+9vkTj1nWlAa
+ xxfgQ982InBhWVOrVVf4Q/9y5WfQbA8vk0xsteo7Y+MACpjcFimjn767zhSvCOFdBLfFOK15/
+ w4oQDm6OXe4rpgV0pVIUH8A0B8d5ZHlEL+4I++KmGo7h/fOAVPlqK7ypbrbBDgNE1qLZk/RJS
+ oIjSrnQjXsZahbH+TX1GlAIqM8oLtWVbbU2q/AvDfiUmfIwuF7QPPVgFiihWrLHGgwAYWMQIz
+ B5zuN0zHmBMvNexRsaFFFwDII7qJSrK8umIXT4aYqFeLUzZgCxktHOFslxLbdfbr87Wrx+7Xc
+ kUQ4ftQAwvExD0/g8niddw7OwwZpHAvNuKDes56gIqCYOGSKsQgHkoFGusKJxRcvwbcxyWwdt
+ 4QYrI8zAZDObtMO408hzl7tOHVEsScZ4YsGBMkqSlbc2i81bZafF6Dz9tV0M4mAcKtiTtAFSe
+ kiihklyTAkXDxLavxvaehhQsTQOrkSJQDdfquoGfeIgWKyqsZZ6LD2FU1XnfcXy0UPrcR4lkC
+ rECkWUXDrsixmvu3K+JymE4fh0XT4k4ZzmPFHGzcU8rW5JqA00GiYuG4u9Nl1ldovPRWVJw51
+ OAiFqLfAeyowM+ETke5RE1l/z+3BG+6npeDV1KqyirdBRTkf5G/y4zOwG+kg+NPlBUjg9RyKE
+ p8REHwAHoYoyN6q6WRq5WTEASnHdWKdH5EUoNtObvxOlFWzLv9oedBIG6R4c4WePVuvI+9nvP
+ UvCN+CWcUs3KytOKNUqQ3L3YQ9Gtfq8BF9731R/tN9QLYsVcRfRx1xXpuQQCPYZBRMceaznAb
+ gVqYwwjgoX9UcLkbCDMjSUwUh/aLT3AqeG4KFTtpk7Hkl/NC8IW59IdSpmn0ePLCZ1xgIgjha
+ ZEjnY5yACTGCI2U3Vfhi+2RIYQ2iFTOHd6vXEzLgIn5x1cys6yai+9BLj9w+yL+NtkV8J5XRr
+ on5VjGXm4a2r3AQlfxUdsjPT/gU+HEcjwrLHDfiQbafTqF/8+hSwztoZHYPsZhplheFiaYr6p
+ sg1DvZsnTtfMzpZ9tZtiGojeU65V4LFbE6oZekXWaVik0dIs+PZe8bpMdgR9yqZWnsKmW/2tP
+ d0ceY7t+raWJymXSgWmspGPtRAtCQ7UrwYqJj1qiILNzX8EgJ88i3LsHg==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 06:08:56PM +0200, Lino Sanfilippo wrote:
-> On 23.06.22 at 11:45, Andy Shevchenko wrote:
-> > On Thu, Jun 23, 2022 at 4:00 AM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
-> >> On 22.06.22 at 19:04, Andy Shevchenko wrote:
-> >>> On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
-> >>>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>>>
-> >>>> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
-> >>>> termination is supported by the driver.
-> >>>
-> >>> I'm not sure I got the usefulness of this change.
-> >>> We request GPIO line as optional, so if one is defined it in the DT/ACPI, then
-> >>> they probably want to (opportunistically) have it>
-> >>>
-> >>> With your change it's possible to have a DTS where GPIO line defined in a
-> >>> broken way and user won't ever know about it, if they are using platforms
-> >>> without termination support.
-> >>
-> >> This behavior is not introduced with this patch, also in the current code the driver
-> >> wont inform the user if it does not make use erroneous defined termination GPIO.
-> >
-> > It does. If a previously stale GPIO resource may have deferred a probe
-> > and hence one may debug why the driver is not working, after this
-> > change one may put a stale GPIO resource into DT/ACPI and have nothing
-> > in the result. Meaning the change relaxes validation which I consider
-> > is not good.
-> >
-> 
-> Ok I see the point. So what about changing it to:
+On 23.06.22 at 18:29, Andy Shevchenko wrote:
+> On Wed, Jun 22, 2022 at 05:46:56PM +0200, Lino Sanfilippo wrote:
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> The maximum allowed delay for RTS before and RTS after send is 100 ms.
+>> Adjust the documentation accordingly.
+>
+>
+> Is it only documentation issue? If the code allows this to be set higher
+> than 100, we may not change the documentation since this an ABI (from
+> firmware <--> kernel perspective) we need to support old variants.
+>
 
-You mean adding below after the existing code in the module?
+Well currently the documentation claims that a maximum of 1000 msecs is al=
+lowed but
+nothing actually checks the values read from device tree/ACPI and so it is=
+ possible
+to set much higher values (note that the UART drivers dont check the delay=
+s read from
+DT/ACPI either, the only exception I found is max310x which clamps it to 1=
+5 ms).
 
-> 	if (port->rs485_term_gpio &&
-> 	    !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
-> 		dev_warn(port->dev,
-> 			"%s (%d): RS485 termination gpio not supported by driver\n",
-> 			port->name, port->line);
-> 		devm_gpiod_put(dev, port->rs485_term_gpio);
-> 		port->rs485_term_gpio = NULL;
-> 	}
-> 
-> This would also be consistent to the warnings we print in uart_sanitize_serial_rs485() for invalid
-> RS485 settings.
+We already have a maximum of 100 ms defined for RTS delays set via TIOCSRS=
+485. To be
+consistent with TIOCSRS485 the same limit is used for DT/ACPI values in th=
+is patch.
 
-Probably it's okay, but I dunno we have much on this to gain. Users may start
-complaining of this (harmless) warning. I leave it to others to comment.
+I am aware that this changes the firmware/kernel ABI. But we had a similar=
+ situation when
+the sanity checks for TIOCSRS485 were introduced
+(see https://lore.kernel.org/all/20220410104642.32195-2-LinoSanfilippo@gmx=
+.de/)
+since before we did not have those limits for all drivers (some drivers cl=
+amped the
+values itself but many did not care).
+Furthermore 100 ms is already a very high value for RTS delays (which are =
+usually rather
+in usecs range). So IMHO the risk is very low to break anything when value=
+s are clamped
+that are higher than that.
 
--- 
-With Best Regards,
-Andy Shevchenko
+
+Regards,
+Lino
+
 
 
