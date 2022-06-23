@@ -2,33 +2,33 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA608C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 02:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22975C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 02:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiFWCAF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jun 2022 22:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        id S1377397AbiFWCEL (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Jun 2022 22:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232529AbiFWCAE (ORCPT
+        with ESMTP id S231310AbiFWCEK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:00:04 -0400
+        Wed, 22 Jun 2022 22:04:10 -0400
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4841A8;
-        Wed, 22 Jun 2022 19:00:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D7D21E17;
+        Wed, 22 Jun 2022 19:04:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655949568;
-        bh=eHLrXoaVIZ1xfowGuPkrjSutjDijEW9mNY1mSSTy7Hs=;
-        h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:In-Reply-To;
-        b=dVxayAJtkrKhwCe8TAok0nyRmqcUoR/obTtkgJ73SdCpCAfxI1YvayXkd8jAABJLB
-         RhPekNgr0zWGV2msj/svCbaK12vILTcFW3eIrOuT9JcmBLN40QZ/R2E2RJehlrvftT
-         3/v/3A4rQoe0JRZjUBhqsdiilf1CuQF7cma0tkIM=
+        s=badeba3b8450; t=1655949824;
+        bh=rL6VxwOlcQhp3wySuLV2AVqCnX+m+t3FXl4nhTKJ5ws=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=ZZwmaEkfEIryCj9VqC7uZKxRfBg1xVaL+Asbg5SQZSd2PKLffCEJAyA7+6d5DPPEy
+         SHKQ8Jcb+ke+izHiwfZaeGCZI04sSEFZVNQBXaiZkVxsSYwH5cVUGGGt3shBXkY3QM
+         igo9R5ZiOHICwehDeIhdxupqsmYf4Ep2x+E5m/00=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.181]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6bk4-1nbzTy32Cc-0180Px; Thu, 23
- Jun 2022 03:59:28 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
- supported
+Received: from [192.168.0.33] ([46.223.2.181]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MNKhs-1oIzDR3xIg-00OstY; Thu, 23
+ Jun 2022 04:03:44 +0200
+Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
+ serial core
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
@@ -38,81 +38,76 @@ Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
         lukas@wunner.de, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
 References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-2-LinoSanfilippo@gmx.de>
- <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
-Message-ID: <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
-Date:   Thu, 23 Jun 2022 03:59:25 +0200
+ <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+ <YrNMMQUYdgDz45Jc@smile.fi.intel.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <7f502ad0-8c86-5029-8801-238402c48d0e@gmx.de>
+Date:   Thu, 23 Jun 2022 04:03:42 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+In-Reply-To: <YrNMMQUYdgDz45Jc@smile.fi.intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1h6TWrYpfJlbjpVfY8XbPGnncDZ0s81dGshYVaZQhCahGxzh20d
- 2PQcSUMKU/60rn4UawD2s2L9Eovlnw35HjykR4G7onljbtwQ5t8NoZpI22IBCPWvcA/ucDP
- /fDNCkCCt77EOIWr/2DQVypWMx2/R0HhEpktSIgvK96AFXuPZMAxtGGdqtvHpHiXvTg/679
- hNatqpKiYPA+mYDPULOmQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:J6FyruJLVLI=:AUQtvNTc+wsJKhm6A2Ij/2
- BVwnrDgOse//leMfUapxhuBGd/5ButtZsKBy1oOEXJ0NSbaku34B+ylYPHJ1UJVWy5KO/RMfg
- x82ZksE29wEETS3T+6x2R8QKRn32qfehAF6lPQHmWur5BjWjIkgT5MQnZipUWpfh+JtjM7pFb
- FMyKOFg0L6HQTJlOvDLG9rxonntBHwezWN2guUurgVxJTQJsCVHeCG41aolkev7eTvpEFyjqY
- iNZWxMVsWZlyEooViSeOIx5W8ncMrtkHtx3maorkgEjPEO02JBvMvcJv3PhfvIpRaEDfSzk8a
- 94MRYWFsvNT0sgYc4GZbJ2hHhxi9iCpmJyLcREIANu1ZTBKebVPNFKq7RP6YKOnjH10e74msL
- 7THz65ICyn9qQiRXPFugVnOk7peXcg6+qluvSU5baP0lJQtoIpp9zLV+Wtz+KtGDjcNEUWeQG
- ejXeARIiFkoib2lwGm8MgWuR52uOauUXdZ9ZPF2LlbP/kKzOQjP9w5WSfKpjrYvkqrATs2pYg
- ndFDDuGlm75vRWMNY0Tgq8NEYCoUNs5rItjrnUQUr0ZOf+ioZ5h4VXnytk5BmaG/6oAF4M0Yi
- Irl/dw2Q0xlkPlfPxxMNGYc777S7bGf/gZ2po5xlDlP55hDXD/TSb1P/8M3FZvKwAiFIads3Q
- Cd7O+8qYHfAG8BOeBnQhQkmxMJgPYuYxqvk1SqyBywQRnAAaGhXzWCLLznStF+vvNfzlF0eP0
- QSFe7nIB77BBen3nBGTLo+5dOy4kxG7Yt0B2puZ5nFVcT9Csszy3j+IStONqlglbrJYAYnS2e
- 1IqSMIWGe5HEr/+yIJyTbKbGLHQwF1/PhkEMZ4juY7iCKXZpFeShHJp8hk5p/UWGNWz6JrIQ7
- N7tyqW/Wh6jMhyuU8Tkl2TZ25YPoSladO0gVFKYGqxCn9GNaJuLYIq3DN6Ou07qPnopYk8OQa
- 1Kzp61yY4YaHuuNVhUry6EhuQo4KB214QN71jWiOOFgjumIzAunN/dMTm6K5bJOa9P8kmtaHE
- +JKwvacZuosOjMpFdulHzXmb7WaBrQMNMUl4Uce1aja2UEgKp3FnVh4XlZS8yfYLHjnvv+tpt
- NVqloygSF75oUPV+ByluyzRoCsyrUfkrschW4m65bmNqTYEHShku62SkA==
+X-Provags-ID: V03:K1:BHxZUtz7aL7d4oKsWy5vYNIC67j+odc8NKypfMy1GloZQ3bEmOb
+ ThmaeUBb1M4nT3ehnOa/eJ0ynUyqQwiSPkZxaHMn4NOlADvT2+9BBBYd/F/hIicZgJWcvQq
+ RVV8l/6cGIQ7SwC7vP5L5lfB0mhgKhZnEmN3Dj/Xjg0aODb+pAYzhwoziO/sPfbVHpaPhiY
+ ndFlH5HGRFb54+BCrIZrg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EtEHicE+FI8=:yUFwRsuReLOQVavO9hKK1d
+ uvdYBUGK8F3iZi6GoL+aNxZkFYun6mOL3Ub+zJBbwxSxTzxH1Fd/KmTfmoGspV+CR1EZYsJBo
+ 4yduTQQBprc5gAzmGLlifyhCw3nZ8qCUPlLMAgDX2aJkB6e6ckGaBZhvBMaHKFnqY3+037+fc
+ ilc4eIfEtzWvfDP5lF+DLQs7pT5XaB0adr8hzRAqa5d01hY9xwPO9BdwA/vTgJFTnsfC6a3BL
+ OLnLOJCiec2wPB3j0qYgv04D1nnp6hs6vNvixo4rGXF48rO6dG9evq/1afG0YWe80ju3EV4eJ
+ nSr5kkGVuEaK8xmTPpd8QVFq0T6I96ivchOTSPFK/KA5LLloNnaIiKVN8MnLpNluk0R6zR5AT
+ vCx9YCUCAYQHzr8ynJeJFDeteP1NiRSpULmnO50j03axY3zXXRJxtD2wmG5t83uSAn+v/qngO
+ ZOMExJ+n7YFcF3gmpKiouSwfyakxPQP8eSx6mezq2VIELAqRyxYLcGywX9nsbkEUCncTQVDv2
+ sB7o2wyMUdPw89ZSqKxLYIMeW5Glk0Dy2nj1LSEkwQjhk8np1+KKmfN2egkFBUYDqc+/tz2TC
+ crQz7N9nEjiQBK4tDRY0c2gRU9/Dijh5fjqzhFuXb43V5Y0cCn9YIml50D+TNXG/YPzyiT6k4
+ pEeP+l/d3XvjuO+j/vztY+hRNwb/xG+Ng7xJ1G7eg+8z8mqgMnIpIFvcgQwukaOJAbDMSW3ba
+ QN+kXOOLYAk1xZzXytuHjfMO33GmIBrVsy0HmUL18CsYxxSDKLCo+rZK9uOjs1mE70DnKNr92
+ btitCvr8ZLzpV7pSwJEww23hcBqQDk2pgMGSxdKJ8xt6Yuyehr3Bz4XRD7169vh+C5y0KALl9
+ ckXFnRYuY0RcKv9GODEdtYfiSRFltT9ZI07LJaCS1gUO3IYGlrZDfNgvhucKTS0g2jrszyZ0J
+ A8FB+1Q9i3QpEDPrr2Sc9OzyDKOCFIW5KU7D+cNKJbR8yTHpBCuQKqAy5T/c7zpJCq/kMBJ3/
+ R69HGuocmsFmh+OIip9HnKQJKnBi9F/CxIYa35/RDhv6VRTk4ZF5/mHLvMdaHcolZ73nBGZdW
+ tgODXSbx1j4Fd3EelYHn0gXiQlI5Vi7pH/QMNHsblr+m+XQDQuuuLtrQw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-Hi,
-
-On 22.06.22 at 19:04, Andy Shevchenko wrote:
-> On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+On 22.06.22 at 19:06, Andy Shevchenko wrote:
+> On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
 >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >>
->> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
-s
->> termination is supported by the driver.
+>> In serial8250_em485_config() the termination GPIO is set with the uart_=
+port
+>> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
+.
+>> since the concerning GPIO expander is connected via SPI or I2C).
+>>
+>> Fix this by setting the termination line outside of the uart_port spinl=
+ock
+>> in the serial core.
 >
-> I'm not sure I got the usefulness of this change.
-> We request GPIO line as optional, so if one is defined it in the DT/ACPI=
-, then
-> they probably want to (opportunistically) have it>
+> This doesn't describe that this patch is actually changing GPIO to suppo=
+rt
+> sleep mode. So, it doesn't fix anything. Please rephrase the commit mess=
+age
+> accordingly.
+
+Good point, I will adjust the commit message in the next version.
+
+>> This also makes setting the termination GPIO generic for all uart drive=
+rs.
 >
-> With your change it's possible to have a DTS where GPIO line defined in =
-a
-> broken way and user won't ever know about it, if they are using platform=
-s
-> without termination support.
+> UART
 >
 
-This behavior is not introduced with this patch, also in the current code =
-the driver
-wont inform the user if it does not make use erroneous defined termination=
- GPIO.
+Right, upper letters should be used.
 
-This patch at least prevents the driver from allocating and holding a GPIO=
- descriptor across
-the drivers lifetime that will never be used.
-
-Furthermore it simplifies the code in patch 2 when we want to set the GPIO=
-, since we can
-skip the check whether or not the termination GPIO is supported by the dri=
-ver.
-
-
+Thanks a lot for the review!
 
 Regards,
 Lino
+
 
