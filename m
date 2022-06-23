@@ -2,64 +2,63 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7482C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 07:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11964C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 07:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbiFWHaO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        id S229476AbiFWHld (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiFWHaN (ORCPT
+        with ESMTP id S230168AbiFWHla (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:30:13 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1ACC4664A;
-        Thu, 23 Jun 2022 00:30:12 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id q6so2184021eji.13;
-        Thu, 23 Jun 2022 00:30:12 -0700 (PDT)
+        Thu, 23 Jun 2022 03:41:30 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894B94667F;
+        Thu, 23 Jun 2022 00:41:27 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id mf9so18885457ejb.0;
+        Thu, 23 Jun 2022 00:41:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=pCJQPDJM0DHo8w0E8CwSS4Lsl1UxwVygfcfBvOi6lBU=;
-        b=C6/QgAodsRzn4CdaNJNeky+ySg7IQkmIY3i0QYuw38cslMhDnXhuTVPgprsKbdZuj4
-         e/RYyr1U3JlHsNFeTInMrWIrHA2/S4S9zMpDb1QSUt1w6w2l4afj7eL/MorC3Ul3D06W
-         vnFpaGQCuzgQPXQgz0C/TEwUHX7TKNN32Yuay0Zj0wdt49nLXV+8QPI9wT8ghE6WuYMZ
-         N9revvgWXirS8O3fEDvvZM45eiveRBwHH76WeaHEM+IwVcGDcEkISr3v4ZwrTOk33rhP
-         0stXI7VCkArNvoOjyyf1GpURPjL1IRXfNx53vj5AkvkgLWecGjQNQkVZbK83Jl4KEwIK
-         cZog==
-X-Gm-Message-State: AJIora8f8b0Au6F9/SS4zZMayJB1cQnWzOI9vzbWGzkUbu4exeelS8MS
-        LE4AMMZOYX7RLaMULAXlFGY=
-X-Google-Smtp-Source: AGRyM1uzgyyn+5wazWdjwR1XOCL14kh/tF9Cc3OS+496AVZLMjXbvILFPpyZx/g8PE1USH6/kwYwKA==
-X-Received: by 2002:a17:906:2a86:b0:711:d8a5:cb0c with SMTP id l6-20020a1709062a8600b00711d8a5cb0cmr6783395eje.426.1655969411375;
-        Thu, 23 Jun 2022 00:30:11 -0700 (PDT)
+        bh=ZVb61+LDQ60uMHssCxzA52VpodCYtCxPvKQczsoS/1g=;
+        b=HVWh8WCV4xy7bwrZ3xEvdRWTNk5kEm3FXnxFq4ihWOrrn9kk3KuCoV/ksv8uKbudbl
+         iNbcC2GktafzMDmPsuAyb2Xi2M++IFJIt99XQTjtK/QTRnkqZq1uu0N13yqf+gYLal/y
+         b9EpkZB/keHs07v4PobB2pSDCJTZ4bUODzYatpy6LvCEN+coSAeqK5URr9Hu5C69gzXm
+         FZtPtzlt+Gry6wEZe9hXzFS6Tw7kkfjiqPX05zfsAfErIiGnQu783ab/tqCDbxLi3tKP
+         Pxm5HXyQ8dadPzH/cKh74rmx5XuPqLvt/W2vVWLDKk+UxtYZtMS7E/wG9km1eBiAjwyy
+         UiKA==
+X-Gm-Message-State: AJIora/RWe5uxmqLhB9S4upxtihkhNB57foyrPlfeBrfn8YpwRhh6bPw
+        uwryPUXtnMzEFllUSpmxkd0=
+X-Google-Smtp-Source: AGRyM1s2wuY4k6dNlSI0R4cdqh9+8L6y5hbgB1bq0e+g38e35h84OG+g2Wa3dMgBb5qJWTGviQlp0A==
+X-Received: by 2002:a17:906:6a1c:b0:70a:fd95:ee6a with SMTP id qw28-20020a1709066a1c00b0070afd95ee6amr6940892ejc.36.1655970086067;
+        Thu, 23 Jun 2022 00:41:26 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id l16-20020aa7cad0000000b0043585bb803fsm8076171edt.25.2022.06.23.00.30.10
+        by smtp.gmail.com with ESMTPSA id la5-20020a170907780500b006f3ef214de7sm10485403ejc.77.2022.06.23.00.41.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 00:30:10 -0700 (PDT)
-Message-ID: <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
-Date:   Thu, 23 Jun 2022 09:30:09 +0200
+        Thu, 23 Jun 2022 00:41:25 -0700 (PDT)
+Message-ID: <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+Date:   Thu, 23 Jun 2022 09:41:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 5/6] serial: Use UART_XMIT_SIZE
+Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
 Content-Language: en-US
 To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        speakup@linux-speakup.org, sparclinux@vger.kernel.org
 References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
- <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -67,43 +66,47 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
-> --- a/include/linux/serial.h
-> +++ b/include/linux/serial.h
-> @@ -9,7 +9,6 @@
->   #ifndef _LINUX_SERIAL_H
->   #define _LINUX_SERIAL_H
+> Per file BOTH_EMPTY defines are littering our source code here and
+> there. Define once in serial.h and create helper for the check
+> too.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+> --- a/arch/mips/ath79/early_printk.c
+> +++ b/arch/mips/ath79/early_printk.c
+> @@ -8,6 +8,7 @@
 >   
-> -#include <asm/page.h>
->   #include <uapi/linux/serial.h>
+>   #include <linux/io.h>
+>   #include <linux/errno.h>
+> +#include <linux/serial.h>
+>   #include <linux/serial_reg.h>
+>   #include <asm/addrspace.h>
+>   #include <asm/setup.h>
+> @@ -29,15 +30,15 @@ static inline void prom_putchar_wait(void __iomem *reg, u32 mask, u32 val)
+>   	} while (1);
+>   }
 >   
->   /* Helper for dealing with UART_LCR_WLEN* defines */
-> @@ -25,11 +24,6 @@ struct async_icount {
->   	__u32	buf_overrun;
->   };
->   
-> -/*
-> - * The size of the serial xmit buffer is 1 page, or 4096 bytes
-> - */
-> -#define SERIAL_XMIT_SIZE PAGE_SIZE
+> -#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
 > -
->   #include <linux/compiler.h>
+>   static void prom_putchar_ar71xx(char ch)
+>   {
+>   	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
 >   
->   #endif /* _LINUX_SERIAL_H */
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 5518b70177b3..1767dee98021 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -296,6 +296,7 @@ struct uart_state {
->   	struct uart_port	*uart_port;
->   };
->   
-> +/* The size of the serial xmit buffer is 1 page, or 4096 bytes */
+> -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+> +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+> +			  UART_LSR_BOTH_EMPTY);
+>   	__raw_writel((unsigned char)ch, base + UART_TX * 4);
+> -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
+> +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+> +			  UART_LSR_BOTH_EMPTY);
 
-That is not completely true, I'd remove the "or" part. Hmm, but then the 
-comment is somehow superfluous as it says what we can see below. So 
-maybe don't add it at all?
-
->   #define UART_XMIT_SIZE	PAGE_SIZE
+Two observations apart from this patch:
+* prom_putchar_wait()'s last two parameters are always the same.
+   One should be removed, i.e. all this simplified.
+* prom_putchar_wait() should be implemented using
+   read_poll_timeout_atomic(), incl. failure/timeout handling.
 
 thanks,
 -- 
