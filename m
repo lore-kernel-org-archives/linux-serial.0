@@ -2,96 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B156CCA47C
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 08:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FA0CCA47C
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 09:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbiFWIZB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        id S231226AbiFWJqn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiFWIZA (ORCPT
+        with ESMTP id S229937AbiFWJql (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:25:00 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D0A48895
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2022 01:24:59 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id fd6so24634448edb.5
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jun 2022 01:24:59 -0700 (PDT)
+        Thu, 23 Jun 2022 05:46:41 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C424949927;
+        Thu, 23 Jun 2022 02:46:39 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id h23so39814731ejj.12;
+        Thu, 23 Jun 2022 02:46:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iPEJUCFh/LGfN07qgp4D4vZfakFgeL5DubV5qPb1vuI=;
-        b=ZJXFZdn7LZ9vkXjzhqyS3/NebCycR1haecnHXNenUjrPneysJnD2YR/e9ZNLQDz064
-         ZnxEEXAeZzrxNmorE3GexHjrNHKd9Tel9VJ9xG87QnWe2DUzCIYWynWtnqzrKHMou0rr
-         oagI4DHcQuOK6XwhGa/8OG+s7b/D4PjProGstowCpjJuk20v7jeB/6KuwNmlSwfnY9Hr
-         CPECaGtaHN2p1/SDIVf6UBSAWbEHg5FY0cQ/wNnD3FTOzFETGOGyTaVhHXV8QVLjlfmN
-         SnMFTlfDJiCrLGUwLjn9Ue3OtwmUntqyz5qQvDGBVoIKDcdCiMqq7pD2apAFsuhCrgOR
-         vWhw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CqZHI78qt9lumbdFWlSiHgcuuijsjPdVdWVBLjHodmk=;
+        b=D38lj8H8nJhIo9qkx/MnZ8wJ1AkNoxYBlHUbMF4zwGLQsc73QZg/eYrvqbxfYv64R1
+         CdXo/2hZprxh0OmqHz63eiVupNkiL4+XXEbcnbk80c7Ovxq+15xb8CTuxVygBkRKOUrn
+         aAba6DsefOi2kHghmRTRYRas8PHUyxqlGxAqfGnmVwOuUg/iBJE70Y3jnebaneuPwRIQ
+         UPutxElfQgar0VmZVnbY6MNeF+wvaMI5vK6qMogMGyzDDlah/j5RuEfM7Fv95zoEX9Vw
+         6RhssvO9KLptXYbzKnUbonEPYK82iRuJ5b8ienIAqEk03TyQJR6UUwsJRMLDmclvDWbV
+         PFaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iPEJUCFh/LGfN07qgp4D4vZfakFgeL5DubV5qPb1vuI=;
-        b=JwFEDCoWa3qSBWZHDQ+QDJv/K9N62c6UZ8zDvS0D3NKDEOsFfW0fp30zn1tM0EKLR8
-         3j0+xRwcT1uc3PTjeB2bOkesfgTxh1mr+Xj1mGfCYmddBIkETuQiraVVaz381Hryy59q
-         MXqUt0U4rFvvfYgpHX3bRX5Wzl8MZQGue5d46UTiNpDuBi8mTj92fiMbUrc5es7M3Vm9
-         BF623hgDKHkx6UxvnfZscDvSZ9rX2U8e5dkE/IR/K/J84G8gQV5LELBQ0BXkzXf3SQgN
-         Qv9q2vi68ZOIe1Y2l8nedlpdLn+GZBRhAzFhYRj4S1OvZDm8l62gD3oG47HJUiXbKDfi
-         c6DA==
-X-Gm-Message-State: AJIora9U2ZDTWCSTwm+z6cwyr9BQdDKbM184KhmZPeSFGKnNB05NgMZP
-        Ms2uwCwGPNZsprAFmIXo3f7d5w==
-X-Google-Smtp-Source: AGRyM1uqdYHMnG6oMpB23aTJs+RrOabEGX9oUQaYpbmrnI/Ldu2XXFpkv22oD3TSMa+JwG0S4Zlf1w==
-X-Received: by 2002:a05:6402:1e95:b0:42a:c466:52ad with SMTP id f21-20020a0564021e9500b0042ac46652admr9170876edf.340.1655972697653;
-        Thu, 23 Jun 2022 01:24:57 -0700 (PDT)
-Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e19-20020a170906315300b00704cf66d415sm10599581eje.13.2022.06.23.01.24.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 01:24:57 -0700 (PDT)
-Message-ID: <cb4ee252-e1dc-1e23-79e4-ae06fb126692@linaro.org>
-Date:   Thu, 23 Jun 2022 10:24:55 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CqZHI78qt9lumbdFWlSiHgcuuijsjPdVdWVBLjHodmk=;
+        b=1p/R2+muDh1qgmwioYpFL+jDgcdTfC/XMO4J+1wZ8PICg+kIcBNWR+HYnoAyF4CChb
+         YyT673YRGysYM8KbclFMlz8rM8mdKIFw8sezvnUi1o38ghhl3FJ8MYzf1TGe4yql4jX0
+         uN7NtEDSte1kQjKEOdhCHj5uLiv0gHliA+xnQT2na0nEWvuhNk0UyRMtRNXVhFXq+Jho
+         a2ITMocXChcLIlSfWdY5TKzq4ZeNmYuO/FzMqbJ54n9cLIFv3gbUoB5rqO/stM38Tkr9
+         NEmuQF0VYVxmyfSSkne9pD1vytPr50b5y7/xrQ3OkYgbh+OoGH2I7hT5BkXWYpW9oPqe
+         2QQg==
+X-Gm-Message-State: AJIora9Q8Q2AGcCYnreocRN1G1qWTGaHLOVM0Gech1ljUR7FEWdoT/sL
+        GVtHgSH3SmFVyxYQ0y6MZDjgcUYAw91e+PKtXbk=
+X-Google-Smtp-Source: AGRyM1tcdDytx3LsBRh8vBYNujZdlq64fb8nbca2bDlIhtR7BJ/rWehDXJzpfzQCwCnDrzBHegri9ri9odY7E19Xv+w=
+X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
+ z15-20020a170906434f00b00711eb76c320mr7344946ejm.636.1655977598189; Thu, 23
+ Jun 2022 02:46:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 05/18] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220622132302.267010-1-tmaimon77@gmail.com>
- <20220622132302.267010-6-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220622132302.267010-6-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-2-LinoSanfilippo@gmx.de>
+ <YrNLtg+BZlwKsBbF@smile.fi.intel.com> <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+In-Reply-To: <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 23 Jun 2022 11:45:57 +0200
+Message-ID: <CAHp75Vd_ix=bJs9k6bYM8S+3f_Pw7Tvs9DhPcZxu1=33T=mQ7A@mail.gmail.com>
+Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if supported
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22/06/2022 15:22, Tomer Maimon wrote:
-> Add binding for the Arbel BMC NPCM8XX Clock controller.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+On Thu, Jun 23, 2022 at 4:00 AM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
+> On 22.06.22 at 19:04, Andy Shevchenko wrote:
+> > On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> >>
+> >> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
+> >> termination is supported by the driver.
+> >
+> > I'm not sure I got the usefulness of this change.
+> > We request GPIO line as optional, so if one is defined it in the DT/ACPI, then
+> > they probably want to (opportunistically) have it>
+> >
+> > With your change it's possible to have a DTS where GPIO line defined in a
+> > broken way and user won't ever know about it, if they are using platforms
+> > without termination support.
+>
+> This behavior is not introduced with this patch, also in the current code the driver
+> wont inform the user if it does not make use erroneous defined termination GPIO.
 
+It does. If a previously stale GPIO resource may have deferred a probe
+and hence one may debug why the driver is not working, after this
+change one may put a stale GPIO resource into DT/ACPI and have nothing
+in the result. Meaning the change relaxes validation which I consider
+is not good.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> This patch at least prevents the driver from allocating and holding a GPIO descriptor across
+> the drivers lifetime that will never be used.
 
+But it's not your issue, if DTS defines it, so the platform has an
+idea about its usage.
 
-Best regards,
-Krzysztof
+> Furthermore it simplifies the code in patch 2 when we want to set the GPIO, since we can
+> skip the check whether or not the termination GPIO is supported by the driver.
+
+That's fine.
+
+-- 
+With Best Regards,
+Andy Shevchenko
