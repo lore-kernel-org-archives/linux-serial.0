@@ -2,38 +2,58 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BE8C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 14:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB49CCA47C
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 14:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbiFWOKr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44892 "EHLO
+        id S230503AbiFWOWy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiFWOKr (ORCPT
+        with ESMTP id S230247AbiFWOWv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:10:47 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9737142489;
-        Thu, 23 Jun 2022 07:10:45 -0700 (PDT)
-Received: from mail-yb1-f178.google.com ([209.85.219.178]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MdeX1-1nVaxG2n7R-00ZdrX; Thu, 23 Jun 2022 16:10:44 +0200
-Received: by mail-yb1-f178.google.com with SMTP id 15so563770ybc.2;
-        Thu, 23 Jun 2022 07:10:43 -0700 (PDT)
-X-Gm-Message-State: AJIora8XmMVdOKlVWYkg79a3UTF1bbFPsdtAxQDfmmHObHI/gi1+nO7v
-        KZKaKM8So0wxCCUThBfbVM8QS5zLF+S51tbYWfo=
-X-Google-Smtp-Source: AGRyM1vu2ZSkm/Pt+nGXc9raGKFWpG1R93fwwvTgqs7o3h5sgHq5bTE/W+B1nhlaeEKf3D0HrCeaA49AGPTGXH8OIc4=
-X-Received: by 2002:a81:b93:0:b0:317:791f:3c0 with SMTP id 141-20020a810b93000000b00317791f03c0mr10368978ywl.42.1655993431168;
- Thu, 23 Jun 2022 07:10:31 -0700 (PDT)
+        Thu, 23 Jun 2022 10:22:51 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BDA443DA;
+        Thu, 23 Jun 2022 07:22:49 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w20so33607026lfa.11;
+        Thu, 23 Jun 2022 07:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jddTL9QD/ReUBIK8e7DEu/2c3B2sdMOmbz7ylbgg8uU=;
+        b=UdndNViC1lHdJAjcXSRoDDIr6TN77FcLRu+YCKR3eVBxGgsbZ7lJbxmF8KPVWNx+1k
+         7SuvoW4pKqtAMSvuflg3/QAzVcBMXxFRrpe9z0LDJE5XYqiGUW0/ZhciCi7cZHXqdMIm
+         WtBSFpKwEsrGROx1aIl5mwHlb3ljWGXW9TQVTJSF1j8gz978P10jgp15xv9+3T6PAXcF
+         8YUzukpaLKNliwihcO2ao/HizK8M1pEh39tjovB95oIGDgrp7QRpLER0KZKhSMmjhwLk
+         QJW4g4T/c+5QvzwShprF9WYbQE6hpfq7wijajKSj8RgnS+NDXv3u6BXvKuzDJfsJ2VvA
+         bOGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jddTL9QD/ReUBIK8e7DEu/2c3B2sdMOmbz7ylbgg8uU=;
+        b=4weovZTlBeOhfnhNuEV+i8uoGcOCvN40Z+bHu031TV55pQYgkRmyUg/QWEBXXw0DTD
+         7U19vHFPdq0+Dy0PL2G4/7XTbKfuGH53cdTnsn99gcN8anLcsCiTyCsViCEoJjLlsIH8
+         xwv2LP3kQkllo+E/EW1xdN8g1nasr2i64vW70k/HjmKhW4yn/LRBwOPgMLlxUnkHYca0
+         D9IStkf8Ir8g+8j7/bGTn7oGSC7A7FrNSDI4l2Fucg9VAKHV6P23TNzNBCbNw300BBLS
+         MgZN+SbJQmMq31YZUxZkcN/qGnH9I2c4Um6WfYm03cvi31pzZX1kAWl+dmarpbOPXo1G
+         JlsA==
+X-Gm-Message-State: AJIora8jYCb9xMviuUyPDia21jdPYin7qkRWZr6Ac8Aopg/hdqu8anWZ
+        GTZVa4f87DtXKFvWscED/8dMRji+sTQtAdY89Sc=
+X-Google-Smtp-Source: AGRyM1u4kTKF1M/+gcdpRyS3zlRbZrXYLNTyR21rReGGI/adWyMDVQRkBDvMt3c2QttvOyzZECBuIq4aM0VQ7Nr0Q7k=
+X-Received: by 2002:a05:6512:15a1:b0:47f:933e:a865 with SMTP id
+ bp33-20020a05651215a100b0047f933ea865mr5336686lfb.200.1655994167914; Thu, 23
+ Jun 2022 07:22:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622132302.267010-1-tmaimon77@gmail.com> <20220622132302.267010-3-tmaimon77@gmail.com>
-In-Reply-To: <20220622132302.267010-3-tmaimon77@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 23 Jun 2022 16:10:13 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3Q-NyfDYPurvK9FFbNn08bGvuxXpGSry5=kRsfu2BZbA@mail.gmail.com>
-Message-ID: <CAK8P3a3Q-NyfDYPurvK9FFbNn08bGvuxXpGSry5=kRsfu2BZbA@mail.gmail.com>
-Subject: Re: [PATCH v5 02/18] clocksource: timer-npcm7xx: Add NPCM845 timer support
-To:     Tomer Maimon <tmaimon77@gmail.com>
+References: <20220621131424.162355-1-tmaimon77@gmail.com> <20220621131424.162355-7-tmaimon77@gmail.com>
+ <9a320833-e951-7a0f-e2bd-3f8deb7e705b@wanadoo.fr>
+In-Reply-To: <9a320833-e951-7a0f-e2bd-3f8deb7e705b@wanadoo.fr>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Thu, 23 Jun 2022 17:22:36 +0300
+Message-ID: <CAP6Zq1iaAyhwY9biRCAXr7nbgPwZdyeUV9YU0w3fNmraC6ToPw@mail.gmail.com>
+Subject: Re: [PATCH v4 06/18] clk: npcm8xx: add clock controller
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Cc:     Avi Fishman <avifishman70@gmail.com>,
         Tali Perry <tali.perry1@gmail.com>,
         Joel Stanley <joel@jms.id.au>,
@@ -45,52 +65,266 @@ Cc:     Avi Fishman <avifishman70@gmail.com>,
         Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:y0GPzKr6X2XmJyLU3cWjFZMaH/zxwAK48Jv57Sgl952+TB+5N+j
- ESrSdNlZ8YFnMhkk4Or5Zp3SPBzc+frjDTDNJ5Q7AldkJS9Y3XznXGmxVai3V7Fi5GbLPQ9
- HRdaLTCS5y1IVo1fispDq+lqk21agZBqzxF7CgFl6JfJE354J8YFIN9LuuGLyBzWl1euw6I
- id5zOhZJ55Sa1OndBvUMA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BgDnWiH/xJo=:nr3qgtQFvi35DjnOhogLVX
- AefwCcJHkKobfF6n2DDo4RmhwOYEDMx8v1MHW66C2HPgOg3u80e51TyLopXZ37TBKZkOwJmUe
- Y9EF2OLucFZNM7a+l6/BzpzH2D27ySosjAQ6tWCbLExqt0GJz5w1m6GkSHEDdRLd/m0eNRx6A
- iwnoFXxSX+vg4WhQ3HdKKOCZKET9LvLIAInB4y21IYKNermO7pZ8cYCj/ZF2WJyq5gczG6/YG
- NW84gOaJfKigg32Wn6tdVGO8tNRQQeWM1Zg+pH3d62bhf/643ZBcZQuS2QlJT347dLEPivX64
- +WNXNzcR9xQtpgx0IsIKLscI7cfj3qdEHjT1rhD6mkg28psGgNdOIK1cBOElHNhK/SKQB4P2t
- w2kEHORTnys3F2PZkAmoaRdH+NTa8a9Tkz9OgcMkov1HFbpGcNzydKMAFxNfazyefdMmZCyaM
- riKtfcKunuFabmYHFcfWey3RaPQMzn477wT7yp/vl3kWGAjWaDbvDa5Rv3D/SSSHcfUAPYtEN
- LnEk0d2hlclH+pQ3FNmKtE7+e+RdAR9qOcMy6amxkhXSYoAPu/nRx/aJ7Jz1nvTI1CbVOWFCM
- tD5jwBlWps7MzGbi3n0uCQ38Y/m9BbCQDxLqvTIRu6y2EH7ywj42nicdD1rSIkZlUyqSGHE31
- FjfNkxMI1X7Dn4aVCKPCTVpTG3ESgZDf4MvThyEGcaNKGNQZQTn+l05AUxnlyqlRMoN+1IqVW
- /4H5/nDrwdgr1alhqDP8PpbvCfVGnEGy4KIZHBUUAhEgNDKNHK4jhiu4+L1iCIRQ0ooBRfDQG
- ei3gJ45rCyayyQcPdm2UJrzBkl3ou3hlSqBR1ne9uZ3SV7EV6yQNj5QWQjMuEE9H+C6rtLonN
- GvFKrX5maGYhiWL5F0cbfl9jhTkN0rAN7wscjfkdo=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 3:22 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> Add Nuvoton BMC NPCM845 timer support, The NPCM845 uses the same timer
-> controller as the NPCM750.
->
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Hi Christophe,
 
-I think I've commented on this before: if the timer is the same, you should not
-need any changes to the timer driver, just mark the device node as compatible
-with the older model (as well as its own string) in its "compatible"
-property and
-drop this patch.
+Thanks for your comments
 
-        Arnd
+On Thu, 23 Jun 2022 at 11:08, Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> Le 21/06/2022 =C3=A0 15:14, Tomer Maimon a =C3=A9crit :
+> > Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller which
+> > generates and supplies clocks to all modules within the BMC.
+> >
+> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> > ---
+> >   drivers/clk/Kconfig       |   6 +
+> >   drivers/clk/Makefile      |   1 +
+> >   drivers/clk/clk-npcm8xx.c | 594 +++++++++++++++++++++++++++++++++++++=
++
+> >   3 files changed, 601 insertions(+)
+> >   create mode 100644 drivers/clk/clk-npcm8xx.c
+> >
+>
+> [...]
+>
+> > +static int npcm8xx_clk_probe(struct platform_device *pdev)
+> > +{
+> > +     struct clk_hw_onecell_data *npcm8xx_clk_data;
+> > +     struct device *dev =3D &pdev->dev;
+> > +     void __iomem *clk_base;
+> > +     struct clk_hw *hw;
+> > +     int i;
+> > +
+> > +     npcm8xx_clk_data =3D devm_kzalloc(dev, struct_size(npcm8xx_clk_da=
+ta, hws,
+> > +                                                      NPCM8XX_NUM_CLOC=
+KS),
+> > +                                     GFP_KERNEL);
+> > +     if (!npcm8xx_clk_data)
+> > +             return -ENOMEM;
+> > +
+> > +     clk_base =3D devm_platform_ioremap_resource(pdev, 0);
+> > +     if (IS_ERR(clk_base))
+> > +             return PTR_ERR(clk_base);
+> > +
+> > +     npcm8xx_clk_data->num =3D NPCM8XX_NUM_CLOCKS;
+> > +
+> > +     for (i =3D 0; i < NPCM8XX_NUM_CLOCKS; i++)
+> > +             npcm8xx_clk_data->hws[i] =3D ERR_PTR(-EPROBE_DEFER);
+> > +
+> > +     /* Reference 25MHz clock */
+> > +     hw =3D clk_hw_register_fixed_rate(dev, "refclk", NULL, 0, NPCM8XX=
+_REF_CLK);
+> > +     if (IS_ERR(hw))
+> > +             return PTR_ERR(hw);
+> > +     npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK] =3D hw;
+> > +
+> > +     /* Register plls */
+> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_plls); i++) {
+> > +             const struct npcm8xx_clk_pll_data *pll_data =3D &npcm8xx_=
+plls[i];
+> > +
+> > +             hw =3D npcm8xx_clk_register_pll(dev, clk_base + pll_data-=
+>reg,
+> > +                                           pll_data->name,
+> > +                                           pll_data->parent_name,
+> > +                                           pll_data->flags);
+> > +             if (IS_ERR(hw)) {
+> > +                     dev_err(dev, "npcm8xx_clk: Can't register pll\n")=
+;
+> > +                     goto unregister_refclk;
+>
+> goto err_mux_clk?
+>
+> (so that we unregister what has already been registered in the loop ;
+> and unregister_refclk becomes useless)
+The err_mux_clk related only to npcm8xx_muxes,
+npcm8xx_clk_register_pll calling devm_clk_hw_register function in case
+it fails it will unregister.
+>
+> > +             }
+> > +
+> > +             if (pll_data->onecell_idx >=3D 0)
+> > +                     npcm8xx_clk_data->hws[pll_data->onecell_idx] =3D =
+hw;
+> > +     }
+> > +
+> > +     /* Register fixed dividers */
+> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL1_=
+DIV2,
+> > +                                            NPCM8XX_CLK_S_PLL1, 0, 1, =
+2);
+> > +     if (IS_ERR(hw)) {
+> > +             dev_err(dev, "npcm8xx_clk: Can't register fixed div\n");
+> > +             goto unregister_refclk;
+> > +     }
+> > +
+> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL2_=
+DIV2,
+> > +                                            NPCM8XX_CLK_S_PLL2, 0, 1, =
+2);
+> > +     if (IS_ERR(hw)) {
+> > +             dev_err(dev, "npcm8xx_clk: Can't register pll div2\n");
+> > +             goto unregister_refclk;
+> > +     }
+> > +
+> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PRE_C=
+LK,
+> > +                                            NPCM8XX_CLK_S_CPU_MUX, 0, =
+1, 2);
+> > +     if (IS_ERR(hw)) {
+> > +             dev_err(dev, "npcm8xx_clk: Can't register ckclk div2\n");
+> > +             goto unregister_refclk;
+> > +     }
+> > +
+> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_AXI,
+> > +                                            NPCM8XX_CLK_S_TH, 0, 1, 2)=
+;
+> > +     if (IS_ERR(hw)) {
+> > +             dev_err(dev, "npcm8xx_clk: Can't register axi div2\n");
+> > +             goto unregister_refclk;
+> > +     }
+> > +
+> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_ATB,
+> > +                                            NPCM8XX_CLK_S_AXI, 0, 1, 2=
+);
+> > +     if (IS_ERR(hw)) {
+> > +             dev_err(dev, "npcm8xx_clk: Can't register atb div2\n");
+> > +             goto unregister_refclk;
+> > +     }
+> > +
+> > +     /* Register clock dividers specified in npcm8xx_divs */
+> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_divs); i++) {
+> > +             const struct npcm8xx_clk_div_data *div_data =3D &npcm8xx_=
+divs[i];
+> > +
+> > +             hw =3D devm_clk_hw_register_divider(dev, div_data->name,
+> > +                                               div_data->parent_name,
+> > +                                               div_data->flags,
+> > +                                               clk_base + div_data->re=
+g,
+> > +                                               div_data->shift,
+> > +                                               div_data->width,
+> > +                                               div_data->clk_divider_f=
+lags,
+> > +                                               &npcm8xx_clk_lock);
+> > +             if (IS_ERR(hw)) {
+> > +                     dev_err(dev, "npcm8xx_clk: Can't register div tab=
+le\n");
+> > +                     goto unregister_refclk;
+> > +             }
+> > +
+> > +             if (div_data->onecell_idx >=3D 0)
+> > +                     npcm8xx_clk_data->hws[div_data->onecell_idx] =3D =
+hw;
+> > +     }
+> > +
+> > +     /* Register muxes */
+> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_muxes); i++) {
+> > +             const struct npcm8xx_clk_mux_data *mux_data =3D &npcm8xx_=
+muxes[i];
+> > +
+> > +             hw =3D clk_hw_register_mux_table(dev, mux_data->name,
+> > +                                            mux_data->parent_names,
+> > +                                            mux_data->num_parents,
+> > +                                            mux_data->flags,
+> > +                                            clk_base + NPCM8XX_CLKSEL,
+> > +                                            mux_data->shift,
+> > +                                            mux_data->mask, 0,
+> > +                                            mux_data->table,
+> > +                                            &npcm8xx_clk_lock);
+> > +
+> > +             if (IS_ERR(hw)) {
+> > +                     dev_err(dev, "npcm8xx_clk: Can't register mux\n")=
+;
+> > +                     goto err_mux_clk;
+> > +             }
+> > +
+> > +             if (mux_data->onecell_idx >=3D 0)
+> > +                     npcm8xx_clk_data->hws[mux_data->onecell_idx] =3D =
+hw;
+> > +     }
+> > +
+> > +     return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get,
+> > +                                        npcm8xx_clk_data);
+>
+> If this fails, I think we should also "goto err_mux_clk;"
+Will be fix in V6
+>
+> > +
+> > +err_mux_clk:
+> > +     while (i--) {
+> > +             if (npcm8xx_muxes[i].onecell_idx >=3D 0)
+> > +                     clk_hw_unregister_mux(npcm8xx_clk_data->hws[npcm8=
+xx_muxes[i].onecell_idx]);
+> > +     }
+> > +unregister_refclk:
+> > +     clk_hw_unregister(npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK]);
+> > +     return PTR_ERR(hw);
+> > +}
+>
+> Does a .remove() function is needed to match this error handling path?
+> (or use devm_add_action_or_reset())?
+I am not sure that the remove driver function is needed in the clock
+driver because the clock driver is a service driver for other driver
+modules (same as the Pin controller).
+>
+> CJ
+> > +
+> > +static const struct of_device_id npcm8xx_clk_dt_ids[] =3D {
+> > +     { .compatible =3D "nuvoton,npcm845-clk", },
+> > +     { }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, npcm8xx_clk_dt_ids);
+> > +
+> > +static struct platform_driver npcm8xx_clk_driver =3D {
+> > +     .probe  =3D npcm8xx_clk_probe,
+> > +     .driver =3D {
+> > +             .name =3D "npcm8xx_clk",
+> > +             .of_match_table =3D npcm8xx_clk_dt_ids,
+> > +     },
+> > +};
+> > +
+> > +static int __init npcm8xx_clk_driver_init(void)
+> > +{
+> > +     return platform_driver_register(&npcm8xx_clk_driver);
+> > +}
+> > +arch_initcall(npcm8xx_clk_driver_init);
+> > +
+>
+
+Best regards,
+
+Tomer
