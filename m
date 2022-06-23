@@ -2,57 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E05F7C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 07:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7482C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 07:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbiFWH1J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S230119AbiFWHaO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiFWH1F (ORCPT
+        with ESMTP id S229643AbiFWHaN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:27:05 -0400
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394A346644;
-        Thu, 23 Jun 2022 00:27:05 -0700 (PDT)
-Received: by mail-ed1-f50.google.com with SMTP id c13so22760641eds.10;
-        Thu, 23 Jun 2022 00:27:05 -0700 (PDT)
+        Thu, 23 Jun 2022 03:30:13 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1ACC4664A;
+        Thu, 23 Jun 2022 00:30:12 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id q6so2184021eji.13;
+        Thu, 23 Jun 2022 00:30:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=c6yTXw2yLdl9FUORd9XTbKmD+hTxds6vw24+wNHfO/4=;
-        b=zSRvEq15hRO2HmEqg+TYmyX8wFtW6aGVy7PgvU+fxtuyVW/O0LR2YcNMhd8l2DXf4X
-         iUcPkoId1Apwb7uW6FgFQJwEkZhbA5yf94QaVNDta+vbWN0R+qiaN8CzA26msUtESkNX
-         Q/QUkYVL1ir2I1GRHNDKEGCcrKgIuUcDFz4tL0a/didrdVab7i7psLSyDnFFRg2PBv5E
-         5vRdfFqWpvvLc0A3rd5kEFeP4OTO/SUz6s9ja+N1HiON1dm6x+RJi3/pIRdTQWBxbPGr
-         PToV62FoWeIMvTO/TgDwvJnGWHike2nlWccUCyPm4pnLlkgFiFsXN3K42q/ayQna41qK
-         XVqQ==
-X-Gm-Message-State: AJIora8cbDa09xmmZMwUW2FWdNP/26GJvygb0Z72KzTs2eQNqN9nPXEo
-        Nu5QYc7uwFzpnHDfNhsGUS/0sw5En/EDPg==
-X-Google-Smtp-Source: AGRyM1usnp8oNx386pFZFnzY99wkX+HjfCw1BQHBoibJwaqXa10OQnbcyUmfTndfrn2Xb7sslpwccg==
-X-Received: by 2002:a50:fb13:0:b0:435:90d1:19ca with SMTP id d19-20020a50fb13000000b0043590d119camr9167197edq.159.1655969223708;
-        Thu, 23 Jun 2022 00:27:03 -0700 (PDT)
+        bh=pCJQPDJM0DHo8w0E8CwSS4Lsl1UxwVygfcfBvOi6lBU=;
+        b=C6/QgAodsRzn4CdaNJNeky+ySg7IQkmIY3i0QYuw38cslMhDnXhuTVPgprsKbdZuj4
+         e/RYyr1U3JlHsNFeTInMrWIrHA2/S4S9zMpDb1QSUt1w6w2l4afj7eL/MorC3Ul3D06W
+         vnFpaGQCuzgQPXQgz0C/TEwUHX7TKNN32Yuay0Zj0wdt49nLXV+8QPI9wT8ghE6WuYMZ
+         N9revvgWXirS8O3fEDvvZM45eiveRBwHH76WeaHEM+IwVcGDcEkISr3v4ZwrTOk33rhP
+         0stXI7VCkArNvoOjyyf1GpURPjL1IRXfNx53vj5AkvkgLWecGjQNQkVZbK83Jl4KEwIK
+         cZog==
+X-Gm-Message-State: AJIora8f8b0Au6F9/SS4zZMayJB1cQnWzOI9vzbWGzkUbu4exeelS8MS
+        LE4AMMZOYX7RLaMULAXlFGY=
+X-Google-Smtp-Source: AGRyM1uzgyyn+5wazWdjwR1XOCL14kh/tF9Cc3OS+496AVZLMjXbvILFPpyZx/g8PE1USH6/kwYwKA==
+X-Received: by 2002:a17:906:2a86:b0:711:d8a5:cb0c with SMTP id l6-20020a1709062a8600b00711d8a5cb0cmr6783395eje.426.1655969411375;
+        Thu, 23 Jun 2022 00:30:11 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id w15-20020a170906480f00b007262a1c8d20sm132852ejq.19.2022.06.23.00.27.02
+        by smtp.gmail.com with ESMTPSA id l16-20020aa7cad0000000b0043585bb803fsm8076171edt.25.2022.06.23.00.30.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 00:27:03 -0700 (PDT)
-Message-ID: <7a7cb1e4-7d74-6569-9fcc-d6a88b917deb@kernel.org>
-Date:   Thu, 23 Jun 2022 09:27:02 +0200
+        Thu, 23 Jun 2022 00:30:10 -0700 (PDT)
+Message-ID: <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
+Date:   Thu, 23 Jun 2022 09:30:09 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 4/6] serial: 8250: Use C99 array initializer & define
- UART_REG_UNMAPPED
+Subject: Re: [PATCH v2 5/6] serial: Use UART_XMIT_SIZE
 Content-Language: en-US
 To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
 References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
- <20220621124958.3342-5-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220621124958.3342-5-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -60,14 +67,45 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
-> Use C99 array initializer insteads of comments and make unmapped checks
-> more obvious.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> --- a/include/linux/serial.h
+> +++ b/include/linux/serial.h
+> @@ -9,7 +9,6 @@
+>   #ifndef _LINUX_SERIAL_H
+>   #define _LINUX_SERIAL_H
+>   
+> -#include <asm/page.h>
+>   #include <uapi/linux/serial.h>
+>   
+>   /* Helper for dealing with UART_LCR_WLEN* defines */
+> @@ -25,11 +24,6 @@ struct async_icount {
+>   	__u32	buf_overrun;
+>   };
+>   
+> -/*
+> - * The size of the serial xmit buffer is 1 page, or 4096 bytes
+> - */
+> -#define SERIAL_XMIT_SIZE PAGE_SIZE
+> -
+>   #include <linux/compiler.h>
+>   
+>   #endif /* _LINUX_SERIAL_H */
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 5518b70177b3..1767dee98021 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -296,6 +296,7 @@ struct uart_state {
+>   	struct uart_port	*uart_port;
+>   };
+>   
+> +/* The size of the serial xmit buffer is 1 page, or 4096 bytes */
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+That is not completely true, I'd remove the "or" part. Hmm, but then the 
+comment is somehow superfluous as it says what we can see below. So 
+maybe don't add it at all?
 
+>   #define UART_XMIT_SIZE	PAGE_SIZE
 
+thanks,
 -- 
 js
 suse labs
