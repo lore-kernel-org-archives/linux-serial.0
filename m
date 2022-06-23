@@ -2,102 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C701ACCA481
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 01:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA608C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 02:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233187AbiFWB2Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        id S235040AbiFWCAF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 22 Jun 2022 22:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343614AbiFWB2K (ORCPT
+        with ESMTP id S232529AbiFWCAE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Jun 2022 21:28:10 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6688C1758A;
-        Wed, 22 Jun 2022 18:28:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655947684; x=1687483684;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FVJa2+JGTCHuOb6NnEu37R8kKk2s4YcOMsTCEJXQcog=;
-  b=nfK/ZSbT8CgjOScdaM/5lU3+AFNNAHdVtN63K59q6p/2ndNOu+jQ0QxF
-   crmKLVR5FMXrDzw35gYybMUWf8uMIa/X1drK+3Sze5WjRWiZCBHQ+AdQZ
-   exrm3rdZ65qyUnOubB9ssJDCbLhu858mwwaLVF8v6BeBnWFSTd+sWve8C
-   q5slLBfgVZzEANLm4AYG2A8KT2/UzEKVZBObiNCieOmB1X0ASvpcysuhZ
-   0K3EZkLqC975pBk+PvIDO4Lzl8dHjTHSw7TR5HtYChOeuMC+cTAOqhbNF
-   7m2mtUPnKOg6nDVk/sbcJhHGhYyil9p+mVsPjDRqJElW9BwatCvKE7Ao/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263625916"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="263625916"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 18:28:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="730624806"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Jun 2022 18:27:59 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4BdW-0000Fq-N0;
-        Thu, 23 Jun 2022 01:27:58 +0000
-Date:   Thu, 23 Jun 2022 08:25:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, quic_msavaliy@quicinc.com,
-        dianders@chromium.org, mka@chromium.org, swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: Re: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate()
- which otherwise could return a sub-optimal clock rate.
-Message-ID: <202206230849.dxzRCvaU-lkp@intel.com>
-References: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
+        Wed, 22 Jun 2022 22:00:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4841A8;
+        Wed, 22 Jun 2022 19:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655949568;
+        bh=eHLrXoaVIZ1xfowGuPkrjSutjDijEW9mNY1mSSTy7Hs=;
+        h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:In-Reply-To;
+        b=dVxayAJtkrKhwCe8TAok0nyRmqcUoR/obTtkgJ73SdCpCAfxI1YvayXkd8jAABJLB
+         RhPekNgr0zWGV2msj/svCbaK12vILTcFW3eIrOuT9JcmBLN40QZ/R2E2RJehlrvftT
+         3/v/3A4rQoe0JRZjUBhqsdiilf1CuQF7cma0tkIM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.2.181]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6bk4-1nbzTy32Cc-0180Px; Thu, 23
+ Jun 2022 03:59:28 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
+ supported
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-2-LinoSanfilippo@gmx.de>
+ <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+Message-ID: <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+Date:   Thu, 23 Jun 2022 03:59:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
+In-Reply-To: <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:1h6TWrYpfJlbjpVfY8XbPGnncDZ0s81dGshYVaZQhCahGxzh20d
+ 2PQcSUMKU/60rn4UawD2s2L9Eovlnw35HjykR4G7onljbtwQ5t8NoZpI22IBCPWvcA/ucDP
+ /fDNCkCCt77EOIWr/2DQVypWMx2/R0HhEpktSIgvK96AFXuPZMAxtGGdqtvHpHiXvTg/679
+ hNatqpKiYPA+mYDPULOmQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:J6FyruJLVLI=:AUQtvNTc+wsJKhm6A2Ij/2
+ BVwnrDgOse//leMfUapxhuBGd/5ButtZsKBy1oOEXJ0NSbaku34B+ylYPHJ1UJVWy5KO/RMfg
+ x82ZksE29wEETS3T+6x2R8QKRn32qfehAF6lPQHmWur5BjWjIkgT5MQnZipUWpfh+JtjM7pFb
+ FMyKOFg0L6HQTJlOvDLG9rxonntBHwezWN2guUurgVxJTQJsCVHeCG41aolkev7eTvpEFyjqY
+ iNZWxMVsWZlyEooViSeOIx5W8ncMrtkHtx3maorkgEjPEO02JBvMvcJv3PhfvIpRaEDfSzk8a
+ 94MRYWFsvNT0sgYc4GZbJ2hHhxi9iCpmJyLcREIANu1ZTBKebVPNFKq7RP6YKOnjH10e74msL
+ 7THz65ICyn9qQiRXPFugVnOk7peXcg6+qluvSU5baP0lJQtoIpp9zLV+Wtz+KtGDjcNEUWeQG
+ ejXeARIiFkoib2lwGm8MgWuR52uOauUXdZ9ZPF2LlbP/kKzOQjP9w5WSfKpjrYvkqrATs2pYg
+ ndFDDuGlm75vRWMNY0Tgq8NEYCoUNs5rItjrnUQUr0ZOf+ioZ5h4VXnytk5BmaG/6oAF4M0Yi
+ Irl/dw2Q0xlkPlfPxxMNGYc777S7bGf/gZ2po5xlDlP55hDXD/TSb1P/8M3FZvKwAiFIads3Q
+ Cd7O+8qYHfAG8BOeBnQhQkmxMJgPYuYxqvk1SqyBywQRnAAaGhXzWCLLznStF+vvNfzlF0eP0
+ QSFe7nIB77BBen3nBGTLo+5dOy4kxG7Yt0B2puZ5nFVcT9Csszy3j+IStONqlglbrJYAYnS2e
+ 1IqSMIWGe5HEr/+yIJyTbKbGLHQwF1/PhkEMZ4juY7iCKXZpFeShHJp8hk5p/UWGNWz6JrIQ7
+ N7tyqW/Wh6jMhyuU8Tkl2TZ25YPoSladO0gVFKYGqxCn9GNaJuLYIq3DN6Ou07qPnopYk8OQa
+ 1Kzp61yY4YaHuuNVhUry6EhuQo4KB214QN71jWiOOFgjumIzAunN/dMTm6K5bJOa9P8kmtaHE
+ +JKwvacZuosOjMpFdulHzXmb7WaBrQMNMUl4Uce1aja2UEgKp3FnVh4XlZS8yfYLHjnvv+tpt
+ NVqloygSF75oUPV+ByluyzRoCsyrUfkrschW4m65bmNqTYEHShku62SkA==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Vijaya,
 
-Thank you for the patch! Yet something to improve:
+Hi,
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on linus/master v5.19-rc3 next-20220622]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On 22.06.22 at 19:04, Andy Shevchenko wrote:
+> On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
+s
+>> termination is supported by the driver.
+>
+> I'm not sure I got the usefulness of this change.
+> We request GPIO line as optional, so if one is defined it in the DT/ACPI=
+, then
+> they probably want to (opportunistically) have it>
+>
+> With your change it's possible to have a DTS where GPIO line defined in =
+a
+> broken way and user won't ever know about it, if they are using platform=
+s
+> without termination support.
+>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220622-015826
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: arm-randconfig-r016-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230849.dxzRCvaU-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/668659f1481053090a9dbe9c83bd769de527a5c2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220622-015826
-        git checkout 668659f1481053090a9dbe9c83bd769de527a5c2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+This behavior is not introduced with this patch, also in the current code =
+the driver
+wont inform the user if it does not make use erroneous defined termination=
+ GPIO.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This patch at least prevents the driver from allocating and holding a GPIO=
+ descriptor across
+the drivers lifetime that will never be used.
 
-All errors (new ones prefixed by >>):
+Furthermore it simplifies the code in patch 2 when we want to set the GPIO=
+, since we can
+skip the check whether or not the termination GPIO is supported by the dri=
+ver.
 
-   arm-linux-gnueabi-ld: arm-linux-gnueabi-ld: DWARF error: could not find abbrev number 121
-   drivers/tty/serial/qcom_geni_serial.o: in function `find_clk_rate_in_tol':
->> qcom_geni_serial.c:(.text+0x764): undefined reference to `__aeabi_uldivmod'
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+Regards,
+Lino
+
