@@ -2,329 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB49CCA47C
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 14:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90791C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 16:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbiFWOWy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        id S231160AbiFWQJd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbiFWOWv (ORCPT
+        with ESMTP id S229976AbiFWQJ0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:22:51 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BDA443DA;
-        Thu, 23 Jun 2022 07:22:49 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id w20so33607026lfa.11;
-        Thu, 23 Jun 2022 07:22:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jddTL9QD/ReUBIK8e7DEu/2c3B2sdMOmbz7ylbgg8uU=;
-        b=UdndNViC1lHdJAjcXSRoDDIr6TN77FcLRu+YCKR3eVBxGgsbZ7lJbxmF8KPVWNx+1k
-         7SuvoW4pKqtAMSvuflg3/QAzVcBMXxFRrpe9z0LDJE5XYqiGUW0/ZhciCi7cZHXqdMIm
-         WtBSFpKwEsrGROx1aIl5mwHlb3ljWGXW9TQVTJSF1j8gz978P10jgp15xv9+3T6PAXcF
-         8YUzukpaLKNliwihcO2ao/HizK8M1pEh39tjovB95oIGDgrp7QRpLER0KZKhSMmjhwLk
-         QJW4g4T/c+5QvzwShprF9WYbQE6hpfq7wijajKSj8RgnS+NDXv3u6BXvKuzDJfsJ2VvA
-         bOGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jddTL9QD/ReUBIK8e7DEu/2c3B2sdMOmbz7ylbgg8uU=;
-        b=4weovZTlBeOhfnhNuEV+i8uoGcOCvN40Z+bHu031TV55pQYgkRmyUg/QWEBXXw0DTD
-         7U19vHFPdq0+Dy0PL2G4/7XTbKfuGH53cdTnsn99gcN8anLcsCiTyCsViCEoJjLlsIH8
-         xwv2LP3kQkllo+E/EW1xdN8g1nasr2i64vW70k/HjmKhW4yn/LRBwOPgMLlxUnkHYca0
-         D9IStkf8Ir8g+8j7/bGTn7oGSC7A7FrNSDI4l2Fucg9VAKHV6P23TNzNBCbNw300BBLS
-         MgZN+SbJQmMq31YZUxZkcN/qGnH9I2c4Um6WfYm03cvi31pzZX1kAWl+dmarpbOPXo1G
-         JlsA==
-X-Gm-Message-State: AJIora8jYCb9xMviuUyPDia21jdPYin7qkRWZr6Ac8Aopg/hdqu8anWZ
-        GTZVa4f87DtXKFvWscED/8dMRji+sTQtAdY89Sc=
-X-Google-Smtp-Source: AGRyM1u4kTKF1M/+gcdpRyS3zlRbZrXYLNTyR21rReGGI/adWyMDVQRkBDvMt3c2QttvOyzZECBuIq4aM0VQ7Nr0Q7k=
-X-Received: by 2002:a05:6512:15a1:b0:47f:933e:a865 with SMTP id
- bp33-20020a05651215a100b0047f933ea865mr5336686lfb.200.1655994167914; Thu, 23
- Jun 2022 07:22:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220621131424.162355-1-tmaimon77@gmail.com> <20220621131424.162355-7-tmaimon77@gmail.com>
- <9a320833-e951-7a0f-e2bd-3f8deb7e705b@wanadoo.fr>
-In-Reply-To: <9a320833-e951-7a0f-e2bd-3f8deb7e705b@wanadoo.fr>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Thu, 23 Jun 2022 17:22:36 +0300
-Message-ID: <CAP6Zq1iaAyhwY9biRCAXr7nbgPwZdyeUV9YU0w3fNmraC6ToPw@mail.gmail.com>
-Subject: Re: [PATCH v4 06/18] clk: npcm8xx: add clock controller
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
+        Thu, 23 Jun 2022 12:09:26 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523B122282;
+        Thu, 23 Jun 2022 09:09:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656000540;
+        bh=LVfs23vytr0zimb1O5cVH3Onv4wtchEeptMsy7Lizb8=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=aP70jm3yuTSxnnWrofiS/XAV0Rq51NX9yWAW5auMxsH295cKp8c7M5JjYMH08N4tA
+         hw6qkz9cRLISCJtqFAeEz80+7acYUTLVmfjTe4E7QBnGmU1k3J18EUVDgOlxCjxPpQ
+         Unvkxip1Q5Y5YuRxGZAIVL9tCk8cuYWvOMXENXU0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.3.134]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4hvR-1ndi2N1AFb-011fcS; Thu, 23
+ Jun 2022 18:09:00 +0200
+Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
+ supported
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-2-LinoSanfilippo@gmx.de>
+ <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+ <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+ <CAHp75Vd_ix=bJs9k6bYM8S+3f_Pw7Tvs9DhPcZxu1=33T=mQ7A@mail.gmail.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <52ea773c-b5b0-fc4d-9b85-022676778af7@gmx.de>
+Date:   Thu, 23 Jun 2022 18:08:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <CAHp75Vd_ix=bJs9k6bYM8S+3f_Pw7Tvs9DhPcZxu1=33T=mQ7A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:09XTQUkSt2KXRLTcHveNlWJxbi5ICmeBBHYjgPq0t9NN6SR5HoN
+ JNMAOBmYFpLQyJvY2jUS6XHEgS07YECTGNZdYfIB2Tv/Zgij25TFOcRXoavvP9rvqroBfUr
+ RnrR/naa6+i/5ahobZX0fXMOdICMNhGrUU+xf5QyMln54NkSawBRiC32TBc3WWcW3KSfdjZ
+ Kr66M2gS3fbtPD1+8MMBw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EUuBWbEln+g=:k8XzOmHstXmjcO9E8XODLS
+ wOIV1JjDZZww3YWcaEYximVeITRW4FoZv4d+of6VLVNpMcsOXwu4WGApKcDkRVKPGelsn5ct9
+ 9aiHcuBSHmt2eOT5NhbZRY1zGJBXKO5enRVawMJW0BZF5E/UKeZqb3Ye/CpdppusNzMm3/C/W
+ AumT79XHSE1VvTmisrbBdWw6/yKS/5dvKGyBRF54dUVeWsL6JazUvKNdfHl8Z8lFZKq3Udes7
+ P1Xi0qmjA0IRiL305amODwDzkQSQOC36K8qX+Zqv6lJ9aD7h7wWyhSVs/ZTxt34m9M8B5YoBN
+ /q1+03gYj0JD9B27AggWWYPIxVwApUP6jhkNLMmXOzn1q5BOpn1qBxCf8ZUjPEGc0ZsQ9o/Wc
+ fAUV8fEXqeppeQdRN0XprCTecqgANaPfsC0BeSd2ZsDoxRPrjAYgVU6/cNoyIukHlvijvsZhO
+ jSgxze6JXnT7LCYPhGmG7yrFk6+VVEQy3jglhBO2XTYLXzUwyPBVF77GETVr3g+NqY9iYnBNC
+ l1gB8Np2z8VGFk6M3vREm2tItnFjXf5AfvuQVKu0jOjV7aVye6hyt4JS/Q0IfuKoOkRGOwyZs
+ LvIDH+tcSKPuy+yMsb7XMS9Bf1QDCQUSZvtvAhlteMAC+yb5XktFRFCnpu+dw06CVO7tbTKwC
+ vgr/nkTfKN6X7zJhp2J4/KrlSFHxW/FBm8M5itVxSpqWrYwCSCMa5qtirB4G5oXjApaXR5D95
+ VAm36lC/Bd6+xhOvVNY0u5MNNOlX5sl7W3/iyQ7WEFBAm5JPBaUhQYEH9/sL+pg5ce6yoYRdx
+ mpRb6AMK/53Y5ArRywj/J8LikQ4ZTglp/t5mnqy2QLjerMlXsl9ghWIi7ZOy9GaEAlnfLymBa
+ sjWpjU4L0sMbMzCINLawm0siI0I+2uwHwXTgUCapxRxJ/t9foBh9d4Z0t0/i9OSCYc1DFFKkc
+ MmnDoqs7jiimrl7BXYdGjjTNc524DsAelHgklrwL2mqrU1r9y3S/i33ZaJgCLM+/gLRYz4+XR
+ j0LdlX9aKsLRv5zvcDKqFeZcZ/cNSTjy+w/9xEJRAOIwILoz9YGxdBKCiZGJclh2Ie56QncCa
+ HaEfQchx7lkRERTPzx3VaTmjMR4summMTYSQRxq/KUHLUIQhvAtsbRXug==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Christophe,
-
-Thanks for your comments
-
-On Thu, 23 Jun 2022 at 11:08, Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
+On 23.06.22 at 11:45, Andy Shevchenko wrote:
+> On Thu, Jun 23, 2022 at 4:00 AM Lino Sanfilippo <LinoSanfilippo@gmx.de> =
+wrote:
+>> On 22.06.22 at 19:04, Andy Shevchenko wrote:
+>>> On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+>>>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>>>
+>>>> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 =
+bus
+>>>> termination is supported by the driver.
+>>>
+>>> I'm not sure I got the usefulness of this change.
+>>> We request GPIO line as optional, so if one is defined it in the DT/AC=
+PI, then
+>>> they probably want to (opportunistically) have it>
+>>>
+>>> With your change it's possible to have a DTS where GPIO line defined i=
+n a
+>>> broken way and user won't ever know about it, if they are using platfo=
+rms
+>>> without termination support.
+>>
+>> This behavior is not introduced with this patch, also in the current co=
+de the driver
+>> wont inform the user if it does not make use erroneous defined terminat=
+ion GPIO.
 >
-> Le 21/06/2022 =C3=A0 15:14, Tomer Maimon a =C3=A9crit :
-> > Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller which
-> > generates and supplies clocks to all modules within the BMC.
-> >
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-> >   drivers/clk/Kconfig       |   6 +
-> >   drivers/clk/Makefile      |   1 +
-> >   drivers/clk/clk-npcm8xx.c | 594 +++++++++++++++++++++++++++++++++++++=
-+
-> >   3 files changed, 601 insertions(+)
-> >   create mode 100644 drivers/clk/clk-npcm8xx.c
-> >
->
-> [...]
->
-> > +static int npcm8xx_clk_probe(struct platform_device *pdev)
-> > +{
-> > +     struct clk_hw_onecell_data *npcm8xx_clk_data;
-> > +     struct device *dev =3D &pdev->dev;
-> > +     void __iomem *clk_base;
-> > +     struct clk_hw *hw;
-> > +     int i;
-> > +
-> > +     npcm8xx_clk_data =3D devm_kzalloc(dev, struct_size(npcm8xx_clk_da=
-ta, hws,
-> > +                                                      NPCM8XX_NUM_CLOC=
-KS),
-> > +                                     GFP_KERNEL);
-> > +     if (!npcm8xx_clk_data)
-> > +             return -ENOMEM;
-> > +
-> > +     clk_base =3D devm_platform_ioremap_resource(pdev, 0);
-> > +     if (IS_ERR(clk_base))
-> > +             return PTR_ERR(clk_base);
-> > +
-> > +     npcm8xx_clk_data->num =3D NPCM8XX_NUM_CLOCKS;
-> > +
-> > +     for (i =3D 0; i < NPCM8XX_NUM_CLOCKS; i++)
-> > +             npcm8xx_clk_data->hws[i] =3D ERR_PTR(-EPROBE_DEFER);
-> > +
-> > +     /* Reference 25MHz clock */
-> > +     hw =3D clk_hw_register_fixed_rate(dev, "refclk", NULL, 0, NPCM8XX=
-_REF_CLK);
-> > +     if (IS_ERR(hw))
-> > +             return PTR_ERR(hw);
-> > +     npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK] =3D hw;
-> > +
-> > +     /* Register plls */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_plls); i++) {
-> > +             const struct npcm8xx_clk_pll_data *pll_data =3D &npcm8xx_=
-plls[i];
-> > +
-> > +             hw =3D npcm8xx_clk_register_pll(dev, clk_base + pll_data-=
->reg,
-> > +                                           pll_data->name,
-> > +                                           pll_data->parent_name,
-> > +                                           pll_data->flags);
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register pll\n")=
-;
-> > +                     goto unregister_refclk;
->
-> goto err_mux_clk?
->
-> (so that we unregister what has already been registered in the loop ;
-> and unregister_refclk becomes useless)
-The err_mux_clk related only to npcm8xx_muxes,
-npcm8xx_clk_register_pll calling devm_clk_hw_register function in case
-it fails it will unregister.
->
-> > +             }
-> > +
-> > +             if (pll_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[pll_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     /* Register fixed dividers */
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL1_=
-DIV2,
-> > +                                            NPCM8XX_CLK_S_PLL1, 0, 1, =
-2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register fixed div\n");
-> > +             goto unregister_refclk;
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL2_=
-DIV2,
-> > +                                            NPCM8XX_CLK_S_PLL2, 0, 1, =
-2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register pll div2\n");
-> > +             goto unregister_refclk;
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PRE_C=
-LK,
-> > +                                            NPCM8XX_CLK_S_CPU_MUX, 0, =
-1, 2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register ckclk div2\n");
-> > +             goto unregister_refclk;
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_AXI,
-> > +                                            NPCM8XX_CLK_S_TH, 0, 1, 2)=
-;
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register axi div2\n");
-> > +             goto unregister_refclk;
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_ATB,
-> > +                                            NPCM8XX_CLK_S_AXI, 0, 1, 2=
-);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register atb div2\n");
-> > +             goto unregister_refclk;
-> > +     }
-> > +
-> > +     /* Register clock dividers specified in npcm8xx_divs */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_divs); i++) {
-> > +             const struct npcm8xx_clk_div_data *div_data =3D &npcm8xx_=
-divs[i];
-> > +
-> > +             hw =3D devm_clk_hw_register_divider(dev, div_data->name,
-> > +                                               div_data->parent_name,
-> > +                                               div_data->flags,
-> > +                                               clk_base + div_data->re=
-g,
-> > +                                               div_data->shift,
-> > +                                               div_data->width,
-> > +                                               div_data->clk_divider_f=
-lags,
-> > +                                               &npcm8xx_clk_lock);
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register div tab=
-le\n");
-> > +                     goto unregister_refclk;
-> > +             }
-> > +
-> > +             if (div_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[div_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     /* Register muxes */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_muxes); i++) {
-> > +             const struct npcm8xx_clk_mux_data *mux_data =3D &npcm8xx_=
-muxes[i];
-> > +
-> > +             hw =3D clk_hw_register_mux_table(dev, mux_data->name,
-> > +                                            mux_data->parent_names,
-> > +                                            mux_data->num_parents,
-> > +                                            mux_data->flags,
-> > +                                            clk_base + NPCM8XX_CLKSEL,
-> > +                                            mux_data->shift,
-> > +                                            mux_data->mask, 0,
-> > +                                            mux_data->table,
-> > +                                            &npcm8xx_clk_lock);
-> > +
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register mux\n")=
-;
-> > +                     goto err_mux_clk;
-> > +             }
-> > +
-> > +             if (mux_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[mux_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get,
-> > +                                        npcm8xx_clk_data);
->
-> If this fails, I think we should also "goto err_mux_clk;"
-Will be fix in V6
->
-> > +
-> > +err_mux_clk:
-> > +     while (i--) {
-> > +             if (npcm8xx_muxes[i].onecell_idx >=3D 0)
-> > +                     clk_hw_unregister_mux(npcm8xx_clk_data->hws[npcm8=
-xx_muxes[i].onecell_idx]);
-> > +     }
-> > +unregister_refclk:
-> > +     clk_hw_unregister(npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK]);
-> > +     return PTR_ERR(hw);
-> > +}
->
-> Does a .remove() function is needed to match this error handling path?
-> (or use devm_add_action_or_reset())?
-I am not sure that the remove driver function is needed in the clock
-driver because the clock driver is a service driver for other driver
-modules (same as the Pin controller).
->
-> CJ
-> > +
-> > +static const struct of_device_id npcm8xx_clk_dt_ids[] =3D {
-> > +     { .compatible =3D "nuvoton,npcm845-clk", },
-> > +     { }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, npcm8xx_clk_dt_ids);
-> > +
-> > +static struct platform_driver npcm8xx_clk_driver =3D {
-> > +     .probe  =3D npcm8xx_clk_probe,
-> > +     .driver =3D {
-> > +             .name =3D "npcm8xx_clk",
-> > +             .of_match_table =3D npcm8xx_clk_dt_ids,
-> > +     },
-> > +};
-> > +
-> > +static int __init npcm8xx_clk_driver_init(void)
-> > +{
-> > +     return platform_driver_register(&npcm8xx_clk_driver);
-> > +}
-> > +arch_initcall(npcm8xx_clk_driver_init);
-> > +
+> It does. If a previously stale GPIO resource may have deferred a probe
+> and hence one may debug why the driver is not working, after this
+> change one may put a stale GPIO resource into DT/ACPI and have nothing
+> in the result. Meaning the change relaxes validation which I consider
+> is not good.
 >
 
-Best regards,
+Ok I see the point. So what about changing it to:
 
-Tomer
+	if (port->rs485_term_gpio &&
+	    !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
+		dev_warn(port->dev,
+			"%s (%d): RS485 termination gpio not supported by driver\n",
+			port->name, port->line);
+		devm_gpiod_put(dev, port->rs485_term_gpio);
+		port->rs485_term_gpio =3D NULL;
+	}
+
+This would also be consistent to the warnings we print in uart_sanitize_se=
+rial_rs485() for invalid
+RS485 settings.
+
+
+Regards,
+Lino
+
+
+
