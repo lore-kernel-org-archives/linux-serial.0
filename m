@@ -2,111 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FA0CCA47C
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 09:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59824CCA480
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jun 2022 10:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiFWJqn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
+        id S230324AbiFWKQ1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiFWJql (ORCPT
+        with ESMTP id S230159AbiFWKQ0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:46:41 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C424949927;
-        Thu, 23 Jun 2022 02:46:39 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id h23so39814731ejj.12;
-        Thu, 23 Jun 2022 02:46:39 -0700 (PDT)
+        Thu, 23 Jun 2022 06:16:26 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3090849FA4;
+        Thu, 23 Jun 2022 03:16:26 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id c65so4781615edf.4;
+        Thu, 23 Jun 2022 03:16:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CqZHI78qt9lumbdFWlSiHgcuuijsjPdVdWVBLjHodmk=;
-        b=D38lj8H8nJhIo9qkx/MnZ8wJ1AkNoxYBlHUbMF4zwGLQsc73QZg/eYrvqbxfYv64R1
-         CdXo/2hZprxh0OmqHz63eiVupNkiL4+XXEbcnbk80c7Ovxq+15xb8CTuxVygBkRKOUrn
-         aAba6DsefOi2kHghmRTRYRas8PHUyxqlGxAqfGnmVwOuUg/iBJE70Y3jnebaneuPwRIQ
-         UPutxElfQgar0VmZVnbY6MNeF+wvaMI5vK6qMogMGyzDDlah/j5RuEfM7Fv95zoEX9Vw
-         6RhssvO9KLptXYbzKnUbonEPYK82iRuJ5b8ienIAqEk03TyQJR6UUwsJRMLDmclvDWbV
-         PFaQ==
+        bh=WAgGmVWVOWwerEi+BAH4Lljnu8y7SnGhYb00GohsXcI=;
+        b=UZAbgb+QBE+NUiOZbaeaQbs37/VcrS4+/t7K3VQuriZ1KcWZX1mfDUcCOiel0wOKlD
+         nlc5OYyFb5l4wWVJCOWB/W8j6VYRg82xPXPLpLSY9k1tcgEVXfe+ezFEzFUjPJuFtlf8
+         CmuG4ESOEfKhkYcGdxOe8YtTLCutLkkMOXeIqnQv+IS/LChOqkl3P0axOrmtW+MRiVa+
+         XpafKMx9HsIBDsQD+x/S3+dKVJdM/ihTpsw+JAKLErvxw+x1OPwA86UeQCxvmCiwiF4S
+         QuE6dd/UrPX0yqHgQ3s9JK2Tgs44DamSMFp3YvUSIftAHVS/a8e6s4c8FmciVcZLDSQ4
+         +cwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CqZHI78qt9lumbdFWlSiHgcuuijsjPdVdWVBLjHodmk=;
-        b=1p/R2+muDh1qgmwioYpFL+jDgcdTfC/XMO4J+1wZ8PICg+kIcBNWR+HYnoAyF4CChb
-         YyT673YRGysYM8KbclFMlz8rM8mdKIFw8sezvnUi1o38ghhl3FJ8MYzf1TGe4yql4jX0
-         uN7NtEDSte1kQjKEOdhCHj5uLiv0gHliA+xnQT2na0nEWvuhNk0UyRMtRNXVhFXq+Jho
-         a2ITMocXChcLIlSfWdY5TKzq4ZeNmYuO/FzMqbJ54n9cLIFv3gbUoB5rqO/stM38Tkr9
-         NEmuQF0VYVxmyfSSkne9pD1vytPr50b5y7/xrQ3OkYgbh+OoGH2I7hT5BkXWYpW9oPqe
-         2QQg==
-X-Gm-Message-State: AJIora9Q8Q2AGcCYnreocRN1G1qWTGaHLOVM0Gech1ljUR7FEWdoT/sL
-        GVtHgSH3SmFVyxYQ0y6MZDjgcUYAw91e+PKtXbk=
-X-Google-Smtp-Source: AGRyM1tcdDytx3LsBRh8vBYNujZdlq64fb8nbca2bDlIhtR7BJ/rWehDXJzpfzQCwCnDrzBHegri9ri9odY7E19Xv+w=
-X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
- z15-20020a170906434f00b00711eb76c320mr7344946ejm.636.1655977598189; Thu, 23
- Jun 2022 02:46:38 -0700 (PDT)
+        bh=WAgGmVWVOWwerEi+BAH4Lljnu8y7SnGhYb00GohsXcI=;
+        b=KoMTe3OWZ29m6pq3zn+m3Xz47xKKr+6shkGaPXssDXWQYQhGd387mY9tt4LKp0acJK
+         z2Hh923QVmxDWdFQylj+Fx+M/FMYsLmoNS/vWOjlKJO1AeQYNJc9GTl+Wf71Ge2dq/W/
+         SVSGnyFf1YbbzzfafwB/SKxSAZBR+isCnXfg8VlqiM/ET3IKuyTHW2bV9n89vIduUeWS
+         6S3VrTmVLUheJUUAsgJvfkiApH2wIMBO6oEOE2nrImPd0CjnKCNnhZSpit4/pGObPiyR
+         o3ELRR2XD7FHUO8XFPqFhjmEkbSa5H7TYQ+HAzBcSwRKWQGzpyqPgd8sAW8DS9VRVcv3
+         ZgZA==
+X-Gm-Message-State: AJIora/CgQeMBtpgrGiFDHUHEBewNonZknc9wbinaQPIhPsOU6SyTnga
+        FH83GQba+Ll5BvpvfOfk5KUxp+1OEQY560VBJvU=
+X-Google-Smtp-Source: AGRyM1sSuZjSq7A6HWGZLYY3BlpzlEJnoj0eAD636Y9Xon5vjxM4t5uMTgVMQ7BDVd8jO2E0fYc4iSv4eaJ59vgiG2M=
+X-Received: by 2002:a50:9f6a:0:b0:435:5804:e07 with SMTP id
+ b97-20020a509f6a000000b0043558040e07mr9791666edf.178.1655979384373; Thu, 23
+ Jun 2022 03:16:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-2-LinoSanfilippo@gmx.de>
- <YrNLtg+BZlwKsBbF@smile.fi.intel.com> <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
-In-Reply-To: <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com> <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+ <CAHp75VeKhY6dN7j_yXQXUMhOqRwqQ2yN_qF95U9wU6K4uKPdaQ@mail.gmail.com> <c7115ff1-2a97-f5a0-a0c2-c7c1064af291@kernel.org>
+In-Reply-To: <c7115ff1-2a97-f5a0-a0c2-c7c1064af291@kernel.org>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Jun 2022 11:45:57 +0200
-Message-ID: <CAHp75Vd_ix=bJs9k6bYM8S+3f_Pw7Tvs9DhPcZxu1=33T=mQ7A@mail.gmail.com>
-Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if supported
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Date:   Thu, 23 Jun 2022 12:15:42 +0200
+Message-ID: <CAHp75Vfsy5yY3saSCvCu87E-arifwEZXUNtFMrMn38gJY2LU0g@mail.gmail.com>
+Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "speakup@linux-speakup.org" <speakup@linux-speakup.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 4:00 AM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
-> On 22.06.22 at 19:04, Andy Shevchenko wrote:
-> > On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
-> >> termination is supported by the driver.
+On Thu, Jun 23, 2022 at 10:24 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> On 23. 06. 22, 10:11, Andy Shevchenko wrote:
+> >     * prom_putchar_wait() should be implemented using
+> >        read_poll_timeout_atomic(), incl. failure/timeout handling.
 > >
-> > I'm not sure I got the usefulness of this change.
-> > We request GPIO line as optional, so if one is defined it in the DT/ACPI, then
-> > they probably want to (opportunistically) have it>
-> >
-> > With your change it's possible to have a DTS where GPIO line defined in a
-> > broken way and user won't ever know about it, if they are using platforms
-> > without termination support.
+> > Not sure since it is an early stage and scheduler might not work as
+> > expected. Conversions to iopoll.h macros bitten us a few times already.
 >
-> This behavior is not introduced with this patch, also in the current code the driver
-> wont inform the user if it does not make use erroneous defined termination GPIO.
+> Except _atomic does not use scheduler :).
 
-It does. If a previously stale GPIO resource may have deferred a probe
-and hence one may debug why the driver is not working, after this
-change one may put a stale GPIO resource into DT/ACPI and have nothing
-in the result. Meaning the change relaxes validation which I consider
-is not good.
+Sorry for a bit misleading comment, but I chased it down, so this what
+I had in mind when commenting:
+be24c6a71ecf ("soc: qcom: rpmh-rsc: Don't use ktime for timeout in
+write_tcs_reg_sync()")
 
-> This patch at least prevents the driver from allocating and holding a GPIO descriptor across
-> the drivers lifetime that will never be used.
+(Yes, it's about _atomic variant)
 
-But it's not your issue, if DTS defines it, so the platform has an
-idea about its usage.
-
-> Furthermore it simplifies the code in patch 2 when we want to set the GPIO, since we can
-> skip the check whether or not the termination GPIO is supported by the driver.
-
-That's fine.
+Means we need to use those macros with care.
 
 -- 
 With Best Regards,
