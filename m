@@ -2,114 +2,142 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A337C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jun 2022 20:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA7BC43334
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jun 2022 20:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbiFXUA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jun 2022 16:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
+        id S231534AbiFXUme (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Jun 2022 16:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiFXUA2 (ORCPT
+        with ESMTP id S231518AbiFXUme (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jun 2022 16:00:28 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24F1823B0;
-        Fri, 24 Jun 2022 13:00:27 -0700 (PDT)
+        Fri, 24 Jun 2022 16:42:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040D463630;
+        Fri, 24 Jun 2022 13:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656100828; x=1687636828;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=aPeFMT2xLIQ7Nk30nxXxTOVKrUtn7QWE8ufSym4FWP4=;
-  b=Jfr+zA2Zi+S6r861UZJbOj+bH7MuRgSGignG6tHCcP8/+Noy0ARcyitk
-   4FXV13wtRyUB9+T5xE9WQyrCB8s9Veo5Ljv1wpOSEXHqkMMvBWyIfQH1o
-   zAzVKwj784ejMcOkDdfxEydUJx8Hz/D2YglnKAnVqC26t25brcVfFcVy3
-   CShItkdTUY9uaJW5vKhUxblSXxMDj+ywI+WPJntwMkq+00wSVyjs2PGGy
-   fsSXFlYFkvxo4JQpHQKuFuVxCJ3KLEDNYQxVYpoBY1/77ltpc2qmDEmnj
-   +vRWEnkd5WRV6lzMkcXhFFstLGmi4tTZeCeZhKAL/nXRhYvYWcU8sYDne
+  t=1656103353; x=1687639353;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Gi3SedSmi1CW56jyMna7RkNN3gSo+ueP2DFVYUbNY9U=;
+  b=YefmMOMqvvVJvEHGPSKQPiimdM9YM7A/kg4R4YOXzwTW+N51B2JPngLV
+   4nFYRTZ9IalC5azRscGaP49CHo1OTxSzEFboL8AquRzpWCCC9xy8ffs4J
+   FIkr2SDpFM1Sxoi3osPDvcMN4XJGklfTuMjwKGHQMIvFZDdklj5yomIL9
+   P58Ac/+ztsNLbCwL8ZhXMskOn/Gk/kVfwAAlsNh/tddQfwHphf95A7dAu
+   LhpyfiZ8FhH+Fs89lH2yanFc9Lvg/MvKjPVn5t+iNtfr+HqVfu7v9vE8J
+   YqJ8T9ivI0Od2WZw3r7KSZsZQuUe77CVrXq5waFzFukMVkK00hoLthANJ
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="264122718"
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="278633905"
 X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="264122718"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:00:27 -0700
+   d="scan'208";a="278633905"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:42:32 -0700
 X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="645421660"
-Received: from vhavel-mobl.ger.corp.intel.com ([10.251.216.91])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:00:22 -0700
-Date:   Fri, 24 Jun 2022 23:00:13 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
-Subject: Re: [PATCH v2 5/6] serial: Use UART_XMIT_SIZE
-In-Reply-To: <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
-Message-ID: <6fb33489-946f-ad92-df35-7f608420bc7@linux.intel.com>
-References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com> <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com> <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
+   d="scan'208";a="593381014"
+Received: from vhavel-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.216.91])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:42:29 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH v9 0/6] Add RS485 9th bit addressing mode support to DW UART
+Date:   Fri, 24 Jun 2022 23:42:04 +0300
+Message-Id: <20220624204210.11112-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-120668389-1656100826=:2099"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+This patchset adds RS-485 9th bit addressing mode support to the DW
+UART driver and the necessary serial core bits to handle it. The
+addressing mode is configured through ->rs485_config() as was requested
+during the review of the earlier versions. The line configuration
+related ADDRB is still kept in ktermios->c_cflag to be able to take
+account the extra addressing bit while calculating timing, etc. but it
+is set/cleared by ->rs485_config().
 
---8323329-120668389-1656100826=:2099
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-api@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
 
-On Thu, 23 Jun 2022, Jiri Slaby wrote:
+v8 -> v9:
+- Tweak comments (struct fields info & one callback style correction)
+- Add struct layout checks as static_asserts
 
-> On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
-> > --- a/include/linux/serial.h
-> > +++ b/include/linux/serial.h
-> > @@ -9,7 +9,6 @@
-> >   #ifndef _LINUX_SERIAL_H
-> >   #define _LINUX_SERIAL_H
-> >   -#include <asm/page.h>
-> >   #include <uapi/linux/serial.h>
-> >     /* Helper for dealing with UART_LCR_WLEN* defines */
-> > @@ -25,11 +24,6 @@ struct async_icount {
-> >   	__u32	buf_overrun;
-> >   };
-> >   -/*
-> > - * The size of the serial xmit buffer is 1 page, or 4096 bytes
-> > - */
-> > -#define SERIAL_XMIT_SIZE PAGE_SIZE
-> > -
-> >   #include <linux/compiler.h>
-> >     #endif /* _LINUX_SERIAL_H */
-> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> > index 5518b70177b3..1767dee98021 100644
-> > --- a/include/linux/serial_core.h
-> > +++ b/include/linux/serial_core.h
-> > @@ -296,6 +296,7 @@ struct uart_state {
-> >   	struct uart_port	*uart_port;
-> >   };
-> >   +/* The size of the serial xmit buffer is 1 page, or 4096 bytes */
-> 
-> That is not completely true, I'd remove the "or" part. Hmm, but then the
-> comment is somehow superfluous as it says what we can see below. So maybe
-> don't add it at all?
-> 
-> >   #define UART_XMIT_SIZE	PAGE_SIZE
+v7 -> v8:
+- Use anonymous union/struct in serial_rs485 to create "v2" of it
+- Remove a stray newline change
+- Reorder local var declarations
+- Put ktermios param before serial_rs485 for rs485_config
 
-Yeah, the comment is probably not that useful. I managed to get into  
-an "autopilot mode" with a sole goal to preserve the comment rather than 
-thinking/reading it through whether it's worth preserving.
+v6 -> v7:
+- Fixed typos in documentation & comment
+- Changes lsr typing from unsigned int to u16
+
+v5 -> v6:
+- Reorder remaining patches
+- LSR changes are simpler due to helper added by LSR fix series
+- Depend on rs485_struct sanitization on catching much of invalid config
+- In order to be able to alter ADDRB in termios .c_cflag within
+  .rs485_config(), take termios_rwsem and pass ktermios to it.
+- Moved addressing mode setup entirely into .rs485_config()
+- Use ndelay() instead of udelay() (uart_port->frame_time is in nsecs)
+
+
+Ilpo Järvinen (6):
+  serial: 8250: make saved LSR larger
+  serial: 8250: create lsr_save_mask
+  serial: 8250_lpss: Use 32-bit reads
+  serial: take termios_rwsem for ->rs485_config() & pass termios as
+    param
+  serial: Support for RS-485 multipoint addresses
+  serial: 8250_dwlib: Support for 9th bit multipoint addressing
+
+ Documentation/driver-api/serial/driver.rst    |   2 +
+ .../driver-api/serial/serial-rs485.rst        |  26 ++++-
+ drivers/tty/serial/8250/8250.h                |   9 +-
+ drivers/tty/serial/8250/8250_core.c           |   4 +
+ drivers/tty/serial/8250/8250_dw.c             |   2 +-
+ drivers/tty/serial/8250/8250_dwlib.c          | 105 +++++++++++++++++-
+ drivers/tty/serial/8250/8250_exar.c           |  11 +-
+ drivers/tty/serial/8250/8250_fintek.c         |   2 +-
+ drivers/tty/serial/8250/8250_fsl.c            |   2 +-
+ drivers/tty/serial/8250/8250_ingenic.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c        |   2 +-
+ drivers/tty/serial/8250/8250_lpss.c           |   2 +-
+ drivers/tty/serial/8250/8250_omap.c           |   7 +-
+ drivers/tty/serial/8250/8250_pci.c            |   2 +-
+ drivers/tty/serial/8250/8250_port.c           |  20 ++--
+ drivers/tty/serial/amba-pl011.c               |   2 +-
+ drivers/tty/serial/ar933x_uart.c              |   2 +-
+ drivers/tty/serial/atmel_serial.c             |   2 +-
+ drivers/tty/serial/fsl_lpuart.c               |   4 +-
+ drivers/tty/serial/imx.c                      |   2 +-
+ drivers/tty/serial/max310x.c                  |   2 +-
+ drivers/tty/serial/mcf.c                      |   3 +-
+ drivers/tty/serial/omap-serial.c              |   3 +-
+ drivers/tty/serial/sc16is7xx.c                |   2 +-
+ drivers/tty/serial/serial_core.c              |  36 +++++-
+ drivers/tty/serial/stm32-usart.c              |   2 +-
+ drivers/tty/tty_ioctl.c                       |   4 +
+ include/linux/serial_8250.h                   |   7 +-
+ include/linux/serial_core.h                   |   1 +
+ include/uapi/asm-generic/termbits-common.h    |   1 +
+ include/uapi/linux/serial.h                   |  20 +++-
+ 31 files changed, 238 insertions(+), 53 deletions(-)
 
 -- 
- i.
+2.30.2
 
---8323329-120668389-1656100826=:2099--
