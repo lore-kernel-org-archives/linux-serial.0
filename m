@@ -2,114 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02900C43334
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jun 2022 17:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A337C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jun 2022 20:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbiFXRD1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jun 2022 13:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56008 "EHLO
+        id S231408AbiFXUA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 24 Jun 2022 16:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiFXRD0 (ORCPT
+        with ESMTP id S229441AbiFXUA2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jun 2022 13:03:26 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F5137A06
-        for <linux-serial@vger.kernel.org>; Fri, 24 Jun 2022 10:03:25 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id o9so4301624edt.12
-        for <linux-serial@vger.kernel.org>; Fri, 24 Jun 2022 10:03:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=s5nDVvgWy+RryiS6/QVVgyQjkiH7gGyVNqw60wo0/GY=;
-        b=Hhj3cNudPsVKi2Ye5EHXAic9I+DK/940ySoUKVqZcIaogTDDPgCyM0UUx5Etdbl3KV
-         d/KNUegEiDShpeLs8eTZsBT1fPyCOGvJvl6aMViiurIIB9sqCoXzyHeu0j93EXH1DQy0
-         ZPVoaM1Yyr2j5EFf5LpF8fDrwegcnBJE0t0Ex5JLogo1zkXed8EnDf0OFsxCkGe2f59A
-         BqwvQWokfslcVH16hu2sunziqMunyi8x+1cN/tLck5/P8oRPqLH8rrd6hmdfSYwlkmS2
-         loYLWdp+/430NcJtKr9AMk414NhO4UW82aHFWURKSouBQU2rX9dGCS1L9HV1URqqLI1/
-         734A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=s5nDVvgWy+RryiS6/QVVgyQjkiH7gGyVNqw60wo0/GY=;
-        b=u6DGl238kILxxKQDK6VfGAeLf2W1WA5VjZW4uFv9gePkb9nCi8zoSVEKWf/1nMG2Ss
-         ngQ/FYeLfi0VB3ACIKFJSB7fiRaxlCH7I0e/N9slr7Oo8Xcxq084Wz5x1Vz0xdi3PuMm
-         nlUsjYYS+Fa/STzD3l0YzIOCDd5j6MkB3Bul0sDoNxoX2yh/ANwQx2BrQ6VHz5Bd2h/4
-         hfVE9DiI8NueMMNh8kObhjHNKzfIBb19wyg4ppWyu858fwe+1PLIVzb9U1vIiq0FPFvx
-         n7nFZ+Y4UB5ZmJtgSB1UiMaDFFCL8WY1eP8uxfIEGXJNQtriUSAO9D7U7DDJYOo1d4k0
-         Ap9Q==
-X-Gm-Message-State: AJIora+oV0avgTn+ob/1259XqAAMJ6cammf3VARniRATo+bRaXs96tWM
-        Tlg5l1rZiRT3qt+Lvs2zYfDyUC1p9xVVsS8KyY5Mha727DM=
-X-Google-Smtp-Source: AGRyM1vh0qRT+pe405UtXgYrEUsbH/SHnRIGUFVmed1+dGqzBMhAzQ9NFLATdIIFUXbXYCEd4e71hTSB1TavlAPWcmY=
-X-Received: by 2002:aa7:dac2:0:b0:435:76a2:4ebe with SMTP id
- x2-20020aa7dac2000000b0043576a24ebemr71964eds.196.1656090203894; Fri, 24 Jun
- 2022 10:03:23 -0700 (PDT)
+        Fri, 24 Jun 2022 16:00:28 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24F1823B0;
+        Fri, 24 Jun 2022 13:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656100828; x=1687636828;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=aPeFMT2xLIQ7Nk30nxXxTOVKrUtn7QWE8ufSym4FWP4=;
+  b=Jfr+zA2Zi+S6r861UZJbOj+bH7MuRgSGignG6tHCcP8/+Noy0ARcyitk
+   4FXV13wtRyUB9+T5xE9WQyrCB8s9Veo5Ljv1wpOSEXHqkMMvBWyIfQH1o
+   zAzVKwj784ejMcOkDdfxEydUJx8Hz/D2YglnKAnVqC26t25brcVfFcVy3
+   CShItkdTUY9uaJW5vKhUxblSXxMDj+ywI+WPJntwMkq+00wSVyjs2PGGy
+   fsSXFlYFkvxo4JQpHQKuFuVxCJ3KLEDNYQxVYpoBY1/77ltpc2qmDEmnj
+   +vRWEnkd5WRV6lzMkcXhFFstLGmi4tTZeCeZhKAL/nXRhYvYWcU8sYDne
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="264122718"
+X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
+   d="scan'208";a="264122718"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:00:27 -0700
+X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
+   d="scan'208";a="645421660"
+Received: from vhavel-mobl.ger.corp.intel.com ([10.251.216.91])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 13:00:22 -0700
+Date:   Fri, 24 Jun 2022 23:00:13 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-unisoc@lists.infradead.org
+Subject: Re: [PATCH v2 5/6] serial: Use UART_XMIT_SIZE
+In-Reply-To: <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
+Message-ID: <6fb33489-946f-ad92-df35-7f608420bc7@linux.intel.com>
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com> <20220621124958.3342-6-ilpo.jarvinen@linux.intel.com> <e864ffbc-5885-f648-01c4-68a598f942b9@kernel.org>
 MIME-Version: 1.0
-References: <CAAcv5+4C6YekJmVzWqDnbp3O7MJ-Pny4MUp7uvqWzrbCweixTQ@mail.gmail.com>
-In-Reply-To: <CAAcv5+4C6YekJmVzWqDnbp3O7MJ-Pny4MUp7uvqWzrbCweixTQ@mail.gmail.com>
-From:   Mohamed Ali Fodha <fodha.mohamed.ali@gmail.com>
-Date:   Fri, 24 Jun 2022 18:03:12 +0100
-Message-ID: <CAAcv5+4msJnQawknnjaBWG9fNhmhr9CPcLOzZxgQ7A36SGG=Dg@mail.gmail.com>
-Subject: Re: Sending gnss data during suspend doesn't work
-To:     linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323329-120668389-1656100826=:2099"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For information I solved suspend/resume issue by adding following code:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-ret =3D pm_runtime_get_sync(&serdev->dev);
-if (ret < 0) {
-pm_runtime_put_noidle(&serdev->dev);
-goto err_serdev_close;
-}
+--8323329-120668389-1656100826=:2099
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-But I think the hardcoded prepare issue is still valid.
+On Thu, 23 Jun 2022, Jiri Slaby wrote:
 
-Best regards,
-Mohamed Ali
+> On 21. 06. 22, 14:49, Ilpo Järvinen wrote:
+> > --- a/include/linux/serial.h
+> > +++ b/include/linux/serial.h
+> > @@ -9,7 +9,6 @@
+> >   #ifndef _LINUX_SERIAL_H
+> >   #define _LINUX_SERIAL_H
+> >   -#include <asm/page.h>
+> >   #include <uapi/linux/serial.h>
+> >     /* Helper for dealing with UART_LCR_WLEN* defines */
+> > @@ -25,11 +24,6 @@ struct async_icount {
+> >   	__u32	buf_overrun;
+> >   };
+> >   -/*
+> > - * The size of the serial xmit buffer is 1 page, or 4096 bytes
+> > - */
+> > -#define SERIAL_XMIT_SIZE PAGE_SIZE
+> > -
+> >   #include <linux/compiler.h>
+> >     #endif /* _LINUX_SERIAL_H */
+> > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> > index 5518b70177b3..1767dee98021 100644
+> > --- a/include/linux/serial_core.h
+> > +++ b/include/linux/serial_core.h
+> > @@ -296,6 +296,7 @@ struct uart_state {
+> >   	struct uart_port	*uart_port;
+> >   };
+> >   +/* The size of the serial xmit buffer is 1 page, or 4096 bytes */
+> 
+> That is not completely true, I'd remove the "or" part. Hmm, but then the
+> comment is somehow superfluous as it says what we can see below. So maybe
+> don't add it at all?
+> 
+> >   #define UART_XMIT_SIZE	PAGE_SIZE
 
-Le ven. 24 juin 2022 =C3=A0 09:28, Mohamed Ali Fodha
-<fodha.mohamed.ali@gmail.com> a =C3=A9crit :
->
-> Hello,
->
-> I am not able to send data (serdev_device_write(gserial->serdev,
-> standby_cmd, strlen(standby_cmd), MAX_SCHEDULE_TIMEOUT)) to gnss in
-> suspend callback (from sta8089_set_power):
->
-> static const struct gnss_serial_ops sta8089_gserial_ops =3D {
-> .set_power =3D sta8089_set_power,
-> };
->
-> but it works during prepare. To do this I have to patch the following API=
-:
->
-> @@ -21,10 +21,11 @@ struct gnss_serial {
->   enum gnss_serial_pm_state {
->   GNSS_SERIAL_OFF,
->   GNSS_SERIAL_ACTIVE,
->   GNSS_SERIAL_STANDBY,
-> + GNSS_SERIAL_PREPARE,
->  };
->
->  static int gnss_serial_prepare(struct device *dev)
->  {
-> - if (pm_runtime_suspended(dev))
-> - return 1;
-> + struct gnss_serial *gserial =3D dev_get_drvdata(dev);
->
-> - return 0;
-> + return gnss_serial_set_power(gserial, GNSS_SERIAL_PREPARE);
->  }
->
-> Is it normal that sending data during suspend doesn't work?
-> I think there should be a solution to use prepare without patching
-> gnss_serial_prepare.
-> Any ideas please?
->
-> Best regards,
-> Mohamed Ali
+Yeah, the comment is probably not that useful. I managed to get into  
+an "autopilot mode" with a sole goal to preserve the comment rather than 
+thinking/reading it through whether it's worth preserving.
+
+-- 
+ i.
+
+--8323329-120668389-1656100826=:2099--
