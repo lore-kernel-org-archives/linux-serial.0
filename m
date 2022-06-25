@@ -2,100 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7800DC43334
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jun 2022 21:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AEECCA479
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Jun 2022 09:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbiFXVJn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jun 2022 17:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        id S232370AbiFYJh2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Jun 2022 05:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbiFXVJm (ORCPT
+        with ESMTP id S232593AbiFYJh0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jun 2022 17:09:42 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410765000F;
-        Fri, 24 Jun 2022 14:09:41 -0700 (PDT)
+        Sat, 25 Jun 2022 05:37:26 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31EC531DD1;
+        Sat, 25 Jun 2022 02:37:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656104981; x=1687640981;
+  t=1656149846; x=1687685846;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=ocdofbPoJSkkH7D2EiI2VUZPxoQiLPz2hq0ijc7qW+g=;
-  b=miTzazxeeEf2JVbYO+0urn8P62MOt4wWI5o3F56svl0RtmYqcsoWs9f1
-   S8AL9BFq8yEvO0yggsaHbpyHwzzw63tnb7AH/6JY2sWmtYnblu/ToT1Bo
-   Oj+cV7+Vj8nBRpP1wv5JBhyXR+bGCwzosgoahYJISTwxszc5BuiOYMbBk
-   gorViEnFXUQUzqcEpycpeoAFkUk+qSbdBgfLL9bnw1Pt5HIkNfeA/SrUR
-   SEC6vrgqicFDahiX+0G/5PQjp7PH/4g6vI4nZEeo7NIWUnxNRqh2e7yzo
-   4fAHX1yAe4VxbyPp0+2kichMSWXxQHWc8gNCgZMQ9b/uaD7b+pVdBd4sF
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="281140009"
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="281140009"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 14:09:40 -0700
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="835281798"
-Received: from vhavel-mobl.ger.corp.intel.com ([10.251.216.91])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 14:09:36 -0700
-Date:   Sat, 25 Jun 2022 00:09:33 +0300 (EEST)
+  bh=Hh1JhW7xdfdjw2eO3nh9s4vHirxteX9cPVbLbjkqHqw=;
+  b=MxkFY1eCduUu9hXs4ljfssus8mFTpwsbl/m/aHzg11YIX0sD7fd4a1ag
+   YPSFbFeywDAYJdWZCWAH1JYkrKMDXSxThopOlmBOGCuid+mer8z2LpL++
+   FL9nHsybHVH1sT9CLN9UtJhyeTOIpkammABlTpBPr9mPMkwpUVVT35nkw
+   JaUTcfqWUs9Gt6mFC+K5w0LNUSjvrXOtaAubikWWy3Q3sx7h8YhsoRLJB
+   UyyexH2c2HxGO/t1MAFDJ23sVDRi2K2HZ+aEz9MmY0soW6mTxdRYUb98J
+   agFW9K7t8SrpVguxnzVSm3y8v+DDkNR4spSjsMhRB32qLVbJLLwlwZF+R
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="261588135"
+X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
+   d="scan'208";a="261588135"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 02:37:25 -0700
+X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
+   d="scan'208";a="645640629"
+Received: from selvaku-mobl.ger.corp.intel.com ([10.252.60.244])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 02:37:22 -0700
+Date:   Sat, 25 Jun 2022 12:37:13 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        speakup@linux-speakup.org, sparclinux@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
-In-Reply-To: <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
-Message-ID: <616c8221-fc6e-1b73-626c-3427c87dddbf@linux.intel.com>
-References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com> <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com> <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH 3/8] serial: core: move sanitizing of RS485 delays into
+ own function
+In-Reply-To: <20220622154659.8710-4-LinoSanfilippo@gmx.de>
+Message-ID: <fc9a10aa-a0e3-4e93-292d-b83d8dd76d36@linux.intel.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-4-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; boundary="8323329-1972244649-1656149845=:1653"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 23 Jun 2022, Jiri Slaby wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> > --- a/arch/mips/ath79/early_printk.c
-> > +++ b/arch/mips/ath79/early_printk.c
-> > @@ -29,15 +30,15 @@ static inline void prom_putchar_wait(void __iomem *reg,
-> > u32 mask, u32 val)
-> >   	} while (1);
-> >   }
-> >   -#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
-> > -
-> >   static void prom_putchar_ar71xx(char ch)
-> >   {
-> >   	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
-> >   -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
-> > +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
-> > +			  UART_LSR_BOTH_EMPTY);
-> >   	__raw_writel((unsigned char)ch, base + UART_TX * 4);
-> > -	prom_putchar_wait(base + UART_LSR * 4, BOTH_EMPTY, BOTH_EMPTY);
-> > +	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
-> > +			  UART_LSR_BOTH_EMPTY);
+--8323329-1972244649-1656149845=:1653
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
+On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
+
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > 
-> Two observations apart from this patch:
-> * prom_putchar_wait()'s last two parameters are always the same.
->   One should be removed, i.e. all this simplified.
+> Move the sanitizing of RS485 delays out of uart_sanitize_serial_rs485()
+> into the new function uart_sanitize_serial_rs485_delays().
+> 
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 
-I noticed this myself but I'm also looking into generalizing wait for tx 
-empty somehow if possible (it might not help much here though as this 
-seems to be on "early" side of things).
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
 
-
-> * prom_putchar_wait() should be implemented using
->   read_poll_timeout_atomic(), incl. failure/timeout handling.
-> 
-> thanks,
-> 
-
+--8323329-1972244649-1656149845=:1653--
