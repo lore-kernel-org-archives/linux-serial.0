@@ -2,138 +2,93 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B897C43334
-	for <linux-serial@archiver.kernel.org>; Sat, 25 Jun 2022 10:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C2AC43334
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Jun 2022 19:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232657AbiFYKkY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
+        id S233272AbiFYTt4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Jun 2022 15:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiFYKkX (ORCPT
+        with ESMTP id S231474AbiFYTtz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:40:23 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D313F90;
-        Sat, 25 Jun 2022 03:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656153623; x=1687689623;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=AVgIL2E9QEAvAwfWoBXfauto0LB7PQrrTcs8Zw/nbNA=;
-  b=ayG0qF1AhtB8wQpRZ+PbtLpuiH0srWlnGqD00I1vlUTmr5GN/LM/2puy
-   6qo339oqvuwD0887Zd7wvDqbgPKbPGTZhEyC3CLaR7rlNQKpxEHudwYeS
-   5ITTk9+KUpqwGlM7tr2vjWPoqBcWQdLXbi1jiGHMWX0kMf+5G9yJAt36N
-   X+zWKyNmDSucY5cGLNKVeUKRE3h5YQRctSi4xzWuPCQXPfzsWwaKGcDhC
-   991oRFdWT84YdAi1UWnqPgK1mu+hAMesnheb8yPiGCb7IlMeFowlpQspL
-   RGY42l1oT2LYyy63fKibcsDMgzKOBIjnz62mbruoVFQJiXU8DKeJg9wVh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="342861243"
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="342861243"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:40:22 -0700
-X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="645655106"
-Received: from selvaku-mobl.ger.corp.intel.com ([10.252.60.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:40:18 -0700
-Date:   Sat, 25 Jun 2022 13:40:16 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+        Sat, 25 Jun 2022 15:49:55 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58F312D2B;
+        Sat, 25 Jun 2022 12:49:53 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id ECF9B100FBFD2;
+        Sat, 25 Jun 2022 21:49:51 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id B46361191FF; Sat, 25 Jun 2022 21:49:51 +0200 (CEST)
+Date:   Sat, 25 Jun 2022 21:49:51 +0200
+From:   Lukas Wunner <lukas@wunner.de>
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
+        andriy.shevchenko@linux.intel.com, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-In-Reply-To: <20220622154659.8710-3-LinoSanfilippo@gmx.de>
-Message-ID: <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
+ supported
+Message-ID: <20220625194951.GA2879@wunner.de>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-2-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622154659.8710-2-LinoSanfilippo@gmx.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
-
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
-> 
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core.
-> 
-> This also makes setting the termination GPIO generic for all uart drivers.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c |  3 ---
->  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->  2 files changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 3e3d784aa628..5245c179cc51 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -675,9 +675,6 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
->  		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
->  	}
->  
-> -	gpiod_set_value(port->rs485_term_gpio,
-> -			rs485->flags & SER_RS485_TERMINATE_BUS);
-> -
->  	/*
->  	 * Both serial8250_em485_init() and serial8250_em485_destroy()
->  	 * are idempotent.
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 015f4e1da647..b387376e6fa2 100644
+On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
+> termination is supported by the driver.
+[...]
 > --- a/drivers/tty/serial/serial_core.c
 > +++ b/drivers/tty/serial/serial_core.c
-> @@ -1352,12 +1352,23 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
->  	memset(rs485->padding, 0, sizeof(rs485->padding));
->  }
+> @@ -3384,17 +3384,20 @@ int uart_get_rs485_mode(struct uart_port *port)
+>  		rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
+>  	}
 >  
-> +static void uart_set_rs485_termination(struct uart_port *port,
-> +				       const struct serial_rs485 *rs485)
-> +{
-> +	if (!port->rs485_term_gpio || !(rs485->flags & SER_RS485_ENABLED))
-> +		return;
-> +
-> +	gpiod_set_value_cansleep(port->rs485_term_gpio,
-> +				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
-> +}
-> +
->  int uart_rs485_config(struct uart_port *port)
->  {
->  	struct serial_rs485 *rs485 = &port->rs485;
->  	int ret;
->  
->  	uart_sanitize_serial_rs485(port, rs485);
-> +	uart_set_rs485_termination(port, rs485);
->  
->  	ret = port->rs485_config(port, rs485);
->  	if (ret)
-> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port *port,
->  	if (ret)
->  		return ret;
->  	uart_sanitize_serial_rs485(port, &rs485);
-> +	uart_set_rs485_termination(port, &rs485);
->  
->  	spin_lock_irqsave(&port->lock, flags);
->  	ret = port->rs485_config(port, &rs485);
+> -	/*
+> -	 * Disabling termination by default is the safe choice:  Else if many
+> -	 * bus participants enable it, no communication is possible at all.
+> -	 * Works fine for short cables and users may enable for longer cables.
+> -	 */
+> -	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
+> -							GPIOD_OUT_LOW);
+> -	if (IS_ERR(port->rs485_term_gpio)) {
+> -		ret = PTR_ERR(port->rs485_term_gpio);
+> -		port->rs485_term_gpio = NULL;
+> -		return dev_err_probe(dev, ret, "Cannot get rs485-term-gpios\n");
+> +	if (port->rs485_supported->flags & SER_RS485_TERMINATE_BUS) {
 
-When port->rs485_config(port, &rs485) returns non-zero, the input got 
-partially applied?
+So I think linux-next commit be2e2cb1d281 ("serial: Sanitize rs485_struct")
+contains a mistake in that it forces drivers to set SER_RS485_TERMINATE_BUS
+in their rs485_supported->flags to allow enabling bus termination.
 
+That's wrong because *every* rs485-capable driver can enable bus
+termination if a GPIO has been defined for that in the DT.
 
--- 
- i.
+In fact, another commit which was applied as part of the same series,
+ebe2cf736a04 ("serial: pl011: Fill in rs485_supported") does not set
+SER_RS485_TERMINATE_BUS in amba-pl011.c's flags and thus forbids the
+driver from enabling bus termination, even though we know there are
+products out there which support bus termination on the pl011 through
+a GPIO (Revolution Pi RevPi Compact, Revpi Flat).
 
+I think what you want to do is amend uart_get_rs485_mode() to set
+SER_RS485_TERMINATE_BUS in port->rs485_supported_flags if a GPIO
+was found in the DT.  Instead of the change proposed above.
+
+Thanks,
+
+Lukas
