@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D3AC433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 25 Jun 2022 10:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B897C43334
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Jun 2022 10:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbiFYKVt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S232657AbiFYKkY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFYKVt (ORCPT
+        with ESMTP id S232651AbiFYKkX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 25 Jun 2022 06:21:49 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BB831513;
-        Sat, 25 Jun 2022 03:21:48 -0700 (PDT)
+        Sat, 25 Jun 2022 06:40:23 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D313F90;
+        Sat, 25 Jun 2022 03:40:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656152508; x=1687688508;
+  t=1656153623; x=1687689623;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=eTCNWlcNgptSkHWawKJQt1duBUbGSUyCeEj5eGlb+xM=;
-  b=Xmv6M9frizN9FSPAqxwfGU1O57Zx7DuHm4CtBB885CZxy3xLbwpIN0ly
-   rDWQ6wCY8E8ML1pRGrQRH5dizDqRMMr3gReaEL894648ME/juWXEbKSF7
-   X+FrJDTe1KhkNfckonoijyKtVanolA2or6Aulxd9zcJD6LWiUD5kzqhRj
-   OjIaAjixQlR/XVHMiJdIyvDZ2fF4ySCfkrWH01SqzHndHmGpr25niR0Wt
-   BqX0itZDtmbSFUDZMQI1qQEgPW6HTvUKA8LOhGiqzdtNBsGwn5Bd3OJUW
-   vX6gt/ewuIzLMefNTKeRZVXCgDSN8vtGQK4hAU/4enEbBs7RNIeckevet
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="269910741"
+  bh=AVgIL2E9QEAvAwfWoBXfauto0LB7PQrrTcs8Zw/nbNA=;
+  b=ayG0qF1AhtB8wQpRZ+PbtLpuiH0srWlnGqD00I1vlUTmr5GN/LM/2puy
+   6qo339oqvuwD0887Zd7wvDqbgPKbPGTZhEyC3CLaR7rlNQKpxEHudwYeS
+   5ITTk9+KUpqwGlM7tr2vjWPoqBcWQdLXbi1jiGHMWX0kMf+5G9yJAt36N
+   X+zWKyNmDSucY5cGLNKVeUKRE3h5YQRctSi4xzWuPCQXPfzsWwaKGcDhC
+   991oRFdWT84YdAi1UWnqPgK1mu+hAMesnheb8yPiGCb7IlMeFowlpQspL
+   RGY42l1oT2LYyy63fKibcsDMgzKOBIjnz62mbruoVFQJiXU8DKeJg9wVh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="342861243"
 X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="269910741"
+   d="scan'208";a="342861243"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:21:47 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:40:22 -0700
 X-IronPort-AV: E=Sophos;i="5.92,222,1650956400"; 
-   d="scan'208";a="645650589"
+   d="scan'208";a="645655106"
 Received: from selvaku-mobl.ger.corp.intel.com ([10.252.60.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:21:43 -0700
-Date:   Sat, 25 Jun 2022 13:21:41 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2022 03:40:18 -0700
+Date:   Sat, 25 Jun 2022 13:40:16 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
 cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -49,67 +49,91 @@ cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
         p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 6/8] serial: 8250_dwlib: remove redundant sanity check
- for RS485 flags
-In-Reply-To: <20220622154659.8710-7-LinoSanfilippo@gmx.de>
-Message-ID: <c0ef766d-198-b257-9291-cee7a6f890fa@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-7-LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
+ serial core
+In-Reply-To: <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+Message-ID: <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-3-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1686025556-1656152507=:1653"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1686025556-1656152507=:1653
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
 
 On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
 
 > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > 
-> Before the drivers rs485_config() function is called the serial core
-> already ensures that only one of both options RTS on send or RTS after send
-> is set. So remove the concerning sanity check in the driver function to
-> avoid redundancy.
+> In serial8250_em485_config() the termination GPIO is set with the uart_port
+> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
+> since the concerning GPIO expander is connected via SPI or I2C).
+> 
+> Fix this by setting the termination line outside of the uart_port spinlock
+> in the serial core.
+> 
+> This also makes setting the termination GPIO generic for all uart drivers.
 > 
 > Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > ---
->  drivers/tty/serial/8250/8250_dwlib.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
+>  drivers/tty/serial/8250/8250_port.c |  3 ---
+>  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
+>  2 files changed, 12 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> index c83e7eaf3877..bed2bd6b7a01 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -95,16 +95,10 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
->  	if (rs485->flags & SER_RS485_ENABLED) {
->  		tcr |= DW_UART_TCR_RS485_EN;
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 3e3d784aa628..5245c179cc51 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -675,9 +675,6 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
+>  		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
+>  	}
 >  
-> -		if (rs485->flags & SER_RS485_RX_DURING_TX) {
-> +		if (rs485->flags & SER_RS485_RX_DURING_TX)
->  			tcr |= DW_UART_TCR_XFER_MODE_DE_DURING_RE;
-> -		} else {
-> -			/* HW does not support same DE level for tx and rx */
-> -			if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-> -			    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-> -				return -EINVAL;
+> -	gpiod_set_value(port->rs485_term_gpio,
+> -			rs485->flags & SER_RS485_TERMINATE_BUS);
 > -
-> +		else
->  			tcr |= DW_UART_TCR_XFER_MODE_DE_OR_RE;
-> -		}
->  		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
->  		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
->  	} else {
-> -- 
+>  	/*
+>  	 * Both serial8250_em485_init() and serial8250_em485_destroy()
+>  	 * are idempotent.
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 015f4e1da647..b387376e6fa2 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1352,12 +1352,23 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
+>  	memset(rs485->padding, 0, sizeof(rs485->padding));
+>  }
+>  
+> +static void uart_set_rs485_termination(struct uart_port *port,
+> +				       const struct serial_rs485 *rs485)
+> +{
+> +	if (!port->rs485_term_gpio || !(rs485->flags & SER_RS485_ENABLED))
+> +		return;
+> +
+> +	gpiod_set_value_cansleep(port->rs485_term_gpio,
+> +				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+> +}
+> +
+>  int uart_rs485_config(struct uart_port *port)
+>  {
+>  	struct serial_rs485 *rs485 = &port->rs485;
+>  	int ret;
+>  
+>  	uart_sanitize_serial_rs485(port, rs485);
+> +	uart_set_rs485_termination(port, rs485);
+>  
+>  	ret = port->rs485_config(port, rs485);
+>  	if (ret)
+> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port *port,
+>  	if (ret)
+>  		return ret;
+>  	uart_sanitize_serial_rs485(port, &rs485);
+> +	uart_set_rs485_termination(port, &rs485);
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	ret = port->rs485_config(port, &rs485);
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+When port->rs485_config(port, &rs485) returns non-zero, the input got 
+partially applied?
 
 
 -- 
  i.
 
---8323329-1686025556-1656152507=:1653--
