@@ -2,102 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E57CC433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Jun 2022 12:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24253C43334
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Jun 2022 13:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234443AbiFZMj7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Jun 2022 08:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
+        id S234463AbiFZNgp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Jun 2022 09:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiFZMj6 (ORCPT
+        with ESMTP id S233597AbiFZNgo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Jun 2022 08:39:58 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760A41183D;
-        Sun, 26 Jun 2022 05:39:57 -0700 (PDT)
+        Sun, 26 Jun 2022 09:36:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92663F5B0;
+        Sun, 26 Jun 2022 06:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656247187;
-        bh=+Qb3TrnQnb7Tf8bDXxqHXI/Y+7qHL+BXsSHZvSy/8Q8=;
+        s=badeba3b8450; t=1656250581;
+        bh=hZku3pKad6YdlzoC5bnphtrI9Ac066vFM1ZhUPMS+rw=;
         h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=ekBEZ8twOLhALi0YfO/G9Ad1X0oiIuXja39gmcVL8fhgOjSPaEW813p+SEHsNpycA
-         IPLIF2vQ9s/0WIkw/ExcRwIkJlFp0ns0vORXTKvBGPmZFlcQi3RThDUeqCJyTq/pAU
-         7atjjAWY+tFbTDZK/FGGCkQiD6fbaWp50FfuB87g=
+        b=b9ZE/z5GSMtb3BZtVIzM6M5tJ8rCPS4Q1ppvhyuXq4Hw9hlcyZwxKwPJhrWT9fB0s
+         Tuy0KbphosNndDXxRMpFLwjeAyXNEKai+9tbiZDE83nEEbKyYWz8uplZro+WQAiFKy
+         tVjed0FRXJRJ91nKtCAfYoChINNKhwngzRw9U+iE=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.248]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MzQgC-1njUod2MdM-00vMyd; Sun, 26
- Jun 2022 14:39:47 +0200
-Subject: Re: [PATCH 22/36] serial: Sanitize rs485_struct
-To:     Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
- <20220606100433.13793-23-ilpo.jarvinen@linux.intel.com>
- <20220625201232.GA17597@wunner.de>
+Received: from [192.168.0.33] ([46.223.2.248]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N79yG-1nZciH1HW0-017XzA; Sun, 26
+ Jun 2022 15:36:21 +0200
+Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
+ serial core
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+ <20220625195844.GB2879@wunner.de>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <d6f6cbb9-e8d9-d69c-d722-231096464484@gmx.de>
-Date:   Sun, 26 Jun 2022 14:39:44 +0200
+Message-ID: <067e6fa2-6015-2eea-5719-8b75fb08882c@gmx.de>
+Date:   Sun, 26 Jun 2022 15:36:17 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20220625201232.GA17597@wunner.de>
+In-Reply-To: <20220625195844.GB2879@wunner.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:4LZnFndGw1j1W6nKEdHMzsiyzI0NP4/oEfoDJKmLVL+Iy8roH/o
- Sr6tyUcw4xyWOovp51TJvkKC8bsOilazvO3PmbBdtGqycz3dgx73zE6VOOc/MLmqDsa9Xvp
- tMgZIDCvNdbivcTaK3PjV67xziE4w9y4NgjFIn1MjsrFwb4wKK1x0/mDVBpepGrknjYkQfQ
- Q6y8H1ncieyt97r4Hxc1A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8l6Y89vTbr0=:zFM7zvVDoWn4x+ERbd3vjD
- CHI5erw4V3JdFCx9zKIOOvD5RzBem7tWo2ewfOSLxEOu9c8OSMtT0pSZSF5LZbEI+8ByOcpSG
- v8XW9TPe+UBEqUsaipNlhwp8aVuuxxxFHrN7z0urZLGGL3CtfqAYwzdWrEEtVo28Iju36fl6j
- mMmbAA69yC75hFdKTFH0SFN+sYYfQ/vWG3gbEJ92Oe10H3tTCao/7kis4oOZFtt+B9GFKzvQp
- ndcEAvFYsOUAom/2n8R8lURXectkgZNSsVklhJ4/UR8P2O0v+HgAh+c1xg/nI9d4l5ioJ84/j
- Nn2bW4IWnZnE38NPF8aAqXJXSpCZHFSNM1PDXUe3uZLFMtbIginJHozuq8evM49bhG36mzG/W
- entSUmDG92uJeJSou3x52siqh9OkLM9WaMdmtbJzvdHml97nSXl/XWu/8piDay2AMzkqjTk44
- qAd6PC8OnQhDk77MTcQf5tz1tFcBtcgs3Tihr5IvtrP8h9yFoLaTBhr7qpg80agcaMJ/fnrXV
- BBfWtgCzVeXZ0+tsX7cexpDbRaprxtnlzFSudFeYbuCvmi2nUTiggU2RQsQ8sVCm/L1HHRDsp
- ckCjF7iegrgOxITql2FSNPdsAVtYGJB0ymkeUdrlMLum+8a8Kv9EfLs/mrnXIKh3EAairTf4m
- cKq0nfQ5LU06x36AQKKdf/f72bTFUzCR74cAaWa7UAJjgK8KvBt2ry5UgmUTy8W7xmNH3a0br
- S/0lepmym6jDUVWQZWFX4H5UyQBdtjO3C60VvW1WnGPth6qOLPuMibIlmFLDGfOICgqbEI0g3
- JqZGgEejWa3ZVvbKzQQ3bTgukm+Clc+0kyDqgG5hAJy/eFJ6G69i4lo4GPRC6jCncWPwLI0WL
- oQHFLrjYOSocbSO8vuo7t293L589i4Hoo4kHmq8wQ3pXdAIZrEMlth3SgSbw2Yx92cM2RahBv
- 55k6JUBaFepHg3ECduE+aGmNQV4xy8r28bdlrdTyGftlNsnoKD9ElmqEMVtAO3wIHiNMunVG2
- u0vkfaauXMuI2o1N3jUhxRfd/RT5fF7vRz33pUQBCg/6CXJW089wyaHbtNU5s/rzMNEKFXpWd
- nzxFRw+lIHxb0qWcqMwPfjs5Z+PNRkWP6iQQDIsZ1IakMgzhcn0p1yxTQ==
+X-Provags-ID: V03:K1:hGacXh8oLZwt9FXVfKQ60JrkzhKSJzVtnlbg7gxtB/Y8cLLiTZX
+ 0UudFxjwIY6NNCUIvHA9id3q9rsmkt2Yb1CUX3ZQmqxbGf99XceXBTanC75Eu3CFG6wNSgz
+ Y181rwQmovaKbb/4m+R++hxGVjXzJWvnP4YhlkXnh/tUTlSyEyH3YrPEA7WWNLFrSsPxr/F
+ +/t156IfegsjgTCUv6j+A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:64O+XQE5+sw=:qLnwlZq1Yx43Hro9ph4Hvz
+ mU2ImpgbsRpC8OWld0hX7Hgqn64mxGHNzRzOuXE21AFnd+h0NPn1SFS35RThbriuO9euOaw2x
+ QdOPMJhZ2nCBM7Ui5UzIxOZCaoqz1EUZufuoMWEMlkFDd6srLb3+RC/NpV0iPYRJ5BaWmsOG7
+ oYGyVqZtbS6IGKADr3T8o0Bl+hF55PHUXA2xGqQx1KShqdp//cxMEPrL9QWZwhKxnEh4fWR4F
+ vxJoGOHWf8zDiUeSJDXH45ETwQt4hJ8yZvNu9RFLi26mIY0XLE6h1EJGripG7W9OOC6LafcIu
+ p9cZMK9WRW9MyPzMILT5TMbxpwHsLlNwKOPTxLCrKrE4rRirF2i2p5bgDboJMnYonxcxgiwpm
+ 2zGFtJYmR7bsjLELi6Pt1LBEyRyv6RMAXBjE3+x+HGV/k6i86OQfaj27GIpktkqvIILByPEgG
+ uz/XKNbVe6JBtXhXXWJvI2glHUFumDpeA5wQmdp/5G7YfRUZvusPPZu35voYNRM7Ag8nia7/J
+ kEBQQmy2L2dQ+/dD1yln/EmIWvncPD0tYLFpX8QFHt+zKAzCNuwwHbmWkqPFcswaXQryZ6dYb
+ viRve4kwhWq1WK6aqRyL/Em7kQ2QGUQag2g00hxv5m66kWvpzFm+QxpwSyPudw+4sTr3WcJwT
+ aCXb71RjOfQyyEvjWKRU+2UDCLb/+5ZnhHuxKvHmaRRAdJyX3VbyD184jf13TDn/ZrLzRdN/4
+ +GFBaaNttECHxY2fgYrNGq8oiat3REVsFr2RGqJMfdcJbXzRw+NfbsVwtYEOXPX6L7+9bKLlR
+ v2ZdyR+KxuGo2P5wM6t7ZIbL7RnZgE/GJ6eeGOpBeh7tM4wEjKT1AOFTcVoqezR3Xm986Cpni
+ tTkSzyG3vAmV4SfYpILmmtQ65QsKYFMwEGaJoKDj5aeLFWKHM22CEEbHfObEvIzMAMnz2W7Om
+ BZ9qk9IXnyF7iCpCbqCp+/IVNCuFWPy4tW4Ug0JAfEKBdqpeDPT6dCb7TUU5clGpITG2vS2lr
+ kn35cd+DVX2YnHAYAtGnEfeptJPWDumIF04r+TDyvxJ16tjGoeBxwKY0lAUA1/Hk7FElzNBtR
+ i3ce1JeFkkRsUjpftXWlVQz/MdFnwkhKtyLaQf26XHaoLR2nWYGlnwa/A==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 25.06.22 at 22:12, Lukas Wunner wrote:
-> On Mon, Jun 06, 2022 at 01:04:19PM +0300, Ilpo J=C3=A4rvinen wrote:
->> -	if (rs485->delay_rts_before_send > RS485_MAX_RTS_DELAY) {
->> +	if (!port->rs485_supported->delay_rts_before_send) {
->> +		if (rs485->delay_rts_before_send) {
->> +			dev_warn_ratelimited(port->dev,
->> +				"%s (%d): RTS delay before sending not supported\n",
->> +				port->name, port->line);
->> +		}
->> +		rs485->delay_rts_before_send =3D 0;
->> +	} else if (rs485->delay_rts_before_send > RS485_MAX_RTS_DELAY) {
->>  		rs485->delay_rts_before_send =3D RS485_MAX_RTS_DELAY;
->>  		dev_warn_ratelimited(port->dev,
->>  			"%s (%d): RTS delay before sending clamped to %u ms\n",
->>  			port->name, port->line, rs485->delay_rts_before_send);
->>  	}
+On 25.06.22 at 21:58, Lukas Wunner wrote:
+> On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> In serial8250_em485_config() the termination GPIO is set with the uart_=
+port
+>> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
+.
+>> since the concerning GPIO expander is connected via SPI or I2C).
+>>
+>> Fix this by setting the termination line outside of the uart_port spinl=
+ock
+>> in the serial core.
+> [...]
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port=
+ *port,
+>>  	if (ret)
+>>  		return ret;
+>>  	uart_sanitize_serial_rs485(port, &rs485);
+>> +	uart_set_rs485_termination(port, &rs485);
+>>
+>>  	spin_lock_irqsave(&port->lock, flags);
+>>  	ret =3D port->rs485_config(port, &rs485);
 >
-> This series seems to set rs485_supported->delay_rts_before_send to 1
-> in all drivers to indicate that a delay is supported.
+> That's one way to solve the issue.  Another would be to push
+> acquisition of the port spinlock down into drivers.
 >
-> It would probably be smarter to define it as a maximum, i.e. drivers
-> declare the supported maximum delay in their rs485_supported struct
-> and the core can use that to clamp the value.  Initially, all drivers
-> may use RS485_MAX_RTS_DELAY.  Some chips only support specific delays
-> (multiples of the UART clock or baud clock).  We can amend their
-> drivers later according to their capabilities.
+> I think in most drivers we don't need to take the port spinlock at all
+> or only for a few specific register accesses.  So taking the lock here
+> in the midlayer is likely unwarranted.  However, changing that requires
+> going through every single driver's ->rs485_config() callback and
+> checking whether it needs the lock or not.
 
-Agreed.
+As a first step its sufficient to take the lock in each drivers rs485_conf=
+ig()
+function and remove it from uart_set_rs485_config(). Then after time sort =
+out
+the drivers that dont require the lock and remove it from their function.
+
+However the point of this patch was also to generalize the handling of the
+termination GPIO, so I would still see this placed in uart_set_rs485_confi=
+g().
 
 Regards,
 Lino
+
+
 
