@@ -2,122 +2,176 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F56C433EF
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Jun 2022 15:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1457FC43334
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 03:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbiFZPmB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Jun 2022 11:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
+        id S232613AbiF0D0U (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 26 Jun 2022 23:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiFZPmA (ORCPT
+        with ESMTP id S232181AbiF0D0T (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Jun 2022 11:42:00 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F39EDFDB;
-        Sun, 26 Jun 2022 08:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656258099;
-        bh=9wnn2viNtYo2HS4a6b8V2lbF+SSHfd4WFAFaclgRsso=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=SHlhQLJT8dgGcqR+X5nHvn7Yjw4el0brNLtT897XUkjePIvV7HSm8fOECnfOBmutl
-         x6KPuUYG554QgIvtaUVlD7FQ+d0+i/+9+eK0kxF/jy2xDFddJR5rmueyp6NRelRDzk
-         wCOCGuqjgcXIdlJrmnUVtAgIv3A+7RhI+qgSCuuA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.248]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M7b6b-1o0Ef93eAf-0085OH; Sun, 26
- Jun 2022 17:41:38 +0200
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-3-LinoSanfilippo@gmx.de>
- <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <aa851698-ff26-a319-500a-575a9c669d95@gmx.de>
-Date:   Sun, 26 Jun 2022 17:41:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 26 Jun 2022 23:26:19 -0400
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5072736
+        for <linux-serial@vger.kernel.org>; Sun, 26 Jun 2022 20:26:03 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220627032558epoutp042b5d8bee1e025e4a7799130f7aa283fb~8XGZ6-Gx52317323173epoutp04s
+        for <linux-serial@vger.kernel.org>; Mon, 27 Jun 2022 03:25:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220627032558epoutp042b5d8bee1e025e4a7799130f7aa283fb~8XGZ6-Gx52317323173epoutp04s
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1656300358;
+        bh=GyyJq89eah//UNxEHjdnPrbyeAPQ8IHY4BpVN8PZ2os=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=JmO22mcmZ3qWFdtgQE5pROPPGTMRiLQNHliiy5IoFxd4h1Wsgeh3FUWMZ31S1C9BP
+         DruauxWjluqc1tTmntCI0rNXmPZcmBcfJwknJMQ5YlwpLGxqEHcvasBbBMKMMC8qqP
+         PZL8JfqJhmTXMsP7491W9cjkZalYx5Iqq+pQvLho=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220627032557epcas2p1f3c3e3f2c9a4cb2c4a00f6e9475e584e~8XGZZ9VdP1208312083epcas2p1z;
+        Mon, 27 Jun 2022 03:25:57 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.91]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LWY5x22hmz4x9Pw; Mon, 27 Jun
+        2022 03:25:57 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CC.C3.09642.54329B26; Mon, 27 Jun 2022 12:25:57 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0~8XGYaM-AH1126011260epcas2p2M;
+        Mon, 27 Jun 2022 03:25:56 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220627032556epsmtrp11c2525b0a2da95a63712e8c0c35eedd5~8XGYZVrW43117931179epsmtrp1S;
+        Mon, 27 Jun 2022 03:25:56 +0000 (GMT)
+X-AuditID: b6c32a47-5e1ff700000025aa-c8-62b92345bc09
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2A.6E.08802.44329B26; Mon, 27 Jun 2022 12:25:56 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.51]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220627032556epsmtip2ba371a7fd41b70e72aae2f3853cec7a7~8XGYIAmnF0953609536epsmtip2O;
+        Mon, 27 Jun 2022 03:25:56 +0000 (GMT)
+From:   Chanho Park <chanho61.park@samsung.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Chanho Park <chanho61.park@samsung.com>
+Subject: [PATCH] tty: serial: samsung_tty: loopback mode support
+Date:   Mon, 27 Jun 2022 12:23:53 +0900
+Message-Id: <20220627032353.8868-1-chanho61.park@samsung.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-In-Reply-To: <83762813-70ec-93c3-4015-5676ce9534fd@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:cyIQlMtZ+G8jaNtEoKMkpMf21pMZu7+zmG4ZsrBrWfjfJ8shTgY
- pupK7k4b3RxBSSU6r9jfqTCB/AphGTAU8V3S3pjE2iwtUCvrYjHGrkDi+IPTZtbaekmMP+j
- XLGfEG2lV+c8+nuB09tRdgrxUIbTeEoRaX28TCdEgdjkjYfN9fyuas6tcj1o9kLXhp5/HUn
- m8SricM+TNI9EiH/EpPHg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:fIJ5qj6lHQc=:8S6VSR7PdExKw8bJkX+MlF
- H3suE7c7Pe31QjpiBufX07LOqmrqcIPg9Fb74x6UYoHX0oIemab+QCZnQBoipJ+ZRU2MrHS5x
- YbZZsMXFkSyd/jraIb1QkxALtwaYRC2TVItcrFAP2khOCzjkahUGtg7Xo1vQzri/EgV1fureK
- ZnJ8BWp32B9RgiCm1+6YaDmTDvNwEC3AH64mKc7RWIGcOuJG+v96COjpg6GFgMmakS4TDCUiA
- qePKp9BlPyrft6XyxHuFMXGe9lPiwzUHBNljEGGDaLLLiHr5DpWOQ55YRFZz95yDMhFddqdLP
- w/It7/0N/09QO+MWw2n+/CZfkxqxFyW9+WLEkz8pZ78Yg41AsXS6TFvKfwy7HfhbBNkfs7kGG
- M65SooRgYaOFRySABeQHafEaPv3vn6eo9Aizb7ntyPC3sYHoDpBMQbIyFgDixyd0atKw1rXhj
- IxmzzuSac633dPs8pwy537nD1TGox6uBlR2ibk5Lmf1RvI2TnTyL9en4iPXiyHvhnDIdvYr2p
- WURTyDybVg/jtC445+TLuZtbGkdxV7M3f+dYrJV7AQozPjQMJ7NqNkOHCBd5tgxsQhNKp9ZKh
- DHnukgvivd57KVUuh/Btq3PbkAWd9s2fkNWRZICTJDaytt2dlBBBOZXGzhrDTJPhJgaakrcqa
- 43vh758Dkg1bf8ZKqb++q0PLM+0QWAAWwqkaHD9Dlh3cXOmg0x22nwN/wqW7onSPqbLMB+Rm5
- ZbXnuqPM9JBXQQZvLtiwphigpARm/8JWzI6syf/EH4VF9oU2KrVtU3b6oFDbAbZVXQqBhY0PL
- 2xfoyQR7UUYsYt8hyKBG9cCwLrcNwjxeUjOVFTyUuOoegcCADElKZMxE63J6UU6MaBCRVlkNp
- LYkOPRUGYyrFZpctUonaYlx4cWvaMifyDxhe7g2aXBjPtjkuYPHWmy7YLxxuAhiugVFmkKaQW
- eRtw+y89NGeDycpISmXxIdc2u4mt12L3+LMCMwc8cGaaHYbekAAvdjIiVBL+aJJswjPSnc8c5
- FCwh/4nmH8Ruo8qTnNeSjZqJKOXWJ+/i9ftc7HxCGup0W2J/vsr64f1jZwObNz6n4/i7UdFNN
- eepTFF5kuDkJc12KYI927EsBzYxv0oAaKKj7n9hqdRjENbw/9nZfNcuPg==
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprDJsWRmVeSWpSXmKPExsWy7bCmma6r8s4kgw9nuSwezNvGZnF5v7ZF
+        8+L1bBY7Go6wWrybK2Ox9/VWdotNj6+xWsw4v4/J4sziXnaL09cWsFuc3+bvwO1xfV2Ax6ZV
+        nWwed67tYfPYP3cNu8fmJfUei5ftZPPo27KK0ePzJrkAjqhsm4zUxJTUIoXUvOT8lMy8dFsl
+        7+B453hTMwNDXUNLC3MlhbzE3FRbJRefAF23zBygI5UUyhJzSoFCAYnFxUr6djZF+aUlqQoZ
+        +cUltkqpBSk5BeYFesWJucWleel6eaklVoYGBkamQIUJ2RnLNzxmLDjKX/Fk2lzGBsbPPF2M
+        nBwSAiYS63ufs3QxcnEICexglNiwtJcVwvnEKNFwaDMTSJWQwGdGiQUtijAdRzY1sEHEdzFK
+        tP1TgbA/Mkp8X1QHYrMJ6Epsef6KEcQWEciWmNO+CWwos8BDJok7qw4ygySEBRwkTl89wgpi
+        swioSnQ86gAbyitgK3Hu5nNmiGXyEhvm9zJDxAUlTs58wgJiMwPFm7fOZgYZKiHwl11iw7+H
+        TBANLhIfF7+AsoUlXh3fwg5hS0m87G+Dsoslls76xATR3MAocXnbLzaIhLHErGftQGdzAG3Q
+        lFi/Sx/ElBBQljhyC2ovn0TH4b/sEGFeiY42IYhGdYkD26ezQNiyEt1zPrNC2B4SncceskLC
+        J1bi3LKJ7BMY5Wch+WYWkm9mIexdwMi8ilEstaA4Nz212KjAGB6nyfm5mxjByVTLfQfjjLcf
+        9A4xMnEwHmKU4GBWEuF9fX1rkhBvSmJlVWpRfnxRaU5q8SFGU2D4TmSWEk3OB6bzvJJ4QxNL
+        AxMzM0NzI1MDcyVxXq+UDYlCAumJJanZqakFqUUwfUwcnFINTFr+u+Z8ZW+qqtyRM3OJq9q6
+        0w2TbYonhMlI/31+ZeW3c0pfTkzw3fNKc7dG68u57OoNBhLJn2/8e73o32m+2Qff8L3ZabW4
+        qsZYp3vvVNV/j67s8Nz056b/Knalx4d91zPr5z4zOM2x6X3Lx2XyM9LZdp5yPj6zR+yRm627
+        m13YDZ7EkBXB0nUGraWRrfbFk+8++L9hKcf29Rut2XQtz9Vne+fe6q10ma/kdmDrhJywFfXH
+        cvZ8fLvI913htMLgT11fZQVfJbjNksy+cVjPRlqIJZbj2EKlIH2uvn9Sz9VLk+eyrtPb7hPz
+        admUM8Z9H1gkuF5+t5Ow7Q/ZbvFpJY/Q3JnX1D5dd7Qt1fjef0eJpTgj0VCLuag4EQBN80nX
+        LwQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrHLMWRmVeSWpSXmKPExsWy7bCSvK6L8s4kg53TpS0ezNvGZnF5v7ZF
+        8+L1bBY7Go6wWrybK2Ox9/VWdotNj6+xWsw4v4/J4sziXnaL09cWsFuc3+bvwO1xfV2Ax6ZV
+        nWwed67tYfPYP3cNu8fmJfUei5ftZPPo27KK0ePzJrkAjigum5TUnMyy1CJ9uwSujOUbHjMW
+        HOWveDJtLmMD42eeLkZODgkBE4kjmxrYuhi5OIQEdjBKTFp3kB0iISvx7N0OKFtY4n7LEVaI
+        oveMEuv332cDSbAJ6Epsef6KEcQWEciWWPtlL9gkZoHnTBL7pk5lAUkICzhInL4K0s3JwSKg
+        KtHxqAOsmVfAVuLczefMEBvkJTbM72WGiAtKnJz5BKyXGSjevHU28wRGvllIUrOQpBYwMq1i
+        lEwtKM5Nzy02LDDKSy3XK07MLS7NS9dLzs/dxAgOci2tHYx7Vn3QO8TIxMF4iFGCg1lJhPf1
+        9a1JQrwpiZVVqUX58UWlOanFhxilOViUxHkvdJ2MFxJITyxJzU5NLUgtgskycXBKNTA1rXMz
+        vLGz6cDlScoqnnyPQ5u6b+noij2tfvDG/qcb14G6VxHn6jec6nxYum9HmdAVjtKcsw8NJH50
+        2BbKXlzX5SIrdPy+plSF1qaCHRuOTImXXvRXLctc76b2M6t470TVUp8p2eFFRY/e7p+6rPXQ
+        ni1LTC93P9j5KWv93JcXBToUX/WZMYlbHjh8c8fT+rmbZEu2nOF/Hur0UfHWd+1SqayzPdbd
+        jZFx0xQ56+8/Ur3G3DJj6pmvZYYnLiR8NnetcrINz/7w1WqGrHeV8dkCaT6L82p3njt92fhv
+        8v5L+6ve/rCI3eZ0//n0yM6ZRx7Elrs7brLbEvwm+smyKZVn5yxs7av/XMuVl7F95v8rSizF
+        GYmGWsxFxYkAyKO1GOECAAA=
+X-CMS-MailID: 20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0
+References: <CGME20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Internal loopback mode can be supported by setting
+S3C2443_UCON_LOOPBACK bit. The mode & bit can be supported since
+s3c2410 and later SoCs. We can test it by linux-serial-test program[1]
+with -k option. It will set TIOCM_LOOP mode during test.
 
-Hi,
+-k, --loopback     Use internal hardware loop back
 
-On 25.06.22 at 12:40, Ilpo J=C3=A4rvinen wrote:
->> +
->>  int uart_rs485_config(struct uart_port *port)
->>  {
->>  	struct serial_rs485 *rs485 =3D &port->rs485;
->>  	int ret;
->>
->>  	uart_sanitize_serial_rs485(port, rs485);
->> +	uart_set_rs485_termination(port, rs485);
->>
->>  	ret =3D port->rs485_config(port, rs485);
->>  	if (ret)
->> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port=
- *port,
->>  	if (ret)
->>  		return ret;
->>  	uart_sanitize_serial_rs485(port, &rs485);
->> +	uart_set_rs485_termination(port, &rs485);
->>
->>  	spin_lock_irqsave(&port->lock, flags);
->>  	ret =3D port->rs485_config(port, &rs485);
->
-> When port->rs485_config(port, &rs485) returns non-zero, the input got
-> partially applied?
->
->
-The thing is we dont know what the state of the termination GPIO (asserted=
- or deasserted)
-was before we set it and port->rs485_config() failed, so we cannot restore=
- it.
-We could read the GPIO before we change it but AFAIK this is unsafe since =
-it is an output
-pin. Maybe add a boolean variable "rs485_termination_gpio_asserted" to uar=
-t_port to track the
-current state?
+[1]: https://github.com/cbrake/linux-serial-test
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+---
+ drivers/tty/serial/samsung_tty.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-
-Regards,
-Lino
-
-
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index d5ca904def34..d7d035cd95c0 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -1002,16 +1002,22 @@ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+ static unsigned int s3c24xx_serial_get_mctrl(struct uart_port *port)
+ {
+ 	unsigned int umstat = rd_reg(port, S3C2410_UMSTAT);
++	unsigned int ucon = rd_reg(port, S3C2410_UCON);
++	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR;
+ 
+ 	if (umstat & S3C2410_UMSTAT_CTS)
+-		return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
+-	else
+-		return TIOCM_CAR | TIOCM_DSR;
++		mctrl |= TIOCM_CTS;
++
++	if (ucon & S3C2443_UCON_LOOPBACK)
++		mctrl |= TIOCM_LOOP;
++
++	return mctrl;
+ }
+ 
+ static void s3c24xx_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	unsigned int umcon = rd_regl(port, S3C2410_UMCON);
++	unsigned int ucon = rd_reg(port, S3C2410_UCON);
+ 
+ 	if (mctrl & TIOCM_RTS)
+ 		umcon |= S3C2410_UMCOM_RTS_LOW;
+@@ -1019,6 +1025,13 @@ static void s3c24xx_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 		umcon &= ~S3C2410_UMCOM_RTS_LOW;
+ 
+ 	wr_regl(port, S3C2410_UMCON, umcon);
++
++	if (mctrl & TIOCM_LOOP)
++		ucon |= S3C2443_UCON_LOOPBACK;
++	else
++		ucon &= ~S3C2443_UCON_LOOPBACK;
++
++	wr_regl(port, S3C2410_UCON, ucon);
+ }
+ 
+ static void s3c24xx_serial_break_ctl(struct uart_port *port, int break_state)
+-- 
+2.36.1
 
