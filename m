@@ -2,67 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F32C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE13CCA47F
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 13:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234717AbiF0MtK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
+        id S236522AbiF0NsU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 09:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234632AbiF0MtK (ORCPT
+        with ESMTP id S236525AbiF0NsU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:49:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA31D2ED;
-        Mon, 27 Jun 2022 05:49:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28EEF61170;
-        Mon, 27 Jun 2022 12:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08FCCC3411D;
-        Mon, 27 Jun 2022 12:49:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656334148;
-        bh=q31zZRCcTxGfAGEYAFGAfqTwac0q01YzEC/8abEgegA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u5du0KHNEr1/l9MgRTh3UhzWVPUwvgx7iRCEYAan2MVWQ/0RJh7nvcqvnsIfNR01a
-         gDXtlBul3zolDzAIV6YdC4CLbF0Hid94MHhi2/DvKyH+1UiNdV2L2D7oQinp6wH7mc
-         9ElCDMHfaq989gBIP290+Me5Q/P3waAv7WSZiQBc=
-Date:   Mon, 27 Jun 2022 14:49:05 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mon, 27 Jun 2022 09:48:20 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73935247;
+        Mon, 27 Jun 2022 06:48:15 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 6ED768106;
+        Mon, 27 Jun 2022 13:43:04 +0000 (UTC)
+Date:   Mon, 27 Jun 2022 16:48:13 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] serial: 8250_dw: Take port lock while accessing LSR
-Message-ID: <YrmnQSSZmFo7SJEz@kroah.com>
-References: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
- <20220615090651.15340-3-ilpo.jarvinen@linux.intel.com>
+Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
+ to enable runtime PM
+Message-ID: <Yrm1HaUtjTMcSIE+@atomide.com>
+References: <20220615062455.15490-1-tony@atomide.com>
+ <Yrmfr3GfXYhclKXA@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615090651.15340-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <Yrmfr3GfXYhclKXA@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 12:06:50PM +0300, Ilpo Järvinen wrote:
-> Accessing LSR requires port lock because it mutates lsr_saved_flags
-> in serial_lsr_in().
+* Greg Kroah-Hartman <gregkh@linuxfoundation.org> [220627 12:23]:
+> On Wed, Jun 15, 2022 at 09:24:55AM +0300, Tony Lindgren wrote:
+> > We want to enable runtime PM for serial port device drivers in a generic
+> > way. To do this, we want to have the serial core layer manage the
+> > registered serial port controllers. For runtime PM, we need a way to find
+> > the serial ports for each serial port controller device.
+> > 
+> > The serial core manages ports. Each serial controller can have multiple
+> > ports. As serial core has no struct device, and the serial port device
+> > drivers have their own driver data, we cannot currently start making
+> > use of serial core generic data easily without changing all the serial
+> > port device drivers.
 > 
-> Fixes: 197eb5c416ff ("serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()")
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 3 +++
->  1 file changed, 3 insertions(+)
+> Really?  Why not make struct uart_port a real struct device?
 
-Does not apply against my tty-linus branch, you mixed patches up in this
-series which is confusing for anyone wanting to apply them.
+Okie dokie
 
-I've applied the first, but the next two you should resend.
+> > We could consider adding a serial core specific struct device. It would
+> > be a child of the serial port device, and would allow us eventually to use
+> > device_links to add generic runtime PM calls for example. But as the serial
+> > core layer is not a device driver, driver specific features would need to
+> > be added, and are probably not justified for a virtual device.
+> 
+> I think it's very justified, let's not paper over this whole thing by
+> adding a kref stuck in in the middle and trying to hook up the PM code
+> to it, instead of just using all of the PM logic that the driver model
+> already provides.
 
-thanks,
+OK. Having the serial controller be the parent device for the port device
+will make runtime PM work as designed :)
 
-greg k-h
+> > Considering the above, let's improve the serial core layer so we can
+> > manage the serial port controllers better. Let's register the controllers
+> > with the serial core layer in addition to the serial ports.
+> 
+> Why can't controllers be a device as well?
+
+The controllers are devices already probed by the serial port drivers.
+What's missing is mapping the ports (as devices based on the comments
+above) to the controller devices. I don't think we need another struct
+device for the serial controller in addition to the serial port driver
+device and it's child port devices.
+
+> Let's try to work with the driver model here, not work around it, if at
+> all possible.  We never did a full conversion of the serial layer to the
+> driver core all those decades ago.  Perhaps now is the time to really do
+> that.
+
+Yes so it seems.
+
+Regards,
+
+Tony
