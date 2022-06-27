@@ -2,78 +2,74 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC379CCA473
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE41CCA482
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239392AbiF0MIX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
+        id S239696AbiF0MI1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240473AbiF0MHp (ORCPT
+        with ESMTP id S240480AbiF0MHp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 27 Jun 2022 08:07:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAFACE14;
-        Mon, 27 Jun 2022 05:06:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E29DEFE;
+        Mon, 27 Jun 2022 05:06:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F09BE614FA;
-        Mon, 27 Jun 2022 12:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D259FC3411D;
-        Mon, 27 Jun 2022 12:06:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB16B81126;
+        Mon, 27 Jun 2022 12:06:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69B5C3411D;
+        Mon, 27 Jun 2022 12:06:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656331590;
-        bh=FRa7EhIZdH14xBmvGsuv9S2UuKN37r7iywmSP/vdMaA=;
+        s=korg; t=1656331593;
+        bh=NbyhByzCH5/okHi8PrVyh0HR/ISn4xht5nGthfBzx1A=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W4hcTuyj1ifMWkRDNmE/plM51pKxWaVXjUEEKuoXONAGp5cMJJXK6/eRYcCAC36go
-         18OZhmx6On3Hv5juJfqJUL7PdTEcmkOVr8p9JWIOpPm6GvFTByoaNROVE8+re8S05q
-         jFbfEIzYfRWyi6N1L00mZxkhCFBCjZZOQ2mwD7Ss=
-Date:   Mon, 27 Jun 2022 13:52:18 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Chanho Park <chanho61.park@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Hector Martin <marcan@marcan.st>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] tty: serial: samsung_tty: support more than 4 uart ports
-Message-ID: <YrmZ8ikVsnAGrBXF@kroah.com>
-References: <CGME20220627071726epcas2p476cfa45f74a73bfd0fcfe03eacc2df60@epcas2p4.samsung.com>
- <20220627071512.18180-1-chanho61.park@samsung.com>
- <2efd725f-3d99-c1df-23ce-9ee60bbe4600@linaro.org>
+        b=cp3sfI9zfJK8tiLDjFucyDJ1O6N1SLfwDmCJQIj553q3nNVv/+Kl7dcsLauoH3CeY
+         WsHRPuzOODEZLLe5Hck5CmJPwMYljbBYfJTehisItHl4wGlrYi7UwnfAk1c50JXeMZ
+         IOMU8udi15yR7LW3RNYC7UO26S91nxP7BA2/3adY=
+Date:   Mon, 27 Jun 2022 13:54:53 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Starke, Daniel" <daniel.starke@siemens.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
+ outgoing data path
+Message-ID: <YrmajcyijzquuFui@kroah.com>
+References: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2efd725f-3d99-c1df-23ce-9ee60bbe4600@linaro.org>
+In-Reply-To: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 12:33:51PM +0200, Krzysztof Kozlowski wrote:
-> On 27/06/2022 09:15, Chanho Park wrote:
-> > Regarding Exynos Auto v9 SoC, it supports uarts up to 12. However, the
-> > maximum number of the ports has been derived from
-> > CONFIG_SERIAL_SAMSUNG_UARTS and tightly coupled with the config for
-> > previous Samsung SoCs such as s3c24xx and s3c64xx. To overcome this
-> > limitation, this changes the usage of the definition to UART_NR which is
-> > widely used from other serial drivers. This also defines the value to 12
-> > only for ARM64 SoCs to not affect the change to previous arm32 SoCs.
-> > Instead of enumerating all the ports as predefined arrays, this
-> > introduces s3c24xx_serial_init_port_default that is initializing the
-> > structure as default value. 
-> > Regarding the ports which are greater than 4
-> > will be initialized as default value and the fifo size will be retrieved
-> > from the DT property.
+On Thu, Jun 23, 2022 at 12:26:27PM +0000, Starke, Daniel wrote:
+> > This is a bit huge for stable backports, especially given that a huge
+> > number of the previous stable backports have totally failed and no one
+> > has submitted new versions.
+> > 
+> > So why is this needed for stable?  Same for all of these in the series...
 > 
-> You need to explain why you are doing this.
-> 
-> It's confusing to initialize some statically and some dynamically.
+> Given the fact that these are all bug fixes I assumed that these are also
+> relevant for backporting. Maybe only in the more recent stable releases
+> if there are issues with the merges.
+> I do not mind removing the stable kernel reference and keep these changes
+> only for mainline. So please let me know your preference.
+> Should I resubmit the patches without stable reference?
 
-I agree, why not just make them all dynamic?
+Please read the stable kernel rules for what is, and is not allowed.
+Generally a patch that does:
+	drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
+is not allowed.
+
+Please sort by what is stable fixes, and what is not.  Given that you
+don't seem to want to backport patches to older stable kernels when they
+fail to apply, why are any of these needed in stable kernels if the
+older ones are not also going to be merged there?
 
 thanks,
 
