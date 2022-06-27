@@ -2,91 +2,75 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 979BEC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537AACCA473
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235764AbiF0M2m (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        id S236213AbiF0Mj2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiF0M2W (ORCPT
+        with ESMTP id S234976AbiF0Mj1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:28:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C767363F4;
-        Mon, 27 Jun 2022 05:28:21 -0700 (PDT)
+        Mon, 27 Jun 2022 08:39:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC241DFE;
+        Mon, 27 Jun 2022 05:39:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92733B81110;
-        Mon, 27 Jun 2022 12:28:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28F7C3411D;
-        Mon, 27 Jun 2022 12:28:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6766E61004;
+        Mon, 27 Jun 2022 12:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47960C3411D;
+        Mon, 27 Jun 2022 12:39:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656332899;
-        bh=ItpgoEcOuwDEFm+eFghMeChypkh3vU8dbMK2C/PstZk=;
+        s=korg; t=1656333565;
+        bh=ZnWpSOiSOj0QVZ0k9JieiGzuTBhurNcyR6fM1Su+ZT4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1Pzi1/gcvjNfq0hTLc2246UYLr1cBss+sqkSAubLHFv005K2lJhz/KgtJq0as3QSN
-         YoyVuLjwAMvFv8mn7Ysasd3NK1lDlUI8ECSp+h1GOD0XAsmSlAXz85XZwoi6GMCPfe
-         eyyHKtgLIi2ya+3tyMXACRZSaq+SGyR9ewTfOLZQ=
-Date:   Mon, 27 Jun 2022 14:16:47 +0200
+        b=FX2/TwKw5z+EEBKy+Adrchc9L29Buf0efUPFoEuuIxhfulnVktJFgRUi5IkcD+gcF
+         Y8b7uSRKqdjoPSDwwdjD6Zp9ABTB+fawDin9rTcFdBzuotFu3SrdUpAixm4x/u35+b
+         pI0+9eKwRMP5xdmwntydhpnsunVOJu/hYv/YxAew=
+Date:   Mon, 27 Jun 2022 14:39:23 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+To:     Chanho Park <chanho61.park@samsung.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <Yrmfr3GfXYhclKXA@kroah.com>
-References: <20220615062455.15490-1-tony@atomide.com>
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: samsung_tty: loopback mode support
+Message-ID: <Yrmk+/2CqrBXcqAT@kroah.com>
+References: <CGME20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0@epcas2p2.samsung.com>
+ <20220627032353.8868-1-chanho61.park@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220615062455.15490-1-tony@atomide.com>
+In-Reply-To: <20220627032353.8868-1-chanho61.park@samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 09:24:55AM +0300, Tony Lindgren wrote:
-> We want to enable runtime PM for serial port device drivers in a generic
-> way. To do this, we want to have the serial core layer manage the
-> registered serial port controllers. For runtime PM, we need a way to find
-> the serial ports for each serial port controller device.
+On Mon, Jun 27, 2022 at 12:23:53PM +0900, Chanho Park wrote:
+> Internal loopback mode can be supported by setting
+> S3C2443_UCON_LOOPBACK bit. The mode & bit can be supported since
+> s3c2410 and later SoCs. We can test it by linux-serial-test program[1]
+> with -k option. It will set TIOCM_LOOP mode during test.
 > 
-> The serial core manages ports. Each serial controller can have multiple
-> ports. As serial core has no struct device, and the serial port device
-> drivers have their own driver data, we cannot currently start making
-> use of serial core generic data easily without changing all the serial
-> port device drivers.
+> -k, --loopback     Use internal hardware loop back
 
-Really?  Why not make struct uart_port a real struct device?
+I do not understand this line in the changelog text, what is it for?
 
-> We could consider adding a serial core specific struct device. It would
-> be a child of the serial port device, and would allow us eventually to use
-> device_links to add generic runtime PM calls for example. But as the serial
-> core layer is not a device driver, driver specific features would need to
-> be added, and are probably not justified for a virtual device.
+> 
+> [1]: https://github.com/cbrake/linux-serial-test
+> Signed-off-by: Chanho Park <chanho61.park@samsung.com>
 
-I think it's very justified, let's not paper over this whole thing by
-adding a kref stuck in in the middle and trying to hook up the PM code
-to it, instead of just using all of the PM logic that the driver model
-already provides.
+Our tools require a blank line before the signed-off-by line.  Did you
+not get a warning when checking this patch before sending it out?
 
-> Considering the above, let's improve the serial core layer so we can
-> manage the serial port controllers better. Let's register the controllers
-> with the serial core layer in addition to the serial ports.
-
-Why can't controllers be a device as well?
-
-Let's try to work with the driver model here, not work around it, if at
-all possible.  We never did a full conversion of the serial layer to the
-driver core all those decades ago.  Perhaps now is the time to really do
-that.
+Also, no need for a footnote in a changelog that is so short, just put
+the link in the body of the text itself.
 
 thanks,
 
