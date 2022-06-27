@@ -2,143 +2,123 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0943CCA473
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27899CCA47F
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235874AbiF0M2W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
+        id S235840AbiF0M2X (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235750AbiF0M2T (ORCPT
+        with ESMTP id S231736AbiF0M2R (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:28:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BED63F4;
-        Mon, 27 Jun 2022 05:28:17 -0700 (PDT)
+        Mon, 27 Jun 2022 08:28:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8ED64F0;
+        Mon, 27 Jun 2022 05:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40CEC6066C;
-        Mon, 27 Jun 2022 12:28:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D94AC3411D;
-        Mon, 27 Jun 2022 12:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B84FB81181;
+        Mon, 27 Jun 2022 12:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680A1C3411D;
+        Mon, 27 Jun 2022 12:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656332896;
-        bh=7Rdz8suEqYG1kHUJrQ4xkQv8wNMVsgrcbrc2gYFbrJw=;
+        s=korg; t=1656332893;
+        bh=0sfx/Gz1mK4MTiDmgOMunb4YktvqBJDEAWOW40rHciw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OGhTewzE7OBEgESRa4LWnXBmMvSVPc6QosIET5/NxGUZnd0znZMAGj8TYsUguUDx4
-         upacxF4vKWMplDU7amJusGoEzibKzEoorLRi/gPgBbAUkuX+RM/1pAUJUXKwwFfqwd
-         1+ISBwsTtrJ1B1fCVOnH/PhPPBTSKRKMwVpxHBuE=
-Date:   Mon, 27 Jun 2022 14:09:33 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Yi Yang <yiyang13@huawei.com>, Jiri Slaby <jirislaby@kernel.org>,
-        andy.shevchenko@gmail.com,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        b=PWjfqkKWlIffUuXBnOGUM/oWU01a7KN52IKAW7juplhwMgaloHbAzCiykFoN0A1sl
+         Ve6v0C0pxPkADtKrjkj3hXZ+zNl3wIoCQx2oIScBiPh5A13Uvf05om1o1uMJSZbMuw
+         +5w/vZXe9qTuMCQwXXPp2cLA3HuZGO6q3N/e3IRA=
+Date:   Mon, 27 Jun 2022 14:08:43 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yi Yang <yiyang13@huawei.com>
+Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        andy.shevchenko@gmail.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [PATCH -next] serial: 8250: fix return error code in
  serial8250_request_std_resource()
-Message-ID: <Yrmd/Y06xWHKjCGy@kroah.com>
+Message-ID: <Yrmdy6IJrWMkZfZg@kroah.com>
 References: <20220620072025.172088-1-yiyang13@huawei.com>
- <fe25cbe3-3cc3-45c3-d6d0-e867ee372b7@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fe25cbe3-3cc3-45c3-d6d0-e867ee372b7@linux.intel.com>
+In-Reply-To: <20220620072025.172088-1-yiyang13@huawei.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 10:53:24AM +0300, Ilpo Järvinen wrote:
-> On Mon, 20 Jun 2022, Yi Yang wrote:
+On Mon, Jun 20, 2022 at 03:20:25PM +0800, Yi Yang wrote:
+> If port->mapbase = NULL in serial8250_request_std_resource() , it need
+> return a error code instead of 0. If uart_set_info() fail to request new
+> regions by serial8250_request_std_resource() but the return value of
+> serial8250_request_std_resource() is 0, that The system will mistakenly
+> considers that port resources are successfully applied for. A null
+> pointer reference is triggered when the port resource is later invoked.
 > 
-> > If port->mapbase = NULL in serial8250_request_std_resource() , it need
-> > return a error code instead of 0. If uart_set_info() fail to request new
-> > regions by serial8250_request_std_resource() but the return value of
-> > serial8250_request_std_resource() is 0, that The system will mistakenly
-> > considers that port resources are successfully applied for. A null
-> > pointer reference is triggered when the port resource is later invoked.
-> > 
-> > The problem can also be triggered with the following simple program:
-> > ----------
-> >   #include <stdio.h>
-> >   #include <sys/types.h>
-> >   #include <sys/stat.h>
-> >   #include <fcntl.h>
-> >   #include <sys/ioctl.h>
-> >   #include <unistd.h>
-> >   #include <errno.h>
-> > 
-> >   struct serial_struct {
-> >       int type;
-> >       int line;
-> >       unsigned int    port;
-> >       int irq;
-> >       int flags;
-> >       int xmit_fifo_size;
-> >       int custom_divisor;
-> >       int baud_base;
-> >       unsigned short  close_delay;
-> >       char    io_type;
-> >       char    reserved_char[1];
-> >       int hub6;
-> >       unsigned short  closing_wait; /* time to wait before closing */
-> >       unsigned short  closing_wait2; /* no longer used... */
-> >       unsigned char   *iomem_base;
-> >       unsigned short  iomem_reg_shift;
-> >       unsigned int    port_high;
-> >       unsigned long   iomap_base; /* cookie passed into ioremap */
-> >   };
-> > 
-> >   struct serial_struct str;
-> > 
-> >   int main(void)
-> >   {
-> >       open("/dev/ttyS0", O_RDWR);
-> >       ioctl(fd, TIOCGSERIAL, &str);
-> >       str.iomem_base = 0;
-> >       ioctl(fd, TIOCSSERIAL, str);
-> >       return 0;
-> >   }
+> The problem can also be triggered with the following simple program:
+> ----------
+>   #include <stdio.h>
+>   #include <sys/types.h>
+>   #include <sys/stat.h>
+>   #include <fcntl.h>
+>   #include <sys/ioctl.h>
+>   #include <unistd.h>
+>   #include <errno.h>
 > 
-> With admin priviledges I guess?
+>   struct serial_struct {
+>       int type;
+>       int line;
+>       unsigned int    port;
+>       int irq;
+>       int flags;
+>       int xmit_fifo_size;
+>       int custom_divisor;
+>       int baud_base;
+>       unsigned short  close_delay;
+>       char    io_type;
+>       char    reserved_char[1];
+>       int hub6;
+>       unsigned short  closing_wait; /* time to wait before closing */
+>       unsigned short  closing_wait2; /* no longer used... */
+>       unsigned char   *iomem_base;
+>       unsigned short  iomem_reg_shift;
+>       unsigned int    port_high;
+>       unsigned long   iomap_base; /* cookie passed into ioremap */
+>   };
 > 
-> > ----------
-> > 
-> > Signed-off-by: Yi Yang <yiyang13@huawei.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_port.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index 3e3d784aa628..e1cefa97bdeb 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2961,8 +2961,10 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
-> >  	case UPIO_MEM32BE:
-> >  	case UPIO_MEM16:
-> >  	case UPIO_MEM:
-> > -		if (!port->mapbase)
-> > +		if (!port->mapbase) {
-> > +			ret = -EFAULT;
-> >  			break;
-> > +		}
-> >  
-> >  		if (!request_mem_region(port->mapbase, size, "serial")) {
-> >  			ret = -EBUSY;
-> > 
+>   struct serial_struct str;
 > 
-> I recall reading somewhere that somebody more knowledgeful than me noted 
-> that this interface has many ways to shoot oneself in the foot if one 
-> really wants to which is why some things are limited to admin only.
-> I cannot seem to find that a reference to that now though.
+>   int main(void)
+>   {
+>       open("/dev/ttyS0", O_RDWR);
+>       ioctl(fd, TIOCGSERIAL, &str);
+>       str.iomem_base = 0;
+>       ioctl(fd, TIOCSSERIAL, str);
+>       return 0;
+>   }
+> ----------
+> 
+> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 3e3d784aa628..e1cefa97bdeb 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2961,8 +2961,10 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+>  	case UPIO_MEM32BE:
+>  	case UPIO_MEM16:
+>  	case UPIO_MEM:
+> -		if (!port->mapbase)
+> +		if (!port->mapbase) {
+> +			ret = -EFAULT;
 
-Yes, what could go wrong with allowing userspace to specify memory
-locations that a uart might be located at :)
+This not a memory fault, that only gets returned for failures when
+copying to/from userspace.
 
-This stuff should all be "locked down" for any system with untrusted
-users.
+Please return -EINVAL or something like that.
 
 thanks,
 
