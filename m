@@ -2,75 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537AACCA473
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F32C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236213AbiF0Mj2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
+        id S234717AbiF0MtK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234976AbiF0Mj1 (ORCPT
+        with ESMTP id S234632AbiF0MtK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Jun 2022 08:39:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC241DFE;
-        Mon, 27 Jun 2022 05:39:26 -0700 (PDT)
+        Mon, 27 Jun 2022 08:49:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA31D2ED;
+        Mon, 27 Jun 2022 05:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6766E61004;
-        Mon, 27 Jun 2022 12:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47960C3411D;
-        Mon, 27 Jun 2022 12:39:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28EEF61170;
+        Mon, 27 Jun 2022 12:49:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08FCCC3411D;
+        Mon, 27 Jun 2022 12:49:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656333565;
-        bh=ZnWpSOiSOj0QVZ0k9JieiGzuTBhurNcyR6fM1Su+ZT4=;
+        s=korg; t=1656334148;
+        bh=q31zZRCcTxGfAGEYAFGAfqTwac0q01YzEC/8abEgegA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FX2/TwKw5z+EEBKy+Adrchc9L29Buf0efUPFoEuuIxhfulnVktJFgRUi5IkcD+gcF
-         Y8b7uSRKqdjoPSDwwdjD6Zp9ABTB+fawDin9rTcFdBzuotFu3SrdUpAixm4x/u35+b
-         pI0+9eKwRMP5xdmwntydhpnsunVOJu/hYv/YxAew=
-Date:   Mon, 27 Jun 2022 14:39:23 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Chanho Park <chanho61.park@samsung.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Hector Martin <marcan@marcan.st>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] tty: serial: samsung_tty: loopback mode support
-Message-ID: <Yrmk+/2CqrBXcqAT@kroah.com>
-References: <CGME20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0@epcas2p2.samsung.com>
- <20220627032353.8868-1-chanho61.park@samsung.com>
+        b=u5du0KHNEr1/l9MgRTh3UhzWVPUwvgx7iRCEYAan2MVWQ/0RJh7nvcqvnsIfNR01a
+         gDXtlBul3zolDzAIV6YdC4CLbF0Hid94MHhi2/DvKyH+1UiNdV2L2D7oQinp6wH7mc
+         9ElCDMHfaq989gBIP290+Me5Q/P3waAv7WSZiQBc=
+Date:   Mon, 27 Jun 2022 14:49:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] serial: 8250_dw: Take port lock while accessing LSR
+Message-ID: <YrmnQSSZmFo7SJEz@kroah.com>
+References: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
+ <20220615090651.15340-3-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220627032353.8868-1-chanho61.park@samsung.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220615090651.15340-3-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 12:23:53PM +0900, Chanho Park wrote:
-> Internal loopback mode can be supported by setting
-> S3C2443_UCON_LOOPBACK bit. The mode & bit can be supported since
-> s3c2410 and later SoCs. We can test it by linux-serial-test program[1]
-> with -k option. It will set TIOCM_LOOP mode during test.
+On Wed, Jun 15, 2022 at 12:06:50PM +0300, Ilpo Järvinen wrote:
+> Accessing LSR requires port lock because it mutates lsr_saved_flags
+> in serial_lsr_in().
 > 
-> -k, --loopback     Use internal hardware loop back
+> Fixes: 197eb5c416ff ("serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()")
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-I do not understand this line in the changelog text, what is it for?
+Does not apply against my tty-linus branch, you mixed patches up in this
+series which is confusing for anyone wanting to apply them.
 
-> 
-> [1]: https://github.com/cbrake/linux-serial-test
-> Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-
-Our tools require a blank line before the signed-off-by line.  Did you
-not get a warning when checking this patch before sending it out?
-
-Also, no need for a footnote in a changelog that is so short, just put
-the link in the body of the text itself.
+I've applied the first, but the next two you should resend.
 
 thanks,
 
