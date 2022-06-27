@@ -2,74 +2,63 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE41CCA482
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF387CCA481
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Jun 2022 12:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239696AbiF0MI1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Jun 2022 08:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S239524AbiF0MIX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 27 Jun 2022 08:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240480AbiF0MHp (ORCPT
+        with ESMTP id S240483AbiF0MHp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Mon, 27 Jun 2022 08:07:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E29DEFE;
-        Mon, 27 Jun 2022 05:06:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4775DF0E
+        for <linux-serial@vger.kernel.org>; Mon, 27 Jun 2022 05:06:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB16B81126;
-        Mon, 27 Jun 2022 12:06:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69B5C3411D;
-        Mon, 27 Jun 2022 12:06:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63781B801BF
+        for <linux-serial@vger.kernel.org>; Mon, 27 Jun 2022 12:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88AEC341C7;
+        Mon, 27 Jun 2022 12:06:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656331593;
-        bh=NbyhByzCH5/okHi8PrVyh0HR/ISn4xht5nGthfBzx1A=;
+        s=korg; t=1656331596;
+        bh=EYuoS1lL2IJYGfEIZNc7+1Wt4msTbpvVkFnpUDH2KWc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cp3sfI9zfJK8tiLDjFucyDJ1O6N1SLfwDmCJQIj553q3nNVv/+Kl7dcsLauoH3CeY
-         WsHRPuzOODEZLLe5Hck5CmJPwMYljbBYfJTehisItHl4wGlrYi7UwnfAk1c50JXeMZ
-         IOMU8udi15yR7LW3RNYC7UO26S91nxP7BA2/3adY=
-Date:   Mon, 27 Jun 2022 13:54:53 +0200
+        b=MlFF1Hx44WnGtJIJkjdP/9LKPG0hHmhpaYGRZOiXBKq4R+rCyoWPRp2KiCswzaTq5
+         7ANAmMtv765WbuwIgYOYOnFq36VbOQ5+0gseWAD3KioFhh8lINWrkrsja3rQmwqAix
+         hLZsBtJ8T7HF3MU+NDycIjrzPSyyZsvSRtk+zCOE=
+Date:   Mon, 27 Jun 2022 14:05:36 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Starke, Daniel" <daniel.starke@siemens.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
- outgoing data path
-Message-ID: <YrmajcyijzquuFui@kroah.com>
-References: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+To:     cael <juanfengpy@gmail.com>
+Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
+        benbjiang@tencent.com, robinlai@tencent.com,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5] tty: fix hang on tty device with no_room set
+Message-ID: <YrmdEJrM3z6Dbvgn@kroah.com>
+References: <YqmmdRynrDSzNL0W@kroah.com>
+ <1655291821-19676-1-git-send-email-juanfengpy@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DB9PR10MB5881188AE33199085DAD1460E0B59@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <1655291821-19676-1-git-send-email-juanfengpy@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 12:26:27PM +0000, Starke, Daniel wrote:
-> > This is a bit huge for stable backports, especially given that a huge
-> > number of the previous stable backports have totally failed and no one
-> > has submitted new versions.
-> > 
-> > So why is this needed for stable?  Same for all of these in the series...
-> 
-> Given the fact that these are all bug fixes I assumed that these are also
-> relevant for backporting. Maybe only in the more recent stable releases
-> if there are issues with the merges.
-> I do not mind removing the stable kernel reference and keep these changes
-> only for mainline. So please let me know your preference.
-> Should I resubmit the patches without stable reference?
+On Wed, Jun 15, 2022 at 07:17:01PM +0800, cael wrote:
+> From: caelli <juanfengpy@gmail.com>
 
-Please read the stable kernel rules for what is, and is not allowed.
-Generally a patch that does:
-	drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
-is not allowed.
+Can you please use the name you use to sign legal documents as the
+number of different names being used and written here is totally
+confusing.  Please use your native language if that's an issue, that
+would be best.
 
-Please sort by what is stable fixes, and what is not.  Given that you
-don't seem to want to backport patches to older stable kernels when they
-fail to apply, why are any of these needed in stable kernels if the
-older ones are not also going to be merged there?
+Also, why not use your corporate email address as the From: and
+signed-off-by line also?  That is preferred, and in this case, I'm going
+to ask for it given the confusion that has happened so far in this
+thread in the past.
 
 thanks,
 
