@@ -2,90 +2,97 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D05ABC43334
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 09:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC9EC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 09:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245702AbiF1JmH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S1344495AbiF1Jvo (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241029AbiF1JmG (ORCPT
+        with ESMTP id S241460AbiF1Jvn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:42:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2291252BD;
-        Tue, 28 Jun 2022 02:42:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656409326; x=1687945326;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JsMXjIg8C9OG1eayahYeUAeX1A9gxni645x5KsPj9vw=;
-  b=E3mPT6LVbiDohjed0sCnpwf/keG/AbIEi365/ktd3Kbi6vfdg/uAUQNM
-   FzkjtFZ7gl6hyGzTMgKMnhEtalv3dgipO7yjQlZnGIpBYktV0Pkwe7fQR
-   zJm4En0Y90d7HR4PGyGwpftHUlfNsF4pTe1wHRZO5CKXPVS7pwrpThGcH
-   XY80jXNQ7rDoCYfJMB4kHlxKB6ENp2jFtGpvGa/M403HdWAvS5KPxLX3C
-   aVxPpmrY5cO2LEzTrp0ntwUxexdex+ittwNOPHCrj6ZKW8Ext30ygXSqE
-   ZjQqlIwJpSWAFQSxzWYcHybzqvMuRIQFulqBc45poa2uQPxJ3+lbUjMAl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282428984"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282428984"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:42:05 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646843688"
-Received: from iannetti-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:42:02 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 28 Jun 2022 05:51:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D98A2AE3F;
+        Tue, 28 Jun 2022 02:51:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B654B81D79;
+        Tue, 28 Jun 2022 09:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5884C3411D;
+        Tue, 28 Jun 2022 09:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656409900;
+        bh=2MJDoSVSUvHYBQTXDGlST2aZE277KT5703sWMj70kjM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pws1kpE3r+YJwttZPjszbUdhTl59v0B+/FxkYHEkwFNThrNOZAknMy4RPwk2Vw085
+         WfTfoGcl5pK5xqZsh/dr8omX0xXEjsTBYdEXker6SL707CqtbGnUiAu3vOrCKVkDqI
+         C9qyRQ+G0KUZEvZqz6WBPlcvtV9qWU3Z0AM1rmQ9ppFNTP6sdCcTEgpICnJqpGi3Rd
+         7wXzFjJZdzb9hpxW63tbO0w0JsJtqlzR4Qc2rdmDm2EpsF+c9lwrq+JpwabcfrrUse
+         O7DEm59lo29LpDcKhKjPSm+L2nFTdLetyKsrZNbn+IaCaVRKX9QHuyi1f3DC14LpSe
+         l8Y7IQCUqNFOQ==
+Received: by pali.im (Postfix)
+        id C50A77AE; Tue, 28 Jun 2022 11:51:36 +0200 (CEST)
+Date:   Tue, 28 Jun 2022 11:51:36 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Allen Yan <yanwei@marvell.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Gregory CLEMENT <gregory.clement@bootlin.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] serial: mvebu: Apply old baudrate to termios
-Date:   Tue, 28 Jun 2022 12:41:55 +0300
-Message-Id: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
+Message-ID: <20220628095136.fhtjjjkj3mre7hwa@pali>
+References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A fallback baud rate was derived from old termios but got never applied
-to (new/current) termios. Old termios is dropped once ->set_termios()
-call chain completes, only termios persists the values. Encode also the
-old baud rate into termios.
+On Tuesday 28 June 2022 12:41:55 Ilpo Järvinen wrote:
+> A fallback baud rate was derived from old termios but got never applied
+> to (new/current) termios. Old termios is dropped once ->set_termios()
+> call chain completes, only termios persists the values. Encode also the
+> old baud rate into termios.
+> 
+> Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Hello! Could you explain a bit more what is this patch fixing? I have
+not caught it yet. Do you have a test scenario which can demonstrate
+this issue? Because I have tested this driver more deeply (on Mox
+and Espressobin) and I have not seen any remaining issue with reporting
+incorrect baudrate.
 
----
- drivers/tty/serial/mvebu-uart.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 0429c2a54290..12a79018697f 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -592,10 +592,9 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 		if (old)
- 			baud = uart_get_baud_rate(port, old, NULL,
- 						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
- 	}
-+	tty_termios_encode_baud_rate(termios, baud, baud);
-+	uart_update_timeout(port, termios->c_cflag, baud);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-
--- 
-tg: (f287f971e256..) fix/mvebu-apply-old-baud (depends on: tty-next)
+> ---
+>  drivers/tty/serial/mvebu-uart.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index 0429c2a54290..12a79018697f 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -592,10 +592,9 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+>  		if (old)
+>  			baud = uart_get_baud_rate(port, old, NULL,
+>  						  min_baud, max_baud);
+> -	} else {
+> -		tty_termios_encode_baud_rate(termios, baud, baud);
+> -		uart_update_timeout(port, termios->c_cflag, baud);
+>  	}
+> +	tty_termios_encode_baud_rate(termios, baud, baud);
+> +	uart_update_timeout(port, termios->c_cflag, baud);
+>  
+>  	/* Only the following flag changes are supported */
+>  	if (old) {
+> 
+> -- 
+> tg: (f287f971e256..) fix/mvebu-apply-old-baud (depends on: tty-next)
