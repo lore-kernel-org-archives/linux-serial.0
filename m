@@ -2,73 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EF6C43334
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 11:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81919C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 11:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344016AbiF1LV3 (ORCPT
+        id S1344109AbiF1Ljn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
+        Tue, 28 Jun 2022 07:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiF1LV2 (ORCPT
+        with ESMTP id S229739AbiF1Ljm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:21:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7612E096;
-        Tue, 28 Jun 2022 04:21:25 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 50C9022246;
-        Tue, 28 Jun 2022 13:21:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656415283;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o0W1KL9ji+DqAJcOrvQpkrdf1niwtlqNX9ZRyuRODlc=;
-        b=Uw/+x6420mcEOIknrJiEYJ4HEZ9UvXxfVZ6Pn1XCw8CkN8ZGwdtezuxBiGXY9vgiFgK+id
-        sco96ziMUq3tHBPtXx1MXH+QQqiDvIx8fvuL4jvAgnBNt55ZQvjmWQN85TQ3PPNa+fhfRq
-        BeLUsNnjDbN9kU5q2xkTkA5N5rh6MDc=
+        Tue, 28 Jun 2022 07:39:42 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2593EB873;
+        Tue, 28 Jun 2022 04:39:42 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-318889e6a2cso113657047b3.1;
+        Tue, 28 Jun 2022 04:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=noX9Qw20rdOUnrhd7rCBZDR35mgpbR/5H4GWJxhK7U4=;
+        b=MydxI/IpeL1O2h+GMMYUVYNmZbIO8GvAHD8ZtgTZF5Jp/3rzZqM/b7wR88QbDa2N2I
+         c0+YnUKNV7SKdgwODbz9f4zAEn5xalOwLVyjSTOQ16c2mC9epB3YJXm72Kf9PiIGLCQF
+         ChQWnUmcBekLRuk+8j+MldPcN5daqIsMHTOLWhlQ4q1NI96cdeXUyRODYppdAEolW74T
+         ze8rpyYtP8RoCf1kkHXneV00kFXZEZ5pSybf1Uu3zSIyEuPQp/5nwCqfx+9kHHp5XmZY
+         58pwL7IR00LgSZVFsDu+M1sTsU/cDqPV+7NBiXoTXJPK8YlsTa19o0tgKLuyxOQIAIp+
+         tCcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=noX9Qw20rdOUnrhd7rCBZDR35mgpbR/5H4GWJxhK7U4=;
+        b=ukc1ht+uRv9LRePKrzWa/NcMRLkLQnSkoJNPvkfnuC2YrOhPEWZdAT1mycXUjXI0DG
+         d3W5tOd+R+lC3Ua9jLPHFzzWjXK4DhApSOSobLyIZ8IXNeqPvtzk0Ky5+AZnF5yOHKpM
+         JYlkhKRMfz1HcOY2jyxZ+zj+bA6SRT3kEyGd5diLNScn5YTecOxnEYmeVYubghhEn8CQ
+         ykr1a8wlZWa6oJG563b7fBNkdfnWeyhKcAG45+Ke2vlMtBFsg6no+BEPWnPJWiqAiC3k
+         6Zz0JqsiCZNHyRHAkbIuR2wLLNMGSiQAuqIWQomb0gDIveFJIPeGIHXC/ahji6y8hAGi
+         QyKQ==
+X-Gm-Message-State: AJIora8HJ3AIBQGn3TIubVTO/jkR4b8JpZFmhyU9yDA2GoIlEHjGSCd+
+        L8doPjlcHytrJGqBMfh2KeLlu7NaOsCt6OdcoRU=
+X-Google-Smtp-Source: AGRyM1twnswZ9JqoJHs1fX5c6Gm2ANTedCBCoTCUbVfvSldG9JYX/PyIYeWGl/YIFplhCKkPhpP0xdLE829xXZvYHOg=
+X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
+ j128-20020a812386000000b0031765868901mr20792966ywj.195.1656416381294; Tue, 28
+ Jun 2022 04:39:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 28 Jun 2022 13:21:23 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
+References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
+ <20220628095136.fhtjjjkj3mre7hwa@pali> <20220628095942.rbpl2iocxoqtzxiy@pali>
+In-Reply-To: <20220628095942.rbpl2iocxoqtzxiy@pali>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 28 Jun 2022 13:39:03 +0200
+Message-ID: <CAHp75VeHNERyPAam_-u7+ykYxcUM_N-YT6kBAh+hG+7WNW31SA@mail.gmail.com>
+Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] earlycon: prevent multiple register_console()
-In-Reply-To: <20220602090038.3201897-1-michael@walle.cc>
-References: <20220602090038.3201897-1-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <2386f29173c6a6d31e3e07630a44eafb@walle.cc>
-X-Sender: michael@walle.cc
+        Jiri Slaby <jirislaby@kernel.org>,
+        Allen Yan <yanwei@marvell.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Tue, Jun 28, 2022 at 12:01 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> On Tuesday 28 June 2022 11:51:36 Pali Roh=C3=A1r wrote:
+> > On Tuesday 28 June 2022 12:41:55 Ilpo J=C3=A4rvinen wrote:
 
-Am 2022-06-02 11:00, schrieb Michael Walle:
-> If the earlycon parameter is given twice, the kernel will spit out a
-> WARN() in register_console() because it was already registered. The
-> non-dt variant setup_earlycon() already handles that gracefully. The dt
-> variant of_setup_earlycon() doesn't. Add the check there and add the
-> -EALREADY handling in early_init_dt_scan_chosen_stdout().
-> 
-> FWIW, this doesn't happen if CONFIG_ACPI_SPCR_TABLE is set. In that 
-> case
-> the registration is delayed until after earlycon parameter(s) are
-> parsed.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> > > A fallback baud rate was derived from old termios but got never appli=
+ed
+> > > to (new/current) termios. Old termios is dropped once ->set_termios()
+> > > call chain completes, only termios persists the values. Encode also t=
+he
+> > > old baud rate into termios.
+> > >
+> > > Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baud=
+rate")
+> > > Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> >
+> > Hello! Could you explain a bit more what is this patch fixing? I have
+> > not caught it yet. Do you have a test scenario which can demonstrate
+> > this issue? Because I have tested this driver more deeply (on Mox
+> > and Espressobin) and I have not seen any remaining issue with reporting
+> > incorrect baudrate.
+>
+> Ou, now I see where is the issue. Patch which I tested and which fixes
+> reporting baudrate is not in kernel tree yet and it looks like I totally
+> forgot to sent it to ML. I will send it. Sorry for confusion.
 
-Ping :) Or do I have to resend this patch?
+Shouldn't the Ilpo's applied anyway to fix the current code base?
 
--michael
+--=20
+With Best Regards,
+Andy Shevchenko
