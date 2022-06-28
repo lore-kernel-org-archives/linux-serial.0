@@ -2,113 +2,80 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B57CCA479
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 08:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC634C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 08:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243176AbiF1IcR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 04:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
+        id S229983AbiF1Ii1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 04:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241877AbiF1IcP (ORCPT
+        with ESMTP id S1344077AbiF1Ihm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 04:32:15 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CE62D1D8;
-        Tue, 28 Jun 2022 01:32:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405133; x=1687941133;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=2kqXa/uuLryKUFs3CLbGBD4etwbcUy4VHXIUo9tYGK4=;
-  b=LEVPB3/vXo+at6YRCU8O0vDKzzxD2b8WiylDwv6IZ/j3wVXsKiTELTAL
-   6AdS0clRVgvYc0bNHuq1g3iHegZW+qx4yODv3caqZ6GSLYCTbjxRLGg+k
-   n1QfU5pl04jkfCfW6dBY7lPGRbiM69X1U7AUQ5GxXSgjRqLXFHWrSi3oy
-   LAE5ZXaHtAE3PW89P86ITAjX1vw7xPyDl/PT0v2n8aYuRzC3sagdu467e
-   CJd45vSeabwfhL65mPsq+5TKHWi7xnyjpFuejxSdBXihKKcEMSI++gHTc
-   3utqS9PDS6voCnP4fk2fRPYkzqBb75c5u+05B+lX9NMwlFZqrE0W78HtF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264716123"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="264716123"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:32:13 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646818234"
-Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:32:09 -0700
-Date:   Tue, 28 Jun 2022 11:31:50 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-In-Reply-To: <067e6fa2-6015-2eea-5719-8b75fb08882c@gmx.de>
-Message-ID: <9239f2ea-1a1c-ff27-70b9-931ab99c16@linux.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de> <20220622154659.8710-3-LinoSanfilippo@gmx.de> <20220625195844.GB2879@wunner.de> <067e6fa2-6015-2eea-5719-8b75fb08882c@gmx.de>
+        Tue, 28 Jun 2022 04:37:42 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9AD2DD7C;
+        Tue, 28 Jun 2022 01:37:38 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LXHwy468jzkWjK;
+        Tue, 28 Jun 2022 16:35:46 +0800 (CST)
+Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 16:37:36 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.28) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 16:37:35 +0800
+From:   Yi Yang <yiyang13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <andy.shevchenko@gmail.com>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 -next] serial: 8250: fix return error code in serial8250_request_std_resource()
+Date:   Tue, 28 Jun 2022 16:35:15 +0800
+Message-ID: <20220628083515.64138-1-yiyang13@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.28]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 26 Jun 2022, Lino Sanfilippo wrote:
+If port->mapbase = NULL in serial8250_request_std_resource() , it need
+return a error code instead of 0. If uart_set_info() fail to request new
+regions by serial8250_request_std_resource() but the return value of
+serial8250_request_std_resource() is 0, The system incorrectly considers
+that the resource application is successful and does not attempt to
+restore the old setting. A null pointer reference is triggered when the
+port resource is later invoked.
 
-> On 25.06.22 at 21:58, Lukas Wunner wrote:
-> > On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
-> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >>
-> >> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> >> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> >> since the concerning GPIO expander is connected via SPI or I2C).
-> >>
-> >> Fix this by setting the termination line outside of the uart_port spinlock
-> >> in the serial core.
-> > [...]
-> >> --- a/drivers/tty/serial/serial_core.c
-> >> +++ b/drivers/tty/serial/serial_core.c
-> >> @@ -1400,6 +1411,7 @@ static int uart_set_rs485_config(struct uart_port *port,
-> >>  	if (ret)
-> >>  		return ret;
-> >>  	uart_sanitize_serial_rs485(port, &rs485);
-> >> +	uart_set_rs485_termination(port, &rs485);
-> >>
-> >>  	spin_lock_irqsave(&port->lock, flags);
-> >>  	ret = port->rs485_config(port, &rs485);
-> >
-> > That's one way to solve the issue.  Another would be to push
-> > acquisition of the port spinlock down into drivers.
-> >
-> > I think in most drivers we don't need to take the port spinlock at all
-> > or only for a few specific register accesses.  So taking the lock here
-> > in the midlayer is likely unwarranted.  However, changing that requires
-> > going through every single driver's ->rs485_config() callback and
-> > checking whether it needs the lock or not.
-> 
-> As a first step its sufficient to take the lock in each drivers rs485_config()
-> function and remove it from uart_set_rs485_config(). Then after time sort out
-> the drivers that dont require the lock and remove it from their function.
-> 
-> However the point of this patch was also to generalize the handling of the
-> termination GPIO, so I would still see this placed in uart_set_rs485_config().
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+---
+v2:
+- return EINVAL instead of EFAULT.
+- change commit messge.
+ drivers/tty/serial/8250/8250_port.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Additional thing to consider is that core currently handles also the 
-port->rs485 assignment under spinlock when ->rs485_config() was 
-successful. TIOCSRS485 ioctl calls are synchronized by other primitives 
-wrt. each other (port mutex and now also termios_rwsem) but drivers 
-probably would like to see consistent rs485 which can only be realized by 
-holding port->lock.
-
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 3e3d784aa628..20b47355221b 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2961,8 +2961,10 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+ 	case UPIO_MEM32BE:
+ 	case UPIO_MEM16:
+ 	case UPIO_MEM:
+-		if (!port->mapbase)
++		if (!port->mapbase) {
++			ret = -EINVAL;
+ 			break;
++		}
+ 
+ 		if (!request_mem_region(port->mapbase, size, "serial")) {
+ 			ret = -EBUSY;
 -- 
- i.
+2.17.1
 
