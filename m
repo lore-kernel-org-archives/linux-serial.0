@@ -2,91 +2,153 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F74EC43334
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 09:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 475B6C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 09:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245619AbiF1JBg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 05:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
+        id S244904AbiF1JlW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 05:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237229AbiF1JBe (ORCPT
+        with ESMTP id S241029AbiF1JlV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 05:01:34 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9D92E685;
-        Tue, 28 Jun 2022 02:01:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656406892; x=1687942892;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/0SUib/paXuDzkqjNC2nmpyo5DifPNvw8VW3V2FElxY=;
-  b=HopgLUGyFe/2KxDlQbhHqvvKCqr5iSskDp5AtJSyeDXkpAzQmOidYhxn
-   uhgFKZl3tesRRZO6zgEu4J6WdxAGuqydFkyf4+TAhi2qGCFfF5BUMT4Xa
-   z2bR/WMEsRoNOJOBc+X6S2QI+k+YjdWe4J71DSA+XVDxaPeL9MI17+wH0
-   M5UeT7c29DLUKnpmW1QPjqdFwcXYj91aK5enAHxxWExyvf3J4Lucdy0AZ
-   37p3MkrNvzaFyUH636wOgCdi+XtOxl5BZfIN2Hmvf2e3zdFWsi2TfycVY
-   cuCXKno0pRzO4BDrAQqRD5snw/wVueLRyXvaqNu4YpdGirD1hcwXvUros
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="280442169"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="280442169"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:01:31 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646829132"
-Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 02:01:30 -0700
-Date:   Tue, 28 Jun 2022 12:01:28 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+        Tue, 28 Jun 2022 05:41:21 -0400
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30061.outbound.protection.outlook.com [40.107.3.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998CACC5;
+        Tue, 28 Jun 2022 02:41:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hPtWHzYVIfz9L5iu7Ir+LoGgHwzFOp1FiaErmBC1OeTth4X0+2nCYvZJECVEzImAlQMqetW4ZCmlbXomIc9+ohdhYvBFbw5XqlsKfJR5GHm5y0hhYD/hC0tRlAEsbLKrSTQrlfo4U6TsYc3uwAB6hok0DFOiT82j5RjbqYxHozox8JWnkXePzBMDAbdenVPIOLRlzCoWYGXR4oOpQM66GDcnFrOuIO13moKuZ+z8gZdFtAJ3icHb9QR7YizuubNk3Ibdk7TQ/3adGx5xzK1+N+/iiUVNo2JmICR8WxD48u+ZkuOmidPC+UndXgNNpWGTHpNO+93QEjkVqpygpDMe9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qFKwbG+MsqnDjmgsuWIk8UO06kFTzvXJ0AH/FyVWLXw=;
+ b=NlDywStKP95y/A2ntwhwA/pgobiSxCjKcfjlD0D2eFWxb8cxT4d51aNgY4BeMk8Y0oPLXjWEGL+r1vhaQ6Jq3ZP0PO5sfwM8rP+tssRNXZIssnBaaejMtomNppfw7G7Mjr6agyh8bSbDXVdYQxY6RueqzNrKs+4s2aUTB48dpVIYEYCauRXscska20Ba3aZjew+xyuPS5Mnq50QDLeqXGuVv4gMdmEjKWVwon1Odu6cCiFfK7fAgNEjnVZBtLp8+FPE1XEEr/oNV9YTd+fynZx1kFLAeKv7T4V4ZXwBl14YJkOzslnnCdBip2VX3lM7LJyznSLc1D9H7UCPVXQzNcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qFKwbG+MsqnDjmgsuWIk8UO06kFTzvXJ0AH/FyVWLXw=;
+ b=kpyR22QgLv/2FO/AoU7Moo6wmHb9XuR9A2QrUMiYpgxSAWXhRvmVjOhf2aTfC9KlUIakVKDuxuKwUS9SoerVsa/eRaoa5yXAqPHoUXzJEDisExiz22jlpUvX1oNzZB3py+8DoVLbwvqrXY9xKp7kKPQr6HlzQsf8waekT4VaS9YadBLGaITIPWKnsawJmQlLtEvDRIcXPB08mP/hKL5yhTJVOkVtU3pYQs+2B0Q/c2auoqE4VO6XcqZOwjLo+2Ca/yu1xjjTNttqwPTZl9aq42toUQY8waSmps1NxaOi+7Wvs6aPKpP/apKkXLjFyeaSFKBaMJzvhv8mG7vAqncG8g==
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21)
+ by AS8PR10MB4629.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:336::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Tue, 28 Jun
+ 2022 09:41:17 +0000
+Received: from DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8f3:281c:a9fb:16f4]) by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8f3:281c:a9fb:16f4%5]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
+ 09:41:17 +0000
+From:   "Starke, Daniel" <daniel.starke@siemens.com>
 To:     Greg KH <gregkh@linuxfoundation.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND tty-next] serial: 8250_dw: Take port lock while
- accessing LSR
-Message-ID: <c5879db7-bee9-93f-526e-872a292442@linux.intel.com>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
+ outgoing data path
+Thread-Topic: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
+ outgoing data path
+Thread-Index: AdiK0xmD7lgBt/OSTs2Jhjzgz+ZBZQ==
+Date:   Tue, 28 Jun 2022 09:41:17 +0000
+Message-ID: <DB9PR10MB58813B83E903F1856FD0CAAAE0B89@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Enabled=true;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_SetDate=2022-06-28T09:41:15Z;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Method=Privileged;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_Name=restricted-default;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_SiteId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_ActionId=cbdef815-c8f9-41ae-81b7-f439804e21bf;
+ MSIP_Label_a59b6cd5-d141-4a33-8bf1-0ca04484304f_ContentBits=0
+document_confidentiality: Restricted
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a640ea1f-7983-4edb-2101-08da58ea599d
+x-ms-traffictypediagnostic: AS8PR10MB4629:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +EVQeRSslnMRCA/Kr6noJhTx8yjmR62aKTOcNrffSeE85ZlLXxUYJPlYN3n+sf0iy79sXFbD5turLtqdE5qFRC7hrn/WHeoHY1z3dEf2ilRBUhmnvPcLU8xYrcmupTXwgqi+RQNlXrJmL+HCT3c42SwmvI8u0yqfHs+beMxQRnn6xfrUEdMdMFEOiqGGa2jsNTAUoYngeiOb1qMYaKuZYiryfzNHU//Zjm5jO4zmLlP0PXRE4kXDF6adsVsFM/SAXKhu4VjL0NCti0N8YDrHFH2OCZFzjpbdvM4egMahy+SLvACybNEiivJK219ODCXO05rZ1usjAA6XGRm3U988trwzKVgju+XtkxmHIlx6z27NCsY7eQNkSuL68TmL8f/2RV1cmRQg0pKEASHdjKMv020SPtSh8YoCWuzvEqnzi4At7g+v9eEU/RNTLazkPhtpPBm8p8KT8t132yxHHQcnYUEluEVnz9Ku4YOFY1xK8QTArCb6J+8Rjc/Cnl7Qi7KjoEJtlIsiixxii/9cfBbcCd3Rh00v2tejaUFr5cgxA8E19oC5wimGQM7DB+9yvwh5btJ88gjl1pTbr2NoDVqI6yEaQ2l2C0b/ftWoIWcvCsNRXq9eKynsWIhspHKhzW1CmNu0lnc0irWm5pgg2lRTvfPmNJPi8UR0WiL2vS6st9upyJxMJuFqZ2/1KBh/7beksKjXXSkFqURkVvnIv38FrQzbEQTFs2LnEZdz4ZBI1zBzpq+m51i5x/qUkoOR8vG2p3uAe0zxzmHEY69cRneLxjWedEuaHvht6ettCRAbuNk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(136003)(39860400002)(376002)(346002)(6506007)(2906002)(186003)(122000001)(6916009)(478600001)(7696005)(8936002)(38070700005)(33656002)(86362001)(41300700001)(38100700002)(316002)(54906003)(55016003)(9686003)(5660300002)(66476007)(4326008)(8676002)(26005)(71200400001)(66946007)(52536014)(66446008)(66556008)(82960400001)(76116006)(64756008)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CfB3sKrle6MUDtSTvAvqVIzObjavYyPRtMx7Qv3KjZ9FqCy5HjAzlePHy/8H?=
+ =?us-ascii?Q?wegyPDwuQRvYZJgIbvudDFd1FxIad9ET0kCbWaVPfGTRLLo7RuwLAV2nnVA9?=
+ =?us-ascii?Q?FCqZ3Fr84X0QvNiL/BzjtneWPJRIis+QjhRcEBhP7Fm8ponhb1JWe9oVEoCQ?=
+ =?us-ascii?Q?eXZFaAJOfaVmITY4gEtJIphj9jpBJWAxdEggMG7RnyisWQBemXR0dJOH66F+?=
+ =?us-ascii?Q?JN9GGKotz10DQJpCAjfzXOKnuizmMe3cKYVqgTtdFbwSO53Er+dsNKhr9Lvc?=
+ =?us-ascii?Q?bJAwiDzjUt+t6+qxLYknc1kLCpXbIJyhF/bCN6BKGfDAwlvPReh2PXhoH5M/?=
+ =?us-ascii?Q?s3yjESs/nB/7xC76SoHW0s974IHEdVhslrl8oElgsDWlMbzm6D9PDFPW+sMz?=
+ =?us-ascii?Q?Aq8dIVP9FMpu1wd0aTeAJSq4srb0pLp243kmTt+KJArkhdhYiCSaQHh4Gsvk?=
+ =?us-ascii?Q?94YXqZwZaxuewg8Fv0uqbDmwhJ26VH8Hnk+RcOqOfJN4muZY33jgp4M/pI3g?=
+ =?us-ascii?Q?3M7wTxetlhxHM3omxHxk1GvyI+ihmVMGLT1FtvbjNxHae2Gn4iVt3b95x1Dg?=
+ =?us-ascii?Q?Ctv9GRIeTOPZ5L9u6v9GslS1VJs4IFvVBWidwxMxcuFuGMFEvWj2F5uKLoVo?=
+ =?us-ascii?Q?qrX60BcrZNCLq+IUkGBtrpgl3lwDryAO3HrRHfsEHggnyqSL5DNgPkc/PVmJ?=
+ =?us-ascii?Q?GpKOWy4sIn6EhjpsXwTCUNT7dRw00ZhKQWXYhnZM7VbU8SauDw52OJfr/VLS?=
+ =?us-ascii?Q?ybbNTcvJ2Y+sL4L4gfpacg3LypVMWxVSJYlx/3jQnm3dnq1Imbr8AxL2ba1K?=
+ =?us-ascii?Q?42Rt86hsVvBj1RChBAed9fhx9+CMZdA9g57Fre80t0FZOqnZb4z3vQ1IsPfw?=
+ =?us-ascii?Q?9H1AnJ4u7/1xNOjebQ4NLYr6X0dagtrLwqx+czOlZUtG/P88QQ6MlKa4tDtE?=
+ =?us-ascii?Q?N0A7XLS4VY1LWejJckYAW51F1oINzNYQLctyeSyv1RshHkm4HbAfSQYo2PhG?=
+ =?us-ascii?Q?rpnooTUN4xaVulLxIV2ZeQWBjNsQ7tVAFOQhjygiIJEV1XiE9esb6xPl6lS1?=
+ =?us-ascii?Q?ye87fi5rlCquid8lPqpV7duhX58AX++BvaaNKj2gU1zPTITPOjswRw/1mMum?=
+ =?us-ascii?Q?LwvFkn+oRqV06Bnpw6pssnT7eA4XHgeAKRTP9lLPNjCKx2QbMsWUvKOzvrP7?=
+ =?us-ascii?Q?VuWGlzS/NDMNF6lI1w4QAT334DZtF4XQKOxO8oPsJjgYLXy7nJAakE6UdhVH?=
+ =?us-ascii?Q?7bp4v+Jp4GVznDhszQI2z+j8sP3vk6H4peEHgCeN1cpTQTg20Dpg0W8Ifah6?=
+ =?us-ascii?Q?A9mszEJl/fSNyaN96hcRPnq57JYXWojpBUnzG3T4O+vMSdhQjGuXycJ53vTP?=
+ =?us-ascii?Q?igVXv+m76v6vM5KnAIoSZi7PmOcvOYDX7gTrcc+NU3MXecZIipf8hiYbnci4?=
+ =?us-ascii?Q?2EU72HyFEBGWZebPTSG6M4fccoxhNGTOp1nCVGFKNyB8+uAUHxAeNeX7wZF0?=
+ =?us-ascii?Q?ZYnF5MHpbUVujSNud5+RrjZ9R+c3OntsrGBbc7d/sxPM371Cf3mgoVK1wY2t?=
+ =?us-ascii?Q?BHZrDJrQeYVoaQGGQe0dk0AQT+n4h5DX37gFpMlHWtSAIyFag3XKwBllwUDy?=
+ =?us-ascii?Q?ug=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-895458432-1656406891=:1603"
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a640ea1f-7983-4edb-2101-08da58ea599d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 09:41:17.5251
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /nedIBTLezOEYSRJZikmY4S7AeuWbbN/Nc5mUKhu/3eiK/Lu5qaPLubX4ipvHz2FNY8XwT2VxND0CYFoq6yz6y31+0pbgzjgyqCuSJGmD0w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB4629
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+> Please read the stable kernel rules for what is, and is not allowed.
+> Generally a patch that does:
+>  drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
+> is not allowed.
+>=20
+> Please sort by what is stable fixes, and what is not.  Given that you
+> don't seem to want to backport patches to older stable kernels when they
+> fail to apply, why are any of these needed in stable kernels if the older
+> ones are not also going to be merged there?
 
---8323329-895458432-1656406891=:1603
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Indeed, the documentation disallows such big backports as I have just found
+out.
+Initially, I added the stable backport remark as suggested by you for my
+very first patch.
+We have split our complete change set in small patches, re-ordered the
+changes to submit bug fixes first and documented all changes pedantically.
+Supporting all the backports turns out to come with much higher effort as
+we have anticipated. We do not have the resources to support this.
+For us it is sufficient to keep all our changes on the n_gsm driver in the
+mainline branch. Also for all upcoming patches.
+We have already done various integration tests with the final version of
+the n_gsm driver with Triorail and Funkwerk mobiles. It is part of our
+commercial product which has an official approval. The quality and feature
+level (3GPP standard conformance) of the n_gsm driver has been
+significantly improved by our changes. And we would like to share this with
+the community. This would bring the n_gsm driver out of its experimental
+state.
+Hence, I would like to resubmit this patch series without any stable
+backport remark to avoid unmanageable effort.
 
-Accessing LSR requires port lock because it mutates lsr_saved_flags
-in serial_lsr_in().
-
-Fixes: 197eb5c416ff ("serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
----
-I'll resend the third patch later.
-
- drivers/tty/serial/8250/8250_dw.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 167a691c7b19..f78b13db1b1e 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -266,7 +266,10 @@ static int dw8250_handle_irq(struct uart_port *p)
- 
- 	/* Manually stop the Rx DMA transfer when acting as flow controller */
- 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
-+		spin_lock_irqsave(&p->lock, flags);
- 		status = serial_lsr_in(up);
-+		spin_unlock_irqrestore(&p->lock, flags);
-+
- 		if (status & (UART_LSR_DR | UART_LSR_BI)) {
- 			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
- 			dw8250_writel_ext(p, DW_UART_DMASA, 1);
-
--- 
-tg: (f55d2e4b0a47..) dw/use-spinlock (depends on: 8250/fix-stop_tx-race)
---8323329-895458432-1656406891=:1603--
+Best regards,
+Daniel Starke
