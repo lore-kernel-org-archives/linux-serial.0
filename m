@@ -2,137 +2,160 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D76CC43334
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A60C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344724AbiF1KJv (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
+        id S239882AbiF1KXl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 06:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344742AbiF1KJu (ORCPT
+        with ESMTP id S239377AbiF1KXk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD542F666;
-        Tue, 28 Jun 2022 03:09:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D28ACB81D93;
-        Tue, 28 Jun 2022 10:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50878C3411D;
-        Tue, 28 Jun 2022 10:09:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656410986;
-        bh=2kqaknsisyJeDGY+X+iXUz3e7OQebOSh2VPWs+t5KCg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=q1iUDDhb4Thtudo3GzAwdrBX82kGmMRcje8fr/uXlbXAFdRnPNpKwhaAPQTN48ldn
-         DyYyBVMqYtYsOhc8Mv6OGUCgEVB53zlNXTuk4ASoWTpN9k1CkhCs3bPwYSov+WosdU
-         m5ZYQ33St0tkBwQZAXzqgVOiBBUUavpizv+AGDGIWvr6RmcpPWmtniqRh0KNqw8Yb6
-         uBYzsw1KCOvX5Di4rUvkznt7Y0KoMCFmTBrBAzkt6VzkTyfUCOTvQ0FEpEj5oYOKhW
-         UKhBXtsUGs0YhZyA2NrnTkIGQY6Ct5ofQj5YuiM5/B+wDkNH/zEOzzDfLSeGNHovR3
-         bZxgAP1IuNIVA==
-Received: by pali.im (Postfix)
-        id 69C6D7AE; Tue, 28 Jun 2022 12:09:43 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 28 Jun 2022 06:23:40 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3112FFC4;
+        Tue, 28 Jun 2022 03:23:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656411819; x=1687947819;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wRjPbVKWB0JV41bfLywdOItEg7b3njNAAl1ELy2fXAI=;
+  b=Gf7tnnPZc8e2pQpRQezdDGgNWN2joVeTpG9jCltYG7hOdcEso13SjfbJ
+   rkMLJ0UOeU2OJakVLtcD8WGdx/UuHh3JeRDvxlv5R2PnO3Al2mbPI7YKI
+   q/0VnEBM5Ad1ilbOcjd75iaRIsJA/n37MbzlEUHRZkqgToFTSmPIZ8RTt
+   2xixhTsuHeJ0cP9kgIOV7cESRD+cWNZPrwsDcfgklY3WX5hmGbLpfiHM5
+   c1Ye+E5wAh8oHdbFJofgnary0Yy50m5o5cGIcmmJiFoBXz4KVP4Y+siMN
+   nu4Cl1hsF7JMRB/hp5CJbXcxNVd9G1XUfloNAXRuKfBxC3UEgOI+joNRR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="280462650"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="280462650"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:23:39 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="646855987"
+Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:23:37 -0700
+Date:   Tue, 28 Jun 2022 13:23:34 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Allen Yan <yanwei@marvell.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Tue, 28 Jun 2022 12:09:22 +0200
-Message-Id: <20220628100922.10717-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: mvebu-uart: correctly report configured baudrate
+ value
+In-Reply-To: <20220628100922.10717-1-pali@kernel.org>
+Message-ID: <ac5fe14-2cee-ec1a-eb9a-5a38e273737d@linux.intel.com>
+References: <20220628100922.10717-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-888930425-1656411819=:1603"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
+--8323329-888930425-1656411819=:1603
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-With this change userspace would see precise value in termios c_ospeed
-field.
+On Tue, 28 Jun 2022, Pali Rohár wrote:
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
----
- drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+> Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+> be called with the baudrate value which was set to hardware. Linux then
+> report exact values via ioctl(TCGETS2) to userspace.
+> 
+> Change mvebu_uart_baud_rate_set() function to return baudrate value which
+> was set to hardware and propagate this value to above mentioned functions.
+> 
+> With this change userspace would see precise value in termios c_ospeed
+> field.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
 
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 0429c2a54290..93489fe334d0 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
- 	}
- }
- 
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- {
- 	unsigned int d_divisor, m_divisor;
- 	unsigned long flags;
- 	u32 brdv, osamp;
- 
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to divisors:
-@@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- 			(m_divisor << 16) | (m_divisor << 24);
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
- }
- 
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 	max_baud = port->uartclk / 80;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
+Look better than my patch covering cases I didn't even realize
+existed. Thanks.
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.20.1
+ i.
 
+
+> ---
+>  drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
+>  1 file changed, 13 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index 0429c2a54290..93489fe334d0 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
+>  	}
+>  }
+>  
+> -static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+> +static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+>  {
+>  	unsigned int d_divisor, m_divisor;
+>  	unsigned long flags;
+>  	u32 brdv, osamp;
+>  
+>  	if (!port->uartclk)
+> -		return -EOPNOTSUPP;
+> +		return 0;
+>  
+>  	/*
+>  	 * The baudrate is derived from the UART clock thanks to divisors:
+> @@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+>  			(m_divisor << 16) | (m_divisor << 24);
+>  	writel(osamp, port->membase + UART_OSAMP);
+>  
+> -	return 0;
+> +	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+>  }
+>  
+>  static void mvebu_uart_set_termios(struct uart_port *port,
+> @@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+>  	max_baud = port->uartclk / 80;
+>  
+>  	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+> -	if (mvebu_uart_baud_rate_set(port, baud)) {
+> -		/* No clock available, baudrate cannot be changed */
+> -		if (old)
+> -			baud = uart_get_baud_rate(port, old, NULL,
+> -						  min_baud, max_baud);
+> -	} else {
+> -		tty_termios_encode_baud_rate(termios, baud, baud);
+> -		uart_update_timeout(port, termios->c_cflag, baud);
+> -	}
+> +	baud = mvebu_uart_baud_rate_set(port, baud);
+> +
+> +	/* In case baudrate cannot be changed, report previous old value */
+> +	if (baud == 0 && old)
+> +		baud = tty_termios_baud_rate(old);
+>  
+>  	/* Only the following flag changes are supported */
+>  	if (old) {
+> @@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+>  		termios->c_cflag |= CS8;
+>  	}
+>  
+> +	if (baud != 0) {
+> +		tty_termios_encode_baud_rate(termios, baud, baud);
+> +		uart_update_timeout(port, termios->c_cflag, baud);
+> +	}
+> +
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  }
+>  
+> 
+
+--8323329-888930425-1656411819=:1603--
