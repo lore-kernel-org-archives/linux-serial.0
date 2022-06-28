@@ -2,178 +2,154 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF44EC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 16:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91772C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 16:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237469AbiF1QZ0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 12:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        id S232222AbiF1Q7F (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 12:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233331AbiF1QYs (ORCPT
+        with ESMTP id S229600AbiF1Q7B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 12:24:48 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AA63914C
-        for <linux-serial@vger.kernel.org>; Tue, 28 Jun 2022 09:17:01 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id v38so12342982ybi.3
-        for <linux-serial@vger.kernel.org>; Tue, 28 Jun 2022 09:17:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a+P6wSeN2x0ZvD2/JjzHKyqS9/n/5A6tY5jiA6Lhnb8=;
-        b=svPPiUXmjLu4A2+b3rJgoCqrzxWVmAH7KXTvVP4AwaLTDrIN9AN3BtNG2XiV2ycJ8x
-         6Y9oMX5BQlCl6K+KL9J1KxqNRcb1MdTb/c18nJgwvmc5rVyOe8EKUyj+KrCbNC70iJoL
-         OlJOsi9x5Scvw9W8cP8d/OYBAk6luTiA/PE8w/jzj7tOJ+ICpHFzyCnfh2xqrRn3YVLo
-         nvgpT4pJzONw4hikJOgq/y8DRHjrG2lOfrc2hEWRc02ovhuxlfgkK9/gOnTwVGME5DOU
-         4AXMX65QfUYiz76GEkrT/465op3M51kj45IkhJmeQobRe1+J32FVHZumFFaJBd9Gan88
-         /wYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a+P6wSeN2x0ZvD2/JjzHKyqS9/n/5A6tY5jiA6Lhnb8=;
-        b=pjN/wL/nKSaXXklkNsbYkbaz8AeRZsP0D9MlxsfG7FTF6LVRxCAOJccZ/YcmnfW0w7
-         NwVSIEbPjBs8aLowVrtXMjtv3BDK5ZRwig0Nf0ePnjT76yqI7huMgA8akgWIEum/k1hp
-         SjnvO2ADbewfhr5Ysjf6Im+LfWf7dLUXHMNCscCV7DbjFcgPRlHSGFuZpiS0Xgx5+0m5
-         WkJweV5+dI7vPz6WvZOV2izDPNZyPPfwmnRRIkcsuUveHoK7YtzuaM/zDEDxARAvFoOG
-         7NDf24oJbX9iJqntsnAQaxiKemOLXojCbXtS+Le/u1s84oAmCfXbK1ohPfz6BVZGhh/V
-         4K9Q==
-X-Gm-Message-State: AJIora/f9Uvt37SsW6aLJ6ObIn7IPnTAquCIk9frZxiwoC3yYqPFxxvc
-        H4xDx6MecLwYl/Bl08XsQnqHwxfxDkU4DwQs4nm19A==
-X-Google-Smtp-Source: AGRyM1vHa4WRnJlk4sln0xuJGdVhcpu8QS15R2N9PrbVvkglI7Nzwr0PBFdp1lTun6HJ/nUSS1O/TmeoEjFZPidRK0U=
-X-Received: by 2002:a25:5bc3:0:b0:669:b722:beb8 with SMTP id
- p186-20020a255bc3000000b00669b722beb8mr20258885ybb.447.1656433020483; Tue, 28
- Jun 2022 09:17:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628020110.1601693-1-saravanak@google.com>
- <20220628020110.1601693-3-saravanak@google.com> <20220628140025.qpom64ptru4ub6fu@distanz.ch>
-In-Reply-To: <20220628140025.qpom64ptru4ub6fu@distanz.ch>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 28 Jun 2022 09:16:24 -0700
-Message-ID: <CAGETcx_7jS3H2cphiXdk=NBfmuPzsusEwPBx75n3PrP6YTnjnA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] serial: Set probe_no_timeout for all DT based drivers
-To:     Tobias Klauser <tklauser@distanz.ch>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Tue, 28 Jun 2022 12:59:01 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDA0139;
+        Tue, 28 Jun 2022 09:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656435540; x=1687971540;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZMmJv0Aq1HwpnPUpXeTro+xXVdnw6ntT+2+Mu0JHFpA=;
+  b=R7FNwhCwPsEWOn2V7Y72JBBh4Tlu6UgIZO4OLFOKg3IWF/FGc9YJWGRf
+   s3VnIydYFrEBNATIsocqpVOQy+1M8drp0mKn6a72fi1FoJwobD2Gu3kak
+   umCMRQgRByv8JMp0STpmPe9qyZid383PvN2/EJC/lB9NsPjaqgdJdkL3i
+   XAzDY4KeEPmopmaE5YCnWb94XJ+DqFLSkm1OrI/vQc4buTmSXrx7dDCkw
+   Jbp45nMXAe0T/L2/lg1hoanNivewMppHSgz/x62lno+hOXGGHDoKI3lc1
+   XbDpK1QO03yyIIn3wp4FC/rGSNNTUWGwFSR48/xOwNVWCsYhibvD3n4xt
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343485041"
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="343485041"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:58:51 -0700
+X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
+   d="scan'208";a="646995337"
+Received: from iannetti-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.216.215])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 09:58:49 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh@kernel.org>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Tony Lindgren <tony@atomide.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH] serial: 8250: Fix PM usage_count for console handover
+Date:   Tue, 28 Jun 2022 19:58:34 +0300
+Message-Id: <20220628165834.63044-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 7:00 AM Tobias Klauser <tklauser@distanz.ch> wrote:
->
-> On 2022-06-28 at 04:01:03 +0200, Saravana Kannan <saravanak@google.com> wrote:
-> > diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
-> > index 758c4aa203ab..5a6f2f67de4f 100644
-> > --- a/drivers/tty/serial/8250/8250_acorn.c
-> > +++ b/drivers/tty/serial/8250/8250_acorn.c
-> > @@ -114,7 +114,6 @@ static const struct ecard_id serial_cids[] = {
-> >  static struct ecard_driver serial_card_driver = {
-> >       .probe          = serial_card_probe,
-> >       .remove         = serial_card_remove,
-> > -     .id_table       = serial_cids,
->
-> Is this change intentional? All other drivers are only changed to set
-> .probe_no_time and I don't see anything mentioned in the commit message
-> re. this driver's change.
+When console is enabled, univ8250_console_setup() calls
+serial8250_console_setup() before .dev is set to uart_port. Therefore,
+it will not call pm_runtime_get_sync(). Later, when the actual driver
+is going to take over univ8250_console_exit() is called. As .dev is
+already set, serial8250_console_exit() makes pm_runtime_put_sync() call
+with usage count being zero triggering PM usage count warning
+(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
+serial8250_register_ports()):
 
-No, that's a mistake. Thanks for catching it! I'll check this patch again.
+[    0.068987] univ8250_console_setup ttyS0 nodev
+[    0.499670] printk: console [ttyS0] enabled
+[    0.717955] printk: console [ttyS0] printing thread started
+[    1.960163] serial8250_register_ports assigned dev for ttyS0
+[    1.976830] printk: console [ttyS0] disabled
+[    1.976888] printk: console [ttyS0] printing thread stopped
+[    1.977073] univ8250_console_exit ttyS0 usage:0
+[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
+[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
+[    1.977812] univ8250_console_setup ttyS0 usage:2
+[    1.978167] printk: console [ttyS0] printing thread started
+[    1.978203] printk: console [ttyS0] enabled
 
--Saravana
+To fix the issue, call pm_runtime_get_sync() in
+serial8250_register_ports() as soon as .dev is set for an uart_port
+if it has console enabled.
+
+This problem became apparent only recently because 82586a721595 ("PM:
+runtime: Avoid device usage count underflows") added the warning
+printout. I confirmed this problem also occurs with v5.18 (w/o the
+warning printout, obviously) so the recent printk kthreads are not the
+cause for this.
+
+Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+---
+ drivers/tty/serial/8250/8250_core.c | 4 ++++
+ drivers/tty/serial/serial_core.c    | 5 -----
+ include/linux/serial_core.h         | 5 +++++
+ 3 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 57e86133af4f..2e83e7367441 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -23,6 +23,7 @@
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/tty.h>
+ #include <linux/ratelimit.h>
+ #include <linux/tty_flip.h>
+@@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
+ 
+ 		up->port.dev = dev;
+ 
++		if (uart_console_enabled(&up->port))
++			pm_runtime_get_sync(up->port.dev);
++
+ 		serial8250_apply_quirks(up);
+ 		uart_add_one_port(drv, &up->port);
+ 	}
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 85ef7ef00b82..3161445504bc 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2024,11 +2024,6 @@ static int uart_proc_show(struct seq_file *m, void *v)
+ }
+ #endif
+ 
+-static inline bool uart_console_enabled(struct uart_port *port)
+-{
+-	return uart_console(port) && (port->cons->flags & CON_ENABLED);
+-}
+-
+ static void uart_port_spin_lock_init(struct uart_port *port)
+ {
+ 	spin_lock_init(&port->lock);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index b7b86ee3cb12..9d8aa139b175 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -404,6 +404,11 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
+ static inline int setup_earlycon(char *buf) { return 0; }
+ #endif
+ 
++static inline bool uart_console_enabled(struct uart_port *port)
++{
++	return uart_console(port) && (port->cons->flags & CON_ENABLED);
++}
++
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+ int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+
+-- 
+tg: (f287f971e256..) fix/console-usage_count (depends on: tty-next)
