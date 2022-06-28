@@ -2,160 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A60C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 645B7C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239882AbiF1KXl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        id S1345116AbiF1K5G (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 28 Jun 2022 06:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239377AbiF1KXk (ORCPT
+        with ESMTP id S231682AbiF1K5F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:23:40 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3112FFC4;
-        Tue, 28 Jun 2022 03:23:39 -0700 (PDT)
+        Tue, 28 Jun 2022 06:57:05 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF67331DC0;
+        Tue, 28 Jun 2022 03:57:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656411819; x=1687947819;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=wRjPbVKWB0JV41bfLywdOItEg7b3njNAAl1ELy2fXAI=;
-  b=Gf7tnnPZc8e2pQpRQezdDGgNWN2joVeTpG9jCltYG7hOdcEso13SjfbJ
-   rkMLJ0UOeU2OJakVLtcD8WGdx/UuHh3JeRDvxlv5R2PnO3Al2mbPI7YKI
-   q/0VnEBM5Ad1ilbOcjd75iaRIsJA/n37MbzlEUHRZkqgToFTSmPIZ8RTt
-   2xixhTsuHeJ0cP9kgIOV7cESRD+cWNZPrwsDcfgklY3WX5hmGbLpfiHM5
-   c1Ye+E5wAh8oHdbFJofgnary0Yy50m5o5cGIcmmJiFoBXz4KVP4Y+siMN
-   nu4Cl1hsF7JMRB/hp5CJbXcxNVd9G1XUfloNAXRuKfBxC3UEgOI+joNRR
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="280462650"
+  t=1656413824; x=1687949824;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=WKpsfZrkq24GzM+XFoOF1PmMcAsmja+uPPVG+NvAxaw=;
+  b=Imkz2nsV9eKCI7BX1unDdSq/k13hlBrHNaxOpbgUp1fCjbvMPkpm0fW0
+   erXzMZ3NggB79LHC/+5O33QNGxEGUDxiB6W6uotCmoiD51tuWxViX3E4l
+   Ew72HIF599e2nmf+vYFU+YyPeXg4YOyeoIAzu91echoQjlJQEYjUbG+Ah
+   Jb4Svfiu8NLy50l6l8q4vjgCFa79WsrHzMnlg2FL42IHBuI7c1Jh/Pt8m
+   OFZJuArSN0gA5RuuoDPP757YCc2e54WvJ3LTg4HPv+EOs5zQkePvJVtzJ
+   95dm/gDVLwQVGFSbfANmV1ztGzMuRfdz+GUCFM6JQDBF8DvMVbxfIhEtv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="261511873"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="280462650"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:23:39 -0700
+   d="scan'208";a="261511873"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:57:04 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646855987"
-Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:23:37 -0700
-Date:   Tue, 28 Jun 2022 13:23:34 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Allen Yan <yanwei@marvell.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+   d="scan'208";a="587829952"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:57:02 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o68tv-000wkA-R2;
+        Tue, 28 Jun 2022 13:56:59 +0300
+Date:   Tue, 28 Jun 2022 13:56:59 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: mvebu-uart: correctly report configured baudrate
- value
-In-Reply-To: <20220628100922.10717-1-pali@kernel.org>
-Message-ID: <ac5fe14-2cee-ec1a-eb9a-5a38e273737d@linux.intel.com>
-References: <20220628100922.10717-1-pali@kernel.org>
+Subject: Re: [PATCH RESEND tty-next] serial: 8250_dw: Take port lock while
+ accessing LSR
+Message-ID: <Yrree8HOrk3D2TzX@smile.fi.intel.com>
+References: <c5879db7-bee9-93f-526e-872a292442@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-888930425-1656411819=:1603"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c5879db7-bee9-93f-526e-872a292442@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Jun 28, 2022 at 12:01:28PM +0300, Ilpo J‰rvinen wrote:
+> Accessing LSR requires port lock because it mutates lsr_saved_flags
+> in serial_lsr_in().
 
---8323329-888930425-1656411819=:1603
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Don't remember if I given or not (and why if not) the tag, so here it is:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Tue, 28 Jun 2022, Pali Roh√°r wrote:
-
-> Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-> be called with the baudrate value which was set to hardware. Linux then
-> report exact values via ioctl(TCGETS2) to userspace.
+> Fixes: 197eb5c416ff ("serial: 8250_dw: Use serial_lsr_in() in dw8250_handle_irq()")
+> Signed-off-by: Ilpo J‰rvinen <ilpo.jarvinen@linux.intel.com>
 > 
-> Change mvebu_uart_baud_rate_set() function to return baudrate value which
-> was set to hardware and propagate this value to above mentioned functions.
+> ---
+> I'll resend the third patch later.
 > 
-> With this change userspace would see precise value in termios c_ospeed
-> field.
+>  drivers/tty/serial/8250/8250_dw.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> Signed-off-by: Pali Roh√°r <pali@kernel.org>
-> Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 167a691c7b19..f78b13db1b1e 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -266,7 +266,10 @@ static int dw8250_handle_irq(struct uart_port *p)
+>  
+>  	/* Manually stop the Rx DMA transfer when acting as flow controller */
+>  	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
+> +		spin_lock_irqsave(&p->lock, flags);
+>  		status = serial_lsr_in(up);
+> +		spin_unlock_irqrestore(&p->lock, flags);
+> +
+>  		if (status & (UART_LSR_DR | UART_LSR_BI)) {
+>  			dw8250_writel_ext(p, RZN1_UART_RDMACR, 0);
+>  			dw8250_writel_ext(p, DW_UART_DMASA, 1);
+> 
+> -- 
+> tg: (f55d2e4b0a47..) dw/use-spinlock (depends on: 8250/fix-stop_tx-race)
 
-Look better than my patch covering cases I didn't even realize
-existed. Thanks.
-
-Reviewed-by: Ilpo J√§rvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
 
-> ---
->  drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
->  1 file changed, 13 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-> index 0429c2a54290..93489fe334d0 100644
-> --- a/drivers/tty/serial/mvebu-uart.c
-> +++ b/drivers/tty/serial/mvebu-uart.c
-> @@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
->  	}
->  }
->  
-> -static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-> +static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
->  {
->  	unsigned int d_divisor, m_divisor;
->  	unsigned long flags;
->  	u32 brdv, osamp;
->  
->  	if (!port->uartclk)
-> -		return -EOPNOTSUPP;
-> +		return 0;
->  
->  	/*
->  	 * The baudrate is derived from the UART clock thanks to divisors:
-> @@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
->  			(m_divisor << 16) | (m_divisor << 24);
->  	writel(osamp, port->membase + UART_OSAMP);
->  
-> -	return 0;
-> +	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
->  }
->  
->  static void mvebu_uart_set_termios(struct uart_port *port,
-> @@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
->  	max_baud = port->uartclk / 80;
->  
->  	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
-> -	if (mvebu_uart_baud_rate_set(port, baud)) {
-> -		/* No clock available, baudrate cannot be changed */
-> -		if (old)
-> -			baud = uart_get_baud_rate(port, old, NULL,
-> -						  min_baud, max_baud);
-> -	} else {
-> -		tty_termios_encode_baud_rate(termios, baud, baud);
-> -		uart_update_timeout(port, termios->c_cflag, baud);
-> -	}
-> +	baud = mvebu_uart_baud_rate_set(port, baud);
-> +
-> +	/* In case baudrate cannot be changed, report previous old value */
-> +	if (baud == 0 && old)
-> +		baud = tty_termios_baud_rate(old);
->  
->  	/* Only the following flag changes are supported */
->  	if (old) {
-> @@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
->  		termios->c_cflag |= CS8;
->  	}
->  
-> +	if (baud != 0) {
-> +		tty_termios_encode_baud_rate(termios, baud, baud);
-> +		uart_update_timeout(port, termios->c_cflag, baud);
-> +	}
-> +
->  	spin_unlock_irqrestore(&port->lock, flags);
->  }
->  
-> 
-
---8323329-888930425-1656411819=:1603--
