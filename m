@@ -2,103 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 711E8CCA481
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D76CC43334
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 10:09:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344715AbiF1KDu (ORCPT
+        id S1344724AbiF1KJv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 06:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
+        Tue, 28 Jun 2022 06:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344635AbiF1KDX (ORCPT
+        with ESMTP id S1344742AbiF1KJu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 06:03:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401642E9E9;
-        Tue, 28 Jun 2022 03:03:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656410602; x=1687946602;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6F1wA0MP/XvdHSRksenwLF7TskHY3KOWwY3P9Ta6U+I=;
-  b=FtrVIO1vHiaP29zgONSRl4tI3ttpj3leE5JcAqttb5gNs+KQaH5WIHwo
-   dOvSOIsfcrMEYZj8ahsSV0GMUNccRY35Mg7QHMAbv5z7u746aGl3KU5iV
-   ax4KAs/0vh2T5JPkjDWSLzuHHuXs5pIDf+VNojsAu60ODycGYZCemPt19
-   ETJz0DrDp3R3PqQUn7jZJoGyAWTHJh7ef5FUxpNsZ+b8dPaAtH4G+nFO1
-   ULD6djPC4ZKciziPvW+gPICxAgRNuWK5AUd7lSBqf0jPfJy3bTiDAMEXI
-   XkRse2XdR1CwdRlbDzf+2eX3hwEDvJNxt9l/LzrLc1lXDn1JQev2JdOWZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282790166"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282790166"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:03:21 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="590261183"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 03:03:18 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o683u-000wgu-T2;
-        Tue, 28 Jun 2022 13:03:14 +0300
-Date:   Tue, 28 Jun 2022 13:03:14 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lukas@wunner.de, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 5/8] dt_bindings: rs485: Correct delay values
-Message-ID: <YrrR4hItCx56bpxI@smile.fi.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-6-LinoSanfilippo@gmx.de>
- <YrSU4eL9hgISg3Y1@smile.fi.intel.com>
- <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
+        Tue, 28 Jun 2022 06:09:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD542F666;
+        Tue, 28 Jun 2022 03:09:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D28ACB81D93;
+        Tue, 28 Jun 2022 10:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50878C3411D;
+        Tue, 28 Jun 2022 10:09:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656410986;
+        bh=2kqaknsisyJeDGY+X+iXUz3e7OQebOSh2VPWs+t5KCg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=q1iUDDhb4Thtudo3GzAwdrBX82kGmMRcje8fr/uXlbXAFdRnPNpKwhaAPQTN48ldn
+         DyYyBVMqYtYsOhc8Mv6OGUCgEVB53zlNXTuk4ASoWTpN9k1CkhCs3bPwYSov+WosdU
+         m5ZYQ33St0tkBwQZAXzqgVOiBBUUavpizv+AGDGIWvr6RmcpPWmtniqRh0KNqw8Yb6
+         uBYzsw1KCOvX5Di4rUvkznt7Y0KoMCFmTBrBAzkt6VzkTyfUCOTvQ0FEpEj5oYOKhW
+         UKhBXtsUGs0YhZyA2NrnTkIGQY6Ct5ofQj5YuiM5/B+wDkNH/zEOzzDfLSeGNHovR3
+         bZxgAP1IuNIVA==
+Received: by pali.im (Postfix)
+        id 69C6D7AE; Tue, 28 Jun 2022 12:09:43 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Allen Yan <yanwei@marvell.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: mvebu-uart: correctly report configured baudrate value
+Date:   Tue, 28 Jun 2022 12:09:22 +0200
+Message-Id: <20220628100922.10717-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c50fdca-aac4-aaf5-ad34-18a60fcc0aa0@gmx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 10:17:06PM +0200, Lino Sanfilippo wrote:
-> On 23.06.22 at 18:29, Andy Shevchenko wrote:
-> > On Wed, Jun 22, 2022 at 05:46:56PM +0200, Lino Sanfilippo wrote:
-> >>
-> >> The maximum allowed delay for RTS before and RTS after send is 100 ms.
-> >> Adjust the documentation accordingly.
-> >
-> > Is it only documentation issue? If the code allows this to be set higher
-> > than 100, we may not change the documentation since this an ABI (from
-> > firmware <--> kernel perspective) we need to support old variants.
-> 
-> Well currently the documentation claims that a maximum of 1000 msecs is allowed but
-> nothing actually checks the values read from device tree/ACPI and so it is possible
-> to set much higher values (note that the UART drivers dont check the delays read from
-> DT/ACPI either, the only exception I found is max310x which clamps it to 15 ms).
-> 
-> We already have a maximum of 100 ms defined for RTS delays set via TIOCSRS485. To be
-> consistent with TIOCSRS485 the same limit is used for DT/ACPI values in this patch.
-> 
-> I am aware that this changes the firmware/kernel ABI. But we had a similar situation when
-> the sanity checks for TIOCSRS485 were introduced
-> (see https://lore.kernel.org/all/20220410104642.32195-2-LinoSanfilippo@gmx.de/)
-> since before we did not have those limits for all drivers (some drivers clamped the
-> values itself but many did not care).
-> Furthermore 100 ms is already a very high value for RTS delays (which are usually rather
-> in usecs range). So IMHO the risk is very low to break anything when values are clamped
-> that are higher than that.
+Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+be called with the baudrate value which was set to hardware. Linux then
+report exact values via ioctl(TCGETS2) to userspace.
 
-You need to elaborate all this in the commit message to justify the change.
+Change mvebu_uart_baud_rate_set() function to return baudrate value which
+was set to hardware and propagate this value to above mentioned functions.
 
+With this change userspace would see precise value in termios c_ospeed
+field.
+
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+---
+ drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+index 0429c2a54290..93489fe334d0 100644
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
+ 	}
+ }
+ 
+-static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
++static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ {
+ 	unsigned int d_divisor, m_divisor;
+ 	unsigned long flags;
+ 	u32 brdv, osamp;
+ 
+ 	if (!port->uartclk)
+-		return -EOPNOTSUPP;
++		return 0;
+ 
+ 	/*
+ 	 * The baudrate is derived from the UART clock thanks to divisors:
+@@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ 			(m_divisor << 16) | (m_divisor << 24);
+ 	writel(osamp, port->membase + UART_OSAMP);
+ 
+-	return 0;
++	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+ }
+ 
+ static void mvebu_uart_set_termios(struct uart_port *port,
+@@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+ 	max_baud = port->uartclk / 80;
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+-	if (mvebu_uart_baud_rate_set(port, baud)) {
+-		/* No clock available, baudrate cannot be changed */
+-		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL,
+-						  min_baud, max_baud);
+-	} else {
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+-		uart_update_timeout(port, termios->c_cflag, baud);
+-	}
++	baud = mvebu_uart_baud_rate_set(port, baud);
++
++	/* In case baudrate cannot be changed, report previous old value */
++	if (baud == 0 && old)
++		baud = tty_termios_baud_rate(old);
+ 
+ 	/* Only the following flag changes are supported */
+ 	if (old) {
+@@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+ 		termios->c_cflag |= CS8;
+ 	}
+ 
++	if (baud != 0) {
++		tty_termios_encode_baud_rate(termios, baud, baud);
++		uart_update_timeout(port, termios->c_cflag, baud);
++	}
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
