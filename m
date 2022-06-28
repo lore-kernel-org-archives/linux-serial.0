@@ -2,89 +2,152 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 574F9C433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 11:41:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F1FC43334
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 11:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344195AbiF1LlI (ORCPT
+        id S1343656AbiF1LzV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 07:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
+        Tue, 28 Jun 2022 07:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344191AbiF1LlI (ORCPT
+        with ESMTP id S1343940AbiF1LzT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 07:41:08 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9302EA32;
-        Tue, 28 Jun 2022 04:41:07 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-3177f4ce3e2so113814967b3.5;
-        Tue, 28 Jun 2022 04:41:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gtqkbAt/44JZuKoK/8+HWU5SI7/GA5fXmx6NsOvWC0s=;
-        b=fg4edWbeIxms6mXn3pRaZGUDWb9BIfURpmMACw9YYY5JI4KE2RpDvFcxWrZjOgmmGT
-         Rcx/Ht6bZ6ozPc+KJA+hWqjT9F725C2bQbp40ZnGvMwuznmt93zEDsIZyC046qiyODar
-         Bk165bcFrgO4RC3OhuW8ZtEDB/lW8FifJY7WXQOLKs5QUVXQTIsoVbDwWEPNZKa1t05h
-         Z2f/gtZs/ihhsYncWMGhiZigAxXyNAt7jcRgE60O0bUBzr1Tb8MxJhNtbChlIhN4FWXQ
-         JlclNYLLVG/aoUXqVlqao4X7m2f2o2psATTkMdBpuLpOzDYwsSjZGtLPVUUZKr/Sobrb
-         wBaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gtqkbAt/44JZuKoK/8+HWU5SI7/GA5fXmx6NsOvWC0s=;
-        b=r81yV9F+mYKw2WCUbpC/GCyCbJbqToEWNK4KQglveofmQmx8I1PkUsk6dVtuTuWSlt
-         IXB0mgAEj8HOi2bI5B1pCR59qJEo5srkzR73CWVxnG4ESr1nQtQJlDFihLKI63e84Us+
-         piKM6bizh5h1YH7BCMLxp54vOhCdBVZOlJ4MKtNKNGVLxoVuQUeW1RwRBXIm4jp/Rt33
-         yFjNg9YU1Sm4oIr+1WowVgW1mC61whvNe5LBx9VXyOWnagw6Ty2BedITCLhqQW0K/x3C
-         VFvXGCyck7kqSfwxflauXFEw2m4Wo41EiZZunjBU9itSSQpSgF9OhX/Uaabn0X2bXaQb
-         UeHg==
-X-Gm-Message-State: AJIora8iZ1yXYoEKlDc5LUv7XoDbur7leHLuXLRV/Uje1TI+e6h02nu9
-        JGHPks1YuNJQ/naEmPAkXyuzDYbp9mB5IU0yu2onvDWUz6w7IA==
-X-Google-Smtp-Source: AGRyM1sAQk4IQ4ZgknIXlWCj2t3hqBQFszoXafJ1dWj9Cbbug/yzMs6/HzvxvM3GoEYn+SRfT/NAoPXNnGxw7jLiEGI=
-X-Received: by 2002:a81:1889:0:b0:317:987b:8e82 with SMTP id
- 131-20020a811889000000b00317987b8e82mr20634424ywy.185.1656416466227; Tue, 28
- Jun 2022 04:41:06 -0700 (PDT)
+        Tue, 28 Jun 2022 07:55:19 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8075F31228
+        for <linux-serial@vger.kernel.org>; Tue, 28 Jun 2022 04:55:17 -0700 (PDT)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220628115515epoutp0261f9974a4390ec7665e60cade80f500c~8xsW5gCTx1259812598epoutp02R
+        for <linux-serial@vger.kernel.org>; Tue, 28 Jun 2022 11:55:15 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220628115515epoutp0261f9974a4390ec7665e60cade80f500c~8xsW5gCTx1259812598epoutp02R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1656417315;
+        bh=i6YODiJmY3k0rS6SbrmdfnttwEjx62o5iv4NgsN9cXc=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=DrjO/Dfiq7HPPcN6qSKFtnsKZvmYB85HEH2+Q/wBj9QKwaAgI5ble/VKrVS28GwX0
+         e4GwJj7cYXV7Lq+Gssr0M4wZGfDVYm7rD+9GrBTo42xbiGKwHR82LsvSMR3+gLtyIC
+         CQgZaVtG4k/04F2YaL2UfIbhLYU+rBWEhs1qEDM0=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220628115514epcas2p3c6090e8b9af804b638f23440c7d14664~8xsWYj4Po3114331143epcas2p3d;
+        Tue, 28 Jun 2022 11:55:14 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4LXNM64ZDkz4x9Q2; Tue, 28 Jun
+        2022 11:55:14 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        BA.E3.09650.22CEAB26; Tue, 28 Jun 2022 20:55:14 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220628115514epcas2p111c656393c313ee2245d195679486678~8xsVhoCsm2065020650epcas2p1B;
+        Tue, 28 Jun 2022 11:55:13 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220628115513epsmtrp2e2013bcb374c8db4882c27e8e817b00c~8xsVgCPFk1577615776epsmtrp2p;
+        Tue, 28 Jun 2022 11:55:13 +0000 (GMT)
+X-AuditID: b6c32a46-0a3ff700000025b2-72-62baec225712
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        71.4D.08802.12CEAB26; Tue, 28 Jun 2022 20:55:13 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220628115513epsmtip1f6e0dfd2598291da22a1130ff88b5672~8xsVRc7DA2553225532epsmtip1W;
+        Tue, 28 Jun 2022 11:55:13 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     =?ISO-8859-1?Q?'Ilpo_J=E4rvinen'?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@linaro.org>,
+        "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
+        "'Jiri Slaby'" <jirislaby@kernel.org>,
+        "'Alim Akhtar'" <alim.akhtar@samsung.com>,
+        "'Hector Martin'" <marcan@marcan.st>,
+        "'Jaewon Kim'" <jaewon02.kim@samsung.com>,
+        "'Vincent Whitchurch'" <vincent.whitchurch@axis.com>,
+        <linux-samsung-soc@vger.kernel.org>,
+        "'linux-serial'" <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <ab327a8f-f520-ad85-c0fc-1e505647164c@linux.intel.com>
+Subject: RE: [PATCH] tty: serial: samsung_tty: loopback mode support
+Date:   Tue, 28 Jun 2022 20:55:13 +0900
+Message-ID: <018601d88ae5$ed2af930$c780eb90$@samsung.com>
 MIME-Version: 1.0
-References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
- <20220628095136.fhtjjjkj3mre7hwa@pali> <20220628095942.rbpl2iocxoqtzxiy@pali> <CAHp75VeHNERyPAam_-u7+ykYxcUM_N-YT6kBAh+hG+7WNW31SA@mail.gmail.com>
-In-Reply-To: <CAHp75VeHNERyPAam_-u7+ykYxcUM_N-YT6kBAh+hG+7WNW31SA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Jun 2022 13:40:28 +0200
-Message-ID: <CAHp75VfDA1x0OQjBb8rj7RB9bHgjXa86jrcayeuxbYxGLf2=Kg@mail.gmail.com>
-Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Allen Yan <yanwei@marvell.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIYBiAk/1BqxfP9MIgOSKejVHmFRAK1rqSQAVoU74OsxTEdMA==
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrNJsWRmVeSWpSXmKPExsWy7bCmma7Sm11JBt9uKlg8mLeNzaJ58Xo2
+        i84dPSwWOxqOsFq8mytjsff1VnaLTY+vsVrMOL+PyeLM4l52i9PXFrBbnN/m78DtcX1dgMem
+        VZ1sHneu7WHzmHcy0GP/3DXsHpuX1HssXraTzaNvyypGj8+b5AI4o7JtMlITU1KLFFLzkvNT
+        MvPSbZW8g+Od403NDAx1DS0tzJUU8hJzU22VXHwCdN0yc4AuVVIoS8wpBQoFJBYXK+nb2RTl
+        l5akKmTkF5fYKqUWpOQUmBfoFSfmFpfmpevlpZZYGRoYGJkCFSZkZ3zveMZecJq9ormvka2B
+        sYWti5GTQ0LAROLFioOMILaQwA5Gifs7ZboYuYDsT4wST6adZoRwPjNKfLp0G67j+K11TBCJ
+        XYwSjz5MZINwXjBKLO7czwpSxSagL/GyYxuYLSLgJtH+rJEdpIhZ4AqzxLcDR9hBEpwCzhLz
+        5/wHs4UFXCRmXroONJaDg0VAVWJruytImFfAUuL1i9WMELagxMmZT1hAbGYBPYkpV1sYIWx5
+        ie1v5zBDXKcg8fPpMlaQMSICThKTN8dAlIhIzO5sYwY5QULgAodE8+O57BD1LhKtO/uhPhOW
+        eHV8C1RcSuLzu71Q8WKJpbM+MUE0NzBKXN72CyphLDHrWTsjyDIJAWWJI7egbuOT6Dj8lx0i
+        zCvR0SYEUa0ucWD7dBYIW1aie85n1gmMSrOQfDYLyWezkHw2C8kLCxhZVjGKpRYU56anFhsV
+        GMFjOzk/dxMjOBVrue1gnPL2g94hRiYOxkOMEhzMSiK8C8/sTBLiTUmsrEotyo8vKs1JLT7E
+        aAoM64nMUqLJ+cBskFcSb2hiaWBiZmZobmRqYK4kzuuVsiFRSCA9sSQ1OzW1ILUIpo+Jg1Oq
+        gck+qzIqOPN5u9uShgvXZeYE80r/u2W/7Ozf1M2H7/meP5v4S+PGK/l986Y65DsLzrhXxdz7
+        b4qWiF7JVLWpYdJzRIsYE+5tENkepTwtfG+L3vG5TExmkb7Za+8GZOZncZ7j/BwtpjIz1nnv
+        UcGH+xpXL9+/ZRHnSfMir367OcedmnPS8huKFW4HpzzJuWC7/vLuBbHNAd5y1y8XnFE6HBiz
+        3eT4iShlQ9X+5EMqLYfX8vAJWT59fsM7PmB5t49Ek/Wb0J6631Nrr8qnfE9cx33u7YwT/7dv
+        Cs1dxmF0M2V6x0/V801fjFl8upVeu9hbhDfM7ReK+fm5tzgqYXL4hG89akxxf89dmn/+5wzX
+        f0osxRmJhlrMRcWJANPrMohOBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGIsWRmVeSWpSXmKPExsWy7bCSnK7im11JBgc7zCwezNvGZtG8eD2b
+        ReeOHhaLHQ1HWC3ezZWx2Pt6K7vFpsfXWC1mnN/HZHFmcS+7xelrC9gtzm/zd+D2uL4uwGPT
+        qk42jzvX9rB5zDsZ6LF/7hp2j81L6j0WL9vJ5tG3ZRWjx+dNcgGcUVw2Kak5mWWpRfp2CVwZ
+        3zuesRecZq9o7mtka2BsYeti5OSQEDCROH5rHVMXIxeHkMAORolDx2YxQiRkJZ6928EOYQtL
+        3G85wgpR9IxRYuO8aSwgCTYBfYmXHdtYQWwRATeJ9meN7CBFzAK3mCV+3/zCDNFxjFHi8qSl
+        YPs4BZwl5s/5DzZWWMBFYual60C7OThYBFQltra7goR5BSwlXr9YzQhhC0qcnPkEbBmzgIHE
+        tlP/2CFseYntb+cwQ1ynIPHz6TJWkDEiAk4SkzfHQJSISMzubGOewCg8C8mkWUgmzUIyaRaS
+        lgWMLKsYJVMLinPTc4sNC4zyUsv1ihNzi0vz0vWS83M3MYKjUktrB+OeVR/0DjEycTAeYpTg
+        YFYS4V14ZmeSEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NTC1KLYLJMHJxS
+        DUwt54N3Rr2L3uStGOZ/KabR5utLttgHN49c4a46erDkVk72sz8Lymfkz+DJEuW5vnu/Z+PB
+        5KMbp5lr3T67LkeHrZfRpML7W0/4/gsac4wL/n2MmeB4Y90PtuOrQ/XXPGxWbUyxyXT5wu89
+        d+PPwtOTOcU0mFdG3LbecmLn5Ltz9lsz3tI4qi/PwM7ndLzow9llrz0LUxoX/9D4WLes+plG
+        ldZaq9NrvJ0ZMib5r5ga/uPD3MvnlI4sueAyb4Vnx1Yj78cP+1nUuw4VavvMijx0aa/1O7Xs
+        d+pLq1WKDn5y/7Bp4ZEjSka+iYdqXWs3mE1POjHDeWbT+mOrFJ37f9QzRSpL1U3qcZ17M1ss
+        dH+MEktxRqKhFnNRcSIAR4XWMzkDAAA=
+X-CMS-MailID: 20220628115514epcas2p111c656393c313ee2245d195679486678
+X-Msg-Generator: CA
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0
+References: <CGME20220627032556epcas2p26c2cd2786888a5018607bf651bc5dec0@epcas2p2.samsung.com>
+        <20220627032353.8868-1-chanho61.park@samsung.com>
+        <ab327a8f-f520-ad85-c0fc-1e505647164c@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 1:39 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Jun 28, 2022 at 12:01 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> > On Tuesday 28 June 2022 11:51:36 Pali Roh=C3=A1r wrote:
+> Subject: Re: [PATCH] tty: serial: samsung_tty: loopback mode support
+> 
+> On Mon, 27 Jun 2022, Chanho Park wrote:
+> 
+> > Internal loopback mode can be supported by setting
+> > S3C2443_UCON_LOOPBACK bit. The mode & bit can be supported since
+> > s3c2410 and later SoCs.
+> 
+> In that case, why is the  LOOPBACK define named 2443 and not 2410???
 
-...
+It might be copied from mach-s3c24xx.
 
-> > Ou, now I see where is the issue. Patch which I tested and which fixes
-> > reporting baudrate is not in kernel tree yet and it looks like I totall=
-y
-> > forgot to sent it to ML. I will send it. Sorry for confusion.
->
-> Shouldn't the Ilpo's applied anyway to fix the current code base?
+> 
+> The change looks fine otherwise.
+> 
+> I note though that many of the current drivers won't return TOICM_LOOP
+> from ->get_mctrl() but I don't think it's exactly wrong to return it
+> either. Perhaps lack of returning it is due to Documentation/driver-
+> api/serial/driver.rst not including TOICM_LOOP in get_mctrl's list of
+> information but only in set_mctrl's one.
 
-Ah, now I understand that your patch is a fix. Sorry for the noise.
+According to the description, TIOCM_LOOP bit might be used only for setting.
+I'll drop the bit manipulation from get_mctrl callback.
+Thanks for the heads up.
 
---=20
-With Best Regards,
-Andy Shevchenko
+Best Regards,
+Chanho Park
+
