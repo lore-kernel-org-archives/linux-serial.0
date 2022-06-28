@@ -2,200 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1322C43334
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 13:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D10BCCA479
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Jun 2022 13:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346826AbiF1NnC (ORCPT
+        id S1345948AbiF1Nvm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Jun 2022 09:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
+        Tue, 28 Jun 2022 09:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346827AbiF1Nm6 (ORCPT
+        with ESMTP id S1345906AbiF1Nvm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Jun 2022 09:42:58 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF0927CD0;
-        Tue, 28 Jun 2022 06:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656423777; x=1687959777;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=SPLW4MUTelcNhLfIwrYgBfgM4WHiKHjiuBV0hIitAOk=;
-  b=VC1qva8aZRF8FnzQ6UWM0/XnvXHUVmBd/h1uoIBtonQpNVMetKBy5wam
-   93biRH9Z4UrO1E1T4h5kkR580a51K6eN+nhHSJ3N0IitCypc2TNwcDU6h
-   8L+94qPV5c9yIN5SWvob/sXRDgbVdItgUXqGdEj1kUNr2X2zjVOQmIWqb
-   St1F7/Ws0bj9vuk9/Bggc6wVAfYrrJCMchsg4VO/eOTZy71mdoWSOk7I7
-   eATlcfCyPOS8XMk8PEwGuAjzPj2C3hgdiHoASbj62lknhxDd1C2eoh+rb
-   TEpTgkyuJdiYEkyNRHKa5G4PlQHV95DqOBVOTh2Wwi8TaHyU9kfuMuGKq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281780657"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281780657"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 06:42:57 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646918036"
-Received: from iannetti-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.216.215])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 06:42:55 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Tue, 28 Jun 2022 09:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F392CE3B;
+        Tue, 28 Jun 2022 06:51:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9CED618F7;
+        Tue, 28 Jun 2022 13:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AF6C3411D;
+        Tue, 28 Jun 2022 13:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656424300;
+        bh=tavwUDptky926TBvCoHB46pswP2jEsYYHlFbhtrikbY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nlAkrFvSDeqAOF4EqhNtymAfoIea1Fm0mYKul9EXHS817F1aLRvx3/MYMEA9mve7u
+         qKiEcgm5UhoCUFY8XntpnIlprm0uW8B1wLDCftkp7cu1m2x9SUgJ4XuTJvZ1Yvav8n
+         3Gf34qvdER1x6h4h1AXSF5V15uK208DHdc/Y2oXA=
+Date:   Tue, 28 Jun 2022 15:51:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Chanho Park <chanho61.park@samsung.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] serial: 8250_dw: Rework ->serial_out() LCR write retry logic
-Date:   Tue, 28 Jun 2022 16:42:34 +0300
-Message-Id: <20220628134234.53771-5-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com>
-References: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com>
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] tty: serial: samsung_tty: loopback mode support
+Message-ID: <YrsHaUqM03I6I9Om@kroah.com>
+References: <CGME20220628124300epcas2p45f1e3a7051bb93ecba778cf7d96720d3@epcas2p4.samsung.com>
+ <20220628124050.144398-1-chanho61.park@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628124050.144398-1-chanho61.park@samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Currently dw8250_verify_write() (was dw8250_check_lcr()) nullifies the
-benefit from differentiated ->serial_out() by having big if tree to
-select correct write type.
+On Tue, Jun 28, 2022 at 09:40:50PM +0900, Chanho Park wrote:
+> Internal loopback mode can be supported by setting
+> UCON register's Loopback Mode bit. The mode & bit can be supported since
+> s3c2410 and later SoCs. The prefix of LOOPBACK / BIT(5) naming should be
+> also changed to S3C2410_ to avoid confusion.
+> 
+> We can test it by linux-serial-test program
+> with -k option. The tool will set TIOCM_LOOP mode when the option is
+> specified.
+> -k, --loopback     Use internal hardware loop back
 
-Rework the logic such that the LCR write can be retried within the
-relevant ->serial_out() handler:
-  1. Move retries counter on the caller level and pass as pointer to
-     dw8250_verify_write()
-  2. Make dw8250_verify_write() return bool
-  3. Retry the write on caller level (if needed)
+Again, what does this line mean in a changelog text?
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 59 ++++++++++++++++++-------------
- 1 file changed, 35 insertions(+), 24 deletions(-)
+And properly wrap your lines at 72 columns.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index fc367d44f86d..f6846363341b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -92,41 +92,36 @@ static void dw8250_force_idle(struct uart_port *p)
-  * UART_16550_COMPATIBLE=NO or version prior to introducing that option).
-  * If BUSY is set while writing to LCR register, the write is ignored and
-  * needs to be retries.
-+ *
-+ * Returns: false if the caller should retry the write.
-  */
--static void dw8250_verify_write(struct uart_port *p, int offset, int value)
-+static bool dw8250_verify_write(struct uart_port *p, int offset, int value,
-+				    unsigned int *retries)
- {
--	void __iomem *reg_offset = p->membase + (offset << p->regshift);
- 	struct dw8250_data *d = to_dw8250_data(p->private_data);
--	int tries = 1000;
-+	unsigned int lcr;
- 
- 	if ((offset != UART_LCR) || !d->uart_16550_compatible)
--		return;
-+		return true;
- 
- 	/* Make sure LCR write wasn't ignored */
--	while (tries--) {
--		unsigned int lcr = p->serial_in(p, offset);
-+	lcr = p->serial_in(p, offset);
- 
--		if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
--			return;
-+	if ((value & ~UART_LCR_SPAR) == (lcr & ~UART_LCR_SPAR))
-+		return true;
- 
--		dw8250_force_idle(p);
-+	dw8250_force_idle(p);
- 
--#ifdef CONFIG_64BIT
--		if (p->type == PORT_OCTEON)
--			__raw_writeq(value & 0xff, reg_offset);
--		else
--#endif
--		if (p->iotype == UPIO_MEM32)
--			writel(value, reg_offset);
--		else if (p->iotype == UPIO_MEM32BE)
--			iowrite32be(value, reg_offset);
--		else
--			writeb(value, reg_offset);
-+	if (*retries) {
-+		*retries -= 1;
-+		return false;
- 	}
-+
- 	/*
- 	 * FIXME: this deadlocks if port->lock is already held
- 	 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
- 	 */
-+	return true;
- }
- 
- /* Returns once the transmitter is empty or we run out of retries */
-@@ -155,9 +150,13 @@ static void dw8250_tx_wait_empty(struct uart_port *p)
- 
- static void dw8250_serial_out(struct uart_port *p, int offset, int value)
- {
-+	unsigned int retries = 1000;
-+
-+retry:
- 	writeb(value, p->membase + (offset << p->regshift));
- 
--	dw8250_verify_write(p, offset, value);
-+	if (!dw8250_verify_write(p, offset, value, &retries))
-+		goto retry;
- }
- 
- static void dw8250_serial_out38x(struct uart_port *p, int offset, int value)
-@@ -188,20 +187,29 @@ static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
- 
- static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
- {
-+	unsigned int retries = 1000;
-+
- 	value &= 0xff;
-+
-+retry:
- 	__raw_writeq(value, p->membase + (offset << p->regshift));
- 	/* Read back to ensure register write ordering. */
- 	__raw_readq(p->membase + (UART_LCR << p->regshift));
- 
--	dw8250_verify_write(p, offset, value);
-+	if (!dw8250_verify_write(p, offset, value, &retries))
-+		goto retry;
- }
- #endif /* CONFIG_64BIT */
- 
- static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
- {
-+	unsigned int retries = 1000;
-+
-+retry:
- 	writel(value, p->membase + (offset << p->regshift));
- 
--	dw8250_verify_write(p, offset, value);
-+	if (!dw8250_verify_write(p, offset, value, &retries))
-+		goto retry;
- }
- 
- static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
-@@ -213,10 +221,13 @@ static unsigned int dw8250_serial_in32(struct uart_port *p, int offset)
- 
- static void dw8250_serial_out32be(struct uart_port *p, int offset, int value)
- {
-+	unsigned int retries = 1000;
- 
-+retry:
- 	iowrite32be(value, p->membase + (offset << p->regshift));
- 
--	dw8250_verify_write(p, offset, value);
-+	if (!dw8250_verify_write(p, offset, value, &retries))
-+		goto retry;
- }
- 
- static unsigned int dw8250_serial_in32be(struct uart_port *p, int offset)
--- 
-2.30.2
+thanks,
 
+greg k-h
