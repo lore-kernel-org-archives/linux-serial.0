@@ -2,161 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35226CCA486
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 14:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762A4C43334
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232058AbiF2O0E (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 10:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54252 "EHLO
+        id S229862AbiF2Oh4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 10:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbiF2O0A (ORCPT
+        with ESMTP id S232008AbiF2Ohz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 10:26:00 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74A93190A;
-        Wed, 29 Jun 2022 07:25:59 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id mf9so33053848ejb.0;
-        Wed, 29 Jun 2022 07:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nzVAkjUIXnSmifmZO/KNuTW33GCGTCzsi9aX026XXeg=;
-        b=S2dVib/eYmAFl827WdIoCLllzfbxALRjIjzfRRwuBWpdbVEMsjXdf1fQZ0QK1n2n0J
-         7Rc0uKmDUlj06sv7gme85B+3fLmze+mOouy0tIsuBDVpy1nD4eEh9k2i1LyAyfo/z7Zj
-         KDlk5RBwfb1T/0o1rVzuZORFiKZsCvSsNfve9fNt60vuT8XdzQWLTwkS/9FAhK69nmEs
-         mEzSIHBFyIvznhb3ZYEmWznM5HxrpFTwi8PXn2kSF7LDJWEQQU2316sTZ03OvudAaN+G
-         thYeRK11RnXT7zItby/QP43/O2E1Z4EfVZv3Nyn7dRrR7zoEuvKZKKrx+f9P5pfvx3Rg
-         uLHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nzVAkjUIXnSmifmZO/KNuTW33GCGTCzsi9aX026XXeg=;
-        b=K+/sP/hRrNW2dKVpBtInRhRcLgevV8ty+8mr5yrNwVTd2440sDwaFo+X70nnHqBZAM
-         O1e8Mt2RDyCnrbwIY3Vfho714AOnWqqXNMH6wDFomSZQxVP/5hLg590W2SFDcCNq7n0j
-         dUBbh1mohPAsDDqfwTtDNwtKCgpxtJ7iwkDUt4rOj9rlVZxBDAQBZ70wGo35FmuOBC3u
-         xejORvqK4II7TIRohQmMq2TK+l0mlnshiOzW+PTHdSVBC+QokePfjOGSPUlKUtHUWTqi
-         1dbdYVekSRxf7honXKELQjw3s2sJFpAo6ohp0sneZck+CTstgY3IOQrAz3PYuH8xBCno
-         LsNA==
-X-Gm-Message-State: AJIora9fPn0c14bXzp6tnc7I4qM66JCoAiTwWqMctW6cwVtnVYc7d4n8
-        MWmqpEuyoC12RWdG8cu+TcE=
-X-Google-Smtp-Source: AGRyM1vLxTFMIxeh0MQDJmw094z51hmalDIKhKM+71jelG0gY6NpuuzQXDALY4ZT1iSuYjMs9++euw==
-X-Received: by 2002:a17:906:58cf:b0:722:e4e1:c174 with SMTP id e15-20020a17090658cf00b00722e4e1c174mr3593366ejs.85.1656512758310;
-        Wed, 29 Jun 2022 07:25:58 -0700 (PDT)
-Received: from [10.29.0.16] ([37.120.217.82])
-        by smtp.gmail.com with ESMTPSA id jy19-20020a170907763300b007263713cfe9sm7220580ejc.169.2022.06.29.07.25.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 07:25:57 -0700 (PDT)
-Message-ID: <80117936-6869-19b2-45a6-96a4562c6cd2@gmail.com>
-Date:   Wed, 29 Jun 2022 16:25:54 +0200
+        Wed, 29 Jun 2022 10:37:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39F7034BBB;
+        Wed, 29 Jun 2022 07:37:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1AF0152B;
+        Wed, 29 Jun 2022 07:37:53 -0700 (PDT)
+Received: from [192.168.122.164] (U203867.austin.arm.com [10.118.30.29])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 99A7C3F792;
+        Wed, 29 Jun 2022 07:37:53 -0700 (PDT)
+Message-ID: <df200560-9beb-0f11-ff5e-8186d81897bf@arm.com>
+Date:   Wed, 29 Jun 2022 09:37:14 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 0/2] BUG, more dw8259 ACPI crashes
 Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Wolfram Sang <wsa@kernel.org>
-Cc:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <uwe@kleine-koenig.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Shawn Tu <shawnx.tu@intel.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-integrity@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, chrome-platform@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mediatek@lists.infradead.org
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+To:     linux-serial@vger.kernel.org
+Cc:     andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, miquel.raynal@bootlin.com,
+        phil.edworthy@renesas.com, kernel@esmil.dk,
+        linux-kernel@vger.kernel.org
+References: <20220629000232.3440704-1-jeremy.linton@arm.com>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <20220629000232.3440704-1-jeremy.linton@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 6/28/22 16:03, Uwe Kleine-König wrote:
-> From: Uwe Kleine-König <uwe@kleine-koenig.org>
+Hi,
+
+On 6/28/22 19:02, Jeremy Linton wrote:
+> 5.19rc4 crashes with:
 > 
-> The value returned by an i2c driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
+> [    4.441703] Internal error: Oops: 96000004 [#1] SMP
+> [    4.446601] Modules linked in:
+> [    4.449668] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-0.rc4.33.fc37.aarch64 #1
+> [    4.457532] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
+> [    4.470800] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [    4.477791] pc : dw8250_handle_irq+0x58/0x190
+> [    4.482170] lr : dw8250_handle_irq+0x38/0x190
+> [    4.486544] sp : ffff800008003e40
+> [    4.489869] x29: ffff800008003e40 x28: ffffbe13be183980 x27: 00000000b46bd3d0
+> [    4.497036] x26: ffffbe13bdbc3008 x25: ffff6f1447910f80 x24: ffff6f1447910f94
+> [    4.504204] x23: 0000000000000012 x22: ffff6f144218fc80 x21: 0000000000000000
+> [    4.511372] x20: 0000000000000007 x19: ffffbe13be7628d0 x18: ffff80000918b528
+> [    4.518540] x17: ffffb103c0343000 x16: ffff800008004000 x15: 0000000000004000
+> [    4.525706] x14: 0000000000000000 x13: 0000000000000030 x12: 0101010101010101
+> [    4.532872] x11: ffffbe13be16f6d8 x10: 0000000000001d90 x9 : ffffbe13bc6b4f0c
+> [    4.540040] x8 : ffffbe13be185770 x7 : 0000000000000000 x6 : 00000000296b5f4a
+> [    4.547206] x5 : 00ffffffffffffff x4 : 0000000000010002 x3 : ffffbe13be7628d0
+> [    4.554373] x2 : 0000000000000007 x1 : 0000000000000000 x0 : 0000000000000000
+> [    4.561539] Call trace:
+> [    4.563994]  dw8250_handle_irq+0x58/0x190
+> [    4.568020]  serial8250_interrupt+0x68/0x140
+> [    4.572307]  __handle_irq_event_percpu+0x68/0x230
+> [    4.577034]  handle_irq_event+0x58/0x120
+> [    4.580973]  handle_fasteoi_irq+0xcc/0x1c4
+> [    4.585086]  generic_handle_domain_irq+0x38/0x50
+> [    4.589723]  gic_handle_irq+0x50/0xe0
+> [    4.593399]  call_on_irq_stack+0x2c/0x38
+> [    4.597338]  do_interrupt_handler+0xdc/0xe0
+> [    4.601539]  el1_interrupt+0x34/0x70
+> [    4.605131]  el1h_64_irq_handler+0x18/0x24
+> [    4.609244]  el1h_64_irq+0x68/0x6c
+> [    4.612658]  arch_cpu_idle+0x18/0x2c
+> [    4.616246]  default_idle_call+0x34/0x18c
+> [    4.620273]  cpuidle_idle_call+0x154/0x1a0
+> [    4.624388]  do_idle+0xa4/0xf4
+> [    4.627455]  cpu_startup_entry+0x34/0x3c
+> [    4.631394]  kernel_init+0x0/0x150
+> [    4.634808]  arch_post_acpi_subsys_init+0x0/0x30
+> [    4.639445]  start_kernel+0x474/0x490
+> [    4.643121]  __primary_switched+0xc0/0xc8
+> [    4.647148] Code: 7100305f 1a9f17f5 f100003f 7a400aa4 (b9400817)
+> [    4.653267] ---[ end trace 0000000000000000 ]---
 > 
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> On an ACPI enabled Mcbin. This is again the result
+> of the pdata information not being available on an
+> ACPI machine. But since there are multiple commits
+> I've broken this into to fixes. The first
+> simply reverts the USR register change because it
+> should be functionality transparent and I don't
+> have a good way to tie ACPI ids to the hardware
+> and the second fixes the later patch which uses it
+> in the interrupt handler.
 
-[...]
->   drivers/platform/surface/surface3_power.c                 | 4 +---
+Hi,
 
-[...]
+I missed cd16044d7c38 ("serial: 8250: dw: enable using pdata with ACPI") 
+in tty-linus, which fixes this. So please ignore this set, sorry about 
+the noise.
 
-> diff --git a/drivers/platform/surface/surface3_power.c b/drivers/platform/surface/surface3_power.c
-> index 444ec81ba02d..3b20dddeb815 100644
-> --- a/drivers/platform/surface/surface3_power.c
-> +++ b/drivers/platform/surface/surface3_power.c
-> @@ -554,7 +554,7 @@ static int mshw0011_probe(struct i2c_client *client)
->   	return error;
->   }
->   
-> -static int mshw0011_remove(struct i2c_client *client)
-> +static void mshw0011_remove(struct i2c_client *client)
->   {
->   	struct mshw0011_data *cdata = i2c_get_clientdata(client);
->   
-> @@ -564,8 +564,6 @@ static int mshw0011_remove(struct i2c_client *client)
->   		kthread_stop(cdata->poll_task);
->   
->   	i2c_unregister_device(cdata->bat0);
-> -
-> -	return 0;
->   }
->   
->   static const struct acpi_device_id mshw0011_acpi_match[] = {
 
-For the quoted above:
-
-Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
+Thanks,
