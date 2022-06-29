@@ -2,312 +2,727 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAF1C43334
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 10:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF24CCCA48D
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 10:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbiF2K3Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 06:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S233398AbiF2KlH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 06:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231811AbiF2K3Y (ORCPT
+        with ESMTP id S229737AbiF2KlE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 06:29:24 -0400
-Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.142.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56C33D4A5;
-        Wed, 29 Jun 2022 03:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
-  t=1656498562; x=1657103362;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9W8yjZZRwRuboWz57P1f3CS+hsf+nrDVf9Py8zSYCY4=;
-  b=HT72jQPv9QLGWWCicgBS3U+3qnMksgPBF8SNa/fcnz+SKnZdGnAaepMI
-   ixzukMkCxlEnLQr9fMLNT2Igh7mzfxk1F4YCR9vGqnQcbK+IN5esEySWz
-   WhJs7CzfWUxw3bbcbwgcIGgsr/iGI+ZBiJ4NkRLZOv9mGvXrDYhoUIa3E
-   U=;
-Received: from mail-dm6nam11lp2169.outbound.protection.outlook.com (HELO NAM11-DM6-obe.outbound.protection.outlook.com) ([104.47.57.169])
-  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 10:29:21 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I+q1aLkU+hoe5xoEQ+6lFMQn2MWp4S98MRA1DXPYsvolEI4jGFduGv8FHThBZxUMWbVMx2skLk97JXpZQwjLRhDD6T7XndGxZRnTFgbw5tKpxlsY5HYren2kVAHZp64rVMzUILq3eWqbsPrlr9lTcgeGq6J+A/gBwbpuBbFaxXVYYfDr0EAe7XU1TgvTPtGAuqWFtp78jObVr0CAiS5D/aqqNxcUvcQfjwHfTbA9u4WfBbpu59pD55gCujAj1XRTomKShD3elwBvqx88aeMAoIoNXFDopek4bpYkRTCqID2pWmtZ9eXXzghthVIb4ZfFzcPlKkxx8rOdQO66MJGZ9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9W8yjZZRwRuboWz57P1f3CS+hsf+nrDVf9Py8zSYCY4=;
- b=gXHIZv33eD2y1R5AEY/oCHR9YlujpKJbNQopPQRHOPwQZWuH5tlqgK8n2++6Q7iqYWs2v7m5/KQmiEcMNf378tPqhjz58+9rtE6+Z95vRjbVr92SFIv+eyoV/quQ5ScAgdxrh9+zJNuCFRkC0X3v9LSmPIaGftzxl0Ty5GNEw60Pd90h7EGYx6kthuld4SuYH5tLFYCNlSv9fekilzi53n1ixbz/gUT8BEuQYSmkjVTeugXimciRMW6xM5IdgTKn0n/MGGr7k9PLllVR4++T8idb+L3sRF6FWik8MKSb0MTdOXAQW12FqqWdYSukOxPKzHf1JpBxSzcgxxX733nFiQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=quicinc.com; dmarc=pass action=none header.from=quicinc.com;
- dkim=pass header.d=quicinc.com; arc=none
-Received: from BL0PR02MB4564.namprd02.prod.outlook.com (2603:10b6:208:4d::13)
- by BYAPR02MB4040.namprd02.prod.outlook.com (2603:10b6:a02:f8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 29 Jun
- 2022 10:29:18 +0000
-Received: from BL0PR02MB4564.namprd02.prod.outlook.com
- ([fe80::74ed:8851:fc13:a4ad]) by BL0PR02MB4564.namprd02.prod.outlook.com
- ([fe80::74ed:8851:fc13:a4ad%5]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
- 10:29:18 +0000
-From:   "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>,
-        "agross@kernel.org" <agross@kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "mka@chromium.org" <mka@chromium.org>,
-        "swboyd@chromium.org" <swboyd@chromium.org>
-Subject: RE: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate()
- which otherwise could return a sub-optimal clock rate.
-Thread-Topic: [PATCH] tty: serial: qcom-geni-serial: Fix get_clk_div_rate()
- which otherwise could return a sub-optimal clock rate.
-Thread-Index: AQHYhZhque1aSuxCn0uPTvCaN8nem61cg+2AgAm2ImA=
-Date:   Wed, 29 Jun 2022 10:29:18 +0000
-Message-ID: <BL0PR02MB45642CE7A0D9A67366FDDE4FFABB9@BL0PR02MB4564.namprd02.prod.outlook.com>
-References: <1655834239-20812-1-git-send-email-quic_vnivarth@quicinc.com>
- <9284b3dd-3da5-1a52-1e92-a434cfe2e1e1@kernel.org>
-In-Reply-To: <9284b3dd-3da5-1a52-1e92-a434cfe2e1e1@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=quicinc.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4d1bb3d4-5ccb-4d1d-f69f-08da59ba3900
-x-ms-traffictypediagnostic: BYAPR02MB4040:EE_
-x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2tgkVm/2ktm5NhW9ZzKVUEaW0AClMLQS/fsddjG+JspyaZv9teDpUV0bjkWr/hgxKlm79TijUI9qfNxDJQ3YnizBQqoAX52lFa1jCBqhX9PS7zCU5lvujz5+PQv20aSNXhxLLS33JOYgMJaHTayegGw2G4vXTRawJEktPN3sAs3e59tL8g/Z5ORZPyBsvl48mJMkvCbkJeA+mEfVeed/7JMyAUctfumaZngSQO+To5wBv2z7PMlQLPSK9orcQa827f8S2o0SU+hfao/DPPrRoJQLbNgBDrrWfHPUVvz6jna76zLSj08oBjl1FnerWoh6QE7ZN7idHboQxUy6fk6cB5GuKtoJAjE7M7dI9PzWYWnWpexULRTAsEBdbZ07YnQoFl1ubEvzsXZRovz00Sbuj7LtMj0B2oQS+lY/FeMDpUsi+zm96W0xVd1eLma9Np3xmIO4KeNzI/WlBjdZn5915pXZZtK2GTbTt5nVmUYuGlN1U2Hmbr7MvlBZm38kVUhB1J7xcYF98kHC8tGSIYIwDVzkD4phOXx32/hY3MG9MRGl+KcBq5gfflm7Q+pGU8RWrn0QesaVoRWD8f3cBdGdwzwJgwxTdCJfVs7+tv5EIhdBUovPmqbShjOGTAeY0kSaIsZ6mHly91YJb0CxEqDMLHNXx4M6ykJR9AFydsypokIuxFjHXNfxEXjMf/8hAvKeraehSrGyw4WipRDlzpph1W/hAEt/dQJUC6SFAa3S0vyXoaHp+JfTrR8gDVV++rvYlH+3AK/uWkJKwe2L7utIsjpUqhs7JYu8RySD4amqBsg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR02MB4564.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(54906003)(186003)(33656002)(83380400001)(38070700005)(41300700001)(55016003)(6506007)(7696005)(122000001)(38100700002)(53546011)(55236004)(9686003)(110136005)(71200400001)(26005)(316002)(478600001)(2906002)(8676002)(66556008)(66476007)(66446008)(4326008)(76116006)(66946007)(64756008)(8936002)(86362001)(52536014)(7416002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Sm41Ylo5bEF5cEJvQ29Xb0VmMG1vVFdNNjhjTlhJQjZDN2s3bGRVeVh2TFhv?=
- =?utf-8?B?NW1kNm1vejhTSGR6OThTaEJRRHBSUUdVYjR2Lzlvb0t2M2dJNytudUIzNytw?=
- =?utf-8?B?amNRbE5XeForYXdzUGJtSExIMzl5V3JRNWE5dnNPZWoxZzNoRUxtZXdmcG1C?=
- =?utf-8?B?VUMzREJOMmYzVktLZTZQSWlJU0pJTyt4TXN4K2x1aUh0M2tYM29JN0xhUFpB?=
- =?utf-8?B?SDhSenRpT1haZ3N6cllqNWZFY01tellHQ3YrTkZnNUJjRFRMQzNZcUdQTzVF?=
- =?utf-8?B?K2lGS2FwWE9RSXhvdEdrZEJRMjRUallURjNEOUZTeGgrL1JYYkZtenhLYi93?=
- =?utf-8?B?RmFMVjlOZkpXbmR0Y093aUlxOUJzYzNvWmlZZzJqZVZjM3p0UVpzUjc0UVpa?=
- =?utf-8?B?SVYrYS9uQ2JxWFg2ZlJGTEx3R3FHOEg0Rkk0TzNnOTQxSXdyOFBwcWs3Uy9I?=
- =?utf-8?B?WnZmT3E2T1pJYTQ3SmtTZ1o4RUdCdTB1VzZQNEZTNWQwdmtCTTZsQURSVFQ3?=
- =?utf-8?B?WEVDVjZ5QS8zaDlkcTNHVDMxZit4eWRzbjkxcWRDa1BiQTJ0TTF3Y0NYZStQ?=
- =?utf-8?B?TW5uTHhzNGpSS29FOEtQWk1PS2ZCcGw4MURhMWFpQjc2MG56a09WQ0ltczVu?=
- =?utf-8?B?UEIvVndwbHpHWk0zT1VGRUpEakFCRUYyUFFlc2pOMlJUYy9CdzZPVnYrYldL?=
- =?utf-8?B?aHdockx5bnVscUtaQW1Ubm9VS0RHQ0pZdEhNdnpiLzJCK2Q3eGtYTkVBeDBv?=
- =?utf-8?B?V0NMNjZicDZTejJiL1ZtSjIvb1ZLNGhOaDhxbWhtZU9HRnFma01YNTVVOGlS?=
- =?utf-8?B?VDhNRTR0MHE0R000Z3RZWDZsaDdLVktReHVsVFRYN1BCWFpHSklLNzdoalcz?=
- =?utf-8?B?bWJSd0VaSEg0d3ZBZFhkLy9UTGdBdVhIbjVyNFBKRTZJUzF0dVlrSWZBdWxw?=
- =?utf-8?B?OUZmYVZWMGprNU1LeGtLSjFOVDhYNVNhVmJpdVg2dFhQaWJuaUxOWDFNM3o5?=
- =?utf-8?B?dmN1cS9RN3ZXcFVsdXFlOFVDVnF2L0xkWlBDdmFMTy9lRDN0WWFvZ2Q0bk5i?=
- =?utf-8?B?andQdysrZ1U5RlNJMVlVRGhDaWwwOGdDdWR3UzhxMnNoT1pqc29POE1uU0xD?=
- =?utf-8?B?azZnT2FMZ0hyeSt4aWxxZk5venlrc3FDWnh0UGRTSm5LTWQxeHFRTnY4UGx0?=
- =?utf-8?B?Wm1YN2RMLzhIb2xWVWFPRTc1dytzZ1hDVWh2b3ZFR1YyejB0bjcvb2laR2hV?=
- =?utf-8?B?MGJOVTRtbHZYeEh0RGNnc3VtZDQxNFliOHYxR3ZYWEU0c243Q2F4QnBJcWlV?=
- =?utf-8?B?ajZvNHBvdnd5SFJoN092azBpamg3aGVFczJYYUpOZUprM2dndE9rU3FReldq?=
- =?utf-8?B?Rjk4Wm9rUXhFRmhEUUJacTgzMmM5Zlgyck9pcG5DVS9pQzVmbWtIOUNGKzNV?=
- =?utf-8?B?S09CbzI2RXRVU2U5RldjZjBDZE5rOHg4ZXdZRXZocUwyWmlmNWdlYUZRQU1k?=
- =?utf-8?B?cVJIUnVmYzhBOGpzRVRXVjRmNyt3ay9uS3VFczZ4Z3FZRW1mMmszK1Y2cXhI?=
- =?utf-8?B?ZDJwQUFTbDBjU1czVjZVRC9YT21zOGtKcXE1dlZkRVNBZjBhZzNVc0QwNWtY?=
- =?utf-8?B?RU9HdUNyUmJEZ3BSeHFSZkgwSWhQaXJsanQrL1VGaG1iV0V2b3pjdjkxUHlB?=
- =?utf-8?B?TVAvblgxemovaVpiWG5OTE5qd085VzNSUWJNMUdwaUJubElCd0lFaDdsTHo0?=
- =?utf-8?B?S1YrdXYvblhGd252bGU1UnkwNFF0UDF1M3kyOFBEdTZHVGNsY1ljRHJrYTZ5?=
- =?utf-8?B?NmUycGhJUWF3UURjdFBUdFpqdWE2K05Fd2FxRUJuUFhZcU9QaDFPdW9HWkhy?=
- =?utf-8?B?a1VNRW9QOUV4bGNCYnhkQnZudXpWRWIvTHpDQ00yUUJpcXFmOU5sWXBiQTlN?=
- =?utf-8?B?TDVtVU1vZmI1eHNYOVUvTDIxTWl6ZDBCZkdLZnNGY0xqRlN6R2dWeEttMHhJ?=
- =?utf-8?B?VVd6NjluODdXT1pqL3U5YnhEa3YxSzJUeE1QMko2cjAwWFpRbjVkQm5KZzRk?=
- =?utf-8?B?UXBHei9DSks2bzArWVpXUE40M2ZaSDFUWlg0Q0lqNy80V3ViNVd3TFJtVWJw?=
- =?utf-8?Q?KfGAx57CTThaoR7uoUiMpR/Aj?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Wed, 29 Jun 2022 06:41:04 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED143E0C1;
+        Wed, 29 Jun 2022 03:41:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656499262; x=1688035262;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=R8VB6/tjMDgTxKnue93AU4hdI5XOBKB8dDAwO/qOwjg=;
+  b=nP2egLQDaZ77vNECafRiIqybpfmzq1pYkQkHVEh6iAAp1AxjadNoy9bB
+   SVE6KOcWsaRjv9e5kEkFZ87jNtglU/EG954OwOOW51Bw6JWA338QuQl7S
+   PK9hbVoS6mKOnjusCl/DMBbjb5PfJ9OOqYagz0YuTJCSIwd37xv5T6huS
+   Wt16jeMF4EP5RlJy3rtZGnZ9O3T54idMQvOghmaBrvAyhnXYLAipwWyW0
+   in6NH4H2ybwXyCpESrMq3NOz7EsETkcfWNNn0vvCEnXlE3HMF8ev4k27u
+   RjeggAU12ucW+9JpjvAeXGjnzQ7//gERLtS1g/4mQ5faeLu0iX6Q1315p
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343686249"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="343686249"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 03:40:54 -0700
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="617536648"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 03:40:46 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o6V7i-000xcv-MD;
+        Wed, 29 Jun 2022 13:40:42 +0300
+Date:   Wed, 29 Jun 2022 13:40:42 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-integrity@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, chrome-platform@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        acpi4asus-user@lists.sourceforge.net, linux-pm@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
+Message-ID: <YrwsKnRZqksuTCVe@smile.fi.intel.com>
+References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
+ <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-X-OriginatorOrg: quicinc.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR02MB4564.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d1bb3d4-5ccb-4d1d-f69f-08da59ba3900
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2022 10:29:18.1187
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2nvjnZlQ+YxenSmHfHji9bSFf2xazaKDIlNuEQKOZJ62qB4/qHILI9MUTTU12gKVZE+DkcXB0kZCdYxm/NtTdgnVxfmsPNwpn0Y5+FQ6mfY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4040
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKaXJpIFNsYWJ5IDxq
-aXJpc2xhYnlAa2VybmVsLm9yZz4NCj4gU2VudDogVGh1cnNkYXksIEp1bmUgMjMsIDIwMjIgMTE6
-MzggQU0NCj4gVG86IFZpamF5YSBLcmlzaG5hIE5pdmFydGhpIChUZW1wKSAoUVVJQykgPHF1aWNf
-dm5pdmFydGhAcXVpY2luYy5jb20+Ow0KPiBhZ3Jvc3NAa2VybmVsLm9yZzsgYmpvcm4uYW5kZXJz
-c29uQGxpbmFyby5vcmc7DQo+IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOyBsaW51eC1hcm0t
-bXNtQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+IHNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IE11a2VzaCBTYXZhbGl5YSAoUVVJQykg
-PHF1aWNfbXNhdmFsaXlAcXVpY2luYy5jb20+Ow0KPiBkaWFuZGVyc0BjaHJvbWl1bS5vcmc7IG1r
-YUBjaHJvbWl1bS5vcmc7IHN3Ym95ZEBjaHJvbWl1bS5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRD
-SF0gdHR5OiBzZXJpYWw6IHFjb20tZ2VuaS1zZXJpYWw6IEZpeCBnZXRfY2xrX2Rpdl9yYXRlKCkN
-Cj4gd2hpY2ggb3RoZXJ3aXNlIGNvdWxkIHJldHVybiBhIHN1Yi1vcHRpbWFsIGNsb2NrIHJhdGUu
-DQo+IA0KPiBXQVJOSU5HOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIFF1
-YWxjb21tLiBQbGVhc2UgYmUgd2FyeQ0KPiBvZiBhbnkgbGlua3Mgb3IgYXR0YWNobWVudHMsIGFu
-ZCBkbyBub3QgZW5hYmxlIG1hY3Jvcy4NCj4gDQo+IE9uIDIxLiAwNi4gMjIsIDE5OjU3LCBWaWph
-eWEgS3Jpc2huYSBOaXZhcnRoaSB3cm90ZToNCj4gPiBJbiB0aGUgbG9naWMgYXJvdW5kIGNhbGwg
-dG8gY2xrX3JvdW5kX3JhdGUsIGZvciBzb21lIGNvcm5lcg0KPiA+IGNvbmRpdGlvbnMsDQo+ID4g
-Z2V0X2Nsa19kaXZfcmF0ZSgpIGNvdWxkIHJldHVybiBhbiBzdWItb3B0aW1hbCBjbG9jayByYXRl
-LiBBbHNvLCBpZiBhbg0KPiA+IGV4YWN0IGNsb2NrIHJhdGUgd2FzIG5vdCBmb3VuZCBsb3dlc3Qg
-Y2xvY2sgd2FzIGJlaW5nIHJldHVybmVkLg0KPiA+DQo+ID4gU2VhcmNoIGZvciBzdWl0YWJsZSBj
-bG9jayByYXRlIGluIDIgc3RlcHMNCj4gPiBhKSBleGFjdCBtYXRjaCBvciB3aXRoaW4gMiUgdG9s
-ZXJhbmNlDQo+ID4gYikgd2l0aGluIDUlIHRvbGVyYW5jZQ0KPiA+IFRoaXMgYWxzbyB0YWtlcyBj
-YXJlIG9mIGNvcm5lciBjb25kaXRpb25zLg0KPiA+DQo+ID4gRml4ZXM6IGMyMTk0YmM5OTlkNCAo
-InR0eTogc2VyaWFsOiBxY29tLWdlbmktc2VyaWFsOiBSZW1vdmUgdWFydA0KPiA+IGZyZXF1ZW5j
-eSB0YWJsZS4gSW5zdGVhZCwgZmluZCBzdWl0YWJsZSBmcmVxdWVuY3kgd2l0aCBjYWxsIHRvDQo+
-ID4gY2xrX3JvdW5kX3JhdGUiKQ0KPiANCj4gSG1tLCBwcm92aWRlZCB0aGUgY29tcGxleGl0eSwg
-d2FzIHRoaXMgd29ydGggaXQgLS0gaG93IG1hbnkgdHlwb3MvYnVncw0KPiBjYW4gYmUgaW4gc3Vj
-aCBjb21wbGV4IGFuZCB0d2lzdGVkIGZ1bmN0aW9ucz8NCj4gDQo+IFRoZSBvcmlnaW5hbCBpbnRl
-bnRpb24gd2FzIG5vdCB0byB0b3VjaCB0aGUgZHJpdmVyIHdoZW4gbmV3IEhXIGFycml2ZXMuDQo+
-IE5vdyBpdCBsb29rcyBsaWtlIHlvdSdkIGJlIGNoYXNpbmcgY29ybmVyIGNhc2VzIGxpa2UgdGhl
-c2UgZm9yIHF1aXRlIHNvbWUNCj4gcmVsZWFzZXMuDQo+IA0KPiBTbyBnb2luZyBiYWNrIGluIHRp
-bWUsIHJlY29uc2lkZXJpbmcgdGhlIHdob2xlIHRoaW5nOiBob3cgb2Z0ZW4gZG8geW91DQo+IGV4
-cGVjdCB0aGUgb3JpZ2luYWwgcmF0ZSB0YWJsZSB3b3VsZCBuZWVkIHRvIGJlIHVwZGF0ZWQ/DQo+
-IA0KPiBOQUNLDQo+IA0KPiBpbiBhbnkgd2F5IC0tIHNlZSBteSBjb21tZW50IGJlbG93IC0tIGlm
-IHlvdSByZWFsbHkgd2FudCB0byBnbyB0aGlzIHBhdGgsDQo+IHlvdSdkIG5lZWQgdG8gc3BsaXQg
-dGhpcy4NCj4gDQoNCkkgc2ltcGxpZmllZCB0aGUgcGF0Y2ggdG8gYWRkcmVzcyBvdGhlciBmZWVk
-YmFja3MgdG9vIGFuZCBJIGJlbGlldmUgaXRzIGxlc3MgY29tcGxleCBhbmQgbW9yZSByZWFkYWJs
-ZSBub3cuDQpUaGUgZnVuY3Rpb24gYXJlIGFib3V0IDUwIExPQyBhbmQgMjAgTE9DICh3aXRob3V0
-IGNvbW1lbnRzKSBhbmQgc3BsaXR0aW5nIHRoZW0gZnVydGhlciBpcyBwb3NzaWJseSBkaWZmaWN1
-bHQ/DQpUaGFuayB5b3UuDQoNCg0KPiA+IFNpZ25lZC1vZmYtYnk6IFZpamF5YSBLcmlzaG5hIE5p
-dmFydGhpIDxxdWljX3ZuaXZhcnRoQHF1aWNpbmMuY29tPg0KPiA+IC0tLQ0KPiA+ICAgZHJpdmVy
-cy90dHkvc2VyaWFsL3Fjb21fZ2VuaV9zZXJpYWwuYyB8IDEzNA0KPiArKysrKysrKysrKysrKysr
-KysrKysrKysrKy0tLS0tLS0tDQo+ID4gICAxIGZpbGUgY2hhbmdlZCwgMTAyIGluc2VydGlvbnMo
-KyksIDMyIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9xY29tX2dlbmlfc2VyaWFsLmMNCj4gPiBiL2RyaXZlcnMvdHR5L3NlcmlhbC9xY29tX2dl
-bmlfc2VyaWFsLmMNCj4gPiBpbmRleCAyZTIzYjY1Li44ZDI0N2MxIDEwMDY0NA0KPiA+IC0tLSBh
-L2RyaXZlcnMvdHR5L3NlcmlhbC9xY29tX2dlbmlfc2VyaWFsLmMNCj4gPiArKysgYi9kcml2ZXJz
-L3R0eS9zZXJpYWwvcWNvbV9nZW5pX3NlcmlhbC5jDQo+ID4gQEAgLTk0Myw1MiArOTQzLDEyMyBA
-QCBzdGF0aWMgaW50IHFjb21fZ2VuaV9zZXJpYWxfc3RhcnR1cChzdHJ1Y3QNCj4gdWFydF9wb3J0
-ICp1cG9ydCkNCj4gPiAgICAgICByZXR1cm4gMDsNCj4gPiAgIH0NCj4gPg0KPiA+IC1zdGF0aWMg
-dW5zaWduZWQgbG9uZyBnZXRfY2xrX2Rpdl9yYXRlKHN0cnVjdCBjbGsgKmNsaywgdW5zaWduZWQg
-aW50IGJhdWQsDQo+ID4gLSAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGludCBzYW1wbGlu
-Z19yYXRlLCB1bnNpZ25lZCBpbnQgKmNsa19kaXYpDQo+ID4gK3N0YXRpYyB1bnNpZ25lZCBsb25n
-IGZpbmRfY2xrX3JhdGVfaW5fdG9sKHN0cnVjdCBjbGsgKmNsaywgdW5zaWduZWQgaW50DQo+IGRl
-c2lyZWRfY2xrLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgKmNsa19k
-aXYsIHVuc2lnbmVkIGludCBwZXJjZW50X3RvbCwNCj4gPiArYm9vbCAqZXhhY3RfbWF0Y2gpDQo+
-ID4gICB7DQo+ID4gKyAgICAgdW5zaWduZWQgbG9uZyBmcmVxOw0KPiA+ICsgICAgIHVuc2lnbmVk
-IGxvbmcgZGl2LCBtYXhkaXYsIG5ld19kaXY7DQo+ID4gKyAgICAgdW5zaWduZWQgbG9uZyBsb25n
-IG11bHQ7DQo+ID4gICAgICAgdW5zaWduZWQgbG9uZyBzZXJfY2xrOw0KPiA+IC0gICAgIHVuc2ln
-bmVkIGxvbmcgZGVzaXJlZF9jbGs7DQo+ID4gLSAgICAgdW5zaWduZWQgbG9uZyBmcmVxLCBwcmV2
-Ow0KPiA+IC0gICAgIHVuc2lnbmVkIGxvbmcgZGl2LCBtYXhkaXY7DQo+ID4gLSAgICAgaW50NjRf
-dCBtdWx0Ow0KPiA+IC0NCj4gPiAtICAgICBkZXNpcmVkX2NsayA9IGJhdWQgKiBzYW1wbGluZ19y
-YXRlOw0KPiA+IC0gICAgIGlmICghZGVzaXJlZF9jbGspIHsNCj4gPiAtICAgICAgICAgICAgIHBy
-X2VycigiJXM6IEludmFsaWQgZnJlcXVlbmN5XG4iLCBfX2Z1bmNfXyk7DQo+ID4gLSAgICAgICAg
-ICAgICByZXR1cm4gMDsNCj4gPiAtICAgICB9DQo+ID4gKyAgICAgdW5zaWduZWQgbG9uZyB0ZXN0
-X2ZyZXEsIG9mZnNldCwgbmV3X2ZyZXE7DQo+ID4NCj4gPiArICAgICBzZXJfY2xrID0gMDsNCj4g
-PiAgICAgICBtYXhkaXYgPSBDTEtfRElWX01TSyA+PiBDTEtfRElWX1NIRlQ7DQo+ID4gLSAgICAg
-cHJldiA9IDA7DQo+ID4gKyAgICAgZGl2ID0gMTsNCj4gPg0KPiA+IC0gICAgIGZvciAoZGl2ID0g
-MTsgZGl2IDw9IG1heGRpdjsgZGl2KyspIHsNCj4gPiAtICAgICAgICAgICAgIG11bHQgPSBkaXYg
-KiBkZXNpcmVkX2NsazsNCj4gPiAtICAgICAgICAgICAgIGlmIChtdWx0ID4gVUxPTkdfTUFYKQ0K
-PiA+ICsgICAgIHdoaWxlIChkaXYgPD0gbWF4ZGl2KSB7DQo+ID4gKyAgICAgICAgICAgICBtdWx0
-ID0gKHVuc2lnbmVkIGxvbmcgbG9uZylkaXYgKiBkZXNpcmVkX2NsazsNCj4gPiArICAgICAgICAg
-ICAgIGlmIChtdWx0ICE9ICh1bnNpZ25lZCBsb25nKW11bHQpDQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgIGJyZWFrOw0KPiA+DQo+ID4gLSAgICAgICAgICAgICBmcmVxID0gY2xrX3JvdW5kX3Jh
-dGUoY2xrLCAodW5zaWduZWQgbG9uZyltdWx0KTsNCj4gPiAtICAgICAgICAgICAgIGlmICghKGZy
-ZXEgJSBkZXNpcmVkX2NsaykpIHsNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgc2VyX2NsayA9
-IGZyZXE7DQo+ID4gLSAgICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPiA+ICsgICAgICAgICAg
-ICAgLyoNCj4gPiArICAgICAgICAgICAgICAqIExvb3AgcmVxdWVzdGluZyBhIGZyZXEgd2l0aGlu
-IHRvbGVyYW5jZSBhbmQgcG9zc2libHkgZXhhY3QgZnJlcS4NCj4gPiArICAgICAgICAgICAgICAq
-DQo+ID4gKyAgICAgICAgICAgICAgKiBXZSdsbCBrZWVwIHRyYWNrIG9mIHRoZSBsb3dlc3QgZnJl
-cSBpbmV4YWN0IG1hdGNoIHdlIGZvdW5kDQo+ID4gKyAgICAgICAgICAgICAgKiBidXQgYWx3YXlz
-IHRyeSB0byBmaW5kIGEgcGVyZmVjdCBtYXRjaC4gTk9URTogdGhpcyBhbGdvcml0aG0NCj4gPiAr
-ICAgICAgICAgICAgICAqIGNvdWxkIG1pc3MgYSBzbGlnaHRseSBiZXR0ZXIgZnJlcSBpZiB0aGVy
-ZSdzIG1vcmUgdGhhbiBvbmUNCj4gPiArICAgICAgICAgICAgICAqIGZyZXEgYmV0d2VlbiAoZnJl
-cSAtIG9mZnNldCkgYW5kIChmcmVxKSBidXQgKGZyZXEpIGNhbid0IGJlIG1hZGUNCj4gPiArICAg
-ICAgICAgICAgICAqIGV4YWN0bHksIGJ1dCB0aGF0J3MgT0suDQo+ID4gKyAgICAgICAgICAgICAg
-Kg0KPiA+ICsgICAgICAgICAgICAgICogVGhpcyBhYnNvbHV0ZWx5IHJlbGllcyBvbiB0aGUgZmFj
-dCB0aGF0IHRoZSBRdWFsY29tbSBjbG9jaw0KPiA+ICsgICAgICAgICAgICAgICogZHJpdmVyIGFs
-d2F5cyByb3VuZHMgdXAuDQo+ID4gKyAgICAgICAgICAgICAgKiBXZSBtYWtlIHVzZSBvZiBleGFj
-dF9tYXRjaCBhcyBhbiBJL08gcGFyYW0uDQo+ID4gKyAgICAgICAgICAgICAgKi8NCj4gPiArDQo+
-ID4gKyAgICAgICAgICAgICAvKiBsb29rIG9ubHkgZm9yIGV4YWN0IG1hdGNoIGlmIHdpdGhpbiB0
-b2xlcmFuY2UgaXMgYWxyZWFkeSBmb3VuZCAqLw0KPiA+ICsgICAgICAgICAgICAgaWYgKHNlcl9j
-bGspDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIG9mZnNldCA9IDA7DQo+ID4gKyAgICAgICAg
-ICAgICBlbHNlDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIG9mZnNldCA9IChtdWx0ICogcGVy
-Y2VudF90b2wpIC8gMTAwOw0KPiA+ICsNCj4gPiArICAgICAgICAgICAgIHRlc3RfZnJlcSA9IG11
-bHQgLSBvZmZzZXQ7DQo+ID4gKyAgICAgICAgICAgICBmcmVxID0gY2xrX3JvdW5kX3JhdGUoY2xr
-LCB0ZXN0X2ZyZXEpOw0KPiA+ICsNCj4gPiArICAgICAgICAgICAgIC8qDQo+ID4gKyAgICAgICAg
-ICAgICAgKiBBIGRlYWQtb24gZnJlcSBpcyBhbiBpbnN0YS13aW4sIGxvb2sgZm9yIGl0IG9ubHkg
-aW4gMXN0IHJ1bg0KPiA+ICsgICAgICAgICAgICAgICovDQo+ID4gKyAgICAgICAgICAgICBpZiAo
-KmV4YWN0X21hdGNoKSB7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIGlmICghKGZyZXEgJSBk
-ZXNpcmVkX2NsaykpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzZXJfY2xr
-ID0gZnJlcTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqY2xrX2RpdiA9IGZy
-ZXEgLyBkZXNpcmVkX2NsazsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXR1
-cm4gc2VyX2NsazsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAgICAg
-ICAgfQ0KPiA+ICsNCj4gPiArICAgICAgICAgICAgIGlmICghc2VyX2Nsaykgew0KPiA+ICsgICAg
-ICAgICAgICAgICAgICAgICBuZXdfZGl2ID0gRElWX1JPVU5EX0NMT1NFU1QoZnJlcSwgZGVzaXJl
-ZF9jbGspOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICBuZXdfZnJlcSA9IG5ld19kaXYgKiBk
-ZXNpcmVkX2NsazsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgb2Zmc2V0ID0gKG5ld19mcmVx
-ICogcGVyY2VudF90b2wpIC8gMTAwOw0KPiA+ICsNCj4gPiArICAgICAgICAgICAgICAgICAgICAg
-aWYgKG5ld19mcmVxIC0gb2Zmc2V0IDw9IGZyZXEgJiYgZnJlcSA8PSBuZXdfZnJlcSArIG9mZnNl
-dCkgew0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8qIFNhdmUgdGhlIGZpcnN0
-IChsb3dlc3QgZnJlcSkgd2l0aGluIHRvbGVyYW5jZSAqLw0KPiA+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHNlcl9jbGsgPSBmcmVxOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICpjbGtfZGl2ID0gbmV3X2RpdjsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAvKiBubyBtb3JlIHNlYXJjaCBmb3IgZXhhY3QgbWF0Y2ggcmVxdWlyZWQgaW4gMm5kIHJ1
-biAqLw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmICghKCpleGFjdF9tYXRj
-aCkpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBicmVhazsNCj4g
-PiArICAgICAgICAgICAgICAgICAgICAgfQ0KPiA+ICAgICAgICAgICAgICAgfQ0KPiA+DQo+ID4g
-LSAgICAgICAgICAgICBpZiAoIXByZXYpDQo+ID4gLSAgICAgICAgICAgICAgICAgICAgIHNlcl9j
-bGsgPSBmcmVxOw0KPiA+IC0gICAgICAgICAgICAgZWxzZSBpZiAocHJldiA9PSBmcmVxKQ0KPiA+
-ICsgICAgICAgICAgICAgZGl2ID0gZnJlcSAvIGRlc2lyZWRfY2xrICsgMTsNCj4gPiArDQo+ID4g
-KyAgICAgICAgICAgICAvKg0KPiA+ICsgICAgICAgICAgICAgICogT25seSB0aW1lIGNsb2NrIGZy
-YW1ld29yayBkb2Vzbid0IHJvdW5kIHVwIGlzIGlmDQo+ID4gKyAgICAgICAgICAgICAgKiB3ZSdy
-ZSBwYXN0IHRoZSBtYXggY2xvY2sgcmF0ZS4gV2UncmUgZG9uZSBzZWFyY2hpbmcNCj4gPiArICAg
-ICAgICAgICAgICAqIGlmIHRoYXQncyB0aGUgY2FzZS4NCj4gPiArICAgICAgICAgICAgICAqLw0K
-PiA+ICsgICAgICAgICAgICAgaWYgKGZyZXEgPCB0ZXN0X2ZyZXEpDQo+ID4gICAgICAgICAgICAg
-ICAgICAgICAgIGJyZWFrOw0KPiA+ICsgICAgIH0NCj4gPiArDQo+ID4gKyAgICAgKmV4YWN0X21h
-dGNoID0gZmFsc2U7DQo+ID4gKyAgICAgcmV0dXJuIHNlcl9jbGs7DQo+ID4gK30NCj4gPiArDQo+
-ID4gK3N0YXRpYyB1bnNpZ25lZCBsb25nIGdldF9jbGtfZGl2X3JhdGUoc3RydWN0IGNsayAqY2xr
-LCB1bnNpZ25lZCBpbnQgYmF1ZCwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQg
-aW50IHNhbXBsaW5nX3JhdGUsIHVuc2lnbmVkIGludA0KPiA+ICsqY2xrX2RpdikNCj4gDQo+IFRo
-aXMgY2Fubm90IGJlIHJldmlld2VkIHByb3Blcmx5LiBDYXJlIHRvIHNwbGl0IHRoaXMgaW50byAy
-LTMgcGF0Y2hlcz8NCj4gTG9va3MgYXQgdGhlIG5lc3RpbmcgYW5kIHRoZSBjb21wbGV4aXR5LCBp
-dCBhbHNvIGxvb2tzIGxpa2UgeW91IG5lZWQgbW9yZQ0KPiBoZWxwZXIgZnVuY3Rpb25zLg0KPiAN
-Cj4gPiArew0KPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgc2VyX2NsazsNCj4gPiArICAgICB1bnNp
-Z25lZCBsb25nIGRlc2lyZWRfY2xrOw0KPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgZGVzaXJlZF90
-b2w7DQo+ID4gKyAgICAgYm9vbCBleGFjdF9tYXRjaDsNCj4gPg0KPiA+IC0gICAgICAgICAgICAg
-cHJldiA9IGZyZXE7DQo+ID4gKyAgICAgZGVzaXJlZF9jbGsgPSBiYXVkICogc2FtcGxpbmdfcmF0
-ZTsNCj4gPiArICAgICBpZiAoIWRlc2lyZWRfY2xrKSB7DQo+ID4gKyAgICAgICAgICAgICBwcl9l
-cnIoIiVzOiBJbnZhbGlkIGZyZXF1ZW5jeVxuIiwgX19mdW5jX18pOw0KPiA+ICsgICAgICAgICAg
-ICAgcmV0dXJuIDA7DQo+ID4gICAgICAgfQ0KPiA+DQo+ID4gLSAgICAgaWYgKCFzZXJfY2xrKSB7
-DQo+ID4gLSAgICAgICAgICAgICBwcl9lcnIoIiVzOiBDYW4ndCBmaW5kIG1hdGNoaW5nIERGUyBl
-bnRyeSBmb3IgYmF1ZCAlZFxuIiwNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF9fZnVuY19fLCBiYXVkKTsNCj4gPiArICAg
-ICAvKiB0cnkgdG8gZmluZCBleGFjdCBjbG9jayByYXRlIG9yIHdpdGhpbiAyJSB0b2xlcmFuY2Ug
-Ki8NCj4gPiArICAgICBzZXJfY2xrID0gMDsNCj4gPiArICAgICBleGFjdF9tYXRjaCA9IHRydWU7
-DQo+ID4gKyAgICAgZGVzaXJlZF90b2wgPSAyOw0KPiA+ICsNCj4gPiArICAgICBzZXJfY2xrID0g
-ZmluZF9jbGtfcmF0ZV9pbl90b2woY2xrLCBkZXNpcmVkX2NsaywgY2xrX2RpdiwgZGVzaXJlZF90
-b2wsDQo+ICZleGFjdF9tYXRjaCk7DQo+ID4gKyAgICAgaWYgKHNlcl9jbGspIHsNCj4gPiArICAg
-ICAgICAgICAgIGlmICghZXhhY3RfbWF0Y2gpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIHBy
-X3dhcm4oIkNhbm5vdCBmaW5kIGV4YWN0IG1hdGNoIGNsa19yYXRlLCB1c2luZw0KPiA+ICsgb25l
-IHdpdGhpbiAyIHBlcmNlbnQgdG9sZXJhbmNlXG4iKTsNCj4gPiAgICAgICAgICAgICAgIHJldHVy
-biBzZXJfY2xrOw0KPiA+ICAgICAgIH0NCj4gPg0KPiA+IC0gICAgICpjbGtfZGl2ID0gc2VyX2Ns
-ayAvIGRlc2lyZWRfY2xrOw0KPiA+IC0gICAgIGlmICghKCpjbGtfZGl2KSkNCj4gPiAtICAgICAg
-ICAgICAgICpjbGtfZGl2ID0gMTsNCj4gPiArICAgICAvKiB0cnkgd2l0aGluIDUlIHRvbGVyYW5j
-ZSBub3csIG5vIG5lZWQgdG8gbG9vayBmb3IgZXhhY3QgbWF0Y2ggKi8NCj4gPiArICAgICBleGFj
-dF9tYXRjaCA9IGZhbHNlOw0KPiA+ICsgICAgIGRlc2lyZWRfdG9sID0gNTsNCj4gPiArDQo+ID4g
-KyAgICAgc2VyX2NsayA9IGZpbmRfY2xrX3JhdGVfaW5fdG9sKGNsaywgZGVzaXJlZF9jbGssIGNs
-a19kaXYsIGRlc2lyZWRfdG9sLA0KPiAmZXhhY3RfbWF0Y2gpOw0KPiA+ICsgICAgIGlmIChzZXJf
-Y2xrKQ0KPiA+ICsgICAgICAgICAgICAgcHJfd2FybigiQ2Fubm90IGZpbmQgZXhhY3QgbWF0Y2gg
-Y2xrX3JhdGUsIHVzaW5nIG9uZSB3aXRoaW4gNQ0KPiBwZXJjZW50IHRvbGVyYW5jZVxuIik7DQo+
-ID4gKyAgICAgZWxzZQ0KPiA+ICsgICAgICAgICAgICAgcHJfZXJyKCJDYW5ub3QgZmluZCBzdWl0
-YWJsZSBjbGtfcmF0ZSwgZ2l2aW5nIHVwXG4iKTsNCj4gPg0KPiA+ICAgICAgIHJldHVybiBzZXJf
-Y2xrOw0KPiA+ICAgfQ0KPiA+IEBAIC0xMDIxLDggKzEwOTIsNyBAQCBzdGF0aWMgdm9pZCBxY29t
-X2dlbmlfc2VyaWFsX3NldF90ZXJtaW9zKHN0cnVjdA0KPiB1YXJ0X3BvcnQgKnVwb3J0LA0KPiA+
-ICAgICAgIGlmICh2ZXIgPj0gUVVQX1NFX1ZFUlNJT05fMl81KQ0KPiA+ICAgICAgICAgICAgICAg
-c2FtcGxpbmdfcmF0ZSAvPSAyOw0KPiA+DQo+ID4gLSAgICAgY2xrX3JhdGUgPSBnZXRfY2xrX2Rp
-dl9yYXRlKHBvcnQtPnNlLmNsaywgYmF1ZCwNCj4gPiAtICAgICAgICAgICAgIHNhbXBsaW5nX3Jh
-dGUsICZjbGtfZGl2KTsNCj4gPiArICAgICBjbGtfcmF0ZSA9IGdldF9jbGtfZGl2X3JhdGUocG9y
-dC0+c2UuY2xrLCBiYXVkLCBzYW1wbGluZ19yYXRlLA0KPiA+ICsgJmNsa19kaXYpOw0KPiA+ICAg
-ICAgIGlmICghY2xrX3JhdGUpDQo+ID4gICAgICAgICAgICAgICBnb3RvIG91dF9yZXN0YXJ0X3J4
-Ow0KPiA+DQo+IA0KPiB0aGFua3MsDQo+IC0tDQo+IGpzDQo+IHN1c2UgbGFicw0K
+On Tue, Jun 28, 2022 at 04:03:12PM +0200, Uwe Kleine-König wrote:
+> From: Uwe Kleine-König <uwe@kleine-koenig.org>
+> 
+> The value returned by an i2c driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+> 
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+>  Documentation/i2c/writing-clients.rst                     | 2 +-
+>  arch/arm/mach-davinci/board-dm644x-evm.c                  | 3 +--
+>  arch/arm/mach-davinci/board-dm646x-evm.c                  | 3 +--
+>  arch/powerpc/platforms/83xx/mcu_mpc8349emitx.c            | 3 +--
+>  drivers/auxdisplay/ht16k33.c                              | 4 +---
+>  drivers/auxdisplay/lcd2s.c                                | 3 +--
+>  drivers/char/ipmi/ipmb_dev_int.c                          | 4 +---
+>  drivers/char/ipmi/ipmi_ipmb.c                             | 4 +---
+>  drivers/char/ipmi/ipmi_ssif.c                             | 6 ++----
+>  drivers/char/tpm/st33zp24/i2c.c                           | 4 +---
+>  drivers/char/tpm/tpm_i2c_atmel.c                          | 3 +--
+>  drivers/char/tpm/tpm_i2c_infineon.c                       | 4 +---
+>  drivers/char/tpm/tpm_i2c_nuvoton.c                        | 3 +--
+>  drivers/char/tpm/tpm_tis_i2c_cr50.c                       | 6 ++----
+>  drivers/clk/clk-cdce706.c                                 | 3 +--
+>  drivers/clk/clk-cs2000-cp.c                               | 4 +---
+>  drivers/clk/clk-si514.c                                   | 3 +--
+>  drivers/clk/clk-si5341.c                                  | 4 +---
+>  drivers/clk/clk-si5351.c                                  | 4 +---
+>  drivers/clk/clk-si570.c                                   | 3 +--
+>  drivers/clk/clk-versaclock5.c                             | 4 +---
+>  drivers/crypto/atmel-ecc.c                                | 6 ++----
+>  drivers/crypto/atmel-sha204a.c                            | 6 ++----
+>  drivers/extcon/extcon-rt8973a.c                           | 4 +---
+>  drivers/gpio/gpio-adp5588.c                               | 4 +---
+>  drivers/gpio/gpio-max7300.c                               | 4 +---
+>  drivers/gpio/gpio-pca953x.c                               | 4 +---
+>  drivers/gpio/gpio-pcf857x.c                               | 4 +---
+>  drivers/gpio/gpio-tpic2810.c                              | 4 +---
+>  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c              | 4 +---
+>  drivers/gpu/drm/bridge/analogix/analogix-anx6345.c        | 4 +---
+>  drivers/gpu/drm/bridge/analogix/analogix-anx78xx.c        | 4 +---
+>  drivers/gpu/drm/bridge/analogix/anx7625.c                 | 4 +---
+>  drivers/gpu/drm/bridge/chrontel-ch7033.c                  | 4 +---
+>  drivers/gpu/drm/bridge/cros-ec-anx7688.c                  | 4 +---
+>  drivers/gpu/drm/bridge/ite-it6505.c                       | 4 +---
+>  drivers/gpu/drm/bridge/ite-it66121.c                      | 4 +---
+>  drivers/gpu/drm/bridge/lontium-lt8912b.c                  | 3 +--
+>  drivers/gpu/drm/bridge/lontium-lt9211.c                   | 4 +---
+>  drivers/gpu/drm/bridge/lontium-lt9611.c                   | 4 +---
+>  drivers/gpu/drm/bridge/lontium-lt9611uxc.c                | 4 +---
+>  drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c  | 8 ++------
+>  drivers/gpu/drm/bridge/nxp-ptn3460.c                      | 4 +---
+>  drivers/gpu/drm/bridge/parade-ps8622.c                    | 4 +---
+>  drivers/gpu/drm/bridge/parade-ps8640.c                    | 4 +---
+>  drivers/gpu/drm/bridge/sii902x.c                          | 4 +---
+>  drivers/gpu/drm/bridge/sii9234.c                          | 4 +---
+>  drivers/gpu/drm/bridge/sil-sii8620.c                      | 4 +---
+>  drivers/gpu/drm/bridge/tc358767.c                         | 4 +---
+>  drivers/gpu/drm/bridge/tc358768.c                         | 4 +---
+>  drivers/gpu/drm/bridge/tc358775.c                         | 4 +---
+>  drivers/gpu/drm/bridge/ti-sn65dsi83.c                     | 4 +---
+>  drivers/gpu/drm/bridge/ti-tfp410.c                        | 4 +---
+>  drivers/gpu/drm/i2c/ch7006_drv.c                          | 4 +---
+>  drivers/gpu/drm/i2c/tda9950.c                             | 4 +---
+>  drivers/gpu/drm/i2c/tda998x_drv.c                         | 3 +--
+>  drivers/gpu/drm/panel/panel-olimex-lcd-olinuxino.c        | 4 +---
+>  drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c     | 4 +---
+>  drivers/gpu/drm/solomon/ssd130x-i2c.c                     | 4 +---
+>  drivers/hid/i2c-hid/i2c-hid-core.c                        | 4 +---
+>  drivers/hid/i2c-hid/i2c-hid.h                             | 2 +-
+>  drivers/hwmon/adc128d818.c                                | 4 +---
+>  drivers/hwmon/adt7470.c                                   | 3 +--
+>  drivers/hwmon/asb100.c                                    | 6 ++----
+>  drivers/hwmon/asc7621.c                                   | 4 +---
+>  drivers/hwmon/dme1737.c                                   | 4 +---
+>  drivers/hwmon/f75375s.c                                   | 5 ++---
+>  drivers/hwmon/fschmd.c                                    | 6 ++----
+>  drivers/hwmon/ftsteutates.c                               | 3 +--
+>  drivers/hwmon/ina209.c                                    | 4 +---
+>  drivers/hwmon/ina3221.c                                   | 4 +---
+>  drivers/hwmon/jc42.c                                      | 3 +--
+>  drivers/hwmon/mcp3021.c                                   | 4 +---
+>  drivers/hwmon/occ/p8_i2c.c                                | 4 +---
+>  drivers/hwmon/pcf8591.c                                   | 3 +--
+>  drivers/hwmon/smm665.c                                    | 3 +--
+>  drivers/hwmon/tps23861.c                                  | 4 +---
+>  drivers/hwmon/w83781d.c                                   | 4 +---
+>  drivers/hwmon/w83791d.c                                   | 6 ++----
+>  drivers/hwmon/w83792d.c                                   | 6 ++----
+>  drivers/hwmon/w83793.c                                    | 6 ++----
+>  drivers/hwmon/w83795.c                                    | 4 +---
+>  drivers/hwmon/w83l785ts.c                                 | 6 ++----
+>  drivers/i2c/i2c-core-base.c                               | 6 +-----
+>  drivers/i2c/i2c-slave-eeprom.c                            | 4 +---
+>  drivers/i2c/i2c-slave-testunit.c                          | 3 +--
+>  drivers/i2c/i2c-smbus.c                                   | 3 +--
+>  drivers/i2c/muxes/i2c-mux-ltc4306.c                       | 4 +---
+>  drivers/i2c/muxes/i2c-mux-pca9541.c                       | 3 +--
+>  drivers/i2c/muxes/i2c-mux-pca954x.c                       | 3 +--
+>  drivers/iio/accel/bma180.c                                | 4 +---
+>  drivers/iio/accel/bma400_i2c.c                            | 4 +---
+>  drivers/iio/accel/bmc150-accel-i2c.c                      | 4 +---
+>  drivers/iio/accel/kxcjk-1013.c                            | 4 +---
+>  drivers/iio/accel/kxsd9-i2c.c                             | 4 +---
+>  drivers/iio/accel/mc3230.c                                | 4 +---
+>  drivers/iio/accel/mma7455_i2c.c                           | 4 +---
+>  drivers/iio/accel/mma7660.c                               | 4 +---
+>  drivers/iio/accel/mma8452.c                               | 4 +---
+>  drivers/iio/accel/mma9551.c                               | 4 +---
+>  drivers/iio/accel/mma9553.c                               | 4 +---
+>  drivers/iio/accel/stk8312.c                               | 4 +---
+>  drivers/iio/accel/stk8ba50.c                              | 4 +---
+>  drivers/iio/adc/ad799x.c                                  | 4 +---
+>  drivers/iio/adc/ina2xx-adc.c                              | 4 +---
+>  drivers/iio/adc/ltc2497.c                                 | 4 +---
+>  drivers/iio/adc/ti-ads1015.c                              | 4 +---
+>  drivers/iio/chemical/atlas-sensor.c                       | 4 +---
+>  drivers/iio/chemical/ccs811.c                             | 4 +---
+>  drivers/iio/chemical/sgp30.c                              | 4 +---
+>  drivers/iio/dac/ad5380.c                                  | 4 +---
+>  drivers/iio/dac/ad5446.c                                  | 4 +---
+>  drivers/iio/dac/ad5593r.c                                 | 4 +---
+>  drivers/iio/dac/ad5696-i2c.c                              | 4 +---
+>  drivers/iio/dac/ds4424.c                                  | 4 +---
+>  drivers/iio/dac/m62332.c                                  | 4 +---
+>  drivers/iio/dac/mcp4725.c                                 | 4 +---
+>  drivers/iio/dac/ti-dac5571.c                              | 4 +---
+>  drivers/iio/gyro/bmg160_i2c.c                             | 4 +---
+>  drivers/iio/gyro/fxas21002c_i2c.c                         | 4 +---
+>  drivers/iio/gyro/itg3200_core.c                           | 4 +---
+>  drivers/iio/gyro/mpu3050-i2c.c                            | 4 +---
+>  drivers/iio/health/afe4404.c                              | 4 +---
+>  drivers/iio/health/max30100.c                             | 4 +---
+>  drivers/iio/health/max30102.c                             | 4 +---
+>  drivers/iio/humidity/hdc2010.c                            | 4 +---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c                 | 4 +---
+>  drivers/iio/imu/kmx61.c                                   | 4 +---
+>  drivers/iio/light/apds9300.c                              | 4 +---
+>  drivers/iio/light/apds9960.c                              | 4 +---
+>  drivers/iio/light/bh1750.c                                | 4 +---
+>  drivers/iio/light/bh1780.c                                | 4 +---
+>  drivers/iio/light/cm3232.c                                | 4 +---
+>  drivers/iio/light/cm36651.c                               | 4 +---
+>  drivers/iio/light/gp2ap002.c                              | 4 +---
+>  drivers/iio/light/gp2ap020a00f.c                          | 4 +---
+>  drivers/iio/light/isl29028.c                              | 4 +---
+>  drivers/iio/light/isl29125.c                              | 4 +---
+>  drivers/iio/light/jsa1212.c                               | 4 +---
+>  drivers/iio/light/ltr501.c                                | 4 +---
+>  drivers/iio/light/opt3001.c                               | 6 ++----
+>  drivers/iio/light/pa12203001.c                            | 4 +---
+>  drivers/iio/light/rpr0521.c                               | 4 +---
+>  drivers/iio/light/stk3310.c                               | 4 +---
+>  drivers/iio/light/tcs3472.c                               | 4 +---
+>  drivers/iio/light/tsl2563.c                               | 4 +---
+>  drivers/iio/light/tsl2583.c                               | 4 +---
+>  drivers/iio/light/tsl4531.c                               | 4 +---
+>  drivers/iio/light/us5182d.c                               | 4 +---
+>  drivers/iio/light/vcnl4000.c                              | 4 +---
+>  drivers/iio/light/vcnl4035.c                              | 4 +---
+>  drivers/iio/light/veml6070.c                              | 4 +---
+>  drivers/iio/magnetometer/ak8974.c                         | 4 +---
+>  drivers/iio/magnetometer/ak8975.c                         | 4 +---
+>  drivers/iio/magnetometer/bmc150_magn_i2c.c                | 4 +---
+>  drivers/iio/magnetometer/hmc5843_i2c.c                    | 4 +---
+>  drivers/iio/magnetometer/mag3110.c                        | 4 +---
+>  drivers/iio/magnetometer/yamaha-yas530.c                  | 4 +---
+>  drivers/iio/potentiostat/lmp91000.c                       | 4 +---
+>  drivers/iio/pressure/mpl3115.c                            | 4 +---
+>  drivers/iio/pressure/ms5611_i2c.c                         | 4 +---
+>  drivers/iio/pressure/zpa2326_i2c.c                        | 4 +---
+>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c         | 4 +---
+>  drivers/iio/proximity/sx9500.c                            | 4 +---
+>  drivers/iio/temperature/mlx90614.c                        | 4 +---
+>  drivers/iio/temperature/mlx90632.c                        | 4 +---
+>  drivers/input/joystick/as5011.c                           | 4 +---
+>  drivers/input/keyboard/adp5588-keys.c                     | 4 +---
+>  drivers/input/keyboard/lm8323.c                           | 4 +---
+>  drivers/input/keyboard/lm8333.c                           | 4 +---
+>  drivers/input/keyboard/mcs_touchkey.c                     | 4 +---
+>  drivers/input/keyboard/qt1070.c                           | 4 +---
+>  drivers/input/keyboard/qt2160.c                           | 4 +---
+>  drivers/input/keyboard/tca6416-keypad.c                   | 4 +---
+>  drivers/input/misc/adxl34x-i2c.c                          | 4 +---
+>  drivers/input/misc/bma150.c                               | 4 +---
+>  drivers/input/misc/cma3000_d0x_i2c.c                      | 4 +---
+>  drivers/input/misc/pcf8574_keypad.c                       | 4 +---
+>  drivers/input/mouse/synaptics_i2c.c                       | 4 +---
+>  drivers/input/rmi4/rmi_smbus.c                            | 4 +---
+>  drivers/input/touchscreen/atmel_mxt_ts.c                  | 4 +---
+>  drivers/input/touchscreen/bu21013_ts.c                    | 4 +---
+>  drivers/input/touchscreen/cyttsp4_i2c.c                   | 4 +---
+>  drivers/input/touchscreen/edt-ft5x06.c                    | 4 +---
+>  drivers/input/touchscreen/goodix.c                        | 4 +---
+>  drivers/input/touchscreen/migor_ts.c                      | 4 +---
+>  drivers/input/touchscreen/s6sy761.c                       | 4 +---
+>  drivers/input/touchscreen/stmfts.c                        | 4 +---
+>  drivers/input/touchscreen/tsc2004.c                       | 4 +---
+>  drivers/leds/flash/leds-as3645a.c                         | 4 +---
+>  drivers/leds/flash/leds-lm3601x.c                         | 4 +---
+>  drivers/leds/flash/leds-rt4505.c                          | 3 +--
+>  drivers/leds/leds-an30259a.c                              | 4 +---
+>  drivers/leds/leds-aw2013.c                                | 4 +---
+>  drivers/leds/leds-bd2802.c                                | 4 +---
+>  drivers/leds/leds-blinkm.c                                | 3 +--
+>  drivers/leds/leds-is31fl319x.c                            | 3 +--
+>  drivers/leds/leds-is31fl32xx.c                            | 4 +---
+>  drivers/leds/leds-lm3530.c                                | 3 +--
+>  drivers/leds/leds-lm3532.c                                | 4 +---
+>  drivers/leds/leds-lm355x.c                                | 4 +---
+>  drivers/leds/leds-lm3642.c                                | 3 +--
+>  drivers/leds/leds-lm3692x.c                               | 4 +---
+>  drivers/leds/leds-lm3697.c                                | 4 +---
+>  drivers/leds/leds-lp3944.c                                | 4 +---
+>  drivers/leds/leds-lp3952.c                                | 4 +---
+>  drivers/leds/leds-lp50xx.c                                | 4 +---
+>  drivers/leds/leds-lp5521.c                                | 4 +---
+>  drivers/leds/leds-lp5523.c                                | 4 +---
+>  drivers/leds/leds-lp5562.c                                | 4 +---
+>  drivers/leds/leds-lp8501.c                                | 4 +---
+>  drivers/leds/leds-lp8860.c                                | 4 +---
+>  drivers/leds/leds-pca9532.c                               | 6 ++----
+>  drivers/leds/leds-tca6507.c                               | 4 +---
+>  drivers/leds/leds-turris-omnia.c                          | 4 +---
+>  drivers/macintosh/ams/ams-i2c.c                           | 4 +---
+>  drivers/macintosh/therm_adt746x.c                         | 4 +---
+>  drivers/macintosh/therm_windtunnel.c                      | 4 +---
+>  drivers/macintosh/windfarm_ad7417_sensor.c                | 4 +---
+>  drivers/macintosh/windfarm_fcu_controls.c                 | 3 +--
+>  drivers/macintosh/windfarm_lm75_sensor.c                  | 4 +---
+>  drivers/macintosh/windfarm_lm87_sensor.c                  | 4 +---
+>  drivers/macintosh/windfarm_max6690_sensor.c               | 4 +---
+>  drivers/macintosh/windfarm_smu_sat.c                      | 4 +---
+>  drivers/media/cec/i2c/ch7322.c                            | 4 +---
+>  drivers/media/dvb-frontends/a8293.c                       | 3 +--
+>  drivers/media/dvb-frontends/af9013.c                      | 4 +---
+>  drivers/media/dvb-frontends/af9033.c                      | 4 +---
+>  drivers/media/dvb-frontends/au8522_decoder.c              | 3 +--
+>  drivers/media/dvb-frontends/cxd2099.c                     | 4 +---
+>  drivers/media/dvb-frontends/cxd2820r_core.c               | 4 +---
+>  drivers/media/dvb-frontends/dvb-pll.c                     | 3 +--
+>  drivers/media/dvb-frontends/lgdt3306a.c                   | 4 +---
+>  drivers/media/dvb-frontends/lgdt330x.c                    | 4 +---
+>  drivers/media/dvb-frontends/m88ds3103.c                   | 3 +--
+>  drivers/media/dvb-frontends/mn88443x.c                    | 4 +---
+>  drivers/media/dvb-frontends/mn88472.c                     | 4 +---
+>  drivers/media/dvb-frontends/mn88473.c                     | 4 +---
+>  drivers/media/dvb-frontends/mxl692.c                      | 4 +---
+>  drivers/media/dvb-frontends/rtl2830.c                     | 4 +---
+>  drivers/media/dvb-frontends/rtl2832.c                     | 4 +---
+>  drivers/media/dvb-frontends/si2165.c                      | 3 +--
+>  drivers/media/dvb-frontends/si2168.c                      | 4 +---
+>  drivers/media/dvb-frontends/sp2.c                         | 3 +--
+>  drivers/media/dvb-frontends/stv090x.c                     | 3 +--
+>  drivers/media/dvb-frontends/stv6110x.c                    | 3 +--
+>  drivers/media/dvb-frontends/tc90522.c                     | 3 +--
+>  drivers/media/dvb-frontends/tda10071.c                    | 3 +--
+>  drivers/media/dvb-frontends/ts2020.c                      | 3 +--
+>  drivers/media/i2c/ad5820.c                                | 3 +--
+>  drivers/media/i2c/ad9389b.c                               | 3 +--
+>  drivers/media/i2c/adp1653.c                               | 4 +---
+>  drivers/media/i2c/adv7170.c                               | 3 +--
+>  drivers/media/i2c/adv7175.c                               | 3 +--
+>  drivers/media/i2c/adv7180.c                               | 4 +---
+>  drivers/media/i2c/adv7183.c                               | 3 +--
+>  drivers/media/i2c/adv7343.c                               | 4 +---
+>  drivers/media/i2c/adv7393.c                               | 4 +---
+>  drivers/media/i2c/adv748x/adv748x-core.c                  | 4 +---
+>  drivers/media/i2c/adv7511-v4l2.c                          | 3 +--
+>  drivers/media/i2c/adv7604.c                               | 3 +--
+>  drivers/media/i2c/adv7842.c                               | 3 +--
+>  drivers/media/i2c/ak7375.c                                | 4 +---
+>  drivers/media/i2c/ak881x.c                                | 4 +---
+>  drivers/media/i2c/bt819.c                                 | 3 +--
+>  drivers/media/i2c/bt856.c                                 | 3 +--
+>  drivers/media/i2c/bt866.c                                 | 3 +--
+>  drivers/media/i2c/ccs/ccs-core.c                          | 4 +---
+>  drivers/media/i2c/cs3308.c                                | 3 +--
+>  drivers/media/i2c/cs5345.c                                | 3 +--
+>  drivers/media/i2c/cs53l32a.c                              | 3 +--
+>  drivers/media/i2c/cx25840/cx25840-core.c                  | 3 +--
+>  drivers/media/i2c/dw9714.c                                | 4 +---
+>  drivers/media/i2c/dw9768.c                                | 4 +---
+>  drivers/media/i2c/dw9807-vcm.c                            | 4 +---
+>  drivers/media/i2c/et8ek8/et8ek8_driver.c                  | 4 +---
+>  drivers/media/i2c/hi556.c                                 | 4 +---
+>  drivers/media/i2c/hi846.c                                 | 4 +---
+>  drivers/media/i2c/hi847.c                                 | 4 +---
+>  drivers/media/i2c/imx208.c                                | 4 +---
+>  drivers/media/i2c/imx214.c                                | 4 +---
+>  drivers/media/i2c/imx219.c                                | 4 +---
+>  drivers/media/i2c/imx258.c                                | 4 +---
+>  drivers/media/i2c/imx274.c                                | 3 +--
+>  drivers/media/i2c/imx290.c                                | 4 +---
+>  drivers/media/i2c/imx319.c                                | 4 +---
+>  drivers/media/i2c/imx334.c                                | 4 +---
+>  drivers/media/i2c/imx335.c                                | 4 +---
+>  drivers/media/i2c/imx355.c                                | 4 +---
+>  drivers/media/i2c/imx412.c                                | 4 +---
+>  drivers/media/i2c/ir-kbd-i2c.c                            | 4 +---
+>  drivers/media/i2c/isl7998x.c                              | 4 +---
+>  drivers/media/i2c/ks0127.c                                | 3 +--
+>  drivers/media/i2c/lm3560.c                                | 4 +---
+>  drivers/media/i2c/lm3646.c                                | 4 +---
+>  drivers/media/i2c/m52790.c                                | 3 +--
+>  drivers/media/i2c/m5mols/m5mols_core.c                    | 4 +---
+>  drivers/media/i2c/max2175.c                               | 4 +---
+>  drivers/media/i2c/max9286.c                               | 4 +---
+>  drivers/media/i2c/ml86v7667.c                             | 4 +---
+>  drivers/media/i2c/msp3400-driver.c                        | 3 +--
+>  drivers/media/i2c/mt9m001.c                               | 4 +---
+>  drivers/media/i2c/mt9m032.c                               | 3 +--
+>  drivers/media/i2c/mt9m111.c                               | 4 +---
+>  drivers/media/i2c/mt9p031.c                               | 4 +---
+>  drivers/media/i2c/mt9t001.c                               | 3 +--
+>  drivers/media/i2c/mt9t112.c                               | 4 +---
+>  drivers/media/i2c/mt9v011.c                               | 4 +---
+>  drivers/media/i2c/mt9v032.c                               | 4 +---
+>  drivers/media/i2c/mt9v111.c                               | 4 +---
+>  drivers/media/i2c/noon010pc30.c                           | 4 +---
+>  drivers/media/i2c/og01a1b.c                               | 4 +---
+>  drivers/media/i2c/ov02a10.c                               | 4 +---
+>  drivers/media/i2c/ov08d10.c                               | 4 +---
+>  drivers/media/i2c/ov13858.c                               | 4 +---
+>  drivers/media/i2c/ov13b10.c                               | 4 +---
+>  drivers/media/i2c/ov2640.c                                | 3 +--
+>  drivers/media/i2c/ov2659.c                                | 4 +---
+>  drivers/media/i2c/ov2680.c                                | 4 +---
+>  drivers/media/i2c/ov2685.c                                | 4 +---
+>  drivers/media/i2c/ov2740.c                                | 4 +---
+>  drivers/media/i2c/ov5640.c                                | 4 +---
+>  drivers/media/i2c/ov5645.c                                | 4 +---
+>  drivers/media/i2c/ov5647.c                                | 4 +---
+>  drivers/media/i2c/ov5648.c                                | 4 +---
+>  drivers/media/i2c/ov5670.c                                | 4 +---
+>  drivers/media/i2c/ov5675.c                                | 4 +---
+>  drivers/media/i2c/ov5693.c                                | 4 +---
+>  drivers/media/i2c/ov5695.c                                | 4 +---
+>  drivers/media/i2c/ov6650.c                                | 3 +--
+>  drivers/media/i2c/ov7251.c                                | 4 +---
+>  drivers/media/i2c/ov7640.c                                | 4 +---
+>  drivers/media/i2c/ov7670.c                                | 3 +--
+>  drivers/media/i2c/ov772x.c                                | 4 +---
+>  drivers/media/i2c/ov7740.c                                | 3 +--
+>  drivers/media/i2c/ov8856.c                                | 4 +---
+>  drivers/media/i2c/ov8865.c                                | 4 +---
+>  drivers/media/i2c/ov9282.c                                | 4 +---
+>  drivers/media/i2c/ov9640.c                                | 4 +---
+>  drivers/media/i2c/ov9650.c                                | 4 +---
+>  drivers/media/i2c/ov9734.c                                | 4 +---
+>  drivers/media/i2c/rdacm20.c                               | 4 +---
+>  drivers/media/i2c/rdacm21.c                               | 4 +---
+>  drivers/media/i2c/rj54n1cb0c.c                            | 4 +---
+>  drivers/media/i2c/s5c73m3/s5c73m3-core.c                  | 4 +---
+>  drivers/media/i2c/s5k4ecgx.c                              | 4 +---
+>  drivers/media/i2c/s5k5baf.c                               | 4 +---
+>  drivers/media/i2c/s5k6a3.c                                | 3 +--
+>  drivers/media/i2c/s5k6aa.c                                | 4 +---
+>  drivers/media/i2c/saa6588.c                               | 4 +---
+>  drivers/media/i2c/saa6752hs.c                             | 3 +--
+>  drivers/media/i2c/saa7110.c                               | 3 +--
+>  drivers/media/i2c/saa7115.c                               | 3 +--
+>  drivers/media/i2c/saa7127.c                               | 3 +--
+>  drivers/media/i2c/saa717x.c                               | 3 +--
+>  drivers/media/i2c/saa7185.c                               | 3 +--
+>  drivers/media/i2c/sony-btf-mpx.c                          | 4 +---
+>  drivers/media/i2c/sr030pc30.c                             | 3 +--
+>  drivers/media/i2c/st-mipid02.c                            | 4 +---
+>  drivers/media/i2c/tc358743.c                              | 4 +---
+>  drivers/media/i2c/tda1997x.c                              | 4 +---
+>  drivers/media/i2c/tda7432.c                               | 3 +--
+>  drivers/media/i2c/tda9840.c                               | 3 +--
+>  drivers/media/i2c/tea6415c.c                              | 3 +--
+>  drivers/media/i2c/tea6420.c                               | 3 +--
+>  drivers/media/i2c/ths7303.c                               | 4 +---
+>  drivers/media/i2c/ths8200.c                               | 4 +---
+>  drivers/media/i2c/tlv320aic23b.c                          | 3 +--
+>  drivers/media/i2c/tvaudio.c                               | 3 +--
+>  drivers/media/i2c/tvp514x.c                               | 3 +--
+>  drivers/media/i2c/tvp5150.c                               | 4 +---
+>  drivers/media/i2c/tvp7002.c                               | 3 +--
+>  drivers/media/i2c/tw2804.c                                | 3 +--
+>  drivers/media/i2c/tw9903.c                                | 3 +--
+>  drivers/media/i2c/tw9906.c                                | 3 +--
+>  drivers/media/i2c/tw9910.c                                | 4 +---
+>  drivers/media/i2c/uda1342.c                               | 3 +--
+>  drivers/media/i2c/upd64031a.c                             | 3 +--
+>  drivers/media/i2c/upd64083.c                              | 3 +--
+>  drivers/media/i2c/video-i2c.c                             | 4 +---
+>  drivers/media/i2c/vp27smpx.c                              | 3 +--
+>  drivers/media/i2c/vpx3220.c                               | 4 +---
+>  drivers/media/i2c/vs6624.c                                | 3 +--
+>  drivers/media/i2c/wm8739.c                                | 3 +--
+>  drivers/media/i2c/wm8775.c                                | 3 +--
+>  drivers/media/radio/radio-tea5764.c                       | 3 +--
+>  drivers/media/radio/saa7706h.c                            | 3 +--
+>  drivers/media/radio/si470x/radio-si470x-i2c.c             | 3 +--
+>  drivers/media/radio/si4713/si4713.c                       | 4 +---
+>  drivers/media/radio/tef6862.c                             | 3 +--
+>  drivers/media/test-drivers/vidtv/vidtv_demod.c            | 4 +---
+>  drivers/media/test-drivers/vidtv/vidtv_tuner.c            | 4 +---
+>  drivers/media/tuners/e4000.c                              | 4 +---
+>  drivers/media/tuners/fc2580.c                             | 3 +--
+>  drivers/media/tuners/m88rs6000t.c                         | 4 +---
+>  drivers/media/tuners/mt2060.c                             | 4 +---
+>  drivers/media/tuners/mxl301rf.c                           | 3 +--
+>  drivers/media/tuners/qm1d1b0004.c                         | 3 +--
+>  drivers/media/tuners/qm1d1c0042.c                         | 3 +--
+>  drivers/media/tuners/si2157.c                             | 4 +---
+>  drivers/media/tuners/tda18212.c                           | 4 +---
+>  drivers/media/tuners/tda18250.c                           | 4 +---
+>  drivers/media/tuners/tua9001.c                            | 3 +--
+>  drivers/media/usb/go7007/s2250-board.c                    | 3 +--
+>  drivers/media/v4l2-core/tuner-core.c                      | 3 +--
+>  drivers/mfd/88pm800.c                                     | 4 +---
+>  drivers/mfd/88pm805.c                                     | 4 +---
+>  drivers/mfd/88pm860x-core.c                               | 3 +--
+>  drivers/mfd/acer-ec-a500.c                                | 4 +---
+>  drivers/mfd/arizona-i2c.c                                 | 4 +---
+>  drivers/mfd/axp20x-i2c.c                                  | 4 +---
+>  drivers/mfd/da903x.c                                      | 3 +--
+>  drivers/mfd/da9052-i2c.c                                  | 3 +--
+>  drivers/mfd/da9055-i2c.c                                  | 4 +---
+>  drivers/mfd/da9062-core.c                                 | 4 +---
+>  drivers/mfd/da9150-core.c                                 | 4 +---
+>  drivers/mfd/dm355evm_msp.c                                | 3 +--
+>  drivers/mfd/ene-kb3930.c                                  | 4 +---
+>  drivers/mfd/gateworks-gsc.c                               | 4 +---
+>  drivers/mfd/intel_soc_pmic_core.c                         | 4 +---
+>  drivers/mfd/iqs62x.c                                      | 4 +---
+>  drivers/mfd/lm3533-core.c                                 | 4 +---
+>  drivers/mfd/lp8788.c                                      | 3 +--
+>  drivers/mfd/madera-i2c.c                                  | 4 +---
+>  drivers/mfd/max14577.c                                    | 4 +---
+>  drivers/mfd/max77693.c                                    | 4 +---
+>  drivers/mfd/max8907.c                                     | 4 +---
+>  drivers/mfd/max8925-i2c.c                                 | 3 +--
+>  drivers/mfd/mc13xxx-i2c.c                                 | 3 +--
+>  drivers/mfd/menelaus.c                                    | 3 +--
+>  drivers/mfd/ntxec.c                                       | 4 +---
+>  drivers/mfd/palmas.c                                      | 4 +---
+>  drivers/mfd/pcf50633-core.c                               | 4 +---
+>  drivers/mfd/retu-mfd.c                                    | 4 +---
+>  drivers/mfd/rk808.c                                       | 4 +---
+>  drivers/mfd/rn5t618.c                                     | 4 +---
+>  drivers/mfd/rsmu_i2c.c                                    | 4 +---
+>  drivers/mfd/rt4831.c                                      | 4 +---
+>  drivers/mfd/si476x-i2c.c                                  | 4 +---
+>  drivers/mfd/stmfx.c                                       | 4 +---
+>  drivers/mfd/stmpe-i2c.c                                   | 4 +---
+>  drivers/mfd/tc3589x.c                                     | 4 +---
+>  drivers/mfd/tps6105x.c                                    | 4 +---
+>  drivers/mfd/tps65010.c                                    | 3 +--
+>  drivers/mfd/tps65086.c                                    | 4 +---
+>  drivers/mfd/tps65217.c                                    | 4 +---
+>  drivers/mfd/tps6586x.c                                    | 3 +--
+>  drivers/mfd/tps65912-i2c.c                                | 4 +---
+>  drivers/mfd/twl-core.c                                    | 3 +--
+>  drivers/mfd/twl6040.c                                     | 4 +---
+>  drivers/mfd/wm8994-core.c                                 | 4 +---
+>  drivers/misc/ad525x_dpot-i2c.c                            | 3 +--
+>  drivers/misc/apds9802als.c                                | 3 +--
+>  drivers/misc/apds990x.c                                   | 3 +--
+>  drivers/misc/bh1770glc.c                                  | 4 +---
+>  drivers/misc/ds1682.c                                     | 3 +--
+>  drivers/misc/eeprom/at24.c                                | 4 +---
+>  drivers/misc/eeprom/ee1004.c                              | 4 +---
+>  drivers/misc/eeprom/eeprom.c                              | 4 +---
+>  drivers/misc/eeprom/idt_89hpesx.c                         | 4 +---
+>  drivers/misc/eeprom/max6875.c                             | 4 +---
+>  drivers/misc/hmc6352.c                                    | 3 +--
+>  drivers/misc/ics932s401.c                                 | 5 ++---
+>  drivers/misc/isl29003.c                                   | 3 +--
+>  drivers/misc/isl29020.c                                   | 3 +--
+>  drivers/misc/lis3lv02d/lis3lv02d_i2c.c                    | 3 +--
+>  drivers/misc/tsl2550.c                                    | 4 +---
+>  drivers/mtd/maps/pismo.c                                  | 4 +---
+>  drivers/net/dsa/lan9303_i2c.c                             | 6 ++----
+>  drivers/net/dsa/microchip/ksz9477_i2c.c                   | 4 +---
+>  drivers/net/dsa/xrs700x/xrs700x_i2c.c                     | 6 ++----
+>  drivers/net/ethernet/mellanox/mlxsw/i2c.c                 | 4 +---
+>  drivers/net/mctp/mctp-i2c.c                               | 3 +--
+>  drivers/nfc/fdp/i2c.c                                     | 4 +---
+>  drivers/nfc/microread/i2c.c                               | 4 +---
+>  drivers/nfc/nfcmrvl/i2c.c                                 | 4 +---
+>  drivers/nfc/nxp-nci/i2c.c                                 | 4 +---
+>  drivers/nfc/pn533/i2c.c                                   | 4 +---
+>  drivers/nfc/pn544/i2c.c                                   | 4 +---
+>  drivers/nfc/s3fwrn5/i2c.c                                 | 4 +---
+>  drivers/nfc/st-nci/i2c.c                                  | 4 +---
+>  drivers/nfc/st21nfca/i2c.c                                | 4 +---
+>  drivers/of/unittest.c                                     | 6 ++----
+>  drivers/platform/chrome/cros_ec_i2c.c                     | 4 +---
+>  drivers/platform/surface/surface3_power.c                 | 4 +---
+>  drivers/platform/x86/asus-tf103c-dock.c                   | 4 +---
+>  drivers/platform/x86/intel/int3472/tps68470.c             | 4 +---
+>  drivers/power/supply/bq2415x_charger.c                    | 4 +---
+>  drivers/power/supply/bq24190_charger.c                    | 4 +---
+>  drivers/power/supply/bq24257_charger.c                    | 4 +---
+>  drivers/power/supply/bq25890_charger.c                    | 4 +---
+>  drivers/power/supply/bq27xxx_battery_i2c.c                | 4 +---
+>  drivers/power/supply/cw2015_battery.c                     | 3 +--
+>  drivers/power/supply/ds2782_battery.c                     | 4 +---
+>  drivers/power/supply/lp8727_charger.c                     | 3 +--
+>  drivers/power/supply/rt5033_battery.c                     | 4 +---
+>  drivers/power/supply/rt9455_charger.c                     | 4 +---
+>  drivers/power/supply/smb347-charger.c                     | 4 +---
+>  drivers/power/supply/z2_battery.c                         | 4 +---
+>  drivers/pwm/pwm-pca9685.c                                 | 4 +---
+>  drivers/regulator/da9121-regulator.c                      | 3 +--
+>  drivers/regulator/lp8755.c                                | 4 +---
+>  drivers/regulator/rpi-panel-attiny-regulator.c            | 4 +---
+>  drivers/rtc/rtc-bq32k.c                                   | 4 +---
+>  drivers/rtc/rtc-ds1374.c                                  | 4 +---
+>  drivers/rtc/rtc-isl12026.c                                | 3 +--
+>  drivers/rtc/rtc-m41t80.c                                  | 4 +---
+>  drivers/rtc/rtc-rs5c372.c                                 | 3 +--
+>  drivers/rtc/rtc-x1205.c                                   | 3 +--
+>  drivers/staging/media/atomisp/i2c/atomisp-gc0310.c        | 4 +---
+>  drivers/staging/media/atomisp/i2c/atomisp-gc2235.c        | 4 +---
+>  drivers/staging/media/atomisp/i2c/atomisp-lm3554.c        | 4 +---
+>  drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c       | 3 +--
+>  drivers/staging/media/atomisp/i2c/atomisp-ov2680.c        | 4 +---
+>  drivers/staging/media/atomisp/i2c/atomisp-ov2722.c        | 4 +---
+>  drivers/staging/media/atomisp/i2c/ov5693/atomisp-ov5693.c | 4 +---
+>  drivers/staging/media/max96712/max96712.c                 | 4 +---
+>  drivers/staging/most/i2c/i2c.c                            | 4 +---
+>  drivers/staging/olpc_dcon/olpc_dcon.c                     | 4 +---
+>  drivers/tty/serial/sc16is7xx.c                            | 4 +---
+>  drivers/usb/misc/usb3503.c                                | 4 +---
+>  drivers/usb/phy/phy-isp1301-omap.c                        | 4 +---
+>  drivers/usb/phy/phy-isp1301.c                             | 4 +---
+>  drivers/usb/typec/hd3ss3220.c                             | 4 +---
+>  drivers/usb/typec/mux/fsa4480.c                           | 4 +---
+>  drivers/usb/typec/mux/pi3usb30532.c                       | 3 +--
+>  drivers/usb/typec/rt1719.c                                | 4 +---
+>  drivers/usb/typec/stusb160x.c                             | 4 +---
+>  drivers/usb/typec/tcpm/fusb302.c                          | 4 +---
+>  drivers/usb/typec/tcpm/tcpci.c                            | 4 +---
+>  drivers/usb/typec/tcpm/tcpci_maxim.c                      | 4 +---
+>  drivers/usb/typec/tcpm/tcpci_rt1711h.c                    | 3 +--
+>  drivers/usb/typec/tipd/core.c                             | 4 +---
+>  drivers/usb/typec/ucsi/ucsi_ccg.c                         | 4 +---
+>  drivers/usb/typec/wusb3801.c                              | 4 +---
+>  drivers/video/backlight/adp8860_bl.c                      | 4 +---
+>  drivers/video/backlight/adp8870_bl.c                      | 4 +---
+>  drivers/video/backlight/arcxcnn_bl.c                      | 4 +---
+>  drivers/video/backlight/bd6107.c                          | 4 +---
+>  drivers/video/backlight/lm3630a_bl.c                      | 3 +--
+>  drivers/video/backlight/lm3639_bl.c                       | 3 +--
+>  drivers/video/backlight/lp855x_bl.c                       | 4 +---
+>  drivers/video/backlight/lv5207lp.c                        | 4 +---
+>  drivers/video/backlight/tosa_bl.c                         | 3 +--
+>  drivers/video/fbdev/matrox/matroxfb_maven.c               | 3 +--
+>  drivers/video/fbdev/ssd1307fb.c                           | 4 +---
+>  drivers/w1/masters/ds2482.c                               | 3 +--
+>  drivers/watchdog/ziirave_wdt.c                            | 4 +---
+>  include/linux/i2c.h                                       | 2 +-
+>  lib/Kconfig.kasan                                         | 1 +
+>  sound/aoa/codecs/onyx.c                                   | 3 +--
+>  sound/aoa/codecs/tas.c                                    | 3 +--
+>  sound/pci/hda/cs35l41_hda_i2c.c                           | 4 +---
+>  sound/ppc/keywest.c                                       | 6 ++----
+>  sound/soc/codecs/adau1761-i2c.c                           | 3 +--
+>  sound/soc/codecs/adau1781-i2c.c                           | 3 +--
+>  sound/soc/codecs/ak4375.c                                 | 4 +---
+>  sound/soc/codecs/ak4458.c                                 | 4 +---
+>  sound/soc/codecs/ak4641.c                                 | 4 +---
+>  sound/soc/codecs/ak5558.c                                 | 4 +---
+>  sound/soc/codecs/cs35l32.c                                | 4 +---
+>  sound/soc/codecs/cs35l33.c                                | 4 +---
+>  sound/soc/codecs/cs35l34.c                                | 4 +---
+>  sound/soc/codecs/cs35l35.c                                | 4 +---
+>  sound/soc/codecs/cs35l36.c                                | 4 +---
+>  sound/soc/codecs/cs35l41-i2c.c                            | 4 +---
+>  sound/soc/codecs/cs35l45-i2c.c                            | 4 +---
+>  sound/soc/codecs/cs4234.c                                 | 4 +---
+>  sound/soc/codecs/cs4265.c                                 | 4 +---
+>  sound/soc/codecs/cs4270.c                                 | 4 +---
+>  sound/soc/codecs/cs42l42.c                                | 4 +---
+>  sound/soc/codecs/cs42l51-i2c.c                            | 4 +---
+>  sound/soc/codecs/cs42l56.c                                | 3 +--
+>  sound/soc/codecs/cs42xx8-i2c.c                            | 4 +---
+>  sound/soc/codecs/cs43130.c                                | 4 +---
+>  sound/soc/codecs/cs4349.c                                 | 4 +---
+>  sound/soc/codecs/cs53l30.c                                | 4 +---
+>  sound/soc/codecs/cx2072x.c                                | 3 +--
+>  sound/soc/codecs/max98090.c                               | 4 +---
+>  sound/soc/codecs/max9860.c                                | 3 +--
+>  sound/soc/codecs/max98927.c                               | 4 +---
+>  sound/soc/codecs/mt6660.c                                 | 3 +--
+>  sound/soc/codecs/nau8821.c                                | 4 +---
+>  sound/soc/codecs/nau8825.c                                | 6 ++----
+>  sound/soc/codecs/pcm1789-i2c.c                            | 4 +---
+>  sound/soc/codecs/pcm3168a-i2c.c                           | 4 +---
+>  sound/soc/codecs/pcm512x-i2c.c                            | 3 +--
+>  sound/soc/codecs/rt274.c                                  | 4 +---
+>  sound/soc/codecs/rt286.c                                  | 4 +---
+>  sound/soc/codecs/rt298.c                                  | 4 +---
+>  sound/soc/codecs/rt5616.c                                 | 6 ++----
+>  sound/soc/codecs/rt5631.c                                 | 6 ++----
+>  sound/soc/codecs/rt5645.c                                 | 4 +---
+>  sound/soc/codecs/rt5663.c                                 | 4 +---
+>  sound/soc/codecs/rt5670.c                                 | 4 +---
+>  sound/soc/codecs/rt5677.c                                 | 4 +---
+>  sound/soc/codecs/rt5682-i2c.c                             | 4 +---
+>  sound/soc/codecs/rt5682s.c                                | 4 +---
+>  sound/soc/codecs/rt9120.c                                 | 3 +--
+>  sound/soc/codecs/sgtl5000.c                               | 4 +---
+>  sound/soc/codecs/sta350.c                                 | 6 ++----
+>  sound/soc/codecs/tas2552.c                                | 3 +--
+>  sound/soc/codecs/tas5086.c                                | 6 ++----
+>  sound/soc/codecs/tas571x.c                                | 4 +---
+>  sound/soc/codecs/tas5805m.c                               | 3 +--
+>  sound/soc/codecs/tas6424.c                                | 4 +---
+>  sound/soc/codecs/tlv320adc3xxx.c                          | 3 +--
+>  sound/soc/codecs/tlv320aic32x4-i2c.c                      | 4 +---
+>  sound/soc/codecs/tlv320aic3x-i2c.c                        | 4 +---
+>  sound/soc/codecs/tlv320dac33.c                            | 4 +---
+>  sound/soc/codecs/wm1250-ev1.c                             | 4 +---
+>  sound/soc/codecs/wm2200.c                                 | 4 +---
+>  sound/soc/codecs/wm5100.c                                 | 4 +---
+>  sound/soc/codecs/wm8804-i2c.c                             | 3 +--
+>  sound/soc/codecs/wm8900.c                                 | 6 ++----
+>  sound/soc/codecs/wm8903.c                                 | 4 +---
+>  sound/soc/codecs/wm8960.c                                 | 6 ++----
+>  sound/soc/codecs/wm8962.c                                 | 3 +--
+>  sound/soc/codecs/wm8993.c                                 | 4 +---
+>  sound/soc/codecs/wm8996.c                                 | 4 +---
+>  sound/soc/codecs/wm9081.c                                 | 6 ++----
+
+Acked-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+for the drivers I'm involved in development of.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
