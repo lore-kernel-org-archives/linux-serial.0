@@ -2,105 +2,229 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF96C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 09:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E0FC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 10:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233027AbiF2JwB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
+        id S233221AbiF2KBK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 06:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233108AbiF2Jvw (ORCPT
+        with ESMTP id S233224AbiF2KBF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:51:52 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5210C3D4AB;
-        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3177f4ce3e2so142733977b3.5;
-        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
+        Wed, 29 Jun 2022 06:01:05 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188163DA77;
+        Wed, 29 Jun 2022 03:01:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
-        b=k5Dz9Mh62sOyTMvK1jWeC2gk1L7MIejLDCiZiyIRvcclCRkz4ozx33pOhMPnvNMVUl
-         MjyFTRHSY8KdXW81PV6z5oHynmj5QMU8LplegY5n5eWyBQGtOSkfZJJuapRR8+SwYBtQ
-         rROmUXBAUjkrru2etvsjnCDJFjt04o8vFd+u6AoOV49seRLM8K9wtA8GSpXsPEgQuLvF
-         PJlB1eeddl4lI1TzBtc98SQsuQ4dambMemxNJPm5SW51QctVQjPoJvl7zW4nke/Ggapy
-         daYEhlJkgp8BZbpn/ObnS2Cl+6FWaFTG5dxo1MoLDAvr1cwcFNQelzoDIS+o7p4Xij86
-         3rTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
-        b=L9TTzv8FdhtCFWDHOi5hj/gjTSBne/VLJwyvlJgLOKmH0wUKhfwJQ2Ll7im0yQhGIh
-         Od/+YDJSOyaOvpRouWZtEPFJLtIS1u0i0rPbvNqDcYO1AUkOIrNiwzV4owLaacXWaPwO
-         3ilEYqpH9YlbCDHEmh3Q7SNh3mmsBSEbjq8oIDK0D4Rk1ef0B5bp68EONJvNkogadr3G
-         6cyPFiG+JgIiqI2g9kF9SSaHaVg/15T+14Vkx5ua1zVQiVRHbMtNlMKxusniDLIcVd1r
-         C/glclTPlHeod9gbqK0stOwOW7jnaRaOsYvn4QTn5E0E/SceqKXI8fKnaKvVv2W3UgtL
-         Qbcw==
-X-Gm-Message-State: AJIora/wNxzOrsq3Sx3/paO/b5fPa5Kx1ICOAYFhh0jQYV/jTMzLM0Q0
-        QhZmTQwlQr9OGSdMZpFaKuCYzrVCX+LQElMReXs=
-X-Google-Smtp-Source: AGRyM1sLb4+78GKq6YudXBHdKWqNbrWdmM1li71d2ceRvJR5iIAkl+r/YogRx5zau14DkeHiwy1E0ClG7jr5CwzQ+j8=
-X-Received: by 2002:a81:5d88:0:b0:318:31c1:56f3 with SMTP id
- r130-20020a815d88000000b0031831c156f3mr2860106ywb.18.1656496310543; Wed, 29
- Jun 2022 02:51:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com>
- <20220628134234.53771-5-ilpo.jarvinen@linux.intel.com> <CAHp75Vf36sFqX1SL4Sjz6ZgNXP41Nom0Q1s6Psgv9WMFkKtGtg@mail.gmail.com>
- <29b084c-183b-4a84-2376-2c88eff7d5a@linux.intel.com> <CAHp75VevfptcsTTkFvCRsJRxuKX6aJ2zQ5LyH0O8wP+aB4xXHw@mail.gmail.com>
- <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
-In-Reply-To: <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 29 Jun 2022 11:51:13 +0200
-Message-ID: <CAHp75VdsTjbEwocx4DAhMBM6nwKhuL3xgaJeZhV=ZhBPz3pdRw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] serial: 8250_dw: Rework ->serial_out() LCR write
- retry logic
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1656496864; x=1688032864;
+  h=from:to:cc:subject:date:message-id;
+  bh=Oiuw9HRkwrHzXSQ2ahL9/W1hkjCXG3OGJrLDI40HLPI=;
+  b=frk4eW7EmuEu9c2vVMDCGtgV5RczU+VE4ETU44TuysGJVohAS2MxnHOD
+   KU+th8dpSItsv07oPVdg8Qu/KvXFDpWE4e8Nq1IUW4d7nQ9/stUwKgL5n
+   MGNt+CO5t1Y5BwKCtVil8+hBzxXTA2ZtxZa44cnoh+FwTtOLZNI6ncVjC
+   k=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 29 Jun 2022 03:01:04 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 29 Jun 2022 03:01:02 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 29 Jun 2022 15:30:45 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 8FFD1404C; Wed, 29 Jun 2022 15:30:44 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Wed, 29 Jun 2022 15:30:41 +0530
+Message-Id: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 11:40 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
-> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
-> > On Wed, Jun 29, 2022 at 10:47 AM Ilpo J=C3=A4rvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > On Tue, 28 Jun 2022, Andy Shevchenko wrote:
+In the logic around call to clk_round_rate(), for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-...
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-> > > Eh, are you suggesting I should do write as a side-effect inside one =
-of
-> > > the iopoll.h macros? Because those available seem to only read?
-> > >
-> > > Or should I create another macro there which writes too?
-> >
-> > It seems to me that it would be a macro on top of iopoll's one which
-> > will take an op read and op write arguments depending on the case.
->
-> The thing is those iopoll macros don't return until the timeout is
-> exhausted
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+v2: removed minor optimisations to make more readable
+v1: intial patch contained slightly complicated logic
+---
+ drivers/tty/serial/qcom_geni_serial.c | 122 +++++++++++++++++++++++++---------
+ 1 file changed, 90 insertions(+), 32 deletions(-)
 
-It returns when the condition is true (in your case verify_lcr is OK).
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2e23b65..d0696d1 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -943,52 +943,111 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol, bool exact_match)
+ {
++	unsigned long freq;
++	unsigned long div, maxdiv, new_div;
++	u64 mult;
+ 	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
+-	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	unsigned long test_freq, offset, new_freq;
+ 
++	ser_clk = 0;
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
++	div = 1;
+ 
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	while (div <= maxdiv) {
++		mult = (u64)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
++		/*
++		 * Loop requesting a freq within tolerance and possibly exact freq.
++		 *
++		 * We'll keep track of the lowest freq inexact match we found
++		 * but always try to find a perfect match. NOTE: this algorithm
++		 * could miss a slightly better freq if there's more than one
++		 * freq between (freq - offset) and (freq) but (freq) can't be made
++		 * exactly, but that's OK.
++		 *
++		 * This absolutely relies on the fact that the Qualcomm clock
++		 * driver always rounds up.
++		 * We make use of exact_match as an I/O param.
++		 */
++
++		/* look only for exact match if within tolerance is already found */
++		if (ser_clk)
++			offset = 0;
++		else
++			offset = div_u64(mult * percent_tol, 100);
++
++		test_freq = mult - offset;
++		freq = clk_round_rate(clk, test_freq);
++
++		/*
++		 * A dead-on freq is an insta-win
++		 */
+ 		if (!(freq % desired_clk)) {
+ 			ser_clk = freq;
+-			break;
++			*clk_div = freq / desired_clk;
++			return ser_clk;
+ 		}
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
+-			break;
++		if (!ser_clk) {
++			new_div = DIV_ROUND_CLOSEST(freq, desired_clk);
++			new_freq = new_div * desired_clk;
++			offset = (new_freq * percent_tol) / 100;
++
++			if (new_freq - offset <= freq && freq <= new_freq + offset) {
++				/* Save the first (lowest freq) within tolerance */
++				ser_clk = freq;
++				*clk_div = new_div;
++				/* no more search for exact match required in 2nd run */
++				if (!exact_match)
++					break;
++			}
++		}
+ 
+-		prev = freq;
++		div = freq / desired_clk + 1;
++
++		/*
++		 * Only time clock framework doesn't round up is if
++		 * we're past the max clock rate. We're done searching
++		 * if that's the case.
++		 */
++		if (freq < test_freq)
++			break;
+ 	}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
+-		return ser_clk;
++	return ser_clk;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
++			unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk) {
++		pr_err("%s: Invalid frequency\n", __func__);
++		return 0;
+ 	}
+ 
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	ser_clk = 0;
++	/*
++	 * try to find exact clock rate or within 2% tolerance,
++	 * then within 5% tolerance
++	 */
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2, true);
++	if (!ser_clk)
++		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5, false);
++
++	if (!ser_clk)
++		pr_err("Couldn't find suitable clock rate for %d\n", desired_clk);
++	else
++		pr_debug("desired_clk-%d, ser_clk-%d, clk_div-%d\n",
++			desired_clk, ser_clk, *clk_div);
+ 
+ 	return ser_clk;
+ }
+@@ -1021,8 +1080,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+-	clk_rate = get_clk_div_rate(port->se.clk, baud,
+-		sampling_rate, &clk_div);
++	clk_rate = get_clk_div_rate(port->se.clk, baud, sampling_rate, &clk_div);
+ 	if (!clk_rate)
+ 		goto out_restart_rx;
+ 
+-- 
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
-> so I don't think I can reuse them easily for this task ("on top
-> of iopoll's one")? That is, w/o some major side-effect hack (which is
-> IMHO a no-go).
-
-Basically what we need is a write-read type of polling.
-
-With your current approach I don't like that retries assignment is
-duplicated several times and decrement happens in the callee. What I'm
-trying to suggest is to research alternatives.
-
---=20
-With Best Regards,
-Andy Shevchenko
