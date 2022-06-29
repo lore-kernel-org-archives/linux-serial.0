@@ -2,143 +2,143 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35465CCA47F
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1ACC433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232172AbiF2HhR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
+        id S232403AbiF2HnP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232066AbiF2HhP (ORCPT
+        with ESMTP id S232208AbiF2HnO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:37:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DF4136140
-        for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2022 00:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656488233;
+        Wed, 29 Jun 2022 03:43:14 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66BA2FF;
+        Wed, 29 Jun 2022 00:43:11 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 22BC4FF809;
+        Wed, 29 Jun 2022 07:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656488590;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1h0smKgkaQYyMckjg1gEO+92UXCJgyf7f6YfzsCAFg4=;
-        b=A9r6z16eLePDP7bGnj4DQvo7y3G6bSPDfVUon8h8UU1fWVxsHhqlS7X5ho2Kg8bsJ94eAB
-        ZpiagtHmU1cR+Mbl+pQ9uTE8c3wDDfX5ZBou6CQVNZ5jJ68lAXx9uYydmYJ32oQ+BT7P8w
-        R0bVtv950eOUgOiUhg0nh9TLSJUseeI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-94-mzrb-UruPwi7XrBfkOnhXw-1; Wed, 29 Jun 2022 03:37:12 -0400
-X-MC-Unique: mzrb-UruPwi7XrBfkOnhXw-1
-Received: by mail-wr1-f70.google.com with SMTP id j14-20020adfa54e000000b0021b8c8204easo2128179wrb.0
-        for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2022 00:37:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1h0smKgkaQYyMckjg1gEO+92UXCJgyf7f6YfzsCAFg4=;
-        b=0/YhPS2h2zoGEb95d/bgQJ7ETeph+RIyNTWvtZlEP9EvC69/1LlTE7fJYeF6ApUNXA
-         jN2R9DXGFC9xwA+VDUKHgpR0EK/n6CSjC0ZQf2+W2FkwPyJR60sV6RrgEd31eqZiEIGe
-         oMo4o+AYqF2qb3Wzy0U4Xi9VDaNgQn+/qxJZuFzqwva8hAKd69MQmoE9xKihvnmj2YzJ
-         Jl2JOYxz4X4vZYBJ5LIP05F7HPTzpsTSgM8ms5Mm4h2/APZn6jYfUZF00QF6Dckc47sM
-         T7fo1XMmfo4xPur3dPXoxpTSLRmqo/s2WIahFjPQP6mNO4JqkecfVyMkfW3bK1XJN5Gr
-         vN0w==
-X-Gm-Message-State: AJIora8eoqUQGSXAdgkdZz+aq8zNMz96Wr9IuOjK1jyWwsMmhKJOc9cc
-        LLEe4SvfDzy4ICpcGycG/WnGhEW4z2fob6p7ZYSkQ/CTIk//T7K2PncfYmQ6QzorMBNmUj9zUgp
-        jo2zShb8wbjaJ4Era3iLnlUjW
-X-Received: by 2002:a05:6000:1448:b0:21b:b7db:c40b with SMTP id v8-20020a056000144800b0021bb7dbc40bmr1650280wrx.279.1656488231026;
-        Wed, 29 Jun 2022 00:37:11 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vfq7mqFRSJqFJPQOP6rs25Ch1nA7fBeueZwuaRaLaWENw0ay54yTOP4QHXmGLo1NEA4L9c5g==
-X-Received: by 2002:a05:6000:1448:b0:21b:b7db:c40b with SMTP id v8-20020a056000144800b0021bb7dbc40bmr1650238wrx.279.1656488230741;
-        Wed, 29 Jun 2022 00:37:10 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id j10-20020a5d448a000000b0021b8c99860asm15832366wrq.115.2022.06.29.00.37.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 00:37:10 -0700 (PDT)
-Message-ID: <7654a74e-a410-a8a5-c228-d006dbbc200f@redhat.com>
-Date:   Wed, 29 Jun 2022 09:37:08 +0200
+        bh=23qNxy3T8AhqxBTiU/5Y9Q/cjusuzwicAS7sUOTqSdA=;
+        b=LapURRYasHGXqYMr6kj8vjOKc7d0TaHdAf004eEwg/IZ5+koA4RmY4W1KoiVotDBVh9TPB
+        nHvZZmLDoOOt8xfyO2AKJUFQYml/6cVTj9N7gvqg7xaqBxHB4SHpTQQOyYAVB3e+vNwfi9
+        IE73WVA00PBNuXa4e/UWCbe1fJlRT62XcZwQ/RukzgKCZ4shhBUcOA7xbA+BA2/8aeJjdg
+        Z0Q2dPAs/+c1b8ovcdysCEuB/nSmy9WDNKbCU8Ai69TfRygUzXDtrwrK1p7FGxNJ0sdmYf
+        bjoUYLVR57pMvxfK+LQNOMscPDuZqAMt3xKfajI9jVOqH3ZpO3b2ND1NtHt67Q==
+Date:   Wed, 29 Jun 2022 09:43:08 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        phil.edworthy@renesas.com, kernel@esmil.dk,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] BUG, more dw8259 ACPI crashes
+Message-ID: <20220629094308.237105a6@xps-13>
+In-Reply-To: <20220629000232.3440704-1-jeremy.linton@arm.com>
+References: <20220629000232.3440704-1-jeremy.linton@arm.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     linux-fbdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        platform-driver-x86@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-i2c@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rtc@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-staging@lists.linux.dev, kasan-dev@googlegroups.com,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-pm@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net, linux-gpio@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        Support Opensource <support.opensource@diasemi.com>,
-        netdev@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        linux-crypto@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        patches@opensource.cirrus.com, linux-integrity@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
- <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
- <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=javierm@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 6/29/22 09:23, Uwe Kleine-König wrote:
-> Hello,
-> 
-> [I dropped nearly all individuals from the Cc: list because various
-> bounces reported to be unhappy about the long (logical) line.]
->
+Hi Jeremy,
 
-Yes, it also bounced for me when I tried to reply earlier today.
+jeremy.linton@arm.com wrote on Tue, 28 Jun 2022 19:02:30 -0500:
 
-> diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> index 1e0fcec7be47..ddfa0bb5d9c9 100644
-> --- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> +++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> @@ -39,13 +39,11 @@ static int ssd130x_i2c_probe(struct i2c_client *client)
->  	return 0;
->  }
->  
-> -static int ssd130x_i2c_remove(struct i2c_client *client)
-> +static void ssd130x_i2c_remove(struct i2c_client *client)
->  {
->  	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
->  
->  	ssd130x_remove(ssd130x);
-> -
-> -	return 0;
->  }
->  
->  static void ssd130x_i2c_shutdown(struct i2c_client *client)
+> 5.19rc4 crashes with:
+>=20
+> [    4.441703] Internal error: Oops: 96000004 [#1] SMP
+> [    4.446601] Modules linked in:
+> [    4.449668] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-0.rc4.33.=
+fc37.aarch64 #1
+> [    4.457532] Hardware name: Marvell                         Armada 7k/8=
+k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 20=
+19
+> [    4.470800] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYP=
+E=3D--)
+> [    4.477791] pc : dw8250_handle_irq+0x58/0x190
+> [    4.482170] lr : dw8250_handle_irq+0x38/0x190
+> [    4.486544] sp : ffff800008003e40
+> [    4.489869] x29: ffff800008003e40 x28: ffffbe13be183980 x27: 00000000b=
+46bd3d0
+> [    4.497036] x26: ffffbe13bdbc3008 x25: ffff6f1447910f80 x24: ffff6f144=
+7910f94
+> [    4.504204] x23: 0000000000000012 x22: ffff6f144218fc80 x21: 000000000=
+0000000
+> [    4.511372] x20: 0000000000000007 x19: ffffbe13be7628d0 x18: ffff80000=
+918b528
+> [    4.518540] x17: ffffb103c0343000 x16: ffff800008004000 x15: 000000000=
+0004000
+> [    4.525706] x14: 0000000000000000 x13: 0000000000000030 x12: 010101010=
+1010101
+> [    4.532872] x11: ffffbe13be16f6d8 x10: 0000000000001d90 x9 : ffffbe13b=
+c6b4f0c
+> [    4.540040] x8 : ffffbe13be185770 x7 : 0000000000000000 x6 : 000000002=
+96b5f4a
+> [    4.547206] x5 : 00ffffffffffffff x4 : 0000000000010002 x3 : ffffbe13b=
+e7628d0
+> [    4.554373] x2 : 0000000000000007 x1 : 0000000000000000 x0 : 000000000=
+0000000
+> [    4.561539] Call trace:
+> [    4.563994]  dw8250_handle_irq+0x58/0x190
+> [    4.568020]  serial8250_interrupt+0x68/0x140
+> [    4.572307]  __handle_irq_event_percpu+0x68/0x230
+> [    4.577034]  handle_irq_event+0x58/0x120
+> [    4.580973]  handle_fasteoi_irq+0xcc/0x1c4
+> [    4.585086]  generic_handle_domain_irq+0x38/0x50
+> [    4.589723]  gic_handle_irq+0x50/0xe0
+> [    4.593399]  call_on_irq_stack+0x2c/0x38
+> [    4.597338]  do_interrupt_handler+0xdc/0xe0
+> [    4.601539]  el1_interrupt+0x34/0x70
+> [    4.605131]  el1h_64_irq_handler+0x18/0x24
+> [    4.609244]  el1h_64_irq+0x68/0x6c
+> [    4.612658]  arch_cpu_idle+0x18/0x2c
+> [    4.616246]  default_idle_call+0x34/0x18c
+> [    4.620273]  cpuidle_idle_call+0x154/0x1a0
+> [    4.624388]  do_idle+0xa4/0xf4
+> [    4.627455]  cpu_startup_entry+0x34/0x3c
+> [    4.631394]  kernel_init+0x0/0x150
+> [    4.634808]  arch_post_acpi_subsys_init+0x0/0x30
+> [    4.639445]  start_kernel+0x474/0x490
+> [    4.643121]  __primary_switched+0xc0/0xc8
+> [    4.647148] Code: 7100305f 1a9f17f5 f100003f 7a400aa4 (b9400817)=20
+> [    4.653267] ---[ end trace 0000000000000000 ]---
+>=20
+> On an ACPI enabled Mcbin. This is again the result
+> of the pdata information not being available on an
+> ACPI machine. But since there are multiple commits
+> I've broken this into to fixes. The first
+> simply reverts the USR register change because it
+> should be functionality transparent and I don't
+> have a good way to tie ACPI ids to the hardware
+> and the second fixes the later patch which uses it
+> in the interrupt handler.
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com> 
--- 
-Best regards,
+Sorry for the breakage, the move of the USR register to pdata is not
+really necessary anyway, it came up rather late in the review process,
+and the other fix lgtm, so:
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
+>=20
+> Jeremy Linton (2):
+>   Revert "serial: 8250: dw: Move the USR register to pdata"
+>   serial: 8250: dw: Fix NULL pointer dereference
+>=20
+>  drivers/tty/serial/8250/8250_dw.c    | 14 +++++++-------
+>  drivers/tty/serial/8250/8250_dwlib.h |  2 +-
+>  2 files changed, 8 insertions(+), 8 deletions(-)
+>=20
+
+
+Thanks,
+Miqu=C3=A8l
