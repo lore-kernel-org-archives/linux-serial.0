@@ -2,143 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1ACC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13861C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232403AbiF2HnP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        id S232208AbiF2HrO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232208AbiF2HnO (ORCPT
+        with ESMTP id S231194AbiF2HrN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:43:14 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66BA2FF;
-        Wed, 29 Jun 2022 00:43:11 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 22BC4FF809;
-        Wed, 29 Jun 2022 07:43:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656488590;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=23qNxy3T8AhqxBTiU/5Y9Q/cjusuzwicAS7sUOTqSdA=;
-        b=LapURRYasHGXqYMr6kj8vjOKc7d0TaHdAf004eEwg/IZ5+koA4RmY4W1KoiVotDBVh9TPB
-        nHvZZmLDoOOt8xfyO2AKJUFQYml/6cVTj9N7gvqg7xaqBxHB4SHpTQQOyYAVB3e+vNwfi9
-        IE73WVA00PBNuXa4e/UWCbe1fJlRT62XcZwQ/RukzgKCZ4shhBUcOA7xbA+BA2/8aeJjdg
-        Z0Q2dPAs/+c1b8ovcdysCEuB/nSmy9WDNKbCU8Ai69TfRygUzXDtrwrK1p7FGxNJ0sdmYf
-        bjoUYLVR57pMvxfK+LQNOMscPDuZqAMt3xKfajI9jVOqH3ZpO3b2ND1NtHt67Q==
-Date:   Wed, 29 Jun 2022 09:43:08 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     linux-serial@vger.kernel.org, andriy.shevchenko@linux.intel.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        phil.edworthy@renesas.com, kernel@esmil.dk,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] BUG, more dw8259 ACPI crashes
-Message-ID: <20220629094308.237105a6@xps-13>
-In-Reply-To: <20220629000232.3440704-1-jeremy.linton@arm.com>
-References: <20220629000232.3440704-1-jeremy.linton@arm.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Wed, 29 Jun 2022 03:47:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF8B387BC;
+        Wed, 29 Jun 2022 00:47:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656488833; x=1688024833;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=YlxnPim1rzCpKPXxIWvBT1D3S+eCXzSTNnLPZpAqKlo=;
+  b=WQ1+7UJGyviFymRBoXU44d29vBnpbAMezoreIjRmaG7z13553RJP30bO
+   IkYAuzuG8+m924muhoQajI2wmYLKmmKPT4oBTjci/K5FdlFqTnphT7ajl
+   RWM9FNGn1KGHMmzsY+wXYyBLCrjPPLAhBvbN4JLXib7yDvD7RcQlO/s2W
+   PH2BR4WsKFKAeUhnGXOWO7/75mIn6pxp8bKbUgsthH1573A34sapTbylL
+   OqXs5FDiumMhXZUUck6XlsgXteRainWcGK/n982Mo+XTtPtrfM5WMI1tJ
+   yhC32rt5lysU5cXKV05t2Ssm3Hzt/qiBRHUvvmHxXp3pneU/XHwZDNgsT
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="345947818"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="345947818"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 00:47:12 -0700
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
+   d="scan'208";a="647274534"
+Received: from dsummer-mobl.ger.corp.intel.com ([10.252.38.121])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 00:47:10 -0700
+Date:   Wed, 29 Jun 2022 10:47:09 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/4] serial: 8250_dw: Rename offset to reg_offset
+In-Reply-To: <YrtxxqnQ5fZKsUoY@smile.fi.intel.com>
+Message-ID: <c2959ca9-5817-f843-4a9b-95c8ffad9fca@linux.intel.com>
+References: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com> <20220628134234.53771-3-ilpo.jarvinen@linux.intel.com> <YrtxxqnQ5fZKsUoY@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; BOUNDARY="8323329-1978143705-1656488381=:1529"
+Content-ID: <18fa9f5-b66c-b74c-961-a42059e76af4@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jeremy,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-jeremy.linton@arm.com wrote on Tue, 28 Jun 2022 19:02:30 -0500:
+--8323329-1978143705-1656488381=:1529
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <7d32f42a-d1be-fb57-f8d4-f5e92a82a942@linux.intel.com>
 
-> 5.19rc4 crashes with:
->=20
-> [    4.441703] Internal error: Oops: 96000004 [#1] SMP
-> [    4.446601] Modules linked in:
-> [    4.449668] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-0.rc4.33.=
-fc37.aarch64 #1
-> [    4.457532] Hardware name: Marvell                         Armada 7k/8=
-k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 20=
-19
-> [    4.470800] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYP=
-E=3D--)
-> [    4.477791] pc : dw8250_handle_irq+0x58/0x190
-> [    4.482170] lr : dw8250_handle_irq+0x38/0x190
-> [    4.486544] sp : ffff800008003e40
-> [    4.489869] x29: ffff800008003e40 x28: ffffbe13be183980 x27: 00000000b=
-46bd3d0
-> [    4.497036] x26: ffffbe13bdbc3008 x25: ffff6f1447910f80 x24: ffff6f144=
-7910f94
-> [    4.504204] x23: 0000000000000012 x22: ffff6f144218fc80 x21: 000000000=
-0000000
-> [    4.511372] x20: 0000000000000007 x19: ffffbe13be7628d0 x18: ffff80000=
-918b528
-> [    4.518540] x17: ffffb103c0343000 x16: ffff800008004000 x15: 000000000=
-0004000
-> [    4.525706] x14: 0000000000000000 x13: 0000000000000030 x12: 010101010=
-1010101
-> [    4.532872] x11: ffffbe13be16f6d8 x10: 0000000000001d90 x9 : ffffbe13b=
-c6b4f0c
-> [    4.540040] x8 : ffffbe13be185770 x7 : 0000000000000000 x6 : 000000002=
-96b5f4a
-> [    4.547206] x5 : 00ffffffffffffff x4 : 0000000000010002 x3 : ffffbe13b=
-e7628d0
-> [    4.554373] x2 : 0000000000000007 x1 : 0000000000000000 x0 : 000000000=
-0000000
-> [    4.561539] Call trace:
-> [    4.563994]  dw8250_handle_irq+0x58/0x190
-> [    4.568020]  serial8250_interrupt+0x68/0x140
-> [    4.572307]  __handle_irq_event_percpu+0x68/0x230
-> [    4.577034]  handle_irq_event+0x58/0x120
-> [    4.580973]  handle_fasteoi_irq+0xcc/0x1c4
-> [    4.585086]  generic_handle_domain_irq+0x38/0x50
-> [    4.589723]  gic_handle_irq+0x50/0xe0
-> [    4.593399]  call_on_irq_stack+0x2c/0x38
-> [    4.597338]  do_interrupt_handler+0xdc/0xe0
-> [    4.601539]  el1_interrupt+0x34/0x70
-> [    4.605131]  el1h_64_irq_handler+0x18/0x24
-> [    4.609244]  el1h_64_irq+0x68/0x6c
-> [    4.612658]  arch_cpu_idle+0x18/0x2c
-> [    4.616246]  default_idle_call+0x34/0x18c
-> [    4.620273]  cpuidle_idle_call+0x154/0x1a0
-> [    4.624388]  do_idle+0xa4/0xf4
-> [    4.627455]  cpu_startup_entry+0x34/0x3c
-> [    4.631394]  kernel_init+0x0/0x150
-> [    4.634808]  arch_post_acpi_subsys_init+0x0/0x30
-> [    4.639445]  start_kernel+0x474/0x490
-> [    4.643121]  __primary_switched+0xc0/0xc8
-> [    4.647148] Code: 7100305f 1a9f17f5 f100003f 7a400aa4 (b9400817)=20
-> [    4.653267] ---[ end trace 0000000000000000 ]---
->=20
-> On an ACPI enabled Mcbin. This is again the result
-> of the pdata information not being available on an
-> ACPI machine. But since there are multiple commits
-> I've broken this into to fixes. The first
-> simply reverts the USR register change because it
-> should be functionality transparent and I don't
-> have a good way to tie ACPI ids to the hardware
-> and the second fixes the later patch which uses it
-> in the interrupt handler.
+On Wed, 29 Jun 2022, Andy Shevchenko wrote:
 
-Sorry for the breakage, the move of the USR register to pdata is not
-really necessary anyway, it came up rather late in the review process,
-and the other fix lgtm, so:
+> On Tue, Jun 28, 2022 at 04:42:32PM +0300, Ilpo Järvinen wrote:
+> > Get 'offset' variable out of the way of parameter named 'offset',
+> > rename it to 'reg_offset'. This is very short lived change as
+> > reg_offset is going to be soon removed.
+> 
+> I'm not sure why this change then even needed...
 
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+I could either:
+    1) create one large patch doing many thing (2+3 or 2+3+4)
+ or
+    2) add the 'offset' parameter with some other name first and rename it 
+       to its final name after local var 'offset' is eliminated by patch 4
+ or
+    3) rename local var 'offset' first out of the way so that I can add 
+       'offset' parameter in patch 3 (=this patch)
 
->=20
-> Jeremy Linton (2):
->   Revert "serial: 8250: dw: Move the USR register to pdata"
->   serial: 8250: dw: Fix NULL pointer dereference
->=20
->  drivers/tty/serial/8250/8250_dw.c    | 14 +++++++-------
->  drivers/tty/serial/8250/8250_dwlib.h |  2 +-
->  2 files changed, 8 insertions(+), 8 deletions(-)
->=20
+If I just drop patch 2 and only do 3, it won't build because 'offset' 
+variable appears twice (as arg and local var).
 
-
-Thanks,
-Miqu=C3=A8l
+-- 
+ i.
+--8323329-1978143705-1656488381=:1529--
