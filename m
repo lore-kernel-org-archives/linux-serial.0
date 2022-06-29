@@ -2,150 +2,137 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB77DC43334
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 16:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B90AC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 17:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiF2Qvq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 12:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        id S231284AbiF2RB6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 13:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiF2Qvp (ORCPT
+        with ESMTP id S230448AbiF2RB4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 12:51:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF8F6E;
-        Wed, 29 Jun 2022 09:51:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FBF1B825DB;
-        Wed, 29 Jun 2022 16:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E81C34114;
-        Wed, 29 Jun 2022 16:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656521501;
-        bh=yuwIKZkchTheG5wn1GwB8qN2vRzMhjjoHKv0gTFvEto=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ew+1yvS2cQ9ZULkW4Qd3Ti7cr7WW+P60spoYnQEx4nTAK9RBK3ENSpDiXDZYoiB2j
-         EvvGthbW34eiwzIBD/KpqdyFO/2Da43fEsizQWUDD+/Gbbefiv2ZOFmLzJ4QcgzaWJ
-         MJnLFWRppAuvcoodC7da+6DCaOK0i1KkeAo4c8WE=
-Date:   Wed, 29 Jun 2022 18:51:38 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Doug Berger <opendmb@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2] serial: 8250_bcm7271: Save/restore RTS in
- suspend/resume
-Message-ID: <YryDGoIFTdNAzn72@kroah.com>
-References: <20220629160208.3167955-1-f.fainelli@gmail.com>
+        Wed, 29 Jun 2022 13:01:56 -0400
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F400338D8E;
+        Wed, 29 Jun 2022 10:01:54 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 0F0CA300002D8;
+        Wed, 29 Jun 2022 19:01:53 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id E3F91A5783; Wed, 29 Jun 2022 19:01:52 +0200 (CEST)
+Date:   Wed, 29 Jun 2022 19:01:52 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>, m.brock@vanmierlo.com,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: [PATCH] serial: Revert RS485 polarity change on UART open
+Message-ID: <20220629170152.GA24851@wunner.de>
+References: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+ <20220329100328.GA2090@wunner.de>
+ <b2f29129f966685105e09781620b85c8f4f1a88e.camel@ew.tq-group.com>
+ <383f5d66d6828a5f09f5705f6ff98e3727ecfdf2.camel@ew.tq-group.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220629160208.3167955-1-f.fainelli@gmail.com>
+In-Reply-To: <383f5d66d6828a5f09f5705f6ff98e3727ecfdf2.camel@ew.tq-group.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 09:02:08AM -0700, Florian Fainelli wrote:
-> From: Doug Berger <opendmb@gmail.com>
+On Mon, Jun 27, 2022 at 10:40:36AM +0200, Matthias Schiffer wrote:
+> On Tue, 2022-03-29 at 12:39 +0200, Matthias Schiffer wrote:
+> > On Tue, 2022-03-29 at 12:03 +0200, Lukas Wunner wrote:
+> > > On Tue, Mar 29, 2022 at 10:50:50AM +0200, Matthias Schiffer wrote:
+> > > > While the change of the RS485 polarity in
+> > > > commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart
+> > > > open")
+> > > > might have made sense based on the original intention of the
+> > > > rs485-rts-active-low flag (*), this is not how it is implemented in
+> > > > various drivers:
+> > > [...]
+> > > > [(*) My understanding of the mentioned commit's description is that
+> > > > rs485-rts-active-low should have referred to the electical signal
+> > > > level
+> > > > of the RTS pin, rather than the logical RTS state as understood by
+> > > > the
+> > > > UART controller.]
 > 
-> Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-> from S2") prevented an early enabling of RTS during resume, but it did
-> not actively restore the RTS state after resume.
-> 
-> Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
->  1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index 9b878d023dac..b9cea38c8aff 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
-> @@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
->  	struct brcmuart_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	struct uart_port *port = &up->port;
-> -
-> -	serial8250_suspend_port(priv->line);
-> -	clk_disable_unprepare(priv->baud_mux_clk);
-> +	unsigned long flags;
->  
->  	/*
->  	 * This will prevent resume from enabling RTS before the
-> -	 *  baud rate has been resored.
-> +	 *  baud rate has been restored.
->  	 */
-> +	spin_lock_irqsave(&port->lock, flags);
->  	priv->saved_mctrl = port->mctrl;
-> -	port->mctrl = 0;
-> +	port->mctrl &= ~TIOCM_RTS;
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
-> +	serial8250_suspend_port(priv->line);
-> +	clk_disable_unprepare(priv->baud_mux_clk);
->  
->  	return 0;
->  }
-> @@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
->  	struct brcmuart_priv *priv = dev_get_drvdata(dev);
->  	struct uart_8250_port *up = serial8250_get_port(priv->line);
->  	struct uart_port *port = &up->port;
-> +	unsigned long flags;
->  	int ret;
->  
->  	ret = clk_prepare_enable(priv->baud_mux_clk);
-> @@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
->  		start_rx_dma(serial8250_get_port(priv->line));
->  	}
->  	serial8250_resume_port(priv->line);
-> -	port->mctrl = priv->saved_mctrl;
-> +
-> +	if (priv->saved_mctrl & TIOCM_RTS) {
-> +		/* Restore RTS */
-> +		spin_lock_irqsave(&port->lock, flags);
-> +		port->mctrl |= TIOCM_RTS;
-> +		spin_unlock_irqrestore(&port->lock, flags);
-> +		port->ops->set_mctrl(port, port->mctrl);
-> +	}
-> +
->  	return 0;
->  }
->  
-> -- 
-> 2.25.1
-> 
+> do you know if there has been any progress on this issue? I see that
+> there has been quite a bit of activity in the RS485 code in linux-next, 
+> but I didn't have time to check if that has any effect on the polarity
+> issue so far.
 
-Hi,
+No, the issue has not been resolved yet but at least I have inspected
+all drivers now and compiled a list of their behavior:
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+          8250_bcm2835aux: identity (RTS in software)
+          8250_dwlib:      identity (RTS in hardware, DE active high after POR)
+                           inverse  (RTS in software em485)
+          8250_exar:       identity (RTS in hardware)
+          8250_fintek:     inverse  (RTS in hardware)
+          8250_lpc18xx:    identity (RTS in hardware)
+          8250_of:         inverse  (RTS in software em485)
+                                    [ns8250, ns16550, lpc3220, da830, wpcm450]
+          8250_omap:       inverse  (RTS in software em485)
+          8250_pci:        identity (RTS in hardware)
+          amba-pl011:      identity (RTS in software)
+          ar933x_uart:     identity (RTS as gpio)
+          atmel_serial:    identity (RTS in hardware, only high supported)
+          fsl_lpuart:      inverse  (RTS in hardware)
+          imx:             identity (RTS as gpio or CTS in software)
+          max310x:         identity (RTS in hardware)
+          mcf:             identity (RTS in hardware)
+          omap-serial:     identity (RTS as gpio)
+          sc16is7xx:       inverse  (RTS in hardware)
+          stm32-usart:     identity (RTS in hardware)
+                           identity (RTS as gpio)
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Where "identity" means that SER_RS485_RTS_ON_SEND results in "high"
+voltage level and "inverse" means it results in "low" voltage level.
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+Unless I've made any mistakes here, it looks like the majority of
+drivers use "identity".  The only ones using inverse polarity are
+8250-compatible UARTs using em485 software emulation (with the
+exception of bcm2835aux), plus three UART drivers which use
+hardware-driven RTS.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+When you reported the issue, you claimed that i.MX, OMAP and STM32
+drivers use inverse polarity.  I was only able to confirm that for
+OMAP (if 8250_omap.c is used, not the older omap-serial.c).
 
-thanks,
+When you refer to i.MX, I suppose you're referring to fsl_lpuart.c
+(which uses hardware-controlled RTS assertion on newer i.MX SoCs),
+not imx.c, right?  The latter offers two options to drive an RS-485
+transceiver, either through CTS or through an mctrl_gpio.
+imx_uart_rts_active() clears the CTS bit in the UCR2 register.
+According to page 4679 of iMX53RM.pdf, that means "high" voltage level,
+hence "identity".  And if an mctrl_gpio is used, mctrl_gpio_set()
+sets the GPIO to "active", which likewise means "high" voltage level
+unless you've specified the GPIO as active-low in the devicetree:
+https://www.nxp.com/docs/en/reference-manual/iMX53RM.pdf
 
-greg k-h's patch email bot
+As for stm32-usart.c, the driver offers either hardware-controlled
+RTS assertion or mctrl_gpio.  The hardware-controlled variant clears
+the DEP bit in the USART_CR3 register if SER_RS485_RTS_ON_SEND is set.
+According to page 1392 of the STM32 documentation this means that
+"DE signal is active high", so it seems to me that this driver uses
+"identity and not "inverse" as claimed:
+https://www.st.com/resource/en/reference_manual/rm0351-stm32l47xxx-stm32l48xxx-stm32l49xxx-and-stm32l4axxx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
+
+Anyway, I'll try to come up with a fix for the affected em485 drivers
+by next week.  The "inverse" drivers with hardware-controlled RTS
+should not be affected by d3b3404df318 (unless I'm missing something).
+
+Thanks!
+
+Lukas
