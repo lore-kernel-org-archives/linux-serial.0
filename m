@@ -2,99 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E4DC433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 09:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E32C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 09:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiF2JlV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S232626AbiF2JoT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiF2JlU (ORCPT
+        with ESMTP id S232934AbiF2JoR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:41:20 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0C6039825;
-        Wed, 29 Jun 2022 02:41:19 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 9BC6380CD;
-        Wed, 29 Jun 2022 09:36:04 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 12:41:17 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250: Fix PM usage_count for console handover
-Message-ID: <YrwePdVzSYDygdVA@atomide.com>
-References: <20220628165834.63044-1-ilpo.jarvinen@linux.intel.com>
- <YrtvOSrrSLGX/coS@smile.fi.intel.com>
- <YrwZkTcU9IyY2DhN@atomide.com>
- <5548afe5-20aa-9066-37e7-a3b2b26872e1@linux.intel.com>
+        Wed, 29 Jun 2022 05:44:17 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC97F3BBF0;
+        Wed, 29 Jun 2022 02:44:16 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id C32D31E80D11;
+        Wed, 29 Jun 2022 17:43:04 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 0WurLbxwHkwr; Wed, 29 Jun 2022 17:43:02 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 7E7951E80CDC;
+        Wed, 29 Jun 2022 17:43:01 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, andy.shevchenko@gmail.com
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com,
+        Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] serial: Fix spelling mistake
+Date:   Wed, 29 Jun 2022 17:44:11 +0800
+Message-Id: <20220629094411.39066-1-jiaming@nfschina.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <5548afe5-20aa-9066-37e7-a3b2b26872e1@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> [220629 09:26]:
-> On Wed, 29 Jun 2022, Tony Lindgren wrote:
-> 
-> > * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [220628 21:09]:
-> > > On Tue, Jun 28, 2022 at 07:58:34PM +0300, Ilpo Järvinen wrote:
-> > > > When console is enabled, univ8250_console_setup() calls
-> > > > serial8250_console_setup() before .dev is set to uart_port. Therefore,
-> > > > it will not call pm_runtime_get_sync(). Later, when the actual driver
-> > > > is going to take over univ8250_console_exit() is called. As .dev is
-> > > > already set, serial8250_console_exit() makes pm_runtime_put_sync() call
-> > > > with usage count being zero triggering PM usage count warning
-> > > > (extra debug for univ8250_console_setup(), univ8250_console_exit(), and
-> > > > serial8250_register_ports()):
-> > 
-> > Hmm so serial8250_console_setup() calls pm_runtime_get_sync() if dev
-> > exists..
-> > 
-> > > > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> > > > index 57e86133af4f..2e83e7367441 100644
-> > > > --- a/drivers/tty/serial/8250/8250_core.c
-> > > > +++ b/drivers/tty/serial/8250/8250_core.c
-> > > > @@ -23,6 +23,7 @@
-> > > >  #include <linux/sysrq.h>
-> > > >  #include <linux/delay.h>
-> > > >  #include <linux/platform_device.h>
-> > > > +#include <linux/pm_runtime.h>
-> > > >  #include <linux/tty.h>
-> > > >  #include <linux/ratelimit.h>
-> > > >  #include <linux/tty_flip.h>
-> > > > @@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
-> > > >  
-> > > >  		up->port.dev = dev;
-> > > >  
-> > > > +		if (uart_console_enabled(&up->port))
-> > > > +			pm_runtime_get_sync(up->port.dev);
-> > > > +
-> > > >  		serial8250_apply_quirks(up);
-> > > >  		uart_add_one_port(drv, &up->port);
-> > > >  	}
-> > 
-> > ..and now we also call it here. Are there now cases where pm_runtime_get_sync()
-> > gets called twice potentially or does uart_console_enabled() ensure that is
-> > not the case already?
-> 
-> The code in serial8250_register_ports() right before that context block is 
-> this:
-> 
-> 		if (up->port.dev)
-> 			continue;
-> 
-> If serial8250_console_setup() already saw .dev != NULL, we take that 
-> continue and pm_runtime_get_sync() will not get called again here.
+Change 'timeing' to 'timing'.
+Change 'Characteres' to 'Characters'.
 
-OK thanks. Looks good to me:
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index fdf21de74e90..a7ed5012b90e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1510,7 +1510,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
+ 		if (!(lsr & UART_LSR_THRE))
+ 			return;
+ 		/*
+-		 * To provide required timeing and allow FIFO transfer,
++		 * To provide required timing and allow FIFO transfer,
+ 		 * __stop_tx_rs485() must be called only when both FIFO and
+ 		 * shift register are empty. The device driver should either
+ 		 * enable interrupt on TEMT or set UART_CAP_NOTEMT that will
+@@ -2796,7 +2796,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		port->read_status_mask |= UART_LSR_BI;
+ 
+ 	/*
+-	 * Characteres to ignore
++	 * Characters to ignore
+ 	 */
+ 	port->ignore_status_mask = 0;
+ 	if (termios->c_iflag & IGNPAR)
+-- 
+2.34.1
+
