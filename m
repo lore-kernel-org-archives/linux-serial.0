@@ -2,140 +2,99 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC5FC43334
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EADEC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 07:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbiF2HX7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
+        id S231430AbiF2Ha2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiF2HX7 (ORCPT
+        with ESMTP id S230491AbiF2Ha1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 03:23:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BE11928E
-        for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2022 00:23:58 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o6S2d-0005UO-4V; Wed, 29 Jun 2022 09:23:15 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o6S2S-003M3c-Vk; Wed, 29 Jun 2022 09:23:08 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o6S2V-001qeU-Nu; Wed, 29 Jun 2022 09:23:07 +0200
-Date:   Wed, 29 Jun 2022 09:23:04 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     Wolfram Sang <wsa@kernel.org>, dri-devel@lists.freedesktop.org,
-        linux-serial@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-mtd@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-crypto@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, netdev@vger.kernel.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        chrome-platform@lists.linux.dev, linux-input@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-hwmon@vger.kernel.org,
-        Support Opensource <support.opensource@diasemi.com>,
-        linux-fbdev@vger.kernel.org, patches@opensource.cirrus.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        kasan-dev@googlegroups.com, linux-staging@lists.linux.dev
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
-Message-ID: <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
- <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
+        Wed, 29 Jun 2022 03:30:27 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00C81DA6B
+        for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2022 00:30:26 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id sb34so30668078ejc.11
+        for <linux-serial@vger.kernel.org>; Wed, 29 Jun 2022 00:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8f9f/DdxcxCzzZ6MEC/yMm66gVi082k8/rCqNHVJetw=;
+        b=ZFc70PtUa5ydr2IDLP8qWrRARDxIZ0xHbWPrHDXA1A78Sv6PcZQkFq1Pl5ksYGhQpA
+         H0HS/TBnWToTgqJqBMrW3fCS3/OTkQxgjAxjYmGcwvm9GAd0ef5cYra07oBBsNi/GELG
+         FN5Kybp4/WNKH0RDImP2VFGhSGdKkysI0Jsu+w1TKjNaKZ1l/GP+KknlLiws/b8KmDfX
+         ZQ4YbUuoyLZZRgWXE+UCHPvFreFYjUJVP76+BG0XFSWunsQHbN5vWJ6+pZwRc0Dmyuz/
+         cD5BaSv1KEmrF2geHwDf7en8qHnpcrvBRwU3Lh7yVNMb5dla3vr2f/GkuLudd0TZK5F0
+         RDdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8f9f/DdxcxCzzZ6MEC/yMm66gVi082k8/rCqNHVJetw=;
+        b=76iua6r7fI6Q67V9zYW3uqfnuU66L4RomtT0Zb6DiYsH5uOEaiZoiakHkORjat/25Y
+         RdVgCRD9toKRMYPfHx5dgltCdmckGjFNeG/Uzcdeov9KUg1El+ysxuhioWWI8QstOByo
+         8HslAdsZPKRgW+BeG0GNE9TeNdfe552oUAeveMxfbDzy7pGuXcvHPowWwCBdr9hQBupz
+         bAdM16N0DPmCFQPnKiDPFZ3I5sY/Zn/EAjozYz+hPPqjAiIjuC0aeWaLcbx2rK4ElW1O
+         +uFP5uVB8gnUktfF5oMKYxU99+uGNWFELc/Sj/JLEjOEg0eGfTNALFB14o8BQlNaweS2
+         2g2A==
+X-Gm-Message-State: AJIora/gWWUmLftp9gzM8gBuBZ5jutHMVCapUI74Baz+hZ5UodmOqPXN
+        PtsvQa9bdGPWTEbloylru8vA6w==
+X-Google-Smtp-Source: AGRyM1tYJfy35uELg9evZ2s21gatUi2PnZHF3AxAijFvL1oP2JbDyBofB1Va552x9uvLRUgMeJvcSQ==
+X-Received: by 2002:a17:907:3f28:b0:726:3149:8a99 with SMTP id hq40-20020a1709073f2800b0072631498a99mr1932872ejc.277.1656487825516;
+        Wed, 29 Jun 2022 00:30:25 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p17-20020a056402501100b0043787ad7cfasm6169340eda.22.2022.06.29.00.30.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 00:30:25 -0700 (PDT)
+Message-ID: <f8186d95-a49c-d211-d0a6-bed9975b03b0@linaro.org>
+Date:   Wed, 29 Jun 2022 09:30:23 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3yzpq2rgg2xm7tqn"
-Content-Disposition: inline
-In-Reply-To: <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] tty: serial: samsung_tty: support more than 4 uart
+ ports
+Content-Language: en-US
+To:     Chanho Park <chanho61.park@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <CGME20220629005750epcas2p418cd79922d1b3f13eda761ee3fcd3e17@epcas2p4.samsung.com>
+ <20220629005538.60132-1-chanho61.park@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220629005538.60132-1-chanho61.park@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 29/06/2022 02:55, Chanho Park wrote:
+> Regarding Exynos Auto v9 SoC, it supports uarts up to 12. However, the
+> maximum number of the ports has been derived from
+> CONFIG_SERIAL_SAMSUNG_UARTS and tightly coupled with the config for
+> previous Samsung SoCs such as s3c24xx and s3c64xx. To overcome this
+> limitation, this changes the usage of the definition to UART_NR which is
+> widely used from other serial drivers. This also defines the value to 12
+> only for ARM64 SoCs to not affect the change to previous arm32 SoCs.
+> 
+> Instead of enumerating all the ports as predefined arrays, this
+> introduces s3c24xx_serial_init_port_default that is initializing the
+> structure as the default value.
+> 
+> Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+> ---
 
---3yzpq2rgg2xm7tqn
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[I dropped nearly all individuals from the Cc: list because various
-bounces reported to be unhappy about the long (logical) line.]
 
-On Wed, Jun 29, 2022 at 03:03:54PM +0800, Jeremy Kerr wrote:
-> Looks good - just one minor change for the mctp-i2c driver, but only
-> worthwhile if you end up re-rolling this series for other reasons:
->=20
-> > -static int mctp_i2c_remove(struct i2c_client *client)
-> > +static void mctp_i2c_remove(struct i2c_client *client)
-> > =A0{
-> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_client *mcli =3D i2c_get_client=
-data(client);
-> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_dev *midev =3D NULL, *tmp =3D N=
-ULL;
-> > @@ -1000,7 +1000,6 @@ static int mctp_i2c_remove(struct i2c_client *cli=
-ent)
-> > =A0=A0=A0=A0=A0=A0=A0=A0mctp_i2c_free_client(mcli);
-> > =A0=A0=A0=A0=A0=A0=A0=A0mutex_unlock(&driver_clients_lock);
-> > =A0=A0=A0=A0=A0=A0=A0=A0/* Callers ignore return code */
-> > -=A0=A0=A0=A0=A0=A0=A0return 0;
-> > =A0}
->=20
-> The comment there no longer makes much sense, I'd suggest removing that
-> too.
-
-Yeah, that was already pointed out to me in a private reply. It's
-already fixed in
-
-	https://git.pengutronix.de/cgit/ukl/linux/log/?h=3Di2c-remove-void
-
-> Either way:
->=20
-> Reviewed-by: Jeremy Kerr <jk@codeconstruct.com.au>
-
-Added to my tree, too.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---3yzpq2rgg2xm7tqn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmK7/dUACgkQwfwUeK3K
-7AnTJgf9GW2H7fk9/Je11PRlCnUOSZ1sz/49RHAm4xj66pI/hdRP++D8L5o7ntEU
-Hl5hKosR36cUyX12ie+YQtiCRkjhLqUoJnPzJOtcXQNV7mlMt6ds2INSO4iHYtMa
-b2UH+lLQ6K/DO0+1KquElKJhfBOKucYY1WQAVK4cfasBKMR4MtukcHAgcYClRYdj
-Nvvy6bCjqr8M1+uqDTJUUR/d0rWYHxFKygYRUfK7YPpz57gaVgaR9Js9GDGkVFB4
-qVL5x23NzgB/Djr1Ls1F6Z5eFMjbtVb+S1HDRsU+HJOYD6v1LkT2OFx9iFpme+8m
-+4HHNR5pxKogz59u4YpP1pIb0MejhA==
-=ibah
------END PGP SIGNATURE-----
-
---3yzpq2rgg2xm7tqn--
+Best regards,
+Krzysztof
