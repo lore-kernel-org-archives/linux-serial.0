@@ -2,165 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DAB8C43334
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 09:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF96C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jun 2022 09:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233120AbiF2Jsr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 05:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        id S233027AbiF2JwB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 29 Jun 2022 05:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233027AbiF2Jsq (ORCPT
+        with ESMTP id S233108AbiF2Jvw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 05:48:46 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AD03D1D7;
-        Wed, 29 Jun 2022 02:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656496125; x=1688032125;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kR520z9Moq5dCNqgaHhzTffg8JxRytrsfPcAIOtwgTE=;
-  b=iuy2Oc59R3Z5Thts1yxX9y/5DH0xiWyLPRX9nQHI+cM1cJM9O88loWYP
-   l6a28CwwKBowY2tbY0N98EuGJ0a6u0XoWdVA2hbUI0s3jE6OSz8zK1p4T
-   pAiQZ87uEtbDfzNJByTttNWb0MV7UKf5iUpjgEwHvW1TYLSqFZrsthDwg
-   tAswB5PEksuOFljFDqE+BTdmgyeq0BhtlCm6ZIKE8idsNwyvlXXE1qjCF
-   uQegklAY4DRk7YkHp7ZhmCfBZIVll9FZvEvGgD9qLCSYR/D96bfDpvMec
-   9+j+ab0aHXxozUN83B+qdvSsseBH0IzPAhvL4Tq9CVJwD58zKdXIgyGMU
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="262395191"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="262395191"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:48:45 -0700
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="647322406"
-Received: from dsummer-mobl.ger.corp.intel.com ([10.252.38.121])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 02:48:43 -0700
-Date:   Wed, 29 Jun 2022 12:48:41 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] serial: 8250: Fix PM usage_count for console handover
-Message-ID: <b4f428e9-491f-daf2-2232-819928dc276e@linux.intel.com>
+        Wed, 29 Jun 2022 05:51:52 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5210C3D4AB;
+        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3177f4ce3e2so142733977b3.5;
+        Wed, 29 Jun 2022 02:51:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
+        b=k5Dz9Mh62sOyTMvK1jWeC2gk1L7MIejLDCiZiyIRvcclCRkz4ozx33pOhMPnvNMVUl
+         MjyFTRHSY8KdXW81PV6z5oHynmj5QMU8LplegY5n5eWyBQGtOSkfZJJuapRR8+SwYBtQ
+         rROmUXBAUjkrru2etvsjnCDJFjt04o8vFd+u6AoOV49seRLM8K9wtA8GSpXsPEgQuLvF
+         PJlB1eeddl4lI1TzBtc98SQsuQ4dambMemxNJPm5SW51QctVQjPoJvl7zW4nke/Ggapy
+         daYEhlJkgp8BZbpn/ObnS2Cl+6FWaFTG5dxo1MoLDAvr1cwcFNQelzoDIS+o7p4Xij86
+         3rTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GElelnyPu+t07uIEEMNg6LAxOxXoiqjQ91T5C4EviUo=;
+        b=L9TTzv8FdhtCFWDHOi5hj/gjTSBne/VLJwyvlJgLOKmH0wUKhfwJQ2Ll7im0yQhGIh
+         Od/+YDJSOyaOvpRouWZtEPFJLtIS1u0i0rPbvNqDcYO1AUkOIrNiwzV4owLaacXWaPwO
+         3ilEYqpH9YlbCDHEmh3Q7SNh3mmsBSEbjq8oIDK0D4Rk1ef0B5bp68EONJvNkogadr3G
+         6cyPFiG+JgIiqI2g9kF9SSaHaVg/15T+14Vkx5ua1zVQiVRHbMtNlMKxusniDLIcVd1r
+         C/glclTPlHeod9gbqK0stOwOW7jnaRaOsYvn4QTn5E0E/SceqKXI8fKnaKvVv2W3UgtL
+         Qbcw==
+X-Gm-Message-State: AJIora/wNxzOrsq3Sx3/paO/b5fPa5Kx1ICOAYFhh0jQYV/jTMzLM0Q0
+        QhZmTQwlQr9OGSdMZpFaKuCYzrVCX+LQElMReXs=
+X-Google-Smtp-Source: AGRyM1sLb4+78GKq6YudXBHdKWqNbrWdmM1li71d2ceRvJR5iIAkl+r/YogRx5zau14DkeHiwy1E0ClG7jr5CwzQ+j8=
+X-Received: by 2002:a81:5d88:0:b0:318:31c1:56f3 with SMTP id
+ r130-20020a815d88000000b0031831c156f3mr2860106ywb.18.1656496310543; Wed, 29
+ Jun 2022 02:51:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1304406510-1656496125=:1529"
+References: <20220628134234.53771-1-ilpo.jarvinen@linux.intel.com>
+ <20220628134234.53771-5-ilpo.jarvinen@linux.intel.com> <CAHp75Vf36sFqX1SL4Sjz6ZgNXP41Nom0Q1s6Psgv9WMFkKtGtg@mail.gmail.com>
+ <29b084c-183b-4a84-2376-2c88eff7d5a@linux.intel.com> <CAHp75VevfptcsTTkFvCRsJRxuKX6aJ2zQ5LyH0O8wP+aB4xXHw@mail.gmail.com>
+ <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
+In-Reply-To: <bc54d67-e573-9ecc-1650-7e7fc35f7897@linux.intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 29 Jun 2022 11:51:13 +0200
+Message-ID: <CAHp75VdsTjbEwocx4DAhMBM6nwKhuL3xgaJeZhV=ZhBPz3pdRw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] serial: 8250_dw: Rework ->serial_out() LCR write
+ retry logic
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, Jun 29, 2022 at 11:40 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
+> > On Wed, Jun 29, 2022 at 10:47 AM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@linux.intel.com> wrote:
+> > > On Tue, 28 Jun 2022, Andy Shevchenko wrote:
 
---8323329-1304406510-1656496125=:1529
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+...
 
-When console is enabled, univ8250_console_setup() calls
-serial8250_console_setup() before .dev is set to uart_port. Therefore,
-it will not call pm_runtime_get_sync(). Later, when the actual driver
-is going to take over univ8250_console_exit() is called. As .dev is
-already set, serial8250_console_exit() makes pm_runtime_put_sync() call
-with usage count being zero triggering PM usage count warning
-(extra debug for univ8250_console_setup(), univ8250_console_exit(), and
-serial8250_register_ports()):
+> > > Eh, are you suggesting I should do write as a side-effect inside one =
+of
+> > > the iopoll.h macros? Because those available seem to only read?
+> > >
+> > > Or should I create another macro there which writes too?
+> >
+> > It seems to me that it would be a macro on top of iopoll's one which
+> > will take an op read and op write arguments depending on the case.
+>
+> The thing is those iopoll macros don't return until the timeout is
+> exhausted
 
-[    0.068987] univ8250_console_setup ttyS0 nodev
-[    0.499670] printk: console [ttyS0] enabled
-[    0.717955] printk: console [ttyS0] printing thread started
-[    1.960163] serial8250_register_ports assigned dev for ttyS0
-[    1.976830] printk: console [ttyS0] disabled
-[    1.976888] printk: console [ttyS0] printing thread stopped
-[    1.977073] univ8250_console_exit ttyS0 usage:0
-[    1.977075] serial8250 serial8250: Runtime PM usage count underflow!
-[    1.977429] dw-apb-uart.6: ttyS0 at MMIO 0x4010006000 (irq = 33, base_baud = 115200) is a 16550A
-[    1.977812] univ8250_console_setup ttyS0 usage:2
-[    1.978167] printk: console [ttyS0] printing thread started
-[    1.978203] printk: console [ttyS0] enabled
+It returns when the condition is true (in your case verify_lcr is OK).
 
-To fix the issue, call pm_runtime_get_sync() in
-serial8250_register_ports() as soon as .dev is set for an uart_port
-if it has console enabled.
+> so I don't think I can reuse them easily for this task ("on top
+> of iopoll's one")? That is, w/o some major side-effect hack (which is
+> IMHO a no-go).
 
-This problem became apparent only recently because 82586a721595 ("PM:
-runtime: Avoid device usage count underflows") added the warning
-printout. I confirmed this problem also occurs with v5.18 (w/o the
-warning printout, obviously).
+Basically what we need is a write-read type of polling.
 
-Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+With your current approach I don't like that retries assignment is
+duplicated several times and decrement happens in the callee. What I'm
+trying to suggest is to research alternatives.
 
----
-v2:
-- Remove reference to reverted printk kthreads from the changelog
-- Collect rev/tested-bys
-
- drivers/tty/serial/8250/8250_core.c | 4 ++++
- drivers/tty/serial/serial_core.c    | 5 -----
- include/linux/serial_core.h         | 5 +++++
- 3 files changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 57e86133af4f..2e83e7367441 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -23,6 +23,7 @@
- #include <linux/sysrq.h>
- #include <linux/delay.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/tty.h>
- #include <linux/ratelimit.h>
- #include <linux/tty_flip.h>
-@@ -558,6 +559,9 @@ serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- 
- 		up->port.dev = dev;
- 
-+		if (uart_console_enabled(&up->port))
-+			pm_runtime_get_sync(up->port.dev);
-+
- 		serial8250_apply_quirks(up);
- 		uart_add_one_port(drv, &up->port);
- 	}
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 85ef7ef00b82..3161445504bc 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2024,11 +2024,6 @@ static int uart_proc_show(struct seq_file *m, void *v)
- }
- #endif
- 
--static inline bool uart_console_enabled(struct uart_port *port)
--{
--	return uart_console(port) && (port->cons->flags & CON_ENABLED);
--}
--
- static void uart_port_spin_lock_init(struct uart_port *port)
- {
- 	spin_lock_init(&port->lock);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index b7b86ee3cb12..9d8aa139b175 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -404,6 +404,11 @@ static const bool earlycon_acpi_spcr_enable EARLYCON_USED_OR_UNUSED;
- static inline int setup_earlycon(char *buf) { return 0; }
- #endif
- 
-+static inline bool uart_console_enabled(struct uart_port *port)
-+{
-+	return uart_console(port) && (port->cons->flags & CON_ENABLED);
-+}
-+
- struct uart_port *uart_get_console(struct uart_port *ports, int nr,
- 				   struct console *c);
- int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
-
--- 
-tg: (f287f971e256..) fix/console-usage_count (depends on: tty-next)
---8323329-1304406510-1656496125=:1529--
+--=20
+With Best Regards,
+Andy Shevchenko
