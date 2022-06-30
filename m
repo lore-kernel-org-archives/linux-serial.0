@@ -2,74 +2,133 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F156C43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EC1C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233956AbiF3IjU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S233072AbiF3IoV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233110AbiF3IjT (ORCPT
+        with ESMTP id S232392AbiF3IoU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:39:19 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9067419A7;
-        Thu, 30 Jun 2022 01:39:16 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,233,1650898800"; 
-   d="scan'208";a="126192432"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 30 Jun 2022 17:39:15 +0900
-Received: from localhost.localdomain (unknown [10.226.93.21])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id CDEB443165D0;
-        Thu, 30 Jun 2022 17:39:11 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH] serial: 8250: dw: Fix the macro RZN1_UART_xDMACR_8_WORD_BURST
-Date:   Thu, 30 Jun 2022 09:39:09 +0100
-Message-Id: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 30 Jun 2022 04:44:20 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61DAC1AF29;
+        Thu, 30 Jun 2022 01:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1656578656; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8HyTVBLAUfpwlyXYrVPEtcPS7gJ1O8fJkaJWfQT+/QQ=;
+        b=ccAzyIa2trLv5mLPWTwyQSxfCZ/snogaVMnuutpQPPZrY745ccZqReeaPE1NahngbImc4t
+        7xy7aRn8cNh2QGYIiWYmUHyNufoE3ZGyP/Iqy4EEU26zBWf7VJHgRdktXI0EjHsuXEIO0n
+        GxpQ1n+TRk6tDIopXVH9aKrDgnpqEBw=
+Date:   Thu, 30 Jun 2022 09:44:07 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
+To:     Ilpo =?iso-8859-1?q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Message-Id: <J98AER.7ZO6O9DK05IM1@crapouillou.net>
+In-Reply-To: <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
+References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
+        <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As per RZ/N1 peripheral user manual(r01uh0752ej0100-rzn1-peripheral.pdf)
-rev 1.0.0 Mar,2019, the value for 8_WORD_BURST is 4(b2,b1=2’b10).
+Hi Ilpo,
 
-This patch fixes the macro as per the user manual.
+Le jeu., juin 30 2022 at 10:41:40 +0300, Ilpo J=E4rvinen=20
+<ilpo.jarvinen@linux.intel.com> a =E9crit :
+> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
+>=20
+>>  Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting=20
+>> dw8250_pm_ops
+>>  to use new PM macros.
+>>=20
+>>  Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>=20
+> Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+>=20
+> Not directily related to the patch itself but do you have any idea why
+> 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
+> didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
+> because in SET_RUNTIME_PM_OPS() the callbacks are only created with
+> #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain=20
+> that
+> behavior but it didn't? Was it just an oversight that should be fixed?
 
-Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- drivers/tty/serial/8250/8250_dw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The RUNTIME_PM_OPS() does not wrap pointers with pm_ptr(), because the=20
+pointer to the dev_pm_ops should only ever be used wrapped with=20
+pm_ptr() or pm_sleep_ptr().
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index f57bbd32ef11..931490b27d6b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -47,7 +47,7 @@
- #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
- #define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
- #define RZN1_UART_xDMACR_4_WORD_BURST	(1 << 1)
--#define RZN1_UART_xDMACR_8_WORD_BURST	(3 << 1)
-+#define RZN1_UART_xDMACR_8_WORD_BURST	(2 << 1)
- #define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
- 
- /* Quirks */
--- 
-2.25.1
+Which is not done here.
+
+Andy:
+The deference of dw8250_pm_ops should be pm_ptr(&dw8250_pm_ops). If you=20
+only had system suspend/resume functions, you'd use pm_sleep_ptr()=20
+there.
+
+Cheers,
+-Paul
+
+> --
+>  i.
+>=20
+>>  ---
+>>   drivers/tty/serial/8250/8250_dw.c | 8 ++------
+>>   1 file changed, 2 insertions(+), 6 deletions(-)
+>>=20
+>>  diff --git a/drivers/tty/serial/8250/8250_dw.c=20
+>> b/drivers/tty/serial/8250/8250_dw.c
+>>  index f71428c85562..adcc869352b1 100644
+>>  --- a/drivers/tty/serial/8250/8250_dw.c
+>>  +++ b/drivers/tty/serial/8250/8250_dw.c
+>>  @@ -691,7 +691,6 @@ static int dw8250_remove(struct platform_device=20
+>> *pdev)
+>>   	return 0;
+>>   }
+>>=20
+>>  -#ifdef CONFIG_PM_SLEEP
+>>   static int dw8250_suspend(struct device *dev)
+>>   {
+>>   	struct dw8250_data *data =3D dev_get_drvdata(dev);
+>>  @@ -709,9 +708,7 @@ static int dw8250_resume(struct device *dev)
+>>=20
+>>   	return 0;
+>>   }
+>>  -#endif /* CONFIG_PM_SLEEP */
+>>=20
+>>  -#ifdef CONFIG_PM
+>>   static int dw8250_runtime_suspend(struct device *dev)
+>>   {
+>>   	struct dw8250_data *data =3D dev_get_drvdata(dev);
+>>  @@ -733,11 +730,10 @@ static int dw8250_runtime_resume(struct=20
+>> device *dev)
+>>=20
+>>   	return 0;
+>>   }
+>>  -#endif
+>>=20
+>>   static const struct dev_pm_ops dw8250_pm_ops =3D {
+>>  -	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+>>  -	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume,=20
+>> NULL)
+>>  +	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+>>  +	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume,=20
+>> NULL)
+>>   };
+>>=20
+>>   static const struct dw8250_platform_data dw8250_dw_apb =3D {
+>>=20
+
 
