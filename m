@@ -2,133 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EC1C43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76258C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiF3IoV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        id S232147AbiF3JAs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232392AbiF3IoU (ORCPT
+        with ESMTP id S229964AbiF3JAs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:44:20 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61DAC1AF29;
-        Thu, 30 Jun 2022 01:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656578656; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8HyTVBLAUfpwlyXYrVPEtcPS7gJ1O8fJkaJWfQT+/QQ=;
-        b=ccAzyIa2trLv5mLPWTwyQSxfCZ/snogaVMnuutpQPPZrY745ccZqReeaPE1NahngbImc4t
-        7xy7aRn8cNh2QGYIiWYmUHyNufoE3ZGyP/Iqy4EEU26zBWf7VJHgRdktXI0EjHsuXEIO0n
-        GxpQ1n+TRk6tDIopXVH9aKrDgnpqEBw=
-Date:   Thu, 30 Jun 2022 09:44:07 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
-To:     Ilpo =?iso-8859-1?q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thu, 30 Jun 2022 05:00:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4968862FD;
+        Thu, 30 Jun 2022 02:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656579647; x=1688115647;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=TXcK+3q53pj9pgGV4Quq35o1WwaCOTY/3PPRcUv/fvU=;
+  b=gYdU5GOq/HlNmbt5ex43HxqhnEQYgYUqJNH23If6pMVjmb3Pdpnn3ZBs
+   4rB4LhIBCIzzcD1ucomiKUlDmPCf20fTmAGieGgln4Bj4AeV9PIGPWdIo
+   Cn73PyVvhSk2IcykbSA6FP1aI1+uBjG/lyjKj1bC755j1sB7laVBxkd3e
+   dCGeitMzS1sr3QwtHEuXr/BmLbTJk1tYwvuFSWpfvq+nA++Ue4OAl6l7Q
+   NF+nCpKqFiOhRM+PopDFoPaCEJb6rc583QxJrryjVvRxLj6Bi2k83lpEl
+   ITeN0hlXatOXntPZx63CzxB2HRYd3fFA6ccs12qYzvpG8M09WU8OG/zNi
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="283391536"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="283391536"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:00:46 -0700
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="917971818"
+Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:00:43 -0700
+Date:   Thu, 30 Jun 2022 12:00:42 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Paul Cercueil <paul@crapouillou.net>
+cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Message-Id: <J98AER.7ZO6O9DK05IM1@crapouillou.net>
-In-Reply-To: <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
-References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
-        <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
+In-Reply-To: <J98AER.7ZO6O9DK05IM1@crapouillou.net>
+Message-ID: <e1cfe399-2b4c-790-f648-3ce13736b1eb@linux.intel.com>
+References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com> <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com> <J98AER.7ZO6O9DK05IM1@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323329-2069501113-1656579645=:1605"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Ilpo,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Le jeu., juin 30 2022 at 10:41:40 +0300, Ilpo J=E4rvinen=20
-<ilpo.jarvinen@linux.intel.com> a =E9crit :
-> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
->=20
->>  Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting=20
->> dw8250_pm_ops
->>  to use new PM macros.
->>=20
->>  Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->=20
-> Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
->=20
-> Not directily related to the patch itself but do you have any idea why
-> 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
-> didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
-> because in SET_RUNTIME_PM_OPS() the callbacks are only created with
-> #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain=20
-> that
-> behavior but it didn't? Was it just an oversight that should be fixed?
+--8323329-2069501113-1656579645=:1605
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 
-The RUNTIME_PM_OPS() does not wrap pointers with pm_ptr(), because the=20
-pointer to the dev_pm_ops should only ever be used wrapped with=20
-pm_ptr() or pm_sleep_ptr().
+On Thu, 30 Jun 2022, Paul Cercueil wrote:
 
-Which is not done here.
+> Hi Ilpo,
+> 
+> Le jeu., juin 30 2022 at 10:41:40 +0300, Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> a écrit :
+> > On Wed, 29 Jun 2022, Andy Shevchenko wrote:
+> > 
+> > >  Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting
+> > > dw8250_pm_ops
+> > >  to use new PM macros.
+> > > 
+> > >  Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > 
+> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> > 
+> > Not directily related to the patch itself but do you have any idea why
+> > 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
+> > didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
+> > because in SET_RUNTIME_PM_OPS() the callbacks are only created with
+> > #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that
+> > behavior but it didn't? Was it just an oversight that should be fixed?
+> 
+> The RUNTIME_PM_OPS() does not wrap pointers with pm_ptr(), because the pointer
+> to the dev_pm_ops should only ever be used wrapped with pm_ptr() or
+> pm_sleep_ptr().
+> 
+> Which is not done here.
 
-Andy:
-The deference of dw8250_pm_ops should be pm_ptr(&dw8250_pm_ops). If you=20
-only had system suspend/resume functions, you'd use pm_sleep_ptr()=20
-there.
+Ok, thanks a lot for the explanation. It's really appreciated.
 
-Cheers,
--Paul
+-- 
+ i.
 
-> --
->  i.
->=20
->>  ---
->>   drivers/tty/serial/8250/8250_dw.c | 8 ++------
->>   1 file changed, 2 insertions(+), 6 deletions(-)
->>=20
->>  diff --git a/drivers/tty/serial/8250/8250_dw.c=20
->> b/drivers/tty/serial/8250/8250_dw.c
->>  index f71428c85562..adcc869352b1 100644
->>  --- a/drivers/tty/serial/8250/8250_dw.c
->>  +++ b/drivers/tty/serial/8250/8250_dw.c
->>  @@ -691,7 +691,6 @@ static int dw8250_remove(struct platform_device=20
->> *pdev)
->>   	return 0;
->>   }
->>=20
->>  -#ifdef CONFIG_PM_SLEEP
->>   static int dw8250_suspend(struct device *dev)
->>   {
->>   	struct dw8250_data *data =3D dev_get_drvdata(dev);
->>  @@ -709,9 +708,7 @@ static int dw8250_resume(struct device *dev)
->>=20
->>   	return 0;
->>   }
->>  -#endif /* CONFIG_PM_SLEEP */
->>=20
->>  -#ifdef CONFIG_PM
->>   static int dw8250_runtime_suspend(struct device *dev)
->>   {
->>   	struct dw8250_data *data =3D dev_get_drvdata(dev);
->>  @@ -733,11 +730,10 @@ static int dw8250_runtime_resume(struct=20
->> device *dev)
->>=20
->>   	return 0;
->>   }
->>  -#endif
->>=20
->>   static const struct dev_pm_ops dw8250_pm_ops =3D {
->>  -	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
->>  -	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume,=20
->> NULL)
->>  +	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
->>  +	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume,=20
->> NULL)
->>   };
->>=20
->>   static const struct dw8250_platform_data dw8250_dw_apb =3D {
->>=20
+> Andy:
+> The deference of dw8250_pm_ops should be pm_ptr(&dw8250_pm_ops). If you only
+> had system suspend/resume functions, you'd use pm_sleep_ptr() there.
 
 
+--8323329-2069501113-1656579645=:1605--
