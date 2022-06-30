@@ -2,106 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A7BC43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C00C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:33:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233367AbiF3JbU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        id S232459AbiF3Jdv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiF3JbS (ORCPT
+        with ESMTP id S229977AbiF3Jdv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:31:18 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B221242A34;
-        Thu, 30 Jun 2022 02:31:17 -0700 (PDT)
+        Thu, 30 Jun 2022 05:33:51 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AAB2BB35;
+        Thu, 30 Jun 2022 02:33:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656581477; x=1688117477;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ts2C+OqBlxWP7DBOA939sjPkbYuxOnt3IFBir6lTgbI=;
-  b=iHaBuJWFdcIHRxrzU5+WLKkAkRK39u8rXNbNLPW0ujdBqsiljlUHOKK3
-   tUwqqWGs51w/g3NUnVTP++QZz8lqamEiS/MnFmSXuj6r6mDkGlwqK3ptA
-   x2utLx9AxOtnhy/FFaJE8t1o9OawF/TtXLivEFzYcvf573VM5DL0HDl9d
-   zg6/p/NNia+81+y/zloelwo2iH2USlAD0ODqETAda2B/KqYr1NWm2rEll
-   +14mUQxIWiVoOi3B2CHA9/gqxoA7WNR3RmJ3tbbXcpMvGtRdJe0zZEUOY
-   ZfpGpeOzAFh6NB1/fTUzKcUkXOZTez/fZw1PlG7KqFjjosFC19QDpp9ze
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262704216"
+  t=1656581630; x=1688117630;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=T1ylInVtE0EmcDSIAmU/Rw3OQAzUbZ0+fwUP1lx/0S4=;
+  b=UzFKMIUOwCJcJ32QQ84+1hv9hU69kzXtoPA/pCWoLncKp6oKgYnP+FrZ
+   okV73pp18cn2XnNmZ2d/rDAjqmvbTmSvBJZDzTGtFMRf5Y2bxcYmf6n++
+   Q9jPHTFxY8Ms/HeODxGOa4lG0sdZ3/QIe2GKOx4BI1wH5uppk69ybjT5K
+   B4+xakyxppQ815M+0bbeDtWpTX8TUhLFf6AxOHMPaIT9hCrNzq1WrakEl
+   XRi3bMdwcp7yjSFiNpIL7Dc9Zs04nEUNtErdJ0n8bX8Id5xwI6vppj4ls
+   wvJLh3EqC3wppGPAHcQIDaHn937eUaBw6zA0OkZM9NMch2sLXrF+jsAoX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="307806105"
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="262704216"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:31:17 -0700
+   d="scan'208";a="307806105"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:33:50 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="718160631"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:31:15 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o6qW0-000yQX-DP;
-        Thu, 30 Jun 2022 12:31:12 +0300
-Date:   Thu, 30 Jun 2022 12:31:12 +0300
+   d="scan'208";a="588696876"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 02:33:48 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 203E611E; Thu, 30 Jun 2022 12:33:53 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
-Message-ID: <Yr1tYLgj4+F8pKO4@smile.fi.intel.com>
-References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
- <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
- <J98AER.7ZO6O9DK05IM1@crapouillou.net>
+Subject: [PATCH v2 1/1] serial: 8250_dw: Drop PM ifdeffery
+Date:   Thu, 30 Jun 2022 12:33:51 +0300
+Message-Id: <20220630093351.27926-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <J98AER.7ZO6O9DK05IM1@crapouillou.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 09:44:07AM +0100, Paul Cercueil wrote:
-> Le jeu., juin 30 2022 at 10:41:40 +0300, Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> a écrit :
-> > On Wed, 29 Jun 2022, Andy Shevchenko wrote:
-> > 
-> > >  Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting
-> > > dw8250_pm_ops
-> > >  to use new PM macros.
-> > > 
-> > >  Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > 
-> > Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm_ops
+to use new PM macros. Since we are using runtime PM, wrap dw8250_pm_ops into
+pm_ptr().
 
-I will drop this for v2.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: wrapped dw8250_pm_ops into pm_ptr() macro (Paul)
+ drivers/tty/serial/8250/8250_dw.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-> > Not directily related to the patch itself but do you have any idea why
-> > 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
-> > didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
-> > because in SET_RUNTIME_PM_OPS() the callbacks are only created with
-> > #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that
-> > behavior but it didn't? Was it just an oversight that should be fixed?
-> 
-> The RUNTIME_PM_OPS() does not wrap pointers with pm_ptr(), because the
-> pointer to the dev_pm_ops should only ever be used wrapped with pm_ptr() or
-> pm_sleep_ptr().
-> 
-> Which is not done here.
-> 
-> Andy:
-> The deference of dw8250_pm_ops should be pm_ptr(&dw8250_pm_ops). If you only
-> had system suspend/resume functions, you'd use pm_sleep_ptr() there.
-
-Right, it's a shame how I forgot that while telling everybody to use them.
-
-Thanks, Paul!
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 921ac5c8cb38..927a4a85367a 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -743,7 +743,6 @@ static int dw8250_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int dw8250_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -775,9 +774,7 @@ static int dw8250_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif /* CONFIG_PM_SLEEP */
+ 
+-#ifdef CONFIG_PM
+ static int dw8250_runtime_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -808,11 +805,10 @@ static int dw8250_runtime_resume(struct device *dev)
+ 	/* TODO: Check if it needs more than it's done in serial8250_console_restore() */
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops dw8250_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+-	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
++	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
++	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+ };
+ 
+ static const struct dw8250_platform_data dw8250_dw_apb = {
+@@ -870,7 +866,7 @@ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+ static struct platform_driver dw8250_platform_driver = {
+ 	.driver = {
+ 		.name		= "dw-apb-uart",
+-		.pm		= &dw8250_pm_ops,
++		.pm		= pm_ptr(&dw8250_pm_ops),
+ 		.of_match_table	= dw8250_of_match,
+ 		.acpi_match_table = dw8250_acpi_match,
+ 	},
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
