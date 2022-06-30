@@ -2,96 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427FDC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 07:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC6EC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233318AbiF3H4x (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S233561AbiF3I3H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbiF3H4w (ORCPT
+        with ESMTP id S234028AbiF3I24 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 03:56:52 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC0C403F2;
-        Thu, 30 Jun 2022 00:56:51 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-31772f8495fso170968337b3.4;
-        Thu, 30 Jun 2022 00:56:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pEG1/5zis6fn9rNZ4cGko3gg4B1FcMMHyqkPX5BcdX8=;
-        b=lUC9kYaRwM0BjvSJzSRdKvwLFR+U74/hzLpRgkBkjOYr3XOjlj8CgqHmG2gaxHtuXW
-         1p75RyRI75cVj0hLo6CN4AvRSRqvF8919+hwoZ+eS6PhYrHH8dnELlYJpoDseAw7VhOo
-         YvtV6hmG/9VwnLXEUbU58K+8kqJhnUsZWZJUfHjM7H/QyIeUdrBB2NtsHrvGxBrWj8zn
-         yWrCYFkZpCdJ9Cv1Wykh5yWKbAOic2NH8/ekh+lNWvY30npihYkkuaKywkv1Mml0gnUR
-         ko0SCMOC/MoRxXjcrijqOJxmOCmK9mwWlNQoGhTEgsz9JYEy3Ek6VyKRMaW9lGQGlnBh
-         ZeJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pEG1/5zis6fn9rNZ4cGko3gg4B1FcMMHyqkPX5BcdX8=;
-        b=F3pUhr1e3yoggIiQXQN/2ZICZsMt8gSHkzD5FshbaeCT0/EzmIHmdK8u9b+TmkCZPW
-         22f6Wy7TRP1R7cHQajG1yMa184MKEfQ0gRpTiwP25iMvmzwT8rTwlNYVJAzblITq9sbP
-         LIH4Ogot65byst8OJWyHKCntZNs1Y9RHfUviArbsRn6G5b0TgBoSO0rZVVVD/HbRqkHM
-         zacfozMnKT3dpTg80gbZzSgKnGPqKHBByaXIWsc1IxfPUVfs0qWMQOnL61Iqn685T2m7
-         SVHENeLrYddwynI/6KGay9x3GAmD3L1s/Uuc126QKeS+joe5K8Oxxt+/rZM2Q1nAAf17
-         bWkw==
-X-Gm-Message-State: AJIora9CQ5FV9dTzXPmsMwrZrliptktsGwWkBeL7Qa5u4A081xXenXrd
-        7hFwlPrtyoF1ZBNFcA25H23Wcg+YIFr+cDCbYONzUJyoK4zmaQ==
-X-Google-Smtp-Source: AGRyM1so4U5iXRDnUOmFWKUYfH0VuZUgTl25P/lq+qTjChyyYigKaV1z5jimYDiiHWkd9cptmD5wDFJk6IJadT5Wtj0=
-X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
- j128-20020a812386000000b0031765868901mr8806187ywj.195.1656575810965; Thu, 30
- Jun 2022 00:56:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com> <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
-In-Reply-To: <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 30 Jun 2022 09:56:11 +0200
-Message-ID: <CAHp75VfY_4CA36MHSi7=VtmcGdXi5kL9aB1HYy2WOJNqc-6L9g@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thu, 30 Jun 2022 04:28:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B24940E67;
+        Thu, 30 Jun 2022 01:28:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F140FB826A3;
+        Thu, 30 Jun 2022 08:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94878C34115;
+        Thu, 30 Jun 2022 08:28:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656577732;
+        bh=cAQUo7kspmH4XuHsaG4rJWzgQnrBlFeAfBrz4QmTHZM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZEKx7fPQrI57hq5FMCZ4ZTRDfq0uDdvKS3bsZwHo+uSu09HoY3A9QmEPU/uWOxaTY
+         OXTFxgpHqz/4urILdk6F20jqIaKhhnvfOLX15qE0ggN1fGKXPhKzy7MT+bX00HtdNb
+         eyHHWyRNQjmi504QnlzS4yT31DxOBOxYnxv/5dJPp+uB7JzU9lr8yDJ0JyBspDPWtA
+         e2kA9eoIvMZ+IlvfIdyOw1S+GjTSicIryNMuOOc16hZs4kHgfZGyk6eBcfHOU22wNW
+         2VPra0C4xfKaYQKC3YgBkKlN3NCzTmG6w/shL0MxHKaZcBziS5/O7Ip+2re6qNAlH5
+         cK7ZmVsJJIvBw==
+Received: by pali.im (Postfix)
+        id 3414096E; Thu, 30 Jun 2022 10:28:49 +0200 (CEST)
+Date:   Thu, 30 Jun 2022 10:28:49 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Allen Yan <yanwei@marvell.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
+Message-ID: <20220630082849.ldvqu7frdrln4ite@pali>
+References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
+ <20220628095136.fhtjjjkj3mre7hwa@pali>
+ <20220628095942.rbpl2iocxoqtzxiy@pali>
+ <CAHp75VeHNERyPAam_-u7+ykYxcUM_N-YT6kBAh+hG+7WNW31SA@mail.gmail.com>
+ <CAHp75VfDA1x0OQjBb8rj7RB9bHgjXa86jrcayeuxbYxGLf2=Kg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VfDA1x0OQjBb8rj7RB9bHgjXa86jrcayeuxbYxGLf2=Kg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 9:42 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Wed, 29 Jun 2022, Andy Shevchenko wrote:
->
-> > Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm=
-_ops
-> > to use new PM macros.
+On Tuesday 28 June 2022 13:40:28 Andy Shevchenko wrote:
+> On Tue, Jun 28, 2022 at 1:39 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Jun 28, 2022 at 12:01 PM Pali Rohár <pali@kernel.org> wrote:
+> > > On Tuesday 28 June 2022 11:51:36 Pali Rohár wrote:
+> 
+> ...
+> 
+> > > Ou, now I see where is the issue. Patch which I tested and which fixes
+> > > reporting baudrate is not in kernel tree yet and it looks like I totally
+> > > forgot to sent it to ML. I will send it. Sorry for confusion.
 > >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->
-> Not directily related to the patch itself but do you have any idea why
-> 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones")
-> didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this
-> because in SET_RUNTIME_PM_OPS() the callbacks are only created with
-> #ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that
-> behavior but it didn't? Was it just an oversight that should be fixed?
+> > Shouldn't the Ilpo's applied anyway to fix the current code base?
+> 
+> Ah, now I understand that your patch is a fix. Sorry for the noise.
 
-I have had the same question, but I think it might be related to how
-PM runtime functions when there is no respective configuration option
-set.
-
-+Cc: Rafael.
-
---=20
-With Best Regards,
-Andy Shevchenko
+Yes, my patch fixes the issue which Ilpo described and handles also errors:
+https://lore.kernel.org/linux-serial/20220628100922.10717-1-pali@kernel.org/
