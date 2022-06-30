@@ -2,105 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD253C43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 21:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF82C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 21:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236413AbiF3VSl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 17:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
+        id S236705AbiF3V53 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233505AbiF3VSl (ORCPT
+        with ESMTP id S237370AbiF3V5V (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 17:18:41 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A5E45781;
-        Thu, 30 Jun 2022 14:18:40 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D049C22236;
-        Thu, 30 Jun 2022 23:18:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656623918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o9v9b2QyCY7aa76Uj7OzhyotVoaj9yPQj5f2StXzCJ0=;
-        b=gValFbeRhfoKv08ktpW0wJolm7fhnt3dc5tvtCnf9g1xCl/WeuHpSUjWmHrKIukHWox3an
-        eLLJ/EtO6zk+o16H8Os3k5t7y3IZn1IgtfWfr+ZKOboSV5NtfQSU6xVN9rCIW5xBab0NOy
-        RugwpMNRpJCJCkY5dNjen1lyKAzjwkc=
+        Thu, 30 Jun 2022 17:57:21 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB8A57200
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jun 2022 14:57:20 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id k7so261834ils.8
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jun 2022 14:57:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uzqzvWO6xI/qzQaupX8bR5RZnWn3d58v4IG2QCKmwHU=;
+        b=cp8cJwDcdlIbomiWQnFrZ0zwWFTVLazFVXI9gdwCIChyn9hDeQcQuW3vUFX9EAWT7k
+         2TW+xOpgM3F6JLXd8gFEF3LngmCK9kVVELiF/EIxzxrTe+J79hoEpjvda8fH4zpMMADe
+         Qvnp9rK6AUyKhgRRM5RG2QgH2ibAgpc3/0lLY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uzqzvWO6xI/qzQaupX8bR5RZnWn3d58v4IG2QCKmwHU=;
+        b=dv0jd/5V16ozVi0EwozR5sND8z8KWflDq0E1gR2lEZVsQJ3c1fUnU9vRvq5G7Cr8nK
+         TmcTTx5FyeOAhGk/5ZbvT1TgMbCotg/Fhsmr1f29hqfoPAIKZTeS10VjdsVw8MCsnO9D
+         Wl2CQORc3giHdhKQOICnim6VahP1hXaEnT1IWl823QUcXezOIVp2Ot+hSdiwiEmABozD
+         KgqiLaeMuEglGAyCnJcoFN36bdRwdTUW8xY9L5FAWX673/P6c7Qlb0fMgzykG55BKliW
+         NZCNv2KzO1aI+KvCMF6whAm6QqkrHCZAyr/I0JoRBk/RHEZh6n1FOHnH/syWcwZyu2Jf
+         rMHA==
+X-Gm-Message-State: AJIora/Qp5/P3F/r+0vPhpHIKETayWDrCH1FTp3rT9uxj/iH+MSjv52g
+        VNIoVb3wXY1PDUI6RnG0hqCF2r/h3FSjXIHpfkU=
+X-Google-Smtp-Source: AGRyM1vh8ZW8pVCfPk1IbGfqllvn+/30t5sIEVlH+sZx34noAKbxrTKTgtMLRAESAuO+joIV43m24A==
+X-Received: by 2002:a05:6e02:1201:b0:2d9:2555:15ff with SMTP id a1-20020a056e02120100b002d9255515ffmr6416240ilq.127.1656626239989;
+        Thu, 30 Jun 2022 14:57:19 -0700 (PDT)
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com. [209.85.166.49])
+        by smtp.gmail.com with ESMTPSA id w5-20020a92ad05000000b002dae5883ddesm158240ilh.2.2022.06.30.14.57.17
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 14:57:18 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id m13so575925ioj.0
+        for <linux-serial@vger.kernel.org>; Thu, 30 Jun 2022 14:57:17 -0700 (PDT)
+X-Received: by 2002:a6b:b74e:0:b0:675:594e:140d with SMTP id
+ h75-20020a6bb74e000000b00675594e140dmr5851331iof.154.1656626237471; Thu, 30
+ Jun 2022 14:57:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jun 2022 23:18:37 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Imran Khan <imran.f.khan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: Regression for duplicate (?) console parameters on next-20220630
-In-Reply-To: <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
-References: <8460ecf2a963c85793cf325e16725044@walle.cc>
- <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <93f5abe324cba9de1bff4aee565f8d5a@walle.cc>
-X-Sender: michael@walle.cc
+References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
+ <Yr26oSKOhIBMaKsS@kroah.com> <BL0PR02MB45646DE7D61E648321E9FBB5FABA9@BL0PR02MB4564.namprd02.prod.outlook.com>
+In-Reply-To: <BL0PR02MB45646DE7D61E648321E9FBB5FABA9@BL0PR02MB4564.namprd02.prod.outlook.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 30 Jun 2022 14:57:03 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UAqNMbsed2QX0iK6hpZzh-k3VJ4PvzXxXSTD-uTtURJA@mail.gmail.com>
+Message-ID: <CAD=FV=UAqNMbsed2QX0iK6hpZzh-k3VJ4PvzXxXSTD-uTtURJA@mail.gmail.com>
+Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+To:     "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        "agross@kernel.org" <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "konrad.dybcio@somainline.org" <konrad.dybcio@somainline.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        "mka@chromium.org" <mka@chromium.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am 2022-06-30 21:35, schrieb Nathan Chancellor:
-> On Thu, Jun 30, 2022 at 03:11:58PM +0200, Michael Walle wrote:
->> Hi,
->> 
->> I'm not sure it these are the correct recipients, feel free to CC 
->> others.
->> 
->> Since next-20220630 (or maybe also since next-20220629) I'm getting 
->> the
->> 
->> [    3.707900] WARNING: CPU: 0 PID: 38 at fs/kernfs/dir.c:531
->> kernfs_put.part.0+0x1a0/0x1d4
->> [    3.716313] kernfs_put: console/active: released with incorrect
->> active_ref 0
->> 
->> on both arm and arm64 boards. See for example:
->> https://linux.kernelci.org/test/case/id/62bd840b330c4851eaa39c16/
->> 
->> I have the console set in the device tree as well as on the 
->> commandline.
->> Up until recently that wasn't a problem and I guess that should be a 
->> valid
->> configuration. That being said, the warn() will go away if I remove 
->> the
->> console= parameter on the commandline.
->> 
->> I haven't had time to do a bisect yet. That will probably my next 
->> step;
->> or maybe kernelci will already do that for me, Guillaume? Unless 
->> someone
->> has some more insights/ideas.
-> 
-> I noticed this as well when booting ARCH=um defconfig.
-> 
-> I ended up doing a bisect against next-20220630 and I landed on the
-> driver-core merge (5732b42edfd18ee888e127fa13d425ed3ed1bef3). I did two
-> more bisects to figure out that there is some sort of contextual
-> contlict between commit 5831788afb17 ("Revert "printk: add kthread
-> console printers"") and commit b8f35fa1188b ("kernfs: Change
-> kernfs_notify_list to llist."), as it is only when those two changes 
-> are
-> present that this issue occurs. I am happy to provide more information
-> if necessary.
+Hi,
 
-Thanks for the info.
+On Thu, Jun 30, 2022 at 10:19 AM Vijaya Krishna Nivarthi (Temp) (QUIC)
+<quic_vnivarth@quicinc.com> wrote:
+>
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Thursday, June 30, 2022 8:31 PM
+> > To: Vijaya Krishna Nivarthi (Temp) (QUIC) <quic_vnivarth@quicinc.com>
+> > Cc: agross@kernel.org; bjorn.andersson@linaro.org;
+> > konrad.dybcio@somainline.org; jirislaby@kernel.org; linux-arm-
+> > msm@vger.kernel.org; linux-serial@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; Mukesh Savaliya (QUIC)
+> > <quic_msavaliy@quicinc.com>; dianders@chromium.org;
+> > mka@chromium.org; swboyd@chromium.org
+> > Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+> > otherwise could return a sub-optimal clock rate.
+> >
+> > WARNING: This email originated from outside of Qualcomm. Please be wary
+> > of any links or attachments, and do not enable macros.
+> >
+> > On Wed, Jun 29, 2022 at 03:30:41PM +0530, Vijaya Krishna Nivarthi wrote:
+> > > In the logic around call to clk_round_rate(), for some corner
+> > > conditions,
+> > > get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+> > > exact clock rate was not found lowest clock was being returned.
+> > >
+> > > Search for suitable clock rate in 2 steps
+> > > a) exact match or within 2% tolerance
+> > > b) within 5% tolerance
+> > > This also takes care of corner conditions.
+> > >
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> > Did the test robot really report the original issue, or just the v2 change?
+> >
+> > thanks,
+> >
+> > greg k-h
+>
+> Test robot raised error for v1 patch and (I think) it got addressed in v2 with call to div_u64.
+> V2 doesn't have this error but other warnings which I am addressing along with other feedback.
+> Below is the error raised for v1.
 
-I can confirm that reverting b8f35fa1188b will fix the error. I couldn't
-revert 5831788afb17 though, didn't apply cleanly.
+I think the adding of the "Reported-by" only really makes sense if the
+commit landed and then you fixed the robot-reported bug in a separate
+commit. If it reported problems in v1 and you fix them in v2 you
+shouldn't add the tag.
 
--michael
+-Doug
