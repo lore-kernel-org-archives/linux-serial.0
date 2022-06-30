@@ -2,76 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A17C43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E28C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 10:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234464AbiF3Jl3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S233750AbiF3KFp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbiF3JlO (ORCPT
+        with ESMTP id S234787AbiF3KFd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:41:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5364814006;
-        Thu, 30 Jun 2022 02:40:57 -0700 (PDT)
+        Thu, 30 Jun 2022 06:05:33 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972CE44A3A;
+        Thu, 30 Jun 2022 03:05:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656582057; x=1688118057;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=dwAueDKLQ5Wcmqhh92BjSYr6GZvEHvGnhzXkG3KxdNQ=;
-  b=PDBwujgpfg8U/NFBlU6rfA/AByrfhFP3GlThcpAz3vnvh3cB1PL0dVAK
-   dA1NZhM3BGQZSKa4EONFAt7gXcsGzFarPSsM7UBAYiRm7edIOvN2hxbQy
-   xs8OO6BxZ49a034p3+S1zKnqGh4bzH2Fv0I1BMcCtBvwpCHt0paocaJq0
-   AVoFjZA90Mk7W4EWhqEvs9oyBnAN33KL0p7wZv/XOoQzxBLf5f16UZI+b
-   QJWVIkTR7gnKwdhlwAyIddvYLSud6xn5F5EMixsOLO6XFX5dW/FNo2RtM
-   t5tSZaz3NOnZG1HbcOJAAkGA706k44bCfeMylwK8L8MjyXNRqqMn0I4H2
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262706057"
+  t=1656583524; x=1688119524;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kT/kZDfevuA69/cTLuoFJQXd96jvzmZdqgDk3HeCPbQ=;
+  b=ZsWvBtQ/+RhX4+If9kd9GAZ+Rjsrpvm8vUbQykwHuy47Pds26vutuk74
+   MRfwsvsWV9TK9t0qlbjgSwhzRQnZH2U6sR+unK3TkPZs8Kikjp2j0hixQ
+   vEVnL0jvdRs0B8DkI8LUFaX7CFsHtQu8cHqrFFlfT9f1ZrPoeTSxMSIhF
+   Vmtd3yha5Yu67kwDDHpb5aXvbvOgSLghzdyjMiXchyw4e0PkB/hyyFI0l
+   MKkEzWLuzxmGK57YuiJ1zDrAcRTj2F+t9lXwvcE/qQMZeP7caK2HBDn14
+   AIDQ4ngvNWeT7TLB8Cd5yPkoQk5wZL4Lp7W+62jfVLKD+4cfSAu/v3ugO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="271074412"
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="262706057"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:57 -0700
+   d="scan'208";a="271074412"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:05:04 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="647818956"
-Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:55 -0700
-Date:   Thu, 30 Jun 2022 12:40:53 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+   d="scan'208";a="680915678"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Jun 2022 03:05:02 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id CFE5011E; Thu, 30 Jun 2022 13:05:08 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Sort headers alphabetically
-In-Reply-To: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <f5522869-8140-1362-442f-43605fb564@linux.intel.com>
-References: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/1] serial: 8250_dw: Drop PM ifdeffery
+Date:   Thu, 30 Jun 2022 13:05:07 +0300
+Message-Id: <20220630100507.31113-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1638031143-1656582057=:1605"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm_ops
+to use new PM macros. Since we are using runtime PM, wrap dw8250_pm_ops into
+pm_ptr().
 
---8323329-1638031143-1656582057=:1605
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+---
+v3: rebased on top of tty/tty-next (LKP)
+ drivers/tty/serial/8250/8250_dw.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-On Thu, 30 Jun 2022, Andy Shevchenko wrote:
-
-> For the sake of better maintenance, sort included headers alphabetically.
-> While at it, split the serial group of headers which makes clear the
-> subsystem the driver belongs to.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index b24c7b25ef7f..45bf032b9891 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -691,7 +691,6 @@ static int dw8250_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int dw8250_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -709,9 +708,7 @@ static int dw8250_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif /* CONFIG_PM_SLEEP */
+ 
+-#ifdef CONFIG_PM
+ static int dw8250_runtime_suspend(struct device *dev)
+ {
+ 	struct dw8250_data *data = dev_get_drvdata(dev);
+@@ -733,11 +730,10 @@ static int dw8250_runtime_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops dw8250_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+-	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
++	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
++	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+ };
+ 
+ static const struct dw8250_platform_data dw8250_dw_apb = {
+@@ -795,7 +791,7 @@ MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+ static struct platform_driver dw8250_platform_driver = {
+ 	.driver = {
+ 		.name		= "dw-apb-uart",
+-		.pm		= &dw8250_pm_ops,
++		.pm		= pm_ptr(&dw8250_pm_ops),
+ 		.of_match_table	= dw8250_of_match,
+ 		.acpi_match_table = dw8250_acpi_match,
+ 	},
 -- 
- i.
+2.35.1
 
---8323329-1638031143-1656582057=:1605--
