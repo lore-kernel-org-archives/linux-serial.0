@@ -2,39 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D5BCCA47B
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 19:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD253C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 21:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236891AbiF3Tfy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 15:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        id S236413AbiF3VSl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 17:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236925AbiF3Tfv (ORCPT
+        with ESMTP id S233505AbiF3VSl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 15:35:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8FE43AE9;
-        Thu, 30 Jun 2022 12:35:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 30 Jun 2022 17:18:41 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A5E45781;
+        Thu, 30 Jun 2022 14:18:40 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA608622B9;
-        Thu, 30 Jun 2022 19:35:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABCC5C341CA;
-        Thu, 30 Jun 2022 19:35:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656617746;
-        bh=bbakRj56jJp4BUYKvkapZrvIMgJUAVuoHeuRe/yqByA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M4660bwEifsjF9zzVycbVd4V2eKqZawU5YGB3ltnq6H2si1HvwX6JDs7lmGNZfdfM
-         xhXoxZYgTmpLdk/AxgvQDyHoFgl8JRKOPpCK4o1FlqyJccxdcPMEvnvf8apaZ9QXDu
-         9wHqBq2v2mst4rjAPQbUoW8uCwrc9fXtTJDObizKjfcPnOA1jrjj8KACnSmzpAbK27
-         IEpymzJA+6AYZY7boM5gr5VqE/K2uu1VDJExD3DTYTydCL+nuAJ/NM8j5vaNE/BoML
-         Hih9QwDlzpq4c/q9SQ9Zd30wLde6ejF9hMmZvcJ7aWUN9IRUc7VmAu1WdbSlovllpw
-         QKgxhUdRSKBRg==
-Date:   Thu, 30 Jun 2022 12:35:43 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Michael Walle <michael@walle.cc>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D049C22236;
+        Thu, 30 Jun 2022 23:18:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1656623918;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o9v9b2QyCY7aa76Uj7OzhyotVoaj9yPQj5f2StXzCJ0=;
+        b=gValFbeRhfoKv08ktpW0wJolm7fhnt3dc5tvtCnf9g1xCl/WeuHpSUjWmHrKIukHWox3an
+        eLLJ/EtO6zk+o16H8Os3k5t7y3IZn1IgtfWfr+ZKOboSV5NtfQSU6xVN9rCIW5xBab0NOy
+        RugwpMNRpJCJCkY5dNjen1lyKAzjwkc=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 30 Jun 2022 23:18:37 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Nathan Chancellor <nathan@kernel.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh@kernel.org>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org,
@@ -42,50 +44,63 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Imran Khan <imran.f.khan@oracle.com>,
         Petr Mladek <pmladek@suse.com>
 Subject: Re: Regression for duplicate (?) console parameters on next-20220630
-Message-ID: <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
+In-Reply-To: <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
 References: <8460ecf2a963c85793cf325e16725044@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8460ecf2a963c85793cf325e16725044@walle.cc>
+ <Yr37D4P2Dmnbkb+M@dev-arch.thelio-3990X>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <93f5abe324cba9de1bff4aee565f8d5a@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:11:58PM +0200, Michael Walle wrote:
-> Hi,
+Am 2022-06-30 21:35, schrieb Nathan Chancellor:
+> On Thu, Jun 30, 2022 at 03:11:58PM +0200, Michael Walle wrote:
+>> Hi,
+>> 
+>> I'm not sure it these are the correct recipients, feel free to CC 
+>> others.
+>> 
+>> Since next-20220630 (or maybe also since next-20220629) I'm getting 
+>> the
+>> 
+>> [    3.707900] WARNING: CPU: 0 PID: 38 at fs/kernfs/dir.c:531
+>> kernfs_put.part.0+0x1a0/0x1d4
+>> [    3.716313] kernfs_put: console/active: released with incorrect
+>> active_ref 0
+>> 
+>> on both arm and arm64 boards. See for example:
+>> https://linux.kernelci.org/test/case/id/62bd840b330c4851eaa39c16/
+>> 
+>> I have the console set in the device tree as well as on the 
+>> commandline.
+>> Up until recently that wasn't a problem and I guess that should be a 
+>> valid
+>> configuration. That being said, the warn() will go away if I remove 
+>> the
+>> console= parameter on the commandline.
+>> 
+>> I haven't had time to do a bisect yet. That will probably my next 
+>> step;
+>> or maybe kernelci will already do that for me, Guillaume? Unless 
+>> someone
+>> has some more insights/ideas.
 > 
-> I'm not sure it these are the correct recipients, feel free to CC others.
+> I noticed this as well when booting ARCH=um defconfig.
 > 
-> Since next-20220630 (or maybe also since next-20220629) I'm getting the
-> 
-> [    3.707900] WARNING: CPU: 0 PID: 38 at fs/kernfs/dir.c:531
-> kernfs_put.part.0+0x1a0/0x1d4
-> [    3.716313] kernfs_put: console/active: released with incorrect
-> active_ref 0
-> 
-> on both arm and arm64 boards. See for example:
-> https://linux.kernelci.org/test/case/id/62bd840b330c4851eaa39c16/
-> 
-> I have the console set in the device tree as well as on the commandline.
-> Up until recently that wasn't a problem and I guess that should be a valid
-> configuration. That being said, the warn() will go away if I remove the
-> console= parameter on the commandline.
-> 
-> I haven't had time to do a bisect yet. That will probably my next step;
-> or maybe kernelci will already do that for me, Guillaume? Unless someone
-> has some more insights/ideas.
+> I ended up doing a bisect against next-20220630 and I landed on the
+> driver-core merge (5732b42edfd18ee888e127fa13d425ed3ed1bef3). I did two
+> more bisects to figure out that there is some sort of contextual
+> contlict between commit 5831788afb17 ("Revert "printk: add kthread
+> console printers"") and commit b8f35fa1188b ("kernfs: Change
+> kernfs_notify_list to llist."), as it is only when those two changes 
+> are
+> present that this issue occurs. I am happy to provide more information
+> if necessary.
 
-I noticed this as well when booting ARCH=um defconfig.
+Thanks for the info.
 
-I ended up doing a bisect against next-20220630 and I landed on the
-driver-core merge (5732b42edfd18ee888e127fa13d425ed3ed1bef3). I did two
-more bisects to figure out that there is some sort of contextual
-contlict between commit 5831788afb17 ("Revert "printk: add kthread
-console printers"") and commit b8f35fa1188b ("kernfs: Change
-kernfs_notify_list to llist."), as it is only when those two changes are
-present that this issue occurs. I am happy to provide more information
-if necessary.
+I can confirm that reverting b8f35fa1188b will fix the error. I couldn't
+revert 5831788afb17 though, didn't apply cleanly.
 
-Cheers,
-Nathan
+-michael
