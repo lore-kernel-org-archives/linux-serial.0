@@ -2,81 +2,166 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC6EC433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8E3C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 08:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbiF3I3H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 04:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S233167AbiF3Ifq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 04:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234028AbiF3I24 (ORCPT
+        with ESMTP id S232102AbiF3Ifp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 04:28:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B24940E67;
-        Thu, 30 Jun 2022 01:28:55 -0700 (PDT)
+        Thu, 30 Jun 2022 04:35:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0922252D;
+        Thu, 30 Jun 2022 01:35:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F140FB826A3;
-        Thu, 30 Jun 2022 08:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94878C34115;
-        Thu, 30 Jun 2022 08:28:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61B6961F56;
+        Thu, 30 Jun 2022 08:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619C5C34115;
+        Thu, 30 Jun 2022 08:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656577732;
-        bh=cAQUo7kspmH4XuHsaG4rJWzgQnrBlFeAfBrz4QmTHZM=;
+        s=k20201202; t=1656578143;
+        bh=3F1iN2nIgI+xSO5HnpbJNEPxV7Bm8MUyryS/idZ1CIo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZEKx7fPQrI57hq5FMCZ4ZTRDfq0uDdvKS3bsZwHo+uSu09HoY3A9QmEPU/uWOxaTY
-         OXTFxgpHqz/4urILdk6F20jqIaKhhnvfOLX15qE0ggN1fGKXPhKzy7MT+bX00HtdNb
-         eyHHWyRNQjmi504QnlzS4yT31DxOBOxYnxv/5dJPp+uB7JzU9lr8yDJ0JyBspDPWtA
-         e2kA9eoIvMZ+IlvfIdyOw1S+GjTSicIryNMuOOc16hZs4kHgfZGyk6eBcfHOU22wNW
-         2VPra0C4xfKaYQKC3YgBkKlN3NCzTmG6w/shL0MxHKaZcBziS5/O7Ip+2re6qNAlH5
-         cK7ZmVsJJIvBw==
+        b=fZKC6hAtSlEiL04R8OiibU+qu37mRcW/rthlpWCchSIZFuhtAjS24aYt4qOvBUTK5
+         1qPInlDjyv23SROnIfW0sbHcsPkD4hiMnpKwg83LLgfz6WN63dwP+DVYKEBZvSPHzg
+         8oblykiMqBfZW0u+VeMjqMLES0BAt4dDxyged/c85YcEZf9DSJFlLLgw11ox0GG/VN
+         oQmGX/rkxCGwEGBPs/L5RIWxIjIoU0tY/Fg+eWb9NJORodp7q7MlkZ0u0WiACT0sy+
+         KIZcZimiPTRszOknA9ffVpNaNvhB879wAIhSANF4KsJfxsfsGjNPzRo/fElRMcyOzG
+         YissxZM8zgvEA==
 Received: by pali.im (Postfix)
-        id 3414096E; Thu, 30 Jun 2022 10:28:49 +0200 (CEST)
-Date:   Thu, 30 Jun 2022 10:28:49 +0200
+        id 8698D96E; Thu, 30 Jun 2022 10:35:40 +0200 (CEST)
+Date:   Thu, 30 Jun 2022 10:35:40 +0200
 From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Allen Yan <yanwei@marvell.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Gregory CLEMENT <gregory.clement@bootlin.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] serial: mvebu: Apply old baudrate to termios
-Message-ID: <20220630082849.ldvqu7frdrln4ite@pali>
-References: <20220628094155.26297-1-ilpo.jarvinen@linux.intel.com>
- <20220628095136.fhtjjjkj3mre7hwa@pali>
- <20220628095942.rbpl2iocxoqtzxiy@pali>
- <CAHp75VeHNERyPAam_-u7+ykYxcUM_N-YT6kBAh+hG+7WNW31SA@mail.gmail.com>
- <CAHp75VfDA1x0OQjBb8rj7RB9bHgjXa86jrcayeuxbYxGLf2=Kg@mail.gmail.com>
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] serial: mvebu-uart: correctly report configured baudrate
+ value
+Message-ID: <20220630083540.azojxio2naixxkk3@pali>
+References: <20220628100922.10717-1-pali@kernel.org>
+ <ac5fe14-2cee-ec1a-eb9a-5a38e273737d@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VfDA1x0OQjBb8rj7RB9bHgjXa86jrcayeuxbYxGLf2=Kg@mail.gmail.com>
+In-Reply-To: <ac5fe14-2cee-ec1a-eb9a-5a38e273737d@linux.intel.com>
 User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tuesday 28 June 2022 13:40:28 Andy Shevchenko wrote:
-> On Tue, Jun 28, 2022 at 1:39 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Jun 28, 2022 at 12:01 PM Pali Rohár <pali@kernel.org> wrote:
-> > > On Tuesday 28 June 2022 11:51:36 Pali Rohár wrote:
+On Tuesday 28 June 2022 13:23:34 Ilpo Järvinen wrote:
+> On Tue, 28 Jun 2022, Pali Rohár wrote:
 > 
-> ...
+> > Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+> > be called with the baudrate value which was set to hardware. Linux then
+> > report exact values via ioctl(TCGETS2) to userspace.
+> > 
+> > Change mvebu_uart_baud_rate_set() function to return baudrate value which
+> > was set to hardware and propagate this value to above mentioned functions.
+> > 
+> > With this change userspace would see precise value in termios c_ospeed
+> > field.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
 > 
-> > > Ou, now I see where is the issue. Patch which I tested and which fixes
-> > > reporting baudrate is not in kernel tree yet and it looks like I totally
-> > > forgot to sent it to ML. I will send it. Sorry for confusion.
-> >
-> > Shouldn't the Ilpo's applied anyway to fix the current code base?
+> Look better than my patch covering cases I didn't even realize
+> existed. Thanks.
 > 
-> Ah, now I understand that your patch is a fix. Sorry for the noise.
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Yes, my patch fixes the issue which Ilpo described and handles also errors:
-https://lore.kernel.org/linux-serial/20220628100922.10717-1-pali@kernel.org/
+Thanks for review!
+
+Now I now why I have not sent this patch earlier. This patch hit bug
+described and fixed by commit "serial: core: Fix initializing and
+restoring termios speed":
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=027b57170bf8bb6999a28e4a5f3d78bf1db0f90c
+
+Above commit is already in master since v5.16 and IIRC it was also
+backported to stable trees.
+
+So applying and testing this patch should be fine also in old trees now.
+
+> -- 
+>  i.
+> 
+> 
+> > ---
+> >  drivers/tty/serial/mvebu-uart.c | 25 +++++++++++++------------
+> >  1 file changed, 13 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> > index 0429c2a54290..93489fe334d0 100644
+> > --- a/drivers/tty/serial/mvebu-uart.c
+> > +++ b/drivers/tty/serial/mvebu-uart.c
+> > @@ -470,14 +470,14 @@ static void mvebu_uart_shutdown(struct uart_port *port)
+> >  	}
+> >  }
+> >  
+> > -static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+> > +static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+> >  {
+> >  	unsigned int d_divisor, m_divisor;
+> >  	unsigned long flags;
+> >  	u32 brdv, osamp;
+> >  
+> >  	if (!port->uartclk)
+> > -		return -EOPNOTSUPP;
+> > +		return 0;
+> >  
+> >  	/*
+> >  	 * The baudrate is derived from the UART clock thanks to divisors:
+> > @@ -548,7 +548,7 @@ static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+> >  			(m_divisor << 16) | (m_divisor << 24);
+> >  	writel(osamp, port->membase + UART_OSAMP);
+> >  
+> > -	return 0;
+> > +	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+> >  }
+> >  
+> >  static void mvebu_uart_set_termios(struct uart_port *port,
+> > @@ -587,15 +587,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+> >  	max_baud = port->uartclk / 80;
+> >  
+> >  	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+> > -	if (mvebu_uart_baud_rate_set(port, baud)) {
+> > -		/* No clock available, baudrate cannot be changed */
+> > -		if (old)
+> > -			baud = uart_get_baud_rate(port, old, NULL,
+> > -						  min_baud, max_baud);
+> > -	} else {
+> > -		tty_termios_encode_baud_rate(termios, baud, baud);
+> > -		uart_update_timeout(port, termios->c_cflag, baud);
+> > -	}
+> > +	baud = mvebu_uart_baud_rate_set(port, baud);
+> > +
+> > +	/* In case baudrate cannot be changed, report previous old value */
+> > +	if (baud == 0 && old)
+> > +		baud = tty_termios_baud_rate(old);
+> >  
+> >  	/* Only the following flag changes are supported */
+> >  	if (old) {
+> > @@ -606,6 +602,11 @@ static void mvebu_uart_set_termios(struct uart_port *port,
+> >  		termios->c_cflag |= CS8;
+> >  	}
+> >  
+> > +	if (baud != 0) {
+> > +		tty_termios_encode_baud_rate(termios, baud, baud);
+> > +		uart_update_timeout(port, termios->c_cflag, baud);
+> > +	}
+> > +
+> >  	spin_unlock_irqrestore(&port->lock, flags);
+> >  }
+> >  
+> > 
+
