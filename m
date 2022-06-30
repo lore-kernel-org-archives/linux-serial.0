@@ -2,161 +2,125 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD28C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 00:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A41EC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 07:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbiF3Adt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jun 2022 20:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
+        id S232986AbiF3Hlu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiF3Ads (ORCPT
+        with ESMTP id S232787AbiF3Hlt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jun 2022 20:33:48 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587D822B26;
-        Wed, 29 Jun 2022 17:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656549204;
-        bh=6lMtPAGrUriFxRzqDiaMwPvLBe2jbc2oorL+KRQ6G0E=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=OTfO9M329EBUUJzlZ1kbot16CJAYzs5ESaOYQyePWGapX3napQEOrHhH7cKml2QQ/
-         yIgsiGzNOB4dIvRKTFL1sn18+xH2wDYOedTHKmXxKV/NZzbYt4gtSpsf+jRgT+FmgI
-         MvL1/vex3OQvuxQOnMwOSZifdykD17XemB3nxQjE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.23]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MuUnA-1npSBa1f4k-00rWrE; Thu, 30
- Jun 2022 02:33:24 +0200
-Message-ID: <16841959-42c9-cbd7-e767-39050134b070@gmx.de>
-Date:   Thu, 30 Jun 2022 02:33:23 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 7/8] serial: ar933x: Remove redundant assignment in
- rs485_config
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
+        Thu, 30 Jun 2022 03:41:49 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63583A1A3;
+        Thu, 30 Jun 2022 00:41:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656574908; x=1688110908;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Kas1K4p5XFnaaEkpjH7XsCiCA1U1Q5VLT4/8BRUEXFI=;
+  b=BPFL4UZIrY/d4wgl9sRfHOZZpo8kSjKiQZdRJZNEOxiossyAovRCR6N8
+   ywgTEFZzf0tQ73kXDTRAHqx8SbghcS9x0e4A+f3Sl0IFPITvT5v7WMNAz
+   QclNC+mIJHIwdRfMi0BglBiOjE1nYPTrz2wJ1NClv3jXntqgiX8G0Rj2d
+   5mStLlRyqKBUOlJKaamuw9IQsJREu/mq58Qd3/SzalBbLimLs/UX51Xfu
+   PHOhio3zgJEIiS5Ddrib1UxWh6/33+ZR8Vix59UdZ6pqvFtgl3U0Cy2So
+   x2d2nVV+xxo707Od22C77+Rwu2bdU0ytj0QtFvEZefaneBD+7ZQQsdhbD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="271041862"
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="271041862"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 00:41:48 -0700
+X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
+   d="scan'208";a="647777264"
+Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 00:41:46 -0700
+Date:   Thu, 30 Jun 2022 10:41:40 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-8-LinoSanfilippo@gmx.de>
- <f7beef4-c422-cae3-8e22-8652b407434@linux.intel.com>
- <df19d91d-371b-f0e9-e37c-2bde00d2b840@gmx.de>
- <033c8d2-3f2e-afe6-2e98-14a61c872b4b@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <033c8d2-3f2e-afe6-2e98-14a61c872b4b@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:fymyF5SOHTcLkP7SEfj64ke4xtX230O6VAwEagenoFcJ803fosw
- wkg5UGVaEOg6mVKNvQrFLo8N9QdLAqIzLyznEhSbCt4CfIOaGpRfpcT2jTa/dFg/21oLz6p
- krFyF6418nG9fkDLq6N6SGQmMORLvyhEuWF5knUEIyvYIEOe5HGI8I6nw8l1WOqTVyioAkZ
- /SC596f1UWyQ3Du22z4Ng==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:51DN12aZLlc=:3sUM85SzIBq78Pf0cH/jpZ
- Ff/FgiAP9iq/TGsKaU2CVbxwuvh2qU9ccFYq4RvM/H9Szz+FUBDyknuam+NCMMrvEVHfpsila
- 2o/e6UWmIcVXThNt/6x2d5hsJojpWVJlR1GKe/EjPRKej4ke4dIqtuqyJ6pktJQ90m+YhZ68n
- 2K4/glejULVCiwiJHgxfPzkR3FS/rawy0oNz11xbpQvELDmrNA3zqQt7Y3pDqhs/vsq89rN1W
- pzo9Z2WQ5cTlVgrSnGsK14Oqc4S+QZ0HuJp9I58GoQXRevss4nfbQEbgvCHn4oupbTZe2lI/6
- MgokvufMg02+ZmYV62KzPADovBJe0Fl+F7feC8Bw0RGg9oFiSKiDmpqcTcwTwXRwhEaG09A3H
- 0rovTr+3LTmF1FujvCyKNc75Yt9LzIpLp9wLvwsmC+QEcAKTe9z2bV66zj7f/lFX9T0TLpEoA
- oCoBP8PBUxn4CHXuXfYE4uGOl2oB7Iw4hi2Ozx+JVE9t2sejxw3iS50svgJ+ZtgweUYc+PoFH
- vlW6yTgHGyXEu76bJMs1gRcalZcoUZBqJxadnEv89l+p5Z8WDa8RjKOg+ocDbpa7l49sAFgdH
- vll/9sLnhHSXSREYxfW7+qXqjqpn3j3UqMoh3Qnhs/KG4+AlEkYtJ+jco6VamT+Kt5xrCdHPZ
- vJODztbVUAw+ExqmVbALP6vu+st3rFHoEyYxcvdCdVDiAkS7LFgCvqxQ2E17dh6BLDz+9o+fq
- Td9hAqJigYZSvtAXF7Urp185ZUpk3UWzSb9jRnM+NeoOiVfDAeY7H2iylUgKLWbGbnceJZb+J
- R+/gD6wRWezhyRpIi1TFr57PC3DCj/a/YX8IO/+kIpUZUzVy07XPQmi+JFG2kNzCRwrAqhpI0
- qOWavPFe8OuQBn2fA/BxuCzXczlUOGX8whbS7m8x7K/gtogfeonF67/4PuTHXSv91ZM88RjwV
- SX8Ek6DzIBrtBvp8tl1rbmeuGx78g75ovVKjK1KrYFfryg5qUPXOvD4r5XXJ+kH/UJ9n0jcGU
- AYkTAOEa4RFKz7JVHWSq194siH6Ch8XkzpEZpNh4o7g3iu+HfJzytOAcDbuK9UDXq1O2Ff6Pk
- t1n2/gCvleNT5e6BkAIA7exqLvxSZsrmbBpn5X4jCKZJ/aaQnPO1gALFg==
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Drop PM ifdeffery
+In-Reply-To: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <4ae74f48-c51c-cb74-548d-46ff9a9a7a7b@linux.intel.com>
+References: <20220628214511.37373-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-800567806-1656574908=:1605"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+--8323329-800567806-1656574908=:1605
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-On 27.06.22 10:14, Ilpo J=C3=A4rvinen wrote:
-> On Sun, 26 Jun 2022, Lino Sanfilippo wrote:
->
->> On 25.06.22 at 12:14, Ilpo J=C3=A4rvinen wrote:
->>> On Wed, 22 Jun 2022, Lino Sanfilippo wrote:
->>>
->>>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>>>
->>>> In uart_set_rs485_config() the serial core already assigns the passed
->>>> serial_rs485 struct to the uart port.
->>>>
->>>> So remove the assignment in the drivers rs485_config() function to av=
-oid
->>>> redundancy.
->>>>
->>>> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>>> ---
->>>>  drivers/tty/serial/ar933x_uart.c | 1 -
->>>>  1 file changed, 1 deletion(-)
->>>>
->>>> diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar=
-933x_uart.c
->>>> index ab2c5b2a1ce8..857e010d01dc 100644
->>>> --- a/drivers/tty/serial/ar933x_uart.c
->>>> +++ b/drivers/tty/serial/ar933x_uart.c
->>>> @@ -591,7 +591,6 @@ static int ar933x_config_rs485(struct uart_port *=
-port,
->>>>  		dev_err(port->dev, "RS485 needs rts-gpio\n");
->>>>  		return 1;
->>>>  	}
->>>> -	port->rs485 =3D *rs485conf;
->>>>  	return 0;
->>>>  }
->>>
->>> Hmm, I realize that for some reason I missed cleaning up this particul=
-ar
->>> driver after introducing the serial_rs485 sanitization. It shouldn't n=
-eed
->>> that preceeding if block either because ar933x_no_rs485 gets applied i=
-f
->>> there's no rts_gpiod so the core clears SER_RS485_ENABLED.
->>
->> I think we still need that "if" in case that RS485 was not enabled at d=
-river
->> startup (no rs485-enabled-at-boot-time) and no RTS GPIO was defined but=
- then
->> RS485 is enabled via TIOCSRS485.
->>
->> Maybe in ar933x_uart_probe()
->>
->> 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
->> 	    !up->rts_gpiod) {
->> 		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
->> 		port->rs485.flags &=3D ~SER_RS485_ENABLED;
->> 		port->rs485_supported =3D &ar933x_no_rs485;
->> 	}
->>
->> should rather be
->
-> I think it would be better (and what I should have done while moving the
-> check there in the first place but I missed it). In addition, however, i=
-t
-> would be useful to not print unnecessarily:
->
->> 	if (!up->rts_gpiod) {
->
-> if (port->rs485.flags & SER_RS485_ENABLED) {
->
->> 		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
->> 		port->rs485.flags &=3D ~SER_RS485_ENABLED;
->
-> }
+On Wed, 29 Jun 2022, Andy Shevchenko wrote:
 
+> Drop CONFIG_PM and CONFIG_PM_SLEEP ifdeffery while converting dw8250_pm_ops
+> to use new PM macros.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Right. I will send a fix for this with the new version of my series.
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Regards,
-Lino
+Not directily related to the patch itself but do you have any idea why 
+1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros, deprecate old ones") 
+didn't wrap RUNTIME_PM_OPS() pointers with pm_ptr()? I'm asking this 
+because in SET_RUNTIME_PM_OPS() the callbacks are only created with
+#ifdef CONFIG_PM so I'd have expected RUNTIME_PM_OPS() to maintain that 
+behavior but it didn't? Was it just an oversight that should be fixed?
 
+-- 
+ i.
 
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index f71428c85562..adcc869352b1 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -691,7 +691,6 @@ static int dw8250_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_PM_SLEEP
+>  static int dw8250_suspend(struct device *dev)
+>  {
+>  	struct dw8250_data *data = dev_get_drvdata(dev);
+> @@ -709,9 +708,7 @@ static int dw8250_resume(struct device *dev)
+>  
+>  	return 0;
+>  }
+> -#endif /* CONFIG_PM_SLEEP */
+>  
+> -#ifdef CONFIG_PM
+>  static int dw8250_runtime_suspend(struct device *dev)
+>  {
+>  	struct dw8250_data *data = dev_get_drvdata(dev);
+> @@ -733,11 +730,10 @@ static int dw8250_runtime_resume(struct device *dev)
+>  
+>  	return 0;
+>  }
+> -#endif
+>  
+>  static const struct dev_pm_ops dw8250_pm_ops = {
+> -	SET_SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+> -	SET_RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+> +	SYSTEM_SLEEP_PM_OPS(dw8250_suspend, dw8250_resume)
+> +	RUNTIME_PM_OPS(dw8250_runtime_suspend, dw8250_runtime_resume, NULL)
+>  };
+>  
+>  static const struct dw8250_platform_data dw8250_dw_apb = {
+> 
+
+--8323329-800567806-1656574908=:1605--
