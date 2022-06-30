@@ -2,132 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D88FC43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 10:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E93CCA47E
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 10:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbiF3KU5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 06:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
+        id S235230AbiF3KgQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 06:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiF3KUz (ORCPT
+        with ESMTP id S232938AbiF3KgP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 06:20:55 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA21545064;
-        Thu, 30 Jun 2022 03:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656584454; x=1688120454;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=4FGMng3U7GLnTku7mVOT+9WivvYzRVqmckgQnASfO9g=;
-  b=Ql7uZZoKVL79/biniHg1ixcW1/+HejRnB0gKU2OHD3IKpn/VQZdHNUR3
-   MIhLK/xan1qP6/Oj+gyjDTOnEgGrlKJgjCpnLQWzH+6LPgqZnHH9S3P/p
-   ADHcaq4N48AhXIVombcCkpdTa1bObojX4AKuCViGUYMhrmc1Pr5q22tAP
-   MLtEYflBv26zufbro0h0pSmGilkKqJ0+vEvNTRvzYCRV+bBWThM9djew2
-   KMWcmKzErZ4ySMT/5PJ6mbqKMWmRuWydXRZXm/4Uqwd3deXwi4xaSSnjR
-   91LYYxVZb590MplsyFOQB9owAJkDvnfEQjL5nxffp6ftVu1d7bxecLrKt
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="346300209"
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="346300209"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:20:53 -0700
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="647832875"
-Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 03:20:50 -0700
-Date:   Thu, 30 Jun 2022 13:20:49 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] 8250_dwlib: Convert bitops to newer form
-In-Reply-To: <CAHp75VcH9O6=Lk06w3Set==zBEFyseCSDN6OUE3n7g4ZnBM4Bg@mail.gmail.com>
-Message-ID: <eeba3ce9-c0a1-2363-154a-82b0b4468e3@linux.intel.com>
-References: <20220630100536.41329-1-ilpo.jarvinen@linux.intel.com> <CAHp75VcH9O6=Lk06w3Set==zBEFyseCSDN6OUE3n7g4ZnBM4Bg@mail.gmail.com>
+        Thu, 30 Jun 2022 06:36:15 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B85B4F1AF;
+        Thu, 30 Jun 2022 03:36:14 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 3F1641C811E4;
+        Thu, 30 Jun 2022 18:36:12 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 30
+ Jun 2022 18:36:12 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 30 Jun
+ 2022 18:36:11 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Thu, 30 Jun 2022 18:36:11 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id BAAA963A20; Thu, 30 Jun 2022 13:36:10 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v6 01/17] dt-bindings: timer: npcm: Add npcm845 compatible string
+Date:   Thu, 30 Jun 2022 13:35:50 +0300
+Message-ID: <20220630103606.83261-2-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220630103606.83261-1-tmaimon77@gmail.com>
+References: <20220630103606.83261-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-29156649-1656584452=:1605"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Add a compatible string for Nuvoton BMC NPCM845 timer.
 
---8323329-29156649-1656584452=:1605
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml        | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Thu, 30 Jun 2022, Andy Shevchenko wrote:
-
-> On Thu, Jun 30, 2022 at 12:08 PM Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> wrote:
-> >
-> > Instead of open-coding, use BIT(), GENMASK(), and FIELD_GET() helpers.
-> 
-> FIELD_GET() requires bitfield.h to be included. Is this the case already?
-
-It's there already.
-
+diff --git a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+index 0cbc26a72151..737af78ad70c 100644
+--- a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
+@@ -8,12 +8,14 @@ title: Nuvoton NPCM7xx timer
+ 
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
+ 
+ properties:
+   compatible:
+     enum:
+       - nuvoton,wpcm450-timer  # for Hermon WPCM450
+       - nuvoton,npcm750-timer  # for Poleg NPCM750
++      - nuvoton,npcm845-timer  # for Arbel NPCM845
+ 
+   reg:
+     maxItems: 1
 -- 
- i.
+2.33.0
 
-> If so,
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
-> > Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_dwlib.c | 26 +++++++++++++-------------
-> >  1 file changed, 13 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
-> > index da330ef46446..a8bbed74ea70 100644
-> > --- a/drivers/tty/serial/8250/8250_dwlib.c
-> > +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> > @@ -46,21 +46,21 @@
-> >  #define DW_UART_LCR_EXT_TRANSMIT_MODE  BIT(3)
-> >
-> >  /* Component Parameter Register bits */
-> > -#define DW_UART_CPR_ABP_DATA_WIDTH     (3 << 0)
-> > -#define DW_UART_CPR_AFCE_MODE          (1 << 4)
-> > -#define DW_UART_CPR_THRE_MODE          (1 << 5)
-> > -#define DW_UART_CPR_SIR_MODE           (1 << 6)
-> > -#define DW_UART_CPR_SIR_LP_MODE                (1 << 7)
-> > -#define DW_UART_CPR_ADDITIONAL_FEATURES        (1 << 8)
-> > -#define DW_UART_CPR_FIFO_ACCESS                (1 << 9)
-> > -#define DW_UART_CPR_FIFO_STAT          (1 << 10)
-> > -#define DW_UART_CPR_SHADOW             (1 << 11)
-> > -#define DW_UART_CPR_ENCODED_PARMS      (1 << 12)
-> > -#define DW_UART_CPR_DMA_EXTRA          (1 << 13)
-> > -#define DW_UART_CPR_FIFO_MODE          (0xff << 16)
-> > +#define DW_UART_CPR_ABP_DATA_WIDTH     GENMASK(1, 0)
-> > +#define DW_UART_CPR_AFCE_MODE          BIT(4)
-> > +#define DW_UART_CPR_THRE_MODE          BIT(5)
-> > +#define DW_UART_CPR_SIR_MODE           BIT(6)
-> > +#define DW_UART_CPR_SIR_LP_MODE                BIT(7)
-> > +#define DW_UART_CPR_ADDITIONAL_FEATURES        BIT(8)
-> > +#define DW_UART_CPR_FIFO_ACCESS                BIT(9)
-> > +#define DW_UART_CPR_FIFO_STAT          BIT(10)
-> > +#define DW_UART_CPR_SHADOW             BIT(11)
-> > +#define DW_UART_CPR_ENCODED_PARMS      BIT(12)
-> > +#define DW_UART_CPR_DMA_EXTRA          BIT(13)
-> > +#define DW_UART_CPR_FIFO_MODE          GENMASK(23, 16)
-> >
-> >  /* Helper for FIFO size calculation */
-> > -#define DW_UART_CPR_FIFO_SIZE(a)       (((a >> 16) & 0xff) * 16)
-> > +#define DW_UART_CPR_FIFO_SIZE(a)       (FIELD_GET(DW_UART_CPR_FIFO_MODE, (a)) * 16)
-> >
-> >  /*
-> >   * divisor = div(I) + div(F)
-> > --
-> > 2.30.2
-> >
-> 
-> 
-> 
-
---8323329-29156649-1656584452=:1605--
