@@ -2,109 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 754FCC43334
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A17C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Jun 2022 09:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234511AbiF3Jiy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Jun 2022 05:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
+        id S234464AbiF3Jl3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 30 Jun 2022 05:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233082AbiF3JiT (ORCPT
+        with ESMTP id S234607AbiF3JlO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Jun 2022 05:38:19 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4983D21806;
-        Thu, 30 Jun 2022 02:38:16 -0700 (PDT)
+        Thu, 30 Jun 2022 05:41:14 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5364814006;
+        Thu, 30 Jun 2022 02:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656581896; x=1688117896;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Vj93OUArCPcOzTNax7R55Pn3eOycZ1bTRsIknl2WeMY=;
-  b=FodXDyTfyaIrXHE8mTzvq6B/cEnJoybljYfP6Iw/KEatIfbly86BLmup
-   ZBtYAuAUNDAQA1ibBRsz45eNGSMqe+9iOQHN5pT6wYJKtkV1VjtJg29EL
-   nDmXziKKcENzj4r9Vi3jTbHCFMs6I6PhH3DE5CVWl8kBwIzJr9+2ps404
-   INIewe1T1e9pJgLQ79+6aQyZ5pNNYqXi7FSjTUxjtvNjCYnDhryXIGLzS
-   SRAMhkWsk7EXEazIemfgG+t2QjVaGsnPfy3SKf10BaSYsICF/j9AgvaxK
-   LDEW+LeYJNh/FZ3FxYYpXgUnor11Konp05y3LrJrjGBtDD9Txe/TMNDa4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="283399328"
+  t=1656582057; x=1688118057;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=dwAueDKLQ5Wcmqhh92BjSYr6GZvEHvGnhzXkG3KxdNQ=;
+  b=PDBwujgpfg8U/NFBlU6rfA/AByrfhFP3GlThcpAz3vnvh3cB1PL0dVAK
+   dA1NZhM3BGQZSKa4EONFAt7gXcsGzFarPSsM7UBAYiRm7edIOvN2hxbQy
+   xs8OO6BxZ49a034p3+S1zKnqGh4bzH2Fv0I1BMcCtBvwpCHt0paocaJq0
+   AVoFjZA90Mk7W4EWhqEvs9oyBnAN33KL0p7wZv/XOoQzxBLf5f16UZI+b
+   QJWVIkTR7gnKwdhlwAyIddvYLSud6xn5F5EMixsOLO6XFX5dW/FNo2RtM
+   t5tSZaz3NOnZG1HbcOJAAkGA706k44bCfeMylwK8L8MjyXNRqqMn0I4H2
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="262706057"
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="283399328"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:38:15 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="262706057"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:57 -0700
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="768062873"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 30 Jun 2022 02:38:14 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 54DDD11E; Thu, 30 Jun 2022 12:38:20 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+   d="scan'208";a="647818956"
+Received: from emontau-mobl2.ger.corp.intel.com ([10.249.42.178])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 02:40:55 -0700
+Date:   Thu, 30 Jun 2022 12:40:53 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_dw: Sort headers alphabetically
-Date:   Thu, 30 Jun 2022 12:38:16 +0300
-Message-Id: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+Subject: Re: [PATCH v1 1/1] serial: 8250_dw: Sort headers alphabetically
+In-Reply-To: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <f5522869-8140-1362-442f-43605fb564@linux.intel.com>
+References: <20220630093816.28271-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-1638031143-1656582057=:1605"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For the sake of better maintenance, sort included headers alphabetically.
-While at it, split the serial group of headers which makes clear the
-subsystem the driver belongs to.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+--8323329-1638031143-1656582057=:1605
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index d5df17455f1d..86762593579f 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -9,26 +9,27 @@
-  * LCR is written whilst busy.  If it is, then a busy detect interrupt is
-  * raised, the LCR needs to be rewritten and the uart status register read.
-  */
-+#include <linux/acpi.h>
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/io.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/serial_8250.h>
--#include <linux/serial_reg.h>
-+#include <linux/notifier.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/property.h>
--#include <linux/workqueue.h>
--#include <linux/notifier.h>
--#include <linux/slab.h>
--#include <linux/acpi.h>
--#include <linux/clk.h>
- #include <linux/reset.h>
--#include <linux/pm_runtime.h>
-+#include <linux/slab.h>
-+#include <linux/workqueue.h>
- 
- #include <asm/byteorder.h>
- 
-+#include <linux/serial_8250.h>
-+#include <linux/serial_reg.h>
-+
- #include "8250_dwlib.h"
- 
- /* Offsets for the DesignWare specific registers */
+On Thu, 30 Jun 2022, Andy Shevchenko wrote:
+
+> For the sake of better maintenance, sort included headers alphabetically.
+> While at it, split the serial group of headers which makes clear the
+> subsystem the driver belongs to.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.35.1
+ i.
 
+--8323329-1638031143-1656582057=:1605--
