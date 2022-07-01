@@ -2,198 +2,269 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77D5C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 14:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC9AC433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 15:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbiGAOvX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Jul 2022 10:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+        id S233657AbiGAPI3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232492AbiGAOvV (ORCPT
+        with ESMTP id S230000AbiGAPI3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Jul 2022 10:51:21 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299FB2CDDC;
-        Fri,  1 Jul 2022 07:51:18 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261DeBIH010382;
-        Fri, 1 Jul 2022 14:51:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=hMumR/HrcMOZN4C9/gVCfsBY3UUDbSWCrkM9wc8pgP8=;
- b=Wh/YCnWoROsXm/lDYtoCGqOyOUGgCvamYNQOkAhE66/XfQyqZ+VHVo8ffzKXooSMJXZI
- 3E9uwb1CYfIb7TfVdGPafv5BU2Hp82wfqO0FHJLQvJQQ/FB9RbYFvwu3VfvZuNuXHjsh
- BDRKrHdd3vuLAOYvDWQXL9KrXigi6oVYzeJnBjq8G+FQhPyT+tC16b2k63UB2/w/uX+y
- TV/HP44jjq2pSowzAj6Ef9n7Ne2oxQ2hf6c9GARk/aUccwD1bsuItOGj3rAVUILeSRau
- eGLf1C2q0FV1XkTw90q/h1jzZUl6CSbqW6q7xAyBDCyLo/W7A/7BsDqrjGuMjl61CMln cg== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwt8a6ywu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 01 Jul 2022 14:51:04 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 261EfbIH029155;
-        Fri, 1 Jul 2022 14:51:03 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gwrt4qxn7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 01 Jul 2022 14:51:03 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GhIWDsQCxr0CbQd6Fe/qKgvtnKB6OiauXtqHZljYJy67xbQV/iMQoPJYwJ30XeFa7wDnLn2AFOb5WTfn4OgdXGHoWt283Dik1K0gvRJroPM5TrjyMo8ZvwrPTdlkOs8NKmvZPrsarVPKqfaEair+HBNq52SmYmToV/RMaOCyLxUqVYzRbGLOMuhuVF5gt3PLa65wFkWsUQWM7Oy4HPXl0zbgNwHsSIKf0BqiX9a7VT3bg2DIPXhmqAAcL1kR+jAQkkiZLur2navpap/HN8PRxfcw8Shm/mduD30NnSrGX+RY+yXRlmPMguW9cN097WN6FynXAoxzqnFeHKkNAd7JwQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hMumR/HrcMOZN4C9/gVCfsBY3UUDbSWCrkM9wc8pgP8=;
- b=gVeYfATFXY4lWJ8JIdGySzWi73DbzsqaN3oG49Ch9mT5gfWLxe2PWsyl65VtXchX1oyU8y/hsuQU465vxEghcXjd17cbz3xQaLMhJR7y7jGCgloG5BbBoKqdfdoMvw5WIg0NynQfYOWdMex8ofndu3dxKHwXHPUcZyKJWYMB3xnmK7e/f/6qScN24OmpBwkyMV7nU3nMdZy2K5OXElxhvnA518pfjIZ7fBTVIezhdDcglQwDcXamXfpKUQT/zhG/ad1oNzMbpFjkfkLbkCngfRv8qv7RIzdzFLQHBweRZ6/fasWAAArtobVRRrxFTcL7rwGS6dV59l6SE0EbdK16vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 1 Jul 2022 11:08:29 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEA11CB1E
+        for <linux-serial@vger.kernel.org>; Fri,  1 Jul 2022 08:08:27 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id z19so3297595edb.11
+        for <linux-serial@vger.kernel.org>; Fri, 01 Jul 2022 08:08:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hMumR/HrcMOZN4C9/gVCfsBY3UUDbSWCrkM9wc8pgP8=;
- b=EwCv1aSQ9QdyV+NtY9vLuQKwuvIVhnCBSREYspwRrmSinTmYs/E9bvqfCCc5/vARR66NH7V3R559szXOc0UzfpNDH9xhiT/+k8lElNvBP2q/nOrVpEfEGbEq69YTxkioQfiKYODRng0yYUwoU63plYBcIqJVcVPvS0m12B8Y5ls=
-Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
- by CH2PR10MB4309.namprd10.prod.outlook.com (2603:10b6:610:ae::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
- 2022 14:51:01 +0000
-Received: from CO1PR10MB4468.namprd10.prod.outlook.com
- ([fe80::3037:a916:f4b6:52cc]) by CO1PR10MB4468.namprd10.prod.outlook.com
- ([fe80::3037:a916:f4b6:52cc%6]) with mapi id 15.20.5395.017; Fri, 1 Jul 2022
- 14:51:01 +0000
-From:   Imran Khan <imran.f.khan@oracle.com>
-To:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
-Cc:     m.szyprowski@samsung.com, nathan@kernel.org, michael@walle.cc,
-        robh@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
-        pmladek@suse.com
-Subject: [PATCH] kernfs: Avoid re-adding kernfs_node into kernfs_notify_list.
-Date:   Sat,  2 Jul 2022 00:50:47 +1000
-Message-Id: <20220701145047.2206900-1-imran.f.khan@oracle.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SYCPR01CA0030.ausprd01.prod.outlook.com
- (2603:10c6:10:e::18) To CO1PR10MB4468.namprd10.prod.outlook.com
- (2603:10b6:303:6c::24)
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hcqXoCNvopDleGLSFa51dBpHMpht82Uknafvcf4bZng=;
+        b=FnCQrXwQdAiXkOt/d6R3dlF07Pr1NY6YMhAmFdxndaf4FP+XDLdXscmAl1od0umUx+
+         vYOZ20u6Uyd3JQVR8/96RimEAKFLUo/4ptLmCfYTdMR0TEo1Uqt6DxgEzj8/GXveNISa
+         wFHck2YTDwbdD5Dwh1LhfYQnHXn849zwAhYxo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hcqXoCNvopDleGLSFa51dBpHMpht82Uknafvcf4bZng=;
+        b=25Xr5rC3cbMinJtf+2V4soHFpzypprkYYOe9aRY3Axur4wJOMYLLVDCIkDzUNGuDJu
+         lvLxBlzami8veFBdRWrb9KMd4p678G7bhCo5A6rLct8OE7KoGJY+d6w+YW4JYe/xrlW6
+         wQHtJoWSV3pF8l2kVT5fstLVrcWdpauS1r0umFCH2w2rxpZQLtujiQFhNmHhThxAQu5J
+         RKIdnv3V3VudD37dwzPcrnT3ly2s2qApj3NNx7PSzfud2xXPJjFgCmoB15hafT5ZSaeS
+         fTetyazySqlWihqmF3eQXFcmfLA0+Tm8eORwJpPsOes3c2jgpq4G251Vu/X7DlVZcegm
+         gnWQ==
+X-Gm-Message-State: AJIora/OwGDMuo+95aU+DJ1sFyJjm9FncPxWRV4fOWw62SI7ODZv3fhS
+        SoeIvspNw68qN8O5HfwToteg6668mYO04NHh
+X-Google-Smtp-Source: AGRyM1ur1C0Fzq8X/0+/f3LeofnMu4hh0MiBr0xuIJeIMvOVunmlj0yFN6XbrvzDy1iV5Is8SqhV7w==
+X-Received: by 2002:a05:6402:4387:b0:435:94c6:716d with SMTP id o7-20020a056402438700b0043594c6716dmr19968128edc.298.1656688106081;
+        Fri, 01 Jul 2022 08:08:26 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id l7-20020a170906644700b0072354a54137sm10434200ejn.34.2022.07.01.08.08.23
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 08:08:24 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id k129so1514453wme.0
+        for <linux-serial@vger.kernel.org>; Fri, 01 Jul 2022 08:08:23 -0700 (PDT)
+X-Received: by 2002:a05:600c:3ace:b0:3a0:4ea4:5f77 with SMTP id
+ d14-20020a05600c3ace00b003a04ea45f77mr16937352wms.57.1656688103060; Fri, 01
+ Jul 2022 08:08:23 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1bb9fe5-93e3-4c88-432c-08da5b711d8a
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4309:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LnCm/fCaQqTlb7e/GxG8GIAK1cu9VSwj2p5iYSmtl60BJk44UApG2mRl2UOQfNcx5fPLWs6uAHWSqppBT0ihuQM1Wb6yGhP1qNYYhSq+UjZWO3QeejMz15o6ipZIMMXnk+Hvwys+yib2mlRf39yl2QV1TyeYSg7CC3j0Tfa3exZrdyTHikwoAZaW/drf7fOklwUwjPb6tgDNuvKifkql/YgWeqMAqSHaqRQ2LMSkRSAgG9XUzBRw8iDJcqCT5uSp/M9u/I0hP6E/m+7/NdDYlhnAPyclGQG+hk4RneW6JAHfMG9fRbHX74rcEDx2GJT8c7qxHGgozuKiVVjilM+hXMWx/R21qJmIkdRM71NF9E8UcNq5KOHMHERBOwV1MnfC2qz938u9zaUhWtnbACOdGS2JbcIsrE/qhdLrVcRWJivg+b4wpQdGRZM5aTu0XfYzo8dgduysq4aq8+A2DP3C+dQ/sNw2lVOlUeUHuOwF3COV9u+7/Hf7mXA0IA4WcQd3hlLfRq114Ut9l7+z1Qx0Ruj+3rEKlWX+mO/NuTw/AbPKHbO+pCvZnDcH7RJNbkVoLAN5gELbcfqRgPXhApeZIIFHXYtfekuLYQ1voz7xRkmB4XVBQAMryF1h/K9s5dQ+l51omgWbW3+Av5Ep17TllgMd+5sqw4Ef//pmKFyRGg6LKvkypmbkVS1mtVY3BOZ3Xdie38CiAytyg8JvWAHFJBTaATtrK96S5SwcMs0+LOd5+026mEsUj/YTdvmeiT3YR8F7rcOeF7cNnxzASqX2e3vZs4YLvhnaVu+xB5bPzweiNZZlTizoFg0pyNTxdNfO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(39860400002)(136003)(346002)(366004)(376002)(478600001)(7416002)(38350700002)(6486002)(66556008)(52116002)(6506007)(1076003)(6512007)(86362001)(26005)(38100700002)(8936002)(2906002)(6666004)(2616005)(36756003)(5660300002)(4326008)(8676002)(316002)(41300700001)(66946007)(103116003)(66476007)(83380400001)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jSwP2ltyvAnVUxlyPRpsiPOhYeO5qpStqdwqbpgW347lrSIvRyG4wnJa2jgY?=
- =?us-ascii?Q?KawhAR+kvoux7vsVqM6YRzPytN7vxx7AcAQrCd7g+xaFp1542oOt+lCQz9sg?=
- =?us-ascii?Q?a7XLq5c+h13uurFgGNrn4j3EeCaEl2yDEx/rtuc5d4xq8xvC/+kZMOF+cbE6?=
- =?us-ascii?Q?8K3BqJqygAQrhb4WTyou4PKJ3MVc3xiwLyA84jf1hZG9V+jUjMX85trzB/XI?=
- =?us-ascii?Q?p9NbJTl7PjHEtPCdlecHyJe+kz5RnORy+t5PVXCQooQM2XgdTPoJ/cxCEZcM?=
- =?us-ascii?Q?BP7O0MosOQbRu3pBbPrMjsAinZqJu7lEKdwKqDDoaLx58Cxy1hIx+WowKOSt?=
- =?us-ascii?Q?+OcAyKlrabyGWOFudDYW/CzYwBqyl1WkOWvO4NyUBMwr3hVOsSZ3QqJ7vxTC?=
- =?us-ascii?Q?2bVPZTmigLIISGT5T8UZOFBiCOxfE3vN8GVoa4hCn6u32uCJ4Wx6SfmAHDcq?=
- =?us-ascii?Q?K7tCB/A01a3f0jsnD0RSEr26pq0d50fGr6BTm5ipmWjy+/UPKZLp/6R121MP?=
- =?us-ascii?Q?Js+r61leYp8i869tZoVFt/rLUV6gE7qSAL61nIQmUFny+pyF5za78R2KK3w3?=
- =?us-ascii?Q?ZSsS21gXwZKSYLbnC3QkVe3qa6gzhGIA9hOIKXY4Z51sU3qkhHXogiWTZz/Q?=
- =?us-ascii?Q?Bvl2HJAGdqMRPGyiHp/x9vz/vsHKWGXtv0rn4xP2shdbVXrenX0u1LPB3zKo?=
- =?us-ascii?Q?lt6Q33dunvbrRHxmuhZ8Cw47xECS6UMbQq8TDaFpNikZ/IO63kPoIAvHVC3B?=
- =?us-ascii?Q?6JaKQ47T5sFEvldCfpstt00NNZoRWFLLudp24R7xAW23L0P4VztjVfOKf1P7?=
- =?us-ascii?Q?341FAQROJCSzKqJlEhzNBF7MRt36LC3sW7d9bbEl/3t+a5ndrGFrt5oqy/7w?=
- =?us-ascii?Q?nMuWkBKbH3houpBSZt+ZJox5zCbUN5dYGyODq2Ydg4HNzm4Of1qDj3dtZpvl?=
- =?us-ascii?Q?RyyebFpa9J9ez4fxr9DWH5iGPvMpk1r+56yj7mctCsVFhWNSGGm00g5wXKDx?=
- =?us-ascii?Q?2zlYy9IBJYp/A/HCK0DYw3+aN2ZmqFK1sT2s6O8Rp8fhxMLxCkDgByYFXpZ6?=
- =?us-ascii?Q?zgxwgyBa88gmQGmT3C+8IFIPnjxwr8CHGtrCM5Osio/NoPxEzLpHxTEAyule?=
- =?us-ascii?Q?m8nutmFhqn/0eCsbE/D2qaXGILP/Rsvp2LXQaF3stgJQC6aiKkOiUDHFy5hu?=
- =?us-ascii?Q?tAd/ICjz02a/KyWTWzWYbyK1koXf+PUIzQAttxV/TqCCyxtVtea67R8yOW/C?=
- =?us-ascii?Q?dtB+Nn73Iwkm5NBZd/dlzG7HXqijLFjK3AHNBRgSq3rH/TRlpBj8tu0uf04t?=
- =?us-ascii?Q?kZJVBPpXYsD6rNynNtZWeO6Nld9OS7l46lTqqVAmLT7poQ0c6M1E9PYrOP0v?=
- =?us-ascii?Q?Mgf52Bol6/XMij3zgSqWHE7tbpU43LDExE/eYNfgFj9YUEyjvmtdkE4k+9oF?=
- =?us-ascii?Q?d5Q3Ejnylz1OcUDEN2IOvv1gKm1lsAhNN3eb8kYYs4oqjsYDK2xjb1MKNnee?=
- =?us-ascii?Q?Xrds4VXLHwoHdrspegoM2mtRpdsjJ4mU0C5ekDbmerf+Fx6xLGBFk2BILPhk?=
- =?us-ascii?Q?xh8jzNRnsbwrCs11x6ZNTXB8Ny8ASM4jFJwcMdp6Jf72eVeII5DfUm5J/Ajw?=
- =?us-ascii?Q?nA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1bb9fe5-93e3-4c88-432c-08da5b711d8a
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 14:51:01.2941
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f7JCMKJ4/7awQJAHzcFJgVFtZwvfyRcatzBTkME80nBfHXBj4aNbnudtp8YZ5pAHzak+dwx56jB0rssm5Xmbig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4309
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-01_07:2022-06-28,2022-07-01 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 bulkscore=0
- phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2207010057
-X-Proofpoint-ORIG-GUID: HNtnTnVS0ZnqaFdxJGFhspBE53BjSIZY
-X-Proofpoint-GUID: HNtnTnVS0ZnqaFdxJGFhspBE53BjSIZY
+References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com> <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
+In-Reply-To: <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 1 Jul 2022 08:08:10 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
+Message-ID: <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
+Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+To:     "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Kick fsnotify only if an event is not already scheduled for target
-kernfs node. commit b8f35fa1188b ("kernfs: Change kernfs_notify_list to
-llist.") changed kernfs_notify_list to a llist.
-Prior to this list was a singly linked list, protected by
-kernfs_notify_lock. Whenever a kernfs_node was added to the list
-its ->attr.notify_next was set to head of the list and upon removal
-->attr.notify_next was reset to NULL. Addition to kernfs_notify_list
-would only happen if kernfs_node was not already in the list i.e.
-if ->attr.notify_next was NULL. commit b8f35fa1188b ("kernfs: Change
-kernfs_notify_list to llist.") removed this checking and this was wrong
-as it resulted in multiple additions for same kernfs_node.
+Hi,
 
-So far this bug only got reflected with some console related setting.
-Nathan found this issue when console was specified both in DT and in
-kernel command line and Marek found this issue when earlycon was enabled.
+On Fri, Jul 1, 2022 at 4:04 AM Vijaya Krishna Nivarthi (Temp) (QUIC)
+<quic_vnivarth@quicinc.com> wrote:
+>
+> Hi,
+>
+>
+> > -----Original Message-----
+> > From: Doug Anderson <dianders@chromium.org>
+> > Sent: Thursday, June 30, 2022 4:45 AM
+> > To: Vijaya Krishna Nivarthi (Temp) (QUIC) <quic_vnivarth@quicinc.com>
+> > Cc: Andy Gross <agross@kernel.org>; bjorn.andersson@linaro.org; Konrad
+> > Dybcio <konrad.dybcio@somainline.org>; Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
+> > msm <linux-arm-msm@vger.kernel.org>; linux-serial@vger.kernel.org; LKML
+> > <linux-kernel@vger.kernel.org>; Mukesh Savaliya (QUIC)
+> > <quic_msavaliy@quicinc.com>; Matthias Kaehlcke <mka@chromium.org>;
+> > Stephen Boyd <swboyd@chromium.org>
+> > Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+> > otherwise could return a sub-optimal clock rate.
+> >
+> >
+> >
+> > > +                               /* Save the first (lowest freq) within tolerance */
+> > > +                               ser_clk = freq;
+> > > +                               *clk_div = new_div;
+> > > +                               /* no more search for exact match required in 2nd run */
+> > > +                               if (!exact_match)
+> > > +                                       break;
+> > > +                       }
+> > > +               }
+> > >
+> > > -               prev = freq;
+> > > +               div = freq / desired_clk + 1;
+> >
+> > Can't you infinite loop now?
+> >
+> > Start with:
+> >
+> > desired_clk = 10000
+> > div = 1
+> > percent_tol = 2
+> >
+> >
+> > Now:
+> >
+> > mult = 10000
+> > offset = 200
+> > test_freq = 9800
+> > freq = 9800
+> > div = 9800 / 10000 + 1 = 0 + 1 = 1
+> >
+> > ...and then you'll loop again with "div = 1", won't you? ...or did I get
+> > something wrong in my analysis? This is the reason my proposed algorithm
+> > had two loops.
+> >
+> >
+>
+> I went back to your proposed algorithm and made couple of simple changes, and it seemed like what we need.
+>
+> a) look only for exact match once a clock rate within tolerance is found
+> b) swap test_freq and freq at end of while loops to make it run as desired
+>
+>
+>         maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+>         div = 1;
+>
+>         while (div < maxdiv) {
+>                 mult = (unsigned long long)div * desired_clk;
+>                 if (mult != (unsigned long)mult)
+>                         break;
+>
+>                 if (ser_clk)
+>                         offset = 0;
+>                 ===================a=====================
+>                 else
+>                         offset = div_u64(mult * percent_tol, 100);
+>
+>                 /*
+>                  * Loop requesting (freq - 2%) and possibly (freq).
+>                  *
+>                  * We'll keep track of the lowest freq inexact match we found
+>                  * but always try to find a perfect match. NOTE: this algorithm
+>                  * could miss a slightly better freq if there's more than one
+>                  * freq between (freq - 2%) and (freq) but (freq) can't be made
+>                  * exactly, but that's OK.
+>                  *
+>                  * This absolutely relies on the fact that the Qualcomm clock
+>                  * driver always rounds up.
+>                  */
+>                 test_freq = mult - offset;
+>                 while (test_freq <= mult) {
+>                         freq = clk_round_rate(clk, test_freq);
+>
+>                         /*
+>                          * A dead-on freq is an insta-win. This implicitly
+>                          * handles when "freq == mult"
+>                          */
+>                         if (!(freq % desired_clk)) {
+>                                 *clk_div = freq / desired_clk;
+>                                 return freq;
+>                         }
+>
+>                         /*
+>                          * Only time clock framework doesn't round up is if
+>                          * we're past the max clock rate. We're done searching
+>                          * if that's the case.
+>                          */
+>                         if (freq < test_freq)
+>                                 return ser_clk;
+>
+>                         /* Save the first (lowest freq) within tolerance */
+>                         if (!ser_clk && freq <= mult + offset) {
+>                                 ser_clk = freq;
+>                                 *clk_div = div;
+>                         }
+>
+>                         /*
+>                          * If we already rounded up past mult then this will
+>                          * cause the loop to exit. If not then this will run
+>                          * the loop a second time with exactly mult.
+>                          */
+>                         test_freq = max(test_freq + 1, mult);
+>                                                      ====b====
+>                 }
+>
+>                 /*
+>                  * freq will always be bigger than mult by at least 1.
+>                  * That means we can get the next divider with a DIV_ROUND_UP.
+>                  * This has the advantage of skipping by a whole bunch of divs
+>                  * If the clock framework already bypassed them.
+>                  */
+>                 div = DIV_ROUND_UP(freq, desired_clk);
+>                                                        ===b==
+>         }
+>
+>
+> Will also drop exact_match now.
+>
+> Will upload v3 after testing.
 
-This patch avoids adding an already added kernfs_node into notify list.
+The more I've been thinking about it, the more I wonder if we even
+need the special case of looking for an exact match at all. It feels
+like we should choose one: we either look for the best match or we
+look for the one with the lowest clock source rate. The weird
+half-half approach that we have right now feels like over-engineering
+and complicates things.
 
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Fixes: b8f35fa1188b ("kernfs: Change kernfs_notify_list to llist.")
-Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
----
- fs/kernfs/file.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+How about this (again, only lightly tested). Worst case if we _truly_
+need a close-to-exact match we could pass a tolerance of 0 in and we'd
+get something that's nearly exact, though I'm not suggesting we
+actually do that. If we think 2% is good enough then we should just
+accept the first (and lowest clock rate) 2% match we find.
 
-diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-index bb933221b4bae..e8ec054e11c63 100644
---- a/fs/kernfs/file.c
-+++ b/fs/kernfs/file.c
-@@ -917,6 +917,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
- 	if (free == NULL)
- 		return;
- 
-+	free->next = NULL;
- 	attr = llist_entry(free, struct kernfs_elem_attr, notify_next);
- 	kn = attribute_to_node(attr, struct kernfs_node, attr);
- 	root = kernfs_root(kn);
-@@ -992,9 +993,11 @@ void kernfs_notify(struct kernfs_node *kn)
- 	rcu_read_unlock();
- 
- 	/* schedule work to kick fsnotify */
--	kernfs_get(kn);
--	llist_add(&kn->attr.notify_next, &kernfs_notify_list);
--	schedule_work(&kernfs_notify_work);
-+	if (kn->attr.notify_next.next != NULL) {
-+		kernfs_get(kn);
-+		llist_add(&kn->attr.notify_next, &kernfs_notify_list);
-+		schedule_work(&kernfs_notify_work);
-+	}
- }
- EXPORT_SYMBOL_GPL(kernfs_notify);
- 
+    abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+    maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+    div = 1;
+    while (div <= maxdiv) {
+        mult = (u64)div * desired_clk;
+        if (mult != (unsigned long)mult)
+            break;
 
-base-commit: 6cc11d2a1759275b856e464265823d94aabd5eaf
--- 
-2.30.2
+        offset = div * abs_tol;
+        freq = clk_round_rate(clk, mult - offset);
 
+        /* Can only get lower if we're done */
+        if (freq < mult - offset)
+            break;
+
+        /*
+         * Re-calculate div in case rounding skipped rates but we
+         * ended up at a good one, then check for a match.
+         */
+        div = DIV_ROUND_CLOSEST(freq, desired_clk);
+        achieved = DIV_ROUND_CLOSEST(freq, div);
+        if (achieved <= desired_clk + abs_tol &&
+            achieved >= desired_clk - abs_tol) {
+            *clk_div = div;
+            return freq;
+        }
+
+        /*
+         * Always increase div by at least one, but we'll go more than
+         * one if clk_round_rate() gave us something higher.
+         */
+        div = DIV_ROUND_UP(max(freq, (unsigned long)mult) + 1, desired_clk);
+        }
+
+    return 0;
