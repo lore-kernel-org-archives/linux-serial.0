@@ -2,269 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC9AC433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 15:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0A2C43334
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 15:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233657AbiGAPI3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        id S232569AbiGAPKI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiGAPI3 (ORCPT
+        with ESMTP id S231732AbiGAPKH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:08:29 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEA11CB1E
-        for <linux-serial@vger.kernel.org>; Fri,  1 Jul 2022 08:08:27 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id z19so3297595edb.11
-        for <linux-serial@vger.kernel.org>; Fri, 01 Jul 2022 08:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hcqXoCNvopDleGLSFa51dBpHMpht82Uknafvcf4bZng=;
-        b=FnCQrXwQdAiXkOt/d6R3dlF07Pr1NY6YMhAmFdxndaf4FP+XDLdXscmAl1od0umUx+
-         vYOZ20u6Uyd3JQVR8/96RimEAKFLUo/4ptLmCfYTdMR0TEo1Uqt6DxgEzj8/GXveNISa
-         wFHck2YTDwbdD5Dwh1LhfYQnHXn849zwAhYxo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hcqXoCNvopDleGLSFa51dBpHMpht82Uknafvcf4bZng=;
-        b=25Xr5rC3cbMinJtf+2V4soHFpzypprkYYOe9aRY3Axur4wJOMYLLVDCIkDzUNGuDJu
-         lvLxBlzami8veFBdRWrb9KMd4p678G7bhCo5A6rLct8OE7KoGJY+d6w+YW4JYe/xrlW6
-         wQHtJoWSV3pF8l2kVT5fstLVrcWdpauS1r0umFCH2w2rxpZQLtujiQFhNmHhThxAQu5J
-         RKIdnv3V3VudD37dwzPcrnT3ly2s2qApj3NNx7PSzfud2xXPJjFgCmoB15hafT5ZSaeS
-         fTetyazySqlWihqmF3eQXFcmfLA0+Tm8eORwJpPsOes3c2jgpq4G251Vu/X7DlVZcegm
-         gnWQ==
-X-Gm-Message-State: AJIora/OwGDMuo+95aU+DJ1sFyJjm9FncPxWRV4fOWw62SI7ODZv3fhS
-        SoeIvspNw68qN8O5HfwToteg6668mYO04NHh
-X-Google-Smtp-Source: AGRyM1ur1C0Fzq8X/0+/f3LeofnMu4hh0MiBr0xuIJeIMvOVunmlj0yFN6XbrvzDy1iV5Is8SqhV7w==
-X-Received: by 2002:a05:6402:4387:b0:435:94c6:716d with SMTP id o7-20020a056402438700b0043594c6716dmr19968128edc.298.1656688106081;
-        Fri, 01 Jul 2022 08:08:26 -0700 (PDT)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
-        by smtp.gmail.com with ESMTPSA id l7-20020a170906644700b0072354a54137sm10434200ejn.34.2022.07.01.08.08.23
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 08:08:24 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id k129so1514453wme.0
-        for <linux-serial@vger.kernel.org>; Fri, 01 Jul 2022 08:08:23 -0700 (PDT)
-X-Received: by 2002:a05:600c:3ace:b0:3a0:4ea4:5f77 with SMTP id
- d14-20020a05600c3ace00b003a04ea45f77mr16937352wms.57.1656688103060; Fri, 01
- Jul 2022 08:08:23 -0700 (PDT)
+        Fri, 1 Jul 2022 11:10:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA662340FB;
+        Fri,  1 Jul 2022 08:10:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5831D623C3;
+        Fri,  1 Jul 2022 15:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14C0FC3411E;
+        Fri,  1 Jul 2022 15:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656688205;
+        bh=VE3xxCP6qqMSL2Ge+UO5AZuDtQGRgxKsVxk0c6Av2T0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vQP7Pi54fa7ZlG5vmHtJ7YP4w9Zl7R6UolfS21FRKD0FrxXep/C+ymxdztrJJKQq2
+         Wnodsl9qNX5zewz9cNtwNOLWVDVASDmiGvE46ybj8XTIPHyQTJSz3YtmnljPecHY5s
+         1GvGFt5pr/4NNT3r+1F7nyVFeksLwpSuAslTrl6SWAMnt0hGgaMPONb7h6hPoCKx5A
+         4450/CLeN5jlE9mXZ8+IMhcTxGVrkoA+GIlMje27H0Rn2WLZAl5pd1b9luG7HHO+d0
+         3TZ4IuvszhIWicsFMOYL/oVLkXIHovhGbH8HGVL0xoK1uVGbpW2c6ViGW3a1QYSPJS
+         ts0LGRh5LZigA==
+Date:   Fri, 1 Jul 2022 08:10:03 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        m.szyprowski@samsung.com, michael@walle.cc, robh@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        guillaume.tucker@collabora.com, pmladek@suse.com
+Subject: Re: [PATCH] kernfs: Avoid re-adding kernfs_node into
+ kernfs_notify_list.
+Message-ID: <Yr8OSxotW2VEUyKQ@dev-arch.thelio-3990X>
+References: <20220701145047.2206900-1-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com> <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
-In-Reply-To: <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 1 Jul 2022 08:08:10 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
-Message-ID: <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
-Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-To:     "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701145047.2206900-1-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Sat, Jul 02, 2022 at 12:50:47AM +1000, Imran Khan wrote:
+> Kick fsnotify only if an event is not already scheduled for target
+> kernfs node. commit b8f35fa1188b ("kernfs: Change kernfs_notify_list to
+> llist.") changed kernfs_notify_list to a llist.
+> Prior to this list was a singly linked list, protected by
+> kernfs_notify_lock. Whenever a kernfs_node was added to the list
+> its ->attr.notify_next was set to head of the list and upon removal
+> ->attr.notify_next was reset to NULL. Addition to kernfs_notify_list
+> would only happen if kernfs_node was not already in the list i.e.
+> if ->attr.notify_next was NULL. commit b8f35fa1188b ("kernfs: Change
+> kernfs_notify_list to llist.") removed this checking and this was wrong
+> as it resulted in multiple additions for same kernfs_node.
+> 
+> So far this bug only got reflected with some console related setting.
+> Nathan found this issue when console was specified both in DT and in
+> kernel command line and Marek found this issue when earlycon was enabled.
+> 
+> This patch avoids adding an already added kernfs_node into notify list.
+> 
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-On Fri, Jul 1, 2022 at 4:04 AM Vijaya Krishna Nivarthi (Temp) (QUIC)
-<quic_vnivarth@quicinc.com> wrote:
->
-> Hi,
->
->
-> > -----Original Message-----
-> > From: Doug Anderson <dianders@chromium.org>
-> > Sent: Thursday, June 30, 2022 4:45 AM
-> > To: Vijaya Krishna Nivarthi (Temp) (QUIC) <quic_vnivarth@quicinc.com>
-> > Cc: Andy Gross <agross@kernel.org>; bjorn.andersson@linaro.org; Konrad
-> > Dybcio <konrad.dybcio@somainline.org>; Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
-> > msm <linux-arm-msm@vger.kernel.org>; linux-serial@vger.kernel.org; LKML
-> > <linux-kernel@vger.kernel.org>; Mukesh Savaliya (QUIC)
-> > <quic_msavaliy@quicinc.com>; Matthias Kaehlcke <mka@chromium.org>;
-> > Stephen Boyd <swboyd@chromium.org>
-> > Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
-> > otherwise could return a sub-optimal clock rate.
-> >
-> >
-> >
-> > > +                               /* Save the first (lowest freq) within tolerance */
-> > > +                               ser_clk = freq;
-> > > +                               *clk_div = new_div;
-> > > +                               /* no more search for exact match required in 2nd run */
-> > > +                               if (!exact_match)
-> > > +                                       break;
-> > > +                       }
-> > > +               }
-> > >
-> > > -               prev = freq;
-> > > +               div = freq / desired_clk + 1;
-> >
-> > Can't you infinite loop now?
-> >
-> > Start with:
-> >
-> > desired_clk = 10000
-> > div = 1
-> > percent_tol = 2
-> >
-> >
-> > Now:
-> >
-> > mult = 10000
-> > offset = 200
-> > test_freq = 9800
-> > freq = 9800
-> > div = 9800 / 10000 + 1 = 0 + 1 = 1
-> >
-> > ...and then you'll loop again with "div = 1", won't you? ...or did I get
-> > something wrong in my analysis? This is the reason my proposed algorithm
-> > had two loops.
-> >
-> >
->
-> I went back to your proposed algorithm and made couple of simple changes, and it seemed like what we need.
->
-> a) look only for exact match once a clock rate within tolerance is found
-> b) swap test_freq and freq at end of while loops to make it run as desired
->
->
->         maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
->         div = 1;
->
->         while (div < maxdiv) {
->                 mult = (unsigned long long)div * desired_clk;
->                 if (mult != (unsigned long)mult)
->                         break;
->
->                 if (ser_clk)
->                         offset = 0;
->                 ===================a=====================
->                 else
->                         offset = div_u64(mult * percent_tol, 100);
->
->                 /*
->                  * Loop requesting (freq - 2%) and possibly (freq).
->                  *
->                  * We'll keep track of the lowest freq inexact match we found
->                  * but always try to find a perfect match. NOTE: this algorithm
->                  * could miss a slightly better freq if there's more than one
->                  * freq between (freq - 2%) and (freq) but (freq) can't be made
->                  * exactly, but that's OK.
->                  *
->                  * This absolutely relies on the fact that the Qualcomm clock
->                  * driver always rounds up.
->                  */
->                 test_freq = mult - offset;
->                 while (test_freq <= mult) {
->                         freq = clk_round_rate(clk, test_freq);
->
->                         /*
->                          * A dead-on freq is an insta-win. This implicitly
->                          * handles when "freq == mult"
->                          */
->                         if (!(freq % desired_clk)) {
->                                 *clk_div = freq / desired_clk;
->                                 return freq;
->                         }
->
->                         /*
->                          * Only time clock framework doesn't round up is if
->                          * we're past the max clock rate. We're done searching
->                          * if that's the case.
->                          */
->                         if (freq < test_freq)
->                                 return ser_clk;
->
->                         /* Save the first (lowest freq) within tolerance */
->                         if (!ser_clk && freq <= mult + offset) {
->                                 ser_clk = freq;
->                                 *clk_div = div;
->                         }
->
->                         /*
->                          * If we already rounded up past mult then this will
->                          * cause the loop to exit. If not then this will run
->                          * the loop a second time with exactly mult.
->                          */
->                         test_freq = max(test_freq + 1, mult);
->                                                      ====b====
->                 }
->
->                 /*
->                  * freq will always be bigger than mult by at least 1.
->                  * That means we can get the next divider with a DIV_ROUND_UP.
->                  * This has the advantage of skipping by a whole bunch of divs
->                  * If the clock framework already bypassed them.
->                  */
->                 div = DIV_ROUND_UP(freq, desired_clk);
->                                                        ===b==
->         }
->
->
-> Will also drop exact_match now.
->
-> Will upload v3 after testing.
+This should also include:
 
-The more I've been thinking about it, the more I wonder if we even
-need the special case of looking for an exact match at all. It feels
-like we should choose one: we either look for the best match or we
-look for the one with the lowest clock source rate. The weird
-half-half approach that we have right now feels like over-engineering
-and complicates things.
+Reported-by: Michael Walle <michael@walle.cc>
 
-How about this (again, only lightly tested). Worst case if we _truly_
-need a close-to-exact match we could pass a tolerance of 0 in and we'd
-get something that's nearly exact, though I'm not suggesting we
-actually do that. If we think 2% is good enough then we should just
-accept the first (and lowest clock rate) 2% match we find.
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Fixes: b8f35fa1188b ("kernfs: Change kernfs_notify_list to llist.")
+> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 
-    abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
-    maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
-    div = 1;
-    while (div <= maxdiv) {
-        mult = (u64)div * desired_clk;
-        if (mult != (unsigned long)mult)
-            break;
+For the ARCH=um case that I noticed:
 
-        offset = div * abs_tol;
-        freq = clk_round_rate(clk, mult - offset);
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-        /* Can only get lower if we're done */
-        if (freq < mult - offset)
-            break;
-
-        /*
-         * Re-calculate div in case rounding skipped rates but we
-         * ended up at a good one, then check for a match.
-         */
-        div = DIV_ROUND_CLOSEST(freq, desired_clk);
-        achieved = DIV_ROUND_CLOSEST(freq, div);
-        if (achieved <= desired_clk + abs_tol &&
-            achieved >= desired_clk - abs_tol) {
-            *clk_div = div;
-            return freq;
-        }
-
-        /*
-         * Always increase div by at least one, but we'll go more than
-         * one if clk_round_rate() gave us something higher.
-         */
-        div = DIV_ROUND_UP(max(freq, (unsigned long)mult) + 1, desired_clk);
-        }
-
-    return 0;
+> ---
+>  fs/kernfs/file.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+> index bb933221b4bae..e8ec054e11c63 100644
+> --- a/fs/kernfs/file.c
+> +++ b/fs/kernfs/file.c
+> @@ -917,6 +917,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
+>  	if (free == NULL)
+>  		return;
+>  
+> +	free->next = NULL;
+>  	attr = llist_entry(free, struct kernfs_elem_attr, notify_next);
+>  	kn = attribute_to_node(attr, struct kernfs_node, attr);
+>  	root = kernfs_root(kn);
+> @@ -992,9 +993,11 @@ void kernfs_notify(struct kernfs_node *kn)
+>  	rcu_read_unlock();
+>  
+>  	/* schedule work to kick fsnotify */
+> -	kernfs_get(kn);
+> -	llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> -	schedule_work(&kernfs_notify_work);
+> +	if (kn->attr.notify_next.next != NULL) {
+> +		kernfs_get(kn);
+> +		llist_add(&kn->attr.notify_next, &kernfs_notify_list);
+> +		schedule_work(&kernfs_notify_work);
+> +	}
+>  }
+>  EXPORT_SYMBOL_GPL(kernfs_notify);
+>  
+> 
+> base-commit: 6cc11d2a1759275b856e464265823d94aabd5eaf
+> -- 
+> 2.30.2
+> 
