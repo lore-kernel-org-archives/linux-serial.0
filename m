@@ -2,44 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA79CCA47B
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 15:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A53C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 15:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbiGAP3J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Jul 2022 11:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
+        id S231896AbiGAPeR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Jul 2022 11:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiGAP3H (ORCPT
+        with ESMTP id S231146AbiGAPeP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Jul 2022 11:29:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E9F1F60D;
-        Fri,  1 Jul 2022 08:29:06 -0700 (PDT)
+        Fri, 1 Jul 2022 11:34:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196242180E;
+        Fri,  1 Jul 2022 08:34:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39BC862414;
-        Fri,  1 Jul 2022 15:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C587C3411E;
-        Fri,  1 Jul 2022 15:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656689345;
-        bh=fg4rHu8CbbqFBxKzijEGmEDBRGujBS5oSTYCqS8ZW70=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB70EB83095;
+        Fri,  1 Jul 2022 15:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C7BC3411E;
+        Fri,  1 Jul 2022 15:34:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656689652;
+        bh=CI4g7mpBhd83x+K5yI20gm0estbqkbyjJjCXm+Yhu0k=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HAGfJ701w0/wjeuqllH40r3iH05v/wKY7zEntWAJRSpPcG+9b8Q5miparWa6qm556
-         TnxIN4cuwNhjSmg+XwnEpBYcwuiOQrZgAZjVIW+Q8dBMkrlQYB88kM6c7LhbmiQIdc
-         0H0ZecFc5lF9ne4ISpiVbZPBhY7xCyZpJYnGSdh8=
-Date:   Fri, 1 Jul 2022 17:29:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        b=SPls6VoqkTe+RubK8D8fXPO4NUYKPt5wX3G/tlfPGXjf7XuSbbG0POKLgZC0D12+7
+         qxqdFk7UVV0mtlJ0lgX7a6YkTUm/xFVUxLV4nKXtgKQT1zTGGBy1FcmwtmH53fwuE9
+         fyasv9Z9IAbVw7gTk5VBIUT/5c26+VnDVZZ0oLfmhXu/r+nQjU02YwBVdsmP2SJPJb
+         +KDMPtSSnNCLg8abbskoEQ16enu38jgM/pdIczLYuwtC9tq1oiWApdaCR+K1IrNQNH
+         oB6NDaNvvVyJWldDZFhQoqThW/UxBR+dCbhWWnRE6Jq19ngUa3HHxV1+2Pt/4hH5rH
+         3v0ToJAifcDsA==
+Date:   Fri, 1 Jul 2022 08:34:10 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
 To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>, tj@kernel.org,
-        viro@zeniv.linux.org.uk, m.szyprowski@samsung.com,
-        michael@walle.cc, robh@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
-        pmladek@suse.com
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        m.szyprowski@samsung.com, michael@walle.cc, robh@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        guillaume.tucker@collabora.com, pmladek@suse.com
 Subject: Re: [PATCH] kernfs: Avoid re-adding kernfs_node into
  kernfs_notify_list.
-Message-ID: <Yr8SvqShBXZ/U6gk@kroah.com>
+Message-ID: <Yr8T8nJC+HyPj8F7@dev-arch.thelio-3990X>
 References: <20220701145047.2206900-1-imran.f.khan@oracle.com>
  <Yr8OSxotW2VEUyKQ@dev-arch.thelio-3990X>
  <2c4bdc7a-b49f-c2ea-28d0-4ec838c3b26c@oracle.com>
@@ -92,13 +94,11 @@ On Sat, Jul 02, 2022 at 01:18:09AM +1000, Imran Khan wrote:
 > 
 > I am really sorry about missing these tags. I was not sure if you have tested
 > the patch I sent this morning.
-> 
-> Could you please suggest me if I should send a v2 of this change with these tags
-> included or if this mail is enough. Sorry if I am asking something obvious but I
-> am encountering such situation for first time.
 
-Please resend with them added.
+No worries, we all forget tags :) I hadn't tested your patch until this
+point so there was no reason for you to add that tag, this was the first
+time I provided it so there is no problem there. Thanks for the quick
+fix!
 
-thanks,
-
-greg k-h
+Cheers,
+Nathan
