@@ -2,95 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A562C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 09:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B25AC43334
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Jul 2022 09:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233848AbiGAJYU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Jul 2022 05:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        id S235874AbiGAJZf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 1 Jul 2022 05:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbiGAJYH (ORCPT
+        with ESMTP id S235046AbiGAJZC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Jul 2022 05:24:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B5C12746;
-        Fri,  1 Jul 2022 02:24:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FDE1B82959;
-        Fri,  1 Jul 2022 09:24:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D00C3411E;
-        Fri,  1 Jul 2022 09:24:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656667444;
-        bh=Zvsd3QERLmTisrPZwjXFkTicJFaJSmHz03J/syrOPmw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GtsQ0y2A54FRyfRMLtFMvAIErVDOFb+6sEyJD53QwiODKAfTvyBHUH/kwt3gQ08jA
-         iitSShucotxmVM37/fljWulv7OsFHuHYjCUe4VbXJXugqzPatLzoDGWnwuUeIEJpaO
-         a3MOdTZiZFqqkIT8cmOJG6J5NfokEbuNaI4DpqoM=
-Date:   Fri, 1 Jul 2022 11:24:01 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Neal Liu <neal_liu@aspeedtech.com>
-Cc:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: Questions about usb to serial driver
-Message-ID: <Yr69MTLQHcJBC6Ts@kroah.com>
-References: <HK0PR06MB3202C7064582E6CB027237BC80BD9@HK0PR06MB3202.apcprd06.prod.outlook.com>
- <Yr6fQbeo/FDrBmfU@kroah.com>
- <HK0PR06MB3202364874FC7283767C05D280BD9@HK0PR06MB3202.apcprd06.prod.outlook.com>
+        Fri, 1 Jul 2022 05:25:02 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A37A70E70
+        for <linux-serial@vger.kernel.org>; Fri,  1 Jul 2022 02:25:01 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id r1so1823367plo.10
+        for <linux-serial@vger.kernel.org>; Fri, 01 Jul 2022 02:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VJeZ+WjGaa4+hEW3peCfL4WVLqu3B1Bi1AgPkXR9HIk=;
+        b=R/rFsTuMPBZeGoQMe5rYyJANDvRFdef9oY6LPondRkVUztcd28xeNsSzmhnUo4eBww
+         +x60eYfl4AdmEM6sTvyy8sa9vHqv9NZ1r7QbmD0u7SmABya69yR7Urd50af3M1V/kfle
+         qSh0Gwu06AB9leH2/pcwVsNCfdlU8+mKSnZzJp7ZVX3dZSZN2GsYdgI3NAR9Lv6VT33h
+         f2Tn4HDTq/BbY96l3xXbMHf+3430IejO8/tU5NFkq6Vazi87xLtVgpVx5wutiH3NBbzo
+         sv6a+GE4nNE/s0C5OhPZ9rlNIeRMi/P/ay+/RtbICcmImSxD90OM7EH8RpNuEncoa+61
+         JWzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VJeZ+WjGaa4+hEW3peCfL4WVLqu3B1Bi1AgPkXR9HIk=;
+        b=cZvSDY22K8HHhcVWqvkaLFe8NaVtvzE9tp0/wXJDz8nF1dWjzHjujUA4L/k8ND4jY8
+         NWRENwNINhPflxjtHoF63TEhxh87P2GlQ3aMXexGbkN2p50RZKdgeFHIIvFCTa2XCqA/
+         MR1b4XtqGYrISd5x8K9yp6vCU95zYQrR3yVM77QNCM5nKWhWEmSP1H6nVNUmeknA318r
+         6Ylq0OuzDuy7kkfx7LA5W/yKgdfSapK3zeadREtyXKSlpT39LddJt4F1Zc5f3yv6uvqa
+         wOUhefG1jGKhsL8m6TOdSXjSd6VWO7oe/1xBtNaTirbsYflEAgoKStum2laEt+51LWq5
+         1UUw==
+X-Gm-Message-State: AJIora+Cv2Gy+UI5dThGXzizxWw32hDfkN9L3HQg8zHOr3WyoXH+Uutj
+        OrqxdDI4NZeGZdTLnuq9sZVQJQ==
+X-Google-Smtp-Source: AGRyM1tn/3ZuTQnenTLiteUpSdYtxwuzIw1xhxbu5YIzTLOAH+lxcAfgGpHVt5veQYdR5OCjkdBwfA==
+X-Received: by 2002:a17:903:2c6:b0:16a:276a:ad81 with SMTP id s6-20020a17090302c600b0016a276aad81mr19827350plk.65.1656667501039;
+        Fri, 01 Jul 2022 02:25:01 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902c1c500b00163f2f9f07csm15020084plc.48.2022.07.01.02.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 02:25:00 -0700 (PDT)
+Date:   Fri, 1 Jul 2022 14:54:58 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 24/30] serial: qcom: Migrate to dev_pm_opp_set_config()
+Message-ID: <20220701092458.tzqv7yul476kh2o7@vireshk-i7>
+References: <cover.1656660185.git.viresh.kumar@linaro.org>
+ <1f3328dafaf9e2944fba8ec9e55e3072a63a4192.1656660185.git.viresh.kumar@linaro.org>
+ <Yr6z5ixRTsIbZvsq@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <HK0PR06MB3202364874FC7283767C05D280BD9@HK0PR06MB3202.apcprd06.prod.outlook.com>
+In-Reply-To: <Yr6z5ixRTsIbZvsq@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 08:57:51AM +0000, Neal Liu wrote:
-> > -----Original Message-----
-> > From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
-> > Sent: Friday, July 1, 2022 3:16 PM
-> > To: Neal Liu <neal_liu@aspeedtech.com>
-> > Cc: linux-usb@vger.kernel.org; linux-serial@vger.kernel.org
-> > Subject: Re: Questions about usb to serial driver
-> > 
-> > On Fri, Jul 01, 2022 at 03:16:13AM +0000, Neal Liu wrote:
-> > > Hi all,
-> > >
-> > > I have a question about USB-serial and I hope I can find the answer from
-> > here.
-> > > I'll be appreciated it if there is any feedback from you.
-> > >
-> > > My question is If I have a USB device controller (udc) and a uart
-> > > controller (16550) independently in a SoC, is there any usb-serial drivers or
-> > applications that could possible to support/connect:
-> > > -	udc tx to uart rx
-> > > -	uart tx to udc rx
-> > >
-> > > Any chance I can make this SoC as a usb-serial devices?
-> > 
-> > Sure, use the CONFIG_USB_CONFIGFS_SERIAL or CONFIG_USB_CONFIGFS_ACM
-> > build options and hook your gadget up to the serial port in userspace and you
-> > will have a very expensive usb-serial converter (there are very cheap chips that
-> > do the same thing if you want to make a simpler
-> > device.)
-> > 
-> > hope this helps,
+On 01-07-22, 10:44, Greg Kroah-Hartman wrote:
+> On Fri, Jul 01, 2022 at 01:50:19PM +0530, Viresh Kumar wrote:
+> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> > +	struct dev_pm_opp_config config = {
+> > +		.clk_names = (const char *[]){ "se" },
+> > +		.clk_count = 1,
+> > +	};
+> >  
+> > -	ret = devm_pm_opp_set_clkname(&pdev->dev, "se");
+> > +	ret = devm_pm_opp_set_config(&pdev->dev, &config);
 > 
-> Thanks Greg!
-> 
-> What the detail steps exactly for "hook your gadget up to the serial port in userspace"?
-> Assume my system has:
-> 1 system uart: ttyS0
-> 1 uart: ttyS1
-> 1 usb gadget cdc acm: ttyGS0
-> 
-> How to hook up ttyS1 to ttyGS0, so that I could communicate through below path.
-> PC1 - usb interface - my SoC (ttyGS0 - ttyS1) - rs232 interface - PC2?
+> This feels like a step back.  This is much harder now, what's wrong with
+> devm_pm_opp_set_clkname() as is?
 
-That's an exercise left for the reader to do, odds are you need a
-userspace program that just copies the data back and forth.  Try it and
-see!
+Hi Greg,
 
-greg k-h
+There are a number of configurations one can do for a device's OPP
+table currently:
+
+- clk, single or multiple (new)
+- helper to configure multiple clocks (for multiple clocks)
+- supplies or regulators
+- helper to configure supplies (for multiple supplies)
+- OPP supported-hw property
+- OPP Property-name
+- Genpd specific one
+- etc
+
+One problem was that it was a mess within the OPP core with a separate
+interface for each of these interfaces, almost duplicate code, etc.
+
+But then it was a bigger mess for the user drivers that need to manage
+a few of these. They were required to call multiple APIs, with all the
+interfaces returning tokens, which the callers need to save and supply
+back to free the resources later. More code, hard to manage, easy to
+abuse and add bugs to.
+
+The new interface makes it easier and clean for everyone and allows
+easy upgrades of interfaces in future. Adding a new interface, like
+support for multiple clocks for a device that I just did, is much
+easier now.
+
+I really believe this is a step in the right direction :)
+
+-- 
+viresh
