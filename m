@@ -2,57 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B6AC433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC48C433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233048AbiGCScw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        id S231305AbiGCSfb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 3 Jul 2022 14:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbiGCScf (ORCPT
+        with ESMTP id S232875AbiGCSf2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:32:35 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A36428;
-        Sun,  3 Jul 2022 11:32:09 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31bf3656517so63797087b3.12;
-        Sun, 03 Jul 2022 11:32:09 -0700 (PDT)
+        Sun, 3 Jul 2022 14:35:28 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C709FB8D;
+        Sun,  3 Jul 2022 11:35:27 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id g4so13194699ybg.9;
+        Sun, 03 Jul 2022 11:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DSKYZbyn8mddhblAYs7qJYuusH9cifWViGiK0y7vJB8=;
-        b=eyyN6g2obGmebx8pIteLaXpAfsiXUeO/yT0/0TR5Et6cKDlZP+3gzDre9S2PTYuXnL
-         rujxYs467APMsocQUjftLdMRhgmBKskwZk1YOVdUZ2aU8K39UmgtM+nTg+rrg7z8BbLQ
-         EJrpjitR1I1dHStWjY4ioi7SGqD52tlTGu4I74lIJ6xLhZnzwXd7j7cH5mEhXtFxybnD
-         Gre4FNwegZSNyrnamdtOXXVCOjh01p7bdAK5loZ8y1aLrxGaX8M4p5dOtX3dMopTjLJV
-         AtfSwPCEOypYT6rYh/dcLbW9RMJEoL3dnzKYT3Ij/Fh8mYmBG+jk5u3M/+ivlbILI7at
-         9a7Q==
+        bh=Y/XwvHrfAcaL5Dlg6DC44ZQayGB2ugp2yd+NGOlWjvk=;
+        b=VzRi0V+rSVmqkRF+3nZu+Hm467maGKd3WrNF6MQ+r8iRY0UIY3p3/2xtkOgh7DYchj
+         S8BQ4dj51XpgSljBDVznotY723aQiNU+2lM+Be73Z+HldVAjdrNTvQRssC0zrSlZ8wcJ
+         pHPNrfPEzvtg8kpT6PMlRkCeomVJwgfG2F5aytDECsSrXybMi97Q5KfuH6PXyZM3Aa/M
+         w5FuY21rDTWXH5EViS/GUQm8bVgodvYqFTV7Bs0IZ82yeHOWvlE5m5pBGbLiJAhm3VUU
+         T2mTY9RxOycAS0+znFfp9S+mrhkcYkYJ7/UmBOVXCYv2sfSf1kJTOczyheyOE3ChYCM2
+         EQ2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DSKYZbyn8mddhblAYs7qJYuusH9cifWViGiK0y7vJB8=;
-        b=vodvrTKjbyF2tWGM8AUsVU/HLVRniUthJmpufhwiRRp0RTchfsvKyiXMaxnSGn1gCj
-         xk49FxJjdG37Hi0Rwh9Bd85p3gVz8uZ5mjmWw89RgTzoAbOnp9lHraAAEkXebod4jTtz
-         OxEt6ekbEOg+KYmJiHYSx6MV9Oa48zfwV/mXZlZc6sFxazMifpi8O+IQqEucVqvHdQm4
-         ZK4cZ5oTz6pwIE+RcRZY3ObEW8NNI4U+vZBK2HdEcyOXXZWEVI+vJiW5x2xE/D32tamC
-         QeMp5bsIwyIL0+zQwOiZ6VW7qDf1U1PRc/QeNdFYtjdQaYKbbAA18E1VsCYyq913uPB+
-         I/ew==
-X-Gm-Message-State: AJIora/FNiJWsjw6bAsBz3Y4oU7mk9osNNdLUWd/xYHnA2ZS4MFzm+sB
-        H1DC31zjcFqHtpso75oHVAmQKC3MrFqdC7pP6Mo=
-X-Google-Smtp-Source: AGRyM1tviE/YFQDmKXbqmGko1a/kn1FgT/21vZOyNeJKXtiVlpsxpUDghv9QNJZ5Ym/vGwTT+ay3P/g0PooGrJ+ZZhE=
-X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
- j128-20020a812386000000b0031765868901mr28830981ywj.195.1656873128834; Sun, 03
- Jul 2022 11:32:08 -0700 (PDT)
+        bh=Y/XwvHrfAcaL5Dlg6DC44ZQayGB2ugp2yd+NGOlWjvk=;
+        b=XsNn86JTMLmwA1VkU+rm/yMVsiDp48NrpUUzycPEe86ihrDwVdt2FskqHXcOqfXT9c
+         /q7DnI7GlQq0ta8l0C2wIqsJARU/Y5rgMZFZvROcQACv7DjVKgAPiU+vUSm+tSoEcMfu
+         1tjFvVB+Gjyf6elB3/9Xni9xLN8sjGoBGGLG1RfvKFMRnOZkW3rnzxakmn3Ine2xwk0F
+         fQ7zl6vtwLClW2SZiw0Ov8prxqbo86wPh5dNLa6ilD1lfuHWCFTjgciNbtuAetMdKjfp
+         C1EumJ8x4MKLPzdWBHPc18877FIQTCL0Boj9UT3AH4mNwgk2tuTRcjYb9gkTjsfu68pS
+         BWRA==
+X-Gm-Message-State: AJIora9w1C3oS/PIPTrzYoo4yGHX/h8kBrjxUCSyHZXTupnLXoDIZLbQ
+        YkpFEkOWcYNhFkpT6cROTBSQMWdwe9HG38ZV2VB7yQot3sRp5g==
+X-Google-Smtp-Source: AGRyM1vi3g5NWtnrRvlcPZyNMhQ7MYLW6V0Ys7aF5nobfSZ5OuV+LupZZznhqTBvgwQQjZgzIMfbmge2aspS2VKIVFc=
+X-Received: by 2002:a5b:68a:0:b0:66e:472a:83f4 with SMTP id
+ j10-20020a5b068a000000b0066e472a83f4mr1932094ybq.570.1656873326848; Sun, 03
+ Jul 2022 11:35:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
-In-Reply-To: <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-5-LinoSanfilippo@gmx.de>
+In-Reply-To: <20220703170039.2058202-5-LinoSanfilippo@gmx.de>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 20:31:32 +0200
-Message-ID: <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
- serial core
+Date:   Sun, 3 Jul 2022 20:34:50 +0200
+Message-ID: <CAHp75VdvBfBM3Exm8BhJs7CzDaFwNYc7BLq-sLuwfzYTo4gyCA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/9] serial: core: sanitize RS485 delays read from
+ device tree
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -76,36 +76,15 @@ On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
 >
 > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
->
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core and using gpiod_set_value_cansleep() which instead of
-> gpiod_set_value() allows to sleep.
+> When setting the RS485 configuration from userspace via TIOCSRS485 the
+> delays are clamped to 100ms. Make this consistent with the values passed
+> in by means of device tree parameters.
 
-allows it to
-
-> Beside fixing the termination GPIO line setting for the 8250 driver this
-> change also makes setting the termination GPIO generic for all UART
-> drivers.
-
-...
-
-> +static void uart_set_rs485_termination(struct uart_port *port,
-> +                                      const struct serial_rs485 *rs485)
-> +{
-
-> +       if (!port->rs485_term_gpio
-
-This duplicates the check the GPIO library does. Drop it.
-
-> || !(rs485->flags & SER_RS485_ENABLED))
-> +               return;
-> +
-> +       gpiod_set_value_cansleep(port->rs485_term_gpio,
-> +                                !!(rs485->flags & SER_RS485_TERMINATE_BUS));
-> +}
+I'm not sure I got it right. Is the values from DT now clampet as well
+as user space does or other way around? In either way the commit
+message misses the explanation why it's not a problem if user
+previously passed bigger values either via user space or via DT,
+because it's an ABI change, right?
 
 -- 
 With Best Regards,
