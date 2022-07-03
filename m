@@ -2,56 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDC1C433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 042BBC43334
+	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbiGCShA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S231833AbiGCSjn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 3 Jul 2022 14:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbiGCSg6 (ORCPT
+        with ESMTP id S229794AbiGCSjm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:36:58 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E442AE9;
-        Sun,  3 Jul 2022 11:36:57 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-31c1d580e4bso64365017b3.3;
-        Sun, 03 Jul 2022 11:36:57 -0700 (PDT)
+        Sun, 3 Jul 2022 14:39:42 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED9A2DE4;
+        Sun,  3 Jul 2022 11:39:41 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id c143so4662956ybf.3;
+        Sun, 03 Jul 2022 11:39:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=01IXmPhYuZ6VlM1S6cBbYA+G+eWAheXLMfpJF09J5h0=;
-        b=XSQ7W9e1A8JRu6cEwBFhiCyxx9kMVLCUi9x+mnwH/P/dRBvt9yzVwY84PdQQMbJjY0
-         PLG8/WP54VYi+oYdj993LciYnsM36VxfuiKE5zh5rM5NgZeWuYSooctgIHIRkjM/GECz
-         sFJ+vdbou4WsGusH5mqjaEQOMuLEvNK4HY7J0BaZqo+c70pxQZU5B4ac2NbmtDc8RJbf
-         vKhzfweWs2mUZXLRTvzW8rS0FMpKtCSHT8QgsIfrwtkT6MdWhXrcVybcpJ6bYJPlLYko
-         Jbw4Nus5vNQZXQZpghFkM0nEsoVCicPmUCZ7y6W1fTBsFet5YkeB+p45vq8o48S4XUS2
-         5EUw==
+        bh=5DVzDDMeIoa4xyzY/DW7k8LXANM8ZaNyYc69eLGHeFg=;
+        b=l+DDU0LZH8WGQTO6pD9bNCgr4uLF+eY5UdKiq8eX2SBZNJHWMgdQlNzAqhTuSA6wkV
+         q9+LyRaZyRLI0FP2MdSh+kJ+6duv3jKG8hDHA/Q3yGw/BWNFpwYas+Ac7OX6hknCzhav
+         0avsAcxjDB3GWeOiXvURteEb13j0fJUIbKG4CLZmYL1ZFHOa+86FXhtHVFNc3dUDccjg
+         dCf3SwJhuoTLB8VX6c8fJktmD6odf80W+iyXpXuWpEraLmS19eTRFBNGYtZWCsU70e7P
+         ijinwoXmdAEwwAiOyIRUSZPYNa01VPtrO1udnxFHZFFsPZXFWuxSctrkC/Do5AvpiPXk
+         55Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=01IXmPhYuZ6VlM1S6cBbYA+G+eWAheXLMfpJF09J5h0=;
-        b=kfLFVterFrYrgqRfHMySiQcj9U6D5RCEUz5tLq96y5wWKOJgRwADTqnRjnZAE++oSQ
-         XOvd3O7wdOngPmk+Qz+G6J99wHZCLt38qNy88gV9A7Zre8UcApSM8idaCMAMK3lJeUk5
-         d5OK8xU6arVlv7ZM9qSEuCSIExafF8XqT5Zh+jeVjvDN1jQYIfZU8muAjgy5v6QaohTK
-         epUgPm6HFw3OaxphyVy4buiW1joU/K+8k7BBCP/h3pMLTe7jwPMuOwClyrKWRaHm07jF
-         aJAC+NduWwCPvbifWcZ/3z7DofRABp6xndZREfaB9ailLbzixO+Ys6hESquo0eW2h6DG
-         ExZA==
-X-Gm-Message-State: AJIora8bzKq+Q0p0GEK99Mkf85s3xPks2pGUpQ0xtWD17hB15fB8Bq+E
-        2w+ljksotj+TSEFGBf7IAeKjqRZMpBo2QHDVyeA=
-X-Google-Smtp-Source: AGRyM1sp15ETRPyE4hQ18Jlc955QlxmgsWxeKfPbmHoG83zFyjKbeg/AfEUK084940cbAYDFXU+IEzkBK5MXiUugW0o=
-X-Received: by 2002:a81:b52:0:b0:31c:932d:e3e5 with SMTP id
- 79-20020a810b52000000b0031c932de3e5mr2536002ywl.185.1656873416766; Sun, 03
- Jul 2022 11:36:56 -0700 (PDT)
+        bh=5DVzDDMeIoa4xyzY/DW7k8LXANM8ZaNyYc69eLGHeFg=;
+        b=AfKSiHj3CgbtM/v0fdXCXKaNHqaKovPca2FLF+XcyoGB03NEhrk1AAnp35wlbv5ewk
+         yw4C53yh+ajhVM4/+1RgagfgCUrAbEZASzvxOW/QezFtwLVAvsqzQYLzMTlj0sDW7wBS
+         bzZCntCJSRQrOw//CeQ6PzbEmDqMCLZg6PFfiPj/4v3ir93U4UDAuFKUpei1iRjhZ9c7
+         8qjH7U0bY3fAXZH1/XXmg3lOy6NFYJfVgoQewmuza4jrdIC3ejI2VvCSpoOXUOqtwFju
+         TUDE1qbYdaxtoTWXERNihfb9eq6DT84pC1GJeZVvp6GbEWyliqHu7eGVkth409sHbgOo
+         C62A==
+X-Gm-Message-State: AJIora9Y6TovLQnOaKJmyjntXfQKVOYrWrTZUae/6FM+KaKVnFNNN0Bw
+        NkddesjqQ5lsBVdQzJCRm8U07wemMiZpieQUHIk=
+X-Google-Smtp-Source: AGRyM1tf2ujv1P42O/7wA8ZPhLFRPqwPYmN+ZPq8B2MFR9A64a7c9ulfkNc1A9KhBA0V+YAI74eIXpqN/uWFTaEsDXQ=
+X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
+ w9-20020a05690210c900b00668e27c08f7mr26878837ybu.128.1656873580503; Sun, 03
+ Jul 2022 11:39:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-6-LinoSanfilippo@gmx.de>
-In-Reply-To: <20220703170039.2058202-6-LinoSanfilippo@gmx.de>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-8-LinoSanfilippo@gmx.de>
+In-Reply-To: <20220703170039.2058202-8-LinoSanfilippo@gmx.de>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 20:36:20 +0200
-Message-ID: <CAHp75VfTQmzfVbxbVKWyWnJZERfPs5v=SmjexY0d+CPYXT7xgg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/9] dt_bindings: rs485: Correct delay values
+Date:   Sun, 3 Jul 2022 20:39:04 +0200
+Message-ID: <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com>
+Subject: Re: [PATCH v2 7/9] serial: ar933x: Fix check for RS485 support
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -75,20 +75,18 @@ On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
 >
 > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >
-> Currently the documentation claims that a maximum of 1000 msecs is allowed
-> for RTS delays. However nothing actually checks the values read from device
-> tree/ACPI and so it is possible to set much higher values.
->
-> There is already a maximum of 100 ms enforced for RTS delays that are set
-> via the uart TIOCSRS485 ioctl. To be consistent with that use the same
-> limit for DT/ACPI values.
->
-> Although this change is visible to userspace the risk of breaking anything
-> when reducing the max delays from 1000 to 100 ms should be very low, since
-> 100 ms is already a very high maximum for delays that are usually rather in
-> the usecs range.
+> Without an RTS GPIO RS485 is not possible so disable the support
+> regardless of whether RS485 is enabled at boottime or not. Also remove the
 
-Yeah, something similar is what you need to add to the previous patch IIUC.
+boot time
+
+> now superfluous check for the RTS GPIO in ar933x_config_rs485().
+>
+> Fixes: e849145e1fdd ("serial: ar933x: Fill in rs485_supported")
+
+Is it an independent fix? If so, it should be the first patch in the
+series, otherwise if it's dependent on something from previous patches
+you need to mark all of them as a fix.
 
 -- 
 With Best Regards,
