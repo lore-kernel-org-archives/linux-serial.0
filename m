@@ -2,56 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B34C433EF
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B6AC433EF
+	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiGCS2S (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47706 "EHLO
+        id S233048AbiGCScw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 3 Jul 2022 14:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232060AbiGCS2R (ORCPT
+        with ESMTP id S233051AbiGCScf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:28:17 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CBACF4;
-        Sun,  3 Jul 2022 11:28:16 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id d145so9971514ybh.1;
-        Sun, 03 Jul 2022 11:28:16 -0700 (PDT)
+        Sun, 3 Jul 2022 14:32:35 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A36428;
+        Sun,  3 Jul 2022 11:32:09 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-31bf3656517so63797087b3.12;
+        Sun, 03 Jul 2022 11:32:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yjZR/70PHdM2PN7TkWB0TtRfSwOaskYmscGVtZ9BAyE=;
-        b=a29l4TY5Uu+UsD/SBXw0sFjO1CW+IN2+uhmdCHwpsBPF0osshMBITJ5hDe1KBAeDZa
-         KJGZdCzp9eonNqcoi+nIi3fhaWALWPShC6m/bRxS2uuLHkr2hZiQX1r08aXHEnqmH9pi
-         mFWjFxe18nTC9aaIP+e3fsfTA97ayA3T8UN4laAbY0iMAltd4vco0URiFm24wDoRvE84
-         TsZj/T9YsPrvbd7ss4jMm1oZXCQjpq34z3+SZ1ifr4jL9A/qSCvqUJ9f12RWwS8+hO2t
-         rOS73dEP1Ai7R2jsgrCOq47pWsod3KRceFnaGulT1wn51B4VeyMk2p6sRaWzwFlkzIMr
-         r9Zg==
+        bh=DSKYZbyn8mddhblAYs7qJYuusH9cifWViGiK0y7vJB8=;
+        b=eyyN6g2obGmebx8pIteLaXpAfsiXUeO/yT0/0TR5Et6cKDlZP+3gzDre9S2PTYuXnL
+         rujxYs467APMsocQUjftLdMRhgmBKskwZk1YOVdUZ2aU8K39UmgtM+nTg+rrg7z8BbLQ
+         EJrpjitR1I1dHStWjY4ioi7SGqD52tlTGu4I74lIJ6xLhZnzwXd7j7cH5mEhXtFxybnD
+         Gre4FNwegZSNyrnamdtOXXVCOjh01p7bdAK5loZ8y1aLrxGaX8M4p5dOtX3dMopTjLJV
+         AtfSwPCEOypYT6rYh/dcLbW9RMJEoL3dnzKYT3Ij/Fh8mYmBG+jk5u3M/+ivlbILI7at
+         9a7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yjZR/70PHdM2PN7TkWB0TtRfSwOaskYmscGVtZ9BAyE=;
-        b=6hXC89otPg45Mx6C2JrzihlOFVZF5dZjfHb2j9Pe17xCM/w+A2pSMob2I4UX+FzOXj
-         AF5nc2hvASRz79KqF1u0cd1fhi6gGbplnDCcA6paUqcVnjJG2XTdCX9kpcOQ0a3nl/FP
-         /TalQjJGI41RYpnro/iIM8FwpxCvajx34XO9/RGohzYGeFD9+akOXKnrnGgyK7Xv/RBh
-         jfcWqTR+/p4dAv+RxVqhHv1I4h7JEKzyDZPwahOg/uXwzbTXCl2kIsmKoCKuvab6O5e4
-         gt1H1P264VMdLN3ENjtpYd552k5WPkyT4fLaSDV3nZgt9Ig8M+OFRfv6fhJHr4B5HWeS
-         Q3wA==
-X-Gm-Message-State: AJIora+JJl1Nmtm0VAtnR0LuR6Cee8k8wxO+ptjvLQTfj3C9EOvFFx7x
-        mMyDcGx3C/g30NyJ4UWSiAjWRgrw8XnvMZ6j6Rw=
-X-Google-Smtp-Source: AGRyM1s3IcdAbvbL68QwHWAcHy5wnzv9v0dtbhrfomjH0uKcNBKUV4HH5ulNe6arGwBQNEnX23Qbv6HOtUoonzDrN40=
-X-Received: by 2002:a05:6902:1549:b0:66d:5f76:27ba with SMTP id
- r9-20020a056902154900b0066d5f7627bamr26444320ybu.385.1656872895607; Sun, 03
- Jul 2022 11:28:15 -0700 (PDT)
+        bh=DSKYZbyn8mddhblAYs7qJYuusH9cifWViGiK0y7vJB8=;
+        b=vodvrTKjbyF2tWGM8AUsVU/HLVRniUthJmpufhwiRRp0RTchfsvKyiXMaxnSGn1gCj
+         xk49FxJjdG37Hi0Rwh9Bd85p3gVz8uZ5mjmWw89RgTzoAbOnp9lHraAAEkXebod4jTtz
+         OxEt6ekbEOg+KYmJiHYSx6MV9Oa48zfwV/mXZlZc6sFxazMifpi8O+IQqEucVqvHdQm4
+         ZK4cZ5oTz6pwIE+RcRZY3ObEW8NNI4U+vZBK2HdEcyOXXZWEVI+vJiW5x2xE/D32tamC
+         QeMp5bsIwyIL0+zQwOiZ6VW7qDf1U1PRc/QeNdFYtjdQaYKbbAA18E1VsCYyq913uPB+
+         I/ew==
+X-Gm-Message-State: AJIora/FNiJWsjw6bAsBz3Y4oU7mk9osNNdLUWd/xYHnA2ZS4MFzm+sB
+        H1DC31zjcFqHtpso75oHVAmQKC3MrFqdC7pP6Mo=
+X-Google-Smtp-Source: AGRyM1tviE/YFQDmKXbqmGko1a/kn1FgT/21vZOyNeJKXtiVlpsxpUDghv9QNJZ5Ym/vGwTT+ay3P/g0PooGrJ+ZZhE=
+X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
+ j128-20020a812386000000b0031765868901mr28830981ywj.195.1656873128834; Sun, 03
+ Jul 2022 11:32:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
-In-Reply-To: <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+In-Reply-To: <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 20:27:39 +0200
-Message-ID: <CAHp75VcU-gLQBvuesoYp-G91SjzeYB7PNCN17PGL7u139VZY2g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if supported
+Date:   Sun, 3 Jul 2022 20:31:32 +0200
+Message-ID: <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
+ serial core
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
@@ -75,36 +76,36 @@ On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
 >
 > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >
-> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
-> termination is supported by the driver. This prevents from allocating
-> and holding a GPIO descriptor for the drivers lifetimg that will never be
+> In serial8250_em485_config() the termination GPIO is set with the uart_port
+> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
+> since the concerning GPIO expander is connected via SPI or I2C).
+>
+> Fix this by setting the termination line outside of the uart_port spinlock
+> in the serial core and using gpiod_set_value_cansleep() which instead of
+> gpiod_set_value() allows to sleep.
 
-lifetiming
+allows it to
 
-> used.
+> Beside fixing the termination GPIO line setting for the 8250 driver this
+> change also makes setting the termination GPIO generic for all UART
+> drivers.
 
 ...
 
->         port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
->                                                         GPIOD_OUT_LOW);
+> +static void uart_set_rs485_termination(struct uart_port *port,
+> +                                      const struct serial_rs485 *rs485)
+> +{
+
+> +       if (!port->rs485_term_gpio
+
+This duplicates the check the GPIO library does. Drop it.
+
+> || !(rs485->flags & SER_RS485_ENABLED))
+> +               return;
 > +
-> +       if (port->rs485_term_gpio &&
-
-This check is incorrect. Either you need to move that after error
-checking (that's what I personally prefer), or use !IS_ERR_OR_NULL().
-
-> +           !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
-> +               dev_warn(port->dev,
-> +                       "%s (%d): RS485 termination gpio not supported by driver\n",
-> +                       port->name, port->line);
-> +               devm_gpiod_put(dev, port->rs485_term_gpio);
-> +               port->rs485_term_gpio = NULL;
-> +       }
-> +
->         if (IS_ERR(port->rs485_term_gpio)) {
->                 ret = PTR_ERR(port->rs485_term_gpio);
->                 port->rs485_term_gpio = NULL;
-
+> +       gpiod_set_value_cansleep(port->rs485_term_gpio,
+> +                                !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+> +}
 
 -- 
 With Best Regards,
