@@ -2,36 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE72C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559BAC43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiGDJWQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47938 "EHLO
+        id S233362AbiGDJZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiGDJWQ (ORCPT
+        with ESMTP id S230098AbiGDJZo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:22:16 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9201A8;
-        Mon,  4 Jul 2022 02:22:14 -0700 (PDT)
+        Mon, 4 Jul 2022 05:25:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C5A656D;
+        Mon,  4 Jul 2022 02:25:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656926518;
-        bh=HMoS1mHTCb0aYIM2kEvkDESvBr9nhP5ZQSnCcrmAqkI=;
+        s=badeba3b8450; t=1656926726;
+        bh=7AgtTeOCjKY42gITCNPqcj2Bze43f73q5a4PmTDg/EI=;
         h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=WM3DaYkAIQno5AiQpSFJZ/AhXVLC53+aKqhmQ7ph6FNDS7aSVSi9DGzhzWJ9MSEyP
-         6Gh35+TryZWkjGrvaaMdH61meuw4EgecIxAlQTa+99xqkMR4VXSEc96vQ+jrNTCFuj
-         81bquO/UGG8enqtTrcrChOaUvbSQ1XrMkDWKhqgo=
+        b=k7H9JiA61r612M/Og49HsCYUy2hEGIWOhLWpYhcXSy2SsrjnSXFHfbjEu6oObjK+M
+         s+IOddX7ONigdHAFlAtWrbJnjQG7ugp9p4xsTA5bsiQz4YWimK8p98Ajuy+R6L25z8
+         GFMmMLVNpvdMkoJuDgo/k9r/lm1OHnjgsT/uyj1c=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N17UQ-1nRr3s2qHC-012VwD; Mon, 04
- Jul 2022 11:21:58 +0200
-Message-ID: <e000058a-0f19-a598-9fba-b745a2f2bca5@gmx.de>
-Date:   Mon, 4 Jul 2022 11:21:56 +0200
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N0oG5-1nNC1j1c17-00wkAp; Mon, 04
+ Jul 2022 11:25:26 +0200
+Message-ID: <bb228b42-e175-513e-0972-57552ef52dc2@gmx.de>
+Date:   Mon, 4 Jul 2022 11:25:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 7/9] serial: ar933x: Fix check for RS485 support
+Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
+ serial core
 Content-Language: en-US
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -48,65 +49,91 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
 References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-8-LinoSanfilippo@gmx.de>
- <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com>
+ <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+ <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com>
+In-Reply-To: <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Id1qi+1KGG9/mHMREikhKJXKJOm/mC299e/p+NZbAkVEh27OVQg
- zwdMhY2XvJFVbqed0wPJ7GZ3rSRxEL7YixQ6Lqxkq5CNBgaeh7uEvnapxfMag6aDy3USTBH
- qZLnCLJBVFZXfAGxTo0ncncejiGb35pPxBh69g483NaeibrfCX11vmTzTN7rkOuohhTWJJJ
- 9dJ/rmLbAYhhGt/q4yGCQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:acCP9qqwCv0=:ZPPf5ravFzQ+wjQizxVBmy
- jeewtXeAw2rGN3XPgRCtHqK3Cdr4FnkXsNI+nVeNWeroBol5I3I9kxz+IdTLNxZFSZQhBZGcP
- 50jop2Fyw78WHlhYJnO8lwDMFvBxgF4LGhyxNbwwWZSS05ZxSX9Qjvk3ACqdeLABFdhZg/jDu
- 5PVHPBEPpotDUbWi2rqzRkS8f2WssgMo4kw93/2z0nWqkooD16SVrQCsVAXP0LR+SsPG7lrqO
- zdOWFdbp5AjXSs1/DH41FGcNg4A5gGXn29lMzRZMUW+NeydKBswhqCeTa7VFj1qVc0q/hVM+A
- cUByeL6DaOKbba+tkbCoPBgP3FO66drIBwWJCMlOwCkp+/cvlgj6qIR0cKn6FLbVZ1l+Uqafh
- ueRDIOh0iMaJimfUZdZxmtDxCXEkKUofbyYaotRlZgdhQBVGgGETyyXA8TriqimsPmLrX3NFd
- Bovt7WEOqQ7M955ILMdbXkLtDH/DiaXKPzOcZFkwLy98ttlsNB0XTFHuN/FowwEy9KRpS8gvD
- Jpr+BgZfzRU4NfXM9jXQAv2jQEKmVURIwdTYs0gxJG9zSb9nh0izcKGs+Lfjqza8F0zjOAt8k
- Nms3urCYkFX96/OXMn/NM8219Y99qB6JKDraAy75JGXwGk5xFzvI5rySTKLzh64tZ6thVxUY9
- /DS+DQ94p8kI66NBmsSF1iDb7RRMEptjDj7qbzXCKpqCgzI+DIPQLxpR4bsguVpkUWXshniNN
- W3sgH48n+68R0GCIKWFiQfVxQtNZZojT2YA22ljlhCtQsbWoLRIW1QV8m0zHoU7EuYt7NDDT8
- gzvMZrFbv0IPza8pejF8pGZ/eDsmBvPRvj6LNySTmziC9HhH4DualX2/dOuE/3+11YHEHc9XT
- O/Qz9usxjs5iXHKf3q69hHBeBTTpmLoCSpx+hq5l0YaqGIdVAZjpPL1+sRNGz9VRSaUcKSYP0
- YgIrAPRVlUDFn9iqkTx7YTks35U2Ul8nWNHHR3kAfFyVYJ2K72c0WT8KmemfuQGT9bei6pyFh
- ep/8m9N0pDkRlPlRMh9NeOWZ2/TOT3gggN+zudv1gtxex+tikSYDRcIwWJ9BR0rJ7PI2xcbPa
- HA+5TG+MpXSR3HbAqNWxRCkuaLFKdvg+oiY/ze6rYCi8jgcHemGlknc9Q==
+X-Provags-ID: V03:K1:Dvsa0LVT82WeAEqY3B18IQwgHTM8am8FU0xKoRnYcHMxE1XxzeD
+ gM1jVLYerT8KrnpsYY73G8Pu/Yk6BGn7pUI1Y6h6AtLXvQZ319kg66HR+BmzJxIVj1OAnCZ
+ 8aHZBUbt3BG2ABnZG4XqQTuk2ty7TqpVLzSS12kD1Hgk8xUqDRV0dL7egd4uGzq06hPE0mK
+ 5g08PqVnazwNXh7s5IDcw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NWwClxxWj5I=:4NiUOBAjyjp7fBz9FmEYjy
+ g086C/Kg0BEdwt5nhrb/PI6x1IXjgnW4JNrtsMhshhDwIGRso54O43Xi8lNGYTZ0OKqLTVLw8
+ SCsnO9AGiCU9jSfqJ+K4J99ekKNd/rn+TDeZV9RZoJlN5od24A11POoHbxwM00yDFAoZSRVZY
+ 7vqjqwci7FKtBz9hrmzoxJk9dR+2hedibQQtpsKg8SBUwlyCyhL2krtGYLfQYbbI5RSRL5bdi
+ kBGBr/7TJz3+HyiT3Rchx3MC0P+4vUHQaYbxJlfiEENLsz/540Zv8F6ZZEHdjuvGgJfjhndWt
+ 7lbQWONX62l0DhOxqzfrOxmn3naTW8h2vAMf6wkGjhrQGS3dlMjyB+ms0+YNWYJ82Kq+ie9sE
+ WSsZbmCXkLUmvyFAGPyBLor/+uB+bAOBk5y5olkxwbOnwxT4O1mXlUF0pef8V2N0OSNoof1FQ
+ 74+RhKSvRtCitKCD/f4plyfDNzPsaqdCTC9D4IrO/GIC/LzHI31FnjWuozywR4p7j65pb/vjP
+ PrBCqWosDwx5jG5BK0Wt3gUIcCB8ukECbPOTf36JZRb8bwZlkHeTYTFO80Z2aP86vDC5oYUpP
+ Yf8TT5sVmAfKxrPfGiJXNy0DCtzieQGDhn1mxjPP144MvMUtTzYabs/xMaNtxaBrN1ur62TMt
+ 20aK1J/32fgG3Cw/5Kqa/yiKAuWcFkEUf4nzX4U3cDkGNxE4a8vBp95/IcY3mBqUoWIfWwvGp
+ OxP9OxUPcV0XmUwP5GQIiRYuATeyptzF5kRMRXgsP7WZA5iQoVsP3PgIjKgpW4jtAAkPDz6BL
+ aMysL6693f3w7ELI12IAETJ4ypvpeAnu/6Tnta4EFqHK+9RyMuBOBkGezx6hr6p/ZjYqMlhZX
+ p1uWxSVorgkusZngVbuXPLOWW/QHG140RZjHxVZemJhfNjTfuQLjH2R2XdjMKkivvxrv1VzD0
+ mp0Yn0R0E2QJKfXkDm+/z79uLK8wX0Qa8mUASCgQA1LBfMVsmTF09Zqi8EfZkPSutIUY6xyhM
+ Eg7DpNgT42jrRkPmiAt/Yjej8bn91UMTISSohG++v6pcqt5pwKwsAXOdS90kw3v9aJPw1B78X
+ 3KQ4uIhmLn2PM1TrjiPt+ZzxUgA8E9Zn/7K/woEdOe7+YLcRC0p9JFn1w==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 03.07.22 20:39, Andy Shevchenko wrote:
+On 03.07.22 20:31, Andy Shevchenko wrote:
 > On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> w=
 rote:
 >>
 >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >>
->> Without an RTS GPIO RS485 is not possible so disable the support
->> regardless of whether RS485 is enabled at boottime or not. Also remove =
-the
->
-> boot time
->
->> now superfluous check for the RTS GPIO in ar933x_config_rs485().
+>> In serial8250_em485_config() the termination GPIO is set with the uart_=
+port
+>> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
+.
+>> since the concerning GPIO expander is connected via SPI or I2C).
 >>
->> Fixes: e849145e1fdd ("serial: ar933x: Fill in rs485_supported")
+>> Fix this by setting the termination line outside of the uart_port spinl=
+ock
+>> in the serial core and using gpiod_set_value_cansleep() which instead o=
+f
+>> gpiod_set_value() allows to sleep.
 >
-> Is it an independent fix? If so, it should be the first patch in the
-> series, otherwise if it's dependent on something from previous patches
-> you need to mark all of them as a fix.
+> allows it to
 >
 
-The fix is independent, patch 8 depends on the fix however. I was not
-aware of this fixes-first rule for series with patches that are independen=
-t
-from each other. I will change the order accordingly in the next version o=
-f the series.
+Ok.
 
-Thanks,
+>> Beside fixing the termination GPIO line setting for the 8250 driver thi=
+s
+>> change also makes setting the termination GPIO generic for all UART
+>> drivers.
+>
+> ...
+>
+>> +static void uart_set_rs485_termination(struct uart_port *port,
+>> +                                      const struct serial_rs485 *rs485=
+)
+>> +{
+>
+>> +       if (!port->rs485_term_gpio
+>
+> This duplicates the check the GPIO library does. Drop it.
+>
+
+Ok.
+
+>> || !(rs485->flags & SER_RS485_ENABLED))
+>> +               return;
+>> +
+>> +       gpiod_set_value_cansleep(port->rs485_term_gpio,
+>> +                                !!(rs485->flags & SER_RS485_TERMINATE_=
+BUS));
+>> +}
+>
+
+Thanks for the review!
+
+Regards,
 Lino
