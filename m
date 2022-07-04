@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0800FC43334
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 15:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8131C433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 15:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233678AbiGDPJB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        id S231250AbiGDPOP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232622AbiGDPIj (ORCPT
+        with ESMTP id S229585AbiGDPOO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:08:39 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9FF12AF8;
-        Mon,  4 Jul 2022 08:07:25 -0700 (PDT)
+        Mon, 4 Jul 2022 11:14:14 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ADEBC83;
+        Mon,  4 Jul 2022 08:14:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656947229;
-        bh=K7RUmy5Limq+hSDDppl+PDSSH2S2TL2HjFu3L9C6A84=;
+        s=badeba3b8450; t=1656947623;
+        bh=lw9l19cpkr4yCqcc6HT5BAREEapDuSh+BtMq4Z73ojA=;
         h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=RYMeRukIIZY0NySBb0GJ4pRIQUlwiCXqGgva4+QIXoveWGJofZ0BcoHViO6Z8y0QP
-         PZv7V7gzReeaVZuBe65DgHZS7ve8e57sn0mWLIOWUNhkFX4UFogr8NTbmKo/IyiyGy
-         lEK9BEOkenEhSg6mUwGwYVqIpr3c6zY/JYRIAX3M=
+        b=joU5t0cevbn9FI0a3XUrCa89xeWo84Gyc3+bVds9L2qAWszvbCKziivpG4hR6r7oB
+         m0dNdOh+uhTlrn3MmgupsNYjZWUz9xS3REe5+Hy2d34gM7NSFCRv+OhaHNl6z5iMx+
+         wQeOcrfhPoI0h6AGR585T0/XEYi1H3MvdPBWcaBA=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MV67y-1o0EkU3jeQ-00SB0W; Mon, 04
- Jul 2022 17:07:08 +0200
-Message-ID: <f318294d-2641-5a38-6d9c-ec96f3ec2b5f@gmx.de>
-Date:   Mon, 4 Jul 2022 17:07:03 +0200
+Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mgeo8-1nh3Ep2wyy-00h9Fb; Mon, 04
+ Jul 2022 17:13:43 +0200
+Message-ID: <576feae5-87f3-fbac-4349-126cf5244821@gmx.de>
+Date:   Mon, 4 Jul 2022 17:13:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if
- supported
+Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
+ serial core
 Content-Language: en-US
 To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -46,98 +46,89 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
 References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
- <9bc128a9-7ce3-d1e-dad6-ca91a5564ea8@linux.intel.com>
+ <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+ <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <9bc128a9-7ce3-d1e-dad6-ca91a5564ea8@linux.intel.com>
+In-Reply-To: <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:F78mEPif5Gs2kOcs+5mq/KWWlBuEXGPYjtBh5mxK9oOEJMpfGIo
- OR5yhs5r4ovPoOCJt5q3K/q1nPcuQhsYyFZos/lk6mlBms4Pn8VtEMUN2amik0AVV7Hf/Mc
- Zv8MGpulkRMhBld/UXFFQ6GA6WeQSsTp006zT7pKHlxRPWqd0LQv36aEQF9qblcv4/RM3rj
- vrxSq2/eSfq2tBH5gOEvg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:w3Sj/bnMhPU=:etWO/zFLCTQMC9Vm/8oNZT
- ZUSqW/0YqLSBsBOjEIm0k30PV6cjGahSgQLQF0Bby8ZhB59TagpVvGz+QchQjBxHbT8Lv/Otd
- a+AifdGmvr62uiKuf86LoMsFCeAd9lYOnrApngKsDK0p9DMfNEcxHGmcdr7QEgkSDYWHUfPgq
- gkTXsyTWMMrO90p4/NIQXsPwFa7QuO0wMMGnWN0C20tsZmvZozgUR0xcfCgBt4tewAOoBtkX8
- K9znygeacU6oygankuiOn4CLI24bNMa1K4R13DQs+/nyLsrji42E+em5N0lcNZh0SbGW2PKc2
- qYuXOyJknG0+SVESRVLCNf4PvoTbwiCfI59kdXW7UhIq7eGRFjQoMytpUUtSjRgZWlRPnvJ2V
- sclMOg4JnPqecClD86M/BD/viZFVvsWdc626EHCHxB606qwz2tqiIEikzFVY4Se4feq/gNZkk
- STazAfi7ERd5RAvnTKL9Pm9Nx/a8JQjF5yZtiZckJaiNUmwvVmOPXGVr3YTt5PLvyE1t15qAA
- VTI0vzEa0D+H/61vsO4L8jHiul0cG7Z0jdQCOqtac2AWdh/ojSWQ2Q95YlDuZfjgSwqKZSfAh
- wYeTzsc930j7D7sgz+BPSx48pMnAZqITeauJtx7fK343SXgYhZYLOCn6gGPChDTdKssN3IX0P
- 3DgA/mAkWimWllbKrrjhnwL0CTK8ca1ULCKPbazNasK6BAKin5mGFMq6AW8ExXPUt4+cXTkdP
- Zl2qFJm0jkI4al71k8MTIze7FL2tIHpPr4d5PPOMEJHOBQocCXvISmRoxZnWoAZPxH4xS4vt2
- b6MRTsD9dBN2UXnH6hvdzdspOgBkCal0Dt0ST4WkBN4ZzyizUwGiVOflck2SWtTOJ2ZLzzRXV
- JBCC97UGHPWVjIrt2wzhoMfuVe3Su/HykY10vDCWHwyh1Z9bA/fj+eGC2OLxDTJZ+idGs36HM
- xOU9j6xdyb7H/3cpvITGKJlzv6wY+nsBCLEifUcKhd2qWm5qSdPcDwWFIP10pq9JqW92bGGGW
- P9fRQr36EP+U3DydnLGYxdCYppigklzPGs0zzwqrU/E7oKxRX7kRmB0PdpGTv2SKM7hy6qHmz
- NLXHdGSP+U71WoQI4h60OHOLnPGCgB/8G3K6CxSsBJQJRJ/Jy60cDM/2w==
+X-Provags-ID: V03:K1:7BLvkQ8Daoruut0OeY5prEW4I+47ILt1MxrQ+u1s/fM+oDJ3G5M
+ bU/gqksPJ/AyAYj+2nJd1fnExnWNC9/G+8lOKaqIcdN0o5ssnKLE9PIjN0MUsjeb6+wdoXj
+ TX+pNEdkIzjEUa2ZO21peLKT/Mf/pD3CXVPX7FxAXp2Blh7xic3KbOwVgyv2Sw3p9ydPqCG
+ gj+B0zgEZm2dv1aMRZXlQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VKzmQ5Nig5Y=:Hu9TT4m/x7bFkXRNGtkvXi
+ VEQsvAW6y0StxIsUHP9ibrObGi7xmCvpqp7nptXo6k/eJ2n+cRX6BQRndmCpqx675G7a9oQg0
+ hpZ6IuKw8b3x5RKOOXBOVNejCFekRl1pfqgxBNI4N8IGv5UiUXHnhSzeRtUND4dHYzCDq/+DO
+ s2CEr3O5t4H0ajc5xgSY7xO+7A9pa9PTZeLtwm3V890C8cN/cEkh1KY3AMP4ibFoU54W/qm1A
+ Ecw1Ih3SMJ30cg/UAYfNaZ2RpaPGP6wGiyk4wVZSyua3EXfObaiNVRiPuk53roIylG1I0OCzZ
+ j2FhUAhG2DMvl2tq5M0WXw9TdSN1E9bV3vEnChf3vmQFtqeddwl3A+5Q7igmn4IFruaYgyB6+
+ /zjGAdWpqEv/jFTCgCPS73PbnUYtPrTBFyb4i5xUD0x7Yc/SqXwFLOgmt3SsggF49L3IqOZxy
+ hcsEk/zTIjeR6apEVO990gHnPZJ/Hsxschu/1Cr4RUPHn+TT4N8vBMG5JEesWaCvbTTeaHhF2
+ 0fkXz+0FXVO777VmZHUxLIl1PKg8di9gBYXpLrVCtRJ9qK33KAcMxNCF1ChWNpt5O+qfldL9N
+ YnLocx5qSCyie5iX1QtfPElnPTl9X683qFED+vLL5NzhyaSafgfGyttbdWg/3w0XjmkhlQ2VL
+ WO2BaJtgQaIcPA8dg8CDRsTz4IW98RCwnc3X1LqpzfzFs8EoNNOJnEdxNUxjGVvvbWQ/mgHUU
+ UV8LvkfbtDM724J8gJhheZEd6CTfUYt2EgU5Pa+G8T1atE5uK4RZkZuIWNVeowRHUgtUcAC3f
+ l7AmwgUJJo9J/M5sNJeFg0vxO3Nv5nWQBbOmZcmwOlW0z9Onudj3JDs87ZoYBXXL0me7WVjPy
+ npO1ARNdrYRHokIAVmoxBnyyw2u9yCXaqfomjutlCg1cZFGQFzDlqoLHYndVQJS2uRK0NQ/lZ
+ vv//o4SAoXC//ux4t7fJC+NXcIRkdJI0G70VxQe1dZaArlXSONgr2tHPxd44tBSOKRYz17Gij
+ VQ0EOFYHHgo0opMIy0ZEoNJxhzXkyZGg0da7GL5a1wSoHGrWqF7iusMTgycLowjmc+ZuHWL/b
+ l+49bBwS5aShZ8fs31cPGs1dspSVcxR+K28Z9PlIVkh+3PAXR4eZ7TDLw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 04.07.22 11:55, Ilpo J=C3=A4rvinen wrote:
+On 04.07.22 11:51, Ilpo J=C3=A4rvinen wrote:
 > On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
 >
 >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >>
->> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
+>> In serial8250_em485_config() the termination GPIO is set with the uart_=
+port
+>> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
+.
+>> since the concerning GPIO expander is connected via SPI or I2C).
+>>
+>> Fix this by setting the termination line outside of the uart_port spinl=
+ock
+>> in the serial core and using gpiod_set_value_cansleep() which instead o=
+f
+>> gpiod_set_value() allows to sleep.
+>>
+>> Beside fixing the termination GPIO line setting for the 8250 driver thi=
 s
->> termination is supported by the driver. This prevents from allocating
->> and holding a GPIO descriptor for the drivers lifetimg that will never =
-be
->> used.
+>> change also makes setting the termination GPIO generic for all UART
+>> drivers.
 >>
 >> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >> ---
+>>  drivers/tty/serial/8250/8250_port.c |  3 ---
+>>  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
+>>  2 files changed, 12 insertions(+), 3 deletions(-)
 >>
->> NOTE:
->> This patch follows the design decision that "rs485_supported" is
->> set by the driver at initialization and cannot be modified
->> afterwards. However the better approach would be to let the serial
->> core modify the termination GPIO support setting based on the
->> existence of a termination GPIO. If "rs485_supported" is not a
->> read-only value any more in future the logic implemented in this
->> patch should be adjusted accordingly.
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
+>> index ed2a606f2da7..72252d956f17 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -676,9 +676,6 @@ int serial8250_em485_config(struct uart_port *port,=
+ struct ktermios *termios,
+>>  		rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
+>>  	}
 >>
->>  drivers/tty/serial/serial_core.c | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
->> index 85ef7ef00b82..3768663dfa4d 100644
->> --- a/drivers/tty/serial/serial_core.c
->> +++ b/drivers/tty/serial/serial_core.c
->> @@ -3404,6 +3404,16 @@ int uart_get_rs485_mode(struct uart_port *port)
->>  	 */
->>  	port->rs485_term_gpio =3D devm_gpiod_get_optional(dev, "rs485-term",
->>  							GPIOD_OUT_LOW);
->> +
->> +	if (port->rs485_term_gpio &&
->> +	    !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
->> +		dev_warn(port->dev,
->> +			"%s (%d): RS485 termination gpio not supported by driver\n",
->> +			port->name, port->line);
->> +		devm_gpiod_put(dev, port->rs485_term_gpio);
->> +		port->rs485_term_gpio =3D NULL;
->> +	}
->> +
->>  	if (IS_ERR(port->rs485_term_gpio)) {
->>  		ret =3D PTR_ERR(port->rs485_term_gpio);
->>  		port->rs485_term_gpio =3D NULL;
+>> -	gpiod_set_value(port->rs485_term_gpio,
+>> -			rs485->flags & SER_RS485_TERMINATE_BUS);
+>> -
 >
-> I sent a series to embed supported_rs485 to uart_port and manage
-> SER_RS485_TERMINATE_BUS properly so I think this won't be necessary
-> with that?
->
+> I sent a series to make .rs485_supported per uart_port and properly set
+> SER_RS485_TERMINATE_BUS according to DT config. With that series added
+> first, SER_RS485_TERMINATE_BUS should also be removed from
+> serial8250_em485_supported so that serial core can properly manage
+> it all.
 >
 
-This is why I wrote the "NOTE" above. But yes, this patch is not needed
-any more. I will drop it in the next version.
-
+Ok, I will rebase the next version of my patches on your series then.
 
 Regards,
 Lino
