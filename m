@@ -2,138 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559BAC43334
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BAEC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiGDJZp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
+        id S233625AbiGDJpb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiGDJZo (ORCPT
+        with ESMTP id S233865AbiGDJp2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:25:44 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C5A656D;
-        Mon,  4 Jul 2022 02:25:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656926726;
-        bh=7AgtTeOCjKY42gITCNPqcj2Bze43f73q5a4PmTDg/EI=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=k7H9JiA61r612M/Og49HsCYUy2hEGIWOhLWpYhcXSy2SsrjnSXFHfbjEu6oObjK+M
-         s+IOddX7ONigdHAFlAtWrbJnjQG7ugp9p4xsTA5bsiQz4YWimK8p98Ajuy+R6L25z8
-         GFMmMLVNpvdMkoJuDgo/k9r/lm1OHnjgsT/uyj1c=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N0oG5-1nNC1j1c17-00wkAp; Mon, 04
- Jul 2022 11:25:26 +0200
-Message-ID: <bb228b42-e175-513e-0972-57552ef52dc2@gmx.de>
-Date:   Mon, 4 Jul 2022 11:25:22 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
- serial core
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 4 Jul 2022 05:45:28 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FCE6305;
+        Mon,  4 Jul 2022 02:45:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656927927; x=1688463927;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VKsSywBsVlwI44RKg1+Y9KR6umXYJC/eD872YN1rLhg=;
+  b=CGK1VUtKfPD1KTHkpQJA50x5GY8z4D5FCKrItNJfnSYrXPwfeBqhFO3L
+   9G8LFSeQ2FU5trjfLQzvR3emr1FVeUy4gYvf4HnkctK8vuDQeD5I1LVS+
+   pfXZ2VXZXanVTc1REFSHLkO2r1M+xELz/nivNXitH1DEmcCktgEM+3Kg1
+   B04yBL2GTS61j04TezDet8fpIWGAB9P8eAssdsONG0IXDInbYOokc4rfx
+   Mf1xfyvdLaT5cUCzDYWPDvLwPU3srq1xwM3mgERjAuiXKLqlWtQSp1pbs
+   ck+EytdrC2N5amWDT2U477E8d5vKCWj5MBw1UcSybbrY4FXcPWymTdNrm
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="266111766"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="266111766"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:45:26 -0700
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="649508686"
+Received: from bclindho-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.49.27])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:45:23 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
- <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <CAHp75Vf7Lm9J3GONazY1OZdMLSWp3aa2iQNztsSVZOPWy3=cfA@mail.gmail.com>
+        Lukas Wunner <lukas@wunner.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/2] serial: RS485 termination improvements
+Date:   Mon,  4 Jul 2022 12:45:13 +0300
+Message-Id: <20220704094515.6831-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Dvsa0LVT82WeAEqY3B18IQwgHTM8am8FU0xKoRnYcHMxE1XxzeD
- gM1jVLYerT8KrnpsYY73G8Pu/Yk6BGn7pUI1Y6h6AtLXvQZ319kg66HR+BmzJxIVj1OAnCZ
- 8aHZBUbt3BG2ABnZG4XqQTuk2ty7TqpVLzSS12kD1Hgk8xUqDRV0dL7egd4uGzq06hPE0mK
- 5g08PqVnazwNXh7s5IDcw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NWwClxxWj5I=:4NiUOBAjyjp7fBz9FmEYjy
- g086C/Kg0BEdwt5nhrb/PI6x1IXjgnW4JNrtsMhshhDwIGRso54O43Xi8lNGYTZ0OKqLTVLw8
- SCsnO9AGiCU9jSfqJ+K4J99ekKNd/rn+TDeZV9RZoJlN5od24A11POoHbxwM00yDFAoZSRVZY
- 7vqjqwci7FKtBz9hrmzoxJk9dR+2hedibQQtpsKg8SBUwlyCyhL2krtGYLfQYbbI5RSRL5bdi
- kBGBr/7TJz3+HyiT3Rchx3MC0P+4vUHQaYbxJlfiEENLsz/540Zv8F6ZZEHdjuvGgJfjhndWt
- 7lbQWONX62l0DhOxqzfrOxmn3naTW8h2vAMf6wkGjhrQGS3dlMjyB+ms0+YNWYJ82Kq+ie9sE
- WSsZbmCXkLUmvyFAGPyBLor/+uB+bAOBk5y5olkxwbOnwxT4O1mXlUF0pef8V2N0OSNoof1FQ
- 74+RhKSvRtCitKCD/f4plyfDNzPsaqdCTC9D4IrO/GIC/LzHI31FnjWuozywR4p7j65pb/vjP
- PrBCqWosDwx5jG5BK0Wt3gUIcCB8ukECbPOTf36JZRb8bwZlkHeTYTFO80Z2aP86vDC5oYUpP
- Yf8TT5sVmAfKxrPfGiJXNy0DCtzieQGDhn1mxjPP144MvMUtTzYabs/xMaNtxaBrN1ur62TMt
- 20aK1J/32fgG3Cw/5Kqa/yiKAuWcFkEUf4nzX4U3cDkGNxE4a8vBp95/IcY3mBqUoWIfWwvGp
- OxP9OxUPcV0XmUwP5GQIiRYuATeyptzF5kRMRXgsP7WZA5iQoVsP3PgIjKgpW4jtAAkPDz6BL
- aMysL6693f3w7ELI12IAETJ4ypvpeAnu/6Tnta4EFqHK+9RyMuBOBkGezx6hr6p/ZjYqMlhZX
- p1uWxSVorgkusZngVbuXPLOWW/QHG140RZjHxVZemJhfNjTfuQLjH2R2XdjMKkivvxrv1VzD0
- mp0Yn0R0E2QJKfXkDm+/z79uLK8wX0Qa8mUASCgQA1LBfMVsmTF09Zqi8EfZkPSutIUY6xyhM
- Eg7DpNgT42jrRkPmiAt/Yjej8bn91UMTISSohG++v6pcqt5pwKwsAXOdS90kw3v9aJPw1B78X
- 3KQ4uIhmLn2PM1TrjiPt+ZzxUgA8E9Zn/7K/woEdOe7+YLcRC0p9JFn1w==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This series improves termination handling for RS485. Effectively,
+.rs485_supported is made a per port and the termination flag is enabled
+when DT configures termination. The downside of this is that embedded
+struct consumes a little bit of more memory, especially as struct
+serial_rs485 has the padding field.
+
+There is other problem on this area besides the one addressed by this
+series which is new since the introduction of .rs485_supported. Lino's
+patch series addresses the ability to tweak the termination through
+->rs485_config() for any driver.
+
+For kernel uses, struct kserial_rs485 version of serial_rs485 could be
+added and both .rs485 and .rs485_supported converted to it leaving
+struct_rs485 only for UAPI use. This series, howver, doesn't attempt
+it. It seems relatively easy to build it on top of these changes
+though.
 
 
-On 03.07.22 20:31, Andy Shevchenko wrote:
-> On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> w=
-rote:
->>
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> In serial8250_em485_config() the termination GPIO is set with the uart_=
-port
->> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
-.
->> since the concerning GPIO expander is connected via SPI or I2C).
->>
->> Fix this by setting the termination line outside of the uart_port spinl=
-ock
->> in the serial core and using gpiod_set_value_cansleep() which instead o=
-f
->> gpiod_set_value() allows to sleep.
->
-> allows it to
->
+Ilpo Järvinen (2):
+  serial: Embed rs485_supported
+  serial: RS485 termination is supported if DT provides one
 
-Ok.
+ drivers/tty/serial/8250/8250_bcm2835aux.c |  2 +-
+ drivers/tty/serial/8250/8250_dwlib.c      |  4 ++--
+ drivers/tty/serial/8250/8250_exar.c       |  2 +-
+ drivers/tty/serial/8250/8250_fintek.c     |  4 ++--
+ drivers/tty/serial/8250/8250_lpc18xx.c    |  2 +-
+ drivers/tty/serial/8250/8250_of.c         |  2 +-
+ drivers/tty/serial/8250/8250_pci.c        |  2 +-
+ drivers/tty/serial/amba-pl011.c           |  2 +-
+ drivers/tty/serial/ar933x_uart.c          |  4 ++--
+ drivers/tty/serial/atmel_serial.c         |  2 +-
+ drivers/tty/serial/fsl_lpuart.c           |  2 +-
+ drivers/tty/serial/imx.c                  |  4 ++--
+ drivers/tty/serial/max310x.c              |  2 +-
+ drivers/tty/serial/mcf.c                  |  4 ++--
+ drivers/tty/serial/omap-serial.c          |  2 +-
+ drivers/tty/serial/sc16is7xx.c            |  2 +-
+ drivers/tty/serial/serial_core.c          | 10 ++++++----
+ drivers/tty/serial/stm32-usart.c          |  2 +-
+ include/linux/serial_core.h               |  2 +-
+ 19 files changed, 29 insertions(+), 27 deletions(-)
 
->> Beside fixing the termination GPIO line setting for the 8250 driver thi=
-s
->> change also makes setting the termination GPIO generic for all UART
->> drivers.
->
-> ...
->
->> +static void uart_set_rs485_termination(struct uart_port *port,
->> +                                      const struct serial_rs485 *rs485=
-)
->> +{
->
->> +       if (!port->rs485_term_gpio
->
-> This duplicates the check the GPIO library does. Drop it.
->
+-- 
+2.30.2
 
-Ok.
-
->> || !(rs485->flags & SER_RS485_ENABLED))
->> +               return;
->> +
->> +       gpiod_set_value_cansleep(port->rs485_term_gpio,
->> +                                !!(rs485->flags & SER_RS485_TERMINATE_=
-BUS));
->> +}
->
-
-Thanks for the review!
-
-Regards,
-Lino
