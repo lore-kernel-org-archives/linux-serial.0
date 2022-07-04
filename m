@@ -2,303 +2,179 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0DEC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 18:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A431BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 21:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiGDS5g (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 14:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
+        id S232613AbiGDVV4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 17:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGDS5d (ORCPT
+        with ESMTP id S232178AbiGDVVy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 14:57:33 -0400
-Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.140.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1905BDF0F;
-        Mon,  4 Jul 2022 11:57:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=qti.qualcomm.com; i=@qti.qualcomm.com; q=dns/txt;
-  s=qccesdkim1; t=1656961052; x=1657565852;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=3SM6vYoE+wzE0AYSmxEteVidVa5o2A9C+JKVLqSgRV8=;
-  b=ARpz87QxfIh+0i//JNfyTiNdFyJ1Zyb8UMqvGV92rqxSYs4fLCm+60g3
-   r2D9Wu8YlDbmPudqUAWOwKkkV1WoKlZw0pEbCHwYeOG0tzDOcr6RPfwrD
-   4reBiQ1RWgDwDmF/+Ozve41POcPe6uMocC2RKS19x5EzQWWzOwYcjN+DY
-   k=;
-Received: from mail-bn7nam10lp2109.outbound.protection.outlook.com (HELO NAM10-BN7-obe.outbound.protection.outlook.com) ([104.47.70.109])
-  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 18:57:29 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bj0hHAdJzXMvgpFiGJ6YOs6Xv5F6M1hEhd7tgGNa/jV4wIbzc3xwCJUm0rAtuk8p5aP9LE94JK4qP1oXouklcOZVRXl67TKsD6qkXOQLgf7NmY5Sli7X8mW+ea52LQ0Kk1Oa+DWtJCwtHkxEKnNTX7BCPFmmwBd1eCezR81Xn5y8LK3i3D8Jxsutlw77RIjun8/U7jYBJIvHC7Oh0yGFZ7TpKoP/sVpbuhgxra9wff50uS16f4FLev5/YJ2a1mR6p8cYh/Ch2YiW7hH/Jirwr4AVoKlawgBc0onb9h1vZZsNsDskswfd9t6WhYr8wu1ciMjPMJ5voyvxjvjd2htlPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3SM6vYoE+wzE0AYSmxEteVidVa5o2A9C+JKVLqSgRV8=;
- b=W5Hr8P7I5/Uzpc7nrwzHWU0eDShQ0fO74/ftQdqyVsdgBqhnzzNbfhK2Ebe9RyGsgE24xnP5of0xT1FrwedvW/ETF+jqvvp9sj77jmBEUVTHtReLoP2Sqr0pfprltGyyThOT0fKbAqGkVMCWmSa9ydVIpiy3ermTEZTsTiKU/kOq0y/oHqEHQeQE4erUzMODWx0ohKvdfKtg1AaK3SLHnfzsf8f3Q6wPgumQBE5FggmkruJfS9X/Gx6Cx58GMgeWy76Y9pXWBF5p6TnQSR2wMoMZU+rZHO846NpsVcVPUsCcUHpzIuHPdgX7xTWw9GqM323+GYFN22DD/2iSn/VNIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=qti.qualcomm.com; dmarc=pass action=none
- header.from=qti.qualcomm.com; dkim=pass header.d=qti.qualcomm.com; arc=none
-Received: from BL0PR02MB4564.namprd02.prod.outlook.com (2603:10b6:208:4d::13)
- by CO6PR02MB7809.namprd02.prod.outlook.com (2603:10b6:303:a2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Mon, 4 Jul
- 2022 18:57:26 +0000
-Received: from BL0PR02MB4564.namprd02.prod.outlook.com
- ([fe80::e861:e6a:b148:865b]) by BL0PR02MB4564.namprd02.prod.outlook.com
- ([fe80::e861:e6a:b148:865b%3]) with mapi id 15.20.5395.021; Mon, 4 Jul 2022
- 18:57:26 +0000
-From:   "Vijaya Krishna Nivarthi (Temp)" <vnivarth@qti.qualcomm.com>
-To:     Doug Anderson <dianders@chromium.org>,
-        "Vijaya Krishna Nivarthi (Temp) (QUIC)" <quic_vnivarth@quicinc.com>
-CC:     Andy Gross <agross@kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: RE: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+        Mon, 4 Jul 2022 17:21:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE58660DC;
+        Mon,  4 Jul 2022 14:21:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656969713; x=1688505713;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Zj9zKOViwF87Jpta7XyEh+jsdVWawQj34qnK9rX7MFA=;
+  b=JXfV1nQKgko1rLrHOZVGnVKuwA4j03tfifiW+/B6PI4g2vSywILF7CdR
+   QFxD4m0eUqP5HNL2QvegaXfUVgGaPZ+kQO5qx71h5hg4NoZ8b6lyHxcA7
+   CIix88NMzN1STJ/XExxIzb99G96qD/crAbcMJWRGu0+mYXup1VSaSaupY
+   0Oeuq5+UxLRrkW4g0adpPLJsZh3frtF9ZfnSfRzTJgZdRwFFS9Q3xGLuM
+   7DFooN+n5xmepx7zBimqRh8YmUWpHUtkSS+aNBtHKwI47+CrVoq35Vls4
+   ScW0eL1dEezdjwVhMsnrtIjAvX0MUSW6TCRKjj+HM9Y248XcKfbRwBO22
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="281956878"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="281956878"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 14:21:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="660315704"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Jul 2022 14:21:50 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8TVt-000IBB-Mt;
+        Mon, 04 Jul 2022 21:21:49 +0000
+Date:   Tue, 5 Jul 2022 05:20:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
  otherwise could return a sub-optimal clock rate.
-Thread-Topic: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Thread-Index: AQHYi58pVIc+cNioKEmeVrCYMiTPqq1nBQCAgAJNqOCAAE7aAIAE6YvQ
-Date:   Mon, 4 Jul 2022 18:57:26 +0000
-Message-ID: <BL0PR02MB45643EEB3C1571E0F2364B8FFABE9@BL0PR02MB4564.namprd02.prod.outlook.com>
+Message-ID: <202207050527.wrtnyin5-lkp@intel.com>
 References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com>
- <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
- <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
-In-Reply-To: <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=qti.qualcomm.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5f0865e-8a16-4e76-4de4-08da5def0983
-x-ms-traffictypediagnostic: CO6PR02MB7809:EE_
-x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HAZ14DCLIQ+jyX3ZygG5zpkoqF1qbRz1KaqFYBWRHFpQY7c+vZCfDM3kXKXe39zV4prF578TO0/orEvQy7zsC7wOxmBaUOt7+ZwqW61+GTyr9HsiljSmxwWb0pyMm5jyS5wGiVwKqTKG+Blk67wKV9GAz++Eqv79VrGYItsIRgrI0epWUxPeuhHRGhyfj0WSTR71rger3wrvG6LP4jBlVpSV7A/bzFKkSIvnrBCgBTf632tbxCnE6APHZgDZId/8dSpbRxRG97Up3jJQ50z0EY29i89KCCEBIR1SGrtk11FrC6djF8Q2+5nm3eCXYgyIKF9Sw7eIfn8G3IRlEKK1Vs1792tBtt1duSAbP7605D3o6r7lqopC/pCURGlPqAg9dwX1e/prlIw+iBsMYfT6SgEW+nskcQHRHwig1KX3J6m1oC6Zl5BnuHd1eFyfAnmpXkOT7ps3XoaJjIdZouYXEdkK65sv2KQ7y39CpEEf4JVrj1n/Vcq/wBKNU6uc1D1DQ+YNjfBzoX1kRRMf8F+aFFIgSXCl0a91jb2jaOIGbBTLFozDCHY1KOluWxwQ3a0zcfkrYNtAfOp9ujEuVNQpmF4qPvEPkRc+KcHNqFG0cd0tpCdnD+U8IQA+VLVCYp0ebEbFIZcD9ohZW/z5ucidELS6Eac9AUi2uMxtTyS30TmpDo9O5DVMo0GjQvV7vdJ3ZK/K8zDXzOv5aL+KfpZdBEdZkg9yjOX6nNqMYelF/pOCK688a1In7YWWcxtQwqBFjrZGZ/H6EhSlDBDpzDQw4B4VvtUH8cLiNuHc3VX+LkmTbm/JmcuAfRDkoGu1AeW+
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR02MB4564.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(5660300002)(86362001)(7416002)(122000001)(38100700002)(186003)(83380400001)(8936002)(33656002)(38070700005)(6506007)(7696005)(478600001)(26005)(54906003)(110136005)(53546011)(41300700001)(316002)(9686003)(64756008)(66556008)(66446008)(66946007)(76116006)(2906002)(66476007)(8676002)(55016003)(71200400001)(4326008)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SWR1Ti85dkJ2WEtiMXR2dWVFeXhkSnR3dHBzYzQxU045d0l0ejBndDIrQ3Fy?=
- =?utf-8?B?TmFrVVh4ckxqVm9nb0ZFUFlXWDNuM2JFZmcwckQ2eklWeVVobG43QnNWY3Z3?=
- =?utf-8?B?dXYxRmtjSk5GQTlYbVoydllkeFhLeksxOUJldzRhL2t2dHk3QnNxWDRGeEVG?=
- =?utf-8?B?R2pRbmIxT1A0UURCRTdrQ3hMWm9WTnRRdXNmVVF0UmpzMnY2aXVKVU1UUHl0?=
- =?utf-8?B?czd6ZUhmU1o4YStUWXp1aXlrSEFGL2pEWUsyeHZ5Nkh6TFh0QlVqRDhHK2ps?=
- =?utf-8?B?S09EaGk4ZU1qNFdWWXpvSTc4VzhLSzVNSUdJNzJ0VVBOaFNYL2xiNUxES0ty?=
- =?utf-8?B?dnQwTVh2RHluaFk3NnFXKzlwV2Fodi80eS9FR29rNmZ6bldQcHFuazJJRTZN?=
- =?utf-8?B?TWY3QnRKTWJGb3QrUHhqNzVjbzJ1QS9KRjVBVTdBVnZrMDRBVHo2Z01TdUM3?=
- =?utf-8?B?WjZaK1M0WkRFZmxoOVB4NnFneUJEV0tNZ2JQOHBZL1ZPOUNOaFRtd2IxL0NV?=
- =?utf-8?B?dDhWbnBGTnhmR0NiaVBjeG5teHQ3NXZSSVNqNkMyT1FRelM5NHFYRnJFQWtW?=
- =?utf-8?B?WE9SMnNsM2RUOTk0V3pGR3g1bnU3RURtUGw4Uzd4aDBDaDJkTTZFcm9PVDBj?=
- =?utf-8?B?QmdBd1NQNkFRYWxtbklUc2piUHNGN0ltRktidHc3WDdGdkZXQlZoc0Qxc21j?=
- =?utf-8?B?V2t2cjMrR08rZkVkcDJaL3orQ3RMUUNhTXJrL1FIeVN2bXdsUC9HZ2Z6THZP?=
- =?utf-8?B?VmpqSmNwRFJINXd0Sk9qQUV3eitwNFdNQlJPMFl4TkpRaUJMeG1XV2NDQmFx?=
- =?utf-8?B?VWJpMXpGbU03WWJhUFdualVBV3pxd3ljTDErMW9HK3IrWisrbHhvRkk1Rm9K?=
- =?utf-8?B?dWdEYlk1SXFwdExvV1J4Syt0OEQ4bkpmSit4TENuSVU0N3JJUDBvbUowVmhU?=
- =?utf-8?B?c000WkJTNmZHT1MzUUlxOE1KZFI2djBHOTVLRVNGVlVZMDhPa21RK1l2WHFH?=
- =?utf-8?B?eHdmY1hrYXBGSHFwODlHK1dpdndKNm9xdXhwTnlENTFneWcvclpLSHljb2Nq?=
- =?utf-8?B?ZWo2NUxGakQrd0dCdXV5WEpZb1dIOEsxUVBzOEh6M0NkZGU5MjlwSVN3TXhL?=
- =?utf-8?B?Q2szVi9JczVPUTBDVG44S3BFbzZNN1h6UnFkVjJVVktISVVwc3FHcUFRcEJN?=
- =?utf-8?B?YWFydCs0OExvcUkrOEIxZHBYclc2ekFNK1BKUGwxY1YwTzZETzhudFMrRFBU?=
- =?utf-8?B?V3JFQzVIVUs2ZnRQUitVWStnZTBiMitUMFdybjdCb3I2MlJBOUtrWWdYTHJ6?=
- =?utf-8?B?Y3BzaXNCOVJFdURvK1lUZWVEcU0wWi9tbzNlajRTWG44dk5Sd0g2TzNxcGwy?=
- =?utf-8?B?OG5Bb2JxdVJLWTdFZEV5Wnp5SXhSOEJDVUtaSjJSMm5XK0c2NE5uNEpOeldZ?=
- =?utf-8?B?MlltS0NhdVVLVVhqOUowR3d5RHFQQzRGMUVWelU5YjhaL1hubDhKcGQyVzd5?=
- =?utf-8?B?bUY1MFBIR2dWYlRGb2dtTHdTbUZOU3ZzMDdOeDFtTmNab29YNENVam04TFdK?=
- =?utf-8?B?ZlhyTE01RkIwcUxOTlNWTGZYcTJjeEtNdnNkM3l4UXc4VDVxWmpSMzZJTllm?=
- =?utf-8?B?ajQ2TDVucUtBakczL1c3UnBQUlpTcWtReTMwMlVKRURRajJzYWNnTWNwNnRP?=
- =?utf-8?B?Qk91WHphUGxCWUphVGIxdVhIb29YRGRYTEg5czdCSXByc2hBaW45OVJHY3Zp?=
- =?utf-8?B?VFNaMG1CZkV2b2pVRk55SmRRMVljZVd4MFZ2bFFTb0J5SlNoN3ZRTVB0eU5V?=
- =?utf-8?B?d1VDTndBRnlyeVh0bVcyZ0YwSDlIa3VVNE4xVy82RlQ4b1ZYcDE4RlFlbTJl?=
- =?utf-8?B?ejJVc211aWVjRUNub2ZpaU5pWXp6UEFyR3o1SnN3eXFRcTByb3JWb3o3VkNL?=
- =?utf-8?B?SjFnUmdmMVg2TDVjaDY3NlpmNVZrTmpEd1U3ZVpHS21WTlg3bndRbUgwN1JG?=
- =?utf-8?B?amVYWkpMc3Q4QTQ1REtSZDdSNE56YjRBcW1jWjRmbGs1WS80dmRQMU5DeWVB?=
- =?utf-8?B?aU8yOGVpYVg3UkZXRHluTHVnbUQwMENNeHNqb3l3TWhVazh4SmlVNVlrSVdF?=
- =?utf-8?B?OEIxT1Z6MlhrRGY4aFRabDJYbzZOOE5LN1lIRjQvS2dTNFBhY3RUK0UzY3J3?=
- =?utf-8?B?V1E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: qti.qualcomm.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR02MB4564.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5f0865e-8a16-4e76-4de4-08da5def0983
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2022 18:57:26.4044
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FdYWS38RJYo+6svSrOkE4OJjBKsI4YhLRvD3NCx4J+9vesL0z6wriSyuSlfkskjEQKJxAfwMvzg6yuipyT8dznT1bL7bwBv9d5iTpfbcq9I=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB7809
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGksDQoNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBEb3VnIEFuZGVy
-c29uIDxkaWFuZGVyc0BjaHJvbWl1bS5vcmc+DQo+IFNlbnQ6IEZyaWRheSwgSnVseSAxLCAyMDIy
-IDg6MzggUE0NCj4gVG86IFZpamF5YSBLcmlzaG5hIE5pdmFydGhpIChUZW1wKSAoUVVJQykgPHF1
-aWNfdm5pdmFydGhAcXVpY2luYy5jb20+DQo+IENjOiBBbmR5IEdyb3NzIDxhZ3Jvc3NAa2VybmVs
-Lm9yZz47IGJqb3JuLmFuZGVyc3NvbkBsaW5hcm8ub3JnOyBLb25yYWQNCj4gRHliY2lvIDxrb25y
-YWQuZHliY2lvQHNvbWFpbmxpbmUub3JnPjsgR3JlZyBLcm9haC1IYXJ0bWFuDQo+IDxncmVna2hA
-bGludXhmb3VuZGF0aW9uLm9yZz47IEppcmkgU2xhYnkgPGppcmlzbGFieUBrZXJuZWwub3JnPjsg
-bGludXgtYXJtLQ0KPiBtc20gPGxpbnV4LWFybS1tc21Admdlci5rZXJuZWwub3JnPjsgbGludXgt
-c2VyaWFsQHZnZXIua2VybmVsLm9yZzsgTEtNTA0KPiA8bGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZz47IE11a2VzaCBTYXZhbGl5YSAoUVVJQykNCj4gPHF1aWNfbXNhdmFsaXlAcXVpY2luYy5j
-b20+OyBNYXR0aGlhcyBLYWVobGNrZSA8bWthQGNocm9taXVtLm9yZz47DQo+IFN0ZXBoZW4gQm95
-ZCA8c3dib3lkQGNocm9taXVtLm9yZz4NCj4gU3ViamVjdDogUmU6IFtWMl0gdHR5OiBzZXJpYWw6
-IHFjb20tZ2VuaS1zZXJpYWw6IEZpeCBnZXRfY2xrX2Rpdl9yYXRlKCkgd2hpY2gNCj4gb3RoZXJ3
-aXNlIGNvdWxkIHJldHVybiBhIHN1Yi1vcHRpbWFsIGNsb2NrIHJhdGUuDQo+IA0KPiBXQVJOSU5H
-OiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIFF1YWxjb21tLiBQbGVhc2Ug
-YmUgd2FyeQ0KPiBvZiBhbnkgbGlua3Mgb3IgYXR0YWNobWVudHMsIGFuZCBkbyBub3QgZW5hYmxl
-IG1hY3Jvcy4NCj4gDQo+IEhpLA0KPiANCj4gT24gRnJpLCBKdWwgMSwgMjAyMiBhdCA0OjA0IEFN
-IFZpamF5YSBLcmlzaG5hIE5pdmFydGhpIChUZW1wKSAoUVVJQykNCj4gPHF1aWNfdm5pdmFydGhA
-cXVpY2luYy5jb20+IHdyb3RlOg0KPiA+DQo+ID4gSGksDQo+ID4NCj4gPg0KPiA+ID4gLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiA+IEZyb206IERvdWcgQW5kZXJzb24gPGRpYW5kZXJz
-QGNocm9taXVtLm9yZz4NCj4gPiA+IFNlbnQ6IFRodXJzZGF5LCBKdW5lIDMwLCAyMDIyIDQ6NDUg
-QU0NCj4gPiA+IFRvOiBWaWpheWEgS3Jpc2huYSBOaXZhcnRoaSAoVGVtcCkgKFFVSUMpDQo+ID4g
-PiA8cXVpY192bml2YXJ0aEBxdWljaW5jLmNvbT4NCj4gPiA+IENjOiBBbmR5IEdyb3NzIDxhZ3Jv
-c3NAa2VybmVsLm9yZz47IGJqb3JuLmFuZGVyc3NvbkBsaW5hcm8ub3JnOw0KPiA+ID4gS29ucmFk
-IER5YmNpbyA8a29ucmFkLmR5YmNpb0Bzb21haW5saW5lLm9yZz47IEdyZWcgS3JvYWgtSGFydG1h
-bg0KPiA+ID4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPjsgSmlyaSBTbGFieSA8amlyaXNs
-YWJ5QGtlcm5lbC5vcmc+Ow0KPiA+ID4gbGludXgtYXJtLSBtc20gPGxpbnV4LWFybS1tc21Admdl
-ci5rZXJuZWwub3JnPjsNCj4gPiA+IGxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmc7IExLTUwg
-PGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+Ow0KPiA+ID4gTXVrZXNoIFNhdmFsaXlhIChR
-VUlDKSA8cXVpY19tc2F2YWxpeUBxdWljaW5jLmNvbT47IE1hdHRoaWFzDQo+ID4gPiBLYWVobGNr
-ZSA8bWthQGNocm9taXVtLm9yZz47IFN0ZXBoZW4gQm95ZA0KPiA8c3dib3lkQGNocm9taXVtLm9y
-Zz4NCj4gPiA+IFN1YmplY3Q6IFJlOiBbVjJdIHR0eTogc2VyaWFsOiBxY29tLWdlbmktc2VyaWFs
-OiBGaXgNCj4gPiA+IGdldF9jbGtfZGl2X3JhdGUoKSB3aGljaCBvdGhlcndpc2UgY291bGQgcmV0
-dXJuIGEgc3ViLW9wdGltYWwgY2xvY2sgcmF0ZS4NCj4gPiA+DQo+ID4gPg0KPiA+ID4NCj4gPiA+
-ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvKiBTYXZlIHRoZSBmaXJzdCAobG93
-ZXN0IGZyZXEpIHdpdGhpbiB0b2xlcmFuY2UgKi8NCj4gPiA+ID4gKyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBzZXJfY2xrID0gZnJlcTsNCj4gPiA+ID4gKyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAqY2xrX2RpdiA9IG5ld19kaXY7DQo+ID4gPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgLyogbm8gbW9yZSBzZWFyY2ggZm9yIGV4YWN0IG1hdGNoIHJlcXVp
-cmVkIGluIDJuZCBydW4NCj4gKi8NCj4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBpZiAoIWV4YWN0X21hdGNoKQ0KPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgYnJlYWs7DQo+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIH0N
-Cj4gPiA+ID4gKyAgICAgICAgICAgICAgIH0NCj4gPiA+ID4NCj4gPiA+ID4gLSAgICAgICAgICAg
-ICAgIHByZXYgPSBmcmVxOw0KPiA+ID4gPiArICAgICAgICAgICAgICAgZGl2ID0gZnJlcSAvIGRl
-c2lyZWRfY2xrICsgMTsNCj4gPiA+DQo+ID4gPiBDYW4ndCB5b3UgaW5maW5pdGUgbG9vcCBub3c/
-DQo+ID4gPg0KPiA+ID4gU3RhcnQgd2l0aDoNCj4gPiA+DQo+ID4gPiBkZXNpcmVkX2NsayA9IDEw
-MDAwDQo+ID4gPiBkaXYgPSAxDQo+ID4gPiBwZXJjZW50X3RvbCA9IDINCj4gPiA+DQo+ID4gPg0K
-PiA+ID4gTm93Og0KPiA+ID4NCj4gPiA+IG11bHQgPSAxMDAwMA0KPiA+ID4gb2Zmc2V0ID0gMjAw
-DQo+ID4gPiB0ZXN0X2ZyZXEgPSA5ODAwDQo+ID4gPiBmcmVxID0gOTgwMA0KPiA+ID4gZGl2ID0g
-OTgwMCAvIDEwMDAwICsgMSA9IDAgKyAxID0gMQ0KPiA+ID4NCj4gPiA+IC4uLmFuZCB0aGVuIHlv
-dSdsbCBsb29wIGFnYWluIHdpdGggImRpdiA9IDEiLCB3b24ndCB5b3U/IC4uLm9yIGRpZCBJDQo+
-ID4gPiBnZXQgc29tZXRoaW5nIHdyb25nIGluIG15IGFuYWx5c2lzPyBUaGlzIGlzIHRoZSByZWFz
-b24gbXkgcHJvcG9zZWQNCj4gPiA+IGFsZ29yaXRobSBoYWQgdHdvIGxvb3BzLg0KPiA+ID4NCj4g
-PiA+DQo+ID4NCj4gPiBJIHdlbnQgYmFjayB0byB5b3VyIHByb3Bvc2VkIGFsZ29yaXRobSBhbmQg
-bWFkZSBjb3VwbGUgb2Ygc2ltcGxlDQo+IGNoYW5nZXMsIGFuZCBpdCBzZWVtZWQgbGlrZSB3aGF0
-IHdlIG5lZWQuDQo+ID4NCj4gPiBhKSBsb29rIG9ubHkgZm9yIGV4YWN0IG1hdGNoIG9uY2UgYSBj
-bG9jayByYXRlIHdpdGhpbiB0b2xlcmFuY2UgaXMNCj4gPiBmb3VuZA0KPiA+IGIpIHN3YXAgdGVz
-dF9mcmVxIGFuZCBmcmVxIGF0IGVuZCBvZiB3aGlsZSBsb29wcyB0byBtYWtlIGl0IHJ1biBhcw0K
-PiA+IGRlc2lyZWQNCj4gPg0KPiA+DQo+ID4gICAgICAgICBtYXhkaXYgPSBDTEtfRElWX01TSyA+
-PiBDTEtfRElWX1NIRlQ7DQo+ID4gICAgICAgICBkaXYgPSAxOw0KPiA+DQo+ID4gICAgICAgICB3
-aGlsZSAoZGl2IDwgbWF4ZGl2KSB7DQo+ID4gICAgICAgICAgICAgICAgIG11bHQgPSAodW5zaWdu
-ZWQgbG9uZyBsb25nKWRpdiAqIGRlc2lyZWRfY2xrOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAo
-bXVsdCAhPSAodW5zaWduZWQgbG9uZyltdWx0KQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAg
-IGJyZWFrOw0KPiA+DQo+ID4gICAgICAgICAgICAgICAgIGlmIChzZXJfY2xrKQ0KPiA+ICAgICAg
-ICAgICAgICAgICAgICAgICAgIG9mZnNldCA9IDA7DQo+ID4gICAgICAgICAgICAgICAgID09PT09
-PT09PT09PT09PT09PT1hPT09PT09PT09PT09PT09PT09PT09DQo+ID4gICAgICAgICAgICAgICAg
-IGVsc2UNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICBvZmZzZXQgPSBkaXZfdTY0KG11bHQg
-KiBwZXJjZW50X3RvbCwgMTAwKTsNCj4gPg0KPiA+ICAgICAgICAgICAgICAgICAvKg0KPiA+ICAg
-ICAgICAgICAgICAgICAgKiBMb29wIHJlcXVlc3RpbmcgKGZyZXEgLSAyJSkgYW5kIHBvc3NpYmx5
-IChmcmVxKS4NCj4gPiAgICAgICAgICAgICAgICAgICoNCj4gPiAgICAgICAgICAgICAgICAgICog
-V2UnbGwga2VlcCB0cmFjayBvZiB0aGUgbG93ZXN0IGZyZXEgaW5leGFjdCBtYXRjaCB3ZSBmb3Vu
-ZA0KPiA+ICAgICAgICAgICAgICAgICAgKiBidXQgYWx3YXlzIHRyeSB0byBmaW5kIGEgcGVyZmVj
-dCBtYXRjaC4gTk9URTogdGhpcyBhbGdvcml0aG0NCj4gPiAgICAgICAgICAgICAgICAgICogY291
-bGQgbWlzcyBhIHNsaWdodGx5IGJldHRlciBmcmVxIGlmIHRoZXJlJ3MgbW9yZSB0aGFuIG9uZQ0K
-PiA+ICAgICAgICAgICAgICAgICAgKiBmcmVxIGJldHdlZW4gKGZyZXEgLSAyJSkgYW5kIChmcmVx
-KSBidXQgKGZyZXEpIGNhbid0IGJlIG1hZGUNCj4gPiAgICAgICAgICAgICAgICAgICogZXhhY3Rs
-eSwgYnV0IHRoYXQncyBPSy4NCj4gPiAgICAgICAgICAgICAgICAgICoNCj4gPiAgICAgICAgICAg
-ICAgICAgICogVGhpcyBhYnNvbHV0ZWx5IHJlbGllcyBvbiB0aGUgZmFjdCB0aGF0IHRoZSBRdWFs
-Y29tbSBjbG9jaw0KPiA+ICAgICAgICAgICAgICAgICAgKiBkcml2ZXIgYWx3YXlzIHJvdW5kcyB1
-cC4NCj4gPiAgICAgICAgICAgICAgICAgICovDQo+ID4gICAgICAgICAgICAgICAgIHRlc3RfZnJl
-cSA9IG11bHQgLSBvZmZzZXQ7DQo+ID4gICAgICAgICAgICAgICAgIHdoaWxlICh0ZXN0X2ZyZXEg
-PD0gbXVsdCkgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgIGZyZXEgPSBjbGtfcm91bmRf
-cmF0ZShjbGssIHRlc3RfZnJlcSk7DQo+ID4NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAv
-Kg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAqIEEgZGVhZC1vbiBmcmVxIGlzIGFuIGlu
-c3RhLXdpbi4gVGhpcyBpbXBsaWNpdGx5DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICog
-aGFuZGxlcyB3aGVuICJmcmVxID09IG11bHQiDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAg
-ICovDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCEoZnJlcSAlIGRlc2lyZWRfY2xr
-KSkgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKmNsa19kaXYgPSBmcmVx
-IC8gZGVzaXJlZF9jbGs7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXR1
-cm4gZnJlcTsNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICB9DQo+ID4NCj4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICAvKg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAqIE9ubHkg
-dGltZSBjbG9jayBmcmFtZXdvcmsgZG9lc24ndCByb3VuZCB1cCBpcyBpZg0KPiA+ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAqIHdlJ3JlIHBhc3QgdGhlIG1heCBjbG9jayByYXRlLiBXZSdyZSBk
-b25lIHNlYXJjaGluZw0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAqIGlmIHRoYXQncyB0
-aGUgY2FzZS4NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgKi8NCj4gPiAgICAgICAgICAg
-ICAgICAgICAgICAgICBpZiAoZnJlcSA8IHRlc3RfZnJlcSkNCj4gPiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHJldHVybiBzZXJfY2xrOw0KPiA+DQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgLyogU2F2ZSB0aGUgZmlyc3QgKGxvd2VzdCBmcmVxKSB3aXRoaW4gdG9sZXJhbmNl
-ICovDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCFzZXJfY2xrICYmIGZyZXEgPD0g
-bXVsdCArIG9mZnNldCkgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2Vy
-X2NsayA9IGZyZXE7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAqY2xrX2Rp
-diA9IGRpdjsNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICB9DQo+ID4NCj4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICAvKg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAqIElmIHdl
-IGFscmVhZHkgcm91bmRlZCB1cCBwYXN0IG11bHQgdGhlbiB0aGlzIHdpbGwNCj4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICAgKiBjYXVzZSB0aGUgbG9vcCB0byBleGl0LiBJZiBub3QgdGhlbiB0
-aGlzIHdpbGwgcnVuDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICogdGhlIGxvb3AgYSBz
-ZWNvbmQgdGltZSB3aXRoIGV4YWN0bHkgbXVsdC4NCj4gPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgKi8NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICB0ZXN0X2ZyZXEgPSBtYXgodGVzdF9m
-cmVxICsgMSwgbXVsdCk7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICA9PT09Yj09PT0NCj4gPiAgICAgICAgICAgICAgICAgfQ0KPiA+DQo+
-ID4gICAgICAgICAgICAgICAgIC8qDQo+ID4gICAgICAgICAgICAgICAgICAqIGZyZXEgd2lsbCBh
-bHdheXMgYmUgYmlnZ2VyIHRoYW4gbXVsdCBieSBhdCBsZWFzdCAxLg0KPiA+ICAgICAgICAgICAg
-ICAgICAgKiBUaGF0IG1lYW5zIHdlIGNhbiBnZXQgdGhlIG5leHQgZGl2aWRlciB3aXRoIGEgRElW
-X1JPVU5EX1VQLg0KPiA+ICAgICAgICAgICAgICAgICAgKiBUaGlzIGhhcyB0aGUgYWR2YW50YWdl
-IG9mIHNraXBwaW5nIGJ5IGEgd2hvbGUgYnVuY2ggb2YgZGl2cw0KPiA+ICAgICAgICAgICAgICAg
-ICAgKiBJZiB0aGUgY2xvY2sgZnJhbWV3b3JrIGFscmVhZHkgYnlwYXNzZWQgdGhlbS4NCj4gPiAg
-ICAgICAgICAgICAgICAgICovDQo+ID4gICAgICAgICAgICAgICAgIGRpdiA9IERJVl9ST1VORF9V
-UChmcmVxLCBkZXNpcmVkX2Nsayk7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgID09PWI9PQ0KPiA+ICAgICAgICAgfQ0KPiA+DQo+ID4N
-Cj4gPiBXaWxsIGFsc28gZHJvcCBleGFjdF9tYXRjaCBub3cuDQo+ID4NCj4gPiBXaWxsIHVwbG9h
-ZCB2MyBhZnRlciB0ZXN0aW5nLg0KPiANCj4gVGhlIG1vcmUgSSd2ZSBiZWVuIHRoaW5raW5nIGFi
-b3V0IGl0LCB0aGUgbW9yZSBJIHdvbmRlciBpZiB3ZSBldmVuIG5lZWQgdGhlDQo+IHNwZWNpYWwg
-Y2FzZSBvZiBsb29raW5nIGZvciBhbiBleGFjdCBtYXRjaCBhdCBhbGwuIEl0IGZlZWxzIGxpa2Ug
-d2Ugc2hvdWxkIGNob29zZQ0KPiBvbmU6IHdlIGVpdGhlciBsb29rIGZvciB0aGUgYmVzdCBtYXRj
-aCBvciB3ZSBsb29rIGZvciB0aGUgb25lIHdpdGggdGhlDQo+IGxvd2VzdCBjbG9jayBzb3VyY2Ug
-cmF0ZS4gVGhlIHdlaXJkIGhhbGYtaGFsZiBhcHByb2FjaCB0aGF0IHdlIGhhdmUgcmlnaHQNCj4g
-bm93IGZlZWxzIGxpa2Ugb3Zlci1lbmdpbmVlcmluZyBhbmQgY29tcGxpY2F0ZXMgdGhpbmdzLg0K
-PiANCj4gSG93IGFib3V0IHRoaXMgKGFnYWluLCBvbmx5IGxpZ2h0bHkgdGVzdGVkKS4gV29yc3Qg
-Y2FzZSBpZiB3ZSBfdHJ1bHlfIG5lZWQgYQ0KPiBjbG9zZS10by1leGFjdCBtYXRjaCB3ZSBjb3Vs
-ZCBwYXNzIGEgdG9sZXJhbmNlIG9mIDAgaW4gYW5kIHdlJ2QgZ2V0DQo+IHNvbWV0aGluZyB0aGF0
-J3MgbmVhcmx5IGV4YWN0LCB0aG91Z2ggSSdtIG5vdCBzdWdnZXN0aW5nIHdlIGFjdHVhbGx5IGRv
-IHRoYXQuDQo+IElmIHdlIHRoaW5rIDIlIGlzIGdvb2QgZW5vdWdoIHRoZW4gd2Ugc2hvdWxkIGp1
-c3QgYWNjZXB0IHRoZSBmaXJzdCAoYW5kDQo+IGxvd2VzdCBjbG9jayByYXRlKSAyJSBtYXRjaCB3
-ZSBmaW5kLg0KPiANCj4gICAgIGFic190b2wgPSBkaXZfdTY0KCh1NjQpZGVzaXJlZF9jbGsgKiBw
-ZXJjZW50X3RvbCwgMTAwKTsNCj4gICAgIG1heGRpdiA9IENMS19ESVZfTVNLID4+IENMS19ESVZf
-U0hGVDsNCj4gICAgIGRpdiA9IDE7DQo+ICAgICB3aGlsZSAoZGl2IDw9IG1heGRpdikgew0KPiAg
-ICAgICAgIG11bHQgPSAodTY0KWRpdiAqIGRlc2lyZWRfY2xrOw0KPiAgICAgICAgIGlmIChtdWx0
-ICE9ICh1bnNpZ25lZCBsb25nKW11bHQpDQo+ICAgICAgICAgICAgIGJyZWFrOw0KPiANCj4gICAg
-ICAgICBvZmZzZXQgPSBkaXYgKiBhYnNfdG9sOw0KPiAgICAgICAgIGZyZXEgPSBjbGtfcm91bmRf
-cmF0ZShjbGssIG11bHQgLSBvZmZzZXQpOw0KPiANCj4gICAgICAgICAvKiBDYW4gb25seSBnZXQg
-bG93ZXIgaWYgd2UncmUgZG9uZSAqLw0KPiAgICAgICAgIGlmIChmcmVxIDwgbXVsdCAtIG9mZnNl
-dCkNCj4gICAgICAgICAgICAgYnJlYWs7DQo+IA0KPiAgICAgICAgIC8qDQo+ICAgICAgICAgICog
-UmUtY2FsY3VsYXRlIGRpdiBpbiBjYXNlIHJvdW5kaW5nIHNraXBwZWQgcmF0ZXMgYnV0IHdlDQo+
-ICAgICAgICAgICogZW5kZWQgdXAgYXQgYSBnb29kIG9uZSwgdGhlbiBjaGVjayBmb3IgYSBtYXRj
-aC4NCj4gICAgICAgICAgKi8NCj4gICAgICAgICBkaXYgPSBESVZfUk9VTkRfQ0xPU0VTVChmcmVx
-LCBkZXNpcmVkX2Nsayk7DQo+ICAgICAgICAgYWNoaWV2ZWQgPSBESVZfUk9VTkRfQ0xPU0VTVChm
-cmVxLCBkaXYpOw0KPiAgICAgICAgIGlmIChhY2hpZXZlZCA8PSBkZXNpcmVkX2NsayArIGFic190
-b2wgJiYNCj4gICAgICAgICAgICAgYWNoaWV2ZWQgPj0gZGVzaXJlZF9jbGsgLSBhYnNfdG9sKSB7
-DQo+ICAgICAgICAgICAgICpjbGtfZGl2ID0gZGl2Ow0KPiAgICAgICAgICAgICByZXR1cm4gZnJl
-cTsNCj4gICAgICAgICB9DQo+IA0KPiAgICAgICAgIC8qDQo+ICAgICAgICAgICogQWx3YXlzIGlu
-Y3JlYXNlIGRpdiBieSBhdCBsZWFzdCBvbmUsIGJ1dCB3ZSdsbCBnbyBtb3JlIHRoYW4NCj4gICAg
-ICAgICAgKiBvbmUgaWYgY2xrX3JvdW5kX3JhdGUoKSBnYXZlIHVzIHNvbWV0aGluZyBoaWdoZXIu
-DQo+ICAgICAgICAgICovDQo+ICAgICAgICAgZGl2ID0gRElWX1JPVU5EX1VQKG1heChmcmVxLCAo
-dW5zaWduZWQgbG9uZyltdWx0KSArIDEsIGRlc2lyZWRfY2xrKTsNCg0KV291bGRu4oCZdCBESVZf
-Uk9VTkRfVVAoZnJlcSwgZGVzaXJlZF9jbGspIHN1ZmZpY2UgaGVyZT8NCmZyZXEgPj0gbXVsdC1v
-ZmZzZXQsIGVsc2Ugd2Ugd291bGQgaGF2ZSBoaXQgYnJlYWsuDQpBZGRpdGlvbmFsbHkgaWYgZnJl
-cSA8PSBtdWx0IHdlIHdvdWxkIGhhdmUgaGl0IHJldHVybi4NClNvIGFsd2F5cyBmcmVxID4gbXVs
-dD8NCg0KQW5kIGhlbmNlIGRpdisrIHdvdWxkIGRvIHRoZSBzYW1lPw0KDQpUaGFuayB5b3UuDQoN
-Cg0KDQo+ICAgICAgICAgfQ0KPiANCj4gICAgIHJldHVybiAwOw0K
+Hi Vijaya,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on linus/master v5.19-rc5 next-20220704]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220629-180330
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: hexagon-buildonly-randconfig-r006-20220703 (https://download.01.org/0day-ci/archive/20220705/202207050527.wrtnyin5-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f7a80c3d08d4821e621fc88d6a2e435291f82dff)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a70b5a9759aef627b6882576f38399ed8c092b74
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220629-180330
+        git checkout a70b5a9759aef627b6882576f38399ed8c092b74
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/qcom_geni_serial.c:1044:56: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+                   pr_err("Couldn't find suitable clock rate for %d\n", desired_clk);
+                                                                 ~~     ^~~~~~~~~~~
+                                                                 %lu
+   include/linux/printk.h:523:33: note: expanded from macro 'pr_err'
+           printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+                                  ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:480:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:452:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   drivers/tty/serial/qcom_geni_serial.c:1047:4: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+                           desired_clk, ser_clk, *clk_div);
+                           ^~~~~~~~~~~
+   include/linux/printk.h:610:38: note: expanded from macro 'pr_debug'
+           no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+                                       ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:131:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:480:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:452:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   drivers/tty/serial/qcom_geni_serial.c:1047:17: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+                           desired_clk, ser_clk, *clk_div);
+                                        ^~~~~~~
+   include/linux/printk.h:610:38: note: expanded from macro 'pr_debug'
+           no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+                                       ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:131:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:480:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:452:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   3 warnings generated.
+
+
+vim +1044 drivers/tty/serial/qcom_geni_serial.c
+
+  1021	
+  1022	static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+  1023				unsigned int sampling_rate, unsigned int *clk_div)
+  1024	{
+  1025		unsigned long ser_clk;
+  1026		unsigned long desired_clk;
+  1027	
+  1028		desired_clk = baud * sampling_rate;
+  1029		if (!desired_clk) {
+  1030			pr_err("%s: Invalid frequency\n", __func__);
+  1031			return 0;
+  1032		}
+  1033	
+  1034		ser_clk = 0;
+  1035		/*
+  1036		 * try to find exact clock rate or within 2% tolerance,
+  1037		 * then within 5% tolerance
+  1038		 */
+  1039		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2, true);
+  1040		if (!ser_clk)
+  1041			ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5, false);
+  1042	
+  1043		if (!ser_clk)
+> 1044			pr_err("Couldn't find suitable clock rate for %d\n", desired_clk);
+  1045		else
+  1046			pr_debug("desired_clk-%d, ser_clk-%d, clk_div-%d\n",
+  1047				desired_clk, ser_clk, *clk_div);
+  1048	
+  1049		return ser_clk;
+  1050	}
+  1051	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
