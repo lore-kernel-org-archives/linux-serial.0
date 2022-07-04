@@ -2,101 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF94FC43334
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 06:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B8BC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 06:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232667AbiGDGkK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 02:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S230204AbiGDGv5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 02:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiGDGkJ (ORCPT
+        with ESMTP id S229477AbiGDGv5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 02:40:09 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E251265F;
-        Sun,  3 Jul 2022 23:40:08 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id h23so14907855ejj.12;
-        Sun, 03 Jul 2022 23:40:08 -0700 (PDT)
+        Mon, 4 Jul 2022 02:51:57 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C151A1;
+        Sun,  3 Jul 2022 23:51:56 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id d2so15054568ejy.1;
+        Sun, 03 Jul 2022 23:51:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=B/wRitQyZlFvkStkqCHaB8oKHN1RIFGsWN/eGD+ncfY=;
-        b=1+ODjNl6XKSj/Xin0p+i1FMq/8NVSTU2N2nWbjSrsSfCizArW4vwUEI3MrAsmIueWX
-         k9Kf1UkYlFkO/AC2cEoY7dAcex0BY8MVjcAK21NUfWvK75xvuMyIFePSPYZezwTbs5F9
-         s68bBPyn8Pxb7pIfACYRKRVjYqmIYTGSRRZjtXiu76AgG4SvdAK3Ais72fYJmHonIACo
-         o7C35KJ/8FjwFda25h9typw5u65SbPl2Jd0xNhWCiJvH9FdJkL+3HxVLAlDuaCSqOjic
-         Vz7GC8xFGCUvS8BlwMBE+6RlMuPIjdwoF7GI0HSZdsUI545wCUJRXSUTsgyQWb4GcB7u
-         mBpA==
-X-Gm-Message-State: AJIora82O+q4dcLc63BRlTDSQvnXhuowNpH0yl7zDcxsLA5Yqy26RilR
-        GbmLDEvMDfJ9BsbAgzcF+rE=
-X-Google-Smtp-Source: AGRyM1sysPXg2Jas7Q+gCFiElgkWow1koIHrJh5jA1C276gBjw157Qhxd9Zn4F+hG8+LIrncbJJkRA==
-X-Received: by 2002:a17:906:8a74:b0:72a:9098:9a15 with SMTP id hy20-20020a1709068a7400b0072a90989a15mr15077646ejc.679.1656916806783;
-        Sun, 03 Jul 2022 23:40:06 -0700 (PDT)
+        bh=V3WLzRQE5hlj9Ag2r0vYMFsjKsgZON5RNX5KPeYiXww=;
+        b=INexnmujA72hd1cSfEjJYi3EV6fpTDEUwkgIi6uIKB1St+EjgHcYc7RW5IM7bD6jyD
+         uMB3fKl8wb41IHpcfhw4RC7aLboZ88PVtB0jt2IG2UfhV5eACroeHWvXzGVWxgyPWc3j
+         /OWE2e8VG3cNmM+FDEvBcqTM1iHBrjFbywUPX6/mL2nvNQzYoRNbS4FOFfi3dp8d9sHf
+         XuDXqMDzvOc1KjM3gJc7PyhFwvnOHasVnDc7mbF3O3XV/qbg/B1k62Yisa0kDqP9J52T
+         /QTYjf9Q3H1E4138ac1yLuyY+wA10WmQ/RAEMiHQ9tGnJgnpVse56XCLxMjhsTSZnkb0
+         il4w==
+X-Gm-Message-State: AJIora+TLmBlC85CkcbaIpMzCp2o4sczhnwP5AIwyrpl/+3/O1ZGsrCg
+        DA5kzOZA0u2UNLBcrwqCITw=
+X-Google-Smtp-Source: AGRyM1v8dChAQI8X41cjbxblEKGrrl0gDwkuRmFOZKgWiz0FHKJWfFar01jZsrywV4UoVL2Tkx3+Ww==
+X-Received: by 2002:a17:906:8315:b0:726:38da:f0f with SMTP id j21-20020a170906831500b0072638da0f0fmr27302882ejx.462.1656917514750;
+        Sun, 03 Jul 2022 23:51:54 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id i10-20020a170906698a00b00705fa7087bbsm13960423ejr.142.2022.07.03.23.40.06
+        by smtp.gmail.com with ESMTPSA id q16-20020a056402249000b00438a13508c4sm8472754eda.51.2022.07.03.23.51.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 23:40:06 -0700 (PDT)
-Message-ID: <a7104148-2c11-8235-9282-5731639316f5@kernel.org>
-Date:   Mon, 4 Jul 2022 08:40:05 +0200
+        Sun, 03 Jul 2022 23:51:54 -0700 (PDT)
+Message-ID: <60678c81-27bf-6f37-bae5-ccc91d714204@kernel.org>
+Date:   Mon, 4 Jul 2022 08:51:52 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2] serial: 8250_bcm7271: Save/restore RTS in
- suspend/resume
+Subject: Re: [PATCH v9 4/6] serial: take termios_rwsem for ->rs485_config() &
+ pass termios as param
 Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220629160208.3167955-1-f.fainelli@gmail.com>
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+References: <20220624204210.11112-1-ilpo.jarvinen@linux.intel.com>
+ <20220624204210.11112-5-ilpo.jarvinen@linux.intel.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220629160208.3167955-1-f.fainelli@gmail.com>
+In-Reply-To: <20220624204210.11112-5-ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 29. 06. 22, 18:02, Florian Fainelli wrote:
-> From: Doug Berger <opendmb@gmail.com>
-> 
-> Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-> from S2") prevented an early enabling of RTS during resume, but it did
-> not actively restore the RTS state after resume.
-> 
-> Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->   drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
->   1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-> index 9b878d023dac..b9cea38c8aff 100644
-> --- a/drivers/tty/serial/8250/8250_bcm7271.c
-> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+On 24. 06. 22, 22:42, Ilpo Järvinen wrote:
+> To be able to alter ADDRB within ->rs485_config(), take termios_rwsem
+> before calling ->rs485_config() and pass termios.
+
+OK, FTR, worth noting the tty->termios_rwsem -> port->mutex lock chain 
+is preexisting.
+
+Anyway, I'm not sure I buy the above. Why is termios_rwsem needed to 
+alter ADDRB?
+
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 621fc15e2e54..44c3785445e3 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
 ...
-> @@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
->   		start_rx_dma(serial8250_get_port(priv->line));
->   	}
->   	serial8250_resume_port(priv->line);
-> -	port->mctrl = priv->saved_mctrl;
+> @@ -1511,6 +1511,10 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+>   	if (ret != -ENOIOCTLCMD)
+>   		goto out;
+>   
+> +	/* rs485_config requires more locking than others */
+> +	if (cmd == TIOCGRS485)
+> +		down_write(&tty->termios_rwsem);
 > +
-> +	if (priv->saved_mctrl & TIOCM_RTS) {
-> +		/* Restore RTS */
-> +		spin_lock_irqsave(&port->lock, flags);
-> +		port->mctrl |= TIOCM_RTS;
-> +		spin_unlock_irqrestore(&port->lock, flags);
-> +		port->ops->set_mctrl(port, port->mctrl);
+>   	mutex_lock(&port->mutex);
+>   	uport = uart_port_check(state);
+>   
+...
+> @@ -1551,6 +1555,8 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
+>   	}
+>   out_up:
+>   	mutex_unlock(&port->mutex);
+> +	if (cmd == TIOCGRS485)
+> +		up_write(&tty->termios_rwsem);
+>   out:
+>   	return ret;
+>   }
 
-Calling ->set_mctrl w/o port->lock doesn't look really safe.
-
-regards,
+thanks,
 -- 
 js
-suse labs
