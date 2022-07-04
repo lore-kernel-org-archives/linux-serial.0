@@ -2,116 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEFCC433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF1BC43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 12:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233443AbiGDJ4J (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        id S234217AbiGDMwL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 08:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiGDJ4I (ORCPT
+        with ESMTP id S234263AbiGDMwJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:56:08 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B0BDEC9;
-        Mon,  4 Jul 2022 02:56:07 -0700 (PDT)
+        Mon, 4 Jul 2022 08:52:09 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F0910FDD;
+        Mon,  4 Jul 2022 05:52:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656928567; x=1688464567;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=wqdKh+YT2kwmBentxY6WWvFarS1Y974WhBuHLSKpX8k=;
-  b=eOZsXb49Yf9yLqlbb9EKagxY4AOKv9qAdS7CmpFbjCRINgPslAzPeCjP
-   QtCWQnC/Jn0b6G2EnwfxgGKuKCv2/MPpTCN+HW2eZ9vJvny0uCFGl3ddH
-   LmJsDCkLxh6hQj8h0quOaaiYXPleFkGaMHBeaQTvGAa9rE3q1UZdJhsP7
-   H5FrO69hIsSDxj9B8fakPnzjjfjgmnbUVY5Y+bkeOYQ8giy0YR6QruosG
-   1wMXnFCv8OkyBk+/bVKCN78Zr57MKC4GTQlChBL4r40xOq4j44dTp5qzf
-   6CXbogZIyFHhFrXuL7x07OjH8rZaKXRFQz2bogNg8Si7j0FrRUJhx5Pol
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="347067904"
+  t=1656939128; x=1688475128;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ohVPsZxj+uL/Ce5+TfyaWAhNK5BZ0yJWMoxA7PT9z6s=;
+  b=W4+DQ71QpO2SCBO2AG3Xl5kUcvES03PHcfNwlRLPRMh0JBIeiDa+mOB1
+   li9snWwExp5NgHu6UzICPIs0gTWyhMerymS25saCHEhEKdV1XJeuac8Xz
+   cDosJAQu3nAHcDu015JaLP5V7phBLE0UnFUA3jEtJDyhlpeDyro7Kbfs0
+   xckCA+26QaZfUk3cJ4pFY08y8PelXdCc5VErtnvwI1bnUASq+1KejB82e
+   8+Z5G6M5I3aVQRSed7wf51tqh7IWJKe/XI5vBeir0W4EIb6rOhSQBEQ5t
+   jJOCJVvfcChCiKKRTAjmtn73IcKp8XrF6y6/NMsXxpo5uT2+RtyV3pbUt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="263546124"
 X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="347067904"
+   d="scan'208";a="263546124"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:56:06 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 05:52:07 -0700
 X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="649513813"
-Received: from bclindho-mobl.ger.corp.intel.com ([10.252.49.27])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:56:02 -0700
-Date:   Mon, 4 Jul 2022 12:55:59 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if
- supported
-In-Reply-To: <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
-Message-ID: <9bc128a9-7ce3-d1e-dad6-ca91a5564ea8@linux.intel.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
+   d="scan'208";a="649591127"
+Received: from bclindho-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.49.27])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 05:52:05 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH tty-next] MIPS: ath79: Remove one of the identical args in early_printk
+Date:   Mon,  4 Jul 2022 15:51:51 +0300
+Message-Id: <20220704125151.59231-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
+prom_putchar_wait() inputs both mask and val but the callers always set
+them to the same value. Thus pass only val.
 
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bus
-> termination is supported by the driver. This prevents from allocating
-> and holding a GPIO descriptor for the drivers lifetimg that will never be
-> used.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
-> 
-> NOTE: 
-> This patch follows the design decision that "rs485_supported" is
-> set by the driver at initialization and cannot be modified
-> afterwards. However the better approach would be to let the serial
-> core modify the termination GPIO support setting based on the
-> existence of a termination GPIO. If "rs485_supported" is not a 
-> read-only value any more in future the logic implemented in this
-> patch should be adjusted accordingly.
-> 
->  drivers/tty/serial/serial_core.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 85ef7ef00b82..3768663dfa4d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3404,6 +3404,16 @@ int uart_get_rs485_mode(struct uart_port *port)
->  	 */
->  	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
->  							GPIOD_OUT_LOW);
-> +
-> +	if (port->rs485_term_gpio &&
-> +	    !(port->rs485_supported->flags & SER_RS485_TERMINATE_BUS)) {
-> +		dev_warn(port->dev,
-> +			"%s (%d): RS485 termination gpio not supported by driver\n",
-> +			port->name, port->line);
-> +		devm_gpiod_put(dev, port->rs485_term_gpio);
-> +		port->rs485_term_gpio = NULL;
-> +	}
-> +
->  	if (IS_ERR(port->rs485_term_gpio)) {
->  		ret = PTR_ERR(port->rs485_term_gpio);
->  		port->rs485_term_gpio = NULL;
+Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-I sent a series to embed supported_rs485 to uart_port and manage 
-SER_RS485_TERMINATE_BUS properly so I think this won't be necessary 
-with that?
+---
+This patch applies only to tty-next that has another change this work is
+based on.
 
+ arch/mips/ath79/early_printk.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/arch/mips/ath79/early_printk.c b/arch/mips/ath79/early_printk.c
+index f6d02b425a10..34c4dfdf46b4 100644
+--- a/arch/mips/ath79/early_printk.c
++++ b/arch/mips/ath79/early_printk.c
+@@ -19,13 +19,13 @@
+ 
+ static void (*_prom_putchar)(char);
+ 
+-static inline void prom_putchar_wait(void __iomem *reg, u32 mask, u32 val)
++static inline void prom_putchar_wait(void __iomem *reg, u32 val)
+ {
+ 	u32 t;
+ 
+ 	do {
+ 		t = __raw_readl(reg);
+-		if ((t & mask) == val)
++		if ((t & val) == val)
+ 			break;
+ 	} while (1);
+ }
+@@ -34,23 +34,19 @@ static void prom_putchar_ar71xx(char ch)
+ {
+ 	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR71XX_UART_BASE));
+ 
+-	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+-			  UART_LSR_BOTH_EMPTY);
++	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY);
+ 	__raw_writel((unsigned char)ch, base + UART_TX * 4);
+-	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY,
+-			  UART_LSR_BOTH_EMPTY);
++	prom_putchar_wait(base + UART_LSR * 4, UART_LSR_BOTH_EMPTY);
+ }
+ 
+ static void prom_putchar_ar933x(char ch)
+ {
+ 	void __iomem *base = (void __iomem *)(KSEG1ADDR(AR933X_UART_BASE));
+ 
+-	prom_putchar_wait(base + AR933X_UART_DATA_REG, AR933X_UART_DATA_TX_CSR,
+-			  AR933X_UART_DATA_TX_CSR);
++	prom_putchar_wait(base + AR933X_UART_DATA_REG, AR933X_UART_DATA_TX_CSR);
+ 	__raw_writel(AR933X_UART_DATA_TX_CSR | (unsigned char)ch,
+ 		     base + AR933X_UART_DATA_REG);
+-	prom_putchar_wait(base + AR933X_UART_DATA_REG, AR933X_UART_DATA_TX_CSR,
+-			  AR933X_UART_DATA_TX_CSR);
++	prom_putchar_wait(base + AR933X_UART_DATA_REG, AR933X_UART_DATA_TX_CSR);
+ }
+ 
+ static void prom_putchar_dummy(char ch)
 
 -- 
- i.
-
+tg: (899e836bddb3..) cleanup/ath79-early-params (depends on: tty-next)
