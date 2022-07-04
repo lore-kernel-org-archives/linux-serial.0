@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 557B5C43334
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF31C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231810AbiGDJBq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        id S233511AbiGDJId (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233299AbiGDJBo (ORCPT
+        with ESMTP id S233540AbiGDJIc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:01:44 -0400
+        Mon, 4 Jul 2022 05:08:32 -0400
 Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDABB10CB;
-        Mon,  4 Jul 2022 02:01:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6766D5584;
+        Mon,  4 Jul 2022 02:08:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656925280;
-        bh=wunTrKVzz/kwW1pyTGsbdz6YZYVftor0tEd0kb7sjO0=;
+        s=badeba3b8450; t=1656925690;
+        bh=Ie4WOyCa3Nl27ZgUjfIb5DYmP4DXeOJq3h1/Ikk02lQ=;
         h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=SINC7RSlV4w99Cn6JlwtJRqAsE75zgeeyizf6OW6Gs1HO22tpejMX6cKxeN0Zws+u
-         Vu2NuhfZCGAWgx+cEsaa2x6ZwPBe82IOWb8v1zApH1K6+BMNKWNxzuxZEvdVWU9Ftg
-         dByJ/AghB9hVBd+cAz/l4M3kj1xUxtgWEFTynIe0=
+        b=dnOOmAXv40TiGYhEhHewwnUN+S/oxUHdQX9F/brAN5/4l/Ahnx7mmOE+bWt0H/M1b
+         nu46tn3G5d/rz+2M/3hLwsdGXaaZy9B6LEWUpT55kCfVGZi8zGDHERTxexRKQStDgH
+         8BopOebIt8pA99TnC1WV88yUiYheQhiF8La24j3U=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MDQeU-1oHbLa2NzK-00AXhd; Mon, 04
- Jul 2022 11:01:20 +0200
-Message-ID: <5f0d2112-ce82-e1b9-d421-de1f8067dbe8@gmx.de>
-Date:   Mon, 4 Jul 2022 11:01:15 +0200
+Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MGQj7-1oP26J0iAX-00GoKw; Mon, 04
+ Jul 2022 11:08:10 +0200
+Message-ID: <51f2142c-f4a0-e608-a9ad-6d7df14e4535@gmx.de>
+Date:   Mon, 4 Jul 2022 11:08:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if
- supported
+Subject: Re: [PATCH v2 4/9] serial: core: sanitize RS485 delays read from
+ device tree
 Content-Language: en-US
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -49,68 +49,60 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
 References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
- <CAHp75VcU-gLQBvuesoYp-G91SjzeYB7PNCN17PGL7u139VZY2g@mail.gmail.com>
+ <20220703170039.2058202-5-LinoSanfilippo@gmx.de>
+ <CAHp75VdvBfBM3Exm8BhJs7CzDaFwNYc7BLq-sLuwfzYTo4gyCA@mail.gmail.com>
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <CAHp75VcU-gLQBvuesoYp-G91SjzeYB7PNCN17PGL7u139VZY2g@mail.gmail.com>
+In-Reply-To: <CAHp75VdvBfBM3Exm8BhJs7CzDaFwNYc7BLq-sLuwfzYTo4gyCA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:MxMrBoebL/3ctFtCTUphQ8fbbzo0zgkURU2onWKweIoqv254Z0s
- t868OlGvUc6fhbcP7VeAiIhLgqlDBHdwcEFAF4U1gK0liSvZKMc6B6Bka+z56N7zo6uI4rj
- cRFVbR4YRXAce3cbcainF19L6917abn0iB2K4DjNy6K1jVnUyAqiGAWmbXtdNOSevkR6Hsh
- d5p2iLrkCVLQMyB1ymF3g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Q2fK6Uw51Ow=:1KxNQm6ApxAwqoouCLJ58d
- ZRcld4NUe4iHIi6CcURdsrTh5F3eKNUURC7YiXTwFqkJUB/ci5cwSrjLrlyDkxxngPTVB4kol
- 4PIt6BFXRli9wA7BYNEKfx1ICufVxXUl3/rdFll/Aqv92ff/aULjCiOyQrpjiCmfaSlgLBTZO
- apqzmZJ72irdvnl0i1El72Ylir7x6VAB842gB4Tmpdk9jgzvxBvZ+4uG40Sx7Qv1Mb4764LT5
- o/KIBuA2Rucw2eh4SXCTnwYEfC6RnFRmOq7OfW5/pjg+QZCJogkWx68aOnqM8CeIHP75yZmGt
- 2cZmQR4NEh0Y3zSp0jM8+WCSB9uO2go/eKaAOlFI+YRx24zeRNyz1Q0qeRRt5sA8ec9WNgH6h
- jRnOG42pGvw91Qdkt3BL5ndKCrmKhb0E3My/xw5zZDupb+TC+A1uGl4/xUQn6tgbnBTNgvqwr
- q11Bokv4gM4L5pf/5Hg/EeUmvrf1a+F33qT/JuJUbXS718GrqQY7K5ZVJQj10n320jERzZ6mg
- ZB0B2igMY1WEGCiATKuf34vSMkU46y7mHaq9WsBYNKMjRxdq+5kqnkR2BTfkoaFWMhmrMAymL
- pABYWpIpjAHf9G8KZNHcZGCxQrCs3KJORKW37R/j57TUVdZjkIn5YU1vIcSQRePnB3eh9dpor
- Wxz+F+9sEANPKFJvRqfQdqiP3JASn+LHGf4G1qpRzwy2BQrNrdkCEoN8XY/84zlNZL8g4EjF8
- FJTdc4Qdi/KY+QM5vritDQEj29yVYxdcESqBkKapr6hqiujRE8A6ajXeMLspOTtqBucVXpnBu
- ZQbNkmn0sLz5JkGj3rW3tMGV8XR1n1AHkxg0jbldVmu8sIHPPsONln+PKFcFzjglfUmu9ulNQ
- gbdE9JLkXcg9Q8WOTUtbq5f9fEsG4jzY52gE3Wexr7TNhpoueDoWO+UQyah7Aiw0OvgAUAg3q
- dKJAR3mGNcB2IjKxEQRQpWiAJsj+yzHVdqC3YZX1EQWzhUw0d9ZxYsclgfhOm39F7wuvlfVE+
- A4xS2v8HDJ+pJUN21dITJzl/5XATzepCAjf9gnqGWszxyqb3WRKPwtIuT4Sa4QOc3z5eW9WQ0
- 8EQoh0lkmEda8nAwjEV6IT3pdZbW5nO/0hclIII1LConYckA1KxbTGoAw==
+X-Provags-ID: V03:K1:fivx9dZYK295NyKzYzs2uwB7FeZ9jYwdtxPDXUlAV7CTMiLBbZH
+ O9CXxC2C/rL7nP3lzpwv78FMSU9JR3anI0J00J59UDFBDjORHqGBA5luC3dMKrq/jadPtWa
+ TqF9UDgCLR2M8buNpsDIDfzvdhLWD2Rt5Ohj1WXstoh8bhkcgEIdZqEw3UYob0rzTtGdjdm
+ HarDosBJTascF1AUkHqaQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:e2kIDIvE8Us=:+b/4nXIkuSJFxjWgeqx+79
+ m9jtQF9mK9OSb7puqzv4HBxqmCKqsNaUkshyMd9ilqkywaNttTY1eJv+TtmS/i/VqylcmRAZC
+ 1RJDLBAdocdtcqj7kTNoU7HT7D9yx4ecceaFqyMIiCUXyfzcTwJB2vcBTL+kf2SHgtDcv/Wal
+ /CUVnovE4lvGdXME4d46F97i2QCCCGSTGcFIhoNh01+H+hA86WnwaIwvMyla8kytzlTk18idB
+ 7hnrvS0CQpOGx0oQmjL57vi7gNsAlJ598voAm57RpvEn2j8dALURETr+6vD3v2KzEtbYDptdB
+ Jy8ZcLWgUDQj2LBsscZYQ15P8uTaBqRZmMSROFOHwTuicN9ZQAWwYnfEJD1Bjedg5kxKHKt28
+ QL6DN30NXvYhDeAnBAJKUeeR6+NW392YQw//e4kMYnBDT6aFp89o/VxSYz2whyhjcMKjjsIkP
+ 9P20NLHkJB2ttzHR+Tp7rOFH8nqfdH55ljQZ0EW8qR35B2CWOBpqXPhOrD6fdXYikp4HS9ajW
+ H+O+LSyNJvlVPo87VkIYVk5Mkj6fc53+BLs2K2j54YhASDy6NHBeN+BgnJDK8qEoLpu59E+nB
+ kl7uM8ZDPuWoZQGaxG4Qw4tuRUUyDd9EsmySby59LRQPcgxYpykT6UtZfju8nS7HlCNMLWq+/
+ TUTtHkaT2kGJJo1180kUaqLvHrc7rZ0945LbbN+UR/ILgQXfULMY8IdCMCqJ5Zco4qw/mFzW8
+ UiTrWNDiqQZYxFRVC5ilHMHoi0n9HYhBcNs0kSK8BXVooTbzUqtpkXe4JRsHoAjMLjO88Tggo
+ YgKH2BOtIEAkaijB5bp3OGgpSi1fD44BkK5fNWO+bmdYd42jh9dyDJhEfLjskOa+PlAYQRgzC
+ putwnABfhtRjH3CLGvQKdIKjw73Dp7DcJ9C3M5Zn2j6jHi0hbePmz/Rvl/qZaKtclqWbs3LxK
+ D6blVZl1QD0Zs4she11LetgumMBisW3FeUHKsgJf374D9X14kbD23XWJWvdjYpq+WiQiSkFqO
+ zIjkjny2RF02R7rFInF0fac9IFOjXidIHprEe79WQO8IHXeLXKztEB3Xg4SshWvIUJiZnCXFy
+ YAwc0Rfp9U92Q2N4OhUcQoaCOnaUlo4LlNtAAfiRYC2wcb0xuvsthicPQ==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-On 03.07.22 20:27, Andy Shevchenko wrote:
+
+On 03.07.22 20:34, Andy Shevchenko wrote:
 > On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> w=
 rote:
 >>
 >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >>
->> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
-s
->> termination is supported by the driver. This prevents from allocating
->> and holding a GPIO descriptor for the drivers lifetimg that will never =
-be
+>> When setting the RS485 configuration from userspace via TIOCSRS485 the
+>> delays are clamped to 100ms. Make this consistent with the values passe=
+d
+>> in by means of device tree parameters.
 >
-> lifetiming
->
->> used.
->
-> ...
->
->>         port->rs485_term_gpio =3D devm_gpiod_get_optional(dev, "rs485-t=
-erm",
->>                                                         GPIOD_OUT_LOW);
->> +
->> +       if (port->rs485_term_gpio &&
->
-> This check is incorrect. Either you need to move that after error
-> checking (that's what I personally prefer), or use !IS_ERR_OR_NULL().
+> I'm not sure I got it right. Is the values from DT now clampet as well
+> as user space does or other way around? In either way the commit
+> message misses the explanation why it's not a problem if user
+> previously passed bigger values either via user space or via DT,
+> because it's an ABI change, right?
 >
 
-Right, a stupid mistake. I will fix this, thanks!
+Values are now clamped to 100 ms if set by userspace via ioctl and
+not clamped at all if set by DT. I will improve the commit message
+to make this more clear.
 
-Regards,
+Thanks,
 Lino
