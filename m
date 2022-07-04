@@ -2,92 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042BBC43334
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Jul 2022 18:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9732C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 06:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231833AbiGCSjn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Jul 2022 14:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        id S231544AbiGDGgA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 02:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiGCSjm (ORCPT
+        with ESMTP id S229576AbiGDGf7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Jul 2022 14:39:42 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED9A2DE4;
-        Sun,  3 Jul 2022 11:39:41 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id c143so4662956ybf.3;
-        Sun, 03 Jul 2022 11:39:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5DVzDDMeIoa4xyzY/DW7k8LXANM8ZaNyYc69eLGHeFg=;
-        b=l+DDU0LZH8WGQTO6pD9bNCgr4uLF+eY5UdKiq8eX2SBZNJHWMgdQlNzAqhTuSA6wkV
-         q9+LyRaZyRLI0FP2MdSh+kJ+6duv3jKG8hDHA/Q3yGw/BWNFpwYas+Ac7OX6hknCzhav
-         0avsAcxjDB3GWeOiXvURteEb13j0fJUIbKG4CLZmYL1ZFHOa+86FXhtHVFNc3dUDccjg
-         dCf3SwJhuoTLB8VX6c8fJktmD6odf80W+iyXpXuWpEraLmS19eTRFBNGYtZWCsU70e7P
-         ijinwoXmdAEwwAiOyIRUSZPYNa01VPtrO1udnxFHZFFsPZXFWuxSctrkC/Do5AvpiPXk
-         55Sg==
+        Mon, 4 Jul 2022 02:35:59 -0400
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B152273D;
+        Sun,  3 Jul 2022 23:35:58 -0700 (PDT)
+Received: by mail-ej1-f49.google.com with SMTP id g26so14954063ejb.5;
+        Sun, 03 Jul 2022 23:35:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5DVzDDMeIoa4xyzY/DW7k8LXANM8ZaNyYc69eLGHeFg=;
-        b=AfKSiHj3CgbtM/v0fdXCXKaNHqaKovPca2FLF+XcyoGB03NEhrk1AAnp35wlbv5ewk
-         yw4C53yh+ajhVM4/+1RgagfgCUrAbEZASzvxOW/QezFtwLVAvsqzQYLzMTlj0sDW7wBS
-         bzZCntCJSRQrOw//CeQ6PzbEmDqMCLZg6PFfiPj/4v3ir93U4UDAuFKUpei1iRjhZ9c7
-         8qjH7U0bY3fAXZH1/XXmg3lOy6NFYJfVgoQewmuza4jrdIC3ejI2VvCSpoOXUOqtwFju
-         TUDE1qbYdaxtoTWXERNihfb9eq6DT84pC1GJeZVvp6GbEWyliqHu7eGVkth409sHbgOo
-         C62A==
-X-Gm-Message-State: AJIora9Y6TovLQnOaKJmyjntXfQKVOYrWrTZUae/6FM+KaKVnFNNN0Bw
-        NkddesjqQ5lsBVdQzJCRm8U07wemMiZpieQUHIk=
-X-Google-Smtp-Source: AGRyM1tf2ujv1P42O/7wA8ZPhLFRPqwPYmN+ZPq8B2MFR9A64a7c9ulfkNc1A9KhBA0V+YAI74eIXpqN/uWFTaEsDXQ=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr26878837ybu.128.1656873580503; Sun, 03
- Jul 2022 11:39:40 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KSz1fScBhXiduYX3MNiAd7k7qd90lzeP7i9sOOLLqvE=;
+        b=C3rFLik7d8D0/b14j3IRnI4DZnryqLBFRDaI4czdB6QqA+SHyOYMlAPOpWAdUZmvtU
+         ax+jkO2v4zjGKblO6J12WiUEOBM5M6TVLO53YjJwXjh+lDO62llcBhJdx71aSe9io8QQ
+         9g26wqEYlOMWPOd2Ml3tqjLvmd9WxUyHvjySGjjDAVwZIxhlx3hq0P5+y/cKXAFBzOuZ
+         hopahKwKtkJXoDapzOja7WndHMAEySmeZ8v+UQf5Qkhln97H4kCmwdVMwD3wmLpBI6L0
+         EwVu2xkmDPRfdFZscuGXUmlqSXlratnMjob9tawP0rUFwcArqq6H8W8levNn0YIdGqfy
+         GxPQ==
+X-Gm-Message-State: AJIora9DCOpR8j6acdlrx2S0YPg5cpbfMJlGA7mTZqPYyKDtbJmuGczo
+        zTZA6zsjOEVLT6ZmNi43y1o=
+X-Google-Smtp-Source: AGRyM1vPq7L06s9wgk51OG/cBNhL2ZdNJUx+ue7Iw7v5MYKvetYYXMxlWV3D9ow0uvGAJrXcqvN/jQ==
+X-Received: by 2002:a17:906:9508:b0:726:9589:6da7 with SMTP id u8-20020a170906950800b0072695896da7mr13595564ejx.505.1656916557102;
+        Sun, 03 Jul 2022 23:35:57 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id w3-20020a1709067c8300b00722fc0779e3sm13851750ejo.85.2022.07.03.23.35.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Jul 2022 23:35:56 -0700 (PDT)
+Message-ID: <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org>
+Date:   Mon, 4 Jul 2022 08:35:54 +0200
 MIME-Version: 1.0
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-8-LinoSanfilippo@gmx.de>
-In-Reply-To: <20220703170039.2058202-8-LinoSanfilippo@gmx.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 Jul 2022 20:39:04 +0200
-Message-ID: <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com>
-Subject: Re: [PATCH v2 7/9] serial: ar933x: Fix check for RS485 support
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
+ RZN1_UART_xDMACR_8_WORD_BURST
+Content-Language: en-US
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
->
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->
-> Without an RTS GPIO RS485 is not possible so disable the support
-> regardless of whether RS485 is enabled at boottime or not. Also remove the
+On 30. 06. 22, 10:39, Biju Das wrote:
+> As per RZ/N1 peripheral user manual(r01uh0752ej0100-rzn1-peripheral.pdf)
+> rev 1.0.0 Mar,2019,
 
-boot time
+Is this public anywhere?
 
-> now superfluous check for the RTS GPIO in ar933x_config_rs485().
->
-> Fixes: e849145e1fdd ("serial: ar933x: Fill in rs485_supported")
+> the value for 8_WORD_BURST is 4(b2,b1=2’b10).
+> 
+> This patch fixes the macro as per the user manual.
 
-Is it an independent fix? If so, it should be the first patch in the
-series, otherwise if it's dependent on something from previous patches
-you need to mark all of them as a fix.
+I'm curious, is the bottom bit from "3" ignored by the HW or does this 
+fix a real problem in behavior? Stating that might help backporters to 
+decide if to take the patch or not.
 
+> Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow controlling devices")
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>   drivers/tty/serial/8250/8250_dw.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index f57bbd32ef11..931490b27d6b 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -47,7 +47,7 @@
+>   #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
+>   #define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
+>   #define RZN1_UART_xDMACR_4_WORD_BURST	(1 << 1)
+> -#define RZN1_UART_xDMACR_8_WORD_BURST	(3 << 1)
+> +#define RZN1_UART_xDMACR_8_WORD_BURST	(2 << 1)
+>   #define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
+>   
+>   /* Quirks */
+
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
+js
