@@ -2,133 +2,122 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8131C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 15:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC89C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 15:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiGDPOP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 11:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S229896AbiGDPgK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 11:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiGDPOO (ORCPT
+        with ESMTP id S234430AbiGDPgG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 11:14:14 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37ADEBC83;
-        Mon,  4 Jul 2022 08:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1656947623;
-        bh=lw9l19cpkr4yCqcc6HT5BAREEapDuSh+BtMq4Z73ojA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=joU5t0cevbn9FI0a3XUrCa89xeWo84Gyc3+bVds9L2qAWszvbCKziivpG4hR6r7oB
-         m0dNdOh+uhTlrn3MmgupsNYjZWUz9xS3REe5+Hy2d34gM7NSFCRv+OhaHNl6z5iMx+
-         wQeOcrfhPoI0h6AGR585T0/XEYi1H3MvdPBWcaBA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mgeo8-1nh3Ep2wyy-00h9Fb; Mon, 04
- Jul 2022 17:13:43 +0200
-Message-ID: <576feae5-87f3-fbac-4349-126cf5244821@gmx.de>
-Date:   Mon, 4 Jul 2022 17:13:38 +0200
+        Mon, 4 Jul 2022 11:36:06 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23AF11169;
+        Mon,  4 Jul 2022 08:36:01 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id l14so10304531qtx.2;
+        Mon, 04 Jul 2022 08:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LwA/Kv+kT4lvUviRoyI/dEAegOAMYJu1KKy1Tr4jNk4=;
+        b=G7P2JWpgnPgLDYkyVc6cKWp/RIvKG6NfOAiMR3Zow56KA7/xE5pgiCIjOSxgwftys1
+         HWmnjKnKLI0q2wmim7r797r9QCB28CHlV1nurOOcLuI2UK0IO1iYnZnCr/itiqTs3kqw
+         0wi4SsupmhUbfBvt5antJv7+TyAh+WO+yFZSb5uMtR4rIA2Etob2HOjduHx8yY6tUsEU
+         a/53BSE5zsCJUg2AwmL+XTdXKRfpvWobyfAQ/0rWN6i3U2TtNt91q3we60WmEtLqcJD/
+         kILqZZ0vDJJGrY/Fh8bYHQczsRMvBMTK+yemVw/H7cJtrBbo2yQyFNPZwo3bLR4JT74v
+         l2rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LwA/Kv+kT4lvUviRoyI/dEAegOAMYJu1KKy1Tr4jNk4=;
+        b=USgpJvEh0RQ+oMPHfMYRJDODSC0pJr1rW38g7/tYj/n+drjA7KEVopagmhAFU1Dsvt
+         v7iRo8cRTQyiTDDwIloR31ZzFY/OqUIC9S/DDAwAEwpZ8FlrqSPsF9tMN3vvZDk4ye2s
+         4WA4x+CAv/UGUNHmkA9to5K3r0NGb+4A7teEqZPwY5CRsAxF/3RIinl1zpcxc8iutIwL
+         EFSiaXDG1jsVTMnkUD/cOU2Cn/OCCjQmFlgMrbybdvNPlDTzZqbSDRHd1Ex546C/5z2e
+         j8cKe54aGZAFLc+p6Yftm7teLm928BU28X8NyWdFsZOPOknsCVihyREXZ1jfHa7TJqmM
+         nzfQ==
+X-Gm-Message-State: AJIora+peohl/bdURAunUGIxib1cC1zsuq8Y8UCfWwlSB6qsJZXO7kCV
+        mKuobxdk4UbK4c1EJhEBaD4=
+X-Google-Smtp-Source: AGRyM1tAypJU/RXFU+t69Of4A/pPH6JorVuxukQtXuaMnDHUm3maocfQWXmPBUwBYZqS2VS8ernx4A==
+X-Received: by 2002:a05:6214:20a4:b0:470:51fd:d455 with SMTP id 4-20020a05621420a400b0047051fdd455mr28450647qvd.26.1656948960758;
+        Mon, 04 Jul 2022 08:36:00 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id r8-20020a05620a298800b006b4689e3425sm2270630qkp.129.2022.07.04.08.35.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 08:36:00 -0700 (PDT)
+Message-ID: <f422b4f7-75ca-8337-e099-fea9cf879b4c@gmail.com>
+Date:   Mon, 4 Jul 2022 08:35:57 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio in
- serial core
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH v2] serial: 8250_bcm7271: Save/restore RTS in
+ suspend/resume
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
- <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
- <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7BLvkQ8Daoruut0OeY5prEW4I+47ILt1MxrQ+u1s/fM+oDJ3G5M
- bU/gqksPJ/AyAYj+2nJd1fnExnWNC9/G+8lOKaqIcdN0o5ssnKLE9PIjN0MUsjeb6+wdoXj
- TX+pNEdkIzjEUa2ZO21peLKT/Mf/pD3CXVPX7FxAXp2Blh7xic3KbOwVgyv2Sw3p9ydPqCG
- gj+B0zgEZm2dv1aMRZXlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VKzmQ5Nig5Y=:Hu9TT4m/x7bFkXRNGtkvXi
- VEQsvAW6y0StxIsUHP9ibrObGi7xmCvpqp7nptXo6k/eJ2n+cRX6BQRndmCpqx675G7a9oQg0
- hpZ6IuKw8b3x5RKOOXBOVNejCFekRl1pfqgxBNI4N8IGv5UiUXHnhSzeRtUND4dHYzCDq/+DO
- s2CEr3O5t4H0ajc5xgSY7xO+7A9pa9PTZeLtwm3V890C8cN/cEkh1KY3AMP4ibFoU54W/qm1A
- Ecw1Ih3SMJ30cg/UAYfNaZ2RpaPGP6wGiyk4wVZSyua3EXfObaiNVRiPuk53roIylG1I0OCzZ
- j2FhUAhG2DMvl2tq5M0WXw9TdSN1E9bV3vEnChf3vmQFtqeddwl3A+5Q7igmn4IFruaYgyB6+
- /zjGAdWpqEv/jFTCgCPS73PbnUYtPrTBFyb4i5xUD0x7Yc/SqXwFLOgmt3SsggF49L3IqOZxy
- hcsEk/zTIjeR6apEVO990gHnPZJ/Hsxschu/1Cr4RUPHn+TT4N8vBMG5JEesWaCvbTTeaHhF2
- 0fkXz+0FXVO777VmZHUxLIl1PKg8di9gBYXpLrVCtRJ9qK33KAcMxNCF1ChWNpt5O+qfldL9N
- YnLocx5qSCyie5iX1QtfPElnPTl9X683qFED+vLL5NzhyaSafgfGyttbdWg/3w0XjmkhlQ2VL
- WO2BaJtgQaIcPA8dg8CDRsTz4IW98RCwnc3X1LqpzfzFs8EoNNOJnEdxNUxjGVvvbWQ/mgHUU
- UV8LvkfbtDM724J8gJhheZEd6CTfUYt2EgU5Pa+G8T1atE5uK4RZkZuIWNVeowRHUgtUcAC3f
- l7AmwgUJJo9J/M5sNJeFg0vxO3Nv5nWQBbOmZcmwOlW0z9Onudj3JDs87ZoYBXXL0me7WVjPy
- npO1ARNdrYRHokIAVmoxBnyyw2u9yCXaqfomjutlCg1cZFGQFzDlqoLHYndVQJS2uRK0NQ/lZ
- vv//o4SAoXC//ux4t7fJC+NXcIRkdJI0G70VxQe1dZaArlXSONgr2tHPxd44tBSOKRYz17Gij
- VQ0EOFYHHgo0opMIy0ZEoNJxhzXkyZGg0da7GL5a1wSoHGrWqF7iusMTgycLowjmc+ZuHWL/b
- l+49bBwS5aShZ8fs31cPGs1dspSVcxR+K28Z9PlIVkh+3PAXR4eZ7TDLw==
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220629160208.3167955-1-f.fainelli@gmail.com>
+ <a7104148-2c11-8235-9282-5731639316f5@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <a7104148-2c11-8235-9282-5731639316f5@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
 
-On 04.07.22 11:51, Ilpo J=C3=A4rvinen wrote:
-> On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
->
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+On 7/3/2022 11:40 PM, Jiri Slaby wrote:
+> On 29. 06. 22, 18:02, Florian Fainelli wrote:
+>> From: Doug Berger <opendmb@gmail.com>
 >>
->> In serial8250_em485_config() the termination GPIO is set with the uart_=
-port
->> spinlock held. This is an issue if setting the GPIO line can sleep (e.g=
-.
->> since the concerning GPIO expander is connected via SPI or I2C).
+>> Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
+>> from S2") prevented an early enabling of RTS during resume, but it did
+>> not actively restore the RTS state after resume.
 >>
->> Fix this by setting the termination line outside of the uart_port spinl=
-ock
->> in the serial core and using gpiod_set_value_cansleep() which instead o=
-f
->> gpiod_set_value() allows to sleep.
->>
->> Beside fixing the termination GPIO line setting for the 8250 driver thi=
-s
->> change also makes setting the termination GPIO generic for all UART
->> drivers.
->>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>> Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming 
+>> from S2")
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 >> ---
->>  drivers/tty/serial/8250/8250_port.c |  3 ---
->>  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->>  2 files changed, 12 insertions(+), 3 deletions(-)
+>>   drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
+>>   1 file changed, 18 insertions(+), 6 deletions(-)
 >>
->> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
->> index ed2a606f2da7..72252d956f17 100644
->> --- a/drivers/tty/serial/8250/8250_port.c
->> +++ b/drivers/tty/serial/8250/8250_port.c
->> @@ -676,9 +676,6 @@ int serial8250_em485_config(struct uart_port *port,=
- struct ktermios *termios,
->>  		rs485->flags &=3D ~SER_RS485_RTS_AFTER_SEND;
->>  	}
->>
->> -	gpiod_set_value(port->rs485_term_gpio,
->> -			rs485->flags & SER_RS485_TERMINATE_BUS);
->> -
->
-> I sent a series to make .rs485_supported per uart_port and properly set
-> SER_RS485_TERMINATE_BUS according to DT config. With that series added
-> first, SER_RS485_TERMINATE_BUS should also be removed from
-> serial8250_em485_supported so that serial core can properly manage
-> it all.
->
+>> diff --git a/drivers/tty/serial/8250/8250_bcm7271.c 
+>> b/drivers/tty/serial/8250/8250_bcm7271.c
+>> index 9b878d023dac..b9cea38c8aff 100644
+>> --- a/drivers/tty/serial/8250/8250_bcm7271.c
+>> +++ b/drivers/tty/serial/8250/8250_bcm7271.c
+> ...
+>> @@ -1180,7 +1184,15 @@ static int __maybe_unused 
+>> brcmuart_resume(struct device *dev)
+>>           start_rx_dma(serial8250_get_port(priv->line));
+>>       }
+>>       serial8250_resume_port(priv->line);
+>> -    port->mctrl = priv->saved_mctrl;
+>> +
+>> +    if (priv->saved_mctrl & TIOCM_RTS) {
+>> +        /* Restore RTS */
+>> +        spin_lock_irqsave(&port->lock, flags);
+>> +        port->mctrl |= TIOCM_RTS;
+>> +        spin_unlock_irqrestore(&port->lock, flags);
+>> +        port->ops->set_mctrl(port, port->mctrl);
+> 
+> Calling ->set_mctrl w/o port->lock doesn't look really safe.
 
-Ok, I will rebase the next version of my patches on your series then.
+Good point, I will check with Doug whether this was intentional and if 
+so, why, and if not why should we move it up under the spinlock.
 
-Regards,
-Lino
+Thanks!
+-- 
+Florian
