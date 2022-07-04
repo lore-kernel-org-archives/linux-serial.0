@@ -2,116 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB47EC43334
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 08:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557B5C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbiGDIvh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 04:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
+        id S231810AbiGDJBq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231668AbiGDIvg (ORCPT
+        with ESMTP id S233299AbiGDJBo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 04:51:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAE17671
-        for <linux-serial@vger.kernel.org>; Mon,  4 Jul 2022 01:51:35 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8Hni-0002a3-P3; Mon, 04 Jul 2022 10:51:26 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8Hnb-004KqZ-HB; Mon, 04 Jul 2022 10:51:23 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8Hne-002uF1-4r; Mon, 04 Jul 2022 10:51:22 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Alan Cox <alan@linux.intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     kernel@pengutronix.de, linux-serial@vger.kernel.org
-Subject: [PATCH v2] serial: 8250_fsl: Don't report FE, PE and OE twice
-Date:   Mon,  4 Jul 2022 10:51:19 +0200
-Message-Id: <20220704085119.55900-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.36.1
+        Mon, 4 Jul 2022 05:01:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDABB10CB;
+        Mon,  4 Jul 2022 02:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1656925280;
+        bh=wunTrKVzz/kwW1pyTGsbdz6YZYVftor0tEd0kb7sjO0=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=SINC7RSlV4w99Cn6JlwtJRqAsE75zgeeyizf6OW6Gs1HO22tpejMX6cKxeN0Zws+u
+         Vu2NuhfZCGAWgx+cEsaa2x6ZwPBe82IOWb8v1zApH1K6+BMNKWNxzuxZEvdVWU9Ftg
+         dByJ/AghB9hVBd+cAz/l4M3kj1xUxtgWEFTynIe0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.69] ([46.223.3.210]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MDQeU-1oHbLa2NzK-00AXhd; Mon, 04
+ Jul 2022 11:01:20 +0200
+Message-ID: <5f0d2112-ce82-e1b9-d421-de1f8067dbe8@gmx.de>
+Date:   Mon, 4 Jul 2022 11:01:15 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 1/9] serial: core: only get RS485 termination GPIO if
+ supported
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de>
+ <20220703170039.2058202-2-LinoSanfilippo@gmx.de>
+ <CAHp75VcU-gLQBvuesoYp-G91SjzeYB7PNCN17PGL7u139VZY2g@mail.gmail.com>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <CAHp75VcU-gLQBvuesoYp-G91SjzeYB7PNCN17PGL7u139VZY2g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2593; h=from:subject; bh=A6rX/PY7QJmDHNUC6NjQIuXk+Pq8qeQm9CW0XzQ5aGM=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiwqoDlhMUixwaCBvfJOrge0zh6Ob2a+OrxNH07akD HlUI7YWJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYsKqAwAKCRDB/BR4rcrsCdOJB/ wK89jryjblgdSpr7MTRRDXJsE/OTcQqgIMPop8J4hn3Q+sqJGflMmYpGu47xAwp1c6jNhDT4EufRLF wlBavug5sCDBFz3C/mu+JzL7hVeT5jwopOXja4PjclAKN8NkhXlnZzMHnNkWC4lGB0P44dyykjcOmD 1elDIw8A6vbz2nQ3vm/UGh+fcikVSRiuzvPaulxG8Sddi/n1QQlCLdUBwGSCI597VrEp8TVCoYBF1Y JbOfhGopVZA8ZA9gU2AlYJTr+24a5uhvlqc9hGlcZf/QzWTUXTqW+d7pry+XFEh9onZt5dKhrsgKAF tOg0k3MmKHVW1LPvz0aqEe6lKqkYYD
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:MxMrBoebL/3ctFtCTUphQ8fbbzo0zgkURU2onWKweIoqv254Z0s
+ t868OlGvUc6fhbcP7VeAiIhLgqlDBHdwcEFAF4U1gK0liSvZKMc6B6Bka+z56N7zo6uI4rj
+ cRFVbR4YRXAce3cbcainF19L6917abn0iB2K4DjNy6K1jVnUyAqiGAWmbXtdNOSevkR6Hsh
+ d5p2iLrkCVLQMyB1ymF3g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Q2fK6Uw51Ow=:1KxNQm6ApxAwqoouCLJ58d
+ ZRcld4NUe4iHIi6CcURdsrTh5F3eKNUURC7YiXTwFqkJUB/ci5cwSrjLrlyDkxxngPTVB4kol
+ 4PIt6BFXRli9wA7BYNEKfx1ICufVxXUl3/rdFll/Aqv92ff/aULjCiOyQrpjiCmfaSlgLBTZO
+ apqzmZJ72irdvnl0i1El72Ylir7x6VAB842gB4Tmpdk9jgzvxBvZ+4uG40Sx7Qv1Mb4764LT5
+ o/KIBuA2Rucw2eh4SXCTnwYEfC6RnFRmOq7OfW5/pjg+QZCJogkWx68aOnqM8CeIHP75yZmGt
+ 2cZmQR4NEh0Y3zSp0jM8+WCSB9uO2go/eKaAOlFI+YRx24zeRNyz1Q0qeRRt5sA8ec9WNgH6h
+ jRnOG42pGvw91Qdkt3BL5ndKCrmKhb0E3My/xw5zZDupb+TC+A1uGl4/xUQn6tgbnBTNgvqwr
+ q11Bokv4gM4L5pf/5Hg/EeUmvrf1a+F33qT/JuJUbXS718GrqQY7K5ZVJQj10n320jERzZ6mg
+ ZB0B2igMY1WEGCiATKuf34vSMkU46y7mHaq9WsBYNKMjRxdq+5kqnkR2BTfkoaFWMhmrMAymL
+ pABYWpIpjAHf9G8KZNHcZGCxQrCs3KJORKW37R/j57TUVdZjkIn5YU1vIcSQRePnB3eh9dpor
+ Wxz+F+9sEANPKFJvRqfQdqiP3JASn+LHGf4G1qpRzwy2BQrNrdkCEoN8XY/84zlNZL8g4EjF8
+ FJTdc4Qdi/KY+QM5vritDQEj29yVYxdcESqBkKapr6hqiujRE8A6ajXeMLspOTtqBucVXpnBu
+ ZQbNkmn0sLz5JkGj3rW3tMGV8XR1n1AHkxg0jbldVmu8sIHPPsONln+PKFcFzjglfUmu9ulNQ
+ gbdE9JLkXcg9Q8WOTUtbq5f9fEsG4jzY52gE3Wexr7TNhpoueDoWO+UQyah7Aiw0OvgAUAg3q
+ dKJAR3mGNcB2IjKxEQRQpWiAJsj+yzHVdqC3YZX1EQWzhUw0d9ZxYsclgfhOm39F7wuvlfVE+
+ A4xS2v8HDJ+pJUN21dITJzl/5XATzepCAjf9gnqGWszxyqb3WRKPwtIuT4Sa4QOc3z5eW9WQ0
+ 8EQoh0lkmEda8nAwjEV6IT3pdZbW5nO/0hclIII1LConYckA1KxbTGoAw==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some Freescale 8250 implementations have the problem that a single long
-break results in one irq per character frame time. The code in
-fsl8250_handle_irq() that is supposed to handle that uses the BI bit in
-lsr_saved_flags to detect such a situation and then skip the second
-received character. However it also stores other error bits and so after
-a single frame error the character received in the next irq handling is
-passed to the upper layer with a frame error, too.
+Hi,
 
-So after a spike on the data line (which is correctly recognized as a
-frame error) the following valid character is thrown away, because the
-driver reports a frame error for that one, too.
+On 03.07.22 20:27, Andy Shevchenko wrote:
+> On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> w=
+rote:
+>>
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
+s
+>> termination is supported by the driver. This prevents from allocating
+>> and holding a GPIO descriptor for the drivers lifetimg that will never =
+be
+>
+> lifetiming
+>
+>> used.
+>
+> ...
+>
+>>         port->rs485_term_gpio =3D devm_gpiod_get_optional(dev, "rs485-t=
+erm",
+>>                                                         GPIOD_OUT_LOW);
+>> +
+>> +       if (port->rs485_term_gpio &&
+>
+> This check is incorrect. Either you need to move that after error
+> checking (that's what I personally prefer), or use !IS_ERR_OR_NULL().
+>
 
-To weaken this problem restrict saving LSR to only the BI bit.
+Right, a stupid mistake. I will fix this, thanks!
 
-Note however that the handling is still broken:
-
- - lsr_saved_flags is updated using orig_lsr which is the LSR content
-   for the first received char, but there might be more in the FIFO, so
-   a character is thrown away that is received later and not necessarily
-   the one following the break.
- - The doubled break might be the 2nd and 3rd char in the FIFO, so the
-   workaround doesn't catch these, because serial8250_rx_chars() doesn't
-   handle the workaround.
- - lsr_saved_flags might have set UART_LSR_BI at the entry of
-   fsl8250_handle_irq() which doesn't originate from
-   fsl8250_handle_irq()'s "up->lsr_saved_flags |= orig_lsr &
-   UART_LSR_BI;" but from e.g. from serial8250_tx_empty().
- - For a long or a short break this isn't about two characters, but more
-   or only a single one.
-
-Fixes: 9deaa53ac7fa ("serial: add irq handler for Freescale 16550 errata.")
-Acked-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
-
-changes since (implicit) v1:
-
- - Add Ilpo's Ack
- - Add a paragraph to commit log to better describe the user visible
-   problem.
-
- drivers/tty/serial/8250/8250_fsl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-index 9c01c531349d..71ce43685797 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -77,7 +77,7 @@ int fsl8250_handle_irq(struct uart_port *port)
- 	if ((lsr & UART_LSR_THRE) && (up->ier & UART_IER_THRI))
- 		serial8250_tx_chars(up);
- 
--	up->lsr_saved_flags = orig_lsr;
-+	up->lsr_saved_flags |= orig_lsr & UART_LSR_BI;
- 
- 	uart_unlock_and_check_sysrq_irqrestore(&up->port, flags);
- 
-
-base-commit: 089866061428ec9bf67221247c936792078c41a4
--- 
-2.36.1
-
+Regards,
+Lino
