@@ -2,88 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ED6C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 06:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E2FC433EF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 07:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiGDG4K (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 02:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
+        id S231142AbiGDHAD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 03:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiGDG4J (ORCPT
+        with ESMTP id S229693AbiGDHAC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 02:56:09 -0400
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE70D2DE3;
-        Sun,  3 Jul 2022 23:56:07 -0700 (PDT)
-Received: by mail-ej1-f47.google.com with SMTP id ay16so15023518ejb.6;
-        Sun, 03 Jul 2022 23:56:07 -0700 (PDT)
+        Mon, 4 Jul 2022 03:00:02 -0400
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C892DC2;
+        Mon,  4 Jul 2022 00:00:00 -0700 (PDT)
+Received: by mail-ed1-f47.google.com with SMTP id r18so10440154edb.9;
+        Mon, 04 Jul 2022 00:00:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=sLZxcn/mwX9NSWhtBrUUwKBfPIOzguHlMVriisP3s50=;
-        b=TZ+YeaivxyquGpUj9WAT5oZJzBe9q7qqSEvCh9sRVq6Ise13FvGMicVNaSSDKcYy2W
-         5m9dXWM5yDagZYNYL2ZBOHBLBzd+FA/pFC19HLwzO6yQYliFhAJ4INpET7f+nvDzCCVp
-         xCdpT3y+sUDwPQguyVbNzffIvbVZsCJoNU7MGlmBUWDFSM05TvxTkBwTAIfSME1JbY0E
-         0rlkl1X4KIg6ybbLllhGNhEFSoWpL+gca4RxN/S3Uh66ylnwpj7R8hOmvgCtTxnW5mc/
-         bhyAyjnWJ3wb/OqDN09qfguzOFsp+lK+D7v/3nQ84tyiLJ63wqTpYRlcVizGB955BxGO
-         N+8w==
-X-Gm-Message-State: AJIora9+LaWoaBDXDyqlY6+Qt/JYlrYVPJWA7cmDtARcGDyMsEcFUqzm
-        MBF4ZEzr5VYzq2Y8/vgSoXo=
-X-Google-Smtp-Source: AGRyM1uwNoj8eGbBYscqhKNT3kl/EICy8stzzbFwhI67Gi9CQ9Ux4HU0BLwYn9CX17sMulpmdbgQ5w==
-X-Received: by 2002:a17:907:6d86:b0:726:99d7:20e4 with SMTP id sb6-20020a1709076d8600b0072699d720e4mr27177070ejc.342.1656917766291;
-        Sun, 03 Jul 2022 23:56:06 -0700 (PDT)
+        bh=lxRbqE6zzxcYx3TuCHfmErH49kGAwmDatQ2HtHuBCXg=;
+        b=e4xJd5kZnkZgUN+9rRlRfeKSR9SVtpqm9VjeRkuR2QHaea84Sm9N1knGYAUH7jtUhH
+         SuuPPTyBSjxsh5YCnjjyAiz7CKLW+/DbPjSXnVeTuDFNfIDrOSTB6tPU0mxjcVjDq5vk
+         TQ4X30bAt10be3imfUvQC2lKQxweIug5hsogcGx1AiiGBigWSbaJgzg5WmcjgNn7u4SQ
+         rrAXbzsYPBNipWwZLlYyxgZT2/4vX9fMUE5ykGJNzqi7vaMY/S+EV03/cLxxxeu4Wega
+         X58C6t62/m5GP4Jjf7CaVokr0KVl0vWeITtsbRxIlmc87AuAqCqCMRHxkLWEGl3E//7w
+         CO8Q==
+X-Gm-Message-State: AJIora/3lWC564pD05QBjEdUYjZ0wHhxDrF2VHjw8JaFc5XDYmdCbtvk
+        42QxasHwniqq7lqDH8hi5xo=
+X-Google-Smtp-Source: AGRyM1thb4nktMfrZE4YLDE20iEVdzXDKH8iaQhzNKvbyFIc6Qop8VDqqoV553XMdKfEgXRtDGrJNQ==
+X-Received: by 2002:a05:6402:350f:b0:437:6618:174a with SMTP id b15-20020a056402350f00b004376618174amr36954962edd.329.1656917998787;
+        Sun, 03 Jul 2022 23:59:58 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id w14-20020a056402128e00b004356894a3f8sm20136747edv.89.2022.07.03.23.56.04
+        by smtp.gmail.com with ESMTPSA id k13-20020a170906a38d00b006fed787478asm13952551ejz.92.2022.07.03.23.59.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 23:56:05 -0700 (PDT)
-Message-ID: <06e40c1c-d8e3-b1c1-276a-e32e579371b8@kernel.org>
-Date:   Mon, 4 Jul 2022 08:56:04 +0200
+        Sun, 03 Jul 2022 23:59:58 -0700 (PDT)
+Message-ID: <dcd42721-0df1-c42a-dd65-3785d7f233cd@kernel.org>
+Date:   Mon, 4 Jul 2022 08:59:57 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v9 4/6] serial: take termios_rwsem for ->rs485_config() &
- pass termios as param
+Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
 Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "speakup@linux-speakup.org" <speakup@linux-speakup.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com>
+ <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+ <CAHp75VeKhY6dN7j_yXQXUMhOqRwqQ2yN_qF95U9wU6K4uKPdaQ@mail.gmail.com>
+ <c7115ff1-2a97-f5a0-a0c2-c7c1064af291@kernel.org>
+ <CAHp75Vfsy5yY3saSCvCu87E-arifwEZXUNtFMrMn38gJY2LU0g@mail.gmail.com>
+ <CAHp75VdSadbtkH1JeiPuJ_CSBDq82GaRWLvJFd8Egg7poY8Lxw@mail.gmail.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-References: <20220624204210.11112-1-ilpo.jarvinen@linux.intel.com>
- <20220624204210.11112-5-ilpo.jarvinen@linux.intel.com>
- <60678c81-27bf-6f37-bae5-ccc91d714204@kernel.org>
-In-Reply-To: <60678c81-27bf-6f37-bae5-ccc91d714204@kernel.org>
+In-Reply-To: <CAHp75VdSadbtkH1JeiPuJ_CSBDq82GaRWLvJFd8Egg7poY8Lxw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 07. 22, 8:51, Jiri Slaby wrote:
-> Anyway, I'm not sure I buy the above. Why is termios_rwsem needed to 
-> alter ADDRB?
+On 23. 06. 22, 12:17, Andy Shevchenko wrote:
+> On Thu, Jun 23, 2022 at 12:15 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+>> On Thu, Jun 23, 2022 at 10:24 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+>>> On 23. 06. 22, 10:11, Andy Shevchenko wrote:
+>>>>      * prom_putchar_wait() should be implemented using
+>>>>         read_poll_timeout_atomic(), incl. failure/timeout handling.
+>>>>
+>>>> Not sure since it is an early stage and scheduler might not work as
+>>>> expected. Conversions to iopoll.h macros bitten us a few times already.
+>>>
+>>> Except _atomic does not use scheduler :).
+>>
+>> Sorry for a bit misleading comment, but I chased it down, so this what
+>> I had in mind when commenting:
+>> be24c6a71ecf ("soc: qcom: rpmh-rsc: Don't use ktime for timeout in
+>> write_tcs_reg_sync()")
+> 
+> ...and this one (specifically for early stages)
+> 
+> c4d936efa46d ("Revert "usb: early: convert to readl_poll_timeout_atomic()"")
 
-Nevermind, reading patch 5/6 gives a clue.
+OK, makes sense.
 
+thanks for pointers,
 -- 
 js
-suse labs
