@@ -2,104 +2,96 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F18B9C433EF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA35C43334
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Jul 2022 09:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233617AbiGDJvi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Jul 2022 05:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S233194AbiGDJyI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 4 Jul 2022 05:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbiGDJvh (ORCPT
+        with ESMTP id S229961AbiGDJyI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Jul 2022 05:51:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EAA63FE;
-        Mon,  4 Jul 2022 02:51:36 -0700 (PDT)
+        Mon, 4 Jul 2022 05:54:08 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411ABD12F;
+        Mon,  4 Jul 2022 02:54:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656928296; x=1688464296;
+  t=1656928447; x=1688464447;
   h=date:from:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=NHDN/2lSyCT1GEduT2MlDHQYpJlzlmnBsu/bQ+QOiwY=;
-  b=lmG9yypPkV9Lasrb+xCHrXH0BqKGcHC+tjAdjgmVyd3WUy+UZPOiKxi0
-   HDK2hTfwQebWnP3ZHc34U2DWSquqzZzKAjuSJJ1FZJ2O0WLggpCEAJIt7
-   9IonfVhbA1piln5ZICEnZ5YJhEYvccjctBQt5fsaGJRUdmzEADp02u9kj
-   v2jW+154Wmni5bzfIdFG0LQllOKcv8wjnMqUTx5LpE8d6KR8URzeqEoLl
-   2Dj5nbecpHPxXyh3gmkJuVCJhG8WVW+MriN8nLYZxWROSZNPzLVaeHtxZ
-   kVlk8Mim8cjmQgw+OTJa74qaopVuZ1Y0bMz50RsabaB31Mi8zm4Nd0nR8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="369413044"
+  bh=lSh2EbbxhUgUat8Nrxc/d9fNoMjhwQg9R6qR3jGL+Ug=;
+  b=etdLVxMjDFb/UKPjtQGcTIFJFAjSwOPkNzXL8uLd++krQc0HvSKUpAVL
+   WaSf//U9/U223LyZcJ0gMTpv6au4MAdy2wgxb0SQbya7bKqrNR9l82DKO
+   Ae5ZyD02T1Bq6IOXT7C5ZLND3zBgs6bxnu/WOkHad1Gh6ltRnx59I8xHt
+   eSFb1XwNwW0YGJtqHRof36MocKARPSJcoLsIbzg1mCIQWh4PpUSW9NPTW
+   rjS3+So51Dv+0UUT0OKKboYPO0CCSY7kajBmoJQJfQE0WKD+DLleUHSqY
+   dgYc0c9hh+h/NjVr1+MBPDIzZKHy3EeX+pNHj7fxnyf/fsKxNjDB1LXw4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="263511023"
 X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="369413044"
+   d="scan'208";a="263511023"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:51:36 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:54:07 -0700
 X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="649511538"
+   d="scan'208";a="649512912"
 Received: from bclindho-mobl.ger.corp.intel.com ([10.252.49.27])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:51:31 -0700
-Date:   Mon, 4 Jul 2022 12:51:28 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 02:54:01 -0700
+Date:   Mon, 4 Jul 2022 12:53:58 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        vz@mleia.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Lukas Wunner <lukas@wunner.de>, p.rosenberger@kunbus.com,
         Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v2 2/9] serial: core, 8250: set RS485 termination gpio
- in serial core
-In-Reply-To: <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
-Message-ID: <355354ef-61ff-692d-aad-3b5721db420@linux.intel.com>
-References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-3-LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH v2 7/9] serial: ar933x: Fix check for RS485 support
+In-Reply-To: <e000058a-0f19-a598-9fba-b745a2f2bca5@gmx.de>
+Message-ID: <f7c9acb6-ce8c-bd3-df12-f240115c6dbb@linux.intel.com>
+References: <20220703170039.2058202-1-LinoSanfilippo@gmx.de> <20220703170039.2058202-8-LinoSanfilippo@gmx.de> <CAHp75VfTYv51ZcBJHR3Ms9HQWjPccigrjUxHUq4NixKXdvm5Ew@mail.gmail.com> <e000058a-0f19-a598-9fba-b745a2f2bca5@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 3 Jul 2022, Lino Sanfilippo wrote:
+On Mon, 4 Jul 2022, Lino Sanfilippo wrote:
+> On 03.07.22 20:39, Andy Shevchenko wrote:
+> > On Sun, Jul 3, 2022 at 7:02 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
+> >>
+> >> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> >>
+> >> Without an RTS GPIO RS485 is not possible so disable the support
+> >> regardless of whether RS485 is enabled at boottime or not. Also remove the
+> >
+> > boot time
+> >
+> >> now superfluous check for the RTS GPIO in ar933x_config_rs485().
+> >>
+> >> Fixes: e849145e1fdd ("serial: ar933x: Fill in rs485_supported")
+> >
+> > Is it an independent fix? If so, it should be the first patch in the
+> > series, otherwise if it's dependent on something from previous patches
+> > you need to mark all of them as a fix.
+> >
+> 
+> The fix is independent, patch 8 depends on the fix however. I was not
+> aware of this fixes-first rule for series with patches that are independent
+> from each other. I will change the order accordingly in the next version of the series.
 
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
-> 
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core and using gpiod_set_value_cansleep() which instead of
-> gpiod_set_value() allows to sleep.
-> 
-> Beside fixing the termination GPIO line setting for the 8250 driver this
-> change also makes setting the termination GPIO generic for all UART
-> drivers.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/tty/serial/8250/8250_port.c |  3 ---
->  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->  2 files changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index ed2a606f2da7..72252d956f17 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -676,9 +676,6 @@ int serial8250_em485_config(struct uart_port *port, struct ktermios *termios,
->  		rs485->flags &= ~SER_RS485_RTS_AFTER_SEND;
->  	}
->  
-> -	gpiod_set_value(port->rs485_term_gpio,
-> -			rs485->flags & SER_RS485_TERMINATE_BUS);
-> -
+While at it, you could separate just the fix to own patch and the 
+->rs485_config() cleanup to own patch (or move it all to patch 8).
 
-I sent a series to make .rs485_supported per uart_port and properly set 
-SER_RS485_TERMINATE_BUS according to DT config. With that series added 
-first, SER_RS485_TERMINATE_BUS should also be removed from 
-serial8250_em485_supported so that serial core can properly manage 
-it all.
+Not that this fix is expected to go anywhere else besides tty-next.
 
 -- 
  i.
+
