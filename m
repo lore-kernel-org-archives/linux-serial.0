@@ -2,48 +2,59 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5114CC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 13:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4A8CCA47B
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 16:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbiGENxs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 09:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        id S229790AbiGEQcC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 12:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiGENxf (ORCPT
+        with ESMTP id S229721AbiGEQcC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 09:53:35 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2090.outbound.protection.outlook.com [40.107.113.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F7224F32;
-        Tue,  5 Jul 2022 06:30:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E7q2OHMCwPPuGrHzHIZSz97Skzo/eUe0XBC5h+Y1Gtt+lJ/fxvMZ1j8qhD73gRqT6Cp0g48ug7t3gBeH4B2sKYjoQph3ercDntIBxB7KY6Qudg+56Z9cISvNghRRCvLobDiVPWh6zlNdmff7T2UFKFfTtrXPixosbkPAnZ/5gRXkKKQlUBJonhqdvZ+VxRIygid9spDzyoWB8bERzjx6/9aa+VVSL27IPtkW53NwK6nHfem2XY5bJQ4ROQ9dV+fR5IgxE2djusr65WcPHevFiKd4h0PsIzezbXBziHMG2cf51leHdIIDovcAtWWFTd6UNfIU7cHgdm8/8JWQIJhMkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GQzkxUDegxGgDJXnmWzbpyMeGlUe/4UGMONEmkwoQqA=;
- b=Z3YBEZFSDkJVthISijU5XGj69oE4CjF5mvSR7BNVambYEYVm6P40tPC/eMxQ6ysd58mISgTHencYj4pNefGI2loUvZdiqTYde5iReNbJ4BukCf+bnd/g+cdFQIUHrnL75HCT4XkmzGM0OkTNUGgd8K530dPA2jspzJ3y/vlFC//+vlk0PxkoUY1Rq9gqm68gJ7eV/A4ACkVdvOyt3WLLjR9ZxcYuzoJWb4YI3J4GcYkRVHFnX0+nmz5NCwvgdGTI9nY4zA0xST1qhywQcYDrXUNpsn1LSQ6P4hSs8era+03NrDJ96WOEAKhv0Mr6+UePAV6vTGEI2LfKyOrri5TDig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GQzkxUDegxGgDJXnmWzbpyMeGlUe/4UGMONEmkwoQqA=;
- b=kwycVZw6uKe9ZB9kthMTHYFipisOEvNsj5XFVN+y/fohscVhhEVtTbWZaJiYFLyKlPI2IMvZFOFvJ1+J1H5Nqm2+FXT6pMTf2ttwlJR884RzIrrqCvVjAmeeDAx8Wk5v8OIM6LvGpJ/U+an7bfDSgkrXBOe1HVHIoF+6gmlOz+o=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by OSAPR01MB7648.jpnprd01.prod.outlook.com (2603:1096:604:140::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Tue, 5 Jul
- 2022 13:30:28 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.022; Tue, 5 Jul 2022
- 13:30:28 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Serge Semin <fancer.lancer@gmail.com>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Tue, 5 Jul 2022 12:32:02 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4FF18B0C;
+        Tue,  5 Jul 2022 09:32:00 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id i18so21456817lfu.8;
+        Tue, 05 Jul 2022 09:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=4NbkobGzDYSn8V9S6l0le1zTKfSXv2REJlNDOFKrDaY=;
+        b=EHlsKLGkyfVfDz9obNnJaUFz9EVbphNwYOyWUubOTbvGPQfIl25DlGHBxz8PvAx6VK
+         Ds3uReSnfmW6n22ccpDslHIDC2jqFXYPTB/+jFeHK/hDBnXuD6GBB351dY+V0NHSKpb0
+         rxf+Se2ETd0zECmDpAJ/Igq4Gkt8sh8+FUv4QztPK9LCTCYpZMSWEtjC5FBGMnCxgCWF
+         qaM2lMtwJgbU+akDNEpVmajG9eNtHED4L0WxEKlw8fcQ+qfKHTe5MqgHpR+OHD3wXIUK
+         Kk5zYEK4z/jt8jWbuS90zAHnnwFrrYVpWjJD+PXANhiGqzDxxaPhuNLpWAShE7e5mAod
+         fHkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4NbkobGzDYSn8V9S6l0le1zTKfSXv2REJlNDOFKrDaY=;
+        b=0oxmBJUH0lCP9xgZ8TNLuxeOsE/KcM8hsdQhsbKqyafKwGMUy2s9kNwN8msQ6RPV2q
+         CQuB2KuZCa8BslK8nvEtobOWargwDw17zVWV58jU5q7gvOiyeP55YR68Ilh4nfi4H8X0
+         bdcxvnZd0jd3o3olfIzKUHb/zYbQ0lKgADsh4++/PUK4edvSzRlxCXFISSI6UGK/7zLR
+         xIAHt8FYDIVdRxp7bbYgskO9B/z4oPIMeZUTUxJ6zApKL7XRvuEGG7nHsObD17Wmrrkr
+         DcSRJeGghecnTi6GACEALe83q+c5L95WOObQk7OeEpiAAYsPtD3LnexYmyaP7LNWSg6K
+         f+eQ==
+X-Gm-Message-State: AJIora87wClsGtTL0d/8+Rk+TtzcQvrTqHPzLJY7DiH20FNPktaB+D5+
+        nbLBvF4M/CI6ZJYHRCILDzo=
+X-Google-Smtp-Source: AGRyM1uTgVG1uciR/SjcTbkcBiDpIihw393o1ScHTp83oPUxLEwvqOf6j+GNv3jz/PPALR09GSTD8Q==
+X-Received: by 2002:a05:6512:1292:b0:481:4cf5:f27a with SMTP id u18-20020a056512129200b004814cf5f27amr18697869lfs.656.1657038719153;
+        Tue, 05 Jul 2022 09:31:59 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id s11-20020a056512214b00b0047fbc399ad2sm5669723lfr.245.2022.07.05.09.31.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 09:31:58 -0700 (PDT)
+Date:   Tue, 5 Jul 2022 19:31:56 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -56,243 +67,104 @@ CC:     Jiri Slaby <jirislaby@kernel.org>,
         Biju Das <biju.das@bp.renesas.com>,
         "linux-renesas-soc@vger.kernel.org" 
         <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
+Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
  RZN1_UART_xDMACR_8_WORD_BURST
-Thread-Topic: [PATCH] serial: 8250: dw: Fix the macro
- RZN1_UART_xDMACR_8_WORD_BURST
-Thread-Index: AQHYjFzicLJAOXueakmTUlp0Tbrj9q1tx+UAgAAIuvCAAYRegIAANeKAgAA+4gA=
-Date:   Tue, 5 Jul 2022 13:30:28 +0000
-Message-ID: <OS0PR01MB59224C802BFF8C61D616662286819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Message-ID: <20220705163156.56ybg35w3ytdmhgl@mobilestation>
 References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
  <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org>
  <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
  <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
  <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
-In-Reply-To: <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ee3b65fe-8985-4395-83a8-08da5e8a86b7
-x-ms-traffictypediagnostic: OSAPR01MB7648:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cE96o892Y3Bz4vbbS4tGMiToDokSJMsBMvZuo6GMJOwFlESt2XjvUcei0Gj/3M2bjnnc/ez/bjgIGYbNqJVYZ8OlmRl+kvzdoZwV72Zhxz9MGGzL5n2XRV0y1SiH/8EMosfZ0E6/1qVbZPbwj9ophgR7U/cWf7zhzPV/AIVfTVReJTlH05lhHEfASpQAwoBmlavSoStFf1+SuzeIQVwlmJVsf0F/wZ86J47jwmbyWGdnndIVCkjzgVceUy7wHcCMPXHCOgKzmkMZbnupE0O5HNfyw5KY3bg0dhVt3KTkUECuuEYczSiFvev7GYNgJj6YU1z+FBTM2Trsx9GmL+Sx6kCgLuXyJNoQ+m6lHSUB7HZ3FOXm2C64Sm/9z8kuhmkYCm7EV9xFMhsPBBtFWIhh09RMUD7tpknz3D6jpx0bWr2tcjFQHXwgIeYHjytkJy7BSGVSfMXr/uKctAx5uVUOStN5gjbQkUyo0ATXCWtBU+Q2h5PDax7NJbKDdTGMPDWqAjA2gD2u6KLT/s6ObF8o0cq6FoeWs3zFAhiZjAO91J+pZtoTclZ0P2tQ77a7ScEnfD3fJ+8XnllZ6XOZ+6iK+YLNPB29kDP5Sg7Bm8ZL/RvNLLfwG8vkXUH2dHq8oTDohjKWxEWv1mVNMlQ1vbEvrWQD/hX9H2FPnB6rHkxfcUqNrCdieusInrw51pnVF/qu2fgx3FPbDKh/Y2PVviJCHldkgk5BZccfsYIU9GHgOZAl8Qc9tGBYxriXAVrAs932DTo0tGTSvePnLK5/UKoyhe/UIKGkq7vwSctiuSMurD0vJzMAkiLPLdsSvx7qSjSinTxulsqTzv23Bmmu9Uw2AWOXMms460RPj0lQRwjAkpg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(396003)(376002)(346002)(39860400002)(83380400001)(186003)(66574015)(71200400001)(33656002)(76116006)(66946007)(66556008)(66476007)(64756008)(8676002)(4326008)(66446008)(478600001)(52536014)(86362001)(966005)(7416002)(8936002)(5660300002)(26005)(38070700005)(122000001)(9686003)(38100700002)(41300700001)(55016003)(53546011)(2906002)(7696005)(6506007)(110136005)(54906003)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?BrqDO6qtoUbLD2jRmBZeIOfXIGV8GDo+lGh7dY4AbOwBzwuTRrSEfOlWLM?=
- =?iso-8859-1?Q?5BSb7ueE5uWedJrtwDwQSPyQ3U3hwNhOSmqTeLOIRA/Z6hsfmwC0HVmnBy?=
- =?iso-8859-1?Q?Me+cQuxlAJBzNvRPXRrpOMVrzz86MXray0xeWKPIPBSVEnl7ljGgN1oDQj?=
- =?iso-8859-1?Q?b0C9xQVlnarR62V0Hgyk3NSB+vJVkLNr/xdXms9/mRSYUki7RtxBnid/my?=
- =?iso-8859-1?Q?qz1AJ/SivAWt4Dp5oGKpaIKfKnAoe4ydssQH+HwME1rYgJUl7FgQlYn4Jf?=
- =?iso-8859-1?Q?iQW30ar/d/HHcJ5XLmb7BIOe9+Xuk4nnBGpBRDBx/oOrZAHLvKTs54qx2H?=
- =?iso-8859-1?Q?EfOYpXY3XYUsABBwwtuV0/+rBsaBIaC1bCzIKN+wganNUE5U4QkLLRFbhn?=
- =?iso-8859-1?Q?TyfB9na5R6mKcK3ca3M3ESe9g8xZqEPesDMqfL8d9gzgn/6EO0xdBB42P5?=
- =?iso-8859-1?Q?fWcFqlw+GryLKwy84VIPpyLy9CO2lSW7I9uxFIDojhXZE60W8uOyhIgM5j?=
- =?iso-8859-1?Q?R6RJOP2VPljw/BLsbjMmGB8ytuFhytGSje+sHdtfsDLTNHIVMuYwNNPbRz?=
- =?iso-8859-1?Q?v2tHOuNKi9qnabtn58wPcK4jdIUtS3Qa5k67JUQc7of5nNqZQOymuDNdsA?=
- =?iso-8859-1?Q?BulEcuqyT/dWFFYeNE6qMtFT9cNVBi8D2tQZHrJGwGoqcFfVH/jjvKt0dS?=
- =?iso-8859-1?Q?EIWASpHHa2TbzKrVKKUNeE51TCq095KSPjnSGsXF3CfjPArXGjrnMlKQX8?=
- =?iso-8859-1?Q?gUB+E0TPggyqhyfboMdHCWo2SGDfZJZyTSMcaBLijx9r31Tio5l44i0O49?=
- =?iso-8859-1?Q?5PmiEkmoQ/1VltCTEiPXwMiMzDF6LY8mB1HRKE9/VLcW6sPsprnrafZx3u?=
- =?iso-8859-1?Q?o6y7Ythzhq0NyuJIUiBPuxtksRp6r/jXFVnda8qfpRZhxLHJsxnZpHLvM5?=
- =?iso-8859-1?Q?jUT3Fcqma3F/r+aaNuPTOJ1Qm2c0Jok8Glp8/sVU6Bke5l3HkKV1dgXEX1?=
- =?iso-8859-1?Q?0lyWt0WvHPuigMzQnIQDu0NGNrMJ1Ch1PbDtwGRK8rqrEToSU4KkZMIDV3?=
- =?iso-8859-1?Q?vsT+mFI32hJDN5Wye90sLw1uodZRYb1jTQQIJuOba3IdXnRH71L5CBoVsj?=
- =?iso-8859-1?Q?ckI3SS3yLhZbp8ySgZP0/WFDHaaEjzdT6vIAdvLl5giVjziAUgNYqdheIH?=
- =?iso-8859-1?Q?NNPzvgOR0OQeAfm0AvwmyK8CvF0VW957YYkt262WwDgeBuJzNBBGWtISQ4?=
- =?iso-8859-1?Q?AtUquZrI5GAh0hMU+RxCQldrVwI3Z4AWSKFLR8/NX3jdbn2lQKRS2PVeG3?=
- =?iso-8859-1?Q?eU+vdN8Y3FqHQfWgFti1gnxblrxHwJcUYl1/gIG3fZMMbeKq2Q5oOhXnV4?=
- =?iso-8859-1?Q?qAxZyzwEQJ7OWwxpM6qhvN/OqrA7GQrRvAuLE0JqRBFwfTna4Wct9nnrPO?=
- =?iso-8859-1?Q?Gy1hTuRhGILH5yh8l/vQHMcmECb0WIrMSsjdnaJoIPXqV9tlCOEzl+zCwC?=
- =?iso-8859-1?Q?VIPuwO0JvZRgZEBgokKBC945jie0nkWTjnikjRpjny1tJ3fXqgXqmcRV7z?=
- =?iso-8859-1?Q?HmdDa6t3afmx1H7jk+O+3H0blBGdnL+Mpl9iK2RGvENZhP9jvV7pRwetHw?=
- =?iso-8859-1?Q?C8XlL4MgVn9M7l+JHt5+eJ5qJ7JfA/qD/Ja+yCkBFeqe7smbe+TKtgIg?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee3b65fe-8985-4395-83a8-08da5e8a86b7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 13:30:28.4705
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +/xkcILckK8iK9cCV3MncRDu4HckXSOcTIIxWtcHA73dlrwgz0nxxEgPrqOoPUzmsp3SrZP8hC2pCMwpD9KwoX5KnPbmIkX0JxVZrof0R3s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB7648
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Thanks Andy.
+Hi Andy,
 
-Please find the Test transfer size and baud rates in which this issue can b=
-e=20
-seen on RZ/N1 Platform.=20
-
-One thing I noticed is, because of that wrong calculation, the PLL baudrate=
- divisor is set to higher value(128) instead of smaller one(13).
-
-test_one () {
-	local LENGTH=3D$1
-	#echo "Length $1"
-	${DIR}/uart-loopback -o ${TXUART} -i ${RXUART} -s ${LENGTH} -r
-	if [ "$?" -ne "0" ]; then ERRORS=3D$((ERRORS+1)); fi
-}
-
-# Test transfers of lengths that typically throw problems
-test_one_cfg () {
-	local SPEED=3D$1
-	./uart-baud/uart-baud ${TXUART} $SPEED
-	./uart-baud/uart-baud ${RXUART} $SPEED
-
-	for length in `seq 1 33`; do
-		test_one ${length}
-	done
-
-	for length in `seq 2043 2053`; do
-		test_one ${length}
-	done
-
-	for length in `seq 4091 4101`; do
-		test_one ${length}
-	done
-
-	for length in `seq 8187 8297`; do
-		test_one ${length}
-	done
-
-	for length in `seq 16379 16389`; do
-		test_one ${length}
-	done
-}
-
-# You need hardware flow control at this speed, otherwise you get overflow =
-errors
-echo "Parity: none Stop: 1 bit, 8 data bits, 'raw' mode, with RTS/CTS hardw=
-are flow control"
-STTY_SETTING=3D"raw -parenb -cstopb crtscts cs8 -echo -echonl -iexten"
-stty -F ${TXUART} 9600 $STTY_SETTING
-stty -F ${RXUART} 9600 $STTY_SETTING
-
-for div in `seq 12 20`; do
-	clk=3D$((1000000000 / $div))
-	# Round up as the clk driver ensures the clock rate is below the requested=
- value
-	clk=3D$(( $clk + 1))
-
-	# Max bitrate
-	bitrate=3D$(( $clk / 16))
-	echo "Bitrate: $bitrate"
-	test_one_cfg $bitrate
-
-	# Max bitrate / 2
-	bitrate=3D$(( $bitrate / 2))
-	echo ""
-	echo "Bitrate: $bitrate"
-	test_one_cfg $bitrate
-done
-
-Cheers,
-Biju
-
-> -----Original Message-----
-> From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Sent: 05 July 2022 10:30
-> To: Biju Das <biju.das.jz@bp.renesas.com>; Ilpo J=E4rvinen
-> <ilpo.jarvinen@linux.intel.com>; Serge Semin <fancer.lancer@gmail.com>
-> Cc: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org>; Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com>; Miquel Raynal
-> <miquel.raynal@bootlin.com>; Emil Renner Berthing <kernel@esmil.dk>; Phil
-> Edworthy <phil.edworthy@renesas.com>; Johan Hovold <johan@kernel.org>;
-> linux-serial@vger.kernel.org; Geert Uytterhoeven
-> <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>;
-> Biju Das <biju.das@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
-> Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
-> RZN1_UART_xDMACR_8_WORD_BURST
->=20
+On Tue, Jul 05, 2022 at 11:30:01AM +0200, Andy Shevchenko wrote:
 > +Cc: Ilpo, the 8250_dw maintainer
+
 > +Cc: Serge, who I believe is the author of the lines in 8250_port you
 > cited, sorry if I'm mistaken.
->=20
-> On Tue, Jul 5, 2022 at 8:25 AM Biju Das <biju.das.jz@bp.renesas.com>
-> wrote:
+
+Right, I was the one who got back the line with the proper max baud rate
+calculation procedure in commit 7b668c064ec3 ("serial: 8250: Fix max
+baud limit in generic 8250 port"). In accordance with [1, 2] the
+interface baud rate is (DIV*16)-th of the reference clock frequency. So
+the patch suggested by Biju will work only until he gets to the zero
+divisor value. Without my fix the baud-rate search algorithm may
+end up with getting unsupported baud-rates causing to have
+zero-divisor, which will lead to the serial interface freeze/disable
+[2].
+
+[1] DesignWare DW_apb_uart Databook 4.03a, December 2020, p. 24
+[2] DesignWare DW_apb_uart Databook 4.03a, December 2020, p. 125
+
+> 
+> On Tue, Jul 5, 2022 at 8:25 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
 > >
 > > Hi Jiri and Miquel,
 > >
-> > While testing serial driver with RZ/N1 on 5.15 kernel, which is the
-> > backport of mainline kernel, I seen performance issue with serial DMA
-> for higher baud rates.
+> > While testing serial driver with RZ/N1 on 5.15 kernel, which is the backport of mainline kernel,
+> > I seen performance issue with serial DMA for higher baud rates.
 > >
-> > The test app is taking 25 minutes finish, whereas with the below
-> patch[1] it takes only 3 minutes to finish.
+> > The test app is taking 25 minutes finish, whereas with the below patch[1] it takes only 3 minutes to finish.
 > >
 > > Not sure has anyone seen this performance issue?
 > >
 > > [1]
-> > diff --git a/drivers/tty/serial/8250/8250_port.c
-> > b/drivers/tty/serial/8250/8250_port.c
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
 > > index 468d1aca5968..321430176698 100644
 > > --- a/drivers/tty/serial/8250/8250_port.c
 > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2680,7 +2680,7 @@ static unsigned int
-> serial8250_get_baud_rate(struct uart_port *port,
-> >                 max =3D (port->uartclk + tolerance) / 4;
+> > @@ -2680,7 +2680,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+> >                 max = (port->uartclk + tolerance) / 4;
 > >         } else {
-> >                 min =3D port->uartclk / 16 / UART_DIV_MAX;
-> > -               max =3D (port->uartclk + tolerance) / 16;
-> > +               max =3D port->uartclk;
+> >                 min = port->uartclk / 16 / UART_DIV_MAX;
+
+> > -               max = (port->uartclk + tolerance) / 16;
+> > +               max = port->uartclk;
+
+Are you sure uartclk is initialized with a real reference clock value?
+
+-Sergey
+
 > >         }
 > >
 > > Note:-
-> > I have added below change on 5.15 kernel to test on all possible use
-> cases.
+> > I have added below change on 5.15 kernel to test on all possible use cases.
 > >
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c
-> > b/drivers/tty/serial/8250/8250_dw.c
+> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
 > > index 7884fcd66d39..6d352981fb3e 100644
 > > --- a/drivers/tty/serial/8250/8250_dw.c
 > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -643,6 +643,26 @@ static int dw8250_probe(struct platform_device
-> *pdev)
-> >                 up->dma =3D &data->data.dma;
+> > @@ -643,6 +643,26 @@ static int dw8250_probe(struct platform_device *pdev)
+> >                 up->dma = &data->data.dma;
 > >         }
 > >
 > > +       if (data->pdata->quirks & DW_UART_QUIRK_IS_DMA_FC) {
 > > +               /*
-> > +                * When the 'char timeout' irq fires because no more
-> data has
-> > +                * been received in some time, the 8250 driver stops
-> the DMA.
-> > +                * However, if the DMAC has been setup to write more
-> data to mem
-> > +                * than is read from the UART FIFO, the data will *not*
-> be
+> > +                * When the 'char timeout' irq fires because no more data has
+> > +                * been received in some time, the 8250 driver stops the DMA.
+> > +                * However, if the DMAC has been setup to write more data to mem
+> > +                * than is read from the UART FIFO, the data will *not* be
 > > +                * written to memory.
-> > +                * Therefore, we limit the width of writes to mem so
-> that it is
-> > +                * the same amount of data as read from the FIFO. You
-> can use
-> > +                * anything less than or equal, but same size is
-> optimal
+> > +                * Therefore, we limit the width of writes to mem so that it is
+> > +                * the same amount of data as read from the FIFO. You can use
+> > +                * anything less than or equal, but same size is optimal
 > > +                */
-> > +               data->data.dma.rxconf.dst_addr_width =3D p->fifosize /
-> > + 4;
+> > +               data->data.dma.rxconf.dst_addr_width = p->fifosize / 4;
 > > +
 > > +               /*
-> > +                * Unless you set the maxburst to 1, if you send only 1
-> char, it
+> > +                * Unless you set the maxburst to 1, if you send only 1 char, it
 > > +                * doesn't get transmitted
 > > +                */
-> > +               data->data.dma.txconf.dst_maxburst =3D 1;
+> > +               data->data.dma.txconf.dst_maxburst = 1;
 > > +       }
 > > +
 > >
@@ -304,13 +176,12 @@ Biju
 > > > Sent: 04 July 2022 08:12
 > > > To: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
 > > > <gregkh@linuxfoundation.org>
-> > > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Miquel
-> > > Raynal <miquel.raynal@bootlin.com>; Emil Renner Berthing
-> > > <kernel@esmil.dk>; Phil Edworthy <phil.edworthy@renesas.com>; Johan
-> > > Hovold <johan@kernel.org>; linux-serial@vger.kernel.org; Geert
-> > > Uytterhoeven <geert+renesas@glider.be>; Chris Paterson
-> > > <Chris.Paterson2@renesas.com>; Biju Das <biju.das@bp.renesas.com>;
-> > > linux-renesas-soc@vger.kernel.org
+> > > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Miquel Raynal
+> > > <miquel.raynal@bootlin.com>; Emil Renner Berthing <kernel@esmil.dk>; Phil
+> > > Edworthy <phil.edworthy@renesas.com>; Johan Hovold <johan@kernel.org>;
+> > > linux-serial@vger.kernel.org; Geert Uytterhoeven
+> > > <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>;
+> > > Biju Das <biju.das@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
 > > > Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
 > > > RZN1_UART_xDMACR_8_WORD_BURST
 > > >
@@ -330,38 +201,36 @@ Biju
 > > >
 > > > Yes, It is available here[1] see page 72 and 73.
 > > >
-> > > [1]
-> > > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-
-> > > rzn1l-group-users-manual-peripherals?language=3Den&r=3D1054561
+> > > [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-
+> > > rzn1l-group-users-manual-peripherals?language=en&r=1054561
 > > >
 > > >
 > > > >
-> > > > > the value for 8_WORD_BURST is 4(b2,b1=3D2'b10).
+> > > > > the value for 8_WORD_BURST is 4(b2,b1=2’b10).
 > > > > >
 > > > > > This patch fixes the macro as per the user manual.
 > > > >
-> > > > I'm curious, is the bottom bit from "3" ignored by the HW or does
-> > > > this fix a real problem in behavior? Stating that might help
-> > > > backporters to decide if to take the patch or not.
+> > > > I'm curious, is the bottom bit from "3" ignored by the HW or does this
+> > > > fix a real problem in behavior? Stating that might help backporters to
+> > > > decide if to take the patch or not.
 > > >
 > > > See page 72 and 73.
 > > >
-> > > Yes, it fixes a real problem as by using a value of 8 , you are
-> > > wrongly configuring DMA_BURST_SIZE of 1 instead of DMA_BURST_SIZE of
-> 8.
+> > > Yes, it fixes a real problem as by using a value of 8 , you are wrongly
+> > > configuring DMA_BURST_SIZE of 1 instead of DMA_BURST_SIZE of 8.
 > > >
 > > > b2, b1 bUart_DEST_BURST
 > > > _SIZE
 > > > DEST_BURST_SIZE
 > > > Destination Burst Transaction Size in Transmit FIFO.
-> > > UART is the flow controller. Thus, the user must write this field
-> > > before or at the same time the DMA mode is enabled. Number of data
-> > > byte, to be written to the Transmit FIFO every time a transmit burst
-> > > transaction request are made on DMA request.
-> > > 2'b00 =3D 1 byte
-> > > 2'b01 =3D 4 bytes
-> > > 2'b10 =3D 8 bytes
-> > > 2'b11 =3D Reserved, not used
+> > > UART is the flow controller. Thus, the user must write this field before
+> > > or at the same time the DMA mode is enabled. Number of data byte, to be
+> > > written to the Transmit FIFO every time a transmit burst transaction
+> > > request are made on DMA request.
+> > > 2’b00 = 1 byte
+> > > 2’b01 = 4 bytes
+> > > 2’b10 = 8 bytes
+> > > 2’b11 = Reserved, not used
 > > >
 > > > Cheers,
 > > > Biju
@@ -393,9 +262,9 @@ Biju
 > > > > thanks,
 > > > > --
 > > > > js
->=20
->=20
->=20
-> --
+> 
+> 
+> 
+> -- 
 > With Best Regards,
 > Andy Shevchenko
