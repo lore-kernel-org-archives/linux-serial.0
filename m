@@ -2,118 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47351C43334
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 18:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A80CCA47C
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 19:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiGESdK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 14:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
+        id S233353AbiGETLD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 15:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiGESdK (ORCPT
+        with ESMTP id S233352AbiGETKy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 14:33:10 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C821D0D0;
-        Tue,  5 Jul 2022 11:33:09 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so8943947pjf.2;
-        Tue, 05 Jul 2022 11:33:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2LGq1pXebat0furaJTv8eGKw+ZX3/YmHNfBp9GTd/AE=;
-        b=Q1c6RsV5v7yMJC+JQ1l74sdVkBRxQNVUcLpu96nk0hftMhMabGGmU+69seiltM7hX0
-         l9HKG3Zc6mfwCR0hUCTgQxjyTtcRXnzLnYmVpHy6L7GWO+wmOCNOwFCdVTLmc7jwSr1T
-         8muK4x7KKh+E75SsgwGQiCHfrLqECBxJRDqx6W1dZ1VfinHBoDd1iRjZI9Pmom+I9ZW3
-         3Sxfbx03GnLYHZHQBkR+nA00AjAfl2q9/NErmEMguZB0W2/MlRSCms/k2cvSK5wHS8AH
-         QS9wX/PRWFDglXJYL3tpNrCW8IL/AbTtBADWEjhgQM6KPWu7AY+QAg+HLkL90lzSO6C7
-         IkMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=2LGq1pXebat0furaJTv8eGKw+ZX3/YmHNfBp9GTd/AE=;
-        b=psGQEG+4GAAMdSfQF+NapSMZFit7yoiyvCd9GN7Wlz+xAasYkKv+fxBiZIUgS0y3ta
-         sMrJeQmy11uOcsE0tzVM6MENVM+S/rm2qENv9PCM1pHFPvpZD4RFqsY6ol5QlV7oe+tX
-         m5CzlOZ5BsEvBPabCqzXFgSxMW5Q02bGBg/eUfu8epOLaoHClByEBj48cbZWUP37aWyG
-         I2VS0nLKm+yAXS/mHmGY8PyFHGberAXbbwLC30SaKWDEcZOa6UrNcwPvg08B6eP78aMI
-         UnV+uYxTLU+qYRxyXf5RSCNzTkSg7wFNvldSPrURtppdNDNLFtwI9SC4TzdDy/k78S0Z
-         /5lQ==
-X-Gm-Message-State: AJIora9mW1oJ6fCqoAMTh7F7l8w5QckMCGjuUEIpi623gOCBtCOxGAi5
-        5vswGZfytVPKk5i/WJAt0WI=
-X-Google-Smtp-Source: AGRyM1u9pBKcpOZ+bYQbG2CgQIyJQiMYSDBa09l+hG8UM78rf0LQdSYEcckXw1SyTWVN051PFrkYMg==
-X-Received: by 2002:a17:902:c950:b0:16a:6b0c:a2e with SMTP id i16-20020a170902c95000b0016a6b0c0a2emr42268116pla.36.1657045988703;
-        Tue, 05 Jul 2022 11:33:08 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:a568])
-        by smtp.gmail.com with ESMTPSA id t9-20020a170902e84900b0016bc947c5b7sm8074842plg.38.2022.07.05.11.33.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 11:33:08 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 5 Jul 2022 08:33:06 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
-        m.szyprowski@samsung.com, nathan@kernel.org, michael@walle.cc,
-        robh@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
-        pmladek@suse.com
-Subject: Re: [RESEND PATCH] kernfs: Avoid re-adding kernfs_node into
- kernfs_notify_list.
-Message-ID: <YsSD4k0o6PPYpMBe@slm.duckdns.org>
-References: <20220701154604.2211008-1-imran.f.khan@oracle.com>
- <Yr9U1q0BBinCgyrT@mtj.duckdns.org>
- <deaaabe5-0a0c-b6f9-c85b-5080874f6437@oracle.com>
+        Tue, 5 Jul 2022 15:10:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D1A21812;
+        Tue,  5 Jul 2022 12:10:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FBE61B0C;
+        Tue,  5 Jul 2022 19:10:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B1ECC341C7;
+        Tue,  5 Jul 2022 19:10:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657048250;
+        bh=DZjCJJL0Yv/6HD/E/v6p0fOtpAocdv+3cV77tazWrKE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sYOW0yhQip2w1zZZEmV4YnPpYe1Dy4quQmSEs13vh2JajXJKLLGWCI3l+iBtPG4vj
+         h+EAgUVB5rnMUc92yTA9RfRbfck+yWdLp/RjaYs1kCykXLv1b8Mjtg7QQb+rIK97EQ
+         zx/5yHoF/yOxitslbjIsCJ2bn3esa3E8oFa8X4T1usa1/pHHSFevJccuJoGgbd3dys
+         rDy/74rj/s8Pxlm/hAZ3qRvla8RFMdt3f06haSb++zMFm9h2lRaUWEtyBdWzWYsHce
+         iHBLMJ4NTSs8jcNJWRmsxsjvBUo9f7epFDJC9YovFkPabWqsJeHYdbNZ19f3OvqNeV
+         WbLP+F125vMOQ==
+Date:   Tue, 5 Jul 2022 21:10:42 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, kursad.oney@broadcom.com,
+        f.fainelli@gmail.com, anand.gore@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        philippe.reynes@softathome.com, dan.beygelman@broadcom.com,
+        Al Cooper <alcooperx@gmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Vinod Koul <vkoul@kernel.org>, linux-clk@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH 5/9] arm: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
+Message-ID: <YsSMskwYYsJRRCyO@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        joel.peshkin@broadcom.com, kursad.oney@broadcom.com,
+        f.fainelli@gmail.com, anand.gore@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        philippe.reynes@softathome.com, dan.beygelman@broadcom.com,
+        Al Cooper <alcooperx@gmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>, Jiri Slaby <jirislaby@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Matt Mackall <mpm@selenic.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>, Russell King <linux@armlinux.org.uk>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tyrone Ting <kfting@nuvoton.com>, Vinod Koul <vkoul@kernel.org>,
+        linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+References: <20220705172613.21152-1-william.zhang@broadcom.com>
+ <20220705172613.21152-6-william.zhang@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <deaaabe5-0a0c-b6f9-c85b-5080874f6437@oracle.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220705172613.21152-6-william.zhang@broadcom.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Tue, Jul 05, 2022 at 10:26:09AM -0700, William Zhang wrote:
+> Update ARCH_BCM_63XX in all sources to use ARCHB_BCMBCA instead.
+>=20
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
 
-On Sun, Jul 03, 2022 at 09:09:05PM +1000, Imran Khan wrote:
-> Can we use kernfs_notify_lock like below snippet to serialize producers
-> (kernfs_notify):
-> 
-> spin_lock_irqsave(&kernfs_notify_lock, flags);
-> if (kn->attr.notify_next.next != NULL) {
-> 	kernfs_get(kn);
-> 	llist_add(&kn->attr.notify_next, &kernfs_notify_list);
-> 	schedule_work(&kernfs_notify_work);
-> }
-> spin_unlock_irqsave(&kernfs_notify_lock, flags);
+Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
 
-But then what's the point of using llist?
-
-> As per following comments at the beginning of llist.h
-> 
->  * Cases where locking is not needed:
->  * If there are multiple producers and multiple consumers, llist_add can be
->  * used in producers and llist_del_all can be used in consumers simultaneously
->  * without locking. Also a single consumer can use llist_del_first while
->  * multiple producers simultaneously use llist_add, without any locking.
-> 
-> Multiple producers and single consumer can work in parallel but as in our case
-> addition is dependent on kn->attr.notify_next.next != NULL, we may keep the
-> checking and list addition under kernfs_notify_lock and for consumer just lock
-> free->next = NULL under kernfs_notify_lock.
-
-It supports multiple producers in the sense that multiple producers can try
-to add their own llist_nodes concurrently. It doesn't support multiple
-producers trying to add the same llist_node whether that depends on NULL
-check or not.
-
-> Having said this, I am okay with reverting the llist change as well, because
-> anyways it is not helping in the contentions that we are chasing here, but I
-> thought of sharing the above idea to see if it is reliable and better than
-> revert option.
-
-The original conversion is broken and the right thing to do, for now, is
-reverting it.
-
-Thanks.
-
--- 
-tejun
