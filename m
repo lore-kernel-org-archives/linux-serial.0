@@ -2,471 +2,400 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7E9C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 10:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5114CC43334
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 13:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbiGEKmE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 06:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
+        id S230321AbiGENxs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 09:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbiGEKlw (ORCPT
+        with ESMTP id S230136AbiGENxf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 06:41:52 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF2915A05;
-        Tue,  5 Jul 2022 03:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1657017674;
-        bh=1cwsQ0VREEl3nisNFp1v4bKpUuTZ+JfPwfXl3rk7ZyQ=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=KHQ3RJ+uYSs5MZCLfzeutChf90YZlVUSvi9mKWQzb8NTK8/As9C2UlmyPMfKtnc+o
-         afmi5pFNBA48WcBewBd6oDD9jw2BJFHS2l2i8bG18Q6ShlY2I1TKMqYlueV7pvIpDO
-         3QRRJ5Xxq0pQOYw2v6T9sDuDL+ujSzpd7akE91gc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.214]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MacSe-1ncNRQ2Fcg-00cBxy; Tue, 05
- Jul 2022 12:41:14 +0200
-Message-ID: <02c4e59b-5aa5-7fe3-02a5-06bff5cee661@gmx.de>
-Date:   Tue, 5 Jul 2022 12:41:11 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] serial: Embed rs485_supported to uart_port
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
+        Tue, 5 Jul 2022 09:53:35 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2090.outbound.protection.outlook.com [40.107.113.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F7224F32;
+        Tue,  5 Jul 2022 06:30:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E7q2OHMCwPPuGrHzHIZSz97Skzo/eUe0XBC5h+Y1Gtt+lJ/fxvMZ1j8qhD73gRqT6Cp0g48ug7t3gBeH4B2sKYjoQph3ercDntIBxB7KY6Qudg+56Z9cISvNghRRCvLobDiVPWh6zlNdmff7T2UFKFfTtrXPixosbkPAnZ/5gRXkKKQlUBJonhqdvZ+VxRIygid9spDzyoWB8bERzjx6/9aa+VVSL27IPtkW53NwK6nHfem2XY5bJQ4ROQ9dV+fR5IgxE2djusr65WcPHevFiKd4h0PsIzezbXBziHMG2cf51leHdIIDovcAtWWFTd6UNfIU7cHgdm8/8JWQIJhMkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GQzkxUDegxGgDJXnmWzbpyMeGlUe/4UGMONEmkwoQqA=;
+ b=Z3YBEZFSDkJVthISijU5XGj69oE4CjF5mvSR7BNVambYEYVm6P40tPC/eMxQ6ysd58mISgTHencYj4pNefGI2loUvZdiqTYde5iReNbJ4BukCf+bnd/g+cdFQIUHrnL75HCT4XkmzGM0OkTNUGgd8K530dPA2jspzJ3y/vlFC//+vlk0PxkoUY1Rq9gqm68gJ7eV/A4ACkVdvOyt3WLLjR9ZxcYuzoJWb4YI3J4GcYkRVHFnX0+nmz5NCwvgdGTI9nY4zA0xST1qhywQcYDrXUNpsn1LSQ6P4hSs8era+03NrDJ96WOEAKhv0Mr6+UePAV6vTGEI2LfKyOrri5TDig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GQzkxUDegxGgDJXnmWzbpyMeGlUe/4UGMONEmkwoQqA=;
+ b=kwycVZw6uKe9ZB9kthMTHYFipisOEvNsj5XFVN+y/fohscVhhEVtTbWZaJiYFLyKlPI2IMvZFOFvJ1+J1H5Nqm2+FXT6pMTf2ttwlJR884RzIrrqCvVjAmeeDAx8Wk5v8OIM6LvGpJ/U+an7bfDSgkrXBOe1HVHIoF+6gmlOz+o=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by OSAPR01MB7648.jpnprd01.prod.outlook.com (2603:1096:604:140::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Tue, 5 Jul
+ 2022 13:30:28 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.022; Tue, 5 Jul 2022
+ 13:30:28 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Serge Semin <fancer.lancer@gmail.com>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20220704094515.6831-1-ilpo.jarvinen@linux.intel.com>
- <20220704094515.6831-2-ilpo.jarvinen@linux.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <20220704094515.6831-2-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Johan Hovold <johan@kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
+ RZN1_UART_xDMACR_8_WORD_BURST
+Thread-Topic: [PATCH] serial: 8250: dw: Fix the macro
+ RZN1_UART_xDMACR_8_WORD_BURST
+Thread-Index: AQHYjFzicLJAOXueakmTUlp0Tbrj9q1tx+UAgAAIuvCAAYRegIAANeKAgAA+4gA=
+Date:   Tue, 5 Jul 2022 13:30:28 +0000
+Message-ID: <OS0PR01MB59224C802BFF8C61D616662286819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
+ <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org>
+ <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
+In-Reply-To: <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ee3b65fe-8985-4395-83a8-08da5e8a86b7
+x-ms-traffictypediagnostic: OSAPR01MB7648:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cE96o892Y3Bz4vbbS4tGMiToDokSJMsBMvZuo6GMJOwFlESt2XjvUcei0Gj/3M2bjnnc/ez/bjgIGYbNqJVYZ8OlmRl+kvzdoZwV72Zhxz9MGGzL5n2XRV0y1SiH/8EMosfZ0E6/1qVbZPbwj9ophgR7U/cWf7zhzPV/AIVfTVReJTlH05lhHEfASpQAwoBmlavSoStFf1+SuzeIQVwlmJVsf0F/wZ86J47jwmbyWGdnndIVCkjzgVceUy7wHcCMPXHCOgKzmkMZbnupE0O5HNfyw5KY3bg0dhVt3KTkUECuuEYczSiFvev7GYNgJj6YU1z+FBTM2Trsx9GmL+Sx6kCgLuXyJNoQ+m6lHSUB7HZ3FOXm2C64Sm/9z8kuhmkYCm7EV9xFMhsPBBtFWIhh09RMUD7tpknz3D6jpx0bWr2tcjFQHXwgIeYHjytkJy7BSGVSfMXr/uKctAx5uVUOStN5gjbQkUyo0ATXCWtBU+Q2h5PDax7NJbKDdTGMPDWqAjA2gD2u6KLT/s6ObF8o0cq6FoeWs3zFAhiZjAO91J+pZtoTclZ0P2tQ77a7ScEnfD3fJ+8XnllZ6XOZ+6iK+YLNPB29kDP5Sg7Bm8ZL/RvNLLfwG8vkXUH2dHq8oTDohjKWxEWv1mVNMlQ1vbEvrWQD/hX9H2FPnB6rHkxfcUqNrCdieusInrw51pnVF/qu2fgx3FPbDKh/Y2PVviJCHldkgk5BZccfsYIU9GHgOZAl8Qc9tGBYxriXAVrAs932DTo0tGTSvePnLK5/UKoyhe/UIKGkq7vwSctiuSMurD0vJzMAkiLPLdsSvx7qSjSinTxulsqTzv23Bmmu9Uw2AWOXMms460RPj0lQRwjAkpg=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(396003)(376002)(346002)(39860400002)(83380400001)(186003)(66574015)(71200400001)(33656002)(76116006)(66946007)(66556008)(66476007)(64756008)(8676002)(4326008)(66446008)(478600001)(52536014)(86362001)(966005)(7416002)(8936002)(5660300002)(26005)(38070700005)(122000001)(9686003)(38100700002)(41300700001)(55016003)(53546011)(2906002)(7696005)(6506007)(110136005)(54906003)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?BrqDO6qtoUbLD2jRmBZeIOfXIGV8GDo+lGh7dY4AbOwBzwuTRrSEfOlWLM?=
+ =?iso-8859-1?Q?5BSb7ueE5uWedJrtwDwQSPyQ3U3hwNhOSmqTeLOIRA/Z6hsfmwC0HVmnBy?=
+ =?iso-8859-1?Q?Me+cQuxlAJBzNvRPXRrpOMVrzz86MXray0xeWKPIPBSVEnl7ljGgN1oDQj?=
+ =?iso-8859-1?Q?b0C9xQVlnarR62V0Hgyk3NSB+vJVkLNr/xdXms9/mRSYUki7RtxBnid/my?=
+ =?iso-8859-1?Q?qz1AJ/SivAWt4Dp5oGKpaIKfKnAoe4ydssQH+HwME1rYgJUl7FgQlYn4Jf?=
+ =?iso-8859-1?Q?iQW30ar/d/HHcJ5XLmb7BIOe9+Xuk4nnBGpBRDBx/oOrZAHLvKTs54qx2H?=
+ =?iso-8859-1?Q?EfOYpXY3XYUsABBwwtuV0/+rBsaBIaC1bCzIKN+wganNUE5U4QkLLRFbhn?=
+ =?iso-8859-1?Q?TyfB9na5R6mKcK3ca3M3ESe9g8xZqEPesDMqfL8d9gzgn/6EO0xdBB42P5?=
+ =?iso-8859-1?Q?fWcFqlw+GryLKwy84VIPpyLy9CO2lSW7I9uxFIDojhXZE60W8uOyhIgM5j?=
+ =?iso-8859-1?Q?R6RJOP2VPljw/BLsbjMmGB8ytuFhytGSje+sHdtfsDLTNHIVMuYwNNPbRz?=
+ =?iso-8859-1?Q?v2tHOuNKi9qnabtn58wPcK4jdIUtS3Qa5k67JUQc7of5nNqZQOymuDNdsA?=
+ =?iso-8859-1?Q?BulEcuqyT/dWFFYeNE6qMtFT9cNVBi8D2tQZHrJGwGoqcFfVH/jjvKt0dS?=
+ =?iso-8859-1?Q?EIWASpHHa2TbzKrVKKUNeE51TCq095KSPjnSGsXF3CfjPArXGjrnMlKQX8?=
+ =?iso-8859-1?Q?gUB+E0TPggyqhyfboMdHCWo2SGDfZJZyTSMcaBLijx9r31Tio5l44i0O49?=
+ =?iso-8859-1?Q?5PmiEkmoQ/1VltCTEiPXwMiMzDF6LY8mB1HRKE9/VLcW6sPsprnrafZx3u?=
+ =?iso-8859-1?Q?o6y7Ythzhq0NyuJIUiBPuxtksRp6r/jXFVnda8qfpRZhxLHJsxnZpHLvM5?=
+ =?iso-8859-1?Q?jUT3Fcqma3F/r+aaNuPTOJ1Qm2c0Jok8Glp8/sVU6Bke5l3HkKV1dgXEX1?=
+ =?iso-8859-1?Q?0lyWt0WvHPuigMzQnIQDu0NGNrMJ1Ch1PbDtwGRK8rqrEToSU4KkZMIDV3?=
+ =?iso-8859-1?Q?vsT+mFI32hJDN5Wye90sLw1uodZRYb1jTQQIJuOba3IdXnRH71L5CBoVsj?=
+ =?iso-8859-1?Q?ckI3SS3yLhZbp8ySgZP0/WFDHaaEjzdT6vIAdvLl5giVjziAUgNYqdheIH?=
+ =?iso-8859-1?Q?NNPzvgOR0OQeAfm0AvwmyK8CvF0VW957YYkt262WwDgeBuJzNBBGWtISQ4?=
+ =?iso-8859-1?Q?AtUquZrI5GAh0hMU+RxCQldrVwI3Z4AWSKFLR8/NX3jdbn2lQKRS2PVeG3?=
+ =?iso-8859-1?Q?eU+vdN8Y3FqHQfWgFti1gnxblrxHwJcUYl1/gIG3fZMMbeKq2Q5oOhXnV4?=
+ =?iso-8859-1?Q?qAxZyzwEQJ7OWwxpM6qhvN/OqrA7GQrRvAuLE0JqRBFwfTna4Wct9nnrPO?=
+ =?iso-8859-1?Q?Gy1hTuRhGILH5yh8l/vQHMcmECb0WIrMSsjdnaJoIPXqV9tlCOEzl+zCwC?=
+ =?iso-8859-1?Q?VIPuwO0JvZRgZEBgokKBC945jie0nkWTjnikjRpjny1tJ3fXqgXqmcRV7z?=
+ =?iso-8859-1?Q?HmdDa6t3afmx1H7jk+O+3H0blBGdnL+Mpl9iK2RGvENZhP9jvV7pRwetHw?=
+ =?iso-8859-1?Q?C8XlL4MgVn9M7l+JHt5+eJ5qJ7JfA/qD/Ja+yCkBFeqe7smbe+TKtgIg?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:g4ShHq5T8H6vtAOHKZnNtZ4uculNq20A5Bkgx9yya8nM+tTZ8MG
- XNC3f0xPmwyssqGS3qMWmeCulBnpOZCal/kpJM60aGpHWuG28CnT0xWYs1V1H/F1fDJM0Ex
- z7WYkQ0XEoFKVl2k3lXkOGutsOoeFOp2NK/AAQkGPozwk0nU69c3OLJFdft5iF4AASyKTuj
- v+geWh1qE10f0vuGJLS/w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EfQMsLJha5s=:JcCMNIKkRguVXZiCVs90DD
- 2a+uV616ZwkCg9pW4NkfBDMKKw6tsobqPtrC/RRDmMLe0fwddXZjz4YM5mQ/J0KlbazLpKuk2
- jChq6z6oIEK7WAUY3bTOBE4/m0dbwb6RQk0qrgJiEB/ZO7qrLt7ok/jz8rE1GGeIhMHgu4VQ0
- 1M3uGdGl9JGBZL6Gk7WvdDSOzoue1e43kCkihwJ8GbpXC2d6O1KChYum4TfhIYh0NSPj6QehN
- HiB8CKruCvInro9xTj3ME332EUIQ5eR8MaPdreEUOODw5KWBsfDPHorStO/sM8S89jqxO2dQr
- 5gxDV1uU8UnF4OB4OpReA00nM9bGlAkHiy1dQEbs84RqaNQNakuRw/kDw33i9Z37lCOFW2BXk
- RC44SvegjxEA1d6xLqWsZbnawV/2vZCnum//U5h9/bmmzC8A2CkhZ2b6ULMzJ0UGQOd4GaxpB
- tPAen++gHQhHGRj6uFNt/QkjiWhVihJO0f/MdBCUhTIjd7vvIsOPEPjUm80TMEyIkbJRDyEXw
- K5TzF5BQb77PPeHugRFyV55Tt2W0DI4Yvb0yTo4fgO+m2wNcgbYFS3psufb8KBXRq5ofoxcwU
- J4bhtMksPTEJOP2emKGoLJ3a0C82ZQvpMb1tb2JmPZAiBvXYR8khMYc8DiJfOW9F1A3fYM73x
- PAWjdgwYCek0a197KYCo22vux0q7Qwwetpm+9d6Y2bikhoHcJ2YuJ13dJ6f2HVNkZuHTG0w0Q
- L/Uu9rYlXqStpESLahyh1mcv5sWf/PItvSBsmDPqO31l0SkvtTRAWWuNV7OGoe5E+46EwTJgy
- zpQRu3KyIJrlgrK6M+OwhuG8sc0WEpSKhfY/RYcSzgZvbuG1XlwilJCTdj0qxAaUSlBmkGu01
- bXkF5Rwu4UpDHfNK3PDmlH+zgDONePt4HkwW1Tru9iaZUI6xcCf3QrZVQYsjkTVU8S2inUqjr
- z9AKPSYRkFfdkY/uZD5UrPABHfaApmv4orpsvCWK+uxyAEEulVWp2GCqr74L+A3+m28gopP37
- dVi3CIPbJS25g6sIUMtl3QR/A0p4ZPMbvUHKu1KmgBvxbsUFI955ub5p+89krewkTII+obgoA
- Oh0pJAJUgkKmokzL97qGvMjBkLcAkuqR8dGAL7rctcH7jgSTdb4/PNRIQ==
+MIME-Version: 1.0
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee3b65fe-8985-4395-83a8-08da5e8a86b7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 13:30:28.4705
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +/xkcILckK8iK9cCV3MncRDu4HckXSOcTIIxWtcHA73dlrwgz0nxxEgPrqOoPUzmsp3SrZP8hC2pCMwpD9KwoX5KnPbmIkX0JxVZrof0R3s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB7648
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Thanks Andy.
 
+Please find the Test transfer size and baud rates in which this issue can b=
+e=20
+seen on RZ/N1 Platform.=20
 
-On 04.07.22 11:45, Ilpo J=C3=A4rvinen wrote:
-> Embed rs485_supported to uart_port to allow serial core to tweak it as
-> needed.
->
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_bcm2835aux.c | 2 +-
->  drivers/tty/serial/8250/8250_dwlib.c      | 4 ++--
->  drivers/tty/serial/8250/8250_exar.c       | 2 +-
->  drivers/tty/serial/8250/8250_fintek.c     | 4 ++--
->  drivers/tty/serial/8250/8250_lpc18xx.c    | 2 +-
->  drivers/tty/serial/8250/8250_of.c         | 2 +-
->  drivers/tty/serial/8250/8250_pci.c        | 2 +-
->  drivers/tty/serial/amba-pl011.c           | 2 +-
->  drivers/tty/serial/ar933x_uart.c          | 4 ++--
->  drivers/tty/serial/atmel_serial.c         | 2 +-
->  drivers/tty/serial/fsl_lpuart.c           | 2 +-
->  drivers/tty/serial/imx.c                  | 4 ++--
->  drivers/tty/serial/max310x.c              | 2 +-
->  drivers/tty/serial/mcf.c                  | 4 ++--
->  drivers/tty/serial/omap-serial.c          | 2 +-
->  drivers/tty/serial/sc16is7xx.c            | 2 +-
->  drivers/tty/serial/serial_core.c          | 8 ++++----
->  drivers/tty/serial/stm32-usart.c          | 2 +-
->  include/linux/serial_core.h               | 2 +-
->  19 files changed, 27 insertions(+), 27 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/ser=
-ial/8250/8250_bcm2835aux.c
-> index d9f1e618cfbd..047e14ccb165 100644
-> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> @@ -108,7 +108,7 @@ static int bcm2835aux_serial_probe(struct platform_d=
-evice *pdev)
->  	up.port.flags =3D UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE |
->  			UPF_SKIP_TEST | UPF_IOREMAP;
->  	up.port.rs485_config =3D serial8250_em485_config;
-> -	up.port.rs485_supported =3D &serial8250_em485_supported;
-> +	up.port.rs485_supported =3D serial8250_em485_supported;
->  	up.rs485_start_tx =3D bcm2835aux_rs485_start_tx;
->  	up.rs485_stop_tx =3D bcm2835aux_rs485_stop_tx;
->
-> diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8=
-250/8250_dwlib.c
-> index a8bbed74ea70..2c3b1468bd88 100644
-> --- a/drivers/tty/serial/8250/8250_dwlib.c
-> +++ b/drivers/tty/serial/8250/8250_dwlib.c
-> @@ -255,10 +255,10 @@ void dw8250_setup_port(struct uart_port *p)
->  	if (pd->hw_rs485_support) {
->  		p->rs485_config =3D dw8250_rs485_config;
->  		up->lsr_save_mask =3D LSR_SAVE_FLAGS | DW_UART_LSR_ADDR_RCVD;
-> -		p->rs485_supported =3D &dw8250_rs485_supported;
-> +		p->rs485_supported =3D dw8250_rs485_supported;
->  	} else {
->  		p->rs485_config =3D serial8250_em485_config;
-> -		p->rs485_supported =3D &serial8250_em485_supported;
-> +		p->rs485_supported =3D serial8250_em485_supported;
->  		up->rs485_start_tx =3D serial8250_em485_start_tx;
->  		up->rs485_stop_tx =3D serial8250_em485_stop_tx;
->  	}
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/82=
-50/8250_exar.c
-> index f5344cfe303c..314a05e009df 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -550,7 +550,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct pci=
-_dev *pcidev,
->
->  	port->port.uartclk =3D baud * 16;
->  	port->port.rs485_config =3D platform->rs485_config;
-> -	port->port.rs485_supported =3D platform->rs485_supported;
-> +	port->port.rs485_supported =3D *(platform->rs485_supported);
->
->  	/*
->  	 * Setup the UART clock for the devices on expansion slot to
-> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/=
-8250/8250_fintek.c
-> index eea693f5b577..65b6b3cbaff6 100644
-> --- a/drivers/tty/serial/8250/8250_fintek.c
-> +++ b/drivers/tty/serial/8250/8250_fintek.c
-> @@ -433,9 +433,9 @@ static void fintek_8250_set_rs485_handler(struct uar=
-t_8250_port *uart)
->  	case CHIP_ID_F81865:
->  		uart->port.rs485_config =3D fintek_8250_rs485_config;
->  		if (!pdata->index)
-> -			uart->port.rs485_supported =3D &fintek_8250_rs485_supported_port0;
-> +			uart->port.rs485_supported =3D fintek_8250_rs485_supported_port0;
->  		else
-> -			uart->port.rs485_supported =3D &fintek_8250_rs485_supported;
-> +			uart->port.rs485_supported =3D fintek_8250_rs485_supported;
->  		break;
->
->  	default: /* No RS485 Auto direction functional */
-> diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial=
-/8250/8250_lpc18xx.c
-> index d7cb3bb52069..d6ca0d47e9d5 100644
-> --- a/drivers/tty/serial/8250/8250_lpc18xx.c
-> +++ b/drivers/tty/serial/8250/8250_lpc18xx.c
-> @@ -161,7 +161,7 @@ static int lpc18xx_serial_probe(struct platform_devi=
-ce *pdev)
->  	uart.port.uartclk =3D clk_get_rate(data->clk_uart);
->  	uart.port.private_data =3D data;
->  	uart.port.rs485_config =3D lpc18xx_rs485_config;
-> -	uart.port.rs485_supported =3D &lpc18xx_rs485_supported;
-> +	uart.port.rs485_supported =3D lpc18xx_rs485_supported;
->  	uart.port.serial_out =3D lpc18xx_uart_serial_out;
->
->  	uart.dma =3D &data->dma;
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250=
-/8250_of.c
-> index 65cccd559db2..1b461fba15a3 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -165,7 +165,7 @@ static int of_platform_serial_setup(struct platform_=
-device *ofdev,
->
->  	port->dev =3D &ofdev->dev;
->  	port->rs485_config =3D serial8250_em485_config;
-> -	port->rs485_supported =3D &serial8250_em485_supported;
-> +	port->rs485_supported =3D serial8250_em485_supported;
->  	up->rs485_start_tx =3D serial8250_em485_start_tx;
->  	up->rs485_stop_tx =3D serial8250_em485_stop_tx;
->
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/825=
-0/8250_pci.c
-> index d31d2350a9db..8a39ae072c65 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -1607,7 +1607,7 @@ static int pci_fintek_setup(struct serial_private =
-*priv,
->  	port->port.iotype =3D UPIO_PORT;
->  	port->port.iobase =3D iobase;
->  	port->port.rs485_config =3D pci_fintek_rs485_config;
-> -	port->port.rs485_supported =3D &pci_fintek_rs485_supported;
-> +	port->port.rs485_supported =3D pci_fintek_rs485_supported;
->
->  	data =3D devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
->  	if (!data)
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-p=
-l011.c
-> index c8f52945a4aa..abeceeefdece 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -2779,7 +2779,7 @@ static int pl011_probe(struct amba_device *dev, co=
-nst struct amba_id *id)
->  	uap->port.irq =3D dev->irq[0];
->  	uap->port.ops =3D &amba_pl011_pops;
->  	uap->port.rs485_config =3D pl011_rs485_config;
-> -	uap->port.rs485_supported =3D &pl011_rs485_supported;
-> +	uap->port.rs485_supported =3D pl011_rs485_supported;
->  	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
->
->  	ret =3D pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
-> diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933=
-x_uart.c
-> index b73ce13683db..f931ecbc0bc0 100644
-> --- a/drivers/tty/serial/ar933x_uart.c
-> +++ b/drivers/tty/serial/ar933x_uart.c
-> @@ -778,7 +778,7 @@ static int ar933x_uart_probe(struct platform_device =
-*pdev)
->  	port->fifosize =3D AR933X_UART_FIFO_SIZE;
->  	port->ops =3D &ar933x_uart_ops;
->  	port->rs485_config =3D ar933x_config_rs485;
-> -	port->rs485_supported =3D &ar933x_rs485_supported;
-> +	port->rs485_supported =3D ar933x_rs485_supported;
->
->  	baud =3D ar933x_uart_get_baud(port->uartclk, AR933X_UART_MAX_SCALE, 1)=
-;
->  	up->min_baud =3D max_t(unsigned int, baud, AR933X_UART_MIN_BAUD);
-> @@ -802,7 +802,7 @@ static int ar933x_uart_probe(struct platform_device =
-*pdev)
->  	    !up->rts_gpiod) {
->  		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
->  		port->rs485.flags &=3D ~SER_RS485_ENABLED;
-> -		port->rs485_supported =3D &ar933x_no_rs485;
-> +		port->rs485_supported =3D ar933x_no_rs485;
->  	}
->
->  #ifdef CONFIG_SERIAL_AR933X_CONSOLE
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atme=
-l_serial.c
-> index bc6004679585..30ba9eef7b39 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -2498,7 +2498,7 @@ static int atmel_init_port(struct atmel_uart_port =
-*atmel_port,
->  	port->mapbase		=3D mpdev->resource[0].start;
->  	port->irq		=3D platform_get_irq(mpdev, 0);
->  	port->rs485_config	=3D atmel_config_rs485;
-> -	port->rs485_supported	=3D &atmel_rs485_supported;
-> +	port->rs485_supported	=3D atmel_rs485_supported;
->  	port->iso7816_config	=3D atmel_config_iso7816;
->  	port->membase		=3D NULL;
->
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lp=
-uart.c
-> index 8fe0494d4057..fc7d235a1e27 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -2655,7 +2655,7 @@ static int lpuart_probe(struct platform_device *pd=
-ev)
->  		sport->port.rs485_config =3D lpuart32_config_rs485;
->  	else
->  		sport->port.rs485_config =3D lpuart_config_rs485;
-> -	sport->port.rs485_supported =3D &lpuart_rs485_supported;
-> +	sport->port.rs485_supported =3D lpuart_rs485_supported;
->
->  	sport->ipg_clk =3D devm_clk_get(&pdev->dev, "ipg");
->  	if (IS_ERR(sport->ipg_clk)) {
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 3457006cea3f..522445a8f666 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2285,9 +2285,9 @@ static int imx_uart_probe(struct platform_device *=
-pdev)
->  	sport->port.rs485_config =3D imx_uart_rs485_config;
->  	/* RTS is required to control the RS485 transmitter */
->  	if (sport->have_rtscts || sport->have_rtsgpio)
-> -		sport->port.rs485_supported =3D &imx_rs485_supported;
-> +		sport->port.rs485_supported =3D imx_rs485_supported;
->  	else
-> -		sport->port.rs485_supported =3D &imx_no_rs485;
-> +		sport->port.rs485_supported =3D imx_no_rs485;
->  	sport->port.flags =3D UPF_BOOT_AUTOCONF;
->  	timer_setup(&sport->timer, imx_uart_timeout, 0);
->
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index e162bfb44080..ab10ca4a45b5 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1370,7 +1370,7 @@ static int max310x_probe(struct device *dev, const=
- struct max310x_devtype *devty
->  		s->p[i].port.membase	=3D (void __iomem *)~0;
->  		s->p[i].port.uartclk	=3D uartclk;
->  		s->p[i].port.rs485_config =3D max310x_rs485_config;
-> -		s->p[i].port.rs485_supported =3D &max310x_rs485_supported;
-> +		s->p[i].port.rs485_supported =3D max310x_rs485_supported;
->  		s->p[i].port.ops	=3D &max310x_ops;
->  		s->p[i].regmap		=3D regmaps[i];
->
-> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-> index 73c5287b8e5e..f4aaaadd0742 100644
-> --- a/drivers/tty/serial/mcf.c
-> +++ b/drivers/tty/serial/mcf.c
-> @@ -506,7 +506,7 @@ int __init early_mcf_setup(struct mcf_platform_uart =
-*platp)
->  		port->uartclk =3D MCF_BUSCLK;
->  		port->flags =3D UPF_BOOT_AUTOCONF;
->  		port->rs485_config =3D mcf_config_rs485;
-> -		port->rs485_supported =3D &mcf_rs485_supported;
-> +		port->rs485_supported =3D mcf_rs485_supported;
->  		port->ops =3D &mcf_uart_ops;
->  	}
->
-> @@ -634,7 +634,7 @@ static int mcf_probe(struct platform_device *pdev)
->  		port->ops =3D &mcf_uart_ops;
->  		port->flags =3D UPF_BOOT_AUTOCONF;
->  		port->rs485_config =3D mcf_config_rs485;
-> -		port->rs485_supported =3D &mcf_rs485_supported;
-> +		port->rs485_supported =3D mcf_rs485_supported;
->  		port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
->
->  		uart_add_one_port(&mcf_driver, port);
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-=
-serial.c
-> index 196bae704f85..0aa666e247d5 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -1643,7 +1643,7 @@ static int serial_omap_probe(struct platform_devic=
-e *pdev)
->  	up->port.flags =3D omap_up_info->flags;
->  	up->port.uartclk =3D omap_up_info->uartclk;
->  	up->port.rs485_config =3D serial_omap_config_rs485;
-> -	up->port.rs485_supported =3D &serial_omap_rs485_supported;
-> +	up->port.rs485_supported =3D serial_omap_rs485_supported;
->  	if (!up->port.uartclk) {
->  		up->port.uartclk =3D DEFAULT_CLK_SPEED;
->  		dev_warn(&pdev->dev,
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7=
-xx.c
-> index 8cb92a3b3fb8..259e08cc347c 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1461,7 +1461,7 @@ static int sc16is7xx_probe(struct device *dev,
->  		s->p[i].port.iotype	=3D UPIO_PORT;
->  		s->p[i].port.uartclk	=3D freq;
->  		s->p[i].port.rs485_config =3D sc16is7xx_config_rs485;
-> -		s->p[i].port.rs485_supported =3D &sc16is7xx_rs485_supported;
-> +		s->p[i].port.rs485_supported =3D sc16is7xx_rs485_supported;
->  		s->p[i].port.ops	=3D &sc16is7xx_ops;
->  		s->p[i].old_mctrl	=3D 0;
->  		s->p[i].port.line	=3D sc16is7xx_alloc_line();
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seria=
-l_core.c
-> index 85ef7ef00b82..a9cf1044a9fa 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1285,7 +1285,7 @@ static int uart_check_rs485_flags(struct uart_port=
- *port, struct serial_rs485 *r
->  	 * For any bit outside of the legacy ones that is not supported by
->  	 * the driver, return -EINVAL.
->  	 */
-> -	if (flags & ~port->rs485_supported->flags)
-> +	if (flags & ~port->rs485_supported.flags)
->  		return -EINVAL;
->
->  	/* Asking for address w/o addressing mode? */
-> @@ -1304,7 +1304,7 @@ static int uart_check_rs485_flags(struct uart_port=
- *port, struct serial_rs485 *r
->
->  static void uart_sanitize_serial_rs485(struct uart_port *port, struct s=
-erial_rs485 *rs485)
->  {
-> -	u32 supported_flags =3D port->rs485_supported->flags;
-> +	u32 supported_flags =3D port->rs485_supported.flags;
->
->  	if (!(rs485->flags & SER_RS485_ENABLED)) {
->  		memset(rs485, 0, sizeof(*rs485));
-> @@ -1323,7 +1323,7 @@ static void uart_sanitize_serial_rs485(struct uart=
-_port *port, struct serial_rs4
->  		supported_flags |=3D SER_RS485_RTS_ON_SEND|SER_RS485_RTS_AFTER_SEND;
->  	}
->
-> -	if (!port->rs485_supported->delay_rts_before_send) {
-> +	if (!port->rs485_supported.delay_rts_before_send) {
->  		if (rs485->delay_rts_before_send) {
->  			dev_warn_ratelimited(port->dev,
->  				"%s (%d): RTS delay before sending not supported\n",
-> @@ -1337,7 +1337,7 @@ static void uart_sanitize_serial_rs485(struct uart=
-_port *port, struct serial_rs4
->  			port->name, port->line, rs485->delay_rts_before_send);
->  	}
->
-> -	if (!port->rs485_supported->delay_rts_after_send) {
-> +	if (!port->rs485_supported.delay_rts_after_send) {
->  		if (rs485->delay_rts_after_send) {
->  			dev_warn_ratelimited(port->dev,
->  				"%s (%d): RTS delay after sending not supported\n",
-> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32=
--usart.c
-> index 13992e64a7df..ff5c7e0ebc4c 100644
-> --- a/drivers/tty/serial/stm32-usart.c
-> +++ b/drivers/tty/serial/stm32-usart.c
-> @@ -1401,7 +1401,7 @@ static int stm32_usart_init_port(struct stm32_port=
- *stm32port,
->  	port->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_STM32_CONSOLE);
->  	port->irq =3D irq;
->  	port->rs485_config =3D stm32_usart_config_rs485;
-> -	port->rs485_supported =3D &stm32_rs485_supported;
-> +	port->rs485_supported =3D stm32_rs485_supported;
->
->  	ret =3D stm32_usart_init_rs485(port, pdev);
->  	if (ret)
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index b7b86ee3cb12..a6fa7c40c330 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -255,7 +255,7 @@ struct uart_port {
->  	struct attribute_group	*attr_group;		/* port specific attributes */
->  	const struct attribute_group **tty_groups;	/* all attributes (serial c=
-ore use only) */
->  	struct serial_rs485     rs485;
-> -	const struct serial_rs485	*rs485_supported;	/* Supported mask for seri=
-al_rs485 */
-> +	struct serial_rs485	rs485_supported;	/* Supported mask for serial_rs48=
-5 */
->  	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
->  	struct serial_iso7816   iso7816;
->  	void			*private_data;		/* generic platform data pointer */
+One thing I noticed is, because of that wrong calculation, the PLL baudrate=
+ divisor is set to higher value(128) instead of smaller one(13).
 
-Reviewed-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+test_one () {
+	local LENGTH=3D$1
+	#echo "Length $1"
+	${DIR}/uart-loopback -o ${TXUART} -i ${RXUART} -s ${LENGTH} -r
+	if [ "$?" -ne "0" ]; then ERRORS=3D$((ERRORS+1)); fi
+}
 
+# Test transfers of lengths that typically throw problems
+test_one_cfg () {
+	local SPEED=3D$1
+	./uart-baud/uart-baud ${TXUART} $SPEED
+	./uart-baud/uart-baud ${RXUART} $SPEED
 
-Regards,
-Lino
+	for length in `seq 1 33`; do
+		test_one ${length}
+	done
 
+	for length in `seq 2043 2053`; do
+		test_one ${length}
+	done
 
+	for length in `seq 4091 4101`; do
+		test_one ${length}
+	done
+
+	for length in `seq 8187 8297`; do
+		test_one ${length}
+	done
+
+	for length in `seq 16379 16389`; do
+		test_one ${length}
+	done
+}
+
+# You need hardware flow control at this speed, otherwise you get overflow =
+errors
+echo "Parity: none Stop: 1 bit, 8 data bits, 'raw' mode, with RTS/CTS hardw=
+are flow control"
+STTY_SETTING=3D"raw -parenb -cstopb crtscts cs8 -echo -echonl -iexten"
+stty -F ${TXUART} 9600 $STTY_SETTING
+stty -F ${RXUART} 9600 $STTY_SETTING
+
+for div in `seq 12 20`; do
+	clk=3D$((1000000000 / $div))
+	# Round up as the clk driver ensures the clock rate is below the requested=
+ value
+	clk=3D$(( $clk + 1))
+
+	# Max bitrate
+	bitrate=3D$(( $clk / 16))
+	echo "Bitrate: $bitrate"
+	test_one_cfg $bitrate
+
+	# Max bitrate / 2
+	bitrate=3D$(( $bitrate / 2))
+	echo ""
+	echo "Bitrate: $bitrate"
+	test_one_cfg $bitrate
+done
+
+Cheers,
+Biju
+
+> -----Original Message-----
+> From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Sent: 05 July 2022 10:30
+> To: Biju Das <biju.das.jz@bp.renesas.com>; Ilpo J=E4rvinen
+> <ilpo.jarvinen@linux.intel.com>; Serge Semin <fancer.lancer@gmail.com>
+> Cc: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org>; Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com>; Miquel Raynal
+> <miquel.raynal@bootlin.com>; Emil Renner Berthing <kernel@esmil.dk>; Phil
+> Edworthy <phil.edworthy@renesas.com>; Johan Hovold <johan@kernel.org>;
+> linux-serial@vger.kernel.org; Geert Uytterhoeven
+> <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>;
+> Biju Das <biju.das@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
+> Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
+> RZN1_UART_xDMACR_8_WORD_BURST
+>=20
+> +Cc: Ilpo, the 8250_dw maintainer
+> +Cc: Serge, who I believe is the author of the lines in 8250_port you
+> cited, sorry if I'm mistaken.
+>=20
+> On Tue, Jul 5, 2022 at 8:25 AM Biju Das <biju.das.jz@bp.renesas.com>
+> wrote:
+> >
+> > Hi Jiri and Miquel,
+> >
+> > While testing serial driver with RZ/N1 on 5.15 kernel, which is the
+> > backport of mainline kernel, I seen performance issue with serial DMA
+> for higher baud rates.
+> >
+> > The test app is taking 25 minutes finish, whereas with the below
+> patch[1] it takes only 3 minutes to finish.
+> >
+> > Not sure has anyone seen this performance issue?
+> >
+> > [1]
+> > diff --git a/drivers/tty/serial/8250/8250_port.c
+> > b/drivers/tty/serial/8250/8250_port.c
+> > index 468d1aca5968..321430176698 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -2680,7 +2680,7 @@ static unsigned int
+> serial8250_get_baud_rate(struct uart_port *port,
+> >                 max =3D (port->uartclk + tolerance) / 4;
+> >         } else {
+> >                 min =3D port->uartclk / 16 / UART_DIV_MAX;
+> > -               max =3D (port->uartclk + tolerance) / 16;
+> > +               max =3D port->uartclk;
+> >         }
+> >
+> > Note:-
+> > I have added below change on 5.15 kernel to test on all possible use
+> cases.
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_dw.c
+> > b/drivers/tty/serial/8250/8250_dw.c
+> > index 7884fcd66d39..6d352981fb3e 100644
+> > --- a/drivers/tty/serial/8250/8250_dw.c
+> > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > @@ -643,6 +643,26 @@ static int dw8250_probe(struct platform_device
+> *pdev)
+> >                 up->dma =3D &data->data.dma;
+> >         }
+> >
+> > +       if (data->pdata->quirks & DW_UART_QUIRK_IS_DMA_FC) {
+> > +               /*
+> > +                * When the 'char timeout' irq fires because no more
+> data has
+> > +                * been received in some time, the 8250 driver stops
+> the DMA.
+> > +                * However, if the DMAC has been setup to write more
+> data to mem
+> > +                * than is read from the UART FIFO, the data will *not*
+> be
+> > +                * written to memory.
+> > +                * Therefore, we limit the width of writes to mem so
+> that it is
+> > +                * the same amount of data as read from the FIFO. You
+> can use
+> > +                * anything less than or equal, but same size is
+> optimal
+> > +                */
+> > +               data->data.dma.rxconf.dst_addr_width =3D p->fifosize /
+> > + 4;
+> > +
+> > +               /*
+> > +                * Unless you set the maxburst to 1, if you send only 1
+> char, it
+> > +                * doesn't get transmitted
+> > +                */
+> > +               data->data.dma.txconf.dst_maxburst =3D 1;
+> > +       }
+> > +
+> >
+> > Cheers,
+> > Biju
+> >
+> > > -----Original Message-----
+> > > From: Biju Das
+> > > Sent: 04 July 2022 08:12
+> > > To: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
+> > > <gregkh@linuxfoundation.org>
+> > > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Miquel
+> > > Raynal <miquel.raynal@bootlin.com>; Emil Renner Berthing
+> > > <kernel@esmil.dk>; Phil Edworthy <phil.edworthy@renesas.com>; Johan
+> > > Hovold <johan@kernel.org>; linux-serial@vger.kernel.org; Geert
+> > > Uytterhoeven <geert+renesas@glider.be>; Chris Paterson
+> > > <Chris.Paterson2@renesas.com>; Biju Das <biju.das@bp.renesas.com>;
+> > > linux-renesas-soc@vger.kernel.org
+> > > Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
+> > > RZN1_UART_xDMACR_8_WORD_BURST
+> > >
+> > > Hi Jiri,
+> > >
+> > > Thanks for the feedback.
+> > >
+> > > > Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
+> > > > RZN1_UART_xDMACR_8_WORD_BURST
+> > > >
+> > > > On 30. 06. 22, 10:39, Biju Das wrote:
+> > > > > As per RZ/N1 peripheral user
+> > > > > manual(r01uh0752ej0100-rzn1-peripheral.pdf)
+> > > > > rev 1.0.0 Mar,2019,
+> > > >
+> > > > Is this public anywhere?
+> > >
+> > > Yes, It is available here[1] see page 72 and 73.
+> > >
+> > > [1]
+> > > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-
+> > > rzn1l-group-users-manual-peripherals?language=3Den&r=3D1054561
+> > >
+> > >
+> > > >
+> > > > > the value for 8_WORD_BURST is 4(b2,b1=3D2'b10).
+> > > > >
+> > > > > This patch fixes the macro as per the user manual.
+> > > >
+> > > > I'm curious, is the bottom bit from "3" ignored by the HW or does
+> > > > this fix a real problem in behavior? Stating that might help
+> > > > backporters to decide if to take the patch or not.
+> > >
+> > > See page 72 and 73.
+> > >
+> > > Yes, it fixes a real problem as by using a value of 8 , you are
+> > > wrongly configuring DMA_BURST_SIZE of 1 instead of DMA_BURST_SIZE of
+> 8.
+> > >
+> > > b2, b1 bUart_DEST_BURST
+> > > _SIZE
+> > > DEST_BURST_SIZE
+> > > Destination Burst Transaction Size in Transmit FIFO.
+> > > UART is the flow controller. Thus, the user must write this field
+> > > before or at the same time the DMA mode is enabled. Number of data
+> > > byte, to be written to the Transmit FIFO every time a transmit burst
+> > > transaction request are made on DMA request.
+> > > 2'b00 =3D 1 byte
+> > > 2'b01 =3D 4 bytes
+> > > 2'b10 =3D 8 bytes
+> > > 2'b11 =3D Reserved, not used
+> > >
+> > > Cheers,
+> > > Biju
+> > >
+> > >
+> > > >
+> > > > > Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow
+> > > > > controlling devices")
+> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > > ---
+> > > > >   drivers/tty/serial/8250/8250_dw.c | 2 +-
+> > > > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/tty/serial/8250/8250_dw.c
+> > > > > b/drivers/tty/serial/8250/8250_dw.c
+> > > > > index f57bbd32ef11..931490b27d6b 100644
+> > > > > --- a/drivers/tty/serial/8250/8250_dw.c
+> > > > > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > > > > @@ -47,7 +47,7 @@
+> > > > >   #define RZN1_UART_xDMACR_DMA_EN         BIT(0)
+> > > > >   #define RZN1_UART_xDMACR_1_WORD_BURST   (0 << 1)
+> > > > >   #define RZN1_UART_xDMACR_4_WORD_BURST   (1 << 1)
+> > > > > -#define RZN1_UART_xDMACR_8_WORD_BURST    (3 << 1)
+> > > > > +#define RZN1_UART_xDMACR_8_WORD_BURST    (2 << 1)
+> > > > >   #define RZN1_UART_xDMACR_BLK_SZ(x)      ((x) << 3)
+> > > > >
+> > > > >   /* Quirks */
+> > > >
+> > > > thanks,
+> > > > --
+> > > > js
+>=20
+>=20
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
