@@ -2,47 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC0AC43334
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 06:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F647C433EF
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 09:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229495AbiGEGXz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 02:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S230506AbiGEJbH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 05:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiGEGXv (ORCPT
+        with ESMTP id S229941AbiGEJaq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 02:23:51 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2131.outbound.protection.outlook.com [40.107.114.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329F7FD19;
-        Mon,  4 Jul 2022 23:23:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lfZZ57qiYKC154rfqMHVRTfdAY8mu3SXI7eVuzs5zAYpGC5JNocVTRqUBeGyTVzE6948Z7aAAkIh73eF0DrElvFZAe7k/9lHj87S5DxpWHVj4g1+8/3CTPDOntM/YobFzauKEyehtUPWnlwDr2RNrF3VZOolMpH69umCKeRoHY1hVvw4KXaQBhso34jPVETUw1JsbgOIXUl3WE4rGGwbZAIQ3LFnStop90kkur9T3vCthGJcYr+h5R/VxrHgRHneG9KJ7EPvuIo4XSiMarFSPdbu6o/wpk1RtUrcbT2zfC7ntyz7UdGn5Db0ZrLhxJOmuwpdTcoC6LSsCmnUxtjOhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6EGNp5OpvrrrMyZXBtaHSzdCyGcW1jsxFdft+Y1r844=;
- b=aZ4jZ4VYrxI5DrH44F7zaEKTQ1cGdZCRIRWLOGLkm5spQYc6sMTYEqBzMFk9t6MjRa6OJ+ciuDrZwaLCHpfW2jY8iHFlxO6k4IK5qLzFGeEgELymYjLI2BXUPuGeYvFB28si3l4WGRvP2ymk+E/6r83sGW+Fz5fE1rUeKqWUmmOnWGU29vG+xmnNKBLeFqFD4CwDhEzM5hixlPqD1jFn98JmlI+nrKabjT4cKBSCx7EtC0NZ0Cu3FcphnxUrlpBUzsBDYYMMWNQ4BtdsffPrH4UDyeTNBiKRwBhG5hmG6O9CX5SgTa1BlZx0Bwm9xURoGZUjjNYpk+KX++E402vLCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6EGNp5OpvrrrMyZXBtaHSzdCyGcW1jsxFdft+Y1r844=;
- b=fLUcfe8TWWV9y4b54BY6COV9SQ3BQ5BoOd5VgB0gFdk1bIeGoIaJFnaknH9OvPGt4Bv0r+ae6yw/XvmlfavS8/vg9tE2Stg0jJYVbZK1dqEjOZwxJAwUgVz4ce2PEshwqUVQcrtxFHnqX4IbXS25DWQsKSKVxaTPHPo9bDgJFcw=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TY2PR01MB3817.jpnprd01.prod.outlook.com (2603:1096:404:e0::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Tue, 5 Jul
- 2022 06:23:45 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
- 06:23:45 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tue, 5 Jul 2022 05:30:46 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07B3A470;
+        Tue,  5 Jul 2022 02:30:44 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id e80so13548452ybb.4;
+        Tue, 05 Jul 2022 02:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ds+q9Soow6oXLmxqWRIB62iNIxiKRRwbc52wJjtzGl4=;
+        b=cSVrWoND00cYNK9sFrNUzKcJ72YmVF7LPyg3X+X8RuLseNTP0oYmxiZxmfsin83oXk
+         UXCaOARoGZWSnYWoqvV7OP866bYt61N/5Ysy80Wa4kD69gysKUAR4NIyN5xAZ7pBHYRh
+         GYOU5OnmT/2SIy5XPZKY0RlpX4QhZh/DFfnAMkDFEtrxhfVqC7Ro1EDiELt7Ia2tPtii
+         RGyNlLoHKqr623wavWufADKhtfBXO/WQDpLwREmKaq4wl8N0vIZkoln/8FfXdAoTDZib
+         nxOESmkydTX98xyZ7Q/pSFR4PgmhziVn+EWr4wTFtGEOyW5BWaA1W1fHB10BnlhKr5SH
+         9qAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ds+q9Soow6oXLmxqWRIB62iNIxiKRRwbc52wJjtzGl4=;
+        b=vQRFykA4KQiJnflG4hQ9yr7JUIbTRL6uHe6pGVsUM52ROVbzxoz9prqw75Ij+gl1cO
+         Tpn1z+LxGINqasEtL8U6vE4UDdXhE526phPQ1QxJ2UWH+g8blppHgSutymnfMV7S94SZ
+         G8tI/v8MMWqT0oj4scLf6DsY1N7rZWf2K9kK1dMGDgMxLuddbTZFopezJQhpcDIWVbjn
+         dNVMSqxuXXuA+d44842ddG/9MsaGItAROZDDvA768SQb5ml+fhJCbTKHFmAFRmyT9MDa
+         tPwoyNeO3uKx2bb2EUuWcyDt/EPRYZFnQlLvV8pgf9/GtPYkazI25SAPDdWGKdJLIVSm
+         NlqA==
+X-Gm-Message-State: AJIora+GAqcP0P8Gt3EqiHqLq7Gv6I8qlXw3mBZR3yMq22tNoudDucmi
+        l96S/vZKzF2/+Vvvcw+AiPdcNKsBKQdf92+ePhM=
+X-Google-Smtp-Source: AGRyM1uDdt7yoYDhELvy1MqxRxn944S/XwIBqxd7Fnfd8WaF5OnaZi6XEfOvWMya8MQ3lj/eBUAiQki3+yzIQawq2jg=
+X-Received: by 2002:a25:dd83:0:b0:66c:8d8d:4f5f with SMTP id
+ u125-20020a25dd83000000b0066c8d8d4f5fmr35985776ybg.79.1657013444032; Tue, 05
+ Jul 2022 02:30:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
+ <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org> <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 5 Jul 2022 11:30:01 +0200
+Message-ID: <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250: dw: Fix the macro RZN1_UART_xDMACR_8_WORD_BURST
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Serge Semin <fancer.lancer@gmail.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Emil Renner Berthing <kernel@esmil.dk>,
         Phil Edworthy <phil.edworthy@renesas.com>,
@@ -53,181 +70,188 @@ CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Biju Das <biju.das@bp.renesas.com>,
         "linux-renesas-soc@vger.kernel.org" 
         <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
- RZN1_UART_xDMACR_8_WORD_BURST
-Thread-Topic: [PATCH] serial: 8250: dw: Fix the macro
- RZN1_UART_xDMACR_8_WORD_BURST
-Thread-Index: AQHYjFzicLJAOXueakmTUlp0Tbrj9q1tx+UAgAAIuvCAAYRegA==
-Date:   Tue, 5 Jul 2022 06:23:45 +0000
-Message-ID: <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
- <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org>
- <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dee22a76-6fde-4c58-67af-08da5e4eea00
-x-ms-traffictypediagnostic: TY2PR01MB3817:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6ZeSXHPDwG9ScEOAfSLSYtA/6gaIRWbqSip2d7AQxi9vvainWwRhDe7dRGcHdmriSDZSu/ieCSwT4mNO+8Dpin5wS54q9ifxs/peDSwKJ1Ty+eMcO6zoEk32aDq1mbQ2lgkxDkKaoZVjCAnZQZ9gjAkkqtVQEuwvkQQXUMplMoIb/JxH+Wq6GpQYl6E/1nNdUbJqTGHCDagkw/z4NHss8EJTf2v6RLEOZRxm6Kxop1/h6o8Qpr8KCZlSa7e6WzxMM5HM0scFNvDf8rXTWrvdA2N8V8GYzwIogf1tvsZ/7BCYTDJXwxCW3XA1DT9AhrCx67ncfKQqSAY1r+9zKYjcN3GMiQeICeAKsmtLmd/ICCS/FP+vRBRNHjxoapEA162JKgVhzcDWFTKlFkJNuLNUHQB+WdaewQtgWPcTA5pznKy0LPKfa+O3axolOa2e8q1gJgGGpD10K8vV2mRuygtkfjAO172CtpjUbQ5BCxg64798Jp5j1vKP1z6l0N4Tn6tBCf7eaPlPWqVBqClUkRqp4p6OiuyeKJ6AHkRg7OHZFVwg6AU2c2Yqs7CcicUsgs/P/K5LTPN0goH2/GPVfuZmEUszsp90JR5VHllviv7UMUn5eIHe725UWXQtczFDCvz4GNmEg8jBhAOqHFPAUCbpWneXBixOgWXqdu/3nB+pRbwIP4TjbVqqRrH3MWm76CGtvUZJVwMEf1BFterTVt+KB54UE3VaXnQAQV4sqCGGccEhQGpg1IRdNRV03KNZGkjESir/CvJxyBroYYqLF0ixgA7540iqAhML+Efqhye7jNTWeyj4jonJ0UY9uopmyk0T1XUCeDJJwPQb7SSdeU9Inud5sAUTP3c5+kbNTXxyAZ8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(366004)(346002)(136003)(39860400002)(186003)(66556008)(83380400001)(55016003)(38100700002)(41300700001)(122000001)(26005)(6506007)(110136005)(66446008)(53546011)(316002)(478600001)(33656002)(54906003)(7696005)(71200400001)(38070700005)(966005)(66476007)(4326008)(8936002)(76116006)(8676002)(52536014)(86362001)(66946007)(2906002)(64756008)(5660300002)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z255RnhIVGVuZ1NmODF1ZHBhR3BDZXB3b2xRaVZ4YmEvRUM1VFNleXpzS0tK?=
- =?utf-8?B?dEVJZ3NoTGU3NEd5OVVNSW9aVTBoa0NOUm5mRkY2MTdQYkdUUExyTnZrNVBy?=
- =?utf-8?B?NHBjMXNjL1VPRFRGWEhOc0V4Vlg2ZSt6cXdsb21qbGk3aTlPc252UVA3M1VT?=
- =?utf-8?B?ZEJMMmE3M1dBVFZGQVVMOGdLb3ZaQ0kycDN3WmJZZG1FcWtkNGpabGI1dDBK?=
- =?utf-8?B?a2t6M1VXNktLa254MXUxUlNnRFF1MTVkdlR4SXNlRGkyb1YrTzFOcjIrbkN4?=
- =?utf-8?B?WUw1Y1J0SU5IdS9SMXRvS1VEOEJ0NDRJb04zejh4NDlnOEV6NjA0U1Ivcksw?=
- =?utf-8?B?Rjk4U2NrcUZQcjQ0K085T3grSzVGZ3V6WTFzV1FndGpxYTQ1MjZPNXdjMFgx?=
- =?utf-8?B?Sldwd2tGVVcyZFhZbjRrZGovRDU4bkppK0RSdWRMRS9PbWZCNFhhRy9neXpX?=
- =?utf-8?B?SmRKaWFkNHZ6dlcwOHJrOFk3WE9uNkRFU3VpaENvQ25xL0s3ckQzd2JKRDlN?=
- =?utf-8?B?SGMxYm5NbWFBSkFwMEdzanlhTnFucXNNeFpObjI3SEhOSU8zN0tqWmphMDhZ?=
- =?utf-8?B?UUJqV01penZEeXFXWkxySEJndkhOK0lmb1E1WE1uZ1QwZGNnakxRMEFBaU5Y?=
- =?utf-8?B?WHFBaDlYQnY0OXpYWlFJWmVMQnJNQlpiU2hGL3E1OVBIM0wrMHZFQ3owVWFh?=
- =?utf-8?B?UE5EL3hmbHJRcTQxMnV2a1NCdVJYaUFKbExJVW5sMGs4bVBCamxwc3RYQys4?=
- =?utf-8?B?cVd4M0hSUlV4NVFZUmgrcGhTWjJrYmk4dVp2UmNwS0ZPN1hHVGttSWlFTmIr?=
- =?utf-8?B?a2NEYTlkT0wvSVJGRGJCUm1kYmJGQ2dtcTZMZGRIUkNWWi9tYjBJNDdCUHR4?=
- =?utf-8?B?NW0xYWdvbW43RUo4ck43THNtMEZjWnRyMC9RYllqS3drY0JvS2U1VjRTTXBl?=
- =?utf-8?B?c3lMWGR5RVRvbnRNdHdOWUd6V0cyNTlyaTcySUViUnphZDRUeEc0bGtQV253?=
- =?utf-8?B?dThpbDZOZzBadlU1RjZoMDNKQTJTNnpZQWtuRFdoaFJQSlh5Tm43ZVdnaWRu?=
- =?utf-8?B?enRZOWdERXhTQXVUcDQ4Nmo1ZTFUd3BTb0FJKy9ON2czRVFqM3Rza0hoSU5y?=
- =?utf-8?B?UmV3WjFIRTc1K3hqdVFVSmYzS3p5MW5OMWNZc293VEM4QlRVWjhKMHNDZXFq?=
- =?utf-8?B?V2FPYWpzaHhuaEpqMnVFdmdoSEtKdkg3N0t6S0RsQTVnWUZnSFpyVnM3RzNo?=
- =?utf-8?B?M1ZQRHNNVVpBSGMrYVdrL0pNM0xYVGNvenFPbEpVM2RCMjEybU1vTlVRczNu?=
- =?utf-8?B?ekFqUVJIK1hiam5CYVV3YzhJSWNtay9GWE0wOWtCcEE5ZS84amoyT3JKMmlw?=
- =?utf-8?B?THU0TlI4ZE01OUdmM1JocXRXeXNmUzdjeHFuUTJuc01tOTE3MlVFV252dkZY?=
- =?utf-8?B?M1FFNW03WDVZbWJGSWdqUjhvanM3Uk0xeHluS0tqVlJLaEdVZWVFN2IvdVZB?=
- =?utf-8?B?ajZFNThvamhYRmJWZFhvK29vNTBsQWRaNHNsQ2l6SzIzVFRnTFVISjJNWnJF?=
- =?utf-8?B?UHR6RDllZld0VFQxVGJwOFVKaUhoalBZbTlzWWNqZWxienN3b3dGVUtiYUUz?=
- =?utf-8?B?eGR5anorWGd5b3c5ZDEwVHdKdkdUYzlKT3IreERMVWowTTN1bGY2RHJBdTlm?=
- =?utf-8?B?MzIwYTNHLzB2OUU3OElLaTlDMkp5VWlIcW9CZVB1QWM4cXJXclVsYm1SRXNs?=
- =?utf-8?B?WFUwSG8rQjBhQStEZWI5S1p1aHNaV0FpTDRUWmpwNk9RUXdhNlRtUWJMc1ZB?=
- =?utf-8?B?M0hjc2VCL2NjSnkxUjhsY0dVWlZhREgwenRKN2hpL0RZM2E2c21ucGZUc1BR?=
- =?utf-8?B?MUlEeWcrcEh0ZEVTZnFKLy9xUjlyT3R5L2RlZCtyM0VFU3llM2VNaEJHaVdX?=
- =?utf-8?B?WmNxQjRYNmZMRHJVdHVtWS8xMmkrSExpSU16TGlvNGxjNlc2M0tFS0hqZDJh?=
- =?utf-8?B?UW16L1FLMDV1V0ZhNUVNM2k4cVBGMjJUbm5Zd3ZVR0lyMjlZVXRuaytySmNO?=
- =?utf-8?B?TXRmMmNWZEZQNVFSN3ljM1haa1NKaXdIR28vcE95Y2FnbndXRTZtUnUrcEtE?=
- =?utf-8?B?eFFSS1BhTDJHVXdsamFGclBVa3U5aDRrZ2tudFh2cVkrM3BuUm5LWFV2WEJu?=
- =?utf-8?B?K1E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dee22a76-6fde-4c58-67af-08da5e4eea00
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jul 2022 06:23:45.2076
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ryMKmV0BBL6ptpjhfIOE+PCddK7zJsKoKUj331/2HXU0rKKvUI48QVRDP4xZ6MLRnZLK01Uh6u/41SRTlcKGe/OJ62fHan2X0p+r9JMKiCs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB3817
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgSmlyaSBhbmQgTWlxdWVsLA0KDQpXaGlsZSB0ZXN0aW5nIHNlcmlhbCBkcml2ZXIgd2l0aCBS
-Wi9OMSBvbiA1LjE1IGtlcm5lbCwgd2hpY2ggaXMgdGhlIGJhY2twb3J0IG9mIG1haW5saW5lIGtl
-cm5lbCwNCkkgc2VlbiBwZXJmb3JtYW5jZSBpc3N1ZSB3aXRoIHNlcmlhbCBETUEgZm9yIGhpZ2hl
-ciBiYXVkIHJhdGVzLg0KDQpUaGUgdGVzdCBhcHAgaXMgdGFraW5nIDI1IG1pbnV0ZXMgZmluaXNo
-LCB3aGVyZWFzIHdpdGggdGhlIGJlbG93IHBhdGNoWzFdIGl0IHRha2VzIG9ubHkgMyBtaW51dGVz
-IHRvIGZpbmlzaC4NCg0KTm90IHN1cmUgaGFzIGFueW9uZSBzZWVuIHRoaXMgcGVyZm9ybWFuY2Ug
-aXNzdWU/DQoNClsxXQ0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBf
-cG9ydC5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wb3J0LmMNCmluZGV4IDQ2OGQx
-YWNhNTk2OC4uMzIxNDMwMTc2Njk4IDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
-NTAvODI1MF9wb3J0LmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfcG9ydC5j
-DQpAQCAtMjY4MCw3ICsyNjgwLDcgQEAgc3RhdGljIHVuc2lnbmVkIGludCBzZXJpYWw4MjUwX2dl
-dF9iYXVkX3JhdGUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwNCiAgICAgICAgICAgICAgICBtYXgg
-PSAocG9ydC0+dWFydGNsayArIHRvbGVyYW5jZSkgLyA0Ow0KICAgICAgICB9IGVsc2Ugew0KICAg
-ICAgICAgICAgICAgIG1pbiA9IHBvcnQtPnVhcnRjbGsgLyAxNiAvIFVBUlRfRElWX01BWDsNCi0g
-ICAgICAgICAgICAgICBtYXggPSAocG9ydC0+dWFydGNsayArIHRvbGVyYW5jZSkgLyAxNjsNCisg
-ICAgICAgICAgICAgICBtYXggPSBwb3J0LT51YXJ0Y2xrOw0KICAgICAgICB9DQoNCk5vdGU6LQ0K
-SSBoYXZlIGFkZGVkIGJlbG93IGNoYW5nZSBvbiA1LjE1IGtlcm5lbCB0byB0ZXN0IG9uIGFsbCBw
-b3NzaWJsZSB1c2UgY2FzZXMuDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1
-MC84MjUwX2R3LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMNCmluZGV4IDc4
-ODRmY2Q2NmQzOS4uNmQzNTI5ODFmYjNlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy90dHkvc2VyaWFs
-LzgyNTAvODI1MF9kdy5jDQorKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMN
-CkBAIC02NDMsNiArNjQzLDI2IEBAIHN0YXRpYyBpbnQgZHc4MjUwX3Byb2JlKHN0cnVjdCBwbGF0
-Zm9ybV9kZXZpY2UgKnBkZXYpDQogICAgICAgICAgICAgICAgdXAtPmRtYSA9ICZkYXRhLT5kYXRh
-LmRtYTsNCiAgICAgICAgfQ0KIA0KKyAgICAgICBpZiAoZGF0YS0+cGRhdGEtPnF1aXJrcyAmIERX
-X1VBUlRfUVVJUktfSVNfRE1BX0ZDKSB7DQorICAgICAgICAgICAgICAgLyoNCisgICAgICAgICAg
-ICAgICAgKiBXaGVuIHRoZSAnY2hhciB0aW1lb3V0JyBpcnEgZmlyZXMgYmVjYXVzZSBubyBtb3Jl
-IGRhdGEgaGFzDQorICAgICAgICAgICAgICAgICogYmVlbiByZWNlaXZlZCBpbiBzb21lIHRpbWUs
-IHRoZSA4MjUwIGRyaXZlciBzdG9wcyB0aGUgRE1BLg0KKyAgICAgICAgICAgICAgICAqIEhvd2V2
-ZXIsIGlmIHRoZSBETUFDIGhhcyBiZWVuIHNldHVwIHRvIHdyaXRlIG1vcmUgZGF0YSB0byBtZW0N
-CisgICAgICAgICAgICAgICAgKiB0aGFuIGlzIHJlYWQgZnJvbSB0aGUgVUFSVCBGSUZPLCB0aGUg
-ZGF0YSB3aWxsICpub3QqIGJlDQorICAgICAgICAgICAgICAgICogd3JpdHRlbiB0byBtZW1vcnku
-DQorICAgICAgICAgICAgICAgICogVGhlcmVmb3JlLCB3ZSBsaW1pdCB0aGUgd2lkdGggb2Ygd3Jp
-dGVzIHRvIG1lbSBzbyB0aGF0IGl0IGlzDQorICAgICAgICAgICAgICAgICogdGhlIHNhbWUgYW1v
-dW50IG9mIGRhdGEgYXMgcmVhZCBmcm9tIHRoZSBGSUZPLiBZb3UgY2FuIHVzZQ0KKyAgICAgICAg
-ICAgICAgICAqIGFueXRoaW5nIGxlc3MgdGhhbiBvciBlcXVhbCwgYnV0IHNhbWUgc2l6ZSBpcyBv
-cHRpbWFsDQorICAgICAgICAgICAgICAgICovDQorICAgICAgICAgICAgICAgZGF0YS0+ZGF0YS5k
-bWEucnhjb25mLmRzdF9hZGRyX3dpZHRoID0gcC0+Zmlmb3NpemUgLyA0Ow0KKw0KKyAgICAgICAg
-ICAgICAgIC8qDQorICAgICAgICAgICAgICAgICogVW5sZXNzIHlvdSBzZXQgdGhlIG1heGJ1cnN0
-IHRvIDEsIGlmIHlvdSBzZW5kIG9ubHkgMSBjaGFyLCBpdA0KKyAgICAgICAgICAgICAgICAqIGRv
-ZXNuJ3QgZ2V0IHRyYW5zbWl0dGVkDQorICAgICAgICAgICAgICAgICovDQorICAgICAgICAgICAg
-ICAgZGF0YS0+ZGF0YS5kbWEudHhjb25mLmRzdF9tYXhidXJzdCA9IDE7DQorICAgICAgIH0NCisN
-Cg0KQ2hlZXJzLA0KQmlqdQ0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206
-IEJpanUgRGFzDQo+IFNlbnQ6IDA0IEp1bHkgMjAyMiAwODoxMg0KPiBUbzogSmlyaSBTbGFieSA8
-amlyaXNsYWJ5QGtlcm5lbC5vcmc+OyBHcmVnIEtyb2FoLUhhcnRtYW4NCj4gPGdyZWdraEBsaW51
-eGZvdW5kYXRpb24ub3JnPg0KPiBDYzogQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5r
-b0BsaW51eC5pbnRlbC5jb20+OyBNaXF1ZWwgUmF5bmFsDQo+IDxtaXF1ZWwucmF5bmFsQGJvb3Rs
-aW4uY29tPjsgRW1pbCBSZW5uZXIgQmVydGhpbmcgPGtlcm5lbEBlc21pbC5kaz47IFBoaWwNCj4g
-RWR3b3J0aHkgPHBoaWwuZWR3b3J0aHlAcmVuZXNhcy5jb20+OyBKb2hhbiBIb3ZvbGQgPGpvaGFu
-QGtlcm5lbC5vcmc+Ow0KPiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBHZWVydCBVeXR0
-ZXJob2V2ZW4NCj4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPjsgQ2hyaXMgUGF0ZXJzb24gPENo
-cmlzLlBhdGVyc29uMkByZW5lc2FzLmNvbT47DQo+IEJpanUgRGFzIDxiaWp1LmRhc0BicC5yZW5l
-c2FzLmNvbT47IGxpbnV4LXJlbmVzYXMtc29jQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBS
-RTogW1BBVENIXSBzZXJpYWw6IDgyNTA6IGR3OiBGaXggdGhlIG1hY3JvDQo+IFJaTjFfVUFSVF94
-RE1BQ1JfOF9XT1JEX0JVUlNUDQo+IA0KPiBIaSBKaXJpLA0KPiANCj4gVGhhbmtzIGZvciB0aGUg
-ZmVlZGJhY2suDQo+IA0KPiA+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHNlcmlhbDogODI1MDogZHc6
-IEZpeCB0aGUgbWFjcm8NCj4gPiBSWk4xX1VBUlRfeERNQUNSXzhfV09SRF9CVVJTVA0KPiA+DQo+
-ID4gT24gMzAuIDA2LiAyMiwgMTA6MzksIEJpanUgRGFzIHdyb3RlOg0KPiA+ID4gQXMgcGVyIFJa
-L04xIHBlcmlwaGVyYWwgdXNlcg0KPiA+ID4gbWFudWFsKHIwMXVoMDc1MmVqMDEwMC1yem4xLXBl
-cmlwaGVyYWwucGRmKQ0KPiA+ID4gcmV2IDEuMC4wIE1hciwyMDE5LA0KPiA+DQo+ID4gSXMgdGhp
-cyBwdWJsaWMgYW55d2hlcmU/DQo+IA0KPiBZZXMsIEl0IGlzIGF2YWlsYWJsZSBoZXJlWzFdIHNl
-ZSBwYWdlIDcyIGFuZCA3My4NCj4gDQo+IFsxXSBodHRwczovL3d3dy5yZW5lc2FzLmNvbS91cy9l
-bi9kb2N1bWVudC9tYWgvcnpuMWQtZ3JvdXAtcnpuMXMtZ3JvdXAtDQo+IHJ6bjFsLWdyb3VwLXVz
-ZXJzLW1hbnVhbC1wZXJpcGhlcmFscz9sYW5ndWFnZT1lbiZyPTEwNTQ1NjENCj4gDQo+IA0KPiA+
-DQo+ID4gPiB0aGUgdmFsdWUgZm9yIDhfV09SRF9CVVJTVCBpcyA0KGIyLGIxPTLigJliMTApLg0K
-PiA+ID4NCj4gPiA+IFRoaXMgcGF0Y2ggZml4ZXMgdGhlIG1hY3JvIGFzIHBlciB0aGUgdXNlciBt
-YW51YWwuDQo+ID4NCj4gPiBJJ20gY3VyaW91cywgaXMgdGhlIGJvdHRvbSBiaXQgZnJvbSAiMyIg
-aWdub3JlZCBieSB0aGUgSFcgb3IgZG9lcyB0aGlzDQo+ID4gZml4IGEgcmVhbCBwcm9ibGVtIGlu
-IGJlaGF2aW9yPyBTdGF0aW5nIHRoYXQgbWlnaHQgaGVscCBiYWNrcG9ydGVycyB0bw0KPiA+IGRl
-Y2lkZSBpZiB0byB0YWtlIHRoZSBwYXRjaCBvciBub3QuDQo+IA0KPiBTZWUgcGFnZSA3MiBhbmQg
-NzMuDQo+IA0KPiBZZXMsIGl0IGZpeGVzIGEgcmVhbCBwcm9ibGVtIGFzIGJ5IHVzaW5nIGEgdmFs
-dWUgb2YgOCAsIHlvdSBhcmUgd3JvbmdseQ0KPiBjb25maWd1cmluZyBETUFfQlVSU1RfU0laRSBv
-ZiAxIGluc3RlYWQgb2YgRE1BX0JVUlNUX1NJWkUgb2YgOC4NCj4gDQo+IGIyLCBiMSBiVWFydF9E
-RVNUX0JVUlNUDQo+IF9TSVpFDQo+IERFU1RfQlVSU1RfU0laRQ0KPiBEZXN0aW5hdGlvbiBCdXJz
-dCBUcmFuc2FjdGlvbiBTaXplIGluIFRyYW5zbWl0IEZJRk8uDQo+IFVBUlQgaXMgdGhlIGZsb3cg
-Y29udHJvbGxlci4gVGh1cywgdGhlIHVzZXIgbXVzdCB3cml0ZSB0aGlzIGZpZWxkIGJlZm9yZQ0K
-PiBvciBhdCB0aGUgc2FtZSB0aW1lIHRoZSBETUEgbW9kZSBpcyBlbmFibGVkLiBOdW1iZXIgb2Yg
-ZGF0YSBieXRlLCB0byBiZQ0KPiB3cml0dGVuIHRvIHRoZSBUcmFuc21pdCBGSUZPIGV2ZXJ5IHRp
-bWUgYSB0cmFuc21pdCBidXJzdCB0cmFuc2FjdGlvbg0KPiByZXF1ZXN0IGFyZSBtYWRlIG9uIERN
-QSByZXF1ZXN0Lg0KPiAy4oCZYjAwID0gMSBieXRlDQo+IDLigJliMDEgPSA0IGJ5dGVzDQo+IDLi
-gJliMTAgPSA4IGJ5dGVzDQo+IDLigJliMTEgPSBSZXNlcnZlZCwgbm90IHVzZWQNCj4gDQo+IENo
-ZWVycywNCj4gQmlqdQ0KPiANCj4gDQo+ID4NCj4gPiA+IEZpeGVzOiBhYTYzZDc4NmNlYTIgKCJz
-ZXJpYWw6IDgyNTA6IGR3OiBBZGQgc3VwcG9ydCBmb3IgRE1BIGZsb3cNCj4gPiA+IGNvbnRyb2xs
-aW5nIGRldmljZXMiKQ0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQmlqdSBEYXMgPGJpanUuZGFzLmp6
-QGJwLnJlbmVzYXMuY29tPg0KPiA+ID4gLS0tDQo+ID4gPiAgIGRyaXZlcnMvdHR5L3NlcmlhbC84
-MjUwLzgyNTBfZHcuYyB8IDIgKy0NCj4gPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9u
-KCspLCAxIGRlbGV0aW9uKC0pDQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfZHcuYw0KPiA+ID4gYi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84
-MjUwX2R3LmMNCj4gPiA+IGluZGV4IGY1N2JiZDMyZWYxMS4uOTMxNDkwYjI3ZDZiIDEwMDY0NA0K
-PiA+ID4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9kdy5jDQo+ID4gPiArKysg
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMNCj4gPiA+IEBAIC00Nyw3ICs0Nyw3
-IEBADQo+ID4gPiAgICNkZWZpbmUgUlpOMV9VQVJUX3hETUFDUl9ETUFfRU4JCUJJVCgwKQ0KPiA+
-ID4gICAjZGVmaW5lIFJaTjFfVUFSVF94RE1BQ1JfMV9XT1JEX0JVUlNUCSgwIDw8IDEpDQo+ID4g
-PiAgICNkZWZpbmUgUlpOMV9VQVJUX3hETUFDUl80X1dPUkRfQlVSU1QJKDEgPDwgMSkNCj4gPiA+
-IC0jZGVmaW5lIFJaTjFfVUFSVF94RE1BQ1JfOF9XT1JEX0JVUlNUCSgzIDw8IDEpDQo+ID4gPiAr
-I2RlZmluZSBSWk4xX1VBUlRfeERNQUNSXzhfV09SRF9CVVJTVAkoMiA8PCAxKQ0KPiA+ID4gICAj
-ZGVmaW5lIFJaTjFfVUFSVF94RE1BQ1JfQkxLX1NaKHgpCSgoeCkgPDwgMykNCj4gPiA+DQo+ID4g
-PiAgIC8qIFF1aXJrcyAqLw0KPiA+DQo+ID4gdGhhbmtzLA0KPiA+IC0tDQo+ID4ganMNCg==
++Cc: Ilpo, the 8250_dw maintainer
++Cc: Serge, who I believe is the author of the lines in 8250_port you
+cited, sorry if I'm mistaken.
+
+On Tue, Jul 5, 2022 at 8:25 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>
+> Hi Jiri and Miquel,
+>
+> While testing serial driver with RZ/N1 on 5.15 kernel, which is the backp=
+ort of mainline kernel,
+> I seen performance issue with serial DMA for higher baud rates.
+>
+> The test app is taking 25 minutes finish, whereas with the below patch[1]=
+ it takes only 3 minutes to finish.
+>
+> Not sure has anyone seen this performance issue?
+>
+> [1]
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 468d1aca5968..321430176698 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2680,7 +2680,7 @@ static unsigned int serial8250_get_baud_rate(struct=
+ uart_port *port,
+>                 max =3D (port->uartclk + tolerance) / 4;
+>         } else {
+>                 min =3D port->uartclk / 16 / UART_DIV_MAX;
+> -               max =3D (port->uartclk + tolerance) / 16;
+> +               max =3D port->uartclk;
+>         }
+>
+> Note:-
+> I have added below change on 5.15 kernel to test on all possible use case=
+s.
+>
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
+8250_dw.c
+> index 7884fcd66d39..6d352981fb3e 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -643,6 +643,26 @@ static int dw8250_probe(struct platform_device *pdev=
+)
+>                 up->dma =3D &data->data.dma;
+>         }
+>
+> +       if (data->pdata->quirks & DW_UART_QUIRK_IS_DMA_FC) {
+> +               /*
+> +                * When the 'char timeout' irq fires because no more data=
+ has
+> +                * been received in some time, the 8250 driver stops the =
+DMA.
+> +                * However, if the DMAC has been setup to write more data=
+ to mem
+> +                * than is read from the UART FIFO, the data will *not* b=
+e
+> +                * written to memory.
+> +                * Therefore, we limit the width of writes to mem so that=
+ it is
+> +                * the same amount of data as read from the FIFO. You can=
+ use
+> +                * anything less than or equal, but same size is optimal
+> +                */
+> +               data->data.dma.rxconf.dst_addr_width =3D p->fifosize / 4;
+> +
+> +               /*
+> +                * Unless you set the maxburst to 1, if you send only 1 c=
+har, it
+> +                * doesn't get transmitted
+> +                */
+> +               data->data.dma.txconf.dst_maxburst =3D 1;
+> +       }
+> +
+>
+> Cheers,
+> Biju
+>
+> > -----Original Message-----
+> > From: Biju Das
+> > Sent: 04 July 2022 08:12
+> > To: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org>
+> > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Miquel Raynal
+> > <miquel.raynal@bootlin.com>; Emil Renner Berthing <kernel@esmil.dk>; Ph=
+il
+> > Edworthy <phil.edworthy@renesas.com>; Johan Hovold <johan@kernel.org>;
+> > linux-serial@vger.kernel.org; Geert Uytterhoeven
+> > <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>=
+;
+> > Biju Das <biju.das@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
+> > Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
+> > RZN1_UART_xDMACR_8_WORD_BURST
+> >
+> > Hi Jiri,
+> >
+> > Thanks for the feedback.
+> >
+> > > Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
+> > > RZN1_UART_xDMACR_8_WORD_BURST
+> > >
+> > > On 30. 06. 22, 10:39, Biju Das wrote:
+> > > > As per RZ/N1 peripheral user
+> > > > manual(r01uh0752ej0100-rzn1-peripheral.pdf)
+> > > > rev 1.0.0 Mar,2019,
+> > >
+> > > Is this public anywhere?
+> >
+> > Yes, It is available here[1] see page 72 and 73.
+> >
+> > [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-
+> > rzn1l-group-users-manual-peripherals?language=3Den&r=3D1054561
+> >
+> >
+> > >
+> > > > the value for 8_WORD_BURST is 4(b2,b1=3D2=E2=80=99b10).
+> > > >
+> > > > This patch fixes the macro as per the user manual.
+> > >
+> > > I'm curious, is the bottom bit from "3" ignored by the HW or does thi=
+s
+> > > fix a real problem in behavior? Stating that might help backporters t=
+o
+> > > decide if to take the patch or not.
+> >
+> > See page 72 and 73.
+> >
+> > Yes, it fixes a real problem as by using a value of 8 , you are wrongly
+> > configuring DMA_BURST_SIZE of 1 instead of DMA_BURST_SIZE of 8.
+> >
+> > b2, b1 bUart_DEST_BURST
+> > _SIZE
+> > DEST_BURST_SIZE
+> > Destination Burst Transaction Size in Transmit FIFO.
+> > UART is the flow controller. Thus, the user must write this field befor=
+e
+> > or at the same time the DMA mode is enabled. Number of data byte, to be
+> > written to the Transmit FIFO every time a transmit burst transaction
+> > request are made on DMA request.
+> > 2=E2=80=99b00 =3D 1 byte
+> > 2=E2=80=99b01 =3D 4 bytes
+> > 2=E2=80=99b10 =3D 8 bytes
+> > 2=E2=80=99b11 =3D Reserved, not used
+> >
+> > Cheers,
+> > Biju
+> >
+> >
+> > >
+> > > > Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow
+> > > > controlling devices")
+> > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > > ---
+> > > >   drivers/tty/serial/8250/8250_dw.c | 2 +-
+> > > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/tty/serial/8250/8250_dw.c
+> > > > b/drivers/tty/serial/8250/8250_dw.c
+> > > > index f57bbd32ef11..931490b27d6b 100644
+> > > > --- a/drivers/tty/serial/8250/8250_dw.c
+> > > > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > > > @@ -47,7 +47,7 @@
+> > > >   #define RZN1_UART_xDMACR_DMA_EN         BIT(0)
+> > > >   #define RZN1_UART_xDMACR_1_WORD_BURST   (0 << 1)
+> > > >   #define RZN1_UART_xDMACR_4_WORD_BURST   (1 << 1)
+> > > > -#define RZN1_UART_xDMACR_8_WORD_BURST    (3 << 1)
+> > > > +#define RZN1_UART_xDMACR_8_WORD_BURST    (2 << 1)
+> > > >   #define RZN1_UART_xDMACR_BLK_SZ(x)      ((x) << 3)
+> > > >
+> > > >   /* Quirks */
+> > >
+> > > thanks,
+> > > --
+> > > js
+
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
