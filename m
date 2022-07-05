@@ -2,269 +2,239 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4A8CCA47B
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 16:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BABC43334
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 17:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiGEQcC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 12:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        id S232876AbiGER1Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 13:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiGEQcC (ORCPT
+        with ESMTP id S229478AbiGER1P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 12:32:02 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4FF18B0C;
-        Tue,  5 Jul 2022 09:32:00 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id i18so21456817lfu.8;
-        Tue, 05 Jul 2022 09:32:00 -0700 (PDT)
+        Tue, 5 Jul 2022 13:27:15 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B237E201AB
+        for <linux-serial@vger.kernel.org>; Tue,  5 Jul 2022 10:27:12 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id he28so14686187qtb.13
+        for <linux-serial@vger.kernel.org>; Tue, 05 Jul 2022 10:27:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=4NbkobGzDYSn8V9S6l0le1zTKfSXv2REJlNDOFKrDaY=;
-        b=EHlsKLGkyfVfDz9obNnJaUFz9EVbphNwYOyWUubOTbvGPQfIl25DlGHBxz8PvAx6VK
-         Ds3uReSnfmW6n22ccpDslHIDC2jqFXYPTB/+jFeHK/hDBnXuD6GBB351dY+V0NHSKpb0
-         rxf+Se2ETd0zECmDpAJ/Igq4Gkt8sh8+FUv4QztPK9LCTCYpZMSWEtjC5FBGMnCxgCWF
-         qaM2lMtwJgbU+akDNEpVmajG9eNtHED4L0WxEKlw8fcQ+qfKHTe5MqgHpR+OHD3wXIUK
-         Kk5zYEK4z/jt8jWbuS90zAHnnwFrrYVpWjJD+PXANhiGqzDxxaPhuNLpWAShE7e5mAod
-         fHkA==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=e0cbtTV8D8I3lOo/vO+9X0ZwprvcSpt2H9tajNnikM4=;
+        b=dH6H4ULBla8TNkOkdWKPPd+LEzx0ueIKAW3aFSlGPLhdyz+iLlExCfVQkD0YK97gkG
+         Y3xuNs8PnFdd263MdVIhUkt8epGtVuOpZa9/50H1WZentJBrW1LA4++c5mChPmqg/4qM
+         BlzI9f1/KgCLEPMsdeEK9boYaqTsTT2dr6vhE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4NbkobGzDYSn8V9S6l0le1zTKfSXv2REJlNDOFKrDaY=;
-        b=0oxmBJUH0lCP9xgZ8TNLuxeOsE/KcM8hsdQhsbKqyafKwGMUy2s9kNwN8msQ6RPV2q
-         CQuB2KuZCa8BslK8nvEtobOWargwDw17zVWV58jU5q7gvOiyeP55YR68Ilh4nfi4H8X0
-         bdcxvnZd0jd3o3olfIzKUHb/zYbQ0lKgADsh4++/PUK4edvSzRlxCXFISSI6UGK/7zLR
-         xIAHt8FYDIVdRxp7bbYgskO9B/z4oPIMeZUTUxJ6zApKL7XRvuEGG7nHsObD17Wmrrkr
-         DcSRJeGghecnTi6GACEALe83q+c5L95WOObQk7OeEpiAAYsPtD3LnexYmyaP7LNWSg6K
-         f+eQ==
-X-Gm-Message-State: AJIora87wClsGtTL0d/8+Rk+TtzcQvrTqHPzLJY7DiH20FNPktaB+D5+
-        nbLBvF4M/CI6ZJYHRCILDzo=
-X-Google-Smtp-Source: AGRyM1uTgVG1uciR/SjcTbkcBiDpIihw393o1ScHTp83oPUxLEwvqOf6j+GNv3jz/PPALR09GSTD8Q==
-X-Received: by 2002:a05:6512:1292:b0:481:4cf5:f27a with SMTP id u18-20020a056512129200b004814cf5f27amr18697869lfs.656.1657038719153;
-        Tue, 05 Jul 2022 09:31:59 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id s11-20020a056512214b00b0047fbc399ad2sm5669723lfr.245.2022.07.05.09.31.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=e0cbtTV8D8I3lOo/vO+9X0ZwprvcSpt2H9tajNnikM4=;
+        b=m6NI9FHBt5l1lMc0qQGKJlTw7lnEDa2cBJRkOlo7BJyoORM9VKf3GhzBStjnCfJrNM
+         GR8MH/thsJG1jGazLd2CuPUWnzMGTAr6pweDvDlsb7qqRkCXtBhbzzIiXHyUMGHFkTcL
+         cWURrE9WCp3tfx+wd/gjDQhWcFITd5ZIUMfPdgQg4OF1a5BId/YiR/VHO1Tnj5YwHlEH
+         +x2XuERIna9DuZrztIZPRtRLmYdyDXNYfLNaKDgQWu80Fp6XoJ5Xdo4h8mg59HPzQe5G
+         IoPMf9k7JryVQpOhQIfAHG+b+rYLANkO3XqfDZl1EdTi/0rwy6GJJMiFMk4x71XRFMgL
+         40CA==
+X-Gm-Message-State: AJIora/kpmK/SjblMRuDgLNObSp8D9ZX9HnQJdzDXaoGyUl1xwOrCItd
+        J1ScE/v4V05A+mzu3Pm/rKGSnw==
+X-Google-Smtp-Source: AGRyM1vOVkXysb0YxR84eHakGgsbHGQgGl1iVwbyjJOjUVtejkZXor5EdPQQsA1F1Wx/mschZEKEQA==
+X-Received: by 2002:a05:6214:250c:b0:472:6e5e:e2f3 with SMTP id gf12-20020a056214250c00b004726e5ee2f3mr32999791qvb.45.1657042031661;
+        Tue, 05 Jul 2022 10:27:11 -0700 (PDT)
+Received: from ubuntu-22.localdomain ([192.19.222.250])
+        by smtp.gmail.com with ESMTPSA id d8-20020ac85ac8000000b00304e70585f9sm24439851qtd.72.2022.07.05.10.27.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 09:31:58 -0700 (PDT)
-Date:   Tue, 5 Jul 2022 19:31:56 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 05 Jul 2022 10:27:10 -0700 (PDT)
+From:   William Zhang <william.zhang@broadcom.com>
+To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     joel.peshkin@broadcom.com, kursad.oney@broadcom.com,
+        f.fainelli@gmail.com, anand.gore@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        philippe.reynes@softathome.com, dan.beygelman@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Johan Hovold <johan@kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
- RZN1_UART_xDMACR_8_WORD_BURST
-Message-ID: <20220705163156.56ybg35w3ytdmhgl@mobilestation>
-References: <20220630083909.4294-1-biju.das.jz@bp.renesas.com>
- <7431817a-ed5e-1de6-9f69-fda2c1907861@kernel.org>
- <OS0PR01MB5922F80CCAF4DFA9C2970FB686BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <OS0PR01MB5922189B75A4C3A93BFE273B86819@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jan Dabros <jsd@semihalf.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jie Deng <jie.deng@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matt Mackall <mpm@selenic.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Michael Walle <michael@walle.cc>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Olof Johansson <olof@lixom.net>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Scott Branden <sbranden@broadcom.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thierry Reding <treding@nvidia.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tyrone Ting <kfting@nuvoton.com>,
+        Vinod Koul <vkoul@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, soc@kernel.org
+Subject: [PATCH 0/9] arm: bcmbca: Move BCM63138 SoC support under ARCH_BCMBCA
+Date:   Tue,  5 Jul 2022 10:26:04 -0700
+Message-Id: <20220705172613.21152-1-william.zhang@broadcom.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VfBPou1TLk4ygsqF3VSJV84_UQLpwSojELsOt9F42Z_4w@mail.gmail.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000b1ea5405e31229e1"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+--000000000000b1ea5405e31229e1
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 05, 2022 at 11:30:01AM +0200, Andy Shevchenko wrote:
-> +Cc: Ilpo, the 8250_dw maintainer
+Now that Broadcom Broadband arch ARCH_BCMBCA is in the kernel, this change
+migrates the existing broadband chip BCM63138 support to ARCH_BCMBCA. It also
+delete the old ARCH_BCM_63XX config as no other chip uses it.
 
-> +Cc: Serge, who I believe is the author of the lines in 8250_port you
-> cited, sorry if I'm mistaken.
+Verified on BCM963138REF board with ramdisk boot.
 
-Right, I was the one who got back the line with the proper max baud rate
-calculation procedure in commit 7b668c064ec3 ("serial: 8250: Fix max
-baud limit in generic 8250 port"). In accordance with [1, 2] the
-interface baud rate is (DIV*16)-th of the reference clock frequency. So
-the patch suggested by Biju will work only until he gets to the zero
-divisor value. Without my fix the baud-rate search algorithm may
-end up with getting unsupported baud-rates causing to have
-zero-divisor, which will lead to the serial interface freeze/disable
-[2].
 
-[1] DesignWare DW_apb_uart Databook 4.03a, December 2020, p. 24
-[2] DesignWare DW_apb_uart Databook 4.03a, December 2020, p. 125
+William Zhang (9):
+  dt-bindings: arm: add BCM63138 SoC
+  ARM: dts: Move BCM963138DVT board dts to ARCH_BCMBCA
+  ARM: dts: update dts files for bcmbca SoC BCM63138
+  ARM: dts: Add BCM63138 generic board dts
+  arm: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
+  arm: bcmbca: Move BCM63138 ARCH_BCM_63XX config to ARCH_BCMBCA
+  arm: bcmbca: Add BCMBCA sub platforms
+  MAINTAINERS: Move BCM63138 to bcmbca arch entry
+  ARM: multi_v7_defconfig: Update configs for BCM63138
 
-> 
-> On Tue, Jul 5, 2022 at 8:25 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> >
-> > Hi Jiri and Miquel,
-> >
-> > While testing serial driver with RZ/N1 on 5.15 kernel, which is the backport of mainline kernel,
-> > I seen performance issue with serial DMA for higher baud rates.
-> >
-> > The test app is taking 25 minutes finish, whereas with the below patch[1] it takes only 3 minutes to finish.
-> >
-> > Not sure has anyone seen this performance issue?
-> >
-> > [1]
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > index 468d1aca5968..321430176698 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2680,7 +2680,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
-> >                 max = (port->uartclk + tolerance) / 4;
-> >         } else {
-> >                 min = port->uartclk / 16 / UART_DIV_MAX;
+ .../bindings/arm/bcm/brcm,bcmbca.yaml         |  8 +++
+ MAINTAINERS                                   | 10 +--
+ arch/arm/Kconfig.debug                        |  2 +-
+ arch/arm/boot/dts/Makefile                    |  4 +-
+ arch/arm/boot/dts/bcm63138.dtsi               | 18 +++---
+ arch/arm/boot/dts/bcm963138.dts               | 26 ++++++++
+ arch/arm/boot/dts/bcm963138dvt.dts            |  8 +--
+ arch/arm/configs/multi_v7_defconfig           |  4 +-
+ arch/arm/mach-bcm/Kconfig                     | 61 +++++++++++++------
+ arch/arm/mach-bcm/Makefile                    |  7 +--
+ arch/arm/mach-bcm/bcm63xx.c                   | 17 ------
+ drivers/ata/Kconfig                           |  2 +-
+ drivers/char/hw_random/Kconfig                |  2 +-
+ drivers/clk/bcm/Kconfig                       |  4 +-
+ drivers/i2c/busses/Kconfig                    |  2 +-
+ drivers/phy/broadcom/Kconfig                  |  2 +-
+ drivers/spi/Kconfig                           |  2 +-
+ drivers/tty/serial/Kconfig                    |  4 +-
+ 18 files changed, 108 insertions(+), 75 deletions(-)
+ create mode 100644 arch/arm/boot/dts/bcm963138.dts
+ delete mode 100644 arch/arm/mach-bcm/bcm63xx.c
 
-> > -               max = (port->uartclk + tolerance) / 16;
-> > +               max = port->uartclk;
+-- 
+2.34.1
 
-Are you sure uartclk is initialized with a real reference clock value?
 
--Sergey
+--000000000000b1ea5405e31229e1
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> >         }
-> >
-> > Note:-
-> > I have added below change on 5.15 kernel to test on all possible use cases.
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> > index 7884fcd66d39..6d352981fb3e 100644
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -643,6 +643,26 @@ static int dw8250_probe(struct platform_device *pdev)
-> >                 up->dma = &data->data.dma;
-> >         }
-> >
-> > +       if (data->pdata->quirks & DW_UART_QUIRK_IS_DMA_FC) {
-> > +               /*
-> > +                * When the 'char timeout' irq fires because no more data has
-> > +                * been received in some time, the 8250 driver stops the DMA.
-> > +                * However, if the DMAC has been setup to write more data to mem
-> > +                * than is read from the UART FIFO, the data will *not* be
-> > +                * written to memory.
-> > +                * Therefore, we limit the width of writes to mem so that it is
-> > +                * the same amount of data as read from the FIFO. You can use
-> > +                * anything less than or equal, but same size is optimal
-> > +                */
-> > +               data->data.dma.rxconf.dst_addr_width = p->fifosize / 4;
-> > +
-> > +               /*
-> > +                * Unless you set the maxburst to 1, if you send only 1 char, it
-> > +                * doesn't get transmitted
-> > +                */
-> > +               data->data.dma.txconf.dst_maxburst = 1;
-> > +       }
-> > +
-> >
-> > Cheers,
-> > Biju
-> >
-> > > -----Original Message-----
-> > > From: Biju Das
-> > > Sent: 04 July 2022 08:12
-> > > To: Jiri Slaby <jirislaby@kernel.org>; Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org>
-> > > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Miquel Raynal
-> > > <miquel.raynal@bootlin.com>; Emil Renner Berthing <kernel@esmil.dk>; Phil
-> > > Edworthy <phil.edworthy@renesas.com>; Johan Hovold <johan@kernel.org>;
-> > > linux-serial@vger.kernel.org; Geert Uytterhoeven
-> > > <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>;
-> > > Biju Das <biju.das@bp.renesas.com>; linux-renesas-soc@vger.kernel.org
-> > > Subject: RE: [PATCH] serial: 8250: dw: Fix the macro
-> > > RZN1_UART_xDMACR_8_WORD_BURST
-> > >
-> > > Hi Jiri,
-> > >
-> > > Thanks for the feedback.
-> > >
-> > > > Subject: Re: [PATCH] serial: 8250: dw: Fix the macro
-> > > > RZN1_UART_xDMACR_8_WORD_BURST
-> > > >
-> > > > On 30. 06. 22, 10:39, Biju Das wrote:
-> > > > > As per RZ/N1 peripheral user
-> > > > > manual(r01uh0752ej0100-rzn1-peripheral.pdf)
-> > > > > rev 1.0.0 Mar,2019,
-> > > >
-> > > > Is this public anywhere?
-> > >
-> > > Yes, It is available here[1] see page 72 and 73.
-> > >
-> > > [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-
-> > > rzn1l-group-users-manual-peripherals?language=en&r=1054561
-> > >
-> > >
-> > > >
-> > > > > the value for 8_WORD_BURST is 4(b2,b1=2’b10).
-> > > > >
-> > > > > This patch fixes the macro as per the user manual.
-> > > >
-> > > > I'm curious, is the bottom bit from "3" ignored by the HW or does this
-> > > > fix a real problem in behavior? Stating that might help backporters to
-> > > > decide if to take the patch or not.
-> > >
-> > > See page 72 and 73.
-> > >
-> > > Yes, it fixes a real problem as by using a value of 8 , you are wrongly
-> > > configuring DMA_BURST_SIZE of 1 instead of DMA_BURST_SIZE of 8.
-> > >
-> > > b2, b1 bUart_DEST_BURST
-> > > _SIZE
-> > > DEST_BURST_SIZE
-> > > Destination Burst Transaction Size in Transmit FIFO.
-> > > UART is the flow controller. Thus, the user must write this field before
-> > > or at the same time the DMA mode is enabled. Number of data byte, to be
-> > > written to the Transmit FIFO every time a transmit burst transaction
-> > > request are made on DMA request.
-> > > 2’b00 = 1 byte
-> > > 2’b01 = 4 bytes
-> > > 2’b10 = 8 bytes
-> > > 2’b11 = Reserved, not used
-> > >
-> > > Cheers,
-> > > Biju
-> > >
-> > >
-> > > >
-> > > > > Fixes: aa63d786cea2 ("serial: 8250: dw: Add support for DMA flow
-> > > > > controlling devices")
-> > > > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > > > ---
-> > > > >   drivers/tty/serial/8250/8250_dw.c | 2 +-
-> > > > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/tty/serial/8250/8250_dw.c
-> > > > > b/drivers/tty/serial/8250/8250_dw.c
-> > > > > index f57bbd32ef11..931490b27d6b 100644
-> > > > > --- a/drivers/tty/serial/8250/8250_dw.c
-> > > > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > > > > @@ -47,7 +47,7 @@
-> > > > >   #define RZN1_UART_xDMACR_DMA_EN         BIT(0)
-> > > > >   #define RZN1_UART_xDMACR_1_WORD_BURST   (0 << 1)
-> > > > >   #define RZN1_UART_xDMACR_4_WORD_BURST   (1 << 1)
-> > > > > -#define RZN1_UART_xDMACR_8_WORD_BURST    (3 << 1)
-> > > > > +#define RZN1_UART_xDMACR_8_WORD_BURST    (2 << 1)
-> > > > >   #define RZN1_UART_xDMACR_BLK_SZ(x)      ((x) << 3)
-> > > > >
-> > > > >   /* Quirks */
-> > > >
-> > > > thanks,
-> > > > --
-> > > > js
-> 
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+MIIQcAYJKoZIhvcNAQcCoIIQYTCCEF0CAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3HMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBU8wggQ3oAMCAQICDDbx5fpN++xs1+5IgzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwODA1MjJaFw0yMjA5MDUwODEwMTZaMIGQ
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFjAUBgNVBAMTDVdpbGxpYW0gWmhhbmcxKTAnBgkqhkiG9w0B
+CQEWGndpbGxpYW0uemhhbmdAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEA4fxIZbzNLvB+7yJE8mbojRaOoaK1uZy1/etc55NzisSJJfY36BAlb7LlMDsza2/BcjXh
+lSACuzeOyI8sy2pKHGt5SZCMHeHaxP8q4ZNR6EGz7+5Lopw6ies8fkDoZ/XFIHpfU2eKcIYrxI25
+bTaYAPDA50BHTPDFzPNkWEIIQaSBBkk55bndnMmB/pPR/IhKjLefDIhIsiWLrvQstTiSf7iUCwMf
+TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
+fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
+BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
+YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
+BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
+MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
+YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
+Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
+HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
+BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
++EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
+abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
+ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
+W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
+1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
+MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
+VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
+SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJzZcMrLCPErIibvl0hXUANg4zg4
+ed6ZN3tb0yJx/4VmMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
+MDcwNTE3MjcxMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
+AwQCATANBgkqhkiG9w0BAQEFAASCAQDPYP0sJ5RAbvzNwmxKl8TGITAELC7t1EGKP4PsS/8TDFYx
+hM59y1oFRsk7qUSxg0SrfBoZ57bwGwIl8orZRhNAgcZn11Vnxf2R6kORMjXIC0NKe71aYQREY2wj
+WmJz0dea3cGwKbsNIFXlCq4YXjp3oPu2dmv9VDW/N7vlhOcbfCSPP+EeoPAVQrmJ3Fn+MJLOCGOW
+7I5hwg0faEcbj32AEOJPha681Gg/vWlsGuc2itYJkoRbHtdZPpvTOIlQ6WO2O1xwqr60tQi3w8uo
+K/P0yViS5O3/zrmMxnbgxDYy04KdGP/D3Gi4Nx2btrbS+wQ6H0huen6PqIELW6E3sKvZ
+--000000000000b1ea5405e31229e1--
