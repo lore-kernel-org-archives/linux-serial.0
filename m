@@ -2,372 +2,397 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1CECCA48B
-	for <linux-serial@archiver.kernel.org>; Wed,  6 Jul 2022 16:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACABCCCA473
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jul 2022 17:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234646AbiGFQyh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 Jul 2022 12:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
+        id S234227AbiGFRo5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 6 Jul 2022 13:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233414AbiGFQy0 (ORCPT
+        with ESMTP id S234220AbiGFRoj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 Jul 2022 12:54:26 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57903286F4;
-        Wed,  6 Jul 2022 09:54:24 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id B32B71C81192;
-        Thu,  7 Jul 2022 00:54:19 +0800 (CST)
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Thu, 7 Jul 2022
- 00:54:19 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Thu, 7 Jul 2022 00:54:19 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 83D6663A51; Wed,  6 Jul 2022 19:54:17 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
-        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
-        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
-        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
-        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
-        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
-        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
-        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v7 09/16] reset: npcm: Add NPCM8XX support
-Date:   Wed, 6 Jul 2022 19:53:59 +0300
-Message-ID: <20220706165406.117349-10-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220706165406.117349-1-tmaimon77@gmail.com>
-References: <20220706165406.117349-1-tmaimon77@gmail.com>
+        Wed, 6 Jul 2022 13:44:39 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717B32C133;
+        Wed,  6 Jul 2022 10:44:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657129450; x=1688665450;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=C21R6YwpZ6S+qazhFSa7FqJfh0q5us7JeiD6mUwqoN8=;
+  b=cH7mHP/OS5MMT+W++9i7U7v9qv3T7cGfYyPE0LtD2qRYQiAVXLtJZCPI
+   2MDBJf1WnP91DsoemcndDIiP+2ba2TsTz2wRMlOdqKMqS0EUARH7brs6H
+   HzjFG+QC1mPb0WA9urmuj6k6w0nyXXhnGA/eRQ5F/jDAULJZl2GysERZI
+   k=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 06 Jul 2022 10:44:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 10:44:07 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Jul 2022 10:44:07 -0700
+Received: from [10.216.39.82] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Jul 2022
+ 10:44:02 -0700
+Message-ID: <69e3fec3-bd49-8877-f1f8-453b09b8c940@quicinc.com>
+Date:   Wed, 6 Jul 2022 23:13:59 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>,
+        "Vijaya Krishna Nivarthi (Temp)" <vnivarth@qti.qualcomm.com>
+CC:     Andy Gross <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>
+References: <1656496841-5853-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UXP+dfYEHpsS_djnWYxNVUS__2Uu5Mmxt2G4T=vfSSQQ@mail.gmail.com>
+ <BL0PR02MB4564A1EC37911A464BBEC260FABD9@BL0PR02MB4564.namprd02.prod.outlook.com>
+ <CAD=FV=XCgsyTRT-T5jKN6c7tJ=du8gbpkMccm2VZpz+TFWyLsw@mail.gmail.com>
+ <BL0PR02MB45643EEB3C1571E0F2364B8FFABE9@BL0PR02MB4564.namprd02.prod.outlook.com>
+ <CAD=FV=Up_NNd5RNJ+xLrPOHfPb_YG1ut=BjU=O2yP8w2hG9Ugw@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=Up_NNd5RNJ+xLrPOHfPb_YG1ut=BjU=O2yP8w2hG9Ugw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Updated the NPCM reset driver to add support for Nuvoton BMC NPCM8XX SoC.
-As part of adding NPCM8XX support:
-- Add NPCM8XX specific compatible string.
-- Add NPCM8XX USB reset.
-- Add data to handle architecture-specific reset parameters.
-- Some of the Reset Id and number of resets are different from NPCM7XX.
+Hi,
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- drivers/reset/reset-npcm.c | 211 ++++++++++++++++++++++++++++++-------
- 1 file changed, 173 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/reset/reset-npcm.c b/drivers/reset/reset-npcm.c
-index b08f8d8a1d63..24c55efa98e5 100644
---- a/drivers/reset/reset-npcm.c
-+++ b/drivers/reset/reset-npcm.c
-@@ -17,13 +17,20 @@
- 
- /* NPCM7xx GCR registers */
- #define NPCM_MDLR_OFFSET	0x7C
--#define NPCM_MDLR_USBD0		BIT(9)
--#define NPCM_MDLR_USBD1		BIT(8)
--#define NPCM_MDLR_USBD2_4	BIT(21)
--#define NPCM_MDLR_USBD5_9	BIT(22)
-+#define NPCM7XX_MDLR_USBD0	BIT(9)
-+#define NPCM7XX_MDLR_USBD1	BIT(8)
-+#define NPCM7XX_MDLR_USBD2_4	BIT(21)
-+#define NPCM7XX_MDLR_USBD5_9	BIT(22)
-+
-+/* NPCM8xx MDLR bits */
-+#define NPCM8XX_MDLR_USBD0_3	BIT(9)
-+#define NPCM8XX_MDLR_USBD4_7	BIT(22)
-+#define NPCM8XX_MDLR_USBD8	BIT(24)
-+#define NPCM8XX_MDLR_USBD9	BIT(21)
- 
- #define NPCM_USB1PHYCTL_OFFSET	0x140
- #define NPCM_USB2PHYCTL_OFFSET	0x144
-+#define NPCM_USB3PHYCTL_OFFSET	0x148
- #define NPCM_USBXPHYCTL_RS	BIT(28)
- 
- /* NPCM7xx Reset registers */
-@@ -49,12 +56,38 @@
- #define NPCM_IPSRST3_USBPHY1	BIT(24)
- #define NPCM_IPSRST3_USBPHY2	BIT(25)
- 
-+#define NPCM_IPSRST4		0x74
-+#define NPCM_IPSRST4_USBPHY3	BIT(25)
-+#define NPCM_IPSRST4_USB_HOST2	BIT(31)
-+
- #define NPCM_RC_RESETS_PER_REG	32
- #define NPCM_MASK_RESETS	GENMASK(4, 0)
- 
-+enum {
-+	BMC_NPCM7XX = 0,
-+	BMC_NPCM8XX,
-+};
-+
-+static const u32 npxm7xx_ipsrst[] = {NPCM_IPSRST1, NPCM_IPSRST2, NPCM_IPSRST3};
-+static const u32 npxm8xx_ipsrst[] = {NPCM_IPSRST1, NPCM_IPSRST2, NPCM_IPSRST3,
-+	NPCM_IPSRST4};
-+
-+struct npcm_reset_info {
-+	u32 bmc_id;
-+	u32 num_ipsrst;
-+	const u32 *ipsrst;
-+};
-+
-+static const struct npcm_reset_info npxm7xx_reset_info[] = {
-+	{.bmc_id = BMC_NPCM7XX, .num_ipsrst = 3, .ipsrst = npxm7xx_ipsrst}};
-+static const struct npcm_reset_info npxm8xx_reset_info[] = {
-+	{.bmc_id = BMC_NPCM8XX, .num_ipsrst = 4, .ipsrst = npxm8xx_ipsrst}};
-+
- struct npcm_rc_data {
- 	struct reset_controller_dev rcdev;
- 	struct notifier_block restart_nb;
-+	const struct npcm_reset_info *info;
-+	struct regmap *gcr_regmap;
- 	u32 sw_reset_number;
- 	void __iomem *base;
- 	spinlock_t lock;
-@@ -120,14 +153,24 @@ static int npcm_rc_status(struct reset_controller_dev *rcdev,
- static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
- 			    const struct of_phandle_args *reset_spec)
- {
-+	struct npcm_rc_data *rc = to_rc_data(rcdev);
- 	unsigned int offset, bit;
-+	bool offset_found = false;
-+	int off_num;
- 
- 	offset = reset_spec->args[0];
--	if (offset != NPCM_IPSRST1 && offset != NPCM_IPSRST2 &&
--	    offset != NPCM_IPSRST3) {
-+	for (off_num = 0 ; off_num < rc->info->num_ipsrst ; off_num++) {
-+		if (offset == rc->info->ipsrst[off_num]) {
-+			offset_found = true;
-+			break;
-+		}
-+	}
-+
-+	if (!offset_found) {
- 		dev_err(rcdev->dev, "Error reset register (0x%x)\n", offset);
- 		return -EINVAL;
- 	}
-+
- 	bit = reset_spec->args[1];
- 	if (bit >= NPCM_RC_RESETS_PER_REG) {
- 		dev_err(rcdev->dev, "Error reset number (%d)\n", bit);
-@@ -138,49 +181,29 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
- }
- 
- static const struct of_device_id npcm_rc_match[] = {
--	{ .compatible = "nuvoton,npcm750-reset" },
-+	{ .compatible = "nuvoton,npcm750-reset", .data = &npxm7xx_reset_info},
-+	{ .compatible = "nuvoton,npcm845-reset", .data = &npxm8xx_reset_info},
- 	{ }
- };
- 
--/*
-- *  The following procedure should be observed in USB PHY, USB device and
-- *  USB host initialization at BMC boot
-- */
--static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
-+static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
- {
- 	u32 mdlr, iprst1, iprst2, iprst3;
--	struct device *dev = &pdev->dev;
--	struct regmap *gcr_regmap;
- 	u32 ipsrst1_bits = 0;
- 	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
- 	u32 ipsrst3_bits = 0;
--	const char *gcr_dt;
--
--	gcr_dt = (const char *)
--	of_match_device(dev->driver->of_match_table, dev)->data;
--
--	gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
--	if (IS_ERR(gcr_regmap)) {
--		dev_warn(&pdev->dev, "Failed to find nuvoton,sysgcr property, please update the device tree\n");
--		dev_info(&pdev->dev, "Using nuvoton,npcm750-gcr for Poleg backward compatibility\n");
--		gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
--		if (IS_ERR(gcr_regmap)) {
--			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-gcr");
--			return PTR_ERR(gcr_regmap);
--		}
--	}
- 
- 	/* checking which USB device is enabled */
--	regmap_read(gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
--	if (!(mdlr & NPCM_MDLR_USBD0))
-+	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
-+	if (!(mdlr & NPCM7XX_MDLR_USBD0))
- 		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
--	if (!(mdlr & NPCM_MDLR_USBD1))
-+	if (!(mdlr & NPCM7XX_MDLR_USBD1))
- 		ipsrst1_bits |= NPCM_IPSRST1_USBD1;
--	if (!(mdlr & NPCM_MDLR_USBD2_4))
-+	if (!(mdlr & NPCM7XX_MDLR_USBD2_4))
- 		ipsrst1_bits |= (NPCM_IPSRST1_USBD2 |
- 				 NPCM_IPSRST1_USBD3 |
- 				 NPCM_IPSRST1_USBD4);
--	if (!(mdlr & NPCM_MDLR_USBD0)) {
-+	if (!(mdlr & NPCM7XX_MDLR_USBD0)) {
- 		ipsrst1_bits |= (NPCM_IPSRST1_USBD5 |
- 				 NPCM_IPSRST1_USBD6);
- 		ipsrst3_bits |= (NPCM_IPSRST3_USBD7 |
-@@ -203,9 +226,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	writel(iprst3, rc->base + NPCM_IPSRST3);
- 
- 	/* clear USB PHY RS bit */
--	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, 0);
--	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, 0);
- 
- 	/* deassert reset USB PHY */
-@@ -215,9 +238,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	udelay(50);
- 
- 	/* set USB PHY RS bit */
--	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
--	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
- 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
- 
- 	/* deassert reset USB devices*/
-@@ -228,6 +251,118 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
- 	writel(iprst1, rc->base + NPCM_IPSRST1);
- 	writel(iprst2, rc->base + NPCM_IPSRST2);
- 	writel(iprst3, rc->base + NPCM_IPSRST3);
-+}
-+
-+static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
-+{
-+	u32 mdlr, iprst1, iprst2, iprst3, iprst4;
-+	u32 ipsrst1_bits = 0;
-+	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
-+	u32 ipsrst3_bits = 0;
-+	u32 ipsrst4_bits = NPCM_IPSRST4_USB_HOST2 | NPCM_IPSRST4_USBPHY3;
-+
-+	/* checking which USB device is enabled */
-+	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
-+	if (!(mdlr & NPCM8XX_MDLR_USBD0_3)) {
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
-+		ipsrst1_bits |= (NPCM_IPSRST1_USBD1 |
-+				 NPCM_IPSRST1_USBD2 |
-+				 NPCM_IPSRST1_USBD3);
-+	}
-+	if (!(mdlr & NPCM8XX_MDLR_USBD4_7)) {
-+		ipsrst1_bits |= (NPCM_IPSRST1_USBD4 |
-+				 NPCM_IPSRST1_USBD5 |
-+				 NPCM_IPSRST1_USBD6);
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD7;
-+	}
-+
-+	if (!(mdlr & NPCM8XX_MDLR_USBD8))
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD8;
-+	if (!(mdlr & NPCM8XX_MDLR_USBD9))
-+		ipsrst3_bits |= NPCM_IPSRST3_USBD9;
-+
-+	/* assert reset USB PHY and USB devices */
-+	iprst1 = readl(rc->base + NPCM_IPSRST1);
-+	iprst2 = readl(rc->base + NPCM_IPSRST2);
-+	iprst3 = readl(rc->base + NPCM_IPSRST3);
-+	iprst4 = readl(rc->base + NPCM_IPSRST4);
-+
-+	iprst1 |= ipsrst1_bits;
-+	iprst2 |= ipsrst2_bits;
-+	iprst3 |= (ipsrst3_bits | NPCM_IPSRST3_USBPHY1 |
-+		   NPCM_IPSRST3_USBPHY2);
-+	iprst2 |= ipsrst4_bits;
-+
-+	writel(iprst1, rc->base + NPCM_IPSRST1);
-+	writel(iprst2, rc->base + NPCM_IPSRST2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+
-+	/* clear USB PHY RS bit */
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, 0);
-+
-+	/* deassert reset USB PHY */
-+	iprst3 &= ~(NPCM_IPSRST3_USBPHY1 | NPCM_IPSRST3_USBPHY2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	iprst4 &= ~NPCM_IPSRST4_USBPHY3;
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+
-+	/* set USB PHY RS bit */
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
-+			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
-+
-+	/* deassert reset USB devices*/
-+	iprst1 &= ~ipsrst1_bits;
-+	iprst2 &= ~ipsrst2_bits;
-+	iprst3 &= ~ipsrst3_bits;
-+	iprst4 &= ~ipsrst4_bits;
-+
-+	writel(iprst1, rc->base + NPCM_IPSRST1);
-+	writel(iprst2, rc->base + NPCM_IPSRST2);
-+	writel(iprst3, rc->base + NPCM_IPSRST3);
-+	writel(iprst4, rc->base + NPCM_IPSRST4);
-+}
-+
-+/*
-+ *  The following procedure should be observed in USB PHY, USB device and
-+ *  USB host initialization at BMC boot
-+ */
-+static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
-+{
-+	struct device *dev = &pdev->dev;
-+
-+	rc->gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
-+	if (IS_ERR(rc->gcr_regmap)) {
-+		dev_warn(&pdev->dev, "Failed to find nuvoton,sysgcr property, please update the device tree\n");
-+		dev_info(&pdev->dev, "Using nuvoton,npcm750-gcr for Poleg backward compatibility\n");
-+		rc->gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
-+		if (IS_ERR(rc->gcr_regmap)) {
-+			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-gcr");
-+			return PTR_ERR(rc->gcr_regmap);
-+		}
-+	}
-+
-+	rc->info = (const struct npcm_reset_info *)
-+			of_match_device(dev->driver->of_match_table, dev)->data;
-+	switch (rc->info->bmc_id) {
-+	case BMC_NPCM7XX:
-+		npcm_usb_reset_npcm7xx(rc);
-+		break;
-+	case BMC_NPCM8XX:
-+		npcm_usb_reset_npcm8xx(rc);
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
- 
- 	return 0;
- }
--- 
-2.33.0
+On 7/6/2022 8:56 PM, Doug Anderson wrote:
+> Hi,
+>
+> On Mon, Jul 4, 2022 at 11:57 AM Vijaya Krishna Nivarthi (Temp)
+> <vnivarth@qti.qualcomm.com> wrote:
+>> Hi,
+>>
+>>
+>>> -----Original Message-----
+>>> From: Doug Anderson <dianders@chromium.org>
+>>> Sent: Friday, July 1, 2022 8:38 PM
+>>> To: Vijaya Krishna Nivarthi (Temp) (QUIC) <quic_vnivarth@quicinc.com>
+>>> Cc: Andy Gross <agross@kernel.org>; bjorn.andersson@linaro.org; Konrad
+>>> Dybcio <konrad.dybcio@somainline.org>; Greg Kroah-Hartman
+>>> <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; linux-arm-
+>>> msm <linux-arm-msm@vger.kernel.org>; linux-serial@vger.kernel.org; LKML
+>>> <linux-kernel@vger.kernel.org>; Mukesh Savaliya (QUIC)
+>>> <quic_msavaliy@quicinc.com>; Matthias Kaehlcke <mka@chromium.org>;
+>>> Stephen Boyd <swboyd@chromium.org>
+>>> Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+>>> otherwise could return a sub-optimal clock rate.
+>>>
+>>> WARNING: This email originated from outside of Qualcomm. Please be wary
+>>> of any links or attachments, and do not enable macros.
+>>>
+>>> Hi,
+>>>
+>>> On Fri, Jul 1, 2022 at 4:04 AM Vijaya Krishna Nivarthi (Temp) (QUIC)
+>>> <quic_vnivarth@quicinc.com> wrote:
+>>>> Hi,
+>>>>
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Doug Anderson <dianders@chromium.org>
+>>>>> Sent: Thursday, June 30, 2022 4:45 AM
+>>>>> To: Vijaya Krishna Nivarthi (Temp) (QUIC)
+>>>>> <quic_vnivarth@quicinc.com>
+>>>>> Cc: Andy Gross <agross@kernel.org>; bjorn.andersson@linaro.org;
+>>>>> Konrad Dybcio <konrad.dybcio@somainline.org>; Greg Kroah-Hartman
+>>>>> <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>;
+>>>>> linux-arm- msm <linux-arm-msm@vger.kernel.org>;
+>>>>> linux-serial@vger.kernel.org; LKML <linux-kernel@vger.kernel.org>;
+>>>>> Mukesh Savaliya (QUIC) <quic_msavaliy@quicinc.com>; Matthias
+>>>>> Kaehlcke <mka@chromium.org>; Stephen Boyd
+>>> <swboyd@chromium.org>
+>>>>> Subject: Re: [V2] tty: serial: qcom-geni-serial: Fix
+>>>>> get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+>>>>>
+>>>>>
+>>>>>
+>>>>>> +                               /* Save the first (lowest freq) within tolerance */
+>>>>>> +                               ser_clk = freq;
+>>>>>> +                               *clk_div = new_div;
+>>>>>> +                               /* no more search for exact match required in 2nd run
+>>> */
+>>>>>> +                               if (!exact_match)
+>>>>>> +                                       break;
+>>>>>> +                       }
+>>>>>> +               }
+>>>>>>
+>>>>>> -               prev = freq;
+>>>>>> +               div = freq / desired_clk + 1;
+>>>>> Can't you infinite loop now?
+>>>>>
+>>>>> Start with:
+>>>>>
+>>>>> desired_clk = 10000
+>>>>> div = 1
+>>>>> percent_tol = 2
+>>>>>
+>>>>>
+>>>>> Now:
+>>>>>
+>>>>> mult = 10000
+>>>>> offset = 200
+>>>>> test_freq = 9800
+>>>>> freq = 9800
+>>>>> div = 9800 / 10000 + 1 = 0 + 1 = 1
+>>>>>
+>>>>> ...and then you'll loop again with "div = 1", won't you? ...or did I
+>>>>> get something wrong in my analysis? This is the reason my proposed
+>>>>> algorithm had two loops.
+>>>>>
+>>>>>
+>>>> I went back to your proposed algorithm and made couple of simple
+>>> changes, and it seemed like what we need.
+>>>> a) look only for exact match once a clock rate within tolerance is
+>>>> found
+>>>> b) swap test_freq and freq at end of while loops to make it run as
+>>>> desired
+>>>>
+>>>>
+>>>>          maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+>>>>          div = 1;
+>>>>
+>>>>          while (div < maxdiv) {
+>>>>                  mult = (unsigned long long)div * desired_clk;
+>>>>                  if (mult != (unsigned long)mult)
+>>>>                          break;
+>>>>
+>>>>                  if (ser_clk)
+>>>>                          offset = 0;
+>>>>                  ===================a=====================
+>>>>                  else
+>>>>                          offset = div_u64(mult * percent_tol, 100);
+>>>>
+>>>>                  /*
+>>>>                   * Loop requesting (freq - 2%) and possibly (freq).
+>>>>                   *
+>>>>                   * We'll keep track of the lowest freq inexact match we found
+>>>>                   * but always try to find a perfect match. NOTE: this algorithm
+>>>>                   * could miss a slightly better freq if there's more than one
+>>>>                   * freq between (freq - 2%) and (freq) but (freq) can't be made
+>>>>                   * exactly, but that's OK.
+>>>>                   *
+>>>>                   * This absolutely relies on the fact that the Qualcomm clock
+>>>>                   * driver always rounds up.
+>>>>                   */
+>>>>                  test_freq = mult - offset;
+>>>>                  while (test_freq <= mult) {
+>>>>                          freq = clk_round_rate(clk, test_freq);
+>>>>
+>>>>                          /*
+>>>>                           * A dead-on freq is an insta-win. This implicitly
+>>>>                           * handles when "freq == mult"
+>>>>                           */
+>>>>                          if (!(freq % desired_clk)) {
+>>>>                                  *clk_div = freq / desired_clk;
+>>>>                                  return freq;
+>>>>                          }
+>>>>
+>>>>                          /*
+>>>>                           * Only time clock framework doesn't round up is if
+>>>>                           * we're past the max clock rate. We're done searching
+>>>>                           * if that's the case.
+>>>>                           */
+>>>>                          if (freq < test_freq)
+>>>>                                  return ser_clk;
+>>>>
+>>>>                          /* Save the first (lowest freq) within tolerance */
+>>>>                          if (!ser_clk && freq <= mult + offset) {
+>>>>                                  ser_clk = freq;
+>>>>                                  *clk_div = div;
+>>>>                          }
+>>>>
+>>>>                          /*
+>>>>                           * If we already rounded up past mult then this will
+>>>>                           * cause the loop to exit. If not then this will run
+>>>>                           * the loop a second time with exactly mult.
+>>>>                           */
+>>>>                          test_freq = max(test_freq + 1, mult);
+>>>>                                                       ====b====
+>>>>                  }
+>>>>
+>>>>                  /*
+>>>>                   * freq will always be bigger than mult by at least 1.
+>>>>                   * That means we can get the next divider with a DIV_ROUND_UP.
+>>>>                   * This has the advantage of skipping by a whole bunch of divs
+>>>>                   * If the clock framework already bypassed them.
+>>>>                   */
+>>>>                  div = DIV_ROUND_UP(freq, desired_clk);
+>>>>                                                         ===b==
+>>>>          }
+>>>>
+>>>>
+>>>> Will also drop exact_match now.
+>>>>
+>>>> Will upload v3 after testing.
+>>> The more I've been thinking about it, the more I wonder if we even need the
+>>> special case of looking for an exact match at all. It feels like we should choose
+>>> one: we either look for the best match or we look for the one with the
+>>> lowest clock source rate. The weird half-half approach that we have right
+>>> now feels like over-engineering and complicates things.
+>>>
+>>> How about this (again, only lightly tested). Worst case if we _truly_ need a
+>>> close-to-exact match we could pass a tolerance of 0 in and we'd get
+>>> something that's nearly exact, though I'm not suggesting we actually do that.
+>>> If we think 2% is good enough then we should just accept the first (and
+>>> lowest clock rate) 2% match we find.
+>>>
+>>>      abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+>>>      maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+>>>      div = 1;
+>>>      while (div <= maxdiv) {
+>>>          mult = (u64)div * desired_clk;
+>>>          if (mult != (unsigned long)mult)
+>>>              break;
+>>>
+>>>          offset = div * abs_tol;
+>>>          freq = clk_round_rate(clk, mult - offset);
+>>>
+>>>          /* Can only get lower if we're done */
+>>>          if (freq < mult - offset)
+>>>              break;
+>>>
+>>>          /*
+>>>           * Re-calculate div in case rounding skipped rates but we
+>>>           * ended up at a good one, then check for a match.
+>>>           */
+>>>          div = DIV_ROUND_CLOSEST(freq, desired_clk);
+>>>          achieved = DIV_ROUND_CLOSEST(freq, div);
+>>>          if (achieved <= desired_clk + abs_tol &&
+>>>              achieved >= desired_clk - abs_tol) {
+>>>              *clk_div = div;
+>>>              return freq;
+>>>          }
+>>>
+>>>          /*
+>>>           * Always increase div by at least one, but we'll go more than
+>>>           * one if clk_round_rate() gave us something higher.
+>>>           */
+>>>          div = DIV_ROUND_UP(max(freq, (unsigned long)mult) + 1, desired_clk);
+>> Wouldn’t DIV_ROUND_UP(freq, desired_clk) suffice here?
+>> freq >= mult-offset, else we would have hit break.
+> No. As you say, freq >= "mult-offset". That means that freq could be
+> == "mult-offset", right? If offset > 0 then freq could be < mult. Then
+> your DIV_ROUND_UP() would just take you right back to where you
+> started the loop with and you'd end up with an infinite loop, wouldn't
+> you?
+>
+Probably No.
 
+( (freq >= mult-offset) && (freq <= mult) ) =>
+
+( (freq >= mult-offset) && (freq <= mult+offset) )
+
+would mean that
+
+div = DIV_ROUND_CLOSEST(freq, desired_clk);
+evaluates to original div and we are within tolerance and hence we can return and hence don't even reach DIV_ROUND_UP?
+
+Please note that freq can skip any multiples and land up anywhere.
+
+As long as it has not gone beyond clock rate table, either it lands 
+within tolerance of nearest multiple of desired_clk (in which case we 
+return)
+
+OR
+
+We move on to next div = (freq/desired_clk + 1)
+
+
+I retract div++, I was mistaken to believe that DIV_ROUND_UP(freq, 
+desired_clk) would be same as div++.
+
+Thank you.
+
+>> Additionally if freq <= mult we would have hit return.
+>> So always freq > mult?
+>>
+>> And hence div++ would do the same?
+> I thought about it and I decided that it might not if the clock
+> framework skipped a whole bunch. Let's see if I can give an example.
+>
+> Let's say
+> * "desired_clk" is 10000
+> * "percent_tol" is 2 (abs_tol = 200)
+> * We can make clocks 17000, 20000, 25000.
+>
+> First time through the loop:
+>
+> mult = 10000
+> offset = 200
+> freq = 17000
+> div = 2
+> achieved = 8500 (not within tolerance)
+>
+> ...at the end of the loop if we do "div++" then we'll end up with
+> div=3 for the next loop and we'll miss finding 20000.
+> ...but if we do my math, we end up with:
+>
+> DIV_ROUND_UP(max(17000, 10000) + 1, 10000)
+> DIV_ROUND_UP(17000 + 1, 10000)
+> DIV_ROUND_UP(17000, 10000)
+> 2
+>
+> ...and that's exactly what we want.
+>
+>
+> Here's an example showing why the line "div = DIV_ROUND_CLOSEST(freq,
+> desired_clk)" is important:
+>
+> * "desired_clk" is 10000
+> * "percent_tol" is 2 (abs_tol = 200)
+> * We can make clocks 19600, 25000.
+>
+> mult = 10000
+> offset = 200
+> freq = 19600
+> div = 2
+> achieved = 9800
+>
+> Returns 19600 and div=2
+>
+>
+> Here's an example showing how the clock framework rounding lets us
+> skip some "div"s without missing anything important:
+>
+> * "desired_clk" is 10000
+> * "percent_tol" is 2 (abs_tol = 200)
+> * We can make clocks 24000, 30000.
+>
+> mult = 25000
+> offset = 200
+> freq = 24000
+> div = 2
+> achieved = 12000 (not within tolerance)
+>
+> div = DIV_ROUND_UP(max(24000, 10000) + 1, 10000)
+> div = 3
+>
+> mult = 30000
+> offset = 600
+> freq = 30000
+> div = 3
+>
+> -Doug
