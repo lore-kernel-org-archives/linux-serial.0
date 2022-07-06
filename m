@@ -2,101 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B481C433EF
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Jul 2022 22:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA4AC433EF
+	for <linux-serial@archiver.kernel.org>; Wed,  6 Jul 2022 03:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiGEWen (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Jul 2022 18:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
+        id S229535AbiGFDCc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 5 Jul 2022 23:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGEWem (ORCPT
+        with ESMTP id S230480AbiGFDCb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Jul 2022 18:34:42 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B29D62D8;
-        Tue,  5 Jul 2022 15:34:41 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id s206so12605915pgs.3;
-        Tue, 05 Jul 2022 15:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=U7+I4uzJ/2VjMUoauKjA9TnrUXhcNYd0QtO4aLroN08=;
-        b=CcybPj2KaNJpXK/5prwzlQtIBlHt3LJMjq0uKBCygnzyD5mQfRUnT+H+gMJfR4/E5/
-         xmyQNi9ICa7hpjjrMnNER3qvH3c/b0G4Q4FH3tvaTk2yDAaq5HNz7QzgxCPDJHh2fy+p
-         YX/F2JGpcSeoCEG1g+LkITbjeOB7Tny1ninBAqviDIL8HMbgBDBCdNET5Mv0hc5LGwQb
-         ToiBOICrDsUTzbwz8g7Ou79Rwndzxk0O1bxuQpS7cuO64oywXBXpP/D55aAU4VriPbAl
-         PhOkQ0tV0xRbNtUYfJZWmSA+ZNI0XK59zdk3zpkQ1NSrT9NFR/ee06aMOyKkh728eL8Q
-         7LAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=U7+I4uzJ/2VjMUoauKjA9TnrUXhcNYd0QtO4aLroN08=;
-        b=KQW4TJxQ8r/bG69IHVUJPZj9rkMsIWIIZEscwXxG3FnHIft5klJU5/OucxXiGQkwL4
-         G4s9ZW34d2/23p+M8TTjMefkZcdMRqHuFnF77AHegNkeA7FZE4aP+kd7F6X3IqAtat66
-         VScHNL9qLOKTT8MRJ5U1+WrwF+FYUdlUqFH5Q0aQEIx1Md+2FmLRg3/cz4Cr8RVmyd/a
-         Jxi8XNIzfvrqXcPPr9cX75bg9XWlv8wi4iCcvfMfVPNQKQ5Em/djQR47AXnIc6MN91A2
-         wb3qT8EHfd9NafP0RbK+eQKxcBCZgCK0cr+bKNyfNvZPhVyMOK8jiottrGZnm7dkUgm/
-         hzxA==
-X-Gm-Message-State: AJIora+ApA8J8xB9T9yRUgpWWrTg6CvlYKTHzrSUa+XAQ26XQlj/DnlK
-        3MLLbkwd20Xor0hauEosfPo=
-X-Google-Smtp-Source: AGRyM1tntuwBGW0kqau2E2/Tq7A2893WAOlZj76LS3TfdUyJmhskdN/rJSr7EssN4K5g4EZ79tRCoQ==
-X-Received: by 2002:a05:6a00:23ca:b0:525:28b4:9e3b with SMTP id g10-20020a056a0023ca00b0052528b49e3bmr42490538pfc.43.1657060480893;
-        Tue, 05 Jul 2022 15:34:40 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:a568])
-        by smtp.gmail.com with ESMTPSA id 72-20020a62164b000000b0052893e26fc6sm2098176pfw.25.2022.07.05.15.34.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 15:34:40 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 5 Jul 2022 12:34:38 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
-        m.szyprowski@samsung.com, nathan@kernel.org, michael@walle.cc,
-        robh@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, guillaume.tucker@collabora.com,
-        pmladek@suse.com
-Subject: Re: [RESEND PATCH] kernfs: Avoid re-adding kernfs_node into
- kernfs_notify_list.
-Message-ID: <YsS8fin9DVKUGxzM@slm.duckdns.org>
-References: <20220701154604.2211008-1-imran.f.khan@oracle.com>
- <Yr9U1q0BBinCgyrT@mtj.duckdns.org>
- <deaaabe5-0a0c-b6f9-c85b-5080874f6437@oracle.com>
- <YsSD4k0o6PPYpMBe@slm.duckdns.org>
- <ea0bc8e3-177c-f78a-de37-339e6261631c@oracle.com>
+        Tue, 5 Jul 2022 23:02:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6451AF15
+        for <linux-serial@vger.kernel.org>; Tue,  5 Jul 2022 20:02:26 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ld46y1q4hzkX38;
+        Wed,  6 Jul 2022 11:00:58 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Jul 2022 11:02:25 +0800
+Received: from huawei.com (10.175.112.208) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Jul
+ 2022 11:02:24 +0800
+From:   Guo Mengqi <guomengqi3@huawei.com>
+To:     <gregkh@linuxfoundation.org>
+CC:     <jirislaby@kernel.org>, <f.fainelli@gmail.com>,
+        <ilpo.jarvinen@linux.intel.com>, <athierry@redhat.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <xuqiang36@huawei.com>,
+        <weiyongjun1@huawei.com>
+Subject: [PATCH -next v2] serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
+Date:   Wed, 6 Jul 2022 11:00:20 +0800
+Message-ID: <20220706030020.11726-1-guomengqi3@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220617025827.130497-1-guomengqi3@huawei.com>
+References: <20220617025827.130497-1-guomengqi3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ea0bc8e3-177c-f78a-de37-339e6261631c@oracle.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+The error path when get clock frequency fails in bcm2835aux_serial
+driver does not correctly disable the clock.
 
-On Wed, Jul 06, 2022 at 06:18:28AM +1000, Imran Khan wrote:
-> In this case, the point of using llist would be to avoid taking the locks in
-> consumer.
+This flaw was found using a static analysis tool "Hulk Robot", which
+reported the following warning when analyzing linux-next/master:
 
-Given that the consumer can dispatch the whole list, I doubt that's worth
-the complication.
+    drivers/tty/serial/8250/8250_bcm2835aux.c:
+    warning: clk_disable_unprepare_missing.cocci
 
-> Hmm. My idea was that eventually we will never run into situation where multiple
-> producers will end up adding the same node because as soon as first producer
-> adds the node (the other potential adders are spinning on kernfs_notify_lock),
-> kn->attr.notif_next.next will get a non-NULL value and checking
-> (kn->attr.notify_next.next != NULL) will avoid the node getting re-added.
+The cocci script checks for the existence of clk_disable_unprepare()
+paired with clk_prepare_enable().
 
-So, here, I don't see how llist can be used without a surrounding lock and I
-don't see much point in using llist if we need to use a lock anyway. If this
-needs to be made scalable, we need a different strategy (e.g. per-cpu lock /
-pending list can be an option).
+Add the missing clk_disable_unprepare() to the error path.
 
-I'm a bit swamped with other stuff and will likely be less engaged from now
-on. I'll try to review patches where possible.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+---
+v2:
+- Change title to more standard format
+- Add details about how Hulk Robot report this issue.
+---
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Thanks.
-
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index d9f1e618cfbd..f5718ff0cd8a 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -167,8 +167,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	uartclk = clk_get_rate(data->clk);
+ 	if (!uartclk) {
+ 		ret = device_property_read_u32(&pdev->dev, "clock-frequency", &uartclk);
+-		if (ret)
+-			return dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++		if (ret) {
++			dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
++			goto dis_clk;
++		}
+ 	}
+ 
+ 	/* the HW-clock divider for bcm2835aux is 8,
 -- 
-tejun
+2.17.1
+
