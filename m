@@ -2,72 +2,69 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D92C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 16:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C629C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 16:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236148AbiGGQN3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
+        id S235941AbiGGQWH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236155AbiGGQMz (ORCPT
+        with ESMTP id S235857AbiGGQWG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:12:55 -0400
+        Thu, 7 Jul 2022 12:22:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F024D14F
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 09:12:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9B2A731
+        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 09:22:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2F56623E3
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 16:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6603C3411E;
-        Thu,  7 Jul 2022 16:12:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657210349;
-        bh=bMoPPyIPT5vc17Mq+LS2ol1HSBnTgt2gb0OIwQhmQiQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CGLEcdaYt5Ar/3e98YJed+VMRNdsh54d/8k5wQtPkYE8LBI1sGGxNBMkoh8zJTUWr
-         k2ML9qynO6IefhExsaTTOK7MmCu0dKOFCq89WZnzVDyl0i4HXVqQNINLhNvhFf0xes
-         MuYKsILHoSC0ED8PmLdqiecmP70X1RWOU/0Jm/Tc=
-Date:   Thu, 7 Jul 2022 18:12:26 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F00F7623C3
+        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 16:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82119C3411E;
+        Thu,  7 Jul 2022 16:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657210925;
+        bh=P4Rk87dMVkVd/LitYkC/tKKzsxVZIwxVXacQm8OUuY4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nux4GDXz41tnIYvQQK54Q9iJK7Ki2KO5Ql/B29HUszMvJbfTJ1hPPohGjXzE/gDcr
+         GWNw3rXR0zT7APqk3bBVMeGpsLRrYYTPhJZunJSC4Q5KD80pHTxL/P+GttYkS/644X
+         D2zRM5zfMzLv9qNcU5EJKmGGVNYGgOjlOsH8ZpJ3nGZJLudSRN7whmOjoXC9NLOCXf
+         lJuY6g0IRB4xKEtLqROqCWSqhr78rRD3VFXpRoGahkXZrn+Yna91GOQWgJxgcjAUX1
+         E3oJEggHzHSeG/A/yTZ3SqQK88d8fyhZg6auwxl6H6qaGpSKzcanRhAZLhlx5a+Ler
+         C0qlxDwOVPEvw==
+Date:   Thu, 7 Jul 2022 18:22:01 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Subject: Re: [PATCH 5/7] USB: serial: ftdi_sio: Fix baudrate rounding for
- ASYNC_SPD_CUST
-Message-ID: <YscF6pONFktLx3el@kroah.com>
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
+Subject: Re: [PATCH 2/7] USB: serial: ftdi_sio: Add missing baudrate
+ validation
+Message-ID: <20220707182201.145b84a7@dellmb>
+In-Reply-To: <Ysb284QtPTvUge+F@kroah.com>
 References: <20220707145354.29705-1-kabel@kernel.org>
- <20220707145354.29705-6-kabel@kernel.org>
- <Ysb3hNJ6wPRe+oxo@kroah.com>
- <20220707180818.53b7e79a@dellmb>
+        <20220707145354.29705-3-kabel@kernel.org>
+        <Ysb284QtPTvUge+F@kroah.com>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220707180818.53b7e79a@dellmb>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 06:08:18PM +0200, Marek Behún wrote:
-> On Thu, 7 Jul 2022 17:11:00 +0200
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> 
-> > On Thu, Jul 07, 2022 at 04:53:52PM +0200, Marek Behún wrote:
-> > > From: Pali Rohár <pali@kernel.org>
-> > > 
-> > > Use DIV_ROUND_CLOSEST() for more accurate baudrate calculation for
-> > > ASYNC_SPD_CUST instead of rounding it just down.  
-> > 
-> > Why?  What does this change or fix?
-> 
-> To compute more accurate baudrate when given custom divisor.
-> 
-> User requests a baudrate B.
-> Application uses old API, so it computes divisor D for baudrate B.
-> The driver then tries to compute back the requested baudrate B. To
-> compute it back more accurately, rounding to closes value should be
-> used.
+On Thu, 7 Jul 2022 17:08:35 +0200
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-Then please describe this in the changelog text, don't make us guess...
+> On Thu, Jul 07, 2022 at 04:53:49PM +0200, Marek Beh=C3=BAn wrote:
+> > From: Pali Roh=C3=A1r <pali@kernel.org>
+> >=20
+> > More FTDI variants limit the minimal baudrate value. Add lower bound
+> > checks. =20
+>=20
+> Which variants limit it?  Did you just break existing devices and keep
+> them from running at really low baud rates?
+
+The variants for which the patch adds the checks. Does this need
+to be listed it in commit message?
+
+Marek
