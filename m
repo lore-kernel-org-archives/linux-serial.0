@@ -2,81 +2,129 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B5BC433EF
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 08:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCCFC43334
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 08:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231350AbiGGIsD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jul 2022 04:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
+        id S235229AbiGGIsy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Jul 2022 04:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234500AbiGGIsC (ORCPT
+        with ESMTP id S235117AbiGGIsr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Jul 2022 04:48:02 -0400
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C3E193CB;
-        Thu,  7 Jul 2022 01:48:02 -0700 (PDT)
-Received: by mail-qt1-f171.google.com with SMTP id r2so1113334qtx.6;
-        Thu, 07 Jul 2022 01:48:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7TC32F89z4NX+rauYaDqmY4874to+dNezztV+gLxaTs=;
-        b=hRVqLg0Oooh1DXh2MqeVcinfVogN8otFAzemmWjcdhXXP98CqgfxYefd4GKYd2Oe6Y
-         c2GkPzJLXU2GZkq4LS4lO+V/SYUtyYm1mpUF5gO0+maWPVWNo9FVCkwZXd0mdWRfI1a7
-         pgc2o/JwqsxGG0Bl4PMrxJGF3V4Jl+hO2tqN7+iykm7OEHhB1uTElrRdPt46TY82HL8L
-         iONkGo3qwnVQnZ09jIqOeAgp5zBcA5ctfDNjj/W8ail+6xijG4MGrQjQkxeaV8h9fPIF
-         u4hYLy+zipyDZbMaq8+nLyGt5KRj17lLQ63mvlvdk7KCyyzgrh6q3XlEhkIIjY083gI0
-         q+FA==
-X-Gm-Message-State: AJIora+M/Ybb8v2WTr2M02pbwGs8tXinTwdzrbuuhyztVOsjX5vpR4mV
-        h7tr1RDz2qZh7UtyKg/4YLh6aDaOqzZS1Fyi
-X-Google-Smtp-Source: AGRyM1va1nZaq+qKAY2LeOfu11fNhu/mrf7/IRXNO9+3Dn1WglViDZK409KApapVTkhv6c/r7O3FCg==
-X-Received: by 2002:ad4:5765:0:b0:473:20f:fc09 with SMTP id r5-20020ad45765000000b00473020ffc09mr12618787qvx.2.1657183681250;
-        Thu, 07 Jul 2022 01:48:01 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id bl10-20020a05620a1a8a00b006a67eb4610fsm32116402qkb.116.2022.07.07.01.48.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 01:48:01 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-317a66d62dfso163467067b3.7;
-        Thu, 07 Jul 2022 01:48:00 -0700 (PDT)
-X-Received: by 2002:a0d:dd09:0:b0:31c:e3b9:7442 with SMTP id
- g9-20020a0ddd09000000b0031ce3b97442mr10302814ywe.47.1657183680441; Thu, 07
- Jul 2022 01:48:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220630140919.3857698-1-yangyingliang@huawei.com>
-In-Reply-To: <20220630140919.3857698-1-yangyingliang@huawei.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 7 Jul 2022 10:47:49 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU=ht8rBnJfc5c_LyhRCzLwABNHMKLfPa22R5mxnTOjvA@mail.gmail.com>
-Message-ID: <CAMuHMdU=ht8rBnJfc5c_LyhRCzLwABNHMKLfPa22R5mxnTOjvA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] serial: sh-sci: fix missing sci_cleanup_single() in sci_probe_single()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thu, 7 Jul 2022 04:48:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC53326E3;
+        Thu,  7 Jul 2022 01:48:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D32B7B820C5;
+        Thu,  7 Jul 2022 08:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE3FC341C0;
+        Thu,  7 Jul 2022 08:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657183723;
+        bh=fHqE0HJYboE0WTHz4AC1/YxMfzfzjS8F9GqESkQwlb4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PxCC+jpTOnOJ9vTUJcvHknrzEJSa8YOW/S/tq0YP/emSOoMMX106mPIC0Qq/yY1tV
+         5e52N+9o8w4m45fr6x/KpwX0uM8FsOJKEat27De4hShLp0+x7/BluvBatMrjyPggPj
+         kF+SfkiLOxfTpLjPve0AN+jzkQ2/1QcRCCb8/wFq5xR/trmq8zSRvmOZqdhOtbC87V
+         +o8/SWLyEJxmkwDCfoILVBeQ5rix3359k4Xs6pY587I3qb47uO/CfYK9TlPmhukAPi
+         EiLh4xYl4uVXUDm7zY6DqsHKexqBrW37aIPVu6fBO8aShDEk/ryioHHd9WNK3fhrng
+         oCi4ODpcxVX8A==
+Received: by pali.im (Postfix)
+        id 24D847B1; Thu,  7 Jul 2022 10:48:40 +0200 (CEST)
+Date:   Thu, 7 Jul 2022 10:48:40 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+Message-ID: <20220707084840.jvsstvyx2ul5ltb6@pali>
+References: <20220321163055.4058-1-pali@kernel.org>
+ <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+ <YmK7drS0XgnTQcaf@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YmK7drS0XgnTQcaf@kroah.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 3:59 PM Yang Yingliang <yangyingliang@huawei.com> wrote:
-> Add missing sci_cleanup_single() in error case in sci_probe_single()
->
-> Fixes: f907c9ea8835 ("serial: sh-sci: Add support for GPIO-controlled modem lines")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
+> On Tue, Mar 22, 2022 at 04:29:08PM +0200, Andy Shevchenko wrote:
+> > On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
+> > >
+> > > Support for UPF_SPD_* flags is currently broken in more drivers for two
+> > > reasons. First one is that uart_update_timeout() function does not
+> > 
+> > the uart_update_timeout()
+> > 
+> > > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
+> > > userspace termios structre is modified by most drivers after each
+> > 
+> > structure
+> > 
+> > ...
+> > 
+> > > (error handling was ommited for simplification)
+> > 
+> > omitted
+> > 
+> > > After calling set_active_spd_cust_baud() function SPD custom divisor
+> > > should be active and therefore is_spd_cust_active() should return true.
+> > >
+> > > But it is not active (cfgetospeed does not return B38400) and this patch
+> > > series should fix it. I have tested it with 8250 driver.
+> > 
+> > drivers
+> > 
+> > > Originally Johan Hovold reported that there may be issue with these
+> > > ASYNC_SPD_FLAGS in email:
+> > > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
+> > >
+> > >
+> > > Johan, Greg, could you please test these patches if there is not any
+> > > regression?
+> > 
+> > I'm wondering why we are still supporting this ugly hack?
+> > Doesn't BOTHER work for you?
+> 
+> Yes, I too do not want to add more support for these old flags.  If they
+> have not been working, let's not add support for them as obviously no
+> one is using them.  Let's try to remove them if at all possible.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Well, it works partially. For more drivers SET method is working, but
+GET method returns incorrect value. If your userspace application is
+written in a way that does not retrieve from kernel current settings
+then it has big probability that application works.
 
-Gr{oetje,eeting}s,
+So, do you really want to remove support for these old flags completely?
+That would of course break above applications.
 
-                        Geert
+Note that usage of BOTHER is problematic and in most cases highly
+impossible if you are using glibc libc.so. BOTHER is incompatible with
+glibc header files and so you can either include BOTHER/linux termios
+file (exclusive) OR glibc header files.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+New version of tcsetattr and ioctl_tty manpages would have documented
+how to use BOTHER (it is currently in the manpages git).
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Currently the only known option how to use BOTHER is to completely
+reimplement all functions from "termios.h", provide custom "termios.h"
+header file (and not use glibc termios.h nor any file which it includes)
+and statically link this reimplementation into final application.
+
+So in most cases BOTHER is not alternative to those old SPD flags even
+for modern applications.
+
+> thanks,
+> 
+> greg k-h
