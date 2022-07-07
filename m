@@ -2,69 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C629C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 16:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F963C43334
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 16:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235941AbiGGQWH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jul 2022 12:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
+        id S235038AbiGGQ0i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Jul 2022 12:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235857AbiGGQWG (ORCPT
+        with ESMTP id S235542AbiGGQ0h (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 Jul 2022 12:22:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9B2A731
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 09:22:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F00F7623C3
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 16:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82119C3411E;
-        Thu,  7 Jul 2022 16:22:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657210925;
-        bh=P4Rk87dMVkVd/LitYkC/tKKzsxVZIwxVXacQm8OUuY4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nux4GDXz41tnIYvQQK54Q9iJK7Ki2KO5Ql/B29HUszMvJbfTJ1hPPohGjXzE/gDcr
-         GWNw3rXR0zT7APqk3bBVMeGpsLRrYYTPhJZunJSC4Q5KD80pHTxL/P+GttYkS/644X
-         D2zRM5zfMzLv9qNcU5EJKmGGVNYGgOjlOsH8ZpJ3nGZJLudSRN7whmOjoXC9NLOCXf
-         lJuY6g0IRB4xKEtLqROqCWSqhr78rRD3VFXpRoGahkXZrn+Yna91GOQWgJxgcjAUX1
-         E3oJEggHzHSeG/A/yTZ3SqQK88d8fyhZg6auwxl6H6qaGpSKzcanRhAZLhlx5a+Ler
-         C0qlxDwOVPEvw==
-Date:   Thu, 7 Jul 2022 18:22:01 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org,
-        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
-Subject: Re: [PATCH 2/7] USB: serial: ftdi_sio: Add missing baudrate
- validation
-Message-ID: <20220707182201.145b84a7@dellmb>
-In-Reply-To: <Ysb284QtPTvUge+F@kroah.com>
-References: <20220707145354.29705-1-kabel@kernel.org>
-        <20220707145354.29705-3-kabel@kernel.org>
-        <Ysb284QtPTvUge+F@kroah.com>
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 7 Jul 2022 12:26:37 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC734D4EB;
+        Thu,  7 Jul 2022 09:26:34 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id x184so7035610pfx.2;
+        Thu, 07 Jul 2022 09:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Jt1e/2ScFzvzJ8enZxDzBhOWnG33XZMiqPivyj1EZrQ=;
+        b=mwwssqW7cpb/n2kz9xsR4FuOlMGONRHF+b3KvU+HdbFmOpO6xKpXP8GKSQmkqCCIWS
+         zC655llfWn7GRKmdFdReGl5t5Lcs2vaknTlqcJntCEYxsx9aGZxLaXWzBGTY/ETcaU97
+         cx0BBt7C2/JbtsmcDmUwW6+okNJ7T+LB/IhbY4FVhcyxchrtMGeTtaPBi15gV6ZfV20w
+         atX8UdInZ6DSxT1m6/J81U9jhTr9bcdC0L0fD+BmWPmjGiU4tDZnznPu/3NfVICq6D+n
+         QwFdtN3uOYu/9NLGLI4+/p0MXz4aWZRTnvlkN9evP5+s+MVMFOwk+/U4ylSdxyAC10Fd
+         78mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Jt1e/2ScFzvzJ8enZxDzBhOWnG33XZMiqPivyj1EZrQ=;
+        b=Avw29ykNRJsiNnBiyUlRsyzF7y/xJoUIzBQWZnGuKNKaeI7icdODd2CaKgjRXz0we1
+         dce497R9r62ZN/lvX8+ezQ0nrYKdVdPklekf2AI1TmmfE9O6N9mCBAJLfuQ+Sj540IW6
+         eBLHmZMiJAkl3GiF7cXnc6sM8dnzUg2n/8r5eNA+NSrIJHxh68+CY+YzSxgxxrM53vLX
+         AUUGG0IoWFabfqVHQx/bsUze7oaI0Ct50ZktQQ+FGtlKJ4hrXX2fiLhXNbCNzahzpOz7
+         6NRRM5Yy0vB9qEbr9MHktQk5Rd58qu9/cA+IR1zoPrEgmy3UXrVeXsbkZKXW+1EOgXdP
+         xELA==
+X-Gm-Message-State: AJIora9jl3B2sBrObPWIlS+4v207NvT+iS7hndkIB/C0xE/02jgDnLg2
+        fh0Pt5u94HrV25pY+aofLGqI9twqtg4=
+X-Google-Smtp-Source: AGRyM1s+f+eh94bcWmcy6FCYO+4mrJG4bxZUDnb7al0tRzuDlPOdafJsZxdZivfXgJYFccT1adYi7g==
+X-Received: by 2002:a17:90b:1284:b0:1ef:877b:2f06 with SMTP id fw4-20020a17090b128400b001ef877b2f06mr6051287pjb.37.1657211194250;
+        Thu, 07 Jul 2022 09:26:34 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id i4-20020a17090332c400b0016a4db13435sm28352148plr.191.2022.07.07.09.26.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 09:26:33 -0700 (PDT)
+Message-ID: <2716ee5c-9339-3bcb-f435-c39d6c3b9b0c@gmail.com>
+Date:   Thu, 7 Jul 2022 09:26:25 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RESEND PATCH 8/8] tty: serial: bcm63xx: bcmbca: Replace
+ ARCH_BCM_63XX with ARCH_BCMBCA
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>
+Cc:     anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
+        f.fainelli@gmail.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220707065800.261269-1-william.zhang@broadcom.com>
+ <20220707065800.261269-8-william.zhang@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220707065800.261269-8-william.zhang@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 7 Jul 2022 17:08:35 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+On 7/6/22 23:57, William Zhang wrote:
+> Prepare for the BCM63138 ARCH_BCM_63XX migration to ARCH_BCMBCA. Make
+> SERIAL_BCM63XX depending on ARCH_BCMBCA.
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
 
-> On Thu, Jul 07, 2022 at 04:53:49PM +0200, Marek Beh=C3=BAn wrote:
-> > From: Pali Roh=C3=A1r <pali@kernel.org>
-> >=20
-> > More FTDI variants limit the minimal baudrate value. Add lower bound
-> > checks. =20
->=20
-> Which variants limit it?  Did you just break existing devices and keep
-> them from running at really low baud rates?
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-The variants for which the patch adds the checks. Does this need
-to be listed it in commit message?
+There is no cover letter for this 8 patch series :/ it is not clear to 
+me whether each subsystem maintainer will be in a position to merge 
+these patches individually, yet still have all 8 (7 of them actually, 
+see comment to patch 1) land in 5.20.
 
-Marek
+Alternatively, we can merge these patches through the Broadcom ARM SoC 
+pull request(s) to ensure they all land at the same time.
+-- 
+Florian
