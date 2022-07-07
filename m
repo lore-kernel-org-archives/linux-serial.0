@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FE3C43334
-	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 11:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7142ACCA482
+	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 11:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235407AbiGGLdz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 Jul 2022 07:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
+        id S235348AbiGGLd4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 7 Jul 2022 07:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235366AbiGGLdy (ORCPT
+        with ESMTP id S235382AbiGGLdy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 7 Jul 2022 07:33:54 -0400
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677AE2FFC8
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 04:33:51 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220707113349e445c3c831494a4af3
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C409E30562
+        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 04:33:52 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220707113350a04a624a171eaa2f50
         for <linux-serial@vger.kernel.org>;
-        Thu, 07 Jul 2022 13:33:49 +0200
+        Thu, 07 Jul 2022 13:33:50 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=tmOmxJuwDN3a6R4Br5jQIzbrMca5twfGKRAch87aKRA=;
- b=Eo/82hWLvgBjkpDrudwKolNmwotdPnfguGBzU29dqR+tkqAtfMEn+i/KNWiJJfWDVJn7m1
- 4JcQ7mjAOrYjHHJ6yAQCxc/zX5mZ4pLMXMVB/hHmvTPXgvNJniSRlihTJi19vCsy4VRGm+bq
- TvpCY+/0FBSPzz4TJDXlNK5YF6H68=;
+ bh=dmsPVO/ob5l26R3xUoVk7IKDPFVjQUBwffjZsB2FjME=;
+ b=fuObogHGxaCf7YeIywwKa5Xb2x6mvl0/hoF9lr59apW4GkCU+2bVT63otI8wa2OumikRrI
+ zgNJqEPWYJSghpEz4UjJZ0dY2Y4HEe3XwwQOjDwzUgiAZL66ybOUyuSZguSPwwO0G4AczqyE
+ 7gFuuqdAlJPUCvtv8sOobgf2hYafQ=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 3/4] tty: n_gsm: fix flow control handling in tx path
-Date:   Thu,  7 Jul 2022 13:32:22 +0200
-Message-Id: <20220707113223.3685-3-daniel.starke@siemens.com>
+Subject: [PATCH v2 4/4] tty: n_gsm: fix missing corner cases in gsmld_poll()
+Date:   Thu,  7 Jul 2022 13:32:23 +0200
+Message-Id: <20220707113223.3685-4-daniel.starke@siemens.com>
 In-Reply-To: <20220707113223.3685-1-daniel.starke@siemens.com>
 References: <20220707113223.3685-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -45,34 +45,44 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-The current implementation constipates all transmission paths during flow
-control except for flow control frames. However, these may not be located
-at the beginning of the transmission queue of the control channel.
-Ensure that flow control frames in the transmission queue for the control
-channel are always handled even if constipated by skipping through other
-messages.
+gsmld_poll() currently fails to handle the following corner cases correctly:
+- remote party closed the associated tty
 
-Fixes: 0af021678d5d ("tty: n_gsm: fix deadlock and link starvation in outgoing data path")
+Add the missing checks and map those to EPOLLHUP.
+Reorder the checks to group them by their reaction.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-No changes have been applied compared to v1.
+Check for valid pointer in tty->disc_data has been removed compared to v1.
+
+Link: https://lore.kernel.org/all/17759c4b-5858-12bb-4beb-c4a1d58c89ae@kernel.org/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 90060018928f..51447ccccbab 100644
+index 51447ccccbab..caa5c14ed57f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -891,7 +891,7 @@ static int gsm_data_kick(struct gsm_mux *gsm)
- 	/* Serialize control messages and control channel messages first */
- 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_ctrl_list, list) {
- 		if (gsm->constipated && !gsm_is_flow_ctrl_msg(msg))
--			return -EAGAIN;
-+			continue;
- 		ret = gsm_send_packet(gsm, msg);
- 		switch (ret) {
- 		case -ENOSPC:
+@@ -3053,12 +3053,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+ 
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
++
++	if (gsm->dead)
++		mask |= EPOLLHUP;
+ 	if (tty_hung_up_p(file))
+ 		mask |= EPOLLHUP;
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		mask |= EPOLLHUP;
+ 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
+-	if (gsm->dead)
+-		mask |= EPOLLHUP;
+ 	return mask;
+ }
+ 
 -- 
 2.34.1
 
