@@ -2,39 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7142ACCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AFB2CCA479
 	for <linux-serial@archiver.kernel.org>; Thu,  7 Jul 2022 11:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235348AbiGGLd4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S235366AbiGGLd4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Thu, 7 Jul 2022 07:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235382AbiGGLdy (ORCPT
+        with ESMTP id S235348AbiGGLdy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 7 Jul 2022 07:33:54 -0400
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C409E30562
-        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 04:33:52 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220707113350a04a624a171eaa2f50
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9672A71D
+        for <linux-serial@vger.kernel.org>; Thu,  7 Jul 2022 04:33:50 -0700 (PDT)
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202207071133472337f1d7a12bffb971
         for <linux-serial@vger.kernel.org>;
-        Thu, 07 Jul 2022 13:33:50 +0200
+        Thu, 07 Jul 2022 13:33:48 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=dmsPVO/ob5l26R3xUoVk7IKDPFVjQUBwffjZsB2FjME=;
- b=fuObogHGxaCf7YeIywwKa5Xb2x6mvl0/hoF9lr59apW4GkCU+2bVT63otI8wa2OumikRrI
- zgNJqEPWYJSghpEz4UjJZ0dY2Y4HEe3XwwQOjDwzUgiAZL66ybOUyuSZguSPwwO0G4AczqyE
- 7gFuuqdAlJPUCvtv8sOobgf2hYafQ=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=4zrox7ZlHscR7GaMrL4oS4/tk+1RCzBT6lJQ3JfJL0o=;
+ b=HUiTBM6BLE6FL/IKNjsboP7hCLX6YfsV25sCaqNvdbwN9jig4jMsRx9/uwSTllrWuoV43E
+ 9GKrXZbk+hxwly5vX37zBkkvykw6ywSzvzTvTJyG7O2RLNkKWEZMal1sxbYQN6SW61zW5FkZ
+ vghSkA6GzHoyVr16NOIQH9xf+uCZY=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 4/4] tty: n_gsm: fix missing corner cases in gsmld_poll()
-Date:   Thu,  7 Jul 2022 13:32:23 +0200
-Message-Id: <20220707113223.3685-4-daniel.starke@siemens.com>
-In-Reply-To: <20220707113223.3685-1-daniel.starke@siemens.com>
-References: <20220707113223.3685-1-daniel.starke@siemens.com>
+Subject: [PATCH v2 1/4] tty: n_gsm: fix wrong T1 retry count handling
+Date:   Thu,  7 Jul 2022 13:32:20 +0200
+Message-Id: <20220707113223.3685-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -45,44 +43,48 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-gsmld_poll() currently fails to handle the following corner cases correctly:
-- remote party closed the associated tty
-
-Add the missing checks and map those to EPOLLHUP.
-Reorder the checks to group them by their reaction.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_dlci_t1() handles this number incorrectly by performing N2 - 1
+retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix gsm_dlci_t1() to comply with 3GPP 27.010.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Check for valid pointer in tty->disc_data has been removed compared to v1.
-
-Link: https://lore.kernel.org/all/17759c4b-5858-12bb-4beb-c4a1d58c89ae@kernel.org/
+No changes have been applied compared to v1.
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 51447ccccbab..caa5c14ed57f 100644
+index ba399a660573..1a70e7ae90cc 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -3053,12 +3053,15 @@ static __poll_t gsmld_poll(struct tty_struct *tty, struct file *file,
+@@ -1805,8 +1805,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
- 	poll_wait(file, &tty->read_wait, wait);
- 	poll_wait(file, &tty->write_wait, wait);
-+
-+	if (gsm->dead)
-+		mask |= EPOLLHUP;
- 	if (tty_hung_up_p(file))
- 		mask |= EPOLLHUP;
-+	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
-+		mask |= EPOLLHUP;
- 	if (!tty_is_writelocked(tty) && tty_write_room(tty) > 0)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
--	if (gsm->dead)
--		mask |= EPOLLHUP;
- 	return mask;
- }
+ 	switch (dlci->state) {
+ 	case DLCI_OPENING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+@@ -1821,8 +1821,8 @@ static void gsm_dlci_t1(struct timer_list *t)
  
+ 		break;
+ 	case DLCI_CLOSING:
+-		dlci->retries--;
+ 		if (dlci->retries) {
++			dlci->retries--;
+ 			gsm_command(dlci->gsm, dlci->addr, DISC|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else
 -- 
 2.34.1
 
