@@ -2,146 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2460C43334
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 14:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA71C43334
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 15:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbiGHOUM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Jul 2022 10:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
+        id S238519AbiGHPmp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Jul 2022 11:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236547AbiGHOUL (ORCPT
+        with ESMTP id S238573AbiGHPml (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Jul 2022 10:20:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7137D24F2F;
-        Fri,  8 Jul 2022 07:20:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B1462831;
-        Fri,  8 Jul 2022 14:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E400C341C0;
-        Fri,  8 Jul 2022 14:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657290005;
-        bh=bnnMOD+hVTtfzjkgSbWTdqdFyQ813Gs/UhdaiJL80eU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Llpr1fGuCLViKrjtK5Czp26O1u18WarIs8xUC+Vl4YIqkb1sBLEXzFhyGBcz4Ni6B
-         mPWVUPQKxDWiR1FI6lNF/Mn6VF5ltqji9767/q1WmbaZDxOTLeEM2mHuGRICaARAIo
-         2YAkxWoSYmWTCIJzUCu7YFmQtH2ik8B3BIksJatqsRBOQ7cCusf1d4GabslcbHOFkS
-         Ic0ao6rIOsT8olsJgRZfETY0pwChDGxSFA92nd1BFc9+hQmCtE2IYRrcW0HhgPg5qa
-         EgLsUxH5de88mknx2bnahbiMq9Rp9xGu9F4KOKWqCZdWTv2Dl7uS/ctLVMi2yd9dLP
-         prKblrFK3mmcg==
-Received: by pali.im (Postfix)
-        id 4BC237D1; Fri,  8 Jul 2022 16:20:01 +0200 (CEST)
-Date:   Fri, 8 Jul 2022 16:20:01 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Fri, 8 Jul 2022 11:42:41 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06AD6EEB4;
+        Fri,  8 Jul 2022 08:42:40 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31caffa4a45so130071637b3.3;
+        Fri, 08 Jul 2022 08:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KyDl05vUDZC3KtpDAZZDk8Jclgf+fyUT4de3z8iw/dQ=;
+        b=cqi3b3DaVyECgMdCiGJS2SrxHGMxunaaoMD/Spwx7tjpJ/GZV2HC3FWINA6pE347/Z
+         oOy8O3mZv6thDHgupGhIXC6GHfRZmHUdKzCgigLkfcH5c28C/eO2VZxmdrNivV05t41r
+         X8N3xNIHpyQGU5ggJAjnkvIVmZWf438knZk+F0jyeXwaMkmvc9vchouIcF05AZz/LqW1
+         FSozO87b7MYP3awk+wRCDa7YceqeDkIJouOQ7eBGfHr43KIHwFhGiS5+SANXned+EpCV
+         7uDvppmwX96H14kmcGpiIxuiv4707kAwWRGJbsbH0fMwMkKTqzm/2hS1iX1U7mQ6JxpT
+         V12A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KyDl05vUDZC3KtpDAZZDk8Jclgf+fyUT4de3z8iw/dQ=;
+        b=ddiLApQdRP7b7Tbkmw4/uOLEyiXJyq87HBko5AQkiPQLaZnq16uXQanuRKcbFnT6n6
+         5iYz1EPCSR7qg0/VBR8lcRqMEoxjWYOgnT5bPSZjI1ITlLFYcY7MXVDgm50lOWzTkB4g
+         fxLBtXGhYqBuMlX6YsH3LeJ1zZ9SUWd5PJa9TEqGbyki7tQ6I0i4gROHY/xRL9s6LOCi
+         EbZNakyKlpjhcFABWuxMHtpmssrfXuEQen5ndDZv/tyzzBv7Q8xkTkEPswr4K7CxdMSk
+         QnsqE3grsAr04luvzDR+Dtow5kbC6Z0Q4S3hCLoXpL/O/kPlUYW5hbTHGjiGzyFSPoc8
+         7kRA==
+X-Gm-Message-State: AJIora9wJDCByCpMc1NqtFQDcFurZumHhCEnKQ+AGrrf48xaDWoSEAev
+        b3n9bmKrSSRZoBcDgUZMC+J4UAKqjCuhIk3PMIQ=
+X-Google-Smtp-Source: AGRyM1vmPDB28H0EnqVeiLVM6R4qsCAkf+yIt8PfwqQqxFb22AHdnNxw7QdMdTx52+0aMVNTu4WBRhb4a5zJ5nQM/iE=
+X-Received: by 2002:a81:4bd7:0:b0:31c:91da:5a20 with SMTP id
+ y206-20020a814bd7000000b0031c91da5a20mr4972445ywa.131.1657294959944; Fri, 08
+ Jul 2022 08:42:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220321163055.4058-1-pali@kernel.org> <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+ <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
+ <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
+ <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
+In-Reply-To: <20220708142001.7fciqnfckznlvsa4@pali>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Jul 2022 17:42:03 +0200
+Message-ID: <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com>
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         Johan Hovold <johan@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-Message-ID: <20220708142001.7fciqnfckznlvsa4@pali>
-References: <20220321163055.4058-1-pali@kernel.org>
- <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com>
- <20220707084840.jvsstvyx2ul5ltb6@pali>
- <YsgsH94PV/wAX0Vu@kroah.com>
- <20220708132621.4v2es73h52aq3izn@pali>
- <Ysg2RW0B/cLL3k+k@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ysg2RW0B/cLL3k+k@kroah.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
-> On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Rohár wrote:
-> > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
-> > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Rohár wrote:
-> > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
-> > > > > On Tue, Mar 22, 2022 at 04:29:08PM +0200, Andy Shevchenko wrote:
-> > > > > > On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
-> > > > > > >
-> > > > > > > Support for UPF_SPD_* flags is currently broken in more drivers for two
-> > > > > > > reasons. First one is that uart_update_timeout() function does not
-> > > > > > 
-> > > > > > the uart_update_timeout()
-> > > > > > 
-> > > > > > > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
-> > > > > > > userspace termios structre is modified by most drivers after each
-> > > > > > 
-> > > > > > structure
-> > > > > > 
-> > > > > > ...
-> > > > > > 
-> > > > > > > (error handling was ommited for simplification)
-> > > > > > 
-> > > > > > omitted
-> > > > > > 
-> > > > > > > After calling set_active_spd_cust_baud() function SPD custom divisor
-> > > > > > > should be active and therefore is_spd_cust_active() should return true.
-> > > > > > >
-> > > > > > > But it is not active (cfgetospeed does not return B38400) and this patch
-> > > > > > > series should fix it. I have tested it with 8250 driver.
-> > > > > > 
-> > > > > > drivers
-> > > > > > 
-> > > > > > > Originally Johan Hovold reported that there may be issue with these
-> > > > > > > ASYNC_SPD_FLAGS in email:
-> > > > > > > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
-> > > > > > >
-> > > > > > >
-> > > > > > > Johan, Greg, could you please test these patches if there is not any
-> > > > > > > regression?
-> > > > > > 
-> > > > > > I'm wondering why we are still supporting this ugly hack?
-> > > > > > Doesn't BOTHER work for you?
-> > > > > 
-> > > > > Yes, I too do not want to add more support for these old flags.  If they
-> > > > > have not been working, let's not add support for them as obviously no
-> > > > > one is using them.  Let's try to remove them if at all possible.
-> > > > 
-> > > > Well, it works partially. For more drivers SET method is working, but
-> > > > GET method returns incorrect value. If your userspace application is
-> > > > written in a way that does not retrieve from kernel current settings
-> > > > then it has big probability that application works.
-> > > 
-> > > I do not understand, sorry, what do you mean by this?
-> > 
-> > I mean that SET methods are working, GET methods not. In this case SET
-> > done via ioctl(TIOCSSERIAL) and GET via ioctl(TIOCGSERIAL).
-> > 
-> > > And as you are responding to a months-old thread, I am totally lost, and
-> > > don't even know what the patch here was...
-> > > 
-> > > > So, do you really want to remove support for these old flags completely?
-> > > > That would of course break above applications.
-> > > 
-> > > I'm not saying remove them, I'm saying let us not add any more
-> > > dependancies on them in order to keep new applications from ever wanting
-> > > to use them.
-> > 
-> > Last time you wrote to remove them. Now saying not to remove them. So I
-> > do not understand you now.
-> 
-> I'm sorry, I am totally lost.
+On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
+> > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote:
+> > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
+> > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r wrote:
+> > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
 
-So look what you have wrote? Who is lost here is me.
+...
 
-> How about starting over and resubmitting
-> the changes you want and we can go from there.
-> 
-> greg k-h
+> > > > I'm not saying remove them, I'm saying let us not add any more
+> > > > dependancies on them in order to keep new applications from ever wa=
+nting
+> > > > to use them.
+> > >
+> > > Last time you wrote to remove them. Now saying not to remove them. So=
+ I
+> > > do not understand you now.
 
-What to resubmit? I do not understand you. In case you lost emails or
-accidentally removed them, you can look at them in archive, not? I hope
-that you do not want me to copy+paste all existing patches with all your
-quotes on them which you wrote into new emails.
+There was a _new_ addition of the ugly SPD_CUST, that's what I believe
+Greg opposes to. And I support that.
+
+> > I'm sorry, I am totally lost.
+>
+> So look what you have wrote? Who is lost here is me.
+>
+> > How about starting over and resubmitting
+> > the changes you want and we can go from there.
+>
+> What to resubmit? I do not understand you. In case you lost emails or
+> accidentally removed them, you can look at them in archive, not? I hope
+> that you do not want me to copy+paste all existing patches with all your
+> quotes on them which you wrote into new emails.
+
+That change that adds the new user of SPD_CUST?
+
+In any case the best summary about BOTHER I ever read is this [1] (and
+an initial steps in picocom [2]). And I believe that instead of
+SPD_CUST we should get rid (or at least minimize) the problems with
+BOTHER in user space.
+
+[1]: https://github.com/npat-efault/picocom/blob/master/termios2.txt
+[2]: https://github.com/jmesmon/picocom/issues/2
+
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
