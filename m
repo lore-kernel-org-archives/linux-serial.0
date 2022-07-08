@@ -2,56 +2,56 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851C0C433EF
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 15:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE1AC43334
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 16:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238905AbiGHP7a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Jul 2022 11:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S238158AbiGHQDb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238414AbiGHP73 (ORCPT
+        with ESMTP id S238127AbiGHQDa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Jul 2022 11:59:29 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EE46D55C;
-        Fri,  8 Jul 2022 08:59:29 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id n74so8864284yba.3;
-        Fri, 08 Jul 2022 08:59:29 -0700 (PDT)
+        Fri, 8 Jul 2022 12:03:30 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45FF1171;
+        Fri,  8 Jul 2022 09:03:28 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id p129so8773528yba.7;
+        Fri, 08 Jul 2022 09:03:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JIFsfOSVQfXvBX0XrqyFJCcU4eKxtUIBtIyIMnlR/d0=;
-        b=Xl8u1ENIUNBQhTTOE5t4JNqEmRipm9EBBREnAES0k9aa1UbMLxMBTGsusTv203kd9s
-         0fZc8DLeOOiBt7Kb5aoI0qsl/VkODJAA9j6bRtMpEooSocNgj5JIhlvNKO24FkkWZtQl
-         vUwWG/w+DvDQ0+PE3qWWeclifxolJwG4zkyOZpvlzdYetzKeQttoF5LCsgKSBgCX7DXv
-         lWxyG/CWauM7LGsRfW9YTWu/I6sjJOUKSzH4BraS8GwoYzFvdf0eWLE1SI+YJVMvsDiS
-         PqtVEzEGfu/Ld0XfvNR+fLXzRmLEREfG7NLoNiu9FGpYqHrqOCwZ4d4G4pfYMGXfpE7C
-         W9IQ==
+        bh=jC9bt20ORRlGeFu2nX1nb50U0xaaq8Zx5a1ATBqxDXc=;
+        b=m7g34KswNMNK+JzrpiOl2eVrf2NkrwDYewCexb/DRwTdwQzrQS/LxtTRERGBB5f6dF
+         sod11nuhuUNyU3vKNahTRSfBh6FPN8j5FXobLKn1glzxNg9UbhHQW7oq+cXdyPeDbJsc
+         fVUNNG6A+7rIOFIh4iX3U0xQgK8x5lsrtp+9fB2v9BTzfSfcsf7FJD5mgsAUyC3MiwG+
+         WQXEqh6zBc9gZq5tcN2NORS+4sh93YqR79IW+5brJpQacU7G49aAm79L7DRyftj9Sb2x
+         jYWz1Ic/d2LLzIdiOEfq2DYdNxE2WrVwgXXqIwkWrQmrotXBxNciw8WQz5s/4A4Vmgpc
+         9BqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JIFsfOSVQfXvBX0XrqyFJCcU4eKxtUIBtIyIMnlR/d0=;
-        b=OFqeTAOxCcIlp9DJOXrBIAod3vpLpIfshQ4Wvv8YuYwS1bJqRh1aMir+xNNgfuOUMt
-         r/lzC8qfV64YqWOeeRno19ONImXOjRkeds8++7eow21KhcYGG4MUuhcq4kfU0msGFHqS
-         LbdYSiPA11fhNH4FtfEWnLX1F3ndB7PP1daBTVeZxJEuPDC2LqV4eQ8jLvC2f9Oz9IfQ
-         J4PFc8mgGpUvFjADyrFWUYkPHLCG5m7my/DHVO7UYy1mQJAaEhmGtI4XZEvljbXfvUe/
-         p5cv34plDz0uB2Y/jy3qY7BRsgdvbHfeuGzcD65db1P5UE/Z+sXcIuwBB+noExrY8+Y0
-         6NBA==
-X-Gm-Message-State: AJIora/2kYBwo0yx8AbEvWANV2RyBdoxl65QU9H7BD5fgducLgCKZZCl
-        L+21l5hiiksezMgOMYV9FOLEQ+RXSDW0ryKgFlM=
-X-Google-Smtp-Source: AGRyM1squvqQ9ABX/jhZ3VK0FtqZmCMqquBhgcf3oL7ktfaTXhDh+hRyB1BDUIo5cwHztujLr1s7GVpkXTpoSTEUduk=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr4399948ybg.460.1657295968321; Fri, 08
- Jul 2022 08:59:28 -0700 (PDT)
+        bh=jC9bt20ORRlGeFu2nX1nb50U0xaaq8Zx5a1ATBqxDXc=;
+        b=mcvwOMUBw4fOEtXu9UQFZV8ahsZyXhDOpjMEGSy0U8y/K3yAmwlHfFHwlfxHybKw4j
+         /ZKHRMrG8TU5nV7xsQqThZ60RTd8NqhPzzntnjXLazBzbFiSt5jq4u5iXditLVVMQ96m
+         Ys1aAFFl6PAWuO3bfkYtWI4ZNDaMb0RcpdlM3wtpVwDD29K/ODiZacUBzVvChGEH7uhy
+         epYRr0x6JrtA1btuZaEacgZkwhhJEzjzcrWmdx8kX8pIMM8yDXVxkvgHbpelJzE/apb3
+         3cneklTxXhowEjMxVAYWW5ncNfe6GidJV/uS3GJ7HWp0nAwcJ5D0hbjg8RWDaY6yExPw
+         eyew==
+X-Gm-Message-State: AJIora9lPLWbYdIl5ledvJxrIQDf06D70LVhJFtFdCikPWOtMRBgvmFu
+        F7JrVFKRu/UHjLWa9ZNAoQ+yAPj+DvYQmEnsgs8=
+X-Google-Smtp-Source: AGRyM1trwccebaK2LpZ94bVBfS1ySQhGM68O7j7fP8z78jBh83olSDAoI6ao6IQOU9x6j9JMgYbih3qYt4w3gsS4eMg=
+X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
+ w9-20020a05690210c900b00668e27c08f7mr4408148ybu.128.1657296207593; Fri, 08
+ Jul 2022 09:03:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220701154604.2211008-1-imran.f.khan@oracle.com>
-In-Reply-To: <20220701154604.2211008-1-imran.f.khan@oracle.com>
+References: <20220705201026.2487665-1-imran.f.khan@oracle.com>
+In-Reply-To: <20220705201026.2487665-1-imran.f.khan@oracle.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 17:58:51 +0200
-Message-ID: <CAHp75VdY=UoBnL=vGkq2xPX6OBD2aDgB+t85z=zKpS1ovin4=w@mail.gmail.com>
-Subject: Re: [RESEND PATCH] kernfs: Avoid re-adding kernfs_node into kernfs_notify_list.
+Date:   Fri, 8 Jul 2022 18:02:51 +0200
+Message-ID: <CAHp75Vc6Oc+cjt8dWBiUFSVnJB8CbkA52Y_OTOT32AwZQcEdMw@mail.gmail.com>
+Subject: Re: [PATCH] Revert "kernfs: Change kernfs_notify_list to llist."
 To:     Imran Khan <imran.f.khan@oracle.com>
 Cc:     Tejun Heo <tj@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -69,18 +69,18 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 5:49 PM Imran Khan <imran.f.khan@oracle.com> wrote:
+On Tue, Jul 5, 2022 at 10:24 PM Imran Khan <imran.f.khan@oracle.com> wrote:
 
 ...
 
-> +       if (kn->attr.notify_next.next != NULL) {
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Reported-by: Michael Walle <michael@walle.cc>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>
+> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 
-Isn't there a helper to get next pointer from an llist pointer?
+A tag block mustn't include blank lines.
 
-> +               kernfs_get(kn);
-> +               llist_add(&kn->attr.notify_next, &kernfs_notify_list);
-> +               schedule_work(&kernfs_notify_work);
-> +       }
 
 -- 
 With Best Regards,
