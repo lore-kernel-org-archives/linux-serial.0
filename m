@@ -2,204 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1A4C43334
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 17:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1B2C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 19:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238459AbiGHRmQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Jul 2022 13:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
+        id S238234AbiGHTP2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Jul 2022 15:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238052AbiGHRmP (ORCPT
+        with ESMTP id S229496AbiGHTP1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Jul 2022 13:42:15 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818185A45D;
-        Fri,  8 Jul 2022 10:42:14 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id r3so38959114ybr.6;
-        Fri, 08 Jul 2022 10:42:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=s7rfjFv2pxYiTyeXDG77gpPSG058438CTEH71lJGjxs=;
-        b=a+FsaUYfq0qtR9QY2OuR7v2E9iCsNpROO86nDvM+iv8/OyQ/3ekajl2TGQipjanxWt
-         ux6KoxQmY+BRsXLUwZbpeix6b9kxUO0lyE4zAjeWB5howOkzRXYxmvthu9qKWSaldXjB
-         pZgWRuogdlLAWdICjXtsZRN7BGkI/TppAc4rTkEP5Ez8piFWDT278DzW31VO63hAJwzR
-         oAHbmqQTQkIxdrV5ErR0i6BT1MCkRNGWGz9pfAQjV7j1C4I8o29T3meCECk9+jH6aeZP
-         AACL4Uc1Fp9Gc0FidFjeWqYXI5Ga0fZTg8T7Ej0/R5d9NeDoVQ3+jt0gARESimU3Bzxf
-         FfoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=s7rfjFv2pxYiTyeXDG77gpPSG058438CTEH71lJGjxs=;
-        b=Frj0mJ3LSyWbacb0Jb0452rtANGF02za13xaeXuoPBM/iWS3Yt9nee6CFwNaa6zi+9
-         hJpAoDIhS9HgUZOnOd4DdsM5sRGbMZNzqP434W+O8Fc59bQP7Ehf5pf+P+Hf+vQ3uEe9
-         KdIG7yV4p1s8KGMkov3yHfGk5ubCeioam6eBE46UIjMNkzUcMbhxaLQjhqKZKeLmqyjC
-         VPmE82OphQb7e2GyDVayTtrV+1en+adHRcpU3vty60+/GyHWirzr4D9JVor5RXqLStbs
-         Mtf2Mg9Df5VLdXfmlBLoNqUiCXVt8zQz9BR9PRVJvqV537Rigc0T7Y+Gq5UUI4WryD5Y
-         CMOQ==
-X-Gm-Message-State: AJIora++W/pRcQzMhKf7Ktc2Pa0NYuLH0xMk5VAvmAhE0eJU5vmHADgN
-        soPTfJLFbeQM4okE1FSIwalUshxwZfX6Oqazts4=
-X-Google-Smtp-Source: AGRyM1stxFyo4NbOuYehHaTTVp9jk9rE09F65RoYnEjrYnP+TO+8Pg0Bk/5BqqC+tFmaTrH8bYc0ZYh5cFZDknGE2ew=
-X-Received: by 2002:a05:6902:c4:b0:64b:4677:331b with SMTP id
- i4-20020a05690200c400b0064b4677331bmr4733744ybs.93.1657302133662; Fri, 08 Jul
- 2022 10:42:13 -0700 (PDT)
+        Fri, 8 Jul 2022 15:15:27 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2059.outbound.protection.outlook.com [40.107.20.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A28E45042
+        for <linux-serial@vger.kernel.org>; Fri,  8 Jul 2022 12:15:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZQ7mvT2i84oX9PsWXZZkaz8Cu00nblqYp+1sqKfPW8SV0uNAVPO9ARQkdPxEysfxXLBV4UyM0/2he8RwO9asxnypSb3KYKo8cnDoQTUZHst89L/pMsaZLIGrQblioXy4qo84X4BorSYwR4SoUvSIS0yG41/HOLbh5r8BjlEEvPtv7dmLjym8OLhDr3jwPlBQbcs7dUgZuQ/0Bej9Ix1xfO7IRmqEmaFvExzbN37vnbqyeclkYD6VJVq4xj6ylcBIfbEOgDc+XEi+PbQ+nD2gStcL8wsGgyilAuRy0owiDRI3k0e7+pCdQ+bh3Zbj2I1N2O+F22SA5INAEX2QQqmi4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lLOkr9E+uf2xoQCeAS/kmOFiih+Kc7HZ3/liinMrtUw=;
+ b=ZN/lyhgueH+IRutjqu5Th2BRYDCin0x0Hm7aRxtPO2uznOJ8f/Uq3CKDAILbybhgcMtAfmCxtMs4YLVPsVYZGsrIHYGR06NDfJmANHmzuza5fsPnrnmweKETpSbTudPCQ/9MmlbrwUDRgvQQCv3Jg9/341pb7Krl4Bi20bjvntAxS6bykIGgTSkkfRi7KzCUc0GMG6Z/IL8hXkkmpg3b2thJckX8scEbNMHEOGEhNQGVk63HCfj6+MB3kHHzSGgKmeyHcs6wkSIXQubxdZ6FLYLWYu7xKhj3zJEjh3H1Vz5NZ4xFd8OWj49CrIjkWNquTzZLsuVBSUwXr10nxxCAoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lLOkr9E+uf2xoQCeAS/kmOFiih+Kc7HZ3/liinMrtUw=;
+ b=I9pm145e5Yse6RAupnUywqS/fcTbCWUK9bXU7xegJWvFP27Yrg250AlkchClnqp1GaK/lOjZ3vNM1+CR7kyv+QrUDl8PUUxleLMm2Qp9W0ZSvWfbFdO0uzKRUKDtQo6abqpaCAZxYAxidthQlFsH+6A9jaOYFtsnsqfC76Ld/wM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
+ by AS1PR04MB9503.eurprd04.prod.outlook.com (2603:10a6:20b:4d1::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Fri, 8 Jul
+ 2022 19:15:24 +0000
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::34eb:6533:85f0:5ed6]) by AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::34eb:6533:85f0:5ed6%9]) with mapi id 15.20.5417.020; Fri, 8 Jul 2022
+ 19:15:24 +0000
+From:   shenwei.wang@nxp.com
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>
+Subject: [PATCH 1/1] serial: fsl_lpuart: zero out parity bit in CS7 mode
+Date:   Fri,  8 Jul 2022 14:15:04 -0500
+Message-Id: <20220708191504.324308-1-shenwei.wang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR13CA0011.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::16) To AM9PR04MB8274.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3e8::23)
 MIME-Version: 1.0
-References: <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
- <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
- <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
- <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com>
- <20220708155413.rlc3iyf72tdwthfa@pali> <CAHp75Vf=JGbmydAaeA=81YDViVtj7cG91Sr4teJ8mhFNH8AhAw@mail.gmail.com>
- <20220708162532.jefbmpokampkuahv@pali>
-In-Reply-To: <20220708162532.jefbmpokampkuahv@pali>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 19:41:37 +0200
-Message-ID: <CAHp75VfD24SxejjQ6hq85BTaHpOGPj3-diEqxu5BGnABm0Yz1w@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 860fb0ab-5663-4c46-9a1a-08da6116355f
+X-MS-TrafficTypeDiagnostic: AS1PR04MB9503:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TIXEhZJAcr/T0mX42QSqYI8Ta+Trn1rEs4E58a2IcCRP/8bEicOzc7Xjngv72AKNYG2k+DrrrR5kEZb7VYw42IUC+R6Pkqtes8bPZ5DY/2Rcv7rDTT8zX2xJ6Bm+an1CDncTu67EYER5rl+tROzHxdTADAZ2m1AARVSR6WAoF9Xhj8IcYDlTYN1wSACki0dcVW9sJtw8S6bScFQZthhdLh7s2LKP8xliTP/Z/DKef0t0U/zYBmgZcQpldpOQlelNfROSRe+BlNXb33jtfdYho8ms76GplcmdzYGmHwE6So5HEGFXpjoI2oA8m7vZaBMJMj1M1YVrV6Dnj8d84gc6Co259+LI2EEquSVOVAXhmrE7ea45veW5SUtGPWpMOBWUG4p/Bk8AD6vWN3T9K30odAHg4IhtJ08JeLPZVxaGixjkUPh1DKWf7QNMLj9NoKnatxp0VKVlodlqreyw5Y95OiYcCjLjZ6pF5TmJFkA7b1J4KdcoLBMLIR1NLLx/3jEqjT4xAj/rJD9G72dmvy0KxLP18rnn1uEy6KSC5g5oJpd4Pn2UawjCevcQdRstnPk8sczpBHGXSDexGzjfx3XS6tDZJ4LefwZClAGDbkyuQKbYPtmA9WSpl8OQYNekSlTgMt995psmOFnz16ffuWkY4PVng/Os/cCmvcx57ToIfyNUjEdl+bNgGmmmGMnWrZkhuCGD3J1UdXV5czh4T8OdSCfGEoOFWmgiShuRYgBOa39zY3I0vSp3DTOXa3tUBPNjPnjL9ydf9URxTkgXmrEwGdwYowjbGCJUMKvIFis2A86rXoTwvkEk6NpdqgsK97/s
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(39860400002)(366004)(346002)(396003)(6512007)(478600001)(9686003)(86362001)(8676002)(66476007)(66946007)(66556008)(6486002)(8936002)(4326008)(83380400001)(38350700002)(1076003)(38100700002)(55236004)(26005)(186003)(41300700001)(2906002)(6666004)(316002)(5660300002)(6506007)(2616005)(52116002)(36756003)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eN5V00DElD9d7Usn21jC6rLFXM+aRoQmF68Qk8Dvc2KHGjaGv0mURuaJ1ri0?=
+ =?us-ascii?Q?c/cOlveaughn+7av8ta5EVq8Z2hf91bfOiGAxO0mxaK7labc/OqGPSZ0DOAi?=
+ =?us-ascii?Q?TMNkqctpnHjiXSqIKqvM57wBdJ9dH4nwPoop22u62DcTbbkyw+4n5xdV8M3X?=
+ =?us-ascii?Q?MdSyT6UJWQCMqMt2sqC3fWnQMgcE48/uzEfMealtOdunbuElZ/k0jxi4fyKx?=
+ =?us-ascii?Q?7i83ppR2LqxxPnCfUMekXjhyj7xXgFyF7Me+81OVjmGunweaVjODgb6L0OQZ?=
+ =?us-ascii?Q?nNVAi/Z/k9YkidX1S44MD+4cGc9CH0wtjBqICxk71EFo/HMTSVIKeOHBgRGc?=
+ =?us-ascii?Q?D0Z0Crjputge1/HdXrRc+6K4rVmb9sufkzXIXuLsxPPIuhzBqZ8jOdqNvywA?=
+ =?us-ascii?Q?tXtOukIMnComlbVPbL7QyKuK1dwTmk/AR7CueRlKUCWb+cGuQWnw3GQzstrY?=
+ =?us-ascii?Q?7lP24rRrDPZJ0F3YPjyqyizNvwNCW6h2StLfM1GKJVogciLcHeWpQHLoCsp/?=
+ =?us-ascii?Q?MSmMNQEPZGCgDisQEQkZNSYlQVBQ67kCgMbBwswvNFu/uDL3DyP810O85K9w?=
+ =?us-ascii?Q?JyxAPTeOoSHh+fKM69P+G8AjVbwACvw16XcKkaf3vu3rnmsakas4eRGbKL2Y?=
+ =?us-ascii?Q?Nb7IPzbZb764QzFS0sBsXEhX4ELsJrAeOUdJdofAJ2BHMYjciVzdjodcYjqT?=
+ =?us-ascii?Q?wv36r4bYuZrYiy34l69L9MHoG8iuVq5WJwEWOPD4S+wYrD6JHxVVoUe5OY0a?=
+ =?us-ascii?Q?xmeJKVXICvD6EV+zXs9whBKPJCEKAQkWRURJxSJ/WY3vTxjtcqcVlw6TCeXN?=
+ =?us-ascii?Q?sHv/oUYwVG5Y0nXXqMIEkOmwS6fPoMmUrYieNas0gnjh4OpQ6dpQpXtd/S1C?=
+ =?us-ascii?Q?glSAH+lB0Ceor6T6kaxC9x3yGe38CzWSLO6TEkTyDIWS0eR3JgpUd8fD9xET?=
+ =?us-ascii?Q?dH1IfDyaiQJ5lgkts8fGbWtlDRnHoUTE/kC8Q0bkSLZs+S1v0LoWGDSak6U9?=
+ =?us-ascii?Q?61q1hv+NM8QpQBEpAgE1p2/j5QpvbWr0A9BEqGBjmaqra1SucaHqBx+vGC+x?=
+ =?us-ascii?Q?A8E9eQfhWX6RGrjjTKNm34tC0bcb83c4Bml901xFOlwHNb46uR1dW2f2CK7p?=
+ =?us-ascii?Q?btJNJ0Fah4xartD21QklxEg17R6xLbSkdDY+Kp23KPX1uCsmh0znaDMPXPov?=
+ =?us-ascii?Q?tz21krskzbIzgpleH3H2uLzzOwwYkaglIpK1cDzjq8eZh0ttCc0eC97/LCEy?=
+ =?us-ascii?Q?LEnxcOZ662OEikD2ZYVXsUD07Lij3VEK0xyzu7mmOADPzwsPLdTWGOrCbuF+?=
+ =?us-ascii?Q?RvxmlR+dR2QfkhEnbidpGOVxds9WXgYIBgQkN8WiWnV3YCT7fQHMXm3qQLLc?=
+ =?us-ascii?Q?RzTnC5HwIHuOK7L2JWr5PYjDtAO9YSSjpNaHij2M2C4hERwSdjeBNyi1OSb2?=
+ =?us-ascii?Q?Kiq3R184ICRzA+zIFfbko6Jq5vMS5YgEtGnYTV53qsINEBqW3Ug9PWq0Rtbf?=
+ =?us-ascii?Q?Oe297ecQuEukWQWMwCYxMa3bHIMrzeLCLmx9JtM+5LhPAa9tkX7yEEaDj4pV?=
+ =?us-ascii?Q?ih6JJ5kG+ewjvuXu4IbsnM3PoJbiZpqA6LPM7+MSWOVo81o5yNQk2wABm1mG?=
+ =?us-ascii?Q?PQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 860fb0ab-5663-4c46-9a1a-08da6116355f
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 19:15:24.0385
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 55FKwLQ+D8sN6oiI3761n1IhIYVkRci0m9WoWU9JGd++qIp8FlKurMUHmFFAVYJF7dSuksCN8z3NIwxtHxp9mA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9503
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 6:25 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
->
-> On Friday 08 July 2022 18:09:07 Andy Shevchenko wrote:
-> > On Fri, Jul 8, 2022 at 5:54 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
-> > > On Friday 08 July 2022 17:42:03 Andy Shevchenko wrote:
-> > > > On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wr=
-ote:
-> > > > > On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
-> > > > > > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote=
-:
-> > > > > > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
-> > > > > > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r w=
-rote:
-> > > > > > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote=
-:
-> > > >
-> > > > ...
-> > > >
-> > > > > > > > I'm not saying remove them, I'm saying let us not add any m=
-ore
-> > > > > > > > dependancies on them in order to keep new applications from=
- ever wanting
-> > > > > > > > to use them.
-> > > > > > >
-> > > > > > > Last time you wrote to remove them. Now saying not to remove =
-them. So I
-> > > > > > > do not understand you now.
-> > > >
-> > > > There was a _new_ addition of the ugly SPD_CUST, that's what I beli=
-eve
-> > > > Greg opposes to. And I support that.
-> > >
-> > > Which addition? I do not understand you. There was not any new driver
-> > > with introduction of SPD support.
-> >
-> > You stated that SPD_CUST is broken in some drivers, so you are trying
-> > to fix a broken ugly hack. Why? Instead of making it rot and be
-> > removed eventually, you pump life into frankenstein.
->
-> Firstly I got rejection of my other patches because they does not handle
-> SDP_CUST correctly. So I decided to look at those issues and fix it via
-> helper function which can be easily reused in all drivers. So helper
-> function wrap all "ugly" hacks. Then I got reaction that SDP should be
-> removed. Then I got another reaction that that "I'm not saying to remove
-> them" and another another reaction why to be removed eventually.
->
-> So how should I interpret this? I'm feeling that you are just trying to
-> annoy people with this "do this", "do opposite", "do again it", "do
-> again opposite"...
+The LPUART hardware doesn't zero out the parity bit on the received
+characters. This behavior won't impact the use cases of CS8 because
+the parity bit is the 9th bit which is not currently used by software.
+But the parity bit for CS7 must be zeroed out by software in order to
+get the correct raw data.
 
-Ask someone who makes a decision. I wrote just my p.o.v. on the
-"problem". I think there is no problem with SPD_CUST, it should be
-oblivionized.
+Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-> > > > > > I'm sorry, I am totally lost.
-> > > > >
-> > > > > So look what you have wrote? Who is lost here is me.
-> > > > >
-> > > > > > How about starting over and resubmitting
-> > > > > > the changes you want and we can go from there.
-> > > > >
-> > > > > What to resubmit? I do not understand you. In case you lost email=
-s or
-> > > > > accidentally removed them, you can look at them in archive, not? =
-I hope
-> > > > > that you do not want me to copy+paste all existing patches with a=
-ll your
-> > > > > quotes on them which you wrote into new emails.
-> > > >
-> > > > That change that adds the new user of SPD_CUST?
-> > >
-> > > What you are talking about? Which user?
-> >
-> > This I missed, I was thinking that you are talking about a new user,
-> > now I read briefly and it seems that it's about an existing user.
-> > Anyway, that change I suppose.
-> >
-> > > > In any case the best summary about BOTHER I ever read is this [1] (=
-and
-> > > > an initial steps in picocom [2]).
-> > >
-> > > Is not that example in manpage enough?
-> >
-> > Dunno.
-> > Can you point it out to me? I can't find it quickly.
->
-> Argh... Have you read emails to which you wrote reply? So copy+paste
-> relevant part from my previous email just for you:
->
->  "New version of tcsetattr and ioctl_tty manpages would have documented
->   how to use BOTHER (it is currently in the manpages git)."
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 8fe0494d4057b..202431f75e913 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -274,6 +274,8 @@ struct lpuart_port {
+ 	int			rx_dma_rng_buf_len;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
++    bool		is_cs7; /* Set to true when character size is 7 */
++						/* and the parity is enabled			*/
+ };
+ 
+ struct lpuart_soc_data {
+@@ -1022,6 +1024,9 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 				flg = TTY_OVERRUN;
+ 		}
+ 
++        if (sport->is_cs7)
++			rx &= 0x7F;
++
+ 		if (tty_insert_flip_char(port, rx, flg) == 0)
+ 			sport->port.icount.buf_overrun++;
+ 	}
+@@ -1107,6 +1112,17 @@ static void lpuart_handle_sysrq(struct lpuart_port *sport)
+ 	}
+ }
+ 
++static inline int lpuart_tty_insert_flip_string(struct tty_port *port,
++               unsigned char *chars, size_t size, bool is_cs7)
++{
++	int i;
++
++	if (is_cs7)
++		for (i = 0; i < size; i++)
++			chars[i] &= 0x7F;
++	return tty_insert_flip_string(port, chars, size);
++}
++
+ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ {
+ 	struct tty_port *port = &sport->port.state->port;
+@@ -1217,7 +1233,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 	if (ring->head < ring->tail) {
+ 		count = sport->rx_sgl.length - ring->tail;
+ 
+-		copied = tty_insert_flip_string(port, ring->buf + ring->tail, count);
++		copied = lpuart_tty_insert_flip_string(port, ring->buf + ring->tail,
++					count, sport->is_cs7);
+ 		if (copied != count)
+ 			sport->port.icount.buf_overrun++;
+ 		ring->tail = 0;
+@@ -1227,8 +1244,9 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 	/* Finally we read data from tail to head */
+ 	if (ring->tail < ring->head) {
+ 		count = ring->head - ring->tail;
+-		copied = tty_insert_flip_string(port, ring->buf + ring->tail, count);
+-		if (copied != count)
++		copied = lpuart_tty_insert_flip_string(port, ring->buf + ring->tail,
++					count, sport->is_cs7);
++	if (copied != count)
+ 			sport->port.icount.buf_overrun++;
+ 		/* Wrap ring->head if needed */
+ 		if (ring->head >= sport->rx_sgl.length)
+@@ -2066,6 +2084,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	ctrl = old_ctrl = lpuart32_read(&sport->port, UARTCTRL);
+ 	bd = lpuart32_read(&sport->port, UARTBAUD);
+ 	modem = lpuart32_read(&sport->port, UARTMODIR);
++	sport->is_cs7 = false;
+ 	/*
+ 	 * only support CS8 and CS7, and for CS7 must enable PE.
+ 	 * supported mode:
+@@ -2184,6 +2203,9 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	lpuart32_write(&sport->port, ctrl, UARTCTRL);
+ 	/* restore control register */
+ 
++	if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) == UARTCTRL_PE)
++		sport->is_cs7 = true;
++
+ 	if (old && sport->lpuart_dma_rx_use) {
+ 		if (!lpuart_start_rx_dma(sport))
+ 			rx_dma_timer_init(sport);
+-- 
+2.25.1
 
-I do not know the "manpages git" URL. Neither its hosting. kernel.org?
-And then? It took time for you to just write something instead of helping m=
-e.
-Whatever. I found the commits.
-
-> Plus in past I also pointed to the extended version of that example from
-> manpage which is currently in my repo on github:
-> https://github.com/pali/linux-baudrate.git
->
-> > > > And I believe that instead of
-> > > > SPD_CUST we should get rid (or at least minimize) the problems with
-> > > > BOTHER in user space.
-> > >
-> > > I looked into archives and seems that glibc people are not interested=
- in
-> > > this area. And I'm not going to spend time on another project which s=
-eems
-> > > to be useless.
-> >
-> > So why should the kernel suffer if it already provides something good
-> > for the user and user space ignores that?
->
-> Because it is unusable? API which standard linux userspace applications
-> cannot use is useless. And for application develop it does not matter if
-> issue is in kernel part of API or userspace part of API. At the end
-> would be use used.
-
-Then help make it happen?
-
-> With whole this discussion I have feeling that there correct way is just
-> to use SDP flags in userspace as there is no interest in fixing BOTHER's
-> c_ospeed and c_ispeed in kernel drivers and it was rejected just because
-> of not handling SDP flags correctly.
-
-I'm puzzled who asked you about SPD_CUST implementation... It.is.an.ugly.ha=
-ck.
-
---=20
-With Best Regards,
-Andy Shevchenko
