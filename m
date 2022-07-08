@@ -2,139 +2,201 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74351C43334
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 13:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8391CC43334
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 13:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237879AbiGHNHs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Jul 2022 09:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
+        id S237862AbiGHNLX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Jul 2022 09:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231890AbiGHNHs (ORCPT
+        with ESMTP id S237918AbiGHNLW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Jul 2022 09:07:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56E99FC3;
-        Fri,  8 Jul 2022 06:07:47 -0700 (PDT)
+        Fri, 8 Jul 2022 09:11:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5952A950;
+        Fri,  8 Jul 2022 06:11:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E52A62767;
-        Fri,  8 Jul 2022 13:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B00FC341C0;
-        Fri,  8 Jul 2022 13:07:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 769BCB827B3;
+        Fri,  8 Jul 2022 13:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98DBDC341C6;
+        Fri,  8 Jul 2022 13:11:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657285666;
-        bh=pT5D8o52SniTggmD0JZqqPMw3dK/JQIRcP3v2sSX7vE=;
+        s=korg; t=1657285879;
+        bh=z5Uat0LSTUymLrXfMjnQF7MXtrkHeCBhETdVEQeiIOM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MVgM8EK8oqx9dvUTokujHZ3JI8Y0z+tU2UGKxuu2mm3ChKKQIf7Q2WwWTZUg9MFRo
-         8DlbTsKzqZvbtcOzGVYjidg7TApgxq+hP6Zk3Lz+Rq6XrW2EBIynX4R33BUXmW1Hcz
-         eMYWE6+AqfeztGsrIJbucdz6Vyye5+7n9aZnNGpU=
-Date:   Fri, 8 Jul 2022 15:07:43 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
-Message-ID: <YsgsH94PV/wAX0Vu@kroah.com>
-References: <20220321163055.4058-1-pali@kernel.org>
- <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
- <YmK7drS0XgnTQcaf@kroah.com>
- <20220707084840.jvsstvyx2ul5ltb6@pali>
+        b=oZl+F8em0KnuzARWbL+MAL57Gpb5jRTAOeSNCYJZC4SO9wLHuMabsUEv20gscBmtL
+         XPGu0ThuPm8hByuq4REd1UvwtTt82Hkpf7ulzYsdGA16VYhuBL7KaZjfMDC1s/l6TC
+         L1wkeJd5quCCx1J3GLKKxPMq7xiFBsM2MOh6Ou5o=
+Date:   Fri, 8 Jul 2022 15:11:16 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_msavaliy@quicinc.com,
+        dianders@chromium.org, mka@chromium.org, swboyd@chromium.org
+Subject: Re: [V3] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+Message-ID: <Ysgs9MwCLyqeWgge@kroah.com>
+References: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220707084840.jvsstvyx2ul5ltb6@pali>
+In-Reply-To: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Rohár wrote:
-> On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
-> > On Tue, Mar 22, 2022 at 04:29:08PM +0200, Andy Shevchenko wrote:
-> > > On Mon, Mar 21, 2022 at 11:07 PM Pali Rohár <pali@kernel.org> wrote:
-> > > >
-> > > > Support for UPF_SPD_* flags is currently broken in more drivers for two
-> > > > reasons. First one is that uart_update_timeout() function does not
-> > > 
-> > > the uart_update_timeout()
-> > > 
-> > > > calculate timeout for UPF_SPD_CUST flag correctly. Second reason is that
-> > > > userspace termios structre is modified by most drivers after each
-> > > 
-> > > structure
-> > > 
-> > > ...
-> > > 
-> > > > (error handling was ommited for simplification)
-> > > 
-> > > omitted
-> > > 
-> > > > After calling set_active_spd_cust_baud() function SPD custom divisor
-> > > > should be active and therefore is_spd_cust_active() should return true.
-> > > >
-> > > > But it is not active (cfgetospeed does not return B38400) and this patch
-> > > > series should fix it. I have tested it with 8250 driver.
-> > > 
-> > > drivers
-> > > 
-> > > > Originally Johan Hovold reported that there may be issue with these
-> > > > ASYNC_SPD_FLAGS in email:
-> > > > https://lore.kernel.org/linux-serial/20211007133146.28949-1-johan@kernel.org/
-> > > >
-> > > >
-> > > > Johan, Greg, could you please test these patches if there is not any
-> > > > regression?
-> > > 
-> > > I'm wondering why we are still supporting this ugly hack?
-> > > Doesn't BOTHER work for you?
-> > 
-> > Yes, I too do not want to add more support for these old flags.  If they
-> > have not been working, let's not add support for them as obviously no
-> > one is using them.  Let's try to remove them if at all possible.
+On Fri, Jul 08, 2022 at 12:47:37AM +0530, Vijaya Krishna Nivarthi wrote:
+> In the logic around call to clk_round_rate(), for some corner conditions,
+> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+> exact clock rate was not found lowest clock was being returned.
 > 
-> Well, it works partially. For more drivers SET method is working, but
-> GET method returns incorrect value. If your userspace application is
-> written in a way that does not retrieve from kernel current settings
-> then it has big probability that application works.
-
-I do not understand, sorry, what do you mean by this?
-
-And as you are responding to a months-old thread, I am totally lost, and
-don't even know what the patch here was...
-
-> So, do you really want to remove support for these old flags completely?
-> That would of course break above applications.
-
-I'm not saying remove them, I'm saying let us not add any more
-dependancies on them in order to keep new applications from ever wanting
-to use them.
-
-> Note that usage of BOTHER is problematic and in most cases highly
-> impossible if you are using glibc libc.so. BOTHER is incompatible with
-> glibc header files and so you can either include BOTHER/linux termios
-> file (exclusive) OR glibc header files.
-
-I thought that was all fixed up in newer versions of glibc.  Is that
-really still the case in the latest release?
-
-> New version of tcsetattr and ioctl_tty manpages would have documented
-> how to use BOTHER (it is currently in the manpages git).
+> Search for suitable clock rate in 2 steps
+> a) exact match or within 2% tolerance
+> b) within 5% tolerance
+> This also takes care of corner conditions.
 > 
-> Currently the only known option how to use BOTHER is to completely
-> reimplement all functions from "termios.h", provide custom "termios.h"
-> header file (and not use glibc termios.h nor any file which it includes)
-> and statically link this reimplementation into final application.
+> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+> v3: simplified algorithm further, fixed robot compile warnings
+> v2: removed minor optimisations to make more readable
+> v1: intial patch contained slightly complicated logic
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 88 +++++++++++++++++++++--------------
+>  1 file changed, 53 insertions(+), 35 deletions(-)
 > 
-> So in most cases BOTHER is not alternative to those old SPD flags even
-> for modern applications.
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 2e23b65..ac2df1c 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>  	return 0;
+>  }
+>  
+> -static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+> -			unsigned int sampling_rate, unsigned int *clk_div)
+> +static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
+> +			unsigned int *clk_div, unsigned int percent_tol)
+>  {
+> -	unsigned long ser_clk;
+> -	unsigned long desired_clk;
+> -	unsigned long freq, prev;
+> +	unsigned long freq;
+>  	unsigned long div, maxdiv;
+> -	int64_t mult;
+> -
+> -	desired_clk = baud * sampling_rate;
+> -	if (!desired_clk) {
+> -		pr_err("%s: Invalid frequency\n", __func__);
+> -		return 0;
+> -	}
+> +	u64 mult;
+> +	unsigned long offset, abs_tol, achieved;
+>  
+> +	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+>  	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+> -	prev = 0;
+> -
+> -	for (div = 1; div <= maxdiv; div++) {
+> -		mult = div * desired_clk;
+> -		if (mult > ULONG_MAX)
+> +	div = 1;
+> +	while (div <= maxdiv) {
+> +		mult = (u64)div * desired_clk;
+> +		if (mult != (unsigned long)mult)
+>  			break;
+>  
+> -		freq = clk_round_rate(clk, (unsigned long)mult);
+> -		if (!(freq % desired_clk)) {
+> -			ser_clk = freq;
+> -			break;
+> -		}
+> +		offset = div * abs_tol;
+> +		freq = clk_round_rate(clk, mult - offset);
+>  
+> -		if (!prev)
+> -			ser_clk = freq;
+> -		else if (prev == freq)
+> +		/* Can only get lower if we're done */
+> +		if (freq < mult - offset)
+>  			break;
+>  
+> -		prev = freq;
+> +		/*
+> +		 * Re-calculate div in case rounding skipped rates but we
+> +		 * ended up at a good one, then check for a match.
+> +		 */
+> +		div = DIV_ROUND_CLOSEST(freq, desired_clk);
+> +		achieved = DIV_ROUND_CLOSEST(freq, div);
+> +		if (achieved <= desired_clk + abs_tol &&
+> +			achieved >= desired_clk - abs_tol) {
+> +			*clk_div = div;
+> +			return freq;
+> +		}
+> +
+> +		div = DIV_ROUND_UP(freq, desired_clk);
+>  	}
+>  
+> -	if (!ser_clk) {
+> -		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+> -								__func__, baud);
+> -		return ser_clk;
+> +	return 0;
+> +}
+> +
+> +static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+> +			unsigned int sampling_rate, unsigned int *clk_div)
+> +{
+> +	unsigned long ser_clk;
+> +	unsigned long desired_clk;
+> +
+> +	desired_clk = baud * sampling_rate;
+> +	if (!desired_clk) {
+> +		pr_err("%s: Invalid frequency\n", __func__);
 
-Using the kernel's .h file should be easy enough here for them, right?
-And again, I thought glibc was fixed, what about other libc versions?
+Note, this is a driver, ALWAYS use dev_err() and friends instead.
+
+Also do not allow userspace to flood the kernel logs like this looks is
+possible, this should just be dev_dbg().
+
+And of course, never use __func__, it's not needed anymore for
+dev_dbg().
+
+
+> +		return 0;
+
+Why if you have a error, are you returning 0?
+
+>  	}
+>  
+> -	*clk_div = ser_clk / desired_clk;
+> -	if (!(*clk_div))
+> -		*clk_div = 1;
+> +	/*
+> +	 * try to find a clock rate within 2% tolerance, then within
+> +	 */
+> +	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
+> +	if (!ser_clk)
+> +		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
+> +
+> +	if (!ser_clk)
+> +		pr_err("Couldn't find suitable clock rate for %lu\n", desired_clk);
+
+return an error?
+
+dev_err().
+
+> +	else
+> +		pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
+> +			desired_clk, ser_clk, *clk_div);
+
+dev_dbg()?
+
+Also, as the kernel test robot says, this does not build cleanly :(
 
 thanks,
 
