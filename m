@@ -2,86 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE1AC43334
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 16:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFD8C433EF
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Jul 2022 16:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238158AbiGHQDb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Jul 2022 12:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
+        id S236808AbiGHQJq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 8 Jul 2022 12:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238127AbiGHQDa (ORCPT
+        with ESMTP id S230335AbiGHQJp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Jul 2022 12:03:30 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45FF1171;
-        Fri,  8 Jul 2022 09:03:28 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id p129so8773528yba.7;
-        Fri, 08 Jul 2022 09:03:28 -0700 (PDT)
+        Fri, 8 Jul 2022 12:09:45 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80377E098;
+        Fri,  8 Jul 2022 09:09:44 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id 6so9664584ybc.8;
+        Fri, 08 Jul 2022 09:09:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jC9bt20ORRlGeFu2nX1nb50U0xaaq8Zx5a1ATBqxDXc=;
-        b=m7g34KswNMNK+JzrpiOl2eVrf2NkrwDYewCexb/DRwTdwQzrQS/LxtTRERGBB5f6dF
-         sod11nuhuUNyU3vKNahTRSfBh6FPN8j5FXobLKn1glzxNg9UbhHQW7oq+cXdyPeDbJsc
-         fVUNNG6A+7rIOFIh4iX3U0xQgK8x5lsrtp+9fB2v9BTzfSfcsf7FJD5mgsAUyC3MiwG+
-         WQXEqh6zBc9gZq5tcN2NORS+4sh93YqR79IW+5brJpQacU7G49aAm79L7DRyftj9Sb2x
-         jYWz1Ic/d2LLzIdiOEfq2DYdNxE2WrVwgXXqIwkWrQmrotXBxNciw8WQz5s/4A4Vmgpc
-         9BqQ==
+         :cc:content-transfer-encoding;
+        bh=NiBAmwWr10y6CHObyc48uD9nFW5jkoG89MkhIpP9Xnw=;
+        b=ZjOMS1DWv4rXK5iN9pFJzlcAtFscvuO/14syZxKG75wxk22F4zoMwS44UT3WQDH+GD
+         GPI/TepMyco+s3itI7Z57Lj4RUyCEPG37Yys7Y3RhO3yNOZ0Jt7lnrhOdCuganu9gsNA
+         dmir/5YvN67iRgNx/7eqMELIRPKutBWpJ3GYV60POn1TiCxcYOa/fRdnh4J69i9q/0Nm
+         fbdb6sJw3sdnav+S3myzHyj6A1nCJFvX8CqrFHTFw8lebEePFhjhysK4A/I1Iuu/jB4c
+         89XMhblSXEYpXcyyjhNeJ/ocGschD7dhkYPQqbHmIX/L7pnYglbvrrWJJybyfGsZbskI
+         CwLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jC9bt20ORRlGeFu2nX1nb50U0xaaq8Zx5a1ATBqxDXc=;
-        b=mcvwOMUBw4fOEtXu9UQFZV8ahsZyXhDOpjMEGSy0U8y/K3yAmwlHfFHwlfxHybKw4j
-         /ZKHRMrG8TU5nV7xsQqThZ60RTd8NqhPzzntnjXLazBzbFiSt5jq4u5iXditLVVMQ96m
-         Ys1aAFFl6PAWuO3bfkYtWI4ZNDaMb0RcpdlM3wtpVwDD29K/ODiZacUBzVvChGEH7uhy
-         epYRr0x6JrtA1btuZaEacgZkwhhJEzjzcrWmdx8kX8pIMM8yDXVxkvgHbpelJzE/apb3
-         3cneklTxXhowEjMxVAYWW5ncNfe6GidJV/uS3GJ7HWp0nAwcJ5D0hbjg8RWDaY6yExPw
-         eyew==
-X-Gm-Message-State: AJIora9lPLWbYdIl5ledvJxrIQDf06D70LVhJFtFdCikPWOtMRBgvmFu
-        F7JrVFKRu/UHjLWa9ZNAoQ+yAPj+DvYQmEnsgs8=
-X-Google-Smtp-Source: AGRyM1trwccebaK2LpZ94bVBfS1ySQhGM68O7j7fP8z78jBh83olSDAoI6ao6IQOU9x6j9JMgYbih3qYt4w3gsS4eMg=
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NiBAmwWr10y6CHObyc48uD9nFW5jkoG89MkhIpP9Xnw=;
+        b=JHUg3q24TlKHE/USZNAD4WB9nHleZt2SiHToUAcEr3uMUV/bJAEZSI6JPCNCCjDQjn
+         hOREFGTW9XcTSeD+OXCjgU1WLed8qGfhdD2Q9iyEx5IHMj8xQ0FHWmCwroYDuGH0y5tI
+         HKE2wJpXtJjZZAlhJHmzGwzJ9XfFmS579QG5GcmiIlE2ZXF2OTGWoHPTuwKrxsksz9Ux
+         mTSAhJmtek8BKB+p4WphzB2iAVie2ejg5GCLRchT5oxLA9Fg6DNeSGy7cFqDZkRVuFvE
+         ysPTryUyAA4zRVbjs2fmHR+8p+501YCARjAxrCNUuSbYiMf+dTgJPSB9kRKKu4jba4oa
+         u+0g==
+X-Gm-Message-State: AJIora8xi1ZWSvoIlZQO/Y0KCyQ3UuFZcBVG4JtXqzrLwqDXJiVsU9vE
+        E4uYrMRhcoyWQ1YmtluRL5jQpmL7tmeskZukETE=
+X-Google-Smtp-Source: AGRyM1snNGAnWmURbdR/Bz0c+IXCwfys5LS4JOVYPJLs24z7iSKouS0PVwgEICtxnhUcTC1s5Fj4Uon/NX9iD0aM0Rw=
 X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr4408148ybu.128.1657296207593; Fri, 08
- Jul 2022 09:03:27 -0700 (PDT)
+ w9-20020a05690210c900b00668e27c08f7mr4439046ybu.128.1657296583588; Fri, 08
+ Jul 2022 09:09:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220705201026.2487665-1-imran.f.khan@oracle.com>
-In-Reply-To: <20220705201026.2487665-1-imran.f.khan@oracle.com>
+References: <20220321163055.4058-1-pali@kernel.org> <CAHp75VddDG-ZJpbAb5ZhKaMpP0L+CMEx2pcYy3FOMiaxNydCWA@mail.gmail.com>
+ <YmK7drS0XgnTQcaf@kroah.com> <20220707084840.jvsstvyx2ul5ltb6@pali>
+ <YsgsH94PV/wAX0Vu@kroah.com> <20220708132621.4v2es73h52aq3izn@pali>
+ <Ysg2RW0B/cLL3k+k@kroah.com> <20220708142001.7fciqnfckznlvsa4@pali>
+ <CAHp75Vci1zeDV1axd_v_PLLPGfF5AzAzmmcegjD1djqnR6XUcA@mail.gmail.com> <20220708155413.rlc3iyf72tdwthfa@pali>
+In-Reply-To: <20220708155413.rlc3iyf72tdwthfa@pali>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Jul 2022 18:02:51 +0200
-Message-ID: <CAHp75Vc6Oc+cjt8dWBiUFSVnJB8CbkA52Y_OTOT32AwZQcEdMw@mail.gmail.com>
-Subject: Re: [PATCH] Revert "kernfs: Change kernfs_notify_list to llist."
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Rob Herring <robh@kernel.org>,
+Date:   Fri, 8 Jul 2022 18:09:07 +0200
+Message-ID: <CAHp75Vf=JGbmydAaeA=81YDViVtj7cG91Sr4teJ8mhFNH8AhAw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] serial: Fix support for UPF_SPD_* flags
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Petr Mladek <pmladek@suse.com>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 10:24 PM Imran Khan <imran.f.khan@oracle.com> wrote:
-
-...
-
-> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> Reported-by: Michael Walle <michael@walle.cc>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+On Fri, Jul 8, 2022 at 5:54 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> On Friday 08 July 2022 17:42:03 Andy Shevchenko wrote:
+> > On Fri, Jul 8, 2022 at 4:20 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> > > On Friday 08 July 2022 15:51:01 Greg Kroah-Hartman wrote:
+> > > > On Fri, Jul 08, 2022 at 03:26:21PM +0200, Pali Roh=C3=A1r wrote:
+> > > > > On Friday 08 July 2022 15:07:43 Greg Kroah-Hartman wrote:
+> > > > > > On Thu, Jul 07, 2022 at 10:48:40AM +0200, Pali Roh=C3=A1r wrote=
+:
+> > > > > > > On Friday 22 April 2022 16:28:06 Greg Kroah-Hartman wrote:
+> >
+> > ...
+> >
+> > > > > > I'm not saying remove them, I'm saying let us not add any more
+> > > > > > dependancies on them in order to keep new applications from eve=
+r wanting
+> > > > > > to use them.
+> > > > >
+> > > > > Last time you wrote to remove them. Now saying not to remove them=
+. So I
+> > > > > do not understand you now.
+> >
+> > There was a _new_ addition of the ugly SPD_CUST, that's what I believe
+> > Greg opposes to. And I support that.
 >
-> Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
+> Which addition? I do not understand you. There was not any new driver
+> with introduction of SPD support.
 
-A tag block mustn't include blank lines.
+You stated that SPD_CUST is broken in some drivers, so you are trying
+to fix a broken ugly hack. Why? Instead of making it rot and be
+removed eventually, you pump life into frankenstein.
 
+> > > > I'm sorry, I am totally lost.
+> > >
+> > > So look what you have wrote? Who is lost here is me.
+> > >
+> > > > How about starting over and resubmitting
+> > > > the changes you want and we can go from there.
+> > >
+> > > What to resubmit? I do not understand you. In case you lost emails or
+> > > accidentally removed them, you can look at them in archive, not? I ho=
+pe
+> > > that you do not want me to copy+paste all existing patches with all y=
+our
+> > > quotes on them which you wrote into new emails.
+> >
+> > That change that adds the new user of SPD_CUST?
+>
+> What you are talking about? Which user?
 
--- 
+This I missed, I was thinking that you are talking about a new user,
+now I read briefly and it seems that it's about an existing user.
+Anyway, that change I suppose.
+
+> > In any case the best summary about BOTHER I ever read is this [1] (and
+> > an initial steps in picocom [2]).
+>
+> Is not that example in manpage enough?
+
+Dunno.
+Can you point it out to me? I can't find it quickly.
+
+> > And I believe that instead of
+> > SPD_CUST we should get rid (or at least minimize) the problems with
+> > BOTHER in user space.
+>
+> I looked into archives and seems that glibc people are not interested in
+> this area. And I'm not going to spend time on another project which seems
+> to be useless.
+
+So why should the kernel suffer if it already provides something good
+for the user and user space ignores that?
+
+> > [1]: https://github.com/npat-efault/picocom/blob/master/termios2.txt
+> > [2]: https://github.com/jmesmon/picocom/issues/2
+
+--=20
 With Best Regards,
 Andy Shevchenko
