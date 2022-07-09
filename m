@@ -2,132 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B52C43334
-	for <linux-serial@archiver.kernel.org>; Sat,  9 Jul 2022 18:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A79CC43334
+	for <linux-serial@archiver.kernel.org>; Sat,  9 Jul 2022 20:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbiGISrO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 9 Jul 2022 14:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
+        id S229459AbiGIUlZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 9 Jul 2022 16:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGISrN (ORCPT
+        with ESMTP id S229448AbiGIUlY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 9 Jul 2022 14:47:13 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE2711479;
-        Sat,  9 Jul 2022 11:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657392429; x=1688928429;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+GNIdhGdPyFqFyXPD803B6BFm3amZVvwqmycIbMsB08=;
-  b=lmOVBU4uE3dwIY6g04Ax/lwrDMHQ+vKAaS7ZUNCBbzRc72DIigujbAdW
-   NwFCqLHleuWAPbv3GDDy4wInrSRwcC0jJgPKJfEYcGQWLA2eGgkKrdrjK
-   a8K2QgF2+HV7KxMvdn1ICoouoLpDgGI2mfH9su6GtpZCQ/+x9og00rOk5
-   7gMiDxpRXpSzPU6KvwPNvwVbWubXkQsAmqXYlyENhrn5uGaRu4qm7OE6I
-   5JnPbIjBJ+opCywfkPJu4h/3USPAoXHbrpwqJMTqjAsclcBvuhJ5sf3K0
-   tChHm8svYEye/iOfqQiVpWBATd8nsZkKphcU9DZYE245IK0UAQPw0VI/q
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10403"; a="346139135"
-X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
-   d="scan'208";a="346139135"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2022 11:47:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,259,1650956400"; 
-   d="scan'208";a="662109631"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Jul 2022 11:47:05 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAFTs-000P20-IV;
-        Sat, 09 Jul 2022 18:47:04 +0000
-Date:   Sun, 10 Jul 2022 02:46:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, quic_msavaliy@quicinc.com,
-        dianders@chromium.org, mka@chromium.org, swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: Re: [V3] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Message-ID: <202207100234.kIBTfg5O-lkp@intel.com>
-References: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+        Sat, 9 Jul 2022 16:41:24 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED61DE92;
+        Sat,  9 Jul 2022 13:41:24 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657399282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7XCPZYdFJvPl/+Lq/KH22t+YauCj8En8BB2tojor6b8=;
+        b=HeLcSAxQmEJQcC6GvlmkZDTH5ZtG49b3ykeV2EIVRUeI2rxgNIyKXJKs9ryRVK7rXZmH88
+        wKwSW37aO9U+f6rLRLzBhwuMmyjG4xfQ81koAon7+3SscTt6TLu21zzU9CCEGtGzDnps44
+        2AtxdanRGr/145a5chmNqB4ThE6VXAUtKZYd00n1Q2bDHbXoVmeIaU6q3SHcc+IxqKZ4K5
+        +Dw7hjQjyNikDpbTrKqx8qoiK+qncNhRdj+UdzosVyE+6i1eA+mif4cuIR2nqQ/2isQu2e
+        L94b7sxYxgmULo5UTSz4wob6xvkKWQBffqKWAxlXH41mTncZYDFX2j6gqXHFKQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657399282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7XCPZYdFJvPl/+Lq/KH22t+YauCj8En8BB2tojor6b8=;
+        b=CDcPk9JxNXrHs6qzr3ETW9n1LgZiKi2wz+2s6K3eAe0PAiq/G1DNqmZcGJ089Wa6piWAla
+        INv1+CdxaMjuJEDQ==
+To:     todd.e.brandt@linux.intel.com, pmladek@suse.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        senozhatsky@chromium.org, rostedt@goodmis.org
+Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
+ (printk issue)
+In-Reply-To: <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
+ <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
+ <87czegxccb.fsf@jogness.linutronix.de>
+ <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+Date:   Sat, 09 Jul 2022 22:47:21 +0206
+Message-ID: <87tu7qvx1q.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1657221457-32494-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Vijaya,
+On 2022-07-08, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
+> The dmesg logs are in the html timelines themselves, just click the
+> "dmesg" button in the upper right hand corner. The log button shows
+> all kinds of system info as well.
 
-Thank you for the patch! Perhaps something to improve:
+Since the beginning of the kernel log is missing, I still do not see
+information about which serial driver you are using. But since it is
+x86, I'll assume it is an 8250.
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v5.19-rc5 next-20220708]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Looking at freeze-5.19.0-rc1-bad.html, at 3431.221039 we see that
+suspend_console() was called. The additional 1-second delay you are
+referring to would be 3432.436187, where serial is suspended. pr_flush()
+would have been satisfied when the message at 3431.221039 was
+printed. So the question is, why is there still printing going on?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: arc-randconfig-r004-20220707 (https://download.01.org/0day-ci/archive/20220710/202207100234.kIBTfg5O-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vijaya-Krishna-Nivarthi/tty-serial-qcom-geni-serial-Fix-get_clk_div_rate-which-otherwise-could-return-a-sub-optimal-clock-rate/20220708-031921
-        git checkout fbd8a1a4b7d91ea5caa048e4557ab18b0d08ea86
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/tty/serial/
+@Todd: I assume you actually see all the messages up to and including
+3431.506391 when it suspends? But the next message does not appear on
+suspend?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I wonder if the console_lock()/console_unlock() within __pr_flush() is
+allowing extra printing to occur, for example if another CPU was calling
+printk.
 
-All warnings (new ones prefixed by >>):
+@Todd: Could you build your kernel with CONFIG_PRINTK_CALLER enabled?
+Also, please provide the last line you _see_ after a suspend. And
+finally, please make sure you are using the latest 5.19-rc. Thanks!
 
-   In file included from include/linux/kernel.h:29,
-                    from include/linux/clk.h:13,
-                    from drivers/tty/serial/qcom_geni_serial.c:4:
-   drivers/tty/serial/qcom_geni_serial.c: In function 'get_clk_div_rate':
->> include/linux/kern_levels.h:5:25: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:452:25: note: in definition of macro 'printk_index_wrap'
-     452 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:131:17: note: in expansion of macro 'printk'
-     131 |                 printk(fmt, ##__VA_ARGS__);             \
-         |                 ^~~~~~
-   include/linux/printk.h:610:9: note: in expansion of macro 'no_printk'
-     610 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~
-   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
-      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
-         |                         ^~~~~~~~
-   include/linux/printk.h:610:19: note: in expansion of macro 'KERN_DEBUG'
-     610 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-         |                   ^~~~~~~~~~
-   drivers/tty/serial/qcom_geni_serial.c:1006:17: note: in expansion of macro 'pr_debug'
-    1006 |                 pr_debug("desired_clk-%lu, ser_clk-%lu, clk_div-%lu\n",
-         |                 ^~~~~~~~
-
-
-vim +5 include/linux/kern_levels.h
-
-314ba3520e513a Joe Perches 2012-07-30  4  
-04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
-04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
-04d2c8c83d0e3a Joe Perches 2012-07-30  7  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+John Ogness
