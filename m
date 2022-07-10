@@ -2,118 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC70C43334
-	for <linux-serial@archiver.kernel.org>; Sun, 10 Jul 2022 19:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C403BC433EF
+	for <linux-serial@archiver.kernel.org>; Sun, 10 Jul 2022 19:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbiGJTBA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 10 Jul 2022 15:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S229570AbiGJTjr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 10 Jul 2022 15:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGJTA7 (ORCPT
+        with ESMTP id S229628AbiGJTjq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 10 Jul 2022 15:00:59 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB1F1209F;
-        Sun, 10 Jul 2022 12:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1657479632;
-        bh=sCSJ/3wMz9Ep+Xj8Zv8+zmOj46t7Ut4p8C/KOgxn8Lw=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=iiLODPJBMSk7T1waGk9XUerCKe4Q5K57VDASXRxJuP+vVVDW3MusQT/aSHOFEjCPZ
-         3FRr88EYWHvSv3b0AFznmyamti/NCiIyvsXhDYfdoBT3LEwWIsgQKBfWafE5meo/AH
-         h5i2kOVXtoXd0SIieJn5ALuUa6yLOhiqOXH0h4HY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.69] ([46.223.3.243]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MHXFx-1oNWL32qtV-00DVZJ; Sun, 10
- Jul 2022 21:00:32 +0200
-Message-ID: <af8bf241-68c3-02fc-b2f2-6eba20c01b9a@gmx.de>
-Date:   Sun, 10 Jul 2022 21:00:30 +0200
+        Sun, 10 Jul 2022 15:39:46 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE8D14D39;
+        Sun, 10 Jul 2022 12:39:44 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id f73so5685601yba.10;
+        Sun, 10 Jul 2022 12:39:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jHig/kgCW9rPtBLTmyT6ZlPMMNP9pICXSeKn7E/q6GU=;
+        b=Fk+voQovmCT95EZAP5dIwBiWwpfksM05+vO7WNxv4z+jWewvoGKeW9BYnwYiAL3Lt5
+         NnKHpGsMR34gyvz0OO1QmecK0S26n3Lbbfuur3tSz1YU28eKxeJFMosnSrxe1+nbbgwc
+         QFBaFLyPSiIzVDDa0U0ird0Yh9YUmFZjXEYjCnzHWkuh2ESgkivGydZ5m3fl7qhrlQL/
+         30wS0ZQ9vjRsK3a3yG4AkgYFTozRA7rUpoEyZJMY0LET8xkV9fWy8Dn1RHalweG9Kb2S
+         9oBMPy6/5t05e37OjTkLU+azjYy9IPD/CCxAJo9/OxXi3QFpXzkcpB74GM5lqaxhIC2n
+         hUBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jHig/kgCW9rPtBLTmyT6ZlPMMNP9pICXSeKn7E/q6GU=;
+        b=WrB3O8fuJ8P2GUfOoExIxuiZlRiK/ciuQReS6tIBpHH/71KvSEuM5toOZUuTbSXlP0
+         lGtca5fSNVXcFLYSJEFn1jjBsmd4pHIG3G3WgTRYBPKWzt8/NjFyzcPf7f3ebUGE2K5Z
+         PjbQp365+yPzpqwY60wC5hUAdfUSNeXvR234zf447spzLkPxS51yU5cX7p50a4eTRqwK
+         MoAyST+EDlOesxO8V1e50yq6CH1RloYnJ/zNF//F/At1b15wG4XNpq3qtrPXl8QmSPYc
+         RSxU68+UoshklmSe6ix01KAHMuQIT85UhNvRMZseP4e2eVzXq7bXwrgYsV2b30YBWVqZ
+         SiKg==
+X-Gm-Message-State: AJIora+PrfgKFbVCYnmGennVQbbhv01mkSGm65AbUjuorp5PVhyhKMeX
+        GJ9LZ8EHfZUael7XdIESnjszkPXkGndqg+uRa28=
+X-Google-Smtp-Source: AGRyM1ueLrKTNFu8t419Verj8miOH/Kb/uR9xKk9ctJSVPuuKbdaLbhj10023Cfq3Ol7WXK26dXTYxFflLklyu8e0mA=
+X-Received: by 2002:a05:6902:686:b0:66e:627f:4d29 with SMTP id
+ i6-20020a056902068600b0066e627f4d29mr13182800ybt.385.1657481983485; Sun, 10
+ Jul 2022 12:39:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 0/8] Fixes and cleanup for RS485
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lukas@wunner.de, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220710164442.2958979-1-LinoSanfilippo@gmx.de>
- <YssdxGoKAt5Rx2DK@smile.fi.intel.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-In-Reply-To: <YssdxGoKAt5Rx2DK@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Rhow1ZI4HAGg0yjWz4+Yj+2OdGHERP8XRPn6pA9qX0TY1msUymX
- NHQDwK1kFqDQ8KktsBSzgTIxYsMdjLxx+/yW6tmPJUWyG5aKI1YTKFmxCrDnqAmrIk89ai1
- tDo4ck0qW41vG+oT1zxpfDQCuTh0NwOEBMbDUeUiWzGaXZRGJSEAnofMbnh1tqUeHPQXcAR
- YvVim4ZcHNkeP8HvNOrHQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:z7qMOxIUZko=:aDp/fR3ni8Y4/P9UB0ZdcO
- qZ2mBdamnTOe9fWJoSj8srdeKCST+QBYohPPXPpDUcLB3I7YyVd1RwUrz/o8MRvak7ogf5t8G
- ICOtHyRn3yLDQ2HJHb8Ft0zQ7fwbgtI8r9WXUHNJnILhJ/TZO5frRYuzSryvYOiAdav3TOPds
- 1rG4feXlkUM1OWDbRVt8HO5OdP33p24Xm3HvaXQgd0ezUR4O6FNySLprl4l2iWKB7/qHkV7cK
- /BA7CLqxmsX/aHuuU134sPVg6EWoP9tOwUntTzu7dUXaElfq05K+aMACDPz4ZBZu27sjjRfGq
- /5w+4aULq+bJbhLh7sdpdCCXDQ/VFaloyzhlckooDehXybm9hyEv8Zizsesrx0Whf1jKWXypj
- YzGUvqx78JUU5tbfAZ6B8WepTENBLMt/Rrgd3BwXiG5Cq1EM4auJBoHl1RDM7/i7Uasa+joIx
- VvbA/h08n5kCFR5dBJgwiIbjmquo1CHmUhvlN3d6+lxC61gA85hrjfaqEU83wLk2QVvrhYeum
- 3X7D6ZLb+Htj6f0iz25XSzgIQf7wW1k6EwspdzCDjQu8bcVr+eYInk8iT7+jpJf6fl6RwivoL
- XuP73IMUa/+GFS9hay8/iMpEuamNJpPld5EL3iDdi5d9P4/bMRILqL0b2PyxKn2JiavfvAOg+
- 3wxlA37y3uzbPK5QEnb2KDrm1yoKC4fQeZlgX5tAoB6PzhYJUR7FIAj+8qww5feLUdy2+WAHg
- b32oIcv2QEePA6dy1pbuo6tf8sedYPr7ZDaI3nSmK8M1/xv+3mt55F61iwSHluerxj+1p6EyY
- 87AM3h1zN/Aqu4nqKm+rxaB1k9rV54LED3WFkDmNN4At3Kmw9M3LVNcojZfBjNVTJFjrC5c7J
- d19y//bxvxyFCuDzRK7sRLe0rGtC69xyh/vECVLM4Fzc8AL4kwxCzheLYkGv4maDpBVEIS27M
- Jd9gzMviqIwm4ZIkNUw4kLtgaeSm9ns6iAyo/qyBGY1wkF6tsnSkpXRUSnE4OomGdADBhuu4Z
- 5xLCicZItpeHF7twMIM8ezm0gB2W+8OLvbQTdVQPJqRYThhyFQhL9UddX1GF4x35z5tM1T7q7
- z0kY5zpAj4PYtP9GNbcbkvvvaKfhbuD5vt3nZyNXMlMa6q/qdW3o4Ns7C3k6aw2pL3KHDSuWZ
- AB01MQP1eAhQhQj96jL9bhK+TW+3xbiW51JUeXAOrtAYye6heKzbVQWF18exAmlfwc8oGTKhy
- Ov50isTYNpQEbZvQyQI0MX/DNw+r3MPx9D8EomfK9VYeTU2hkvNy5xYbzO4T8E8PcdYy01Npr
- Gk0oKlAIavHKlU+houKiaNHdUjclfw==
+References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
+ <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
+ <87czegxccb.fsf@jogness.linutronix.de> <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+ <87tu7qvx1q.fsf@jogness.linutronix.de>
+In-Reply-To: <87tu7qvx1q.fsf@jogness.linutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 10 Jul 2022 21:39:07 +0200
+Message-ID: <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
+Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
+ (printk issue)
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     todd.e.brandt@linux.intel.com, Petr Mladek <pmladek@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On 10.07.22 20:43, Andy Shevchenko wrote:
-> On Sun, Jul 10, 2022 at 06:44:34PM +0200, Lino Sanfilippo wrote:
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> The following series includes cleanup and fixes around RS485 in the ser=
-ial
->> core and uart drivers:
->>
->> Patch 1: ar933x: Fix check for RS485 support
->> Patch 2: Remove superfluous code in ar933x.
->> Patch 3: Set the rs485 termination GPIO in the serial core. This is nee=
-ded
->> 	 since if the gpio is only accessible in sleepable context. It also
->> 	 is a further step to make the RS485 handling more generic.
->> Patch 4: Move sanitizing of RS485 delays into an own function. This is =
-in
->> 	 preparation of patch 4.
->> Patch 5: Sanitize RS485 delays read from device tree.
->> Patch 6: Correct RS485 delays in binding documentation.
->> Patch 7: Remove redundant code in 8250_dwlib.
->> Patch 8: Remove redundant code in 8250-lpc18xx.
+On Sat, Jul 9, 2022 at 10:48 PM John Ogness <john.ogness@linutronix.de> wrote:
 >
->> Changes in v4:
->> - fixed logical error found by
->> - capitalize "uart" and "gpio" in commit messages
+> On 2022-07-08, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
+> > The dmesg logs are in the html timelines themselves, just click the
+> > "dmesg" button in the upper right hand corner. The log button shows
+> > all kinds of system info as well.
 >
-> Please, avoid sending sequential version of the series more often than o=
-nce per
-> a few days, recommended interval is one week.
+> Since the beginning of the kernel log is missing, I still do not see
+> information about which serial driver you are using. But since it is
+> x86, I'll assume it is an 8250.
 >
+> Looking at freeze-5.19.0-rc1-bad.html, at 3431.221039 we see that
+> suspend_console() was called. The additional 1-second delay you are
+> referring to would be 3432.436187, where serial is suspended. pr_flush()
+> would have been satisfied when the message at 3431.221039 was
+> printed. So the question is, why is there still printing going on?
 
-sorry, this was due to the error found by the kernel test robot. I was not=
- sure
-if to wait, resend with the same version number or send the next version.
-I guess waiting a few days would have been the best option. Will do so nex=
-t
-time.
+It might be no_console_suspend hack. Are you, btw, aware of this ugly
+hack in the kernel?
 
-Regards,
-Lino
+-- 
+With Best Regards,
+Andy Shevchenko
