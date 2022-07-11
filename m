@@ -2,26 +2,26 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 923BCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DE0CCA489
 	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 12:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbiGKMfs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        id S231748AbiGKMfr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiGKMfe (ORCPT
+        with ESMTP id S231657AbiGKMff (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:35:34 -0400
+        Mon, 11 Jul 2022 08:35:35 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9630954CB0;
-        Mon, 11 Jul 2022 05:35:30 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 461651C811AE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 334E1545F0;
+        Mon, 11 Jul 2022 05:35:29 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 262E11C811A8;
         Mon, 11 Jul 2022 20:35:26 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 11 Jul
- 2022 20:35:26 +0800
+Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 11
+ Jul 2022 20:35:25 +0800
 Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01B.nuvoton.com
  (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 11 Jul
@@ -30,7 +30,7 @@ Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
  Transport; Mon, 11 Jul 2022 20:35:25 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 258DE63A57; Mon, 11 Jul 2022 15:35:24 +0300 (IDT)
+        id C92F163A51; Mon, 11 Jul 2022 15:35:23 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -50,11 +50,10 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v8 12/16] dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
-Date:   Mon, 11 Jul 2022 15:35:15 +0300
-Message-ID: <20220711123519.217219-13-tmaimon77@gmail.com>
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v8 06/16] ARM: dts: nuvoton: add reset syscon property
+Date:   Mon, 11 Jul 2022 15:35:09 +0300
+Message-ID: <20220711123519.217219-7-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220711123519.217219-1-tmaimon77@gmail.com>
 References: <20220711123519.217219-1-tmaimon77@gmail.com>
@@ -65,26 +64,26 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add a compatible string for Nuvoton BMC NPCM845 global control registers.
+Add nuvoton,sysgcr syscon property to the reset node to handle the general
+control registers.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml | 1 +
+ arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
-index aad7c85e787f..94e72f25b331 100644
---- a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
-+++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
-@@ -21,6 +21,7 @@ properties:
-       - enum:
-           - nuvoton,wpcm450-gcr
-           - nuvoton,npcm750-gcr
-+          - nuvoton,npcm845-gcr
-       - const: syscon
-       - const: simple-mfd
+diff --git a/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi b/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
+index 3696980a3da1..8a2f29016291 100644
+--- a/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
++++ b/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
+@@ -110,6 +110,7 @@ rstc: rstc@f0801000 {
+ 			compatible = "nuvoton,npcm750-reset";
+ 			reg = <0xf0801000 0x70>;
+ 			#reset-cells = <2>;
++			nuvoton,sysgcr = <&gcr>;
+ 		};
  
+ 		clk: clock-controller@f0801000 {
 -- 
 2.33.0
 
