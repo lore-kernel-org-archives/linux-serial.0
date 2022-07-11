@@ -2,35 +2,31 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A65E0CCA48F
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 12:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF28CCCA492
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 12:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbiGKMfe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S229775AbiGKMfg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231461AbiGKMfd (ORCPT
+        with ESMTP id S231347AbiGKMfc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:35:33 -0400
+        Mon, 11 Jul 2022 08:35:32 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD4B9545D6;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E690545EB;
         Mon, 11 Jul 2022 05:35:29 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 215FE1C811A7;
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 1FFC91C811A6;
         Mon, 11 Jul 2022 20:35:26 +0800 (CST)
-Received: from NTHCML01A.nuvoton.com (10.1.8.177) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 11 Jul
- 2022 20:35:26 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01A.nuvoton.com
- (10.1.8.177) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 11 Jul
- 2022 20:35:25 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 11
+ Jul 2022 20:35:25 +0800
 Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
  Transport; Mon, 11 Jul 2022 20:35:25 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id E456263A53; Mon, 11 Jul 2022 15:35:23 +0300 (IDT)
+        id 0CCFF63A55; Mon, 11 Jul 2022 15:35:24 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -51,44 +47,53 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Tomer Maimon <tmaimon77@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v8 08/16] dt-bindings: reset: npcm: Add support for NPCM8XX
-Date:   Mon, 11 Jul 2022 15:35:11 +0300
-Message-ID: <20220711123519.217219-9-tmaimon77@gmail.com>
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v8 10/16] dt-bindings: arm: npcm: Add maintainer
+Date:   Mon, 11 Jul 2022 15:35:13 +0300
+Message-ID: <20220711123519.217219-11-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220711123519.217219-1-tmaimon77@gmail.com>
 References: <20220711123519.217219-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add binding document and device tree binding constants for Nuvoton BMC
-NPCM8XX reset controller.
+Add Tomer Maimon to the maintainers list.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml      | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/npcm/npcm.yaml        | 1 +
+ Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
-index 43a6e77cbf4e..d82e65e37cc0 100644
---- a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
-+++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
-@@ -11,7 +11,9 @@ maintainers:
+diff --git a/Documentation/devicetree/bindings/arm/npcm/npcm.yaml b/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
+index 95e51378089c..ea9c3103761d 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/npcm.yaml
+@@ -8,6 +8,7 @@ title: NPCM Platforms Device Tree Bindings
+ 
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
  
  properties:
-   compatible:
--    const: nuvoton,npcm750-reset
-+    enum:
-+      - nuvoton,npcm750-reset        # Poleg NPCM7XX SoC
-+      - nuvoton,npcm845-reset        # Arbel NPCM8XX SoC
+   $nodename:
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+index fcb211add7d3..aad7c85e787f 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -8,6 +8,7 @@ title: Global Control Registers block in Nuvoton SoCs
  
-   reg:
-     maxItems: 1
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
++  - Tomer Maimon <tmaimon77@gmail.com>
+ 
+ description:
+   The Global Control Registers (GCR) are a block of registers in Nuvoton SoCs
 -- 
 2.33.0
 
