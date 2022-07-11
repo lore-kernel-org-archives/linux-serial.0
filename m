@@ -2,228 +2,194 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98631C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 15:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E172ACCA47B
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 17:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbiGKPfS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S229645AbiGKReA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 13:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGKPfR (ORCPT
+        with ESMTP id S229654AbiGKRdz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:35:17 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-oln040092064040.outbound.protection.outlook.com [40.92.64.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD7D61115;
-        Mon, 11 Jul 2022 08:35:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BO5mUY+onYEsNNdrrSXaNhy4sbECbva3zFYhUgWDpxc4U4jG7BUCNVgEdk58OMiBe4L9hNXluNB90QqIUApPy9ZgqUVd/exPVGQf355gGIR+DK/YaaSpsxo5p7TrgCMrZEEMZUUjwKA9fIQDKFdb/2zqW+gNPxLQIEnmPglKswTHmkQnOG4FlYJMJ63OZAR7b0z8+er9EquGK1L/SmRl/m+Z8JdcselFfeaLOaCM/MZAVSPQH6+SR64wwJ6ho+nksR22N/soBL62OhF8DnKJ59qjohqlIw6DG0JPUKu99L1Wx+2dsdgG0yThm0lsV1HGCJY02eJHSww7gBzxlFggIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xzh5JGMwxst5DzDuVhW4hdb1HZ6oHunXoDmzE0E5PxI=;
- b=HTOB8Tf1jMEnKjODuEiyuPPCGOEc9t0npWayABotOPt5IsdEGXlwH8YbaL4W4lqIgMOLDjPPbaSa1O1Vody/1tQ9GX+wDkW6+r8+d8MS7mXXVd3gW4QCjbqgwLwiqXtRCMOMW03mxeJlZYLumZXY5Blurld7OgsCDRj0UGP+7mHgd/Szd5YMAFoDBb9v6OWuCw3OkmQFK/xXa1xazxmOYdDcQRFkn26esuX6UT1Q7DU3LUvATSLSnwIxH68zR9oyyIOV4ocAHbQBkrHMW6476FN5DGaxnGI3TXoDFv83OjSqIKfCxcg+n/eLefD7k0GgqYLErmJGiwegHwJmlW20HQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from AM5PR0202MB2564.eurprd02.prod.outlook.com (2603:10a6:203:6c::7)
- by DB7PR02MB5100.eurprd02.prod.outlook.com (2603:10a6:10:75::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
- 2022 15:35:14 +0000
-Received: from AM5PR0202MB2564.eurprd02.prod.outlook.com
- ([fe80::3c09:20aa:1d83:89e0]) by AM5PR0202MB2564.eurprd02.prod.outlook.com
- ([fe80::3c09:20aa:1d83:89e0%7]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 15:35:14 +0000
-Date:   Mon, 11 Jul 2022 16:35:10 +0100
-From:   Cameron Williams <cang1@live.co.uk>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        Mon, 11 Jul 2022 13:33:55 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF0B64D5;
+        Mon, 11 Jul 2022 10:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657560831; x=1689096831;
+  h=from:to:cc:subject:date:message-id;
+  bh=Kc4cDivDUaBoL2zBqpgtHP8w9cqA4NEFOrZFebj4Rs4=;
+  b=ryon+qW5rYr+gJJg43+E9fpvI02dncxxxMDj5TrYt0G2UU6IcSzOK0rR
+   wZmnVDqKlJu7/dg41+kdGw9hUVyVD/WCqtmTLXkmgp61+tLxcPbQB+eSJ
+   4gyCR0rff4/ruy609hgxkSYbEx0wZPtE48q0GYz7zHHZhhUSMnKArXYxF
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 10:33:51 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 10:33:50 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 23:03:33 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id D832B40EF; Mon, 11 Jul 2022 23:03:32 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] tty: 8250: Add support for Brainboxes PX cards.
-Message-ID: <AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-TMN:  [2kQ3Jyzzjk+A1q7TIVJfs+d1Y+D+J9j9]
-X-ClientProxiedBy: LO2P123CA0015.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:a6::27) To AM5PR0202MB2564.eurprd02.prod.outlook.com
- (2603:10a6:203:6c::7)
-X-Microsoft-Original-Message-ID: <YsxDLlUzQTM7Mcu8@archlinux>
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db65b58d-5ad1-487a-96f8-08da6352f2db
-X-MS-TrafficTypeDiagnostic: DB7PR02MB5100:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FGcRRmUbCcdv33p20EpS8gCkPpY3pI/alaHrruHbWVCnZS2VifFD1D+ieBrHBI0U6hCJ58km17oyJH4b1Ca4jqoYAFK4imIKXHFZyDLlgvqZzp6/d21Gjukc4EnM9PDxmHgWJCkwCk/kX5RDfJSbHSHH1p2hsPGHqE7jVnxLN/cku+HnX6PvwTD4BZfW7Rs2uvqr0B/rHscO3JlwmxJso4e4UxU4ZJrZraY3/SXOpL/b/ANb7O8jfsopuhiofdmPrkNSLjtCSeSWo5DVmJxd5DrQQ2LZ8cqzGlViJ4TRXE5oF5gqSrI/kuaShvyBKKYVnaKTHP7OPkeSdaKhgUbdR/IlglRljUYy46zPGCoAZC1fMDLGTQeanM6Apz4JtOiltkMy0ypjSdCZvunRd8hlBfXF0p/XJF5s4WzK0H9d1rGKXcT+CqsSG4yaLoh+nIMkWII0szNi40wEcJRTDOzvFv/xF3K01k0+snS20ow4Nr4GliDz1tb6eyEPPXfVWlZY31P/6pMWXCHSRApQcuBFq8fwM6CObOT3I2WuVi1wWLe3+Jlmp37/JwjuUS6libansuEPIiDcFUHCOojn91G7f/v17jCVDVY3e4u0QzDz//XhC6/S3eVSyuEAThkL64ikyEk2ZfqlH+szWMqd87F1HqIPkjYbqfmrjH0QKKxjc/po5At47ZTyrhi27nLyT4orPP4evpHQPI7vgHrx6yrc8A==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VuoHP+YhMYTVjCRmmSH7hXEsa//v964rD/wvb53JpPVG7nvtWOWCNLZOFBtY?=
- =?us-ascii?Q?oYzeG9gm7e/64NMtt8WDEUCtdnCJdgoAsLy8+D85YKDmk9dmgGG+abboooSl?=
- =?us-ascii?Q?E3ZCu7wWEjLZWTQPvG2f0mtAwovg5Lejo6tiZRQRrMUPGw7cTcEyWtLFTVIW?=
- =?us-ascii?Q?iilduCv0QGzlWcwyFbYkngOS/K5fClcM6oYNYZRgC9CWxj8rPDINxH2zRiLG?=
- =?us-ascii?Q?KBse1hgdLmIBIhcrMKzCMHHswqbP9qWOILgWrRM+S0b+rzQ6lK69gspo+4Ys?=
- =?us-ascii?Q?ysepCripODAlc1WCAyT5cOU6YCcEztwJ2xkHzf+CZQrTO7re4nQqtygWjN/k?=
- =?us-ascii?Q?5ADdE4x+3yE2/ETPv9vXz0GcLvsKHziNYM8EnyZ6MfzOLMF8UP+P86ykMv9T?=
- =?us-ascii?Q?yG1pirkQq5RNiBMqmr7aHTihVj8pROkiDwqfF+eJ86Yktc0McG9mrd/phdhn?=
- =?us-ascii?Q?0UWqTQt4KNmNwvG/HuzraWGnOcAIdUK7Kf1jDMPgxtqEMMzbNlCcbuq7XCjj?=
- =?us-ascii?Q?FhkixDFXAsebV3TOxZmW7xK2593zHtJRMrZgR8fgC4XAqFzA3iDOHo9NNoVn?=
- =?us-ascii?Q?a7LFjoTi91bFY7KtCxi/gRHM8XIRkSALDZ+MyUXBRxTYWtfhJK5IVs7AW+Bu?=
- =?us-ascii?Q?anVXwsN1EQrXtfv5QjjTqtvYI+z0XDJttarYF2Cm/Tc39Tlt+VekUzR370l1?=
- =?us-ascii?Q?wACorsFWBYhnizJxQphzTsUjXe6iCYSgleonpn3e9JA8wxMYuTCjdPfxJwMr?=
- =?us-ascii?Q?/AyKz8ZqiZdc3RFcLw+DbeDfpOtunBeiCp02XEeKtc6poVtukKMqpYuMtEtA?=
- =?us-ascii?Q?wAajB9r3Z2+H+M4uCj14bfJarenkuV81bjC9/TJPmUaVbzCPV9FEkNAw2DFw?=
- =?us-ascii?Q?f5kEF1+isjGua3k2WR0NRn5ZvkP8yLjgKfdH84sgWT5LZVy2ZbszbFZT11sv?=
- =?us-ascii?Q?c/PuIE4K2pnzAzGJpf3FFhGMnE7CSmZMmFkNB8q9aJAcV7kVkeG0S0U/eqEe?=
- =?us-ascii?Q?2zpEt+23Ko13FR91MPncp6Zy2nr24cTRY0hIr5Hvbtqzx+kqyUkkuJ6D/dML?=
- =?us-ascii?Q?MWYeUYVJ1jjiwDByTVKXkCRBkiE8nlZB1/pmHRMbIe2aXvBmDoYtydzyn95d?=
- =?us-ascii?Q?ip2clch4OQJZF7dd/SvlkthymzVaYBJSnMxo+wHaPlqv0J+SbZB/akJR7VU/?=
- =?us-ascii?Q?qbLrM9EcIR1SBNGsJhWpgGXXZpkBqkcp67stuD11t+yJX88iM3N8KYGrbz+L?=
- =?us-ascii?Q?AK2P6IX/I91U2UoBDy2z2DptPTM3sx4Fe00/cdGoPA=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-ab7de.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: db65b58d-5ad1-487a-96f8-08da6352f2db
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR0202MB2564.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 15:35:14.3822
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR02MB5100
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V4] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Mon, 11 Jul 2022 23:03:28 +0530
+Message-Id: <1657560808-9795-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add support for some of the Brainboxes PCIe (PX) range of
-serial cards, including the PX-101, PX-235/PX-246,
-PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
-PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
-PX-803 and PX-846.
+In the logic around call to clk_round_rate(), for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-[fix for patch v1 to remove whitespace fixes and also
-correct base baud configuration for OXSEMI]
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 109 +++++++++++++++++++++++++++++
- 1 file changed, 109 insertions(+)
+v4: replaced pr_dbg calls with dev_dbg
+v3: simplified algorithm further, fixed robot compile warnings
+v2: removed minor optimisations to make more readable
+v1: intial patch contained slightly complicated logic
+---
+ drivers/tty/serial/qcom_geni_serial.c | 89 +++++++++++++++++++++--------------
+ 1 file changed, 54 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index a17619db7939..2a578980d87f 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -5076,6 +5076,115 @@ static const struct pci_device_id serial_pci_tbl[] = {
- 		PCI_ANY_ID, PCI_ANY_ID,
- 		0, 0,
- 		pbn_b2_4_115200 },
-+	/*
-+	 * Brainboxes PX-101
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4005,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4019,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-235/246
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4004,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4016,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-203/PX-257
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4006,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_2_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4015,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-260/PX-701
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400A,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-310
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-313
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400C,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_2_15625000 },
-+	/*
-+	 * Brainboxes PX-320/324/PX-376/PX-387
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400B,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-335/346
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x400F,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-368
-+	 */
-+	{       PCI_VENDOR_ID_INTASHIELD, 0x4010,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-420
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4000,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_4_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4011,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_4_15625000 },
-+	/*
-+	 * Brainboxes PX-803
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4009,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x401E,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
-+	/*
-+	 * Brainboxes PX-846
-+	 */
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4008,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_b0_1_115200 },
-+	{	PCI_VENDOR_ID_INTASHIELD, 0x4017,
-+		PCI_ANY_ID, PCI_ANY_ID,
-+		0, 0,
-+		pbn_oxsemi_1_15625000 },
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2e23b65..f88b042 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol)
+ {
+-	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
++	unsigned long freq;
+ 	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	u64 mult;
++	unsigned long offset, abs_tol, achieved;
+ 
++	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
+-
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	div = 1;
++	while (div <= maxdiv) {
++		mult = (u64)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
+-		if (!(freq % desired_clk)) {
+-			ser_clk = freq;
+-			break;
+-		}
++		offset = div * abs_tol;
++		freq = clk_round_rate(clk, mult - offset);
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
++		/* Can only get lower if we're done */
++		if (freq < mult - offset)
+ 			break;
+ 
+-		prev = freq;
++		/*
++		 * Re-calculate div in case rounding skipped rates but we
++		 * ended up at a good one, then check for a match.
++		 */
++		div = DIV_ROUND_CLOSEST(freq, desired_clk);
++		achieved = DIV_ROUND_CLOSEST(freq, div);
++		if (achieved <= desired_clk + abs_tol &&
++		    achieved >= desired_clk - abs_tol) {
++			*clk_div = div;
++			return freq;
++		}
 +
- 	/*
- 	 * Perle PCI-RAS cards
- 	 */
++		div = DIV_ROUND_UP(freq, desired_clk);
+ 	}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
+-		return ser_clk;
++	return 0;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, struct device *dev,
++		unsigned int baud, unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk) {
++		dev_dbg(dev, "Invalid frequency\n");
++		return 0;
+ 	}
+ 
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	/*
++	 * try to find a clock rate within 2% tolerance, then within
++	 */
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
++	if (!ser_clk)
++		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
++
++	if (!ser_clk)
++		dev_err(dev, "Couldn't find suitable clock rate for %d\n", desired_clk);
++	else
++		dev_dbg(dev, "desired_clk-%d, ser_clk-%d, clk_div-%d\n",
++				desired_clk, ser_clk, *clk_div);
+ 
+ 	return ser_clk;
+ }
+@@ -1021,8 +1040,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	if (ver >= QUP_SE_VERSION_2_5)
+ 		sampling_rate /= 2;
+ 
+-	clk_rate = get_clk_div_rate(port->se.clk, baud,
+-		sampling_rate, &clk_div);
++	clk_rate = get_clk_div_rate(port->se.clk, port->se.dev, baud,
++					sampling_rate, &clk_div);
+ 	if (!clk_rate)
+ 		goto out_restart_rx;
+ 
 -- 
-2.37.0
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
