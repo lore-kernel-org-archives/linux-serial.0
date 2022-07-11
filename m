@@ -2,92 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DE6CCA497
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 12:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B932CCA480
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 12:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbiGKMfb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        id S231804AbiGKMlF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiGKMf3 (ORCPT
+        with ESMTP id S231689AbiGKMkf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:35:29 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5513952FCC;
-        Mon, 11 Jul 2022 05:35:27 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 0A4AA1C81191;
-        Mon, 11 Jul 2022 20:35:25 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Mon, 11 Jul
- 2022 20:35:24 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 11 Jul
- 2022 20:35:24 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Mon, 11 Jul 2022 20:35:24 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 927B363A4C; Mon, 11 Jul 2022 15:35:23 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
-        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
-        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
-        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
-        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
-        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
-        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
-        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
+        Mon, 11 Jul 2022 08:40:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B79113B
+        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 05:40:29 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oAshU-0006Jl-Sj; Mon, 11 Jul 2022 14:39:44 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oAshN-000JOt-2A; Mon, 11 Jul 2022 14:39:37 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oAshL-000LHN-E1; Mon, 11 Jul 2022 14:39:35 +0200
+Message-ID: <c23f737eb449998f1d038fec882dd309d29f53da.camel@pengutronix.de>
+Subject: Re: [PATCH v8 08/16] dt-bindings: reset: npcm: Add support for
+ NPCM8XX
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, gregkh@linuxfoundation.org,
+        daniel.lezcano@linaro.org, tglx@linutronix.de,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v8 02/16] dt-bindings: watchdog: npcm: Add npcm845 compatible string
-Date:   Mon, 11 Jul 2022 15:35:05 +0300
-Message-ID: <20220711123519.217219-3-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220711123519.217219-1-tmaimon77@gmail.com>
+Date:   Mon, 11 Jul 2022 14:39:35 +0200
+In-Reply-To: <20220711123519.217219-9-tmaimon77@gmail.com>
 References: <20220711123519.217219-1-tmaimon77@gmail.com>
+         <20220711123519.217219-9-tmaimon77@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add a compatible string for Nuvoton BMC NPCM845 watchdog.
+On Mo, 2022-07-11 at 15:35 +0300, Tomer Maimon wrote:
+> Add binding document and device tree binding constants for Nuvoton BMC
+> NPCM8XX reset controller.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
----
- .../devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt          | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-diff --git a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-index 9059f54dc023..866a958b8a2b 100644
---- a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-+++ b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
-@@ -6,7 +6,8 @@ expiry.
- 
- Required properties:
- - compatible      : "nuvoton,npcm750-wdt" for NPCM750 (Poleg), or
--                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon).
-+                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon), or
-+                    "nuvoton,npcm845-wdt" for NPCM845 (Arbel).
- - reg             : Offset and length of the register set for the device.
- - interrupts      : Contain the timer interrupt with flags for
-                     falling edge.
--- 
-2.33.0
-
+regards
+Philipp
