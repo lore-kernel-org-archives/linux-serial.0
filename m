@@ -2,39 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469FCC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 08:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF6A5CCA47B
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 11:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiGKINj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
+        id S229605AbiGKLEH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiGKINg (ORCPT
+        with ESMTP id S229692AbiGKLDv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:13:36 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02478CEC;
-        Mon, 11 Jul 2022 01:13:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id D1B231FF65;
-        Mon, 11 Jul 2022 08:13:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657527211; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VQUw23aTCjy0cvtNneUfRztB67PX87lDLscgOZWi84I=;
-        b=Ws2DrVlXEH8eFgIxeTfRNC2I1misR7uVQxC2lI0qa2f3ZtPEJKAqWb6KpPuRYc722UVy/X
-        dXvP0Erla4brqVEENxq5wPhFrTS31chA6Ed722BCR90yPhmKaFoyhvd32eRzQaKxMslMB1
-        G3o/x1962Dmz9jKKfTlDKMrI2pNyfMg=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7D3F82C141;
-        Mon, 11 Jul 2022 08:13:31 +0000 (UTC)
-Date:   Mon, 11 Jul 2022 10:13:27 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mon, 11 Jul 2022 07:03:51 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2207BA3B3
+        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id e16so4353578pfm.11
+        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8hQbQuIkXH2nGerXV36d8aZidSoI6QgUgjQAkOlJd1E=;
+        b=HNqkU+6COV5zPrcjrdTrk/MnpONKK1qsXD/joQnTTCWeKDnbrIlpVu8fG8OTdmG0cu
+         NbpQDgkbIzDhDD2e46iTwhJVe+PrFSF9dfCQciCUsS8xrR03uHUd0DoGp8S2bIkR4B2u
+         fSKcJ6tHuDXTFJNG+Q99FGejke7l+U0ktxeCQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8hQbQuIkXH2nGerXV36d8aZidSoI6QgUgjQAkOlJd1E=;
+        b=v9hGAR7ZBa7mTEc5+omN8AbosBu37IXhw83zfl5jz7gT0cF+L3N9P3i1wVATR22Jha
+         G1UUv/fbwDJps5VjnXL4qwLsbUDd+B1cZNzg5oaQaJ2ro11G7X4APHuUJ6AEzkcHVups
+         LeJ6nz/OjPI8cwgepYCrtG8DVupdu/BGz+KadWrhzzgE9/sNDYG13IJSDjKQBEWHs5tf
+         +rAZoX1XnRWw9WLqO+ACY+vDl9Bh0jsezpMK8matdaZyEvZ0oxb9Pxn2kUfbKFJOZ9V9
+         4ebsGIrvz1bdgCjsk+0RtrHcerp2HYmwLlWy0RPfFDJzRSqw5kWtzmJEBGoqFzIHxNv0
+         zrEg==
+X-Gm-Message-State: AJIora90MiVfoPqFgvbPt2TIc8T/qLoQlsThjT4o9JcZWsGzMnMrJ1Ws
+        LIYzg2pRoeD0uxU4DxZ/6rWgHA==
+X-Google-Smtp-Source: AGRyM1uzUJheRLsOh6g4rN2qYYRG9lFr0c+/BQ+0Zzqd4yX/KG08Rl0SlssZT8yQL6EuogWTW0hmrw==
+X-Received: by 2002:a63:2a8f:0:b0:412:5278:b90 with SMTP id q137-20020a632a8f000000b0041252780b90mr15136947pgq.363.1657534250032;
+        Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
+Received: from google.com ([240f:75:7537:3187:ef9b:8bda:6cfb:9c5a])
+        by smtp.gmail.com with ESMTPSA id g6-20020a655806000000b0040c74f0cdb5sm3864633pgr.6.2022.07.11.03.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 03:10:49 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 19:10:44 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         todd.e.brandt@linux.intel.com,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
@@ -42,7 +57,7 @@ Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Steven Rostedt <rostedt@goodmis.org>
 Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
  (printk issue)
-Message-ID: <Ysvbp8vz7R9hDNqx@alley>
+Message-ID: <Ysv3JNs4RwE7kAou@google.com>
 References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
  <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
  <87czegxccb.fsf@jogness.linutronix.de>
@@ -50,40 +65,19 @@ References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
  <87tu7qvx1q.fsf@jogness.linutronix.de>
  <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
  <87o7xwbuoy.fsf@jogness.linutronix.de>
+ <Ysvbp8vz7R9hDNqx@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87o7xwbuoy.fsf@jogness.linutronix.de>
+In-Reply-To: <Ysvbp8vz7R9hDNqx@alley>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun 2022-07-10 22:10:45, John Ogness wrote:
-> On 2022-07-10, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> >> Looking at freeze-5.19.0-rc1-bad.html, at 3431.221039 we see that
-> >> suspend_console() was called. The additional 1-second delay you are
-> >> referring to would be 3432.436187, where serial is
-> >> suspended. pr_flush() would have been satisfied when the message at
-> >> 3431.221039 was printed. So the question is, why is there still
-> >> printing going on?
-> >
-> > It might be no_console_suspend hack. Are you, btw, aware of this ugly
-> > hack in the kernel?
+On (22/07/11 10:13), Petr Mladek wrote:
 > 
-> I am aware of it. There are some cases where it actually works. But it
-> is not being used here. The boot args are:
-> 
-> BOOT_IMAGE=/boot/vmlinuz-5.19.0-rc1+ root=UUID=1dfec046-baf6-4f38-8b5e-a8f438a48038 ro rw quiet console=ttyS0,115200 console=tty0 i915.enable_psr=1 initcall_debug log_buf_len=32M quiet splash console=tty0 console=ttyS0,115200n8 vt.handoff=7
-> 
-> I am curious if Todd sees this problem with 5.19-rc4 or later (the
-> kthread printers were removed).
+> It seems that __pr_flush() does not check whether all consoles
+> are suspended. In this case the progress is not possible and
+> it has to wait the entire timeout.
 
-We removed the kthreads but not pr_flush(). The commit
-3b604ca81202eea2a91 ("printk: add pr_flush()") is still there.
-
-It seems that __pr_flush() does not check whether all consoles
-are suspended. In this case the progress is not possible and
-it has to wait the entire timeout.
-
-Best Regards,
-Petr
+But isn't console_suspended set after pr_flush() call?
