@@ -2,81 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04897C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 02:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 469FCC433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 08:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229501AbiGKCLt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 10 Jul 2022 22:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        id S229703AbiGKINj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiGKCLs (ORCPT
+        with ESMTP id S229756AbiGKINg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 10 Jul 2022 22:11:48 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DBA18356;
-        Sun, 10 Jul 2022 19:11:47 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id v7so1569174pfb.0;
-        Sun, 10 Jul 2022 19:11:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Fg/qHRNXMxe+gT3ycrSYdh4h9WIANO2zwYVb05Tuhzo=;
-        b=lm++BYNr9rzPF5mZkjS61x35IUNX3RVIjwpniPWD5fDy4FKgi2QS1TUHJzax+vLe56
-         znJcYBwaM4KZujOVWHwhBLzd/zsmUAzOiY3aKp34loOyoMVRlKwgK77a/4+3ieIKGfIS
-         vu01IoXe+6lIzYXW0EW0g+igLJStKuHXb+/A7DnU9fk+zOltWZX9asNXIv4UTqZ60s7v
-         9sPQ6XzKydOUTFfRrvJMeMlFbHjPggUNriT+GChhjX4/FiHiKqfCd15haiJM0BcqUur1
-         MQ1/Ue6Ne52UBH83hfiSQLgBcSoRSFnd0EuooOwPgoHNRlDoaDk1OMHT1Ed/lcxv5xNX
-         ritA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Fg/qHRNXMxe+gT3ycrSYdh4h9WIANO2zwYVb05Tuhzo=;
-        b=pkoQFSooFyhfWLpDMvF8NE6Tdywf/CsgC+NYzebsKgd93G80x/pBIVlaj/bgS2Xioa
-         9MGxS+mfECW7CIG2JLlDmAvJwsekolZwFmXHx4yAIPzsuRU1E8ET0hxPtyXOww6qoUDx
-         2Da1THyt+BZQ8ietAeKEw+RIg/KNCgAJcEFobD/mH6D8QAx9ECEHLUcK2Jkrr8ljTSh+
-         5S+cDyeu8D5hJscSnJPVirf2d4rO1Brb0F6ZI5durRQ1v7rWN4mWb7XbxXQQvdmjeJ16
-         VLNZh6aCd+I8GmHDTLRiPOuGJI7zdInGhn7cgMClo9V46cmUXo+itlcuKYlP+7zOb0YT
-         5QVA==
-X-Gm-Message-State: AJIora8KVVDnqmUP+WC4xBdgWrPCrxoMQ0Ndo98KQU7MmP8R7p+hY1lk
-        G4FpKkLxP3Z6cL1KvquZe3SFRrDFwgg=
-X-Google-Smtp-Source: AGRyM1ucsikHjeV4WP/+TNKBvcVRmH3rEJfxMAjcaAe49ZC+CqSf8tJc1ACUvrpEhod8pPXShIyotg==
-X-Received: by 2002:a63:c056:0:b0:411:b3d3:ae4c with SMTP id z22-20020a63c056000000b00411b3d3ae4cmr13792289pgi.102.1657505506976;
-        Sun, 10 Jul 2022 19:11:46 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p1-20020a17090a348100b001ef7bcb7e61sm5647636pjb.47.2022.07.10.19.11.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 19:11:46 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     anand.gore@broadcom.com, dan.beygelman@broadcom.com,
-        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [RESEND PATCH 8/8] tty: serial: bcm63xx: bcmbca: Replace ARCH_BCM_63XX with ARCH_BCMBCA
-Date:   Sun, 10 Jul 2022 19:11:44 -0700
-Message-Id: <20220711021144.3289992-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220707065800.261269-8-william.zhang@broadcom.com>
-References: <20220707065800.261269-1-william.zhang@broadcom.com> <20220707065800.261269-8-william.zhang@broadcom.com>
+        Mon, 11 Jul 2022 04:13:36 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02478CEC;
+        Mon, 11 Jul 2022 01:13:33 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D1B231FF65;
+        Mon, 11 Jul 2022 08:13:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657527211; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VQUw23aTCjy0cvtNneUfRztB67PX87lDLscgOZWi84I=;
+        b=Ws2DrVlXEH8eFgIxeTfRNC2I1misR7uVQxC2lI0qa2f3ZtPEJKAqWb6KpPuRYc722UVy/X
+        dXvP0Erla4brqVEENxq5wPhFrTS31chA6Ed722BCR90yPhmKaFoyhvd32eRzQaKxMslMB1
+        G3o/x1962Dmz9jKKfTlDKMrI2pNyfMg=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7D3F82C141;
+        Mon, 11 Jul 2022 08:13:31 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 10:13:27 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        todd.e.brandt@linux.intel.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
+ (printk issue)
+Message-ID: <Ysvbp8vz7R9hDNqx@alley>
+References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
+ <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
+ <87czegxccb.fsf@jogness.linutronix.de>
+ <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+ <87tu7qvx1q.fsf@jogness.linutronix.de>
+ <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
+ <87o7xwbuoy.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o7xwbuoy.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed,  6 Jul 2022 23:57:59 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Prepare for the BCM63138 ARCH_BCM_63XX migration to ARCH_BCMBCA. Make
-> SERIAL_BCM63XX depending on ARCH_BCMBCA.
+On Sun 2022-07-10 22:10:45, John Ogness wrote:
+> On 2022-07-10, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> >> Looking at freeze-5.19.0-rc1-bad.html, at 3431.221039 we see that
+> >> suspend_console() was called. The additional 1-second delay you are
+> >> referring to would be 3432.436187, where serial is
+> >> suspended. pr_flush() would have been satisfied when the message at
+> >> 3431.221039 was printed. So the question is, why is there still
+> >> printing going on?
+> >
+> > It might be no_console_suspend hack. Are you, btw, aware of this ugly
+> > hack in the kernel?
 > 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> I am aware of it. There are some cases where it actually works. But it
+> is not being used here. The boot args are:
 > 
-> ---
+> BOOT_IMAGE=/boot/vmlinuz-5.19.0-rc1+ root=UUID=1dfec046-baf6-4f38-8b5e-a8f438a48038 ro rw quiet console=ttyS0,115200 console=tty0 i915.enable_psr=1 initcall_debug log_buf_len=32M quiet splash console=tty0 console=ttyS0,115200n8 vt.handoff=7
+> 
+> I am curious if Todd sees this problem with 5.19-rc4 or later (the
+> kthread printers were removed).
 
-Applied to https://github.com/Broadcom/stblinux/commits/drivers/next, thanks!
---
-Florian
+We removed the kthreads but not pr_flush(). The commit
+3b604ca81202eea2a91 ("printk: add pr_flush()") is still there.
+
+It seems that __pr_flush() does not check whether all consoles
+are suspended. In this case the progress is not possible and
+it has to wait the entire timeout.
+
+Best Regards,
+Petr
