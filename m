@@ -2,82 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF6A5CCA47B
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 11:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 031B3CCA483
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 11:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbiGKLEH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        id S230411AbiGKLN5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiGKLDv (ORCPT
+        with ESMTP id S230089AbiGKLNb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:03:51 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2207BA3B3
-        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id e16so4353578pfm.11
-        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8hQbQuIkXH2nGerXV36d8aZidSoI6QgUgjQAkOlJd1E=;
-        b=HNqkU+6COV5zPrcjrdTrk/MnpONKK1qsXD/joQnTTCWeKDnbrIlpVu8fG8OTdmG0cu
-         NbpQDgkbIzDhDD2e46iTwhJVe+PrFSF9dfCQciCUsS8xrR03uHUd0DoGp8S2bIkR4B2u
-         fSKcJ6tHuDXTFJNG+Q99FGejke7l+U0ktxeCQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8hQbQuIkXH2nGerXV36d8aZidSoI6QgUgjQAkOlJd1E=;
-        b=v9hGAR7ZBa7mTEc5+omN8AbosBu37IXhw83zfl5jz7gT0cF+L3N9P3i1wVATR22Jha
-         G1UUv/fbwDJps5VjnXL4qwLsbUDd+B1cZNzg5oaQaJ2ro11G7X4APHuUJ6AEzkcHVups
-         LeJ6nz/OjPI8cwgepYCrtG8DVupdu/BGz+KadWrhzzgE9/sNDYG13IJSDjKQBEWHs5tf
-         +rAZoX1XnRWw9WLqO+ACY+vDl9Bh0jsezpMK8matdaZyEvZ0oxb9Pxn2kUfbKFJOZ9V9
-         4ebsGIrvz1bdgCjsk+0RtrHcerp2HYmwLlWy0RPfFDJzRSqw5kWtzmJEBGoqFzIHxNv0
-         zrEg==
-X-Gm-Message-State: AJIora90MiVfoPqFgvbPt2TIc8T/qLoQlsThjT4o9JcZWsGzMnMrJ1Ws
-        LIYzg2pRoeD0uxU4DxZ/6rWgHA==
-X-Google-Smtp-Source: AGRyM1uzUJheRLsOh6g4rN2qYYRG9lFr0c+/BQ+0Zzqd4yX/KG08Rl0SlssZT8yQL6EuogWTW0hmrw==
-X-Received: by 2002:a63:2a8f:0:b0:412:5278:b90 with SMTP id q137-20020a632a8f000000b0041252780b90mr15136947pgq.363.1657534250032;
-        Mon, 11 Jul 2022 03:10:50 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:ef9b:8bda:6cfb:9c5a])
-        by smtp.gmail.com with ESMTPSA id g6-20020a655806000000b0040c74f0cdb5sm3864633pgr.6.2022.07.11.03.10.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 03:10:49 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 19:10:44 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        todd.e.brandt@linux.intel.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
- (printk issue)
-Message-ID: <Ysv3JNs4RwE7kAou@google.com>
-References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
- <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
- <87czegxccb.fsf@jogness.linutronix.de>
- <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
- <87tu7qvx1q.fsf@jogness.linutronix.de>
- <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
- <87o7xwbuoy.fsf@jogness.linutronix.de>
- <Ysvbp8vz7R9hDNqx@alley>
+        Mon, 11 Jul 2022 07:13:31 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691AF1836F
+        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:28:03 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id tmU12700b4C55Sk06mU14Z; Mon, 11 Jul 2022 12:28:01 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oAqCw-0032if-I7; Mon, 11 Jul 2022 12:00:02 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oAp0H-004S3w-R4; Mon, 11 Jul 2022 10:42:53 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Jeremy Kerr <jk@ozlabs.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: 8250: SERIAL_8250_ASPEED_VUART should depend on ARCH_ASPEED
+Date:   Mon, 11 Jul 2022 10:42:52 +0200
+Message-Id: <259138c372d433005b4871789ef9ee8d15320307.1657528861.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ysvbp8vz7R9hDNqx@alley>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On (22/07/11 10:13), Petr Mladek wrote:
-> 
-> It seems that __pr_flush() does not check whether all consoles
-> are suspended. In this case the progress is not possible and
-> it has to wait the entire timeout.
+The Aspeed Virtual UART is only present on Aspeed BMC platforms.  Hence
+add a dependency on ARCH_ASPEED, to prevent asking the user about this
+driver when configuring a kernel without Aspeed BMC support.
 
-But isn't console_suspended set after pr_flush() call?
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/tty/serial/8250/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index c621c21db7863278..6c1d2e70e497a19a 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -254,6 +254,7 @@ config SERIAL_8250_ASPEED_VUART
+ 	depends on SERIAL_8250
+ 	depends on OF
+ 	depends on REGMAP && MFD_SYSCON
++	depends on ARCH_ASPEED || COMPILE_TEST
+ 	help
+ 	  If you want to use the virtual UART (VUART) device on Aspeed
+ 	  BMC platforms, enable this option. This enables the 16550A-
+-- 
+2.25.1
+
