@@ -2,66 +2,67 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031B3CCA483
-	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 11:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D0ECCA47B
+	for <linux-serial@archiver.kernel.org>; Mon, 11 Jul 2022 11:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbiGKLN5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
+        id S230469AbiGKLSp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiGKLNb (ORCPT
+        with ESMTP id S230236AbiGKLSZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:13:31 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691AF1836F
-        for <linux-serial@vger.kernel.org>; Mon, 11 Jul 2022 03:28:03 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id tmU12700b4C55Sk06mU14Z; Mon, 11 Jul 2022 12:28:01 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oAqCw-0032if-I7; Mon, 11 Jul 2022 12:00:02 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oAp0H-004S3w-R4; Mon, 11 Jul 2022 10:42:53 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Jeremy Kerr <jk@ozlabs.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: 8250: SERIAL_8250_ASPEED_VUART should depend on ARCH_ASPEED
-Date:   Mon, 11 Jul 2022 10:42:52 +0200
-Message-Id: <259138c372d433005b4871789ef9ee8d15320307.1657528861.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 07:18:25 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA04A190;
+        Mon, 11 Jul 2022 03:41:06 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LhL5T4Hkrz4xD9;
+        Mon, 11 Jul 2022 20:41:01 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ozlabs.org;
+        s=201707; t=1657536062;
+        bh=WkUBTudz6dG+TVvLeDvu9O1AhkbCdb5uNCCAictTr2g=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=w0cOffT/9tTiRHg2BhqZIQK+XKZC7zeFHiPlYdJZqgVyy7K78aV7UI7HRpX++qhYD
+         QCUmrsSj+cT54B0rgOiDWhQpwVOazT00+CiEao10e/LWnLcBq4sWfvKSHfP1BNK8iA
+         oP1QL8jt9Kd+j9O1KPOxbUH853N/SSKATmj/dvecsxmnV8NiaRFBWjWSOE2KItF6SK
+         Er3xAimALb3TlI/Om51KOhk5c+fYLvDgs73m87RbtF+OxpT+BNmAr7WXV7mAAmYPmx
+         6KagakpccinWRER1Zl4ce/KscfrLXugFFwKrgN0ZwzzNjp+ks2eApMeM0I4wKTBEfY
+         n+5T8EocAu9Wg==
+Message-ID: <74b98265ff9638ad7a06a58ef0dea1758396744f.camel@ozlabs.org>
+Subject: Re: [PATCH] serial: 8250: SERIAL_8250_ASPEED_VUART should depend on
+ ARCH_ASPEED
+From:   Jeremy Kerr <jk@ozlabs.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 11 Jul 2022 18:40:38 +0800
+In-Reply-To: <259138c372d433005b4871789ef9ee8d15320307.1657528861.git.geert+renesas@glider.be>
+References: <259138c372d433005b4871789ef9ee8d15320307.1657528861.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0-2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Aspeed Virtual UART is only present on Aspeed BMC platforms.  Hence
-add a dependency on ARCH_ASPEED, to prevent asking the user about this
-driver when configuring a kernel without Aspeed BMC support.
+Hi Geert,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/8250/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> The Aspeed Virtual UART is only present on Aspeed BMC platforms.=C2=A0
+> Hence add a dependency on ARCH_ASPEED, to prevent asking the user
+> about this driver when configuring a kernel without Aspeed BMC
+> support.
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index c621c21db7863278..6c1d2e70e497a19a 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -254,6 +254,7 @@ config SERIAL_8250_ASPEED_VUART
- 	depends on SERIAL_8250
- 	depends on OF
- 	depends on REGMAP && MFD_SYSCON
-+	depends on ARCH_ASPEED || COMPILE_TEST
- 	help
- 	  If you want to use the virtual UART (VUART) device on Aspeed
- 	  BMC platforms, enable this option. This enables the 16550A-
--- 
-2.25.1
+All fine by me. It'd be super weird if this hardware appeared on a
+non-ASPEED platform.
 
+Reviewed-by: Jeremy Kerr <jk@ozlabs.org>
+
+Cheers,
+
+
+Jeremy
