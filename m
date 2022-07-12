@@ -2,248 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C08AC433EF
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jul 2022 12:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596C7C43334
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jul 2022 13:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbiGLMwK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S231249AbiGLNPf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbiGLMwJ (ORCPT
+        with ESMTP id S229617AbiGLNPe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:52:09 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE5F32EF0;
-        Tue, 12 Jul 2022 05:52:07 -0700 (PDT)
+        Tue, 12 Jul 2022 09:15:34 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE24E5C959
+        for <linux-serial@vger.kernel.org>; Tue, 12 Jul 2022 06:15:30 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id k18-20020a170902c41200b0016c40543af4so4192925plk.0
+        for <linux-serial@vger.kernel.org>; Tue, 12 Jul 2022 06:15:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657630328; x=1689166328;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=U2Un04XVTmq4xkp4/4A5znANGKPLAF6CfLJmOF8T2vQ=;
-  b=WUh62GntfmIVriD0qG3ScSCnQmITP8wbNooeI9m0WWvX5RQ4vWPelNDP
-   fjPAHPCC+oahxRlU68MefjN2073MOcWYwP78zF5n+X2+rb9fOiefW8ImI
-   mFiJxFRPVDT4uMR1HdY9Bty6FXa65Ufoi1JIFePhUtLBuTOPqc32DuPe8
-   U=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 12 Jul 2022 05:52:07 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 05:52:07 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Jul 2022 05:52:07 -0700
-Received: from [10.216.22.118] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Jul
- 2022 05:52:03 -0700
-Message-ID: <78aeec99-60d4-c495-0623-c9450621d23b@quicinc.com>
-Date:   Tue, 12 Jul 2022 18:21:59 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [V4] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Content-Language: en-CA
-To:     Doug Anderson <dianders@chromium.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Jj15qoURj3emWvHLxBH2nPwiIzzLvd3mSNd7M20V7kc=;
+        b=VrvPmlW1Mw9Qie6nuTLyJIEdvtB1q9qnbj5yZHc5WAz2gmilCGbHrAqHW+nbHnr1Yt
+         QYCVTeIud8NWMDpleRg/psfMwA6QarcShJmRgGOPwCri+9+7X2GBA4+Tj+c4G58JlOR2
+         AAnOp9AzxbNQ7LsrvFRsrxgHUqqbYI38rxnkXJYQf4VtAcxDHSqE1u2CVWElkavoprVq
+         MLPLZF4KKZ2n+NFw/z5bjZirvOBQtqzV8bEJ7ZcxpbnMBWkTdx+DSdszCF38jbVzKw1N
+         v+nA8OfSDnRpifHP6YFfv5eLm0pP+A8Sl89jwczzX/VKEppia8uaYMmSmotBlTP99use
+         TmPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Jj15qoURj3emWvHLxBH2nPwiIzzLvd3mSNd7M20V7kc=;
+        b=uiQgMj3Vc8djiE/exqNCEB4OWw1KQyH0zUYxM0zjCmV1YSMlYd7b7xizSv+xDQYrLT
+         h+QRbYaboh87nB0KRaFQ4rgGvGKC9+wyI9Uaq+d3Pgcew/ud+QZ87V9Q1VuMYu+G6YAz
+         EfX8SSCAh5hG1mIr53YCcYl+G8zETeq9hMeLgldR3vo7znwNepLQ/42Ir5221wH2VYiA
+         H09e2bWvx/ya1RukHgUwpwn4zzJFg6XPx2dXwWC4biXs1OFKRFAIvnEbsWu+0369YVKw
+         6AaSE+++lbtKUtU9fDqDl9oO9aruKkaXUWT0dRh9mGWsDD+r/t/39ytJA+x1RDf/zvoF
+         2Aeg==
+X-Gm-Message-State: AJIora90gvpDZH6V/GFL+3qEymEE/tlZHftGogHg88sFnYnelN8NmoHs
+        ISqFxDH5cYw2o8OQfaOi1vnQVwYvhVJ8S+JYin04
+X-Google-Smtp-Source: AGRyM1tiLhmBsSG07iMVccKmTqJMgw+sCcWHJFKw/dCojeh685N00bAiC1pMr5tl2AGmpOHdStzVwHzb7OqZJcAwSsTV
+X-Received: from vamshig51.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:70c])
+ (user=vamshigajjela job=sendgmr) by 2002:a17:90b:247:b0:1f0:1192:7c22 with
+ SMTP id fz7-20020a17090b024700b001f011927c22mr4471560pjb.232.1657631730301;
+ Tue, 12 Jul 2022 06:15:30 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 18:45:23 +0530
+Message-Id: <20220712131523.1874428-1-vamshigajjela@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
+Subject: [PATCH] serial: 8250_dw: Avoid pslverr on reading empty receiver fifo
+From:   Vamshi Gajjela <vamshigajjela@google.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-References: <1657560808-9795-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=U20bzea7qzuMCgrAApFqBZ_sc9QsRdUZ_xX4ptRas-0w@mail.gmail.com>
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <CAD=FV=U20bzea7qzuMCgrAApFqBZ_sc9QsRdUZ_xX4ptRas-0w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        VAMSHI GAJJELA <vamshigajjela@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: VAMSHI GAJJELA <vamshigajjela@google.com>
 
-On 7/11/2022 11:35 PM, Doug Anderson wrote:
-> Hi,
->
-> On Mon, Jul 11, 2022 at 10:33 AM Vijaya Krishna Nivarthi
-> <quic_vnivarth@quicinc.com> wrote:
->> In the logic around call to clk_round_rate(), for some corner conditions,
->> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
->> exact clock rate was not found lowest clock was being returned.
->>
->> Search for suitable clock rate in 2 steps
->> a) exact match or within 2% tolerance
->> b) within 5% tolerance
->> This also takes care of corner conditions.
->>
->> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
->> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
->> ---
->> v4: replaced pr_dbg calls with dev_dbg
->> v3: simplified algorithm further, fixed robot compile warnings
->> v2: removed minor optimisations to make more readable
->> v1: intial patch contained slightly complicated logic
->> ---
->>   drivers/tty/serial/qcom_geni_serial.c | 89 +++++++++++++++++++++--------------
->>   1 file changed, 54 insertions(+), 35 deletions(-)
->>
->> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->> index 2e23b65..f88b042 100644
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
->>          return 0;
->>   }
->>
->> -static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
->> -                       unsigned int sampling_rate, unsigned int *clk_div)
->> +static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
->> +                       unsigned int *clk_div, unsigned int percent_tol)
->>   {
->> -       unsigned long ser_clk;
->> -       unsigned long desired_clk;
->> -       unsigned long freq, prev;
->> +       unsigned long freq;
->>          unsigned long div, maxdiv;
->> -       int64_t mult;
->> -
->> -       desired_clk = baud * sampling_rate;
->> -       if (!desired_clk) {
->> -               pr_err("%s: Invalid frequency\n", __func__);
->> -               return 0;
->> -       }
->> +       u64 mult;
->> +       unsigned long offset, abs_tol, achieved;
->>
->> +       abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
->>          maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
->> -       prev = 0;
->> -
->> -       for (div = 1; div <= maxdiv; div++) {
->> -               mult = div * desired_clk;
->> -               if (mult > ULONG_MAX)
->> +       div = 1;
->> +       while (div <= maxdiv) {
->> +               mult = (u64)div * desired_clk;
->> +               if (mult != (unsigned long)mult)
->>                          break;
->>
->> -               freq = clk_round_rate(clk, (unsigned long)mult);
->> -               if (!(freq % desired_clk)) {
->> -                       ser_clk = freq;
->> -                       break;
->> -               }
->> +               offset = div * abs_tol;
->> +               freq = clk_round_rate(clk, mult - offset);
->>
->> -               if (!prev)
->> -                       ser_clk = freq;
->> -               else if (prev == freq)
->> +               /* Can only get lower if we're done */
->> +               if (freq < mult - offset)
->>                          break;
->>
->> -               prev = freq;
->> +               /*
->> +                * Re-calculate div in case rounding skipped rates but we
->> +                * ended up at a good one, then check for a match.
->> +                */
->> +               div = DIV_ROUND_CLOSEST(freq, desired_clk);
->> +               achieved = DIV_ROUND_CLOSEST(freq, div);
->> +               if (achieved <= desired_clk + abs_tol &&
->> +                   achieved >= desired_clk - abs_tol) {
->> +                       *clk_div = div;
->> +                       return freq;
->> +               }
->> +
->> +               div = DIV_ROUND_UP(freq, desired_clk);
->>          }
->>
->> -       if (!ser_clk) {
->> -               pr_err("%s: Can't find matching DFS entry for baud %d\n",
->> -                                                               __func__, baud);
->> -               return ser_clk;
->> +       return 0;
->> +}
->> +
->> +static unsigned long get_clk_div_rate(struct clk *clk, struct device *dev,
->> +               unsigned int baud, unsigned int sampling_rate, unsigned int *clk_div)
->> +{
->> +       unsigned long ser_clk;
->> +       unsigned long desired_clk;
->> +
->> +       desired_clk = baud * sampling_rate;
->> +       if (!desired_clk) {
->> +               dev_dbg(dev, "Invalid frequency\n");
->> +               return 0;
->>          }
->>
->> -       *clk_div = ser_clk / desired_clk;
->> -       if (!(*clk_div))
->> -               *clk_div = 1;
->> +       /*
->> +        * try to find a clock rate within 2% tolerance, then within
->> +        */
->> +       ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
->> +       if (!ser_clk)
->> +               ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
->> +
->> +       if (!ser_clk)
->> +               dev_err(dev, "Couldn't find suitable clock rate for %d\n", desired_clk);
->> +       else
->> +               dev_dbg(dev, "desired_clk-%d, ser_clk-%d, clk_div-%d\n",
->> +                               desired_clk, ser_clk, *clk_div);
-> Pretty sure the robot is going to yell at you again here. Here is my
-> analysis in detail:
->
-> desired_clk
-> * type: unsigned long
-> * proper format code: %lu
-> * marginally acceptable code: %ld
-> * format code you used in v3: %lu
-> * did robot yell at you about this in v3: no
-> * format code you used in v4: %d
-> * will robot yell at you in v4: YES
->
-> ser_clk:
-> * type: unsigned long
-> * proper format code: %lu
-> * marginally acceptable code: %ld
-> * format code you used in v3: %lu
-> * did robot yell at you about this in v3: no
-> * format code you used in v4: %d
-> * will robot yell at you in v4: YES
->
-> *clk_div:
-> * type: unsigned int
-> * proper format code: %u
-> * marginally acceptable code: %d
-> * format code you used in v3: %lu
-> * did robot yell at you about this in v3: YES
-> * format code you used in v4: %d
-> * will robot yell at you in v4: no
-> * should you change it to %u: yes
->
->
-> -Doug
-Thank you very much.
-For some reason robot seems to be more forgiving towards dev_funcs than 
-pr_funcs, at least it did not yell at v4.
+With PSLVERR_RESP_EN parameter set to 1, device generates an error
+response when an attempt to read empty RBR with FIFO enabled.
 
-Also I found usage of %d for uls at many locations.
+This happens when LCR writes are ignored when UART is busy.
+dw8250_check_lcr() in retries to updateLCR, invokes dw8250_force_idle()
+to clear and reset fifo and eventually reads UART_RX causing pslverr.
 
-Made the changes and uploaded V5.
+Avoid this by not reading RBR/UART_RX when no data is available.
 
--Vijay/
+Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index f57bbd32ef11..a83222839884 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -81,9 +81,19 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+ 
+ static void dw8250_force_idle(struct uart_port *p)
+ {
++	unsigned int lsr;
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 
+ 	serial8250_clear_and_reinit_fifos(up);
++
++	/*
++	 * With PSLVERR_RESP_EN parameter set to 1, device generates pslverr
++	 * error response when an attempt to read empty RBR with FIFO enabled
++	 */
++	lsr = p->serial_in(p, UART_LSR);
++	if ((up->fcr & UART_FCR_ENABLE_FIFO) && !(lsr & UART_LSR_DR))
++		return;
++
+ 	(void)p->serial_in(p, UART_RX);
+ }
+ 
+-- 
+2.37.0.144.g8ac04bfd2-goog
 
