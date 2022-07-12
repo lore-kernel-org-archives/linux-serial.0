@@ -2,121 +2,150 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD62CC43334
-	for <linux-serial@archiver.kernel.org>; Tue, 12 Jul 2022 13:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735DCC433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 12 Jul 2022 14:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiGLN0h (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S233074AbiGLOAD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiGLN0g (ORCPT
+        with ESMTP id S233453AbiGLN7p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:26:36 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C354388F34;
-        Tue, 12 Jul 2022 06:26:35 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id l11so13855410ybu.13;
-        Tue, 12 Jul 2022 06:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tPT19Kfs8LeMRuQNUNS/QgGrqQ3NwvwMCFw4PNMdSIs=;
-        b=X8Px23L+V3za0BnD3cakHrQ4J6Ya3vYywEENBbezm987pke851PTKV3avyjDFjRkw7
-         ZsMydqcBLJv1w8HwUidrwp60ZfwEAubhw+4j8iw97cXOtLbJKICSf6edAkIhIVxrVO8o
-         8djHIoBs1X07CJJYqcfCtAaUFJOpJSP5MRkA6zs3DqGDRHrldH/RErwdGp23qryQlRIC
-         YFIuOdj4zngBXTJUgkZUvsODCNIVAFLxd1LCmFfFpbQHujNoDKsY9Ic5Oa/8tqjIhNmQ
-         r5zdPSWjKg0hnVDxffWc1k8rwNa6q5NtVYRXJ9mF76y0MxTeb43IL3FXKFltVity347i
-         QukA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tPT19Kfs8LeMRuQNUNS/QgGrqQ3NwvwMCFw4PNMdSIs=;
-        b=fi/WLCIfkY86Q5dZdxjf4GtoX0+JU8Qi1TCrVkVoWQJM+SB+jz4MAVvDlw+SPrl6UE
-         JyGH3D2stV6Xfy51ADkyoK1Mt3uB63ZqxLJ7cDuriixnFpAkEe8Au+YPpuMnH14uyfwC
-         LBXXGAQ2VZB2cBf2yfaShHTBhIpwikWBHwFaBoht4fIx4v7TRqf1grrnm0thOXGuqoS9
-         o2NPN0KlVAY57RKnMQK5fqW1zwdZmDu0zZStwIg8enLPMfDEPtvBlKL+mfMizrz2+aHy
-         kKdR5/GfcEyhwaNWdc2BtcxabZULZwK8FkpgNkAjFl40sT9l7LY2tch78FYLAP8163jU
-         btVQ==
-X-Gm-Message-State: AJIora+MYg3cHC8d1tws4msHb4Z97Y0JnXAFlNkkUS8o2MIBUMCkAZt3
-        +sCivBVls0gJIh5c+wLN6m8gNDWzZAG1uHNYcnA=
-X-Google-Smtp-Source: AGRyM1tydpkTIh2IgBmDJrpBmhXorykjG2XeC1Otp/8Wl7SPN46xnfSPreo3g9mX+Tw/YQ1D+Phgw5v+6rJXfVUMlhk=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr23004457ybg.460.1657632394963; Tue, 12
- Jul 2022 06:26:34 -0700 (PDT)
+        Tue, 12 Jul 2022 09:59:45 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFC5B8EB1
+        for <linux-serial@vger.kernel.org>; Tue, 12 Jul 2022 06:59:05 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220712135901euoutp016860d83547183735c624fb4e39d4d167~BGaadO2wT0708707087euoutp018
+        for <linux-serial@vger.kernel.org>; Tue, 12 Jul 2022 13:59:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220712135901euoutp016860d83547183735c624fb4e39d4d167~BGaadO2wT0708707087euoutp018
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657634341;
+        bh=UrPawTkkxco5tNzWRxD6vVP9tjBtCtweHbBECxb5T8o=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=UVL7V+VNtOvGJuZt6vcXLlVmz6T/gmDgabvME5JLAk6PloVixy0MTyg3LYeEXRd5X
+         XcmQLMHPBAoWcApYLBPghubaSpHafPmJob48VbSefucnyRmxO4FvelNOUarRflXg4h
+         VZ0GFugLdmrS90bXWI0iV51S7zeUteLaNx8Cmemc=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220712135900eucas1p14a52f558e0ee24a00db457b1b938ee39~BGaaGFSV_1626016260eucas1p1Y;
+        Tue, 12 Jul 2022 13:59:00 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 25.57.09664.42E7DC26; Tue, 12
+        Jul 2022 14:59:00 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220712135900eucas1p284595bf0268f06396e7dba21fa6eb244~BGaZpwtAB0409004090eucas1p2X;
+        Tue, 12 Jul 2022 13:59:00 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220712135900eusmtrp1f49bd185141eab176bb4115d9164945a~BGaZo-mJo1223712237eusmtrp1S;
+        Tue, 12 Jul 2022 13:59:00 +0000 (GMT)
+X-AuditID: cbfec7f2-d97ff700000025c0-ad-62cd7e24525c
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id EE.01.09038.42E7DC26; Tue, 12
+        Jul 2022 14:59:00 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220712135859eusmtip1e1fea7b861abd6226036e7300863b6f3~BGaYtxzAy0659806598eusmtip10;
+        Tue, 12 Jul 2022 13:58:59 +0000 (GMT)
+Message-ID: <caa266c1-aecc-31c4-75f5-b5061444b446@samsung.com>
+Date:   Tue, 12 Jul 2022 15:58:59 +0200
 MIME-Version: 1.0
-References: <20220712131523.1874428-1-vamshigajjela@google.com>
-In-Reply-To: <20220712131523.1874428-1-vamshigajjela@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 15:25:57 +0200
-Message-ID: <CAHp75VecnJSv9P4ZXf5g4Yi7rYySRN=73KwZ_OBFUyFtaSq00w@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_dw: Avoid pslverr on reading empty receiver fifo
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v3] tty: serial: samsung_tty: loopback mode support
+Content-Language: en-US
+To:     Chanho Park <chanho61.park@samsung.com>,
+        'Krzysztof Kozlowski' <krzysztof.kozlowski@linaro.org>,
+        'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
+Cc:     'Jiri Slaby' <jirislaby@kernel.org>,
+        'Alim Akhtar' <alim.akhtar@samsung.com>,
+        'Hector Martin' <marcan@marcan.st>,
+        'Jaewon Kim' <jaewon02.kim@samsung.com>,
+        'Vincent Whitchurch' <vincent.whitchurch@axis.com>,
+        =?UTF-8?Q?=27Ilpo_J=c3=a4rvinen=27?= 
+        <ilpo.jarvinen@linux.intel.com>, linux-samsung-soc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <000001d89588$936d14c0$ba473e40$@samsung.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEKsWRmVeSWpSXmKPExsWy7djPc7oqdWeTDKb9MrB4MG8bm8Xl/doW
+        zYvXs1l07uhhsdjRcITV4t1cGYu9r7eyW2x6fI3VYsb5fUwWZxb3slucvraA3eL8Nn8HHo/r
+        6wI8Nq3qZPO4c20Pm8e8k4Ee++euYffYvKTeY/GynWwefVtWMXp83iQXwBnFZZOSmpNZllqk
+        b5fAldG14gRLwUOOihOtTSwNjK/Zuhg5OSQETCTavj9m7GLk4hASWMEocXLuY3aQhJDAF0aJ
+        H4vrIezPjBIHD0XDNPxddZ0NomE5o8TOmZ0sEM5HRonFd7YAdXNw8ArYSayf7QnSwCKgKrG6
+        7yQjiM0rIChxcuYTFhBbVCBZ4tzZq2BXCAu4S3TOaGUFsZkFxCVuPZnPBDJTRGAWo8TbLdvA
+        FjALdDBLzP+2BKyKTcBQouttF1g3p4CVxNzGb4wQ3fIS29/OYQZpkBCYzSmxf/ZUJoi7XST+
+        v9vBDGELS7w6voUdwpaROD25hwXkagmBfIm/M4whwhUS116vgSq3lrhz7hcbSAmzgKbE+l36
+        EGFHiTM961ghOvkkbrwVhLiAT2LStunMEGFeiY42IYhqNYlZx9fB7Tx44RLzBEalWUihMgvJ
+        97OQ/DILYe8CRpZVjOKppcW56anFhnmp5XrFibnFpXnpesn5uZsYgcns9L/jn3Ywzn31Ue8Q
+        IxMH4yFGCQ5mJRHeP2dPJQnxpiRWVqUW5ccXleakFh9ilOZgURLnTc7ckCgkkJ5YkpqdmlqQ
+        WgSTZeLglGpgsnqzynoFS9HTTVezq6q2fXx1IOGT5jr90LwHF0TenUsuWevvmbpuVhZfXlTw
+        cb2sCrNpJXyb1xpbK/bFN5nysOaenK+oIGP6SVhEYNXMI4f9l85eXZsrZtqY5dfGYW14qor9
+        jWhg5KWjsa+mXniQsjRTQaq593N39f/ad0rCAW3pVxlv8OSe0l3x4LLJkyen735lTlFY/+Id
+        R9zT/y5zG1h2rz3T+GjZtUlaJkt59r6R09u5wPvz+T1HO5+nLFx1hjvO66CQi1Xehp/RzUvL
+        b6Soz+m3nBaUMZkrV9VIsV3r1SyB2QZRu96kLLvAo79S201lg9qFuycXCfDY/53QESMv2Hnr
+        uPrG2WmTRG3jlFiKMxINtZiLihMBTg96ptUDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrJIsWRmVeSWpSXmKPExsVy+t/xu7oqdWeTDCa/F7B4MG8bm8Xl/doW
+        zYvXs1l07uhhsdjRcITV4t1cGYu9r7eyW2x6fI3VYsb5fUwWZxb3slucvraA3eL8Nn8HHo/r
+        6wI8Nq3qZPO4c20Pm8e8k4Ee++euYffYvKTeY/GynWwefVtWMXp83iQXwBmlZ1OUX1qSqpCR
+        X1xiqxRtaGGkZ2hpoWdkYqlnaGwea2VkqqRvZ5OSmpNZllqkb5egl9G14gRLwUOOihOtTSwN
+        jK/Zuhg5OSQETCT+rroOZHNxCAksZZQ4tK2HFSIhI3FyWgOULSzx51oXVNF7RokHL3axdzFy
+        cPAK2Emsn+0JUsMioCqxuu8kI4jNKyAocXLmExYQW1QgWaJ5yyEmEFtYwF2ic0Yr2ExmAXGJ
+        W0/mM4HMFBGYxShx/dNTdhCHWaCLWeLI4y5miG3fGSUmnDoKdiubgKFE19suMJtTwEpibuM3
+        RohRZhJdW7ugbHmJ7W/nME9gFJqF5JJZSDbOQtIyC0nLAkaWVYwiqaXFuem5xUZ6xYm5xaV5
+        6XrJ+bmbGIFxvO3Yzy07GFe++qh3iJGJg/EQowQHs5II75+zp5KEeFMSK6tSi/Lji0pzUosP
+        MZoCg2Mis5Rocj4wkeSVxBuaGZgamphZGphamhkrifN6FnQkCgmkJ5akZqemFqQWwfQxcXBK
+        NTB55L0SUb6XEuy/82Qzw/m78XlBn+qWr90U9sZx6bua9c32pkJ99SraJpqPpRQ2sE1f9upf
+        0dmTkWUZNxVFZmtGXrjqJDeloWrNfv8z6zTvPCrSmSfu93eVWd31Nx9KlyRUCZaw9HHd6Fv+
+        rTTtUelRkwzWKpdE5e2+XyonJrs90m5L7hDiYuO+9u599druR+cu7HtwIuj2R2aT04c++97U
+        unZQuMRUsch5m+yn9dGd3VarrSPLlVz3/LY9+fbyozYNw5f3tvxODjSb8namf97CK7bnuvym
+        7+7oPFyQ7sW6atGcnwGdUzaF8l8yFv4veLE1Vf/TphUt+65t33yEQf70SbbvP991z74698a2
+        OtsnSizFGYmGWsxFxYkAc9ZqpWwDAAA=
+X-CMS-MailID: 20220712135900eucas1p284595bf0268f06396e7dba21fa6eb244
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220629004356epcas2p408afcd3d19d926a86d98e887e25e93bc
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220629004356epcas2p408afcd3d19d926a86d98e887e25e93bc
+References: <CGME20220629004356epcas2p408afcd3d19d926a86d98e887e25e93bc@epcas2p4.samsung.com>
+        <20220629004141.51484-1-chanho61.park@samsung.com>
+        <4fb8c922-08aa-2ee3-8073-95b8a26bf5db@samsung.com>
+        <000001d89588$936d14c0$ba473e40$@samsung.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 3:16 PM Vamshi Gajjela <vamshigajjela@google.com> wrote:
->
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
->
-> With PSLVERR_RESP_EN parameter set to 1, device generates an error
+On 12.07.2022 02:44, Chanho Park wrote:
+>>> +	if (mctrl & TIOCM_LOOP)
+>>> +		ucon |= S3C2410_UCON_LOOPBACK;
+>>> +	else
+>>> +		ucon &= ~S3C2410_UCON_LOOPBACK;
+>>> +
+>>> +	wr_regl(port, S3C2410_UCON, ucon);
+>> S3C2410_UCON must be modified at least under the local_irq_save() or port
+>> lock, otherwise it breaks kernel console operation on older Exynos SoCs
+>> (especially when DMA mode is used).
+>>
+>> The above read-modify-write sequence should be replaced with the following
+>> pattern:
+>>
+>>           if (mctrl & TIOCM_LOOP)
+>>                   s3c24xx_set_bit(port, S3C2410_UCON_LOOPBACK, S3C2410_UCON);
+>>           else
+>>                   s3c24xx_clear_bit(port, S3C2410_UCON_LOOPBACK, S3C2410_UCON);
+> All the set_mctrl() call can be protected by spin_[un]lock_irq[save/restore] with port->lock.
+> So, I think it is not required.
 
-the device
+Right. The problem is elsewhere. You used rd_reg(port, S3C2410_UCON) 
+instead of rd_regl(port, S3C2410_UCON) what always zeroed upper bits. I 
+will send a fix in a few minutes.
 
-> response when an attempt to read empty RBR with FIFO enabled.
 
-an empty
-
-> This happens when LCR writes are ignored when UART is busy.
-> dw8250_check_lcr() in retries to updateLCR, invokes dw8250_force_idle()
-> to clear and reset fifo and eventually reads UART_RX causing pslverr.
-
-fifo --> FIFO
-pslverr --> the error
-
-> Avoid this by not reading RBR/UART_RX when no data is available.
-
-...
-
-> +       unsigned int lsr;
->         struct uart_8250_port *up = up_to_u8250p(p);
-
-Can we keep it ordered according to the reversed xmas tree?
-
-...
-
-> +       /*
-> +        * With PSLVERR_RESP_EN parameter set to 1, device generates pslverr
-
-the device
-pslverr --> an
-
-> +        * error response when an attempt to read empty RBR with FIFO enabled
-
-Missed period.
-
-> +        */
-> +       lsr = p->serial_in(p, UART_LSR);
-
-The only caller of this function already has the lsr value, why you
-can't (re)use it?
-
-> +       if ((up->fcr & UART_FCR_ENABLE_FIFO) && !(lsr & UART_LSR_DR))
-> +               return;
-
+Best regards
 -- 
-With Best Regards,
-Andy Shevchenko
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
