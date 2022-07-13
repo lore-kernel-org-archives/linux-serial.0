@@ -2,112 +2,132 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06236C43334
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 07:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C066BC43334
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 08:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234297AbiGMHhg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33716 "EHLO
+        id S235221AbiGMIRS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiGMHhf (ORCPT
+        with ESMTP id S235207AbiGMIQy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:37:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C0EE43C3;
-        Wed, 13 Jul 2022 00:37:33 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LjTrX6xGjzVfqT;
-        Wed, 13 Jul 2022 15:33:48 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 15:37:14 +0800
-Received: from [10.174.178.156] (10.174.178.156) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 15:37:13 +0800
-Message-ID: <7c4eaa8e-2812-b805-c81b-9964a5cb6b52@huawei.com>
-Date:   Wed, 13 Jul 2022 15:37:13 +0800
+        Wed, 13 Jul 2022 04:16:54 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A4EBEB63
+        for <linux-serial@vger.kernel.org>; Wed, 13 Jul 2022 01:14:00 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id b8so9571980pjo.5
+        for <linux-serial@vger.kernel.org>; Wed, 13 Jul 2022 01:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uEs3G00VHY8EwtdUIttGPsPa/hYyZ0phbIsIaqIPwZ4=;
+        b=NpZL51UbDNgo7qFQ5Xf5qaSGFTPBk4IEKOlXnzm4eKfW7EJvCzbAMawefAQJXlUDSc
+         r9wE1Xrf8ejaEA1KTERugXUavnl4JM1no8mUtjoh+JiBRnRVXD8bCnEnF/ZndYe6dcrr
+         TLH/biJ80ZpDu1E2+q2tmLFl5uUaOjfcgovutQwp8Ta9cl48hTPCh+sMMTvAfQjh6OV4
+         Qu3/GK7+gfihiFE9dvKiCwrTHA6Ihj9idKKFnW0Wd/4RgNmvrGskMqrSd0FkY/ZhOFES
+         GcaVUYZrS+1pDprBcaghqbSbY34aa/5hEgPrOH9XdWtKGr47DfvOTxs8wUqJ8YVkB0TM
+         lJVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uEs3G00VHY8EwtdUIttGPsPa/hYyZ0phbIsIaqIPwZ4=;
+        b=zZY/JN+ME0kyxtlaZcGDRwPOtbsg+RGEvUIrUcbVMzY+Mx217mDuHDX/Iu1GKDmq1i
+         F+jU+4VZ+JE9Yv05cEaFF5eQxftDZI41CRfVErjvt60HYtyXs94hozjis91uPlhfwMQ+
+         JM7D4xZ2Mp0n7caSHASEf9bw2dC/f7QdBpOIjr3MIRIP6POboQ6epyEqDvBxDRwzt1ng
+         yFH89edPB5sWRaxs/QdIpy4K6D9JKlOix7y1nbmr30FO1CFmjv84HZmDKopdaHWvXVyC
+         fCy3KXurlx64igaft5wj5jwfUkyQklgU55UuNP5lDUBovNkMWxZ5K0vSldw/mCuaLe/U
+         zbzg==
+X-Gm-Message-State: AJIora9VbUh4rYpy1uVNo3gMJYBpXJShIaT5CMzpSsJDJkh+u5hZt4Tk
+        fuxeNDv5XPJWHEiwePGJlw1PUVUlRL2ngEfutiEMxg==
+X-Google-Smtp-Source: AGRyM1tcPH/6ecESZNaup02lqJ98voKrU4plooytOmMe+IbjluLlfKDuzFMyhzAbNgin18/kBnUNG8klG76h1Eg7mVQ=
+X-Received: by 2002:a17:90b:693:b0:1ef:4d94:412d with SMTP id
+ m19-20020a17090b069300b001ef4d94412dmr8802447pjz.27.1657700036609; Wed, 13
+ Jul 2022 01:13:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH -next] drivers/tty/serial: Add missing
- clk_disable_unprepare()
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <rjui@broadcom.com>, <sbranden@broadcom.com>,
-        <bcm-kernel-feedback-list@broadcom.com>, <nsaenz@kernel.org>,
-        <athierry@redhat.com>, <linux-serial@vger.kernel.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <xuqiang36@huawei.com>
-References: <20220617025827.130497-1-guomengqi3@huawei.com>
- <ba372c31-f8b8-7987-5f7b-bb7c01b8233f@gmail.com>
-From:   "guomengqi (A)" <guomengqi3@huawei.com>
-In-Reply-To: <ba372c31-f8b8-7987-5f7b-bb7c01b8233f@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.156]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+References: <20220712131523.1874428-1-vamshigajjela@google.com> <CAHp75VecnJSv9P4ZXf5g4Yi7rYySRN=73KwZ_OBFUyFtaSq00w@mail.gmail.com>
+In-Reply-To: <CAHp75VecnJSv9P4ZXf5g4Yi7rYySRN=73KwZ_OBFUyFtaSq00w@mail.gmail.com>
+From:   VAMSHI GAJJELA <vamshigajjela@google.com>
+Date:   Wed, 13 Jul 2022 13:43:44 +0530
+Message-ID: <CAMTSyjrhSSYVEBq=bdu9wBCcuPdrkmxS4jszOgOQBBvSKyaa_g@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_dw: Avoid pslverr on reading empty receiver fifo
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Johan Hovold <johan@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Manu Gautam <manugautam@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Florian,
-
-Yes I found it's better to use title of same style. I did not pay 
-attention to this.
-
-I will send a new version of this patch.
-
-Thank you!
-
-在 2022/7/12 11:35, Florian Fainelli 写道:
+On Tue, Jul 12, 2022 at 6:56 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
 >
+> On Tue, Jul 12, 2022 at 3:16 PM Vamshi Gajjela <vamshigajjela@google.com> wrote:
+> >
+> > From: VAMSHI GAJJELA <vamshigajjela@google.com>
+> >
+> > With PSLVERR_RESP_EN parameter set to 1, device generates an error
 >
-> On 6/16/2022 7:58 PM, 'Guo Mengqi' via BCM-KERNEL-FEEDBACK-LIST,PDL 
-> wrote:
->> Add missing clk_disable_unprepare() when get clk rate fails.
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+> the device
+ack
 >
-> Looks about right, can we use the same prefix as the majority of other 
-> changes:
+> > response when an attempt to read empty RBR with FIFO enabled.
 >
-> serial: 8250_bcm2835aux: Add missing clk_disable_unprepare()
+> an empty
+ack
 >
-> and slap a:
+> > This happens when LCR writes are ignored when UART is busy.
+> > dw8250_check_lcr() in retries to updateLCR, invokes dw8250_force_idle()
+> > to clear and reset fifo and eventually reads UART_RX causing pslverr.
 >
-> Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
+> fifo --> FIFO
+> pslverr --> the error
+ack
 >
-> Thanks!
+> > Avoid this by not reading RBR/UART_RX when no data is available.
 >
->> ---
->>   drivers/tty/serial/8250/8250_bcm2835aux.c | 6 ++++--
->>   1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c 
->> b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> index 2a1226a78a0c..21939bb44613 100644
->> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
->> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> @@ -166,8 +166,10 @@ static int bcm2835aux_serial_probe(struct 
->> platform_device *pdev)
->>       uartclk = clk_get_rate(data->clk);
->>       if (!uartclk) {
->>           ret = device_property_read_u32(&pdev->dev, 
->> "clock-frequency", &uartclk);
->> -        if (ret)
->> -            return dev_err_probe(&pdev->dev, ret, "could not get clk 
->> rate\n");
->> +        if (ret) {
->> +            dev_err_probe(&pdev->dev, ret, "could not get clk rate\n");
->> +            goto dis_clk;
->> +        }
->>       }
->>         /* the HW-clock divider for bcm2835aux is 8,
+> ...
 >
+> > +       unsigned int lsr;
+> >         struct uart_8250_port *up = up_to_u8250p(p);
+>
+> Can we keep it ordered according to the reversed xmas tree?
+agree.
+>
+> ...
+>
+> > +       /*
+> > +        * With PSLVERR_RESP_EN parameter set to 1, device generates pslverr
+>
+> the device
+> pslverr --> an
+ack.
+>
+> > +        * error response when an attempt to read empty RBR with FIFO enabled
+>
+> Missed period.
+ack
+>
+> > +        */
+> > +       lsr = p->serial_in(p, UART_LSR);
+>
+> The only caller of this function already has the lsr value, why you
+> can't (re)use it?
+lsr is not read before, caller function (dw8250_check_lcr) reads lcr.
+>
+> > +       if ((up->fcr & UART_FCR_ENABLE_FIFO) && !(lsr & UART_LSR_DR))
+> > +               return;
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
