@@ -2,39 +2,39 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15194C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 21:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F139C433EF
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 22:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236812AbiGMVXB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Jul 2022 17:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
+        id S237287AbiGMWBI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Jul 2022 18:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbiGMVWo (ORCPT
+        with ESMTP id S229470AbiGMWBI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Jul 2022 17:22:44 -0400
+        Wed, 13 Jul 2022 18:01:08 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FF013F03;
-        Wed, 13 Jul 2022 14:22:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD6431218;
+        Wed, 13 Jul 2022 15:01:06 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657747341;
+        s=2020; t=1657749664;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=1yBttfM1OIBrcobeykZD9o4tbtZiHFfM1/f7oRhcDk0=;
-        b=YKWajG8WfsiE2Hr4rJ3Kr0aJnB1C5SjgyGRO2LpCbAHowS403vGXprtO4TNatWTuIIrbBB
-        2QBdSMS71kwtHcIsBpC+6tg8qEtkzKx1SDDccULp5gTGGZri/Rmw34adavSWgoxmocVOsE
-        PFlYzwvYHTmBGZOlJu/1nv98ho/aW60ahxsHO+H3Rd9sinJNmqdLKwuF9NoLU0xm39uda4
-        1juleGNMm3I6Pq5opoampRysUKqd8Boa2RyqIio8Ds0ek71C2RNJFgg5n+owfT2zPpioDv
-        XdQMBjldIjR4NjfkyJmoav0QVREhc9LOnODw3L1WIr9vwCZ88al4CRhEPlcc3Q==
+        bh=YnBn9SiT5WrnT/4mLV7Ah48VHNLH73En/1THWTXmgH4=;
+        b=xc4A0CCfR/DqNBm/26nzSMUenJbgvtBmO30hw2aGZZ9YXIvZCVaAo7RZK+nejrW1WrEo4O
+        +FvyYW2g/Q1PUUiL7p4nCn2U5Qvzw/PeQc5lKVY7p8dDQGmXYjz5+4I7qIodB2aUdfor6h
+        YoWkF6CVOVQ69ABDtlZ9AOjUpeaXR/FKxYiNeeSlMXq8M8o73llLu0yj3eOCWUIPIx4CMq
+        IUAhu69YcJ9gbMoQkjul4xRmoLtsqaxjsdmky6z8Te++Lz3ybaEMg7ANVuvVnlXxBPZziQ
+        xFyzyEHtrThUqHQL+BaA3AL/Z/GAOxY/blgix2EG7K0p7qYww17lDxLc24lCdA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657747341;
+        s=2020e; t=1657749664;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=1yBttfM1OIBrcobeykZD9o4tbtZiHFfM1/f7oRhcDk0=;
-        b=ztDAuM+VYw/ELLKYIWq1oUmmyc0nNOrLOLf5XoW48EDkkvcr0GcedXNhsyqdMtVBvwREuG
-        THBcfEwAco6coVAQ==
+        bh=YnBn9SiT5WrnT/4mLV7Ah48VHNLH73En/1THWTXmgH4=;
+        b=XuMw8bvJzqqx00ogc3ukYl45zs97QqC/1oMtsX9weKzewKXIc10g0RhaRvyki3N2y7byXq
+        bk7IvqpqAfu6kWDg==
 To:     todd.e.brandt@linux.intel.com,
         Sergey Senozhatsky <senozhatsky@chromium.org>,
         Petr Mladek <pmladek@suse.com>, rafael.j.wysocki@intel.com,
@@ -45,7 +45,7 @@ Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Steven Rostedt <rostedt@goodmis.org>
 Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
  (printk issue)
-In-Reply-To: <7d79e9877d63cdb74144f38d8736959281b562cc.camel@linux.intel.com>
+In-Reply-To: <875yk0908j.fsf@jogness.linutronix.de>
 References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
  <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
  <87czegxccb.fsf@jogness.linutronix.de>
@@ -56,24 +56,24 @@ References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
  <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
  <c60f5634e8605cb4c2ef4646b6e511e6135bea48.camel@linux.intel.com>
  <7d79e9877d63cdb74144f38d8736959281b562cc.camel@linux.intel.com>
-Date:   Wed, 13 Jul 2022 23:28:20 +0206
-Message-ID: <875yk0908j.fsf@jogness.linutronix.de>
+ <875yk0908j.fsf@jogness.linutronix.de>
+Date:   Thu, 14 Jul 2022 00:07:04 +0206
+Message-ID: <8735f48yfz.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-07-13, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
-> URGENT: Removing the commit FIXES the issue.
->
-> I just ran a 5.19.0-rc6 kernel with the offending commit removed and
-> it fixed the problem completely on all 3 machines.
+Hi,
 
-I believe to have found the issue. A patch was posted to bugzilla:
+I have posted a v2 to bugzilla:
 
-https://bugzilla.kernel.org/attachment.cgi?id=301413
+https://bugzilla.kernel.org/attachment.cgi?id=301414
 
-Please test this. Thanks.
+This version allows console_stop()/console_start() to flush for the
+non-suspend case.
+
+Please test. Thanks.
 
 John Ogness
