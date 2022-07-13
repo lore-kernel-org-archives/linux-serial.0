@@ -2,127 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47780C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 16:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A31C43334
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 17:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234904AbiGMQLh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        id S234753AbiGMRLY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Jul 2022 13:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiGMQLh (ORCPT
+        with ESMTP id S229807AbiGMRLY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:11:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584CF29C8F;
-        Wed, 13 Jul 2022 09:11:36 -0700 (PDT)
+        Wed, 13 Jul 2022 13:11:24 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7614C2CE02;
+        Wed, 13 Jul 2022 10:11:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657728696; x=1689264696;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MYSKoO4+JA1HLIxr6+ZiGU46DVwUCWwtwniY7flkkp4=;
-  b=aTzSBd44Q05EgMeRC11W9Xg2pTjAN5xZ6lvpvguTjW0/aP1cau3uXEkI
-   3+XcnsQSgrYgsitqLCPMCuEWK6Em4DDjgg9KTeV0hlPZ1rIq74xGWJVHA
-   eNluFRARFunYQ3fHqScjBOtYgeEpowrVBQMCqGOPTKX8vGOcW8dTTBtUA
-   7I+DN5G6SWvF6CGeFMe+btKvt+kxe9hvrb6pUrBuy+FvoIKdU/T0gMREB
-   pRNuzoLORybWebeqKpvZjXo9GmmZ5I14sGkYfmejj3RbmDL6f11HGYOQr
-   vkQY/oRuLxn8wdFvtuF42cjCxh8yf6KtsC5JihYIZyUCjB3XMA+BuZPSn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="268304430"
+  t=1657732283; x=1689268283;
+  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7okOHRohkmqY1odlj6bLAXPI/CRp5yIJ+HMblNpFZsw=;
+  b=nmBCq803A32+ZNpzoqz8DLNRR++Y2G+LNLehVY/9xTHVNVOTYi3CX96q
+   bkwXDfPXOQmixTxEiDXZdDBKhdmJXXo7Dnyt9QbRNJWCGj2XtHSJTZgNy
+   rXT6xB4n3JOWlu1JurdeRg6VvYaATEd+r33+HJK0kl35KB2cQaTqIVy05
+   kA1OUToRESJlvyyiLdlRIdmCyi8ojlxppLy3DeFmxXdVoycWi8u2c2TQZ
+   H6M0HowVwBUeo1PKdG1EI0taeJjL1nZhqKHLvDkTswcqbyo7KovoZ6xF6
+   RCEEnUJbONuKkjmIwawRXtjW+cri0tLvcqH8JAhl/xVF1Tolh5oxXa22F
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="346969871"
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="268304430"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 09:11:35 -0700
+   d="scan'208";a="346969871"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 10:11:23 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="545912368"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 09:11:33 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oBexW-001CSU-0Y;
-        Wed, 13 Jul 2022 19:11:30 +0300
-Date:   Wed, 13 Jul 2022 19:11:29 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, manugautam@google.com
-Subject: Re: [PATCH v3] serial: 8250_dw: Avoid pslverr on reading empty
- receiver fifo
-Message-ID: <Ys7usW3W3kemtVc+@smile.fi.intel.com>
-References: <20220713131722.2316829-1-vamshigajjela@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713131722.2316829-1-vamshigajjela@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+   d="scan'208";a="628391499"
+Received: from wopr.jf.intel.com ([10.54.75.125])
+  by orsmga001.jf.intel.com with ESMTP; 13 Jul 2022 10:11:22 -0700
+Message-ID: <c60f5634e8605cb4c2ef4646b6e511e6135bea48.camel@linux.intel.com>
+Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
+ (printk issue)
+From:   Todd Brandt <todd.e.brandt@linux.intel.com>
+Reply-To: todd.e.brandt@linux.intel.com
+To:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Petr Mladek <pmladek@suse.com>, rafael.j.wysocki@intel.com,
+        len.brown@intel.com
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Date:   Wed, 13 Jul 2022 10:11:22 -0700
+In-Reply-To: <87ilo1wdac.fsf@jogness.linutronix.de>
+References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
+         <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
+         <87czegxccb.fsf@jogness.linutronix.de>
+         <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+         <87tu7qvx1q.fsf@jogness.linutronix.de>
+         <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
+         <87o7xwbuoy.fsf@jogness.linutronix.de> <Ysvbp8vz7R9hDNqx@alley>
+         <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 06:47:22PM +0530, Vamshi Gajjela wrote:
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> 
-> With PSLVERR_RESP_EN parameter set to 1, the device generates an error
-> response when an attempt to read an empty RBR with FIFO enabled.
-> 
-> This happens when LCR writes are ignored when UART is busy.
-> dw8250_check_lcr() in retries to update LCR, invokes dw8250_force_idle()
-> to clear and reset FIFO and eventually reads UART_RX causing the error.
-> 
-> Avoid this by not reading RBR/UART_RX when no data is available.
+I've updated the bugzilla entry with new data:
+https://bugzilla.kernel.org/show_bug.cgi?id=216216
 
-From code perspective looks good,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+I just added 3 new tests for 5.19.0-rc6 on 3 machines that see this
+issue: otcpl-asus-e200-cht (cherry trail), otcpl-aml-y (amber lake),
+and otcpl-whl-u (whiskey lake). The kernel has the CONFIG_PRINTK_CALLER
+option enabled.
 
-but maybe Ilpo or others have something to add based on the practical use.
+The test is a S2idle and is run thusly:
+%> sleepgraph -dev -m freeze -rtcwake 15
 
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
-> ---
-> v3:
-> - check lsr based on FIFO enablement
-> v2:
-> - update as per review comments (re-format comments, xmas tree ordering)
->  drivers/tty/serial/8250/8250_dw.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+I've included the dmesg boot logs for all three. The dmesg
+suspend/resume logs are included in the html timelines by clicking the
+"dmesg" button in the upper right hand corner of the timeline. There's
+a "log" button as well that shows other system into.
+
+These files are attached to the bugzilla entry.
+otcpl-aml-y-5.19.0-rc6-boot-dmesg.txt
+otcpl-aml-y-5.19.0-rc6-freeze.html
+otcpl-asus-e200-cht-5.19.0-rc6-boot-dmesg.txt
+otcpl-asus-e200-cht-5.19.0-rc6-freeze.html
+otcpl-whl-u-5.19.0-rc6-boot-dmesg.txt
+otcpl-whl-u-5.19.0-rc6-freeze.html
+
+If possible can we move this thread to the bugzilla comment section?
+
+
+On Wed, 2022-07-13 at 11:57 +0206, John Ogness wrote:
+> On 2022-07-11, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
+> > > It seems that __pr_flush() does not check whether all consoles
+> > > are
+> > > suspended. In this case the progress is not possible and it has
+> > > to
+> > > wait the entire timeout.
+> > 
+> > But isn't console_suspended set after pr_flush() call?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index f57bbd32ef11..7573904579f6 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -82,8 +82,21 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
->  static void dw8250_force_idle(struct uart_port *p)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(p);
-> +	unsigned int lsr;
->  
->  	serial8250_clear_and_reinit_fifos(up);
-> +
-> +	/*
-> +	 * With PSLVERR_RESP_EN parameter set to 1, the device generates an
-> +	 * error response when an attempt to read an empty RBR with FIFO
-> +	 * enabled.
-> +	 */
-> +	if (up->fcr & UART_FCR_ENABLE_FIFO) {
-> +		lsr = p->serial_in(p, UART_LSR);
-> +		if (!(lsr & UART_LSR_DR))
-> +			return;
-> +	}
-> +
->  	(void)p->serial_in(p, UART_RX);
->  }
->  
-> -- 
-> 2.37.0.144.g8ac04bfd2-goog
+> There should not be any printing after the suspend_console() message.
+> If
+> Todd's report is coming from 5.19-rc1, then it is likely a kthread
+> issue, where the kthread is not respecting @console_suspended. (This
+> would still need to be fixed for the kthreads, but would not be
+> relevant
+> for 5.19.)
 > 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> John
 
