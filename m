@@ -2,78 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F139C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Jul 2022 22:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3084C433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Jul 2022 03:19:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237287AbiGMWBI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Jul 2022 18:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
+        id S232078AbiGNDT3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 13 Jul 2022 23:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiGMWBI (ORCPT
+        with ESMTP id S232042AbiGNDT1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Jul 2022 18:01:08 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD6431218;
-        Wed, 13 Jul 2022 15:01:06 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657749664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YnBn9SiT5WrnT/4mLV7Ah48VHNLH73En/1THWTXmgH4=;
-        b=xc4A0CCfR/DqNBm/26nzSMUenJbgvtBmO30hw2aGZZ9YXIvZCVaAo7RZK+nejrW1WrEo4O
-        +FvyYW2g/Q1PUUiL7p4nCn2U5Qvzw/PeQc5lKVY7p8dDQGmXYjz5+4I7qIodB2aUdfor6h
-        YoWkF6CVOVQ69ABDtlZ9AOjUpeaXR/FKxYiNeeSlMXq8M8o73llLu0yj3eOCWUIPIx4CMq
-        IUAhu69YcJ9gbMoQkjul4xRmoLtsqaxjsdmky6z8Te++Lz3ybaEMg7ANVuvVnlXxBPZziQ
-        xFyzyEHtrThUqHQL+BaA3AL/Z/GAOxY/blgix2EG7K0p7qYww17lDxLc24lCdA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657749664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YnBn9SiT5WrnT/4mLV7Ah48VHNLH73En/1THWTXmgH4=;
-        b=XuMw8bvJzqqx00ogc3ukYl45zs97QqC/1oMtsX9weKzewKXIc10g0RhaRvyki3N2y7byXq
-        bk7IvqpqAfu6kWDg==
-To:     todd.e.brandt@linux.intel.com,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>, rafael.j.wysocki@intel.com,
-        len.brown@intel.com
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
- (printk issue)
-In-Reply-To: <875yk0908j.fsf@jogness.linutronix.de>
-References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
- <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
- <87czegxccb.fsf@jogness.linutronix.de>
- <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
- <87tu7qvx1q.fsf@jogness.linutronix.de>
- <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
- <87o7xwbuoy.fsf@jogness.linutronix.de> <Ysvbp8vz7R9hDNqx@alley>
- <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
- <c60f5634e8605cb4c2ef4646b6e511e6135bea48.camel@linux.intel.com>
- <7d79e9877d63cdb74144f38d8736959281b562cc.camel@linux.intel.com>
- <875yk0908j.fsf@jogness.linutronix.de>
-Date:   Thu, 14 Jul 2022 00:07:04 +0206
-Message-ID: <8735f48yfz.fsf@jogness.linutronix.de>
+        Wed, 13 Jul 2022 23:19:27 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB240A6;
+        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so6879785pjr.4;
+        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
+        b=U4JVh3ts33oVhhRAbTM4c01uw8QW6+vPU5AqzfkUcw3FPZNY8y02/Y+KIVqy1S4PKY
+         5pj7O3afgjTX6R10hLARBk03+f/Hr1YiLgdpLhc/e78LIyjRKfljkvQXJB1hLqJFdRRF
+         jdF6c0pxHOTze5Aj9r6r8Nmy8oQi6jZ4fMraezZQo5ANTXWFU5Nc+3Nei8lIvYBuJaFH
+         aDPaeHQAbNaqtI5y6YG+jZUe87mlUecRFtkz3v8gPOC9GcuAfGaQCidjOxNgzJyyS0EH
+         219BNBZfoqtKx2cfHqVkMALPBSks3/29Di8x9BNKUvXm9NYwBdYLzJtor8iERr1Y+tC/
+         OyxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
+        b=WwAzydN/Y+B2LOjKMl9fn7G4SUxfVj0CZ9iy6vTn0Zj41DdECDai5kKS9DbHX602Hj
+         CHr2+Jsg8BAfuHxFXSKZdSLRg/OGLfLrBQLw2tmMGKBNqv2xxlRBwlfxJSc/woNFmYD+
+         +B1Ia+K7rjHRoz5KNaNiJfjItD50PfxOadqNrTVO3lj+SKpkWGuwT7mw/Tq9iQiuIrh7
+         xS+LfqNAp1J7rbOdmrqQcCwseT1rItWra1q0r08xPED6yq4gfBRKabhrCWAywWk9pbxu
+         00b5XS7KfDKsmBrxK/Qc01gKh4cy4fiNV0sc/fmsIHjb39dh5tZ3ReWU79SWlhL4ET8x
+         6SnA==
+X-Gm-Message-State: AJIora+LwLk35UfYP0Z0hH48+5n1bicQwrwVkU6aEstdpaNil8Yrtc7c
+        TRyVjICgoBZuZxHe0fbPq4DhNkSS8FA=
+X-Google-Smtp-Source: AGRyM1tWJujGTkrezqCP3LyXiasWmr8nGAOJP1sPDZw2284iA56M+LT2CdcvyND93KOnVEX4QwG++Q==
+X-Received: by 2002:a17:90b:3149:b0:1f0:3539:e7ae with SMTP id ip9-20020a17090b314900b001f03539e7aemr13877497pjb.80.1657768765569;
+        Wed, 13 Jul 2022 20:19:25 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id pc13-20020a17090b3b8d00b001ef8ea89a33sm2411453pjb.2.2022.07.13.20.19.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 20:19:24 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v3] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
+Date:   Wed, 13 Jul 2022 20:13:15 -0700
+Message-Id: <20220714031316.404918-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+From: Doug Berger <opendmb@gmail.com>
 
-I have posted a v2 to bugzilla:
+Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
+from S2") prevented an early enabling of RTS during resume, but it did
+not actively restore the RTS state after resume.
 
-https://bugzilla.kernel.org/attachment.cgi?id=301414
+Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v3:
 
-This version allows console_stop()/console_start() to flush for the
-non-suspend case.
+- moved set_mctrl within the critical section
 
-Please test. Thanks.
+Changes in v2:
 
-John Ogness
+- reworded the commit message to be clearer
+
+ drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 9b878d023dac..8efdc271eb75 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
+-
+-	serial8250_suspend_port(priv->line);
+-	clk_disable_unprepare(priv->baud_mux_clk);
++	unsigned long flags;
+ 
+ 	/*
+ 	 * This will prevent resume from enabling RTS before the
+-	 *  baud rate has been resored.
++	 *  baud rate has been restored.
+ 	 */
++	spin_lock_irqsave(&port->lock, flags);
+ 	priv->saved_mctrl = port->mctrl;
+-	port->mctrl = 0;
++	port->mctrl &= ~TIOCM_RTS;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	serial8250_suspend_port(priv->line);
++	clk_disable_unprepare(priv->baud_mux_clk);
+ 
+ 	return 0;
+ }
+@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
++	unsigned long flags;
+ 	int ret;
+ 
+ 	ret = clk_prepare_enable(priv->baud_mux_clk);
+@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 		start_rx_dma(serial8250_get_port(priv->line));
+ 	}
+ 	serial8250_resume_port(priv->line);
+-	port->mctrl = priv->saved_mctrl;
++
++	if (priv->saved_mctrl & TIOCM_RTS) {
++		/* Restore RTS */
++		spin_lock_irqsave(&port->lock, flags);
++		port->mctrl |= TIOCM_RTS;
++		port->ops->set_mctrl(port, port->mctrl);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.25.1
+
