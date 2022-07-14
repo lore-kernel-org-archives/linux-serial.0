@@ -2,147 +2,117 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3084C433EF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Jul 2022 03:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AFAC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Jul 2022 10:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbiGNDT3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Jul 2022 23:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S238463AbiGNKq2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbiGNDT1 (ORCPT
+        with ESMTP id S238459AbiGNKq1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Jul 2022 23:19:27 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB240A6;
-        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so6879785pjr.4;
-        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
-        b=U4JVh3ts33oVhhRAbTM4c01uw8QW6+vPU5AqzfkUcw3FPZNY8y02/Y+KIVqy1S4PKY
-         5pj7O3afgjTX6R10hLARBk03+f/Hr1YiLgdpLhc/e78LIyjRKfljkvQXJB1hLqJFdRRF
-         jdF6c0pxHOTze5Aj9r6r8Nmy8oQi6jZ4fMraezZQo5ANTXWFU5Nc+3Nei8lIvYBuJaFH
-         aDPaeHQAbNaqtI5y6YG+jZUe87mlUecRFtkz3v8gPOC9GcuAfGaQCidjOxNgzJyyS0EH
-         219BNBZfoqtKx2cfHqVkMALPBSks3/29Di8x9BNKUvXm9NYwBdYLzJtor8iERr1Y+tC/
-         OyxQ==
+        Thu, 14 Jul 2022 06:46:27 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD3354CAD;
+        Thu, 14 Jul 2022 03:46:26 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id x91so1883018ede.1;
+        Thu, 14 Jul 2022 03:46:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
-        b=WwAzydN/Y+B2LOjKMl9fn7G4SUxfVj0CZ9iy6vTn0Zj41DdECDai5kKS9DbHX602Hj
-         CHr2+Jsg8BAfuHxFXSKZdSLRg/OGLfLrBQLw2tmMGKBNqv2xxlRBwlfxJSc/woNFmYD+
-         +B1Ia+K7rjHRoz5KNaNiJfjItD50PfxOadqNrTVO3lj+SKpkWGuwT7mw/Tq9iQiuIrh7
-         xS+LfqNAp1J7rbOdmrqQcCwseT1rItWra1q0r08xPED6yq4gfBRKabhrCWAywWk9pbxu
-         00b5XS7KfDKsmBrxK/Qc01gKh4cy4fiNV0sc/fmsIHjb39dh5tZ3ReWU79SWlhL4ET8x
-         6SnA==
-X-Gm-Message-State: AJIora+LwLk35UfYP0Z0hH48+5n1bicQwrwVkU6aEstdpaNil8Yrtc7c
-        TRyVjICgoBZuZxHe0fbPq4DhNkSS8FA=
-X-Google-Smtp-Source: AGRyM1tWJujGTkrezqCP3LyXiasWmr8nGAOJP1sPDZw2284iA56M+LT2CdcvyND93KOnVEX4QwG++Q==
-X-Received: by 2002:a17:90b:3149:b0:1f0:3539:e7ae with SMTP id ip9-20020a17090b314900b001f03539e7aemr13877497pjb.80.1657768765569;
-        Wed, 13 Jul 2022 20:19:25 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id pc13-20020a17090b3b8d00b001ef8ea89a33sm2411453pjb.2.2022.07.13.20.19.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 20:19:24 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
-Date:   Wed, 13 Jul 2022 20:13:15 -0700
-Message-Id: <20220714031316.404918-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=mdZHN68nnDMwF7tgjBDSWcIdnt+cELpwBZVJBAjefvQ=;
+        b=hxsg9NKfPHtAJXlsaBjbZYm+d6y3jnGqhVjhwZfbyFu37+r4Ik+rX6+5YdkCTj1j6q
+         Zvnvt0lvbKCGIa9KjKmz8bNMBAwthXU3ZzIIsYWOJazQwZDazvGiEIR/yCFd1sDdh70d
+         Cf9DXLtcEhx6dBQRBS+hTkVAjnS/lbvmAIQym4kfonSVAfqegB2MmbG7JHMSo/l4KRNx
+         gyrHdg/Tl30y2VQOLeAM9ruxYvL8Ch/Aqgj8Pg1ZrZzA4gFKax1ODEVW8TDYVZ+mWDPy
+         wCusAEYDSJS5LIC4UgtPcNcrTjTzBTrRLpGxgPydZVxtA7HB+g28mzY85YTL2QDFAs9x
+         2W+w==
+X-Gm-Message-State: AJIora96mc7UNIwd977YyQYlAGt4dLzmMamOgmLjfxBX+YArWcPvR4lm
+        5aSobQrYQaFVL/J488kgRyw6oFJcXLVz0Q==
+X-Google-Smtp-Source: AGRyM1syDuPlSQ3J3FJoTOFBJyVnDbl1sd0yL1SHmEfTsGCfRY7Ir7La5x85AMDOtIgmhPVSfr1Y4Q==
+X-Received: by 2002:a05:6402:2997:b0:43b:247b:89cb with SMTP id eq23-20020a056402299700b0043b247b89cbmr2879714edb.91.1657795584887;
+        Thu, 14 Jul 2022 03:46:24 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906329200b0072b2eab813fsm343840ejw.75.2022.07.14.03.46.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 03:46:24 -0700 (PDT)
+Message-ID: <b973cfc2-d9a8-5d62-036f-14671cf56799@kernel.org>
+Date:   Thu, 14 Jul 2022 12:46:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [V5] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+Content-Language: en-US
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org
+References: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+On 12. 07. 22, 14:45, Vijaya Krishna Nivarthi wrote:
+...
+> +static unsigned long get_clk_div_rate(struct clk *clk, struct device *dev,
+> +		unsigned int baud, unsigned int sampling_rate, unsigned int *clk_div)
+> +{
+> +	unsigned long ser_clk;
+> +	unsigned long desired_clk;
+> +
+> +	desired_clk = baud * sampling_rate;
+> +	if (!desired_clk) {
+> +		dev_dbg(dev, "Invalid frequency\n");
+> +		return 0;
+>   	}
+>   
+> -	*clk_div = ser_clk / desired_clk;
+> -	if (!(*clk_div))
+> -		*clk_div = 1;
+> +	/*
+> +	 * try to find a clock rate within 2% tolerance, then within
 
-Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-from S2") prevented an early enabling of RTS during resume, but it did
-not actively restore the RTS state after resume.
+"then within" ... "5" is missing, perhaps?
 
-Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v3:
+> +	 */
+> +	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
+> +	if (!ser_clk)
+> +		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
+> +
+> +	if (!ser_clk)
+> +		dev_err(dev, "Couldn't find suitable clock rate for %lu\n", desired_clk);
+> +	else
+> +		dev_dbg(dev, "desired_clk-%lu, ser_clk-%lu, clk_div-%u\n",
+> +				desired_clk, ser_clk, *clk_div);
+>   
+>   	return ser_clk;
+>   }
+> @@ -1021,8 +1040,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>   	if (ver >= QUP_SE_VERSION_2_5)
+>   		sampling_rate /= 2;
+>   
+> -	clk_rate = get_clk_div_rate(port->se.clk, baud,
+> -		sampling_rate, &clk_div);
+> +	clk_rate = get_clk_div_rate(port->se.clk, port->se.dev, baud,
 
-- moved set_mctrl within the critical section
+Maybe worth passing whole geni_se (port->se) then?
 
-Changes in v2:
+> +					sampling_rate, &clk_div);
+>   	if (!clk_rate)
+>   		goto out_restart_rx;
+>   
 
-- reworded the commit message to be clearer
-
- drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 9b878d023dac..8efdc271eb75 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
--
--	serial8250_suspend_port(priv->line);
--	clk_disable_unprepare(priv->baud_mux_clk);
-+	unsigned long flags;
- 
- 	/*
- 	 * This will prevent resume from enabling RTS before the
--	 *  baud rate has been resored.
-+	 *  baud rate has been restored.
- 	 */
-+	spin_lock_irqsave(&port->lock, flags);
- 	priv->saved_mctrl = port->mctrl;
--	port->mctrl = 0;
-+	port->mctrl &= ~TIOCM_RTS;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	serial8250_suspend_port(priv->line);
-+	clk_disable_unprepare(priv->baud_mux_clk);
- 
- 	return 0;
- }
-@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
-+	unsigned long flags;
- 	int ret;
- 
- 	ret = clk_prepare_enable(priv->baud_mux_clk);
-@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 		start_rx_dma(serial8250_get_port(priv->line));
- 	}
- 	serial8250_resume_port(priv->line);
--	port->mctrl = priv->saved_mctrl;
-+
-+	if (priv->saved_mctrl & TIOCM_RTS) {
-+		/* Restore RTS */
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl |= TIOCM_RTS;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+
- 	return 0;
- }
- 
+thanks,
 -- 
-2.25.1
-
+js
+suse labs
