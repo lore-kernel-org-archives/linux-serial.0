@@ -2,135 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E875CC43334
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Jul 2022 13:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFFCC433EF
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Jul 2022 14:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238166AbiGNNF1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32824 "EHLO
+        id S235321AbiGNO1Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231947AbiGNNF0 (ORCPT
+        with ESMTP id S230307AbiGNO1Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:05:26 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBFD2D1F9;
-        Thu, 14 Jul 2022 06:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657803925; x=1689339925;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=o/uCGcJ47frDAidTP8LfsgkkatSl2wQ4r/QApE2FaGU=;
-  b=zESrki1aa27DopVzSh/NxADoXkmLgdzSmFcyGTs5BBAL+eRPovrEtsp8
-   CA3h6dEuhHE8/S1vuCECzsi83M4irllxr2ANJMefbuob/aIqBUa4h0n9Z
-   a9htUp1eUKkgoqiWaIDoIiXSZZzoo730Lqn2a+SJelYD55ymCBtA4GIWp
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jul 2022 06:05:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 06:05:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 06:05:24 -0700
-Received: from [10.242.7.35] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Jul
- 2022 06:05:20 -0700
-Message-ID: <1bc53dc5-fc7f-54fd-ab7c-f1e77548b20d@quicinc.com>
-Date:   Thu, 14 Jul 2022 18:35:17 +0530
+        Thu, 14 Jul 2022 10:27:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB87599D8;
+        Thu, 14 Jul 2022 07:27:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A12261B40;
+        Thu, 14 Jul 2022 14:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB45EC34114;
+        Thu, 14 Jul 2022 14:27:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657808843;
+        bh=chPyj8d71nEotL/dYoyx2zw6gpGSgTT1XFqCSUrWXzg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D/AzbcReb/+ttQRuRy2eN93Qu/iXjHNH+Qt6MKIsVVj+fGryPSvnv8Cms1WMR3ayu
+         2NwFjMxGXoYob/sc/IpYHvkd00HHmqVLSvKiIAA+2l1E4Vr7zzPi6Vx+Hry1NseKPJ
+         tdIlHJdtk7NfjsyBojPrVu2yZ1L0eMaYc3Hsmggc=
+Date:   Thu, 14 Jul 2022 16:27:20 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Cameron Williams <cang1@live.co.uk>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] tty: 8250: Add support for Brainboxes PX cards.
+Message-ID: <YtAnyCXvtdtaoVkJ@kroah.com>
+References: <AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [V5] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
- otherwise could return a sub-optimal clock rate.
-Content-Language: en-CA
-To:     Jiri Slaby <jirislaby@kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
-        <gregkh@linuxfoundation.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
-        <mka@chromium.org>, <swboyd@chromium.org>
-References: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
- <b973cfc2-d9a8-5d62-036f-14671cf56799@kernel.org>
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-In-Reply-To: <b973cfc2-d9a8-5d62-036f-14671cf56799@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM5PR0202MB2564669252BDC59BF55A6E87C4879@AM5PR0202MB2564.eurprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Mon, Jul 11, 2022 at 04:35:10PM +0100, Cameron Williams wrote:
+> Add support for some of the Brainboxes PCIe (PX) range of
+> serial cards, including the PX-101, PX-235/PX-246,
+> PX-203/PX-257, PX-260/PX-701, PX-310, PX-313,
+> PX-320/PX-324/PX-376/PX-387, PX-335/PX-346, PX-368, PX-420,
+> PX-803 and PX-846.
+> 
+> [fix for patch v1 to remove whitespace fixes and also
+> correct base baud configuration for OXSEMI]
 
-On 7/14/2022 4:16 PM, Jiri Slaby wrote:
-> On 12. 07. 22, 14:45, Vijaya Krishna Nivarthi wrote:
-> ...
->> +static unsigned long get_clk_div_rate(struct clk *clk, struct device 
->> *dev,
->> +        unsigned int baud, unsigned int sampling_rate, unsigned int 
->> *clk_div)
->> +{
->> +    unsigned long ser_clk;
->> +    unsigned long desired_clk;
->> +
->> +    desired_clk = baud * sampling_rate;
->> +    if (!desired_clk) {
->> +        dev_dbg(dev, "Invalid frequency\n");
->> +        return 0;
->>       }
->>   -    *clk_div = ser_clk / desired_clk;
->> -    if (!(*clk_div))
->> -        *clk_div = 1;
->> +    /*
->> +     * try to find a clock rate within 2% tolerance, then within
->
-> "then within" ... "5" is missing, perhaps?
+Note, this needs to go below the --- line, as the documentation asks.
+I'll fix it up by hand this time...
 
-
-Yes :(
-
-Will change.
-
-
->
->> +     */
->> +    ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
->> +    if (!ser_clk)
->> +        ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
->> +
->> +    if (!ser_clk)
->> +        dev_err(dev, "Couldn't find suitable clock rate for %lu\n", 
->> desired_clk);
->> +    else
->> +        dev_dbg(dev, "desired_clk-%lu, ser_clk-%lu, clk_div-%u\n",
->> +                desired_clk, ser_clk, *clk_div);
->>         return ser_clk;
->>   }
->> @@ -1021,8 +1040,8 @@ static void qcom_geni_serial_set_termios(struct 
->> uart_port *uport,
->>       if (ver >= QUP_SE_VERSION_2_5)
->>           sampling_rate /= 2;
->>   -    clk_rate = get_clk_div_rate(port->se.clk, baud,
->> -        sampling_rate, &clk_div);
->> +    clk_rate = get_clk_div_rate(port->se.clk, port->se.dev, baud,
->
-> Maybe worth passing whole geni_se (port->se) then?
-
-
-but then geni_se is a struct; shall we pass port instead?
-
-Alternately move logging to caller?
-
-Thank you.
-
-
->
->> +                    sampling_rate, &clk_div);
->>       if (!clk_rate)
->>           goto out_restart_rx;
->
-> thanks,
+greg k-h
