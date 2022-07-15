@@ -2,97 +2,119 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0D8C433EF
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Jul 2022 02:41:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B78C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Jul 2022 03:01:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240885AbiGOClG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Jul 2022 22:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
+        id S232836AbiGODBP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 14 Jul 2022 23:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229984AbiGOClF (ORCPT
+        with ESMTP id S229603AbiGODBO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Jul 2022 22:41:05 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C1C75391
-        for <linux-serial@vger.kernel.org>; Thu, 14 Jul 2022 19:41:04 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id s27so3210916pga.13
-        for <linux-serial@vger.kernel.org>; Thu, 14 Jul 2022 19:41:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j0LkY7V697d3ZVo5WxziZUxKlyEGG8e7be+I9q1UHZc=;
-        b=HfNLipGrzytDB935p8bmqPON5CCDTAZMyAiAxewGU+bb/fGa4ILTdeVF+rsA4E81LY
-         EA6isllOd40wVpZ6xg1LL2AajDouAQ33p+qW7Q/SvFeC4F1lghs54MRqNaZJCUEXCBYq
-         UxtT/gqB7umL6Xt45HXp9mgQVZ1RnwCbB6mgmRnncSJAnapzo5xyLzkVCAXjbZkq8eJh
-         LgkuOBU2P0vbzdH66t0uxhDFM2YbmWZjOl/mtrkcJp4QH7Y7xs2klWo16ZL2TiS5SS4T
-         ymjvoAo0UjNRMW+A4929mxUHchP/jUvtFFPq1Xh3iH3mtcF5wHmMIehpW7SSxNWC02jg
-         LsFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j0LkY7V697d3ZVo5WxziZUxKlyEGG8e7be+I9q1UHZc=;
-        b=vuPWftet/Ng1eGzb4CsnhwRJObHTqfNTu9IJpXgw4BwJpfG3msYgknJh03KtfmN4Wf
-         34KTczulb3pzASnorU+xBlWH70rxRUlmWVayZ9gD4sgzbfV6vQ3W6gXIHTcO4DXSFwiM
-         phbaA6E3cWlrywUO4/ZoBS0Fzk5jjm/G3bnoRFSwNwO60BVgglP83XanOm4WB4k1YleD
-         y/+6xwMfyix10s2mHc4K5s4nUvDsRmlINXwrq324jZEMrydMY3HhnsIyHss9Wdf0Zg0n
-         xBahoy17J1/+Lkz0/DhHIhyisXGjCBzYrV9eV46o5Z6VkXlaLD4eFaQLRh+flO69xFdi
-         msSQ==
-X-Gm-Message-State: AJIora+OF40k/RhX73RAnpG562a/NhAG4NnCEHeTi3lM4yxCaE9IAKME
-        2XmUNOLh6WIp3XCuwVB+F2s=
-X-Google-Smtp-Source: AGRyM1tO2r9TY0BZlwAeQKSbwkOO9lVL+SsDXgiA7s/1gDBB1Hm5KsYfHtWLb0kGfqWH37Va1WZoBg==
-X-Received: by 2002:aa7:94b3:0:b0:52a:198a:e3cb with SMTP id a19-20020aa794b3000000b0052a198ae3cbmr11363086pfl.60.1657852864219;
-        Thu, 14 Jul 2022 19:41:04 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id v188-20020a622fc5000000b0052ab0a73752sm2409633pfv.198.2022.07.14.19.41.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 19:41:03 -0700 (PDT)
-Message-ID: <5c4ddf6d-3f6c-b64e-5503-0f8cad4a9364@gmail.com>
-Date:   Thu, 14 Jul 2022 19:41:02 -0700
+        Thu, 14 Jul 2022 23:01:14 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80070.outbound.protection.outlook.com [40.107.8.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF4548C8D;
+        Thu, 14 Jul 2022 20:01:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M8kMs8qCvUtV7oGI2cxX61WsuQuQhg21nZ3abGIbIyF1itup9aUARl/kHbCYN4rSHiqTZNSGkNQk+loSLuzHgMeFG7D3/5uozszPSZqrPlVSacWqMgBXvWfGK/VHdkWK5SF7vYAuOtjKac9LxTPFWo8KGQ0s2x2NbT+Bs6WnM+V5SWWbbddOt2rnVAhEoNN7Viu04w2rvN6zRlb5jtm86p4E8xsaW/uoLd1uBxxK/er365tjgC8kMksvuum1T0pOwxBRsVpLx9P2PvC4GQVMFr3cyDVKSF8gep/6fUXl2CAhC7rdfyw/YO/7XiAkcsHvCpRyWfqmOmrkKJhVdWwUCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bpphCbnvSGF05V8uwar8pb0AF+a94Tc/SJLKRUeM7+c=;
+ b=R0zu/QyHT03hdBjij5u6d/tLOMwqdpbIk5u6SbSmTDOwmKFBxNzcjdgkLxH6U/XZVeq9hVutga13lBNeCxqJaztkB23ZqwD8vMqzlMCqPY88+2uwBKea0TV8jx0+9VSLqZSieNBDN3ef2neS6s5sH49pOh/eLtiOomIMkGDqErf6UqTFJvG/y6ZFpIvbVR/NRpnPy65JkZU//D+MHwabWewJvk2v3Jh+tmNqaoftv3LU5etZGwoIaacJ1ydtbr2Ns8P2MvnGpnGFZ+Qg3d9w8UkXhH1mxqOCrplxRXpl4U4eXPBmsZkU2t2BiZBQ05AftYsqKYofX9w1gmFIsO6Nmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bpphCbnvSGF05V8uwar8pb0AF+a94Tc/SJLKRUeM7+c=;
+ b=ErNc6SqlHNRiaFGvFHAKs7MTyavgMsgbUPqaAA7pxHgsnkjzyerluDZsRijHeTzvtxy5ra/WIJPdQI3izpQmVWweq2N/8GUtbwCP4qAPuMQevr+LKYmCGMOLJn0K5piGEZsA3PkytVh7BBlkXTpCE1OtA5YX5/GEwd7RSb+k3uU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by VE1PR04MB6477.eurprd04.prod.outlook.com (2603:10a6:803:11e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Fri, 15 Jul
+ 2022 03:01:09 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3cec:d61:3836:2826]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::3cec:d61:3836:2826%5]) with mapi id 15.20.5438.017; Fri, 15 Jul 2022
+ 03:01:09 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, michael@walle.cc
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH 0/2] fsl_lpuart: fix the bugs in received break signal count and send break signal
+Date:   Fri, 15 Jul 2022 10:59:42 +0800
+Message-Id: <20220715025944.11076-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0163.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:28::19) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH -next v3] serial: 8250_bcm2835aux: Add missing
- clk_disable_unprepare()
-Content-Language: en-US
-To:     Guo Mengqi <guomengqi3@huawei.com>, gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, ilpo.jarvinen@linux.intel.com,
-        athierry@redhat.com, linux-serial@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, xuqiang36@huawei.com
-References: <7c4eaa8e-2812-b805-c81b-9964a5cb6b52@huawei.com>
- <20220715023312.37808-1-guomengqi3@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220715023312.37808-1-guomengqi3@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 272df67b-3bb6-4840-9534-08da660e4493
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6477:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MhPrOlCrI7CJop3Fx/5YH85OBCLhBG9m3BTEKMUo/65+DGj0yt+Djhybqn/OxkeIeUy1sFie3zyfbIBd3YWrl/AIPNw7IaMKaM6WkoBLnQl+HvJcw0d/NsPlLGGYOZhPZryPzxi8d/gMW13BUZlzyE4AiruSnisG9duanEs5f86Swj1DHLazJVmVPbHqDYUr5tffDCYF2U4bCtgLdOgXmIEh9UtSK9LyZ8qXjEhmsy4mC29zeoNoLDam5bfSeW1wBP/HigijkxSRyG1Fjn9Ck1/Pna1/qFYE50vu1LywZbDrxggiIVaiAZSH0xNKUtVtzhwrwxlKKo4HxaWgbe3D74Zz58iSgN8OUG+O6RRghqpIBaeGn3sRgBCkDkDfE/46N7qxiyQKkDZGFrCHqbqAKLMx9QTgID4mZIdMdx6JpWx3AbAy1jLAmf9r1/DqwATAvlsnrhZx9Eb31gJsOR6frGywvTHQIvA09W3cEENEGCsDx6GgMgfVp+7R/HeBfJnI9sRFX+BA/ZmcYThMMog29SWqRlNJLW6qLxaKzcaucT1loCUX8YullBHbun7InrIz4ytJ7kNqZxNmeGW9v/ezIrZh9KeNyqujWr0BTVSva0+kLrE4iUHSlMF6DwAzlAsB/ns3mjT4GuJWPNWk/U/hXdvvtX3zWTLmXfguhGI76cnloIPox0WcFLyVGtWGtgi0JTP2qzZ/hvJs7PXIqfDF17Rt1BNxhyId84UuSWlupLxj2JsYs67GUbxIQDhFxua0aYxH5C4EnbH5eKV/eV7xG1nrAM+UvQQY9djq/SBTwDT0I9CL1wSoTcAfBtiHroqL
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(136003)(346002)(39860400002)(376002)(8676002)(66946007)(66556008)(4326008)(26005)(5660300002)(38100700002)(83380400001)(1076003)(38350700002)(2906002)(2616005)(41300700001)(66476007)(6666004)(186003)(316002)(36756003)(52116002)(44832011)(6512007)(478600001)(8936002)(6486002)(86362001)(6506007)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jbEz5gkMOBd8W8jiW6tdG/01mvl+HrLjDvIDihSkLcqNyIbXKhAcFbBC5e+k?=
+ =?us-ascii?Q?3BR3QshdhMYWZ9ECPOeG/Rw3DUlxQMVEkzg0CMBV6/Z3lvW5GFnsOrTnczZa?=
+ =?us-ascii?Q?rcK/EN8QdJUD5K1pmdWyg3qaTUwhYPBuId8Q9OVUQCdiSjoDoDL1l6KQwesJ?=
+ =?us-ascii?Q?nWyc3dwK7SspzlOLBpZ+p9mHTIPhKLK+Yijro3UJXC99+wQT9t+P2SB35k3O?=
+ =?us-ascii?Q?ltqOglF2cioOPdsB5a4n+4Bf7mW2G1ezVPDoOlmN3+TH0x0GhB3aC2OKEmNf?=
+ =?us-ascii?Q?/eAo2yCqYzoy8YP8FTLZmB/yTb4KDX4Pnw3zexfiICAkCGH0LlUYk0fdoisk?=
+ =?us-ascii?Q?60p672Ru/Alq039E8tuoL8OaTaBRCnCpZ2RdndseEMwmyDVhN4d1cIte5esA?=
+ =?us-ascii?Q?YHzoHmcp0+fw02szQVHv4nq3FPMZMl2K7vVgYoJh/yZd1EfNnHsTekd9Dixo?=
+ =?us-ascii?Q?UN/03BkD7PnmhpyHbDf04a+V7Lj6bznExqkWVA7ItjqgjAKu+5MTs3uscTJ/?=
+ =?us-ascii?Q?6zB7Ec5u4W0mxbUEDnOrzAWORN67mpGFHdHziVuDCCeXNpNU8QwPMJjFOef1?=
+ =?us-ascii?Q?tqBtgJqFOj+fDd9VA/ctIUu6qSVuvQA+lep7lVSaUEIJG5tsCJpCkocTMmI8?=
+ =?us-ascii?Q?4DzM4kor5fcZ1MJ2ZA3sV2mvkeo7hHta+VrGmHwrd7qf4iCroBzkXh0tGaJa?=
+ =?us-ascii?Q?ppsEDoXBElbNLB96MW3I9sbV3v7YuXDRtID4UEvWkQ4/LhfN0Kdnnyq9fnlT?=
+ =?us-ascii?Q?NgLIDBZ6YFiG0ikNqWST+gDvR5mzvKff7sVfNLaqZJCxxcYgFP5CWNZ/2PRm?=
+ =?us-ascii?Q?f4J4tw0LADtK8aNi4g/nqcLcf/4/QTJdICCGgqmlzToa5KpijE/KfsSBRDP/?=
+ =?us-ascii?Q?UFoyk/LQeZ3OEgXbTnyRuUVZtbblKBXJIrRJ2fLidbhWLXRRlX6Tj6HwZBpj?=
+ =?us-ascii?Q?j/vKxifoHQPq0wFetIYIa0mbUVzaUsRCceemYRSSga09BBqyVYlITlg5pCBO?=
+ =?us-ascii?Q?Onr6Vu3PGq9W+2El5Z9hPY9DwryiCKTzyEVF3qfuMWHdtP5nWVRSx3w7gN4W?=
+ =?us-ascii?Q?OavdaD/h9Bjf5YCwnl1KtszndJ1KRTitF8FpwrCRxPmui82sku+VlFypcRHI?=
+ =?us-ascii?Q?pjjpGVGwDbLNnA5jBqYpgkoouAj3pYLm0qYyOBd6mBh+nUnsSuVvpqyc63tu?=
+ =?us-ascii?Q?DMDQNdY/BhLO/s9hWITEh+v+k2pkjLAmnHh5G4L6E3XZ1VyXz2H40fD6UvY8?=
+ =?us-ascii?Q?XNxF18kH5xASwnc4tZDf4Gm7UXkwFz2MLyD8JTbBuKHqrAHODH6hV+Jb1Q20?=
+ =?us-ascii?Q?Qjwz8CEMzQUfgRZy33PaiVsCZQ7YpQ/XBOCO24GmBRjANL8XdrkPuiGhLola?=
+ =?us-ascii?Q?piz+qPLS4RWpyhf/bpT+FZY9L1RmqyU6l36wV5n0C1JmJgVP2UDl0RDyROlK?=
+ =?us-ascii?Q?6PaYF2fCfSi3y22zAgapbILEXBa5l/eTvRECsUoNyChHC5NvAn41lTtgOyU9?=
+ =?us-ascii?Q?RoRe2dhFHXsB52cplxzfZ3gSyCSCpgnNHOAQaVACEehVREAcyyNS/aPOo+2Q?=
+ =?us-ascii?Q?wdRuNuQtivgGi/ULhpF6EfGiIuOTr3YT53lIg06r?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 272df67b-3bb6-4840-9534-08da660e4493
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 03:01:09.5882
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bNy+pABiiHxvTQHY6sJXtACalPwYcdr87q/O+GeLB9OP/ZepKqBWcyyDms8b7/zEjHXbFuNUFXFr2iOcRW+d1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6477
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patchset fix some issues in the received break characters counts and send
+break character in the lpuart driver.
 
+Sherry Sun (2):
+  tty: serial: fsl_lpuart: correct the count of break characters
+  tty: serial: fsl_lpuart: writing a 1 and then a 0 to trigger a break
+    character
 
-On 7/14/2022 7:33 PM, Guo Mengqi wrote:
-> The error path when get clock frequency fails in bcm2835aux_serial
-> driver does not correctly disable the clock.
-> 
-> This flaw was found using a static analysis tool "Hulk Robot", which
-> reported the following warning when analyzing linux-next/master:
-> 
->      drivers/tty/serial/8250/8250_bcm2835aux.c:
->      warning: clk_disable_unprepare_missing.cocci
-> 
-> The cocci script checks for the existence of clk_disable_unprepare()
-> paired with clk_prepare_enable().
-> 
-> Add the missing clk_disable_unprepare() to the error path.
-> 
-> Fixes: fcc446c8aa63 ("serial: 8250_bcm2835aux: Add ACPI support")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+ drivers/tty/serial/fsl_lpuart.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+2.17.1
+
