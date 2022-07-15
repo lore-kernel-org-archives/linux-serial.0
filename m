@@ -2,161 +2,219 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DF4C43334
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Jul 2022 15:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C285FC433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Jul 2022 18:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235037AbiGOPTL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
+        id S229597AbiGOS42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 15 Jul 2022 14:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235448AbiGOPSw (ORCPT
+        with ESMTP id S229538AbiGOS42 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:18:52 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662B11144D
-        for <linux-serial@vger.kernel.org>; Fri, 15 Jul 2022 08:18:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657898323; x=1689434323;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PL2lqJDfMC7ccNc03p6i/mdppqrOMEEY06HpVQeTmZ0=;
-  b=XkTASb+Xipnx8f4GXMJvYW7nznkKpyxAGGBRN+UqfG4pxC3mVxtiaOL4
-   4vrOGxOBf2UOzWNuyh4ec9Na5L+HI6i/b7E1j379CeZM1w1jkhI9d7KEb
-   QQOxBg/2x7MSPayPGQFSQU44skO8AYJ3ZCcA7P2kg9HLDHi2BCq9vZYl2
-   9gSu/vRQiAED0FWIXdSBsI+cWw/HONe1qeY21X7dBJKSJE7lB6Mqds3j+
-   DZAi/pb0QXqkZBS/DfM7YkGjZJigqKGDbwA5JhMIlJHutZ+i579wd2l27
-   OtxgSAhQ2YJe0Kn+qlakY2bmBWikFaWoZm449BDEQjTDasE1N/3Tpu/J0
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="285840937"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="285840937"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 08:18:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="600526788"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 15 Jul 2022 08:18:40 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCN5T-0000Dg-Le;
-        Fri, 15 Jul 2022 15:18:39 +0000
-Date:   Fri, 15 Jul 2022 17:10:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 5095ca634f8b134cc202a5f5e4985d2b81f0ef0a
-Message-ID: <62d12ef8.nePqRML/H0R6h1oT%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Fri, 15 Jul 2022 14:56:28 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590102DAA2;
+        Fri, 15 Jul 2022 11:56:27 -0700 (PDT)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26FEs6KC031633;
+        Fri, 15 Jul 2022 18:55:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id; s=qcppdkim1;
+ bh=9wiYGNZN6tmOdPV5LNB6z205KdtgihGjwpgjz9fRBbk=;
+ b=jFD7Hkisz/gPy41HLTpPLMM5U77kczSFF3ZFB79T5ucz2iQz1QwBy7FifKXHP0+2mjvA
+ SvQthBAWzbHnJUwsdhF1OUVoqLG0N/F6XlFU/8ZrLs0P2Ym4pkDQg8Bgqv3P/wlqMnLj
+ nf6mHWQhP55Cfi9J3H3bH1Y/2VMbm8Kv5EknSQgbX32zoHmSgqKfffAtGU3UWInqjso3
+ lAQ2+pv5nIucn9jVkOwCwU4AXT1k1yv1dcfoGlZ8eLxh1TsInX8v60COR+0vvKiPOXbH
+ IiT6NUaicyx/a0ctE80OqJRkBvaqtKHH2GMJW9Teg6tabEbvwHGf4rdwBav4568fFbes uQ== 
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hawhwjt6t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 18:55:52 +0000
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26FItmTU001945;
+        Fri, 15 Jul 2022 18:55:48 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 3h72rjjuc2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 15 Jul 2022 18:55:48 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26FItmW8001940;
+        Fri, 15 Jul 2022 18:55:48 GMT
+Received: from hu-sgudaval-hyd.qualcomm.com (hu-vnivarth-hyd.qualcomm.com [10.213.111.166])
+        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 26FItmej001939;
+        Fri, 15 Jul 2022 18:55:48 +0000
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 6992C410F; Sat, 16 Jul 2022 00:25:47 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
+        swboyd@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V6] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
+Date:   Sat, 16 Jul 2022 00:25:43 +0530
+Message-Id: <1657911343-1909-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: b5i3boycqfCgB3ZPaLuNrhL0z4vbzPI6
+X-Proofpoint-ORIG-GUID: b5i3boycqfCgB3ZPaLuNrhL0z4vbzPI6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-15_10,2022-07-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
+ phishscore=0 priorityscore=1501 spamscore=0 malwarescore=0 mlxlogscore=999
+ adultscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207150084
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 5095ca634f8b134cc202a5f5e4985d2b81f0ef0a  serial: 8250: lpc18xx: Remove redundant sanity check for RS485 flags
+In the logic around call to clk_round_rate(), for some corner conditions,
+get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+exact clock rate was not found lowest clock was being returned.
 
-elapsed time: 1094m
+Search for suitable clock rate in 2 steps
+a) exact match or within 2% tolerance
+b) within 5% tolerance
+This also takes care of corner conditions.
 
-configs tested: 85
-configs skipped: 3
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+---
+v6: moved logging to caller function
+v5: corrected format specifiers for logs
+v4: replaced pr_dbg calls with dev_dbg
+v3: simplified algorithm further, fixed robot compile warnings
+v2: removed minor optimisations to make more readable
+v1: intial patch contained slightly complicated logic
+---
+ drivers/tty/serial/qcom_geni_serial.c | 88 +++++++++++++++++++++--------------
+ 1 file changed, 53 insertions(+), 35 deletions(-)
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-i386                          randconfig-c001
-sparc                             allnoconfig
-arm                           h3600_defconfig
-mips                         cobalt_defconfig
-sh                        sh7785lcr_defconfig
-m68k                       m5275evb_defconfig
-arm                        oxnas_v6_defconfig
-arm                        clps711x_defconfig
-powerpc                      pcm030_defconfig
-m68k                          atari_defconfig
-arc                          axs103_defconfig
-powerpc                     pq2fads_defconfig
-arm                             ezx_defconfig
-sh                             sh03_defconfig
-m68k                        m5272c3_defconfig
-arc                                 defconfig
-arm                         at91_dt_defconfig
-powerpc                 mpc8540_ads_defconfig
-alpha                             allnoconfig
-arm                           viper_defconfig
-sh                        edosk7705_defconfig
-x86_64                                  kexec
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-csky                              allnoconfig
-arc                               allnoconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                             allyesconfig
-i386                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-syz
-
-clang tested configs:
-powerpc                 mpc836x_rdk_defconfig
-powerpc                    gamecube_defconfig
-powerpc                  mpc885_ads_defconfig
-powerpc                    mvme5100_defconfig
-powerpc                        fsp2_defconfig
-hexagon                             defconfig
-powerpc                      ppc44x_defconfig
-powerpc                     ppa8548_defconfig
-powerpc                     kilauea_defconfig
-x86_64                        randconfig-k001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a014
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-hexagon              randconfig-r045-20220714
-hexagon              randconfig-r041-20220714
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2e23b65..624ffe1 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -943,52 +943,63 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	return 0;
+ }
+ 
+-static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+-			unsigned int sampling_rate, unsigned int *clk_div)
++static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
++			unsigned int *clk_div, unsigned int percent_tol)
+ {
+-	unsigned long ser_clk;
+-	unsigned long desired_clk;
+-	unsigned long freq, prev;
++	unsigned long freq;
+ 	unsigned long div, maxdiv;
+-	int64_t mult;
+-
+-	desired_clk = baud * sampling_rate;
+-	if (!desired_clk) {
+-		pr_err("%s: Invalid frequency\n", __func__);
+-		return 0;
+-	}
++	u64 mult;
++	unsigned long offset, abs_tol, achieved;
+ 
++	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+ 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+-	prev = 0;
+-
+-	for (div = 1; div <= maxdiv; div++) {
+-		mult = div * desired_clk;
+-		if (mult > ULONG_MAX)
++	div = 1;
++	while (div <= maxdiv) {
++		mult = (u64)div * desired_clk;
++		if (mult != (unsigned long)mult)
+ 			break;
+ 
+-		freq = clk_round_rate(clk, (unsigned long)mult);
+-		if (!(freq % desired_clk)) {
+-			ser_clk = freq;
+-			break;
+-		}
++		offset = div * abs_tol;
++		freq = clk_round_rate(clk, mult - offset);
+ 
+-		if (!prev)
+-			ser_clk = freq;
+-		else if (prev == freq)
++		/* Can only get lower if we're done */
++		if (freq < mult - offset)
+ 			break;
+ 
+-		prev = freq;
+-	}
++		/*
++		 * Re-calculate div in case rounding skipped rates but we
++		 * ended up at a good one, then check for a match.
++		 */
++		div = DIV_ROUND_CLOSEST(freq, desired_clk);
++		achieved = DIV_ROUND_CLOSEST(freq, div);
++		if (achieved <= desired_clk + abs_tol &&
++		    achieved >= desired_clk - abs_tol) {
++			*clk_div = div;
++			return freq;
++		}
+ 
+-	if (!ser_clk) {
+-		pr_err("%s: Can't find matching DFS entry for baud %d\n",
+-								__func__, baud);
+-		return ser_clk;
++		div = DIV_ROUND_UP(freq, desired_clk);
+ 	}
+ 
+-	*clk_div = ser_clk / desired_clk;
+-	if (!(*clk_div))
+-		*clk_div = 1;
++	return 0;
++}
++
++static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
++			unsigned int sampling_rate, unsigned int *clk_div)
++{
++	unsigned long ser_clk;
++	unsigned long desired_clk;
++
++	desired_clk = baud * sampling_rate;
++	if (!desired_clk)
++		return 0;
++
++	/*
++	 * try to find a clock rate within 2% tolerance, then within 5%
++	 */
++	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
++	if (!ser_clk)
++		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
+ 
+ 	return ser_clk;
+ }
+@@ -1023,8 +1034,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 
+ 	clk_rate = get_clk_div_rate(port->se.clk, baud,
+ 		sampling_rate, &clk_div);
+-	if (!clk_rate)
++	if (!clk_rate) {
++		dev_err(port->se.dev,
++			"Couldn't find suitable clock rate for %lu\n",
++			baud * sampling_rate);
+ 		goto out_restart_rx;
++	}
++
++	dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
++			baud * sampling_rate, clk_rate, clk_div);
+ 
+ 	uport->uartclk = clk_rate;
+ 	dev_pm_opp_set_rate(uport->dev, clk_rate);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+
