@@ -2,35 +2,31 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83448CCA49C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A1FCCA49F
 	for <linux-serial@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbiGQJQj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 17 Jul 2022 05:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        id S233088AbiGQJQm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 17 Jul 2022 05:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232964AbiGQJQf (ORCPT
+        with ESMTP id S232832AbiGQJQd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 17 Jul 2022 05:16:35 -0400
+        Sun, 17 Jul 2022 05:16:33 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30ABD15FFD;
-        Sun, 17 Jul 2022 02:16:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D351A15FDC;
+        Sun, 17 Jul 2022 02:16:31 -0700 (PDT)
 Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id D92231C811EC;
+        by maillog.nuvoton.com (Postfix) with ESMTP id 35FC91C811E3;
         Sun, 17 Jul 2022 17:16:28 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS04.nuvoton.com
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCCAS04.nuvoton.com
  (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 17
- Jul 2022 17:16:28 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Sun, 17 Jul
- 2022 17:16:28 +0800
+ Jul 2022 17:16:27 +0800
 Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Sun, 17 Jul 2022 17:16:28 +0800
+ Transport; Sun, 17 Jul 2022 17:16:27 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 07F0663A5B; Sun, 17 Jul 2022 12:16:26 +0300 (IDT)
+        id D8E9F63A58; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -50,58 +46,69 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v9 16/16] arm64: defconfig: Add Nuvoton NPCM family support
-Date:   Sun, 17 Jul 2022 12:16:09 +0300
-Message-ID: <20220717091609.122968-17-tmaimon77@gmail.com>
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v9 13/16] arm64: npcm: Add support for Nuvoton NPCM8XX BMC SoC
+Date:   Sun, 17 Jul 2022 12:16:06 +0300
+Message-ID: <20220717091609.122968-14-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220717091609.122968-1-tmaimon77@gmail.com>
 References: <20220717091609.122968-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Enable basic drivers for NPCM8XX booting up support: Architecture, Clock,
-and WD.
+This adds support for the Nuvoton NPCM8XX Board Management
+controller (BMC) SoC family.
+
+The NPCM8XX based quad-core Cortex-A35 ARMv8 architecture.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+ MAINTAINERS                  |  2 ++
+ arch/arm64/Kconfig.platforms | 11 +++++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 7d1105343bc2..c4a237a84efa 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -49,6 +49,7 @@ CONFIG_ARCH_MEDIATEK=y
- CONFIG_ARCH_MESON=y
- CONFIG_ARCH_MVEBU=y
- CONFIG_ARCH_MXC=y
-+CONFIG_ARCH_NPCM=y
- CONFIG_ARCH_QCOM=y
- CONFIG_ARCH_RENESAS=y
- CONFIG_ARCH_ROCKCHIP=y
-@@ -627,6 +628,7 @@ CONFIG_RENESAS_RZG2LWDT=y
- CONFIG_UNIPHIER_WATCHDOG=y
- CONFIG_PM8916_WATCHDOG=m
- CONFIG_BCM2835_WDT=y
-+CONFIG_NPCM7XX_WATCHDOG=y
- CONFIG_MFD_ALTERA_SYSMGR=y
- CONFIG_MFD_BD9571MWV=y
- CONFIG_MFD_AXP20X_I2C=y
-@@ -1021,6 +1023,7 @@ CONFIG_COMMON_CLK_FSL_SAI=y
- CONFIG_COMMON_CLK_S2MPS11=y
- CONFIG_COMMON_CLK_PWM=y
- CONFIG_COMMON_CLK_VC5=y
-+CONFIG_COMMON_CLK_NPCM8XX=y
- CONFIG_COMMON_CLK_BD718XX=m
- CONFIG_CLK_RASPBERRYPI=m
- CONFIG_CLK_IMX8MM=y
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f52543aedd61..69cb86b913cf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2448,9 +2448,11 @@ F:	Documentation/devicetree/bindings/*/*npcm*
+ F:	Documentation/devicetree/bindings/arm/npcm/*
+ F:	arch/arm/boot/dts/nuvoton-npcm*
+ F:	arch/arm/mach-npcm/
++F:	arch/arm64/boot/dts/nuvoton/
+ F:	drivers/*/*npcm*
+ F:	drivers/*/*/*npcm*
+ F:	include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
++F:	include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
+ 
+ ARM/NUVOTON WPCM450 ARCHITECTURE
+ M:	Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 4e6d635a1731..c68d1b4f8975 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -202,6 +202,17 @@ config ARCH_MXC
+ 	  This enables support for the ARMv8 based SoCs in the
+ 	  NXP i.MX family.
+ 
++config ARCH_NPCM
++	bool "Nuvoton NPCM Architecture"
++	select PINCTRL
++	select GPIOLIB
++	select NPCM7XX_TIMER
++	select RESET_CONTROLLER
++	select MFD_SYSCON
++	help
++	  General support for NPCM8xx BMC (Arbel).
++	  Nuvoton NPCM8xx BMC based on the Cortex A35.
++
+ config ARCH_QCOM
+ 	bool "Qualcomm Platforms"
+ 	select GPIOLIB
 -- 
 2.33.0
 
