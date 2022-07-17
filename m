@@ -2,192 +2,124 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BD8C43334
-	for <linux-serial@archiver.kernel.org>; Sat, 16 Jul 2022 18:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322B6C43334
+	for <linux-serial@archiver.kernel.org>; Sun, 17 Jul 2022 02:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiGPSif (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 16 Jul 2022 14:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46874 "EHLO
+        id S229536AbiGQCPK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 16 Jul 2022 22:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231998AbiGPSid (ORCPT
+        with ESMTP id S229505AbiGQCPJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 16 Jul 2022 14:38:33 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4031BEAD
-        for <linux-serial@vger.kernel.org>; Sat, 16 Jul 2022 11:38:33 -0700 (PDT)
+        Sat, 16 Jul 2022 22:15:09 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8804EBF4B
+        for <linux-serial@vger.kernel.org>; Sat, 16 Jul 2022 19:15:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657996713; x=1689532713;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=848bURfT0fSYmwL8WKjh3y8Nllvztb1gp9XYT3CeHdg=;
-  b=A+j/5cOJuiiCJ7Ry+vFvDQO+ijpdcEnDxs37Dj7o/Q8DcEydoXR9IwpQ
-   M9+NAcXlLrVmhBzz8mYskS1KMfgYspFNgUZ6EHAyizSXHKqxO9/tFYOQC
-   vRlDozn/DDcTUT1urBOp7md9BV7gEkllYcaB98PsO+qVvg7WkDABvDco+
-   GfoCevA+6+Grm5PPOGVP894rTuZ+Qa/iNw2K7uVfA4WW2QgTXhkwz/Fpu
-   zO3hjSbMJaizAmY40u8OxBm1RcDtMN5zJ6T1AwP3RYrg6AgxZP9JpfSwh
-   erc1DpNhNpmyvejlgPB0MIO+E1H863MtlogcUqOIKck4wpGYjsmXKP528
+  t=1658024106; x=1689560106;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8whLrbw0yagzGZnGC8lUHtNV4l1wBOGp0KnezY224wE=;
+  b=j/H8LoMtHj7W8luOtqLbtkjafcDGjDVQvLkBGvHPfo8XGd+xQbhkzXuv
+   JJBXAJxXrFdApRxX8qTM3ZV7qlKwkNK9Evsr705/TAMVb+z3SSPbbzl+S
+   LsOBM3qhdZaacbboKmhizhfDX1z4nTmtOfoJt/3ZL7TH7wnKc6vySVk/U
+   DiXwWxfBlBhoh3vagpn4+c7pf0g4vTv4tgkgPyIc+eLZmvkkV+gib1Obo
+   f9k13X8uuUYuXcfU23viQVolTE9HCZrwdqBpJmS+s+zMiyRuP6mm3YDi+
+   7DgFePS54UagRBeCfPQ6kxKd+7K3l3k/YdezgfI8G7wQuw2M00NtbGjbu
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="283563600"
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="283563600"
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="311693493"
+X-IronPort-AV: E=Sophos;i="5.92,278,1650956400"; 
+   d="scan'208";a="311693493"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 11:38:32 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 19:15:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="842857597"
+X-IronPort-AV: E=Sophos;i="5.92,278,1650956400"; 
+   d="scan'208";a="842916204"
 Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Jul 2022 11:38:31 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jul 2022 19:15:05 -0700
 Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1oCmgR-0001zI-08;
-        Sat, 16 Jul 2022 18:38:31 +0000
-Date:   Sun, 17 Jul 2022 02:38:05 +0800
+        id 1oCtoG-0002Vu-O6;
+        Sun, 17 Jul 2022 02:15:04 +0000
+Date:   Sun, 17 Jul 2022 10:14:39 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- ceefa81e6e69b020997205e5c30a42d43aa5ae63
-Message-ID: <62d3058d.d1TjCrVgi4Iqbsca%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     kbuild-all@lists.01.org, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 77/77] arch/mips/vr41xx/common/siu.c:18:9: error:
+ 'PORT_VR41XX_SIU' undeclared here (not in a function)
+Message-ID: <202207171049.VucAZfef-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: ceefa81e6e69b020997205e5c30a42d43aa5ae63  serial: remove VR41XX serial driver
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   ceefa81e6e69b020997205e5c30a42d43aa5ae63
+commit: ceefa81e6e69b020997205e5c30a42d43aa5ae63 [77/77] serial: remove VR41XX serial driver
+config: mips-tb0226_defconfig (https://download.01.org/0day-ci/archive/20220717/202207171049.VucAZfef-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=ceefa81e6e69b020997205e5c30a42d43aa5ae63
+        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+        git fetch --no-tags tty tty-testing
+        git checkout ceefa81e6e69b020997205e5c30a42d43aa5ae63
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-elapsed time: 722m
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-configs tested: 117
-configs skipped: 4
+All errors (new ones prefixed by >>):
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>> arch/mips/vr41xx/common/siu.c:18:9: error: 'PORT_VR41XX_SIU' undeclared here (not in a function)
+      18 |         PORT_VR41XX_SIU,
+         |         ^~~~~~~~~~~~~~~
+>> arch/mips/vr41xx/common/siu.c:37:9: error: 'PORT_VR41XX_DSIU' undeclared here (not in a function)
+      37 |         PORT_VR41XX_DSIU,
+         |         ^~~~~~~~~~~~~~~~
+   arch/mips/vr41xx/common/siu.c:110:13: warning: no previous prototype for 'vr41xx_siu_setup' [-Wmissing-prototypes]
+     110 | void __init vr41xx_siu_setup(void)
+         |             ^~~~~~~~~~~~~~~~
 
-gcc tested configs:
-arm                                 defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-i386                          randconfig-c001
-arm                      footbridge_defconfig
-xtensa                              defconfig
-openrisc                    or1ksim_defconfig
-arm                        mvebu_v7_defconfig
-powerpc                 mpc85xx_cds_defconfig
-parisc                generic-32bit_defconfig
-arm                            lart_defconfig
-sh                         ecovec24_defconfig
-arm                     eseries_pxa_defconfig
-sh                         ap325rxa_defconfig
-arm                          gemini_defconfig
-arm                           sama5_defconfig
-xtensa                generic_kc705_defconfig
-mips                           jazz_defconfig
-arm                          simpad_defconfig
-arm                       multi_v4t_defconfig
-mips                      loongson3_defconfig
-arm                        keystone_defconfig
-powerpc                      tqm8xx_defconfig
-mips                             allyesconfig
-xtensa                    xip_kc705_defconfig
-powerpc                     tqm8555_defconfig
-sh                        sh7785lcr_defconfig
-sh                           se7750_defconfig
-arm                        spear6xx_defconfig
-powerpc                     tqm8548_defconfig
-ia64                             alldefconfig
-openrisc                 simple_smp_defconfig
-sh                           se7721_defconfig
-m68k                        mvme147_defconfig
-sh                          polaris_defconfig
-powerpc                  storcenter_defconfig
-arc                            hsdk_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-ia64                             allmodconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-m68k                             allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                             allyesconfig
-i386                                defconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220715
-x86_64                    rhel-8.3-kselftests
-x86_64                           allyesconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
 
-clang tested configs:
-mips                      pic32mzda_defconfig
-mips                           mtx1_defconfig
-powerpc                      ppc64e_defconfig
-powerpc                  mpc885_ads_defconfig
-powerpc                    mvme5100_defconfig
-arm                       aspeed_g4_defconfig
-arm                          moxart_defconfig
-powerpc                     ppa8548_defconfig
-mips                      maltaaprp_defconfig
-arm                        mvebu_v5_defconfig
-arm                         bcm2835_defconfig
-powerpc                    socrates_defconfig
-powerpc               mpc834x_itxgp_defconfig
-arm                       netwinder_defconfig
-mips                       lemote2f_defconfig
-arm                   milbeaut_m10v_defconfig
-powerpc                    ge_imp3a_defconfig
-mips                     cu1830-neo_defconfig
-powerpc                      obs600_defconfig
-arm                            dove_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220716
-hexagon              randconfig-r045-20220715
-s390                 randconfig-r044-20220715
-hexagon              randconfig-r041-20220716
-hexagon              randconfig-r041-20220715
-riscv                randconfig-r042-20220715
+vim +/PORT_VR41XX_SIU +18 arch/mips/vr41xx/common/siu.c
+
+891649409edbed Yoichi Yuasa 2007-05-09  16  
+891649409edbed Yoichi Yuasa 2007-05-09  17  static unsigned int siu_type1_ports[SIU_PORTS_MAX] __initdata = {
+891649409edbed Yoichi Yuasa 2007-05-09 @18  	PORT_VR41XX_SIU,
+891649409edbed Yoichi Yuasa 2007-05-09  19  	PORT_UNKNOWN,
+891649409edbed Yoichi Yuasa 2007-05-09  20  };
+891649409edbed Yoichi Yuasa 2007-05-09  21  
+891649409edbed Yoichi Yuasa 2007-05-09  22  static struct resource siu_type1_resource[] __initdata = {
+891649409edbed Yoichi Yuasa 2007-05-09  23  	{
+891649409edbed Yoichi Yuasa 2007-05-09  24  		.start	= 0x0c000000,
+891649409edbed Yoichi Yuasa 2007-05-09  25  		.end	= 0x0c00000a,
+891649409edbed Yoichi Yuasa 2007-05-09  26  		.flags	= IORESOURCE_MEM,
+891649409edbed Yoichi Yuasa 2007-05-09  27  	},
+891649409edbed Yoichi Yuasa 2007-05-09  28  	{
+891649409edbed Yoichi Yuasa 2007-05-09  29  		.start	= SIU_IRQ,
+891649409edbed Yoichi Yuasa 2007-05-09  30  		.end	= SIU_IRQ,
+891649409edbed Yoichi Yuasa 2007-05-09  31  		.flags	= IORESOURCE_IRQ,
+891649409edbed Yoichi Yuasa 2007-05-09  32  	},
+891649409edbed Yoichi Yuasa 2007-05-09  33  };
+891649409edbed Yoichi Yuasa 2007-05-09  34  
+891649409edbed Yoichi Yuasa 2007-05-09  35  static unsigned int siu_type2_ports[SIU_PORTS_MAX] __initdata = {
+891649409edbed Yoichi Yuasa 2007-05-09  36  	PORT_VR41XX_SIU,
+891649409edbed Yoichi Yuasa 2007-05-09 @37  	PORT_VR41XX_DSIU,
+891649409edbed Yoichi Yuasa 2007-05-09  38  };
+891649409edbed Yoichi Yuasa 2007-05-09  39  
+
+:::::: The code at line 18 was first introduced by commit
+:::::: 891649409edbed528728b4a104d29e43e9d7473a [MIPS] separate platform_device registration for VR41xx serial interface
+
+:::::: TO: Yoichi Yuasa <yoichi_yuasa@tripeaks.co.jp>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
 
 -- 
 0-DAY CI Kernel Test Service
