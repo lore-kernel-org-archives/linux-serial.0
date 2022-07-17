@@ -2,21 +2,21 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8243ACCA499
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A79C1CCA49B
 	for <linux-serial@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbiGQJQg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 17 Jul 2022 05:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
+        id S233013AbiGQJQi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 17 Jul 2022 05:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232944AbiGQJQf (ORCPT
+        with ESMTP id S232972AbiGQJQf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Sun, 17 Jul 2022 05:16:35 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68AF815FF1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68AA115FE8;
         Sun, 17 Jul 2022 02:16:33 -0700 (PDT)
 Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 627291C811E9;
+        by maillog.nuvoton.com (Postfix) with ESMTP id 44B6E1C811E8;
         Sun, 17 Jul 2022 17:16:28 +0800 (CST)
 Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
  (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
@@ -30,7 +30,7 @@ Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
  Transport; Sun, 17 Jul 2022 17:16:27 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id E5E5863A59; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
+        id A892463A54; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -50,11 +50,10 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v9 14/16] arm64: dts: nuvoton: Add initial NPCM8XX device tree
-Date:   Sun, 17 Jul 2022 12:16:07 +0300
-Message-ID: <20220717091609.122968-15-tmaimon77@gmail.com>
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v9 09/16] reset: npcm: Add NPCM8XX support
+Date:   Sun, 17 Jul 2022 12:16:02 +0300
+Message-ID: <20220717091609.122968-10-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220717091609.122968-1-tmaimon77@gmail.com>
 References: <20220717091609.122968-1-tmaimon77@gmail.com>
@@ -65,292 +64,315 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This adds initial device tree support for the Nuvoton NPCM845 Board
-Management controller (BMC) SoC family.
-
-The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and have
-various peripheral IPs.
+Updated the NPCM reset driver to add support for Nuvoton BMC NPCM8XX SoC.
+As part of adding NPCM8XX support:
+- Add NPCM8XX specific compatible string.
+- Add NPCM8XX USB reset.
+- Add data to handle architecture-specific reset parameters.
+- Some of the Reset Id and number of resets are different from NPCM7XX.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- arch/arm64/boot/dts/Makefile                  |   1 +
- .../dts/nuvoton/nuvoton-common-npcm8xx.dtsi   | 170 ++++++++++++++++++
- .../boot/dts/nuvoton/nuvoton-npcm845.dtsi     |  76 ++++++++
- 3 files changed, 247 insertions(+)
- create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
- create mode 100644 arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
+ drivers/reset/reset-npcm.c | 211 ++++++++++++++++++++++++++++++-------
+ 1 file changed, 173 insertions(+), 38 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-index 1ba04e31a438..7b107fa7414b 100644
---- a/arch/arm64/boot/dts/Makefile
-+++ b/arch/arm64/boot/dts/Makefile
-@@ -19,6 +19,7 @@ subdir-y += lg
- subdir-y += marvell
- subdir-y += mediatek
- subdir-y += microchip
-+subdir-y += nuvoton
- subdir-y += nvidia
- subdir-y += qcom
- subdir-y += realtek
-diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-new file mode 100644
-index 000000000000..aa7aac8c3774
---- /dev/null
-+++ b/arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi
-@@ -0,0 +1,170 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
+diff --git a/drivers/reset/reset-npcm.c b/drivers/reset/reset-npcm.c
+index b08f8d8a1d63..24c55efa98e5 100644
+--- a/drivers/reset/reset-npcm.c
++++ b/drivers/reset/reset-npcm.c
+@@ -17,13 +17,20 @@
+ 
+ /* NPCM7xx GCR registers */
+ #define NPCM_MDLR_OFFSET	0x7C
+-#define NPCM_MDLR_USBD0		BIT(9)
+-#define NPCM_MDLR_USBD1		BIT(8)
+-#define NPCM_MDLR_USBD2_4	BIT(21)
+-#define NPCM_MDLR_USBD5_9	BIT(22)
++#define NPCM7XX_MDLR_USBD0	BIT(9)
++#define NPCM7XX_MDLR_USBD1	BIT(8)
++#define NPCM7XX_MDLR_USBD2_4	BIT(21)
++#define NPCM7XX_MDLR_USBD5_9	BIT(22)
 +
-+#include <dt-bindings/clock/nuvoton,npcm845-clk.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
++/* NPCM8xx MDLR bits */
++#define NPCM8XX_MDLR_USBD0_3	BIT(9)
++#define NPCM8XX_MDLR_USBD4_7	BIT(22)
++#define NPCM8XX_MDLR_USBD8	BIT(24)
++#define NPCM8XX_MDLR_USBD9	BIT(21)
+ 
+ #define NPCM_USB1PHYCTL_OFFSET	0x140
+ #define NPCM_USB2PHYCTL_OFFSET	0x144
++#define NPCM_USB3PHYCTL_OFFSET	0x148
+ #define NPCM_USBXPHYCTL_RS	BIT(28)
+ 
+ /* NPCM7xx Reset registers */
+@@ -49,12 +56,38 @@
+ #define NPCM_IPSRST3_USBPHY1	BIT(24)
+ #define NPCM_IPSRST3_USBPHY2	BIT(25)
+ 
++#define NPCM_IPSRST4		0x74
++#define NPCM_IPSRST4_USBPHY3	BIT(25)
++#define NPCM_IPSRST4_USB_HOST2	BIT(31)
 +
-+/ {
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+	interrupt-parent = <&gic>;
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		interrupt-parent = <&gic>;
-+		ranges;
-+
-+		gcr: system-controller@f0800000 {
-+			compatible = "nuvoton,npcm845-gcr", "syscon";
-+			reg = <0x0 0xf0800000 0x0 0x1000>;
-+		};
-+
-+		gic: interrupt-controller@dfff9000 {
-+			compatible = "arm,gic-400";
-+			reg = <0x0 0xdfff9000 0x0 0x1000>,
-+			      <0x0 0xdfffa000 0x0 0x2000>,
-+			      <0x0 0xdfffc000 0x0 0x2000>,
-+			      <0x0 0xdfffe000 0x0 0x2000>;
-+			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+			#interrupt-cells = <3>;
-+			interrupt-controller;
-+			#address-cells = <0>;
-+			ppi-partitions {
-+				ppi_cluster0: interrupt-partition-0 {
-+					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-+				};
-+			};
-+		};
-+	};
-+
-+	ahb {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		interrupt-parent = <&gic>;
-+		ranges;
-+
-+		rstc: reset-controller@f0801000 {
-+			compatible = "nuvoton,npcm845-reset";
-+			reg = <0x0 0xf0801000 0x0 0x78>;
-+			#reset-cells = <2>;
-+			nuvoton,sysgcr = <&gcr>;
-+		};
-+
-+		clk: clock-controller@f0801000 {
-+			compatible = "nuvoton,npcm845-clk";
-+			#clock-cells = <1>;
-+			reg = <0x0 0xf0801000 0x0 0x1000>;
-+		};
-+
-+		apb {
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			compatible = "simple-bus";
-+			interrupt-parent = <&gic>;
-+			ranges = <0x0 0x0 0xf0000000 0x00300000>,
-+				<0xfff00000 0x0 0xfff00000 0x00016000>;
-+
-+			timer0: timer@8000 {
-+				compatible = "nuvoton,npcm845-timer";
-+				interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
-+				reg = <0x8000 0x1C>;
-+				clocks = <&clk NPCM8XX_CLK_REFCLK>;
-+				clock-names = "refclk";
-+			};
-+
-+			serial0: serial@0 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x0 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial1: serial@1000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x1000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial2: serial@2000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x2000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial3: serial@3000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x3000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial4: serial@4000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x4000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial5: serial@5000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x5000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			serial6: serial@6000 {
-+				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
-+				reg = <0x6000 0x1000>;
-+				clocks = <&clk NPCM8XX_CLK_UART>;
-+				interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-shift = <2>;
-+				status = "disabled";
-+			};
-+
-+			watchdog0: watchdog@801c {
-+				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
-+				interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-+				reg = <0x801c 0x4>;
-+				status = "disabled";
-+				clocks = <&clk NPCM8XX_CLK_REFCLK>;
-+				syscon = <&gcr>;
-+			};
-+
-+			watchdog1: watchdog@901c {
-+				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
-+				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
-+				reg = <0x901c 0x4>;
-+				status = "disabled";
-+				clocks = <&clk NPCM8XX_CLK_REFCLK>;
-+				syscon = <&gcr>;
-+			};
-+
-+			watchdog2: watchdog@a01c {
-+				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
-+				interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
-+				reg = <0xa01c 0x4>;
-+				status = "disabled";
-+				clocks = <&clk NPCM8XX_CLK_REFCLK>;
-+				syscon = <&gcr>;
-+			};
-+		};
-+	};
+ #define NPCM_RC_RESETS_PER_REG	32
+ #define NPCM_MASK_RESETS	GENMASK(4, 0)
+ 
++enum {
++	BMC_NPCM7XX = 0,
++	BMC_NPCM8XX,
 +};
-diff --git a/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
-new file mode 100644
-index 000000000000..12118b75c0e6
---- /dev/null
-+++ b/arch/arm64/boot/dts/nuvoton/nuvoton-npcm845.dtsi
-@@ -0,0 +1,76 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
 +
-+#include "nuvoton-common-npcm8xx.dtsi"
++static const u32 npxm7xx_ipsrst[] = {NPCM_IPSRST1, NPCM_IPSRST2, NPCM_IPSRST3};
++static const u32 npxm8xx_ipsrst[] = {NPCM_IPSRST1, NPCM_IPSRST2, NPCM_IPSRST3,
++	NPCM_IPSRST4};
 +
-+/ {
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			clocks = <&clk NPCM8XX_CLK_CPU>;
-+			reg = <0x0 0x0>;
-+			next-level-cache = <&l2>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			clocks = <&clk NPCM8XX_CLK_CPU>;
-+			reg = <0x0 0x1>;
-+			next-level-cache = <&l2>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			clocks = <&clk NPCM8XX_CLK_CPU>;
-+			reg = <0x0 0x2>;
-+			next-level-cache = <&l2>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a35";
-+			clocks = <&clk NPCM8XX_CLK_CPU>;
-+			reg = <0x0 0x3>;
-+			next-level-cache = <&l2>;
-+			enable-method = "psci";
-+		};
-+
-+		l2: l2-cache {
-+			compatible = "cache";
-+		};
-+	};
-+
-+	arm-pmu {
-+		compatible = "arm,cortex-a35-pmu";
-+		interrupts = <GIC_SPI 242 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 244 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
-+	};
-+
-+	psci {
-+		compatible      = "arm,psci-1.0";
-+		method          = "smc";
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
++struct npcm_reset_info {
++	u32 bmc_id;
++	u32 num_ipsrst;
++	const u32 *ipsrst;
 +};
++
++static const struct npcm_reset_info npxm7xx_reset_info[] = {
++	{.bmc_id = BMC_NPCM7XX, .num_ipsrst = 3, .ipsrst = npxm7xx_ipsrst}};
++static const struct npcm_reset_info npxm8xx_reset_info[] = {
++	{.bmc_id = BMC_NPCM8XX, .num_ipsrst = 4, .ipsrst = npxm8xx_ipsrst}};
++
+ struct npcm_rc_data {
+ 	struct reset_controller_dev rcdev;
+ 	struct notifier_block restart_nb;
++	const struct npcm_reset_info *info;
++	struct regmap *gcr_regmap;
+ 	u32 sw_reset_number;
+ 	void __iomem *base;
+ 	spinlock_t lock;
+@@ -120,14 +153,24 @@ static int npcm_rc_status(struct reset_controller_dev *rcdev,
+ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
+ 			    const struct of_phandle_args *reset_spec)
+ {
++	struct npcm_rc_data *rc = to_rc_data(rcdev);
+ 	unsigned int offset, bit;
++	bool offset_found = false;
++	int off_num;
+ 
+ 	offset = reset_spec->args[0];
+-	if (offset != NPCM_IPSRST1 && offset != NPCM_IPSRST2 &&
+-	    offset != NPCM_IPSRST3) {
++	for (off_num = 0 ; off_num < rc->info->num_ipsrst ; off_num++) {
++		if (offset == rc->info->ipsrst[off_num]) {
++			offset_found = true;
++			break;
++		}
++	}
++
++	if (!offset_found) {
+ 		dev_err(rcdev->dev, "Error reset register (0x%x)\n", offset);
+ 		return -EINVAL;
+ 	}
++
+ 	bit = reset_spec->args[1];
+ 	if (bit >= NPCM_RC_RESETS_PER_REG) {
+ 		dev_err(rcdev->dev, "Error reset number (%d)\n", bit);
+@@ -138,49 +181,29 @@ static int npcm_reset_xlate(struct reset_controller_dev *rcdev,
+ }
+ 
+ static const struct of_device_id npcm_rc_match[] = {
+-	{ .compatible = "nuvoton,npcm750-reset" },
++	{ .compatible = "nuvoton,npcm750-reset", .data = &npxm7xx_reset_info},
++	{ .compatible = "nuvoton,npcm845-reset", .data = &npxm8xx_reset_info},
+ 	{ }
+ };
+ 
+-/*
+- *  The following procedure should be observed in USB PHY, USB device and
+- *  USB host initialization at BMC boot
+- */
+-static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
++static void npcm_usb_reset_npcm7xx(struct npcm_rc_data *rc)
+ {
+ 	u32 mdlr, iprst1, iprst2, iprst3;
+-	struct device *dev = &pdev->dev;
+-	struct regmap *gcr_regmap;
+ 	u32 ipsrst1_bits = 0;
+ 	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
+ 	u32 ipsrst3_bits = 0;
+-	const char *gcr_dt;
+-
+-	gcr_dt = (const char *)
+-	of_match_device(dev->driver->of_match_table, dev)->data;
+-
+-	gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
+-	if (IS_ERR(gcr_regmap)) {
+-		dev_warn(&pdev->dev, "Failed to find nuvoton,sysgcr property, please update the device tree\n");
+-		dev_info(&pdev->dev, "Using nuvoton,npcm750-gcr for Poleg backward compatibility\n");
+-		gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
+-		if (IS_ERR(gcr_regmap)) {
+-			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-gcr");
+-			return PTR_ERR(gcr_regmap);
+-		}
+-	}
+ 
+ 	/* checking which USB device is enabled */
+-	regmap_read(gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
+-	if (!(mdlr & NPCM_MDLR_USBD0))
++	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
++	if (!(mdlr & NPCM7XX_MDLR_USBD0))
+ 		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
+-	if (!(mdlr & NPCM_MDLR_USBD1))
++	if (!(mdlr & NPCM7XX_MDLR_USBD1))
+ 		ipsrst1_bits |= NPCM_IPSRST1_USBD1;
+-	if (!(mdlr & NPCM_MDLR_USBD2_4))
++	if (!(mdlr & NPCM7XX_MDLR_USBD2_4))
+ 		ipsrst1_bits |= (NPCM_IPSRST1_USBD2 |
+ 				 NPCM_IPSRST1_USBD3 |
+ 				 NPCM_IPSRST1_USBD4);
+-	if (!(mdlr & NPCM_MDLR_USBD0)) {
++	if (!(mdlr & NPCM7XX_MDLR_USBD0)) {
+ 		ipsrst1_bits |= (NPCM_IPSRST1_USBD5 |
+ 				 NPCM_IPSRST1_USBD6);
+ 		ipsrst3_bits |= (NPCM_IPSRST3_USBD7 |
+@@ -203,9 +226,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
+ 	writel(iprst3, rc->base + NPCM_IPSRST3);
+ 
+ 	/* clear USB PHY RS bit */
+-	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
+ 			   NPCM_USBXPHYCTL_RS, 0);
+-	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
+ 			   NPCM_USBXPHYCTL_RS, 0);
+ 
+ 	/* deassert reset USB PHY */
+@@ -215,9 +238,9 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
+ 	udelay(50);
+ 
+ 	/* set USB PHY RS bit */
+-	regmap_update_bits(gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
+ 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
+-	regmap_update_bits(gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
+ 			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
+ 
+ 	/* deassert reset USB devices*/
+@@ -228,6 +251,118 @@ static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
+ 	writel(iprst1, rc->base + NPCM_IPSRST1);
+ 	writel(iprst2, rc->base + NPCM_IPSRST2);
+ 	writel(iprst3, rc->base + NPCM_IPSRST3);
++}
++
++static void npcm_usb_reset_npcm8xx(struct npcm_rc_data *rc)
++{
++	u32 mdlr, iprst1, iprst2, iprst3, iprst4;
++	u32 ipsrst1_bits = 0;
++	u32 ipsrst2_bits = NPCM_IPSRST2_USB_HOST;
++	u32 ipsrst3_bits = 0;
++	u32 ipsrst4_bits = NPCM_IPSRST4_USB_HOST2 | NPCM_IPSRST4_USBPHY3;
++
++	/* checking which USB device is enabled */
++	regmap_read(rc->gcr_regmap, NPCM_MDLR_OFFSET, &mdlr);
++	if (!(mdlr & NPCM8XX_MDLR_USBD0_3)) {
++		ipsrst3_bits |= NPCM_IPSRST3_USBD0;
++		ipsrst1_bits |= (NPCM_IPSRST1_USBD1 |
++				 NPCM_IPSRST1_USBD2 |
++				 NPCM_IPSRST1_USBD3);
++	}
++	if (!(mdlr & NPCM8XX_MDLR_USBD4_7)) {
++		ipsrst1_bits |= (NPCM_IPSRST1_USBD4 |
++				 NPCM_IPSRST1_USBD5 |
++				 NPCM_IPSRST1_USBD6);
++		ipsrst3_bits |= NPCM_IPSRST3_USBD7;
++	}
++
++	if (!(mdlr & NPCM8XX_MDLR_USBD8))
++		ipsrst3_bits |= NPCM_IPSRST3_USBD8;
++	if (!(mdlr & NPCM8XX_MDLR_USBD9))
++		ipsrst3_bits |= NPCM_IPSRST3_USBD9;
++
++	/* assert reset USB PHY and USB devices */
++	iprst1 = readl(rc->base + NPCM_IPSRST1);
++	iprst2 = readl(rc->base + NPCM_IPSRST2);
++	iprst3 = readl(rc->base + NPCM_IPSRST3);
++	iprst4 = readl(rc->base + NPCM_IPSRST4);
++
++	iprst1 |= ipsrst1_bits;
++	iprst2 |= ipsrst2_bits;
++	iprst3 |= (ipsrst3_bits | NPCM_IPSRST3_USBPHY1 |
++		   NPCM_IPSRST3_USBPHY2);
++	iprst2 |= ipsrst4_bits;
++
++	writel(iprst1, rc->base + NPCM_IPSRST1);
++	writel(iprst2, rc->base + NPCM_IPSRST2);
++	writel(iprst3, rc->base + NPCM_IPSRST3);
++	writel(iprst4, rc->base + NPCM_IPSRST4);
++
++	/* clear USB PHY RS bit */
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, 0);
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, 0);
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, 0);
++
++	/* deassert reset USB PHY */
++	iprst3 &= ~(NPCM_IPSRST3_USBPHY1 | NPCM_IPSRST3_USBPHY2);
++	writel(iprst3, rc->base + NPCM_IPSRST3);
++	iprst4 &= ~NPCM_IPSRST4_USBPHY3;
++	writel(iprst4, rc->base + NPCM_IPSRST4);
++
++	/* set USB PHY RS bit */
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB1PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB2PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
++	regmap_update_bits(rc->gcr_regmap, NPCM_USB3PHYCTL_OFFSET,
++			   NPCM_USBXPHYCTL_RS, NPCM_USBXPHYCTL_RS);
++
++	/* deassert reset USB devices*/
++	iprst1 &= ~ipsrst1_bits;
++	iprst2 &= ~ipsrst2_bits;
++	iprst3 &= ~ipsrst3_bits;
++	iprst4 &= ~ipsrst4_bits;
++
++	writel(iprst1, rc->base + NPCM_IPSRST1);
++	writel(iprst2, rc->base + NPCM_IPSRST2);
++	writel(iprst3, rc->base + NPCM_IPSRST3);
++	writel(iprst4, rc->base + NPCM_IPSRST4);
++}
++
++/*
++ *  The following procedure should be observed in USB PHY, USB device and
++ *  USB host initialization at BMC boot
++ */
++static int npcm_usb_reset(struct platform_device *pdev, struct npcm_rc_data *rc)
++{
++	struct device *dev = &pdev->dev;
++
++	rc->gcr_regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "nuvoton,sysgcr");
++	if (IS_ERR(rc->gcr_regmap)) {
++		dev_warn(&pdev->dev, "Failed to find nuvoton,sysgcr property, please update the device tree\n");
++		dev_info(&pdev->dev, "Using nuvoton,npcm750-gcr for Poleg backward compatibility\n");
++		rc->gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
++		if (IS_ERR(rc->gcr_regmap)) {
++			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-gcr");
++			return PTR_ERR(rc->gcr_regmap);
++		}
++	}
++
++	rc->info = (const struct npcm_reset_info *)
++			of_match_device(dev->driver->of_match_table, dev)->data;
++	switch (rc->info->bmc_id) {
++	case BMC_NPCM7XX:
++		npcm_usb_reset_npcm7xx(rc);
++		break;
++	case BMC_NPCM8XX:
++		npcm_usb_reset_npcm8xx(rc);
++		break;
++	default:
++		return -ENODEV;
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.33.0
 
