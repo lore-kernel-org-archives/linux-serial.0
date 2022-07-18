@@ -2,96 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB62AC2BBE8
-	for <linux-serial@archiver.kernel.org>; Sun, 17 Jul 2022 09:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E72C433EF
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 02:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232995AbiGQJQp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 17 Jul 2022 05:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S232254AbiGRCt3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 17 Jul 2022 22:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232763AbiGQJQd (ORCPT
+        with ESMTP id S229887AbiGRCt2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 17 Jul 2022 05:16:33 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9351B15FCD;
-        Sun, 17 Jul 2022 02:16:31 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 1ADCB1C8118E;
-        Sun, 17 Jul 2022 17:16:28 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Sun, 17 Jul
- 2022 17:16:27 +0800
-Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Sun, 17 Jul
- 2022 17:16:27 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
- Transport; Sun, 17 Jul 2022 17:16:27 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 8BAA463A4F; Sun, 17 Jul 2022 12:16:25 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
-        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
-        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
-        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
-        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
-        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
-        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
-        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
-        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v9 01/16] dt-bindings: timer: npcm: Add npcm845 compatible string
-Date:   Sun, 17 Jul 2022 12:15:54 +0300
-Message-ID: <20220717091609.122968-2-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220717091609.122968-1-tmaimon77@gmail.com>
-References: <20220717091609.122968-1-tmaimon77@gmail.com>
+        Sun, 17 Jul 2022 22:49:28 -0400
+Received: from server.atrad.com.au (server.atrad.com.au [150.101.241.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC99F11C36;
+        Sun, 17 Jul 2022 19:49:24 -0700 (PDT)
+Received: from marvin.atrad.com.au (marvin.atrad.com.au [192.168.0.2])
+        by server.atrad.com.au (8.17.1/8.17.1) with ESMTPS id 26I2n2NC006650
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 18 Jul 2022 12:19:04 +0930
+Date:   Mon, 18 Jul 2022 12:19:02 +0930
+From:   Jonathan Woithe <jwoithe@just42.net>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [Regression] CH341 USB-serial converter passes data in 32 byte
+ chunks
+Message-ID: <YtTKHhdfq5cM0G4G@marvin.atrad.com.au>
+References: <Ys1iPTfiZRWj2gXs@marvin.atrad.com.au>
+ <Ys1sfRyL6El7go94@kroah.com>
+ <Ys2nEmkvz2dfAKkU@hovoldconsulting.com>
+ <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
+X-MIMEDefang-action: accept
+X-Scanned-By: MIMEDefang 2.86 on 192.168.0.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add a compatible string for Nuvoton BMC NPCM845 timer.
+On Wed, Jul 13, 2022 at 09:52:20AM +0930, Jonathan Woithe wrote:
+> On Tue, Jul 12, 2022 at 06:53:38PM +0200, Johan Hovold wrote:
+> > On Tue, Jul 12, 2022 at 02:43:41PM +0200, Greg Kroah-Hartman wrote:
+> > > On Tue, Jul 12, 2022 at 09:29:57PM +0930, Jonathan Woithe wrote:
+> > > > It would be great if this regression could be addressed.  At present I must
+> > > > boot a pre-4.10 kernel whenever I need to use the programming dongle with
+> > > > this converter.
+> > > > 
+> > > > Please let me know if there is anything I can do to help resolve the
+> > > > problem.
+> > > 
+> > > If you revert this commit on top of the latest kernel release, does it
+> > > solve the problem for you?
+> > 
+> > Simply reverting the commit blamed by the bisection should only makes
+> > things worse, at least for some device types.
+> > 
+> > Perhaps we need to set that bit 7 based on the type, even if the bit
+> > meaning having been inverted seems a bit far-fetched.
+> > 
+> > Jonathan, could you try simply commenting out the
+> > 	
+> > 	val |= BIT(7);
+> > 
+> > statement in ch341_set_baudrate_lcr()?
+> 
+> Commenting out the above line brought some improvement.  In minicom with a
+> loopback connector in place, the first byte sent does not get echoed
+> back at all.  However, all other bytes are echoed as soon as they are sent.
+> 
+> The kernel used for the above test was 672c0c5 (5.18-rc5), which is the most
+> recent I can conveniently get onto the test machine at present.  I tested
+> the unmodified kernel before commenting out the line and confirmed that it
+> exhibited the full fault condition (bytes come back in blocks of 32).
+> 
+> > Also, what chip version do you have (see debug statement in
+> > ch341_configure())?
+> 
+> Chip revision is 0x27.
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml        | 2 ++
- 1 file changed, 2 insertions(+)
+Is there anything further I can do or provide to help identify a solution to
+the regression?
 
-diff --git a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
-index 0cbc26a72151..737af78ad70c 100644
---- a/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
-+++ b/Documentation/devicetree/bindings/timer/nuvoton,npcm7xx-timer.yaml
-@@ -8,12 +8,14 @@ title: Nuvoton NPCM7xx timer
- 
- maintainers:
-   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-+  - Tomer Maimon <tmaimon77@gmail.com>
- 
- properties:
-   compatible:
-     enum:
-       - nuvoton,wpcm450-timer  # for Hermon WPCM450
-       - nuvoton,npcm750-timer  # for Poleg NPCM750
-+      - nuvoton,npcm845-timer  # for Arbel NPCM845
- 
-   reg:
-     maxItems: 1
--- 
-2.33.0
-
+Regards
+  jonathan
