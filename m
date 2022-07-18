@@ -2,149 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE8AC433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 13:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78302CCA487
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 14:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234637AbiGRNMs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
+        id S234401AbiGROQX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Jul 2022 10:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233263AbiGRNMr (ORCPT
+        with ESMTP id S233719AbiGROQM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:12:47 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBCE26133;
-        Mon, 18 Jul 2022 06:12:46 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id e28so19212412lfj.4;
-        Mon, 18 Jul 2022 06:12:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zW26rBi6b5NN34eoig0+xNjNcL1nw0bdLAbSIFvoRIE=;
-        b=VDc+hawylJ1zylNGVUYcDnTYJ5BDNvP6SNt/pZv5L8zGwE7bLN2jlb+jl24dCIzOJg
-         /qINBIfTEdI7hlT6H+zr9LpZZinoWT9nb7EzrkOhUqRKLEt+/CnTsYIC/wiN9smwzAWs
-         9gEtr+aMDBlE5CXqlbMEadnEU2IRWEvBYdJ6m0ynMQVpQzVYGIHv9FzDW+lXV75+g7fe
-         EEmYb6j5A52TUOsLWUPT/cLBOmcBY5aQ1CYsuLUf45AB+s0LBby5UFulbTHohUcbFrLa
-         wcfkM6cOeJt2H3JkYTqEIu4azf6fNf4eVs7ecLK6YSWPTRLl2o6ffyhhhqEnjb8hNgbw
-         ClNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zW26rBi6b5NN34eoig0+xNjNcL1nw0bdLAbSIFvoRIE=;
-        b=ZkC6eYcIqzmQttV+OMNINHeSHjJHvR7pzwukNLWB8AdRlARymO7MFkUCQD2jLDCx8b
-         8o97/tq3Dmcoll+yqJ+6lE++ZyNP2zbKZQSv/2eVmxzcp/hN0SXyScIXmx6OwUt+qYYW
-         yRtUS7dJSHijTPQHX0hsjg5XBCCq+phSXoRT/eadP3duYdGUjiG6e9TUt04/C44Imw+h
-         WFcxJN5/754uC64ZLfDOfwmwIWwN3jk5kj7Ys2LeU3aWHchpoFDXGQwGgTmQSZRpsJx+
-         0DYfFlIwKYlKgxQvY5ITpizjN0K3QqCKaZiKPjOhEhp8L4R6b2wwIUva7eQ1Yxy9F6Pn
-         2VeA==
-X-Gm-Message-State: AJIora/CYP1ERaY6LMTETmNLdUMV4HTAaOnQsiDiHQqfkSh1mKBQ5Eo6
-        1g/r217So7K4lKgEoZvPtURZPswwHcrof6qRh6A=
-X-Google-Smtp-Source: AGRyM1t6IrwnDXUKp8lX11UQjAriHARn8Ym+LJnivDfcR8D10MSoiFmXI75SX/xW6Wsks/l98Uqn/fXPBufvxFAHerE=
-X-Received: by 2002:a05:6512:1190:b0:48a:19d5:ef23 with SMTP id
- g16-20020a056512119000b0048a19d5ef23mr10573130lfr.401.1658149964876; Mon, 18
- Jul 2022 06:12:44 -0700 (PDT)
+        Mon, 18 Jul 2022 10:16:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC2738BE;
+        Mon, 18 Jul 2022 07:16:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FBFC60A5B;
+        Mon, 18 Jul 2022 14:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B314FC341CB;
+        Mon, 18 Jul 2022 14:16:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658153769;
+        bh=enx8mInxZehWuply8x2Bfea4HxGgwGZeH0Vaz5tQzdA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HkMQw4Db9y35qqBBul2/4ID2kreLQo1VXySvkFInutplGNpGVgBJDCWkpNdMNmv6y
+         SwSran9JseFoRmXfv8CPWfS3kdkXDDLFNpsekmA9RZa71lNdJzx30VKmgp8yOP+VKm
+         9VVhoXHBP/V/anyOXcKks+5GCHv9YvIWHqwPRYwEJprQzCVxgnap83W1UPj3eEbd8P
+         J3M7qBduJJzVRNKnSPp8DgkclsHMi0LvjiqPAYXweO83IumcGh0I/gTwKrp7SCRKN2
+         GCFu57H2R/TR+uQ5rTsgRSqEw6TymjjcOK7RBMl+Dwpfj8oupIvWngDlVWrd1Y9He5
+         h9Nl7R4QCQkYQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oDRXX-0005Jo-Uq; Mon, 18 Jul 2022 16:16:04 +0200
+Date:   Mon, 18 Jul 2022 16:16:03 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Jonathan Woithe <jwoithe@just42.net>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, Aidan Thornton <makosoft@gmail.com>,
+        Grigori Goronzy <greg@chown.ath.cx>,
+        Michael Hanselmann <public@hansmi.ch>
+Subject: Re: [Regression] CH341 USB-serial converter passes data in 32 byte
+ chunks
+Message-ID: <YtVrI6FRZRKKALPN@hovoldconsulting.com>
+References: <Ys1iPTfiZRWj2gXs@marvin.atrad.com.au>
+ <Ys1sfRyL6El7go94@kroah.com>
+ <Ys2nEmkvz2dfAKkU@hovoldconsulting.com>
+ <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
+ <YtUfcSOTl/ia+ahL@hovoldconsulting.com>
 MIME-Version: 1.0
-References: <20220706165406.117349-1-tmaimon77@gmail.com> <CACPK8Xd0n5cpsCJ6guPzEj8JfXkz_ERzU3VdXW-Xx2QX8ssNKg@mail.gmail.com>
- <CAK8P3a0Ojf1hm5Q2FJZEGLygku+qkPmKnKpBD8eAZPeRZtb=gw@mail.gmail.com> <CAK8P3a3Dh+wTyPYhvv5c-wsqMK24ZgqPWHw2C7xuFh9vL53XfA@mail.gmail.com>
-In-Reply-To: <CAK8P3a3Dh+wTyPYhvv5c-wsqMK24ZgqPWHw2C7xuFh9vL53XfA@mail.gmail.com>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 18 Jul 2022 16:12:33 +0300
-Message-ID: <CAP6Zq1iCai5hSWVyeMg+xcgBXj0mdq7mcQrQfNmDFh15Q2y_-g@mail.gmail.com>
-Subject: Re: [PATCH v7 00/16] Introduce Nuvoton Arbel NPCM8XX BMC SoC
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Joel Stanley <joel@jms.id.au>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Qin Jian <qinjian@cqplus1.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtUfcSOTl/ia+ahL@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Arnd,
+On Mon, Jul 18, 2022 at 10:53:06AM +0200, Johan Hovold wrote:
 
-Appreciate you taking care of this!
+> From 82faf260d13c9f01e4af664f31231e5d88d7e4f1 Mon Sep 17 00:00:00 2001
+> From: Johan Hovold <johan@kernel.org>
+> Date: Mon, 18 Jul 2022 10:21:41 +0200
+> Subject: [PATCH] USB: serial: ch341: fix disabled tx timer on older devices
+> 
+> At least one older CH341 appears to have the TX timer enable bit
+> inverted so that setting it disables the TX timer and prevents the FIFO
+> from emptying until it is full.
+> 
+> Only set the TX timer enable bit for devices with version newer than
+> 0x27.
+> 
+> Also try restoring an older init command before updating the line
+> settings to see if it has any effect on a lost first byte after
+> initialisation.
+> 
+> Reported-by: Jonathan Woithe <jwoithe@just42.net>
+> Link: https://lore.kernel.org/r/Ys1iPTfiZRWj2gXs@marvin.atrad.com.au
+> Not-Signed-off-yet-by: Johan Hovold <johan@kernel.org>
 
-Are these questions direct to me or Joel?
+s/TX/RX/ ...
 
-On our side we will be happy that you will start to merge Arbel
-NPCM8XX without the clock driver, hopefully the NPCM8XX clock driver
-will ACK soon and maybe you can merge it as well.
-
-What do you say Joel?
-
-Thanks a lot
-
-Tomer
-
-On Mon, 18 Jul 2022 at 14:28, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Fri, Jul 8, 2022 at 3:45 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Fri, Jul 8, 2022 at 8:50 AM Joel Stanley <joel@jms.id.au> wrote:
-> > > Are you happy with a cross tree new soc branch for this series? If so
-> > > I can put them in a branch and get some build coverage before sending
-> > > them out.
-> > >
-> > > (I notice the clock and reset changes are waiting on acks still)
-> >
-> > Yes, I think we should merge the parts that are reviewed already, but I'd
-> > leave out the clk (4/16) and reset (9/16) patches in this case.
-> >
-> > Krzysztof has reviewed the binding changes, so I don't mind having
-> > the DT nodes added in the soc tree even if the two drivers are still
-> > missing.
-> >
-> > I would do the same thing for the sunplus SP7021 platform that
-> > Qin Jian has been posting, as this is also waiting for a final Ack
-> > on the clk driver.
-> >
-> > I would put both of the new platforms into a single branch in the
-> > SoC tree, separate from the usual dt/drivers/soc/defconfig
-> > branches. I was already planning to pick npcm8xx up myself,
-> > but if you can do a pull request, that would be even better.
->
-> I see there is now a v9 of the series, let me know if I should
-> apply some or all of those, or if I should wait for a pull request
-> from you.
->
-> I've just merged the Sunplus sp7021 support leaving out the
-> clock driver in order to make progress on that one, and
-> we can do the same thing here if there is still ongoing discussion
-> about some of the drivers. It would be nice to not wait too long
-> though, as we are already past -rc7.
->
->       Arnd
+Johan
