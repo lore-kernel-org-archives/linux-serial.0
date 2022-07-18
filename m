@@ -2,103 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 704C6C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 07:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 902CBC43334
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 07:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiGRHCO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Jul 2022 03:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39538 "EHLO
+        id S233288AbiGRHMi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Jul 2022 03:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233184AbiGRHCN (ORCPT
+        with ESMTP id S231689AbiGRHMg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Jul 2022 03:02:13 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138A41706D;
-        Mon, 18 Jul 2022 00:02:13 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id b26so15663505wrc.2;
-        Mon, 18 Jul 2022 00:02:13 -0700 (PDT)
+        Mon, 18 Jul 2022 03:12:36 -0400
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399D717A86;
+        Mon, 18 Jul 2022 00:12:32 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id r14so15711586wrg.1;
+        Mon, 18 Jul 2022 00:12:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=mBaCn+yOtwwme9flF0xPrDTgDsQW7uNWw9wOEtCnhK4=;
-        b=TxPYWCpnbe999RTMQbJmHOshS9DrDRFDdYeJwCnZX0xutYYGnR3102WyksgRMV/Dz6
-         bd53Ng6jWR5tpNH3TA0FFEcQnLfu22APattrzKiFTn10yOTB7A2C8WzrMTXpJe4HwKaN
-         uYqpj0sdf80RGGbytvF70vKEeiW58AwisZU8Fj7d1ggdm1Xf2ES+Ko+guMgJjNYeUZ2h
-         hcyPmZi9VrNSKuZOfYAV5j28RPRa4BcWAsLmxlQ5Z0rwet7GMZr6t1lHf3n8HWjuR70e
-         u/LX48XrHxs2QR4h11+h+UBTnK+aMxTrZXBwjy4mnlKGt5wSbq/AJNHb8Ey2y53w7Zz+
-         iABg==
-X-Gm-Message-State: AJIora962fYRr8KRW8oPuAfI/ZkpxfITjinGS63OVkMM7ZS+EBWG9Raf
-        qtcFWuObhqQ/ftTQmHTKhelvzhYhJk8=
-X-Google-Smtp-Source: AGRyM1vY2mD3JpdNb/SNzvjPGkQe4nn8SXRSvzuNUEmKzaUnA+s4GFDYX2/U024C758KBtyCxc93MA==
-X-Received: by 2002:adf:f245:0:b0:21d:a39a:bed5 with SMTP id b5-20020adff245000000b0021da39abed5mr20980909wrp.508.1658127731543;
-        Mon, 18 Jul 2022 00:02:11 -0700 (PDT)
+        bh=Jq+ERgHLXjd99Gt//WGSWsvGDeg+4Vpzw3ae5fqcZd0=;
+        b=qQUc2w6grL4384+um1BW4h2jSKqJyXWxQesrpsUEFp64War6tc015XB2P7v8nkRRhp
+         l7VxpaZYVlXYtz+iKMqAJGrKTckWYqTgt002hk4NIc/DP3OwZCwcIxkGoEhUGWG48CB1
+         kqquwnDuKaoLafRQ6J/56NJTlJbAgb0OBf+rYkBv2AWNdNwkY31LarCl/37q4Gz6ZGbA
+         zcEQGioSVvHWrTbPCFGew55vgjLNxsSQsSI+vNEHBLguu3l7c8nBils2g2qak4pBfF1r
+         jDbFDZmYva1XxKVAz8akFG/tS8adpDdDoYoCZClxQ4PQqfxdd8LU1vLeSEjLrw9MZPO1
+         oxrA==
+X-Gm-Message-State: AJIora+dApVM/CC06vuOL3qC4RIF9LCGZQHVf6ja0rpXSL8S8a5boAFg
+        ewfTGV0pZCpATYRZ2inL4TQkmSxg8+A=
+X-Google-Smtp-Source: AGRyM1vuCuHClwlRREYmL4N9K/orvP2tFDDUyl37081RiZs1RADzqbgP5a7pWfTHCG9hGrL+f5OTjw==
+X-Received: by 2002:a05:6000:185:b0:21d:7ffc:4916 with SMTP id p5-20020a056000018500b0021d7ffc4916mr21851821wrx.692.1658128350735;
+        Mon, 18 Jul 2022 00:12:30 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id r10-20020a056000014a00b0021d68a504cbsm10078557wrx.94.2022.07.18.00.02.10
+        by smtp.gmail.com with ESMTPSA id id15-20020a05600ca18f00b003a31f1edfa7sm627887wmb.41.2022.07.18.00.12.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 00:02:10 -0700 (PDT)
-Message-ID: <d75d1339-4539-330a-680b-2d940e603a72@kernel.org>
-Date:   Mon, 18 Jul 2022 09:02:09 +0200
+        Mon, 18 Jul 2022 00:12:30 -0700 (PDT)
+Message-ID: <d0e692ed-e28b-2fff-b870-3640ef5009bb@kernel.org>
+Date:   Mon, 18 Jul 2022 09:12:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: writing a 1 and then a 0 to
- trigger a break character
+Subject: Re: [PATCH] serial: remove VR41XX serial driver
 Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>, Sherry Sun <sherry.sun@nxp.com>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dl-linux-imx <linux-imx@nxp.com>
-References: <20220715025944.11076-1-sherry.sun@nxp.com>
- <20220715025944.11076-3-sherry.sun@nxp.com>
- <509669b26b5899088e9b77ed94d103ee@walle.cc>
- <AS8PR04MB840448675E64E4FCDEEF91A1928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
- <e2560f01fd1731ea2422d82c97efcc6f@walle.cc>
- <AS8PR04MB8404B8E3EB0FFCEE8ADDA283928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
- <61c525fc87d6586c024cd6e42fcf876d@walle.cc>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220715140322.135825-1-tsbogend@alpha.franken.de>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <61c525fc87d6586c024cd6e42fcf876d@walle.cc>
+In-Reply-To: <20220715140322.135825-1-tsbogend@alpha.franken.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 15. 07. 22, 13:52, Michael Walle wrote:
->> Seems we have the different understanding of the break_ctl(port,ctl)
->> callback. The original break_ctl(tty,-1) in lpuart will not send the
->> break signal until we call break_ctl(tty,0).
+On 15. 07. 22, 16:03, Thomas Bogendoerfer wrote:
+> Commit d3164e2f3b0a ("MIPS: Remove VR41xx support") removed support
+> for MIPS VR41xx platform, so remove exclusive drivers for this
+> platform, too.
 > 
-> That is not correct. The TX linue goes low as soon as the SBK bit
-> is set. See below.
+> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-In that case…
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
->> Per my understanding of
->> "If ctl is nonzero, the break signal should be transmitted", call
->> break_ctl(tty,-1) is enough the send one break signal, now my patch
->> makes the behavior align with my understanding.
-> 
-> As I said, Greg should clarify here.
-> 
-> In any case, I've checked the hardware (LS1028A) and as soon as you
-> set the SBK bit, the TX line goes low (TTL levels) as expected. It
-> will go to high again as soon as you clear the bit again.
-> 
-> So to me it seems there is nothing wrong here. Also have a look
-> at man ioctl_tty:
-> 
->         TIOCSBRK
->                Turn break on, that is, start sending zero bits.
-> 
->         TIOCCBRK
->                Turn break off, that is, stop sending zero bits.
-> 
-> So to send one break "character", you need to do ioctl(TIOCSBRK)
-> followed by an ioctl(TIOCCBRK).
+...
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -124,10 +124,6 @@
+>   /* TXX9 type number */
+>   #define PORT_TXX9	64
+>   
+> -/* NEC VR4100 series SIU/DSIU */
+> -#define PORT_VR41XX_SIU		65
+> -#define PORT_VR41XX_DSIU	66
 
-… you're right.
+I didn't find any userspace users, so hopefully nothing breaks.
 
-regards,
+thanks,
 -- 
 js
+suse labs
