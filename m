@@ -2,196 +2,131 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00B1C433EF
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 08:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A27C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 11:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233090AbiGRIxP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Jul 2022 04:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S233964AbiGRL2u (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiGRIxP (ORCPT
+        with ESMTP id S232593AbiGRL2t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Jul 2022 04:53:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F8D62DF;
-        Mon, 18 Jul 2022 01:53:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A97DD614A1;
-        Mon, 18 Jul 2022 08:53:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09FB7C341C0;
-        Mon, 18 Jul 2022 08:53:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658134393;
-        bh=LbLuYT3GxhcNEQW6HRRHRR3dST7TzBmJlF6ixRxMJYw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ja4IOLZJ3rRiqqFqktY8bLnTp30cUgq0wVfclFLqoyuc4xW+HANRQsiIc3WaE9tCw
-         FsSw8JxdfB9yp7VhHLKZQNEwTlWY/V0D7W3UFidZ8ppx+235kzf7926lpr47XQLYAs
-         zjkVXljjkz3MXTr8Mm3EMVlUOioQn4K5sBd/A29JUZk0Gmmtz0wAh7byJzs83DWDll
-         9cpCSahb3UIIakoJchOCImiKDuymqJ6GVBw8n+RE9cRLqdULm3Nv3QaGcEJfOGq03q
-         xcgbYtkDu4WNK+O2DJG0SQmDUZQQbat5BSKna/AK3zF2yVfyIhBECIChQqKKC+je6o
-         dtb72BkgJycPw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oDMUz-0000RU-Tl; Mon, 18 Jul 2022 10:53:06 +0200
-Date:   Mon, 18 Jul 2022 10:53:05 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Jonathan Woithe <jwoithe@just42.net>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, Aidan Thornton <makosoft@gmail.com>,
-        Grigori Goronzy <greg@chown.ath.cx>,
-        Michael Hanselmann <public@hansmi.ch>
-Subject: Re: [Regression] CH341 USB-serial converter passes data in 32 byte
- chunks
-Message-ID: <YtUfcSOTl/ia+ahL@hovoldconsulting.com>
-References: <Ys1iPTfiZRWj2gXs@marvin.atrad.com.au>
- <Ys1sfRyL6El7go94@kroah.com>
- <Ys2nEmkvz2dfAKkU@hovoldconsulting.com>
- <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
+        Mon, 18 Jul 2022 07:28:49 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906CBBC8;
+        Mon, 18 Jul 2022 04:28:48 -0700 (PDT)
+Received: from mail-oa1-f44.google.com ([209.85.160.44]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MAwTn-1oOAQJ1woj-00BMGZ; Mon, 18 Jul 2022 13:28:46 +0200
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-10cf9f5b500so21665761fac.2;
+        Mon, 18 Jul 2022 04:28:45 -0700 (PDT)
+X-Gm-Message-State: AJIora+1kOmEFp0hCdR7rq47pEbVX6oqifTqPII4Ojrdwr75YRgOKKnK
+        yL8lVkfEiAjdFUCctd6KiAA6k4iA5Hn4z9j8Sfc=
+X-Google-Smtp-Source: AGRyM1u3T7s1p1tMCI3Ux3IMuwbe7i4DiTt+21krVOs89HFUCcgbDFyHfQD+kzZHPRaiPmpi1WSRcKQJW4jBIRjM+80=
+X-Received: by 2002:a05:6870:6114:b0:10c:6bf:542f with SMTP id
+ s20-20020a056870611400b0010c06bf542fmr16739255oae.188.1658143714477; Mon, 18
+ Jul 2022 04:28:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
+References: <20220706165406.117349-1-tmaimon77@gmail.com> <CACPK8Xd0n5cpsCJ6guPzEj8JfXkz_ERzU3VdXW-Xx2QX8ssNKg@mail.gmail.com>
+ <CAK8P3a0Ojf1hm5Q2FJZEGLygku+qkPmKnKpBD8eAZPeRZtb=gw@mail.gmail.com>
+In-Reply-To: <CAK8P3a0Ojf1hm5Q2FJZEGLygku+qkPmKnKpBD8eAZPeRZtb=gw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 18 Jul 2022 13:28:18 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Dh+wTyPYhvv5c-wsqMK24ZgqPWHw2C7xuFh9vL53XfA@mail.gmail.com>
+Message-ID: <CAK8P3a3Dh+wTyPYhvv5c-wsqMK24ZgqPWHw2C7xuFh9vL53XfA@mail.gmail.com>
+Subject: Re: [PATCH v7 00/16] Introduce Nuvoton Arbel NPCM8XX BMC SoC
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Joel Stanley <joel@jms.id.au>, Tomer Maimon <tmaimon77@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Qin Jian <qinjian@cqplus1.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:ITCj9jon9+Jp0REjUl6uAP1CUdHTMKxA/CgVnRkDtI74FZ0km2X
+ 7Gd6SqGUe3J3iNADoY0hW0P2zk8G5cON3x2kTLPrK+kjeZRyY2F7o6apIR+JVIMklq7zvrC
+ yc7s6Ua6xQFiiey9ePv5hI0NzGX3ZlsJn+J9s2lAmuKrjS77OtEV9dHSuyTK6FqElD/oggZ
+ aImj7Ji6UYxdllBIhZjPw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:s/VcfA3LNdA=:QY0sx+6BapAmnf5H7fYpQE
+ bCaqxilwfUEUat/UsAoBozWpZ9ThUeEy2z/JWBWlMRRtsfKZOrhFXuQEn1JdBLud39kxqjiRo
+ hdMpvEhr7cDBUEctRiYN2htOB8gX+ePNmPFFo7cue1G6f6cxeStV1JdHKtCLpdJR0yXspSU+w
+ Bqa/t/1/7ut5WcSxT0Fk5JOJRO27H/abQfQy0R3mtkwD1mhPoM369NKcSTQLaxvFChldzcM2S
+ ZrswhYIf5BGiqQH6LOmsq9XcPH6a2uqnlqhuwMRG4FwKekavEkg2qrJCnfdlLdGBi7swGshfB
+ 4AgQt9BVqxNH+trKV/sfnI+/jZ5yTivr/Mbj6NgQ8M9rV9tNmjicsBCL7hxtH+EI3tQUv7Clo
+ J99XQSi0blLnM1frs4N5Hrp0EYcJULJV4+JHFNn95zOng7dY6YEhD9Q35Yi6TBNAokRPeHjq2
+ /9vE+p87m5+N8mUlhXt7YvTNw9rfvyEaaKaUZfP7ZkexP+aDRD4HxHCFkpYF9BcBpVCBqN/oS
+ tlT8jzYMaq+L1SDnj1ySHJVZ5zT+0p24ZfpZgk2lGBKceSIgJBLNp4x23tCuXtk8z1KShy9Zs
+ 6JbwmEyFPau/EGZS4jfXC8sAkjAyuhctSzWefL1W2qc2DsD4CQ0v2JSju7NbHpRbQTkBRU2Jh
+ 0t2RY1ui82O+fgh//MInL7xVfpHccrJJZz85ooWuuxAD3q89DmqKiFqF3LWAIhhdLYSkNivJV
+ KD6PwoNwdlzL/d77gYXDPgspEmj5DeDVUkbe6/unzVSmyIiaG/bybfbf2B8Ic4PSPe67OoO4p
+ 9y6ZEp3J9eFXkSJWzjkFlJDEPkk8ua7ipO0M27ER79paJ3aYilEj1XXjWbtzsn4Gnh1kgcmFQ
+ r2Quf8dE3mUyFpA9Xt1g==
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-[ +CC: Aidan, Grigori and Michael ]
+On Fri, Jul 8, 2022 at 3:45 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Fri, Jul 8, 2022 at 8:50 AM Joel Stanley <joel@jms.id.au> wrote:
+> > Are you happy with a cross tree new soc branch for this series? If so
+> > I can put them in a branch and get some build coverage before sending
+> > them out.
+> >
+> > (I notice the clock and reset changes are waiting on acks still)
+>
+> Yes, I think we should merge the parts that are reviewed already, but I'd
+> leave out the clk (4/16) and reset (9/16) patches in this case.
+>
+> Krzysztof has reviewed the binding changes, so I don't mind having
+> the DT nodes added in the soc tree even if the two drivers are still
+> missing.
+>
+> I would do the same thing for the sunplus SP7021 platform that
+> Qin Jian has been posting, as this is also waiting for a final Ack
+> on the clk driver.
+>
+> I would put both of the new platforms into a single branch in the
+> SoC tree, separate from the usual dt/drivers/soc/defconfig
+> branches. I was already planning to pick npcm8xx up myself,
+> but if you can do a pull request, that would be even better.
 
-On Wed, Jul 13, 2022 at 09:52:18AM +0930, Jonathan Woithe wrote:
-> On Tue, Jul 12, 2022 at 06:53:38PM +0200, Johan Hovold wrote:
+I see there is now a v9 of the series, let me know if I should
+apply some or all of those, or if I should wait for a pull request
+from you.
 
-> > Simply reverting the commit blamed by the bisection should only makes
-> > things worse, at least for some device types.
-> > 
-> > Perhaps we need to set that bit 7 based on the type, even if the bit
-> > meaning having been inverted seems a bit far-fetched.
-> > 
-> > Jonathan, could you try simply commenting out the
-> > 	
-> > 	val |= BIT(7);
-> > 
-> > statement in ch341_set_baudrate_lcr()?
-> 
-> Commenting out the above line brought some improvement.  In minicom with a
-> loopback connector in place, the first byte sent does not get echoed
-> back at all.  However, all other bytes are echoed as soon as they are sent.
+I've just merged the Sunplus sp7021 support leaving out the
+clock driver in order to make progress on that one, and
+we can do the same thing here if there is still ongoing discussion
+about some of the drivers. It would be nice to not wait too long
+though, as we are already past -rc7.
 
-Ok, so at least that addresses the disabled TX timer.
-
-What happens if you change the line speed? Does the first character
-after changing speed also get dropped?
-
-There were a few more changes done to the initialisation sequence at
-that time and more changes in this area has followed since.
-
-Could you try the patch below which addresses the disabled tx timer and
-restores one of the init commands that were removed in 4.10.
-
-If that doesn't help, we'll keep digging. One more thing to try then
-could be to comment out the above line on a 4.10 kernel to rule the
-impact of any later changes on the first lost character.
-
-> The kernel used for the above test was 672c0c5 (5.18-rc5), which is the most
-> recent I can conveniently get onto the test machine at present.  I tested
-> the unmodified kernel before commenting out the line and confirmed that it
-> exhibited the full fault condition (bytes come back in blocks of 32).
-
-> > Also, what chip version do you have (see debug statement in
-> > ch341_configure())?
-> 
-> Chip revision is 0x27.
-
-Interesting. The devices I have here both have version 0x30. While the
-tx-timer bit has no effect on the CH340G it must be set on the CH341A in
-order for the FIFO to empty before it is full.
-
-Michael Hanselmann posted a patch mentioning that devices before 0x30
-has never been supported by the mainline driver:
-
-	2c509d1cc86d ("USB: serial: ch341: name prescaler, divisor registers")
-
-but your programmer seems to suggest otherwise, even if there may be
-other differences here left to account for.
-
-The joys of reverse-engineering...
-
-Johan
-
-
-From 82faf260d13c9f01e4af664f31231e5d88d7e4f1 Mon Sep 17 00:00:00 2001
-From: Johan Hovold <johan@kernel.org>
-Date: Mon, 18 Jul 2022 10:21:41 +0200
-Subject: [PATCH] USB: serial: ch341: fix disabled tx timer on older devices
-
-At least one older CH341 appears to have the TX timer enable bit
-inverted so that setting it disables the TX timer and prevents the FIFO
-from emptying until it is full.
-
-Only set the TX timer enable bit for devices with version newer than
-0x27.
-
-Also try restoring an older init command before updating the line
-settings to see if it has any effect on a lost first byte after
-initialisation.
-
-Reported-by: Jonathan Woithe <jwoithe@just42.net>
-Link: https://lore.kernel.org/r/Ys1iPTfiZRWj2gXs@marvin.atrad.com.au
-Not-Signed-off-yet-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/ch341.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/usb/serial/ch341.c b/drivers/usb/serial/ch341.c
-index 2798fca71261..748724ab6b04 100644
---- a/drivers/usb/serial/ch341.c
-+++ b/drivers/usb/serial/ch341.c
-@@ -97,7 +97,10 @@ struct ch341_private {
- 	u8 mcr;
- 	u8 msr;
- 	u8 lcr;
-+
- 	unsigned long quirks;
-+	u8 version;
-+
- 	unsigned long break_end;
- };
- 
-@@ -250,8 +253,12 @@ static int ch341_set_baudrate_lcr(struct usb_device *dev,
- 	/*
- 	 * CH341A buffers data until a full endpoint-size packet (32 bytes)
- 	 * has been received unless bit 7 is set.
-+	 *
-+	 * At least one device with version 0x27 appears to have this bit
-+	 * inverted.
- 	 */
--	val |= BIT(7);
-+	if (priv->version > 0x27)
-+		val |= BIT(7);
- 
- 	r = ch341_control_out(dev, CH341_REQ_WRITE_REG,
- 			      CH341_REG_DIVISOR << 8 | CH341_REG_PRESCALER,
-@@ -308,12 +315,18 @@ static int ch341_configure(struct usb_device *dev, struct ch341_private *priv)
- 	r = ch341_control_in(dev, CH341_REQ_READ_VERSION, 0, 0, buffer, size);
- 	if (r)
- 		return r;
--	dev_dbg(&dev->dev, "Chip version: 0x%02x\n", buffer[0]);
-+
-+	priv->version = buffer[0];
-+	dev_dbg(&dev->dev, "Chip version: 0x%02x\n", priv->version);
- 
- 	r = ch341_control_out(dev, CH341_REQ_SERIAL_INIT, 0, 0);
- 	if (r < 0)
- 		return r;
- 
-+	r = ch341_control_out(dev, CH341_REQ_SERIAL_INIT, 0x501f, 0xd90a);
-+	if (r < 0)
-+               return r;
-+
- 	r = ch341_set_baudrate_lcr(dev, priv, priv->baud_rate, priv->lcr);
- 	if (r < 0)
- 		return r;
--- 
-2.35.1
-
+      Arnd
