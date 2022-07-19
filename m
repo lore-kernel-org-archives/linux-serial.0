@@ -2,201 +2,144 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF195CCA485
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Jul 2022 19:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0093EC43334
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Jul 2022 04:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234907AbiGRTO5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Jul 2022 15:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        id S234570AbiGSEAC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Jul 2022 00:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiGRTO4 (ORCPT
+        with ESMTP id S229914AbiGSEAC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Jul 2022 15:14:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD92C2CCB4;
-        Mon, 18 Jul 2022 12:14:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D524616BD;
-        Mon, 18 Jul 2022 19:14:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B5D3C341C0;
-        Mon, 18 Jul 2022 19:14:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658171694;
-        bh=dqjX1mmlML3aigT0dIo8r1Wy/YrsKN/Sc5/hAu3AZzE=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=g5m5lFVBpvfVj/WQ+kexwatTrjuly4N3LBV3QOw/e0BZ3pUCvUeUn9ogK8GqAA/He
-         3GjokFeeQjW9zgoMmALq66vrpNXxp9pqDOw0T9C6y2RE2QnH9T5UYntnaYytTYW6iC
-         BZSChVAJv9ydeKNVw3xFg8QSQRSCcntrrS1T5NxqwfHwTy3hY0Yr4ST6W5c+LFT/Gr
-         Ts+dsAqW5UX3PhieBu/xbTnqjQLDQNvlyFB+P1qn5hSUCqL4eC3xARjzRPQgNecrKm
-         lbyEwb1cL4pBOblVbBagqIitt/yx0TtUhlh8eySseKctsxu259KSAAZD0ZWuPDHkXZ
-         j21F1HzcZR6fg==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 19 Jul 2022 00:00:02 -0400
+Received: from server.atrad.com.au (server.atrad.com.au [150.101.241.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0D02F013;
+        Mon, 18 Jul 2022 20:59:58 -0700 (PDT)
+Received: from marvin.atrad.com.au (marvin.atrad.com.au [192.168.0.2])
+        by server.atrad.com.au (8.17.1/8.17.1) with ESMTPS id 26J3xHBV030466
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Tue, 19 Jul 2022 13:29:18 +0930
+Date:   Tue, 19 Jul 2022 13:29:17 +0930
+From:   Jonathan Woithe <jwoithe@just42.net>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, Aidan Thornton <makosoft@gmail.com>,
+        Grigori Goronzy <greg@chown.ath.cx>,
+        Michael Hanselmann <public@hansmi.ch>
+Subject: Re: [Regression] CH341 USB-serial converter passes data in 32 byte
+ chunks
+Message-ID: <YtYsFVCShDeVCeis@marvin.atrad.com.au>
+References: <Ys1iPTfiZRWj2gXs@marvin.atrad.com.au>
+ <Ys1sfRyL6El7go94@kroah.com>
+ <Ys2nEmkvz2dfAKkU@hovoldconsulting.com>
+ <Ys4QOgNF0pJDwRCJ@marvin.atrad.com.au>
+ <YtUfcSOTl/ia+ahL@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com> <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>, open list:
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>, ;
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     ;
-                        ^-missing semicolon to end mail group, extraneous tokens in mailbox, missing end of mailbox
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 18 Jul 2022 12:14:52 -0700
-User-Agent: alot/0.10
-Message-Id: <20220718191454.5B5D3C341C0@smtp.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtUfcSOTl/ia+ahL@hovoldconsulting.com>
+X-MIMEDefang-action: accept
+X-Scanned-By: MIMEDefang 2.86 on 192.168.0.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Tomer Maimon (2022-07-12 00:28:30)
-> On Mon, 11 Jul 2022 at 22:55, Stephen Boyd <sboyd@kernel.org> wrote:
-> >
-> > Quoting Tomer Maimon (2022-07-11 05:35:07)
-> > > +        */
-> > > +       int onecell_idx;
-> > > +};
-> > > +
-> > > +struct npcm8xx_clk_pll_data {
-> > > +       u32 reg;
-> > > +       const char *name;
-> > > +       const char *parent_name;
-> >
-> > Any reason why we're not using clk_parent_data or direct clk_hw
-> > pointers?
-> For more historical reasons, I did the same method as done in the
-> NPCM7XX driver.
-> The clk_init_data struct can use * const *parent_names,
-> https://elixir.bootlin.com/linux/v5.19-rc6/source/include/linux/clk-provi=
-der.h#L289
-> Is it problematic?
+On Mon, Jul 18, 2022 at 10:53:05AM +0200, Johan Hovold wrote:
+> [ +CC: Aidan, Grigori and Michael ]
+> 
+> On Wed, Jul 13, 2022 at 09:52:18AM +0930, Jonathan Woithe wrote:
+> > On Tue, Jul 12, 2022 at 06:53:38PM +0200, Johan Hovold wrote:
+> 
+> > > Simply reverting the commit blamed by the bisection should only makes
+> > > things worse, at least for some device types.
+> > > 
+> > > Perhaps we need to set that bit 7 based on the type, even if the bit
+> > > meaning having been inverted seems a bit far-fetched.
+> > > 
+> > > Jonathan, could you try simply commenting out the
+> > > 	
+> > > 	val |= BIT(7);
+> > > 
+> > > statement in ch341_set_baudrate_lcr()?
+> > 
+> > Commenting out the above line brought some improvement.  In minicom with a
+> > loopback connector in place, the first byte sent does not get echoed
+> > back at all.  However, all other bytes are echoed as soon as they are sent.
+> 
+> Ok, so at least that addresses the disabled TX timer.
+> 
+> What happens if you change the line speed? Does the first character
+> after changing speed also get dropped?
 
-It will need to be changed to not use global string matching. Ideally
-new drivers use clk_parent_data or clk_hw pointers directly. It's faster
-and preferred.
+Yes it does.  Starting out at 115200 in minicom I confirmed the loss of the
+first character.  I changed the line speed to 38400 in minicom and the next
+character to be pressed was dropped.  All others after it were fine.  I then
+returned to 115200 in minicom and the pattern repeated: the first character
+after the speed change was lost, but all others came through.  All these
+tests were done in the same minicom session under kernel 672c0c5 with the
 
-> >
-> > > +       NPCM8XX_CLK_S_AHB, CLK_DIVIDER_READ_ONLY, 0, NPCM8XX_CLK_SPI0=
-},
-> > > +       /* bit 10-6 SPI0CKDV*/
-> > > +       {NPCM8XX_CLKDIV3, 1, 5, NPCM8XX_CLK_S_SPIX,
-> > > +       NPCM8XX_CLK_S_AHB, CLK_DIVIDER_READ_ONLY, 0, NPCM8XX_CLK_SPIX=
-},
-> > > +       /* bit 5-1 SPIXCKDV*/
-> > > +
-> > > +       {NPCM8XX_CLKDIV4, 28, 4, NPCM8XX_CLK_S_RG, NPCM8XX_CLK_S_RG_M=
-UX,
-> > > +       CLK_DIVIDER_READ_ONLY, 0, NPCM8XX_CLK_RG},
-> > > +       /* bit 31-28 RGREFDIV*/
-> > > +       {NPCM8XX_CLKDIV4, 12, 4, NPCM8XX_CLK_S_RCP, NPCM8XX_CLK_S_RCP=
-_MUX,
-> > > +       CLK_DIVIDER_READ_ONLY, 0, NPCM8XX_CLK_RCP},
-> > > +       /* bit 15-12 RCPREFDIV*/
-> > > +       {NPCM8XX_THRTL_CNT, 0, 2, NPCM8XX_CLK_S_TH, NPCM8XX_CLK_S_CPU=
-_MUX,
-> > > +       CLK_DIVIDER_READ_ONLY | CLK_DIVIDER_POWER_OF_TWO, 0, NPCM8XX_=
-CLK_TH},
-> > > +       /* bit 1-0 TH_DIV*/
-> > > +};
-> > > +
-> > > +static DEFINE_SPINLOCK(npcm8xx_clk_lock);
-> > > +
-> > > +static int npcm8xx_clk_probe(struct platform_device *pdev)
-> > > +{
-> > > +       struct clk_hw_onecell_data *npcm8xx_clk_data;
-> > > +       struct device *dev =3D &pdev->dev;
-> > > +       struct device_node *np =3D dev->of_node;
-> > > +       void __iomem *clk_base;
-> > > +       struct resource res;
-> > > +       struct clk_hw *hw;
-> > > +       int i, err;
-> > > +
-> > > +       npcm8xx_clk_data =3D devm_kzalloc(dev, struct_size(npcm8xx_cl=
-k_data, hws,
-> > > +                                                        NPCM8XX_NUM_=
-CLOCKS),
-> > > +                                       GFP_KERNEL);
-> > > +       if (!npcm8xx_clk_data)
-> > > +               return -ENOMEM;
-> > > +
-> > > +       err =3D of_address_to_resource(np, 0, &res);
-> >
-> > Why can't we use platform_get_resource()?
-> >
-> > > +       if (err) {
-> > > +               dev_err(dev, "Failed to get resource, ret %d\n", err);
-> > > +               return err;
-> > > +       }
-> > > +
-> > > +       clk_base =3D ioremap(res.start, resource_size(&res));
-> >
-> > And use devm_platform_ioremap_resource()?
-> Clock and reset driver use the same memory register map 0xF0801000 - 0xF0=
-801FFF.
-> For historical reasons the registers of both modules are mixed in the
-> memory range 0xF0801000 - 0xF0801FFF this is why we can't have a
-> separate region for each module.
-> In case I will use devm_platform_ioremap_resource function the reset
-> ioremap will fail so the driver using the method above.
+  val |= BIT(7);
 
-So the clk and reset driver should be the same driver, or one driver
-should register the other and use the auxiliary bus to express the
-relationship. That way we know that the drivers are tightly coupled and
-aren't going to stomp over each other.
+line still commented out.
 
-> >
-> > > +       if (!clk_base) {
-> > > +               dev_err(&pdev->dev, "Failed to remap I/O memory\n");
-> > > +               return -ENOMEM;
-> > > +       }
-> > > +
-> > > +       npcm8xx_clk_data->num =3D NPCM8XX_NUM_CLOCKS;
-> > > +
-> > > +       for (i =3D 0; i < NPCM8XX_NUM_CLOCKS; i++)
-> > > +               npcm8xx_clk_data->hws[i] =3D ERR_PTR(-EPROBE_DEFER);
-> > > +
-> > > +       /* Reference 25MHz clock */
-> >
-> > Does this exist on the board? If so, I'd make a fixed rate clk in the
-> > dts and have 'refclk' be an input in the binding for this clk controlle=
-r.
-> No, it is an internal clock in the SoC, this is why it is in the driver.
+> There were a few more changes done to the initialisation sequence at
+> that time and more changes in this area has followed since.
+> 
+> Could you try the patch below which addresses the disabled tx timer and
+> restores one of the init commands that were removed in 4.10.
 
-Ok. I suppose that could be inside the 'soc' node for this device as a
-fixed rate clk but registering it here is also fine.
+Unfortunately the patch didn't bring back the first character.  The first
+character is still missed (immediately after starting minicom, and also
+after changing the line speed within minicom), but all others are delivered
+as they should be.
+
+> If that doesn't help, we'll keep digging. One more thing to try then
+> could be to comment out the above line on a 4.10 kernel to rule the
+> impact of any later changes on the first lost character.
+
+I assume the "above line" is the
+
+  val |= BIT(7);
+
+statement in ch341_set_baudrate_lcr().  With this line commented out in the
+"v4.10" tag (c470abd), the first character is lost but all others are
+send/received as expected.  As you suggested, this appears to rule out
+later changes as the source of the lost first character.
+
+> > The kernel used for the above test was 672c0c5 (5.18-rc5), which is the most
+> > recent I can conveniently get onto the test machine at present.  I tested
+> > the unmodified kernel before commenting out the line and confirmed that it
+> > exhibited the full fault condition (bytes come back in blocks of 32).
+> 
+> > > Also, what chip version do you have (see debug statement in
+> > > ch341_configure())?
+> > 
+> > Chip revision is 0x27.
+> 
+> Interesting. The devices I have here both have version 0x30. While the
+> tx-timer bit has no effect on the CH340G it must be set on the CH341A in
+> order for the FIFO to empty before it is full.
+> 
+> Michael Hanselmann posted a patch mentioning that devices before 0x30
+> has never been supported by the mainline driver:
+> 
+> 	2c509d1cc86d ("USB: serial: ch341: name prescaler, divisor registers")
+> 
+> but your programmer seems to suggest otherwise, even if there may be
+> other differences here left to account for.
+
+I can confirm that this USB-serial converter has apparently been working
+fine for me with kernel 4.4.14 (and continued to do so up until the comment
+identified by the bisect).  This wasn't just with the programmer hardware
+though.  I was also using a second identical CH341 USB-serial converter with
+minicom for debugging of external hardware, and this also worked fine under
+4.4.14.  Given the comment in the commit you referenced above, it may be
+that we were just lucky.  Whatever the reason, these two CH341 version 0x27
+converters have definitely been working in practice for me.
+
+> The joys of reverse-engineering...
+
+Yes, having been there myself I totally agree.
+
+Regards
+  jonathan
