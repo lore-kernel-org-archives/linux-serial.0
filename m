@@ -2,126 +2,257 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD8CCCA47F
-	for <linux-serial@archiver.kernel.org>; Tue, 19 Jul 2022 14:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFB9C433EF
+	for <linux-serial@archiver.kernel.org>; Tue, 19 Jul 2022 23:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238642AbiGSOoj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Jul 2022 10:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
+        id S237151AbiGSXdK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 19 Jul 2022 19:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239727AbiGSOoD (ORCPT
+        with ESMTP id S235061AbiGSXdJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Jul 2022 10:44:03 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46851422FA;
-        Tue, 19 Jul 2022 07:42:09 -0700 (PDT)
-Received: from mail-ua1-f43.google.com ([209.85.222.43]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mr9OA-1nhHPV1uOE-00oJkN; Tue, 19 Jul 2022 16:42:07 +0200
-Received: by mail-ua1-f43.google.com with SMTP id g12so2945884uan.6;
-        Tue, 19 Jul 2022 07:42:06 -0700 (PDT)
-X-Gm-Message-State: AJIora+RwN51PRsMVLOiKxs3M4VkEGy8el/EcQJ5Mw2oskYMEGFHbKoG
-        fqxQQABAc4cxxFWfdYt7sNzFXzIBKnO3JPmRUW4=
-X-Google-Smtp-Source: AGRyM1sQikcKoGgAT6yV2vJ17SN926DE+GHt8PDGByKcXd/T2/q6CdAznJd8BVDLz6eMRl5ZCzsdNoH8O58apFp22kQ=
-X-Received: by 2002:a25:808c:0:b0:670:7d94:f2a with SMTP id
- n12-20020a25808c000000b006707d940f2amr4885533ybk.452.1658241714958; Tue, 19
- Jul 2022 07:41:54 -0700 (PDT)
+        Tue, 19 Jul 2022 19:33:09 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60047.outbound.protection.outlook.com [40.107.6.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A05A5A8A1;
+        Tue, 19 Jul 2022 16:33:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Md9CSPhioNLBGGxiqrZR4r9BLH8oJfr/LYelSRUVcKCbaqHX1q55VOHD4nBR/NGK2LVfKHjHrfvKwV0VFuQXVPEj7I06V7Wxvsfl2iZF0MCcvmCLSEgDfVVLT7XI3TRpsa7/exSX2W7v6X/p5mg8cBLOtccLCg1TvcNKuVpCdXkPsA2fFjOogBa7t6nfI2DzHGnmMEK5j4gExZVJBh98Gr9DhI3kj70SXMiDgiazSfwKXcdhyWglNOL2JfzfSQtl1pCMbF9Vr9d0EFo+zfAGiB0Pjj0fs1v0C+OwuKWEVm6EZ7l8thPS61YCDNJmmwBxj/fdpz6EMUkCJrtMqf0FSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=g+rUJveYmuBzEJGZ+DLNFWOOW+7VXieGN9RyR9PCvHk=;
+ b=NXXpw7BryLqRjJesUigVjivh8Uj4yjfCyNPOFSqbJ+lyHp6Oh4wLaAR/NSNUl0IB45+J3XOuLSg8zsgKcfcwQHZru8HzWrjv7+3b6PJee0SnkX8kE/Bgr04KMVOgxLttboHRKeZbAwpp7GphKMJ+i+H/5REep/cqR/Io6VWBwAvn9vbQ3TLiYRcYH2tykdqLw0F/5WePdW/vswuQclYiqrT1bVbswxURZIoPcyik2WnBByogv/jXBvmectiHa+JwaQVCl/fbb5cQ2MbifR7qeqn1Po7LL5/KRfd1P3fHOOuSFQYyXY9pcrxIIpt/v1/hEy16QQa4XrqvIDyIUcskpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g+rUJveYmuBzEJGZ+DLNFWOOW+7VXieGN9RyR9PCvHk=;
+ b=SLA5K/gWoxSlxgur+/ioD217BvE+coSllFDpxS/DYm1JV/cYNij4kleCuA+XF0ob1236CqepFws3X/Zm+K+C4f8FSRqYquEsxdq/UkuY8RSNrVQ/a+Tg7QqWB4dtEkWuzM8iUgZIjZIg13EE14BwlgnzbBkpti+q+aTGfGYSgCk=
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
+ by AM0PR04MB6225.eurprd04.prod.outlook.com (2603:10a6:208:13c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Tue, 19 Jul
+ 2022 23:33:06 +0000
+Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::f46c:5b09:72eb:638c]) by AM9PR04MB8274.eurprd04.prod.outlook.com
+ ([fe80::f46c:5b09:72eb:638c%4]) with mapi id 15.20.5438.025; Tue, 19 Jul 2022
+ 23:33:05 +0000
+From:   Shenwei Wang <shenwei.wang@nxp.com>
+To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit
+ in CS7 mode
+Thread-Topic: [EXT] Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit
+ in CS7 mode
+Thread-Index: AQHYl7Pc5ouTsV2p6EuL4SD+9s88e62FhFoAgADbN2A=
+Date:   Tue, 19 Jul 2022 23:33:05 +0000
+Message-ID: <AM9PR04MB8274A5FBEE76F65D36B12F39898F9@AM9PR04MB8274.eurprd04.prod.outlook.com>
+References: <20220714185858.615373-1-shenwei.wang@nxp.com>
+ <bf982c0-403c-1677-b8a-5098f7e85b82@linux.intel.com>
+In-Reply-To: <bf982c0-403c-1677-b8a-5098f7e85b82@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: af85febd-940c-4385-17ec-08da69df07db
+x-ms-traffictypediagnostic: AM0PR04MB6225:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZwASv+Zc+9R8r3eUstu3hz4HI9SmQ15DHH4a4K0w77kkkv2JBl6cs3sVo7XZ71nC3QHOG35KohCywkIhnH2OZ8HRXfpRcZ0ChkMra2AjM9zAX8qSg/yAvY2d5WlUKjg8IktqMSQtr0egauDtJRTWnvaj4j7y5MXNuVzMJmhseM7YN34rs/BNOuECBo4Dk7wn4lquq43qBywa5A0xAH5WD63Vh7I31zWI0J9BUT59RfzJVa339GzT4l/2cSUgjNdyQP/tXbz8F51TX0bpN9uztVs+R+y5zKrlpRF+B7CmQ9rT7YHzrxvL0MCWc2zK/dsFTpnZZIEHA0Ondg5HuHzzX3IrAB1OF+zOCSUrxacY6kWlEGvnm6SYGSMke9PUzO0lV+n7FXUIey1QvDWZGpHYqwZ2ksf3IL6W6vWhwvlnbwRB5GJDUPVaHCLc9UL8UPaA+pJ0aE3VnlGWaV+jdhZOkh07upePN3KK2TSNtlUO19GKg08T1iDTnFxL0JhC0J+nwzpXJp393xEsERxsTUifzdtztUFsTvXCxWAXZUj+XvNptSs47qjgREl0Rssvv7pL7rcIelEroOBplBtYTPVB7p+kXD7FPwZQvGKyKayOX89eUbdFayNX1Kk07RijIBH+MKPqHCls3lk/2U1G1u4SoCmZ2NkV3oHru94ZQ9MJcS5VoZA9RfBL+QHNdp9Zk5coCskNiXl2bQCzIeX93kbkg8CGgSyUJGObThgLlj6wcrlrUMNwwZcsWY9tKPqT3nHL326b0lrwnIycsMGg9uPqfGWtndPl8dDhXPtsce91ZJFAG6DZm2qldy+v8cBByj2C
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(376002)(396003)(366004)(55236004)(186003)(26005)(41300700001)(9686003)(478600001)(55016003)(83380400001)(2906002)(66574015)(33656002)(6506007)(53546011)(7696005)(44832011)(8936002)(5660300002)(52536014)(122000001)(316002)(86362001)(38100700002)(6916009)(66946007)(8676002)(64756008)(71200400001)(4326008)(38070700005)(54906003)(66446008)(76116006)(66476007)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?uWxskJfPkgukKFP48awJLBm4pU4LMs+FTTr6b9R8e+jEkj+ow+HJyRnD//?=
+ =?iso-8859-1?Q?sMG4IVa16pKC0Dblcbz3WuKwuMo7dM7NqeoP8vIHZs4AEhZfSEp0vrr2pN?=
+ =?iso-8859-1?Q?7dnVrz/hRZSkTc23qOs47xz7eFsCfGlYQH9bUczaVn2PSIRc3qYxOKRonw?=
+ =?iso-8859-1?Q?xUdrF+nocGbBdlKtwK6aze2v74i0q2SyahCu2syq+OnniDGL2hejqy7GA+?=
+ =?iso-8859-1?Q?f8Rpl23Pni95vEA+uGeCmVv4rQSHBgdxiyJsiOXKX5OSkuQfHYFm4LYwlY?=
+ =?iso-8859-1?Q?4GHWr665pU4tto9KF0/g/1L3h9o94ievd2Kk+gTrYUZARCnp279r1A4ZTK?=
+ =?iso-8859-1?Q?SOOYcdnmM0P1YcydncqXTofNhepa0NFIjo2Pob7okmEKGR7peIFzPE2CtT?=
+ =?iso-8859-1?Q?JetISU5uZzxLz3WZtv7DWugwaW1Ug76FuX4z3+dufbGXVS5ACh1ZBUsR0Y?=
+ =?iso-8859-1?Q?5LKBIMxWvxQMlayWdFrUBZ49W+S2fc+5/ZYdx1/S3EWz2kVNRujsKR7kDF?=
+ =?iso-8859-1?Q?kZfuzdpyWwfFQ6NunYI81uHbWQlkCIfn7f/IJ4bYmojaOSXljhe+31jpwD?=
+ =?iso-8859-1?Q?LnxMAIabolyzqxj1NOTCP8lF06zrajI8ddrrVSc+tsQ1SSUOvy36pEbjem?=
+ =?iso-8859-1?Q?YPctnx9UoPIQuNh41A1Ieoy9kCF9s1oNFfptUphIib00ziA9g2Wnu0/l8X?=
+ =?iso-8859-1?Q?GMIXHbp/AGYvseeLE4zkcidbk6deWiXiKU1E1CvzXIWSw5pre/W99Ko8bI?=
+ =?iso-8859-1?Q?kSzmNoDsE1GVTu6s8kClJterT7xNgXAvb6bkfLy6Z0FXgofWrfWo/kO+7n?=
+ =?iso-8859-1?Q?CZHiekqPRbXq1/CgZu0RxzaaGaAg1E4fIRCokWCblfqKU2O4ryKJHJ/EWD?=
+ =?iso-8859-1?Q?hwml1PKtZEzd9+0T6lnsmz6kVoefUazJSts3K3tzEw3CR1Vtx5TyCr6Yr/?=
+ =?iso-8859-1?Q?az7u3OoEbdSqgFGfU8hFC9zWkAfU3JkvJbeY7Wys4/fQ3duzyrnhJP7AWP?=
+ =?iso-8859-1?Q?5vYOmnK+mucVlrJ/aEmDCXQxI7adCsmcCfz3tI7G1ty1sZbRmvq4pz8ZnF?=
+ =?iso-8859-1?Q?CAhiHgyVSVMuj3jzcNlZJcjrli4NJ8EXicQnQrJLMpQ6KMKnQCDJlAvyDt?=
+ =?iso-8859-1?Q?RhAfh+avSh01PCY5Ai8pAN14TCVRr3TDXAQDBUwu+lv6rCBM3mfpVZpjzl?=
+ =?iso-8859-1?Q?emXRtCi0FrWZj9qu8sHX8nn/rdSLV1DPS+ArfbEvgWiUuRTV8G5rqozMg8?=
+ =?iso-8859-1?Q?uaV5eE9NIq0PUWh4VbUZ4JaYPJ3cMaLm9/FecAY6ZYgDzGa1O40i84okE4?=
+ =?iso-8859-1?Q?DZkLhEiechRjwRlz/IHhnJnXOwT/IVxp6g7jeHKiklp9B4r8R2qTtPCuSo?=
+ =?iso-8859-1?Q?EElMem7hXJ3NjvSFQjtEY9VsgP7l1Mr7aexMk3hR2cGJnDYmpQU086odkw?=
+ =?iso-8859-1?Q?YMzxltONFYalqWwVYq0JvDEQhK9in0jeO1dlci0nP+8XeaplsR6BGdEpn+?=
+ =?iso-8859-1?Q?8mVl4bIR1GHkiLPW/7acKOQnqRs/iLc7ktYjYyWDXj8GeXIV6Z4U/Nuy+e?=
+ =?iso-8859-1?Q?twdN7uqtn5oI3cHaAwCbOnQznm3kEvx6P9L9Bb3RoyYLL/0yj4ZBY2tKcF?=
+ =?iso-8859-1?Q?vqEbjoCvGr6iPeUvuupT63tsI2HFspyRJ4?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220706165406.117349-1-tmaimon77@gmail.com> <CACPK8Xd0n5cpsCJ6guPzEj8JfXkz_ERzU3VdXW-Xx2QX8ssNKg@mail.gmail.com>
- <CAK8P3a0Ojf1hm5Q2FJZEGLygku+qkPmKnKpBD8eAZPeRZtb=gw@mail.gmail.com>
- <CAK8P3a3Dh+wTyPYhvv5c-wsqMK24ZgqPWHw2C7xuFh9vL53XfA@mail.gmail.com> <CAP6Zq1iCai5hSWVyeMg+xcgBXj0mdq7mcQrQfNmDFh15Q2y_-g@mail.gmail.com>
-In-Reply-To: <CAP6Zq1iCai5hSWVyeMg+xcgBXj0mdq7mcQrQfNmDFh15Q2y_-g@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 19 Jul 2022 16:41:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0N5J+jc2xL+J6bc-GD5R4f1aY3n+GMAq_7Cejc4w5Opg@mail.gmail.com>
-Message-ID: <CAK8P3a0N5J+jc2xL+J6bc-GD5R4f1aY3n+GMAq_7Cejc4w5Opg@mail.gmail.com>
-Subject: Re: [PATCH v7 00/16] Introduce Nuvoton Arbel NPCM8XX BMC SoC
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Joel Stanley <joel@jms.id.au>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Qin Jian <qinjian@cqplus1.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:PNYrzzlDmg3qAHx8zGYAEK2JcwcgSuFZf2gzdx0wVncnRCBaCkM
- i8Oy58GX+zBIh9UlXw/YuQTnGkNX3PqKxyyhNwZjBqNdpW8c/XYVFp6LRnmdhIvcw4fxOv8
- 6pCe9yjPDDrqVVdaJCsbegjBe4kA9hsNEh82Ei3NytAlCTiVRwQarJwawn+eJKgidQK7+QF
- HIOKs/OCh0JImqjVkb/IA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hX3CbiXRCL8=:Nsay3/HZRmMYxdmQwIxQhK
- ar20KniwvKgK7Q/nZD+LShJRpNy5MNJJAPF0YFQuMzyIKu/Ti5hVK5UHqH6JeYOVP7HDwrI6C
- ecP0LYMr4d5OqKeq1L/NP1SOvlb907saKiXkXE2uJRIYBzocNlEnMcocAP1uYODInW6vr4uvK
- v7XioEm5tzvpRkob2IBJBowMRlmJeWptBL8PLYAUOl35MUyXU0THvzjla0iu5zJ8ygSLhXJBY
- V6V1AiB80wjh8LQJvSYlD4QCOy1kCbeGn2s1utNgutMFkihNKmAPslXOKTqvJne9+hleP5bYD
- O2lsvv/qJTbxy0T4TM1SKs3Z/Zu3EIDsWQc7+Vxqf+epy7X39+h1b7D256PL+W3LR2lz1O6ns
- Sm++uMsdkVu03ELjtEQF2JabFbHt4U7GyhkXEfjNhQaewOKu4H7UwerPL8oA48HWkEa/324BY
- nAHS7fnvgN8YISvFFXxoouNA2r8j2QbjbuxjSecO2SDED7moz5ODqZAYGyj5coONoEyo/oZ5n
- jhO/0vrd5rFJnz9m4Z1sYtji0KLD8mT6IDu4IVLbxZCzOdumgW7nq4PY0I5P7ZBmYHw2K4s/L
- qYcVeAojxOzf8JcusRoeBHwnHoxUBV9bHhRo7/+Y/uRHHVFt/vRziCqFeepmg1LVJDMV1wKt1
- qNJpGLa9uyl4at6Nm7GWA1vpFeV2fBzc9ZFPu01MrSkBI0bZc9+FvwljGTIqxqBMl08UDpvfB
- OW0K6UCzp30OW1jAz/oi+3Z063Kid5F6oT9EwVNuSB3UKAFeIKlOBDNcEQyot1xcGCDcERRi8
- CR+RWRfkrcTdcHen7wx5eNcP3ykejiaKJQJgIJXSXDgjzq8qjZX0g/b2X7wTDB29HLCOoQNXQ
- l2rFZJVXDvv6ikv8ZbJQ==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af85febd-940c-4385-17ec-08da69df07db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2022 23:33:05.6143
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3g7MzSX8l+Crjvw9loqUE47pRZ9JO4LZLE+/T6dlAw4f3uoheyxo27J1VZawN/ZEnrl098zDoQiRjV+Xox7C8Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6225
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 3:12 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> Hi Arnd,
->
-> Appreciate you taking care of this!
->
-> Are these questions direct to me or Joel?
->
-> On our side we will be happy that you will start to merge Arbel
-> NPCM8XX without the clock driver, hopefully the NPCM8XX clock driver
-> will ACK soon and maybe you can merge it as well.
->
-> What do you say Joel?
 
-As discussed off-list, I have now merged the series into the soc tree
-as part of the arm/newsoc branch directly, with the exception of the
-clk driver. No need to resend the patches I merged for future versions,
-if any changes are required before the merge window, please send
-them directly to soc@kernel.org.
 
-After that, it's best to continue working with Joel so he can merge
-and forward future patches.
+> -----Original Message-----
+> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> Sent: Tuesday, July 19, 2022 5:26 AM
+> To: Shenwei Wang <shenwei.wang@nxp.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; linux-serial <linux-
+> serial@vger.kernel.org>; stable@vger.kernel.org
+> Subject: [EXT] Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit=
+ in CS7
+> mode
+>=20
+> Caution: EXT Email
+>=20
+> On Thu, 14 Jul 2022, Shenwei Wang wrote:
+>=20
+> > The LPUART hardware doesn't zero out the parity bit on the received
+> > characters. This behavior won't impact the use cases of CS8 because
+> > the parity bit is the 9th bit which is not currently used by software.
+> > But the parity bit for CS7 must be zeroed out by software in order to
+> > get the correct raw data.
+>=20
+> This problem only occurs with the lpuart32 variant? Or should the other
+> functions be changed as well?
 
-Regarding the clk driver, please make sure this applies cleanly
-on top of what I just merged. This can be applied to either
-the soc tree at the moment, or the common-clk tree in the
-future if it misses the merge window.
+In theory this problem should occur with the non lpuart32 variant too, beca=
+use LPUART32 was derived from the non lpuart32 IP module.  However, I don't=
+ have a platform to confirm it.
 
-      Arnd
+Thanks,
+Shenwei
+
+>=20
+> --
+>  i.
+>=20
+>=20
+> > Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> > ---
+> > changes in v2
+> > - remove the "inline" keyword from the function of
+> > lpuart_tty_insert_flip_string;
+> >
+> > changes in v1
+> > - fix the code indent and whitespace issue;
+> >
+> >  drivers/tty/serial/fsl_lpuart.c | 26 ++++++++++++++++++++++++--
+> >  1 file changed, 24 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/fsl_lpuart.c
+> > b/drivers/tty/serial/fsl_lpuart.c index fc7d235a1e270..afa0f941c862f
+> > 100644
+> > --- a/drivers/tty/serial/fsl_lpuart.c
+> > +++ b/drivers/tty/serial/fsl_lpuart.c
+> > @@ -274,6 +274,8 @@ struct lpuart_port {
+> >       int                     rx_dma_rng_buf_len;
+> >       unsigned int            dma_tx_nents;
+> >       wait_queue_head_t       dma_wait;
+> > +     bool                    is_cs7; /* Set to true when character siz=
+e is 7 */
+> > +                                     /* and the parity is enabled     =
+       */
+> >  };
+> >
+> >  struct lpuart_soc_data {
+> > @@ -1022,6 +1024,9 @@ static void lpuart32_rxint(struct lpuart_port *sp=
+ort)
+> >                               flg =3D TTY_OVERRUN;
+> >               }
+> >
+> > +             if (sport->is_cs7)
+> > +                     rx &=3D 0x7F;
+> > +
+> >               if (tty_insert_flip_char(port, rx, flg) =3D=3D 0)
+> >                       sport->port.icount.buf_overrun++;
+> >       }
+> > @@ -1107,6 +1112,17 @@ static void lpuart_handle_sysrq(struct lpuart_po=
+rt
+> *sport)
+> >       }
+> >  }
+> >
+> > +static int lpuart_tty_insert_flip_string(struct tty_port *port,
+> > +     unsigned char *chars, size_t size, bool is_cs7) {
+> > +     int i;
+> > +
+> > +     if (is_cs7)
+> > +             for (i =3D 0; i < size; i++)
+> > +                     chars[i] &=3D 0x7F;
+> > +     return tty_insert_flip_string(port, chars, size); }
+> > +
+> >  static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)  {
+> >       struct tty_port *port =3D &sport->port.state->port; @@ -1217,7
+> > +1233,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+> >       if (ring->head < ring->tail) {
+> >               count =3D sport->rx_sgl.length - ring->tail;
+> >
+> > -             copied =3D tty_insert_flip_string(port, ring->buf + ring-=
+>tail, count);
+> > +             copied =3D lpuart_tty_insert_flip_string(port, ring->buf =
++ ring->tail,
+> > +                                     count, sport->is_cs7);
+> >               if (copied !=3D count)
+> >                       sport->port.icount.buf_overrun++;
+> >               ring->tail =3D 0;
+> > @@ -1227,7 +1244,8 @@ static void lpuart_copy_rx_to_tty(struct lpuart_p=
+ort
+> *sport)
+> >       /* Finally we read data from tail to head */
+> >       if (ring->tail < ring->head) {
+> >               count =3D ring->head - ring->tail;
+> > -             copied =3D tty_insert_flip_string(port, ring->buf + ring-=
+>tail, count);
+> > +             copied =3D lpuart_tty_insert_flip_string(port, ring->buf =
++ ring->tail,
+> > +                                     count, sport->is_cs7);
+> >               if (copied !=3D count)
+> >                       sport->port.icount.buf_overrun++;
+> >               /* Wrap ring->head if needed */ @@ -2066,6 +2084,7 @@
+> > lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+> >       ctrl =3D old_ctrl =3D lpuart32_read(&sport->port, UARTCTRL);
+> >       bd =3D lpuart32_read(&sport->port, UARTBAUD);
+> >       modem =3D lpuart32_read(&sport->port, UARTMODIR);
+> > +     sport->is_cs7 =3D false;
+> >       /*
+> >        * only support CS8 and CS7, and for CS7 must enable PE.
+> >        * supported mode:
+> > @@ -2184,6 +2203,9 @@ lpuart32_set_termios(struct uart_port *port, stru=
+ct
+> ktermios *termios,
+> >       lpuart32_write(&sport->port, ctrl, UARTCTRL);
+> >       /* restore control register */
+> >
+> > +     if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) =3D=3D UARTCTRL_PE)
+> > +             sport->is_cs7 =3D true;
+> > +
+> >       if (old && sport->lpuart_dma_rx_use) {
+> >               if (!lpuart_start_rx_dma(sport))
+> >                       rx_dma_timer_init(sport);
+> > --
+> > 2.25.1
+> >
