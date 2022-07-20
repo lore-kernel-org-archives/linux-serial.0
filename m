@@ -2,26 +2,26 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA680C43334
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jul 2022 14:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0C1CCA480
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jul 2022 14:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232596AbiGTO0Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Jul 2022 10:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S234317AbiGTO0a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Jul 2022 10:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230285AbiGTO0Y (ORCPT
+        with ESMTP id S234372AbiGTO0Z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Jul 2022 10:26:24 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2069.outbound.protection.outlook.com [40.107.237.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D0D3ED68;
-        Wed, 20 Jul 2022 07:26:23 -0700 (PDT)
+        Wed, 20 Jul 2022 10:26:25 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B2118B16;
+        Wed, 20 Jul 2022 07:26:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fpj/s+lppKZqWrn5gatqrPCuzbc1my7GZExF/diijnZV7JzJCgfw1/Xq+FCfp+RPbeo1pcY5CmqViv/Kqx/Fi32yEuGFH8bXmTceg3A30IZpSap4RQhpaohmcT97rdiLekgzqBdkzn/HHwv0s+lX7pAkCY6M8OZh4TLWexJVksRnzLjXfhouD+LZ9UCCiJUOOiWpQ932isoYn8ARdRKZQz1+nO9/j+s9YyXbt49mPdCkeerU4gyyRjhfHEMAnn8xOcqKYMLXyHcZsCGg8Q7bKcvdoefScUVE2KrFc7CTWII1+X048RJ2UG2gm7kz+nfshu4FzAFH5wbRCBfLCzQaSg==
+ b=esLUyrYhbCPwqVlxFLA4dysmce2IcQtXCaDm5YW4oMPCnWb4yVbk/5s8qBWSDwU3yAHrPjVYTj2SbaRCpbpEjGW/E/CqEJSnbhgc1/EzodJVDrndO6hfJJXSzPyPQudeorAi+sPEoj+mkOpM+Tg42GjpNbqIIEqutXiEKcP9nf6xeE8IcuN6HA8jAtaLseMxI74ieCiyC5hFto0hQkDb5cglgy+IHC/shc1uN/pH7897Bt5+Ap5+D09j818AnWcSCdQapducUWRvYPT1sFYF+joezv+9WLBhOm9rnYJ/9ZvWrzboC4wh+vl/liCuEyhNZkrDW8qQVzXjaas4I2CmWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YRYfdJvrOs+sZvH+MTLrzXCbSHS5XhTJltq83gLtT3Q=;
- b=QtKTrAu0Ycps2rvKH2MVPLt76rduOWKCT36uw3gb9z38U8p6dl6fHG+u+J2f1eaG9zUvpSRRCSVjwn4vNKnDhFXHK/d+1H3zNYRRM74u9K5i+Mxf4C8og5JnBmzT0mrDuTymMnSd553jkCSr69Z13S705hCR/mQZ4vh7SZMU/ZSkS8LzPZmJ3QwxToXobEztM2xOfO3kwPe3rqUJUPVw3BNiMKpTjfg6IYTKvF8JQl2hXzeo9+VPCegea5GBeD9FnlEwgUqwcUtiIPLqXI68SDfwNhjNebUbLm4RiBYFeLiObJoAg8a5gOXZjeWHuwltfRj1ulmAIukKdCPlytxTVQ==
+ bh=iLc0Bigpsyk6pzFgqGGXXuFvXixJ4mMfmAr3UlDDqtg=;
+ b=EBA9O63uFuCFUMPAzbyUwgpcg6oJr/XGMHGdVo1n4t6X6/cKp6y5qV8jbDThGABGpQLmxHbWHlmOwCMqfeaM0YmftqUVDnYzdxtzDZF7AtMe/7VgOe1NjWujUT1vUU2Wzj5sFHXNFZyEqI0HjOSeongTfcNfmoxAuP3fszVzWK4Ee+DUHZ5E0WljzuyKHC2nQ5VwYE7Y76uu2a30jfJkKlKOC8XIKL73dmS6/h5pbKlZJIy/sg/uD6Y+yOi6Vjzdl7vtjlfqyhOwM1HnP0y0VCb1Myoakhq5CiwT8PHV4zqVa2kpCSOz0NueF6UzQx2P28sIY9oSHS2Lua6d0OHF5g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,35 +29,35 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YRYfdJvrOs+sZvH+MTLrzXCbSHS5XhTJltq83gLtT3Q=;
- b=RT94h5Gt27+orC6mqaJ/qFjWt5/rfAIUafh7DCsxd5Q7ky0i562s4gyHOVQehCnYB45wp0d8mV/Ny/UeJe1ljwEUaoTYl6CEH1UyDuAMPfYG8k5H/lPSmpbVh5LgnaUxY5BinMLXL9l9X52NxGJ/MilqQWlQmIVrkrv08NYHES0=
-Received: from SN4PR0501CA0022.namprd05.prod.outlook.com
- (2603:10b6:803:40::35) by DM6PR02MB5211.namprd02.prod.outlook.com
- (2603:10b6:5:49::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21; Wed, 20 Jul
- 2022 14:26:19 +0000
-Received: from SN1NAM02FT0060.eop-nam02.prod.protection.outlook.com
- (2603:10b6:803:40:cafe::e6) by SN4PR0501CA0022.outlook.office365.com
- (2603:10b6:803:40::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.9 via Frontend
- Transport; Wed, 20 Jul 2022 14:26:19 +0000
+ bh=iLc0Bigpsyk6pzFgqGGXXuFvXixJ4mMfmAr3UlDDqtg=;
+ b=GhZRMgAk3Upc6oQk3OosPo8KDRWTC+FCNnSUmtb8yzjkXQrVJ+9C+k3VPjNRpWvBIPVziLQE/B3SqQ0HbSiY0SWaHVX3wEiro4RGsr6sD8toqWAFXNbN8jfMHU70gDdF2SGi+hpn+0YwRXodLNPzv3cMxkoO461f78t+2h6nQfM=
+Received: from DM6PR02CA0134.namprd02.prod.outlook.com (2603:10b6:5:1b4::36)
+ by SA0PR02MB7418.namprd02.prod.outlook.com (2603:10b6:806:e0::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Wed, 20 Jul
+ 2022 14:26:22 +0000
+Received: from DM3NAM02FT030.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:1b4:cafe::1a) by DM6PR02CA0134.outlook.office365.com
+ (2603:10b6:5:1b4::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.21 via Frontend
+ Transport; Wed, 20 Jul 2022 14:26:22 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0060.mail.protection.outlook.com (10.97.4.134) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT030.mail.protection.outlook.com (10.13.4.160) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Wed, 20 Jul 2022 14:26:19 +0000
+ 15.20.5458.17 via Frontend Transport; Wed, 20 Jul 2022 14:26:22 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 20 Jul 2022 07:26:18 -0700
+ 15.1.2176.14; Wed, 20 Jul 2022 07:26:20 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 20 Jul 2022 07:26:18 -0700
+ 15.1.2176.14 via Frontend Transport; Wed, 20 Jul 2022 07:26:20 -0700
 Envelope-to: git@xilinx.com,
  linux-serial@vger.kernel.org,
  krzysztof.kozlowski+dt@linaro.org,
@@ -67,15 +67,15 @@ Envelope-to: git@xilinx.com,
 Received: from [10.140.6.59] (port=55844 helo=xhdshubhraj40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <shubhrajyoti.datta@xilinx.com>)
-        id 1oEAeX-0000jg-LR; Wed, 20 Jul 2022 07:26:18 -0700
+        id 1oEAeZ-0000jg-V7; Wed, 20 Jul 2022 07:26:20 -0700
 From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 To:     <linux-serial@vger.kernel.org>
 CC:     <git@xilinx.com>, <shubhrajyoti.datta@xilinx.com>,
         <krzysztof.kozlowski+dt@linaro.org>, <gregkh@linuxfoundation.org>,
         <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 1/2] dt-bindings: serial: pl011: Add 'arm,xlnx-uart'
-Date:   Wed, 20 Jul 2022 19:56:11 +0530
-Message-ID: <20220720142612.19779-2-shubhrajyoti.datta@xilinx.com>
+Subject: [PATCH v2 2/2] serial: pl011: Add support for Xilinx Uart
+Date:   Wed, 20 Jul 2022 19:56:12 +0530
+Message-ID: <20220720142612.19779-3-shubhrajyoti.datta@xilinx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220720142612.19779-1-shubhrajyoti.datta@xilinx.com>
 References: <20220720142612.19779-1-shubhrajyoti.datta@xilinx.com>
@@ -83,62 +83,128 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 72586925-0de9-4c2f-9e35-08da6a5bd060
-X-MS-TrafficTypeDiagnostic: DM6PR02MB5211:EE_
+X-MS-Office365-Filtering-Correlation-Id: 95942d39-92d2-4fb9-b71e-08da6a5bd218
+X-MS-TrafficTypeDiagnostic: SA0PR02MB7418:EE_
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HdNtVTVCN8PQMBepJ/oQ3ftUMfwfUxQdy7Fx/dpxFyA/ABSv9k7cIEsEYB/juxFvRzhaU70g1dEbd0HJemz1Xvo6txUz8tjZqwssNSkJqd6cdmOKVCaeMGRpNhkO3NzjZCVxS8kqGUy+tvQyn9LtM++vENGcSjfSI9Bp5LxHb3W4dccGLKCm+yjOwcMtywYHE9DRx5O2YP+ac4L55/3a81i93/Ygk0yX6C0Ygkh+LU3bTCgwq+/QkDFnS6ghu5FB8a79RPjE3enbKDv5zX7RyB+oCsKvz6dEmDEq01y54ZJCLkyyCamAVzccQeSLWvgLcVouxe2hXjnAmw3sLrq1QOXRtE8DArbSbpXZL8Nzd/if09Mtl1L43/6USchl8dKlQ04nXIKC3CWt0O/4RtVCRy9zkASlZ/hdlxWr2Wywv+LiozBg4YPSPaXCzJAGAgp+F12u8UGrD8yyFptUzDfshadF2NvhfQUC9lt1ZaJArgnJJPpklGJgNjm9ncDM3ZdPqGRSnsDJTIm6LUvhrUXpgN+gBAn0pXKDjcpyn52gCYtwzv/hpQrJ3lQj7zMiFai5fzmkjjYQztFT8+6f4MKeLcjABxHSzEEhTdPN+itUY8vGhpJJrrExTge8quJ3lmoao7H8xgUcX7XjqRPFWNcsoES+dw1+tsUcHyCI0bhM1kxDifEvZN//lAjnzl5z84tIwd5sEYbMghcZ6OBLYKA/+NRp6sbdsGeJyG/aXOQc3uFCnj5pcVjVtwCtw4qYwT2RT+7cLSokihJfXsCbPFCv31hbCAImH3y3oDNAmX5FfbV1TxWlUq+wkyXixf7pA9tjcffDhXCxR8Nu4qm/ElRRtg==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(376002)(39860400002)(346002)(40470700004)(36840700001)(46966006)(70586007)(8676002)(7696005)(4326008)(70206006)(8936002)(186003)(82310400005)(426003)(47076005)(336012)(6916009)(40480700001)(44832011)(83380400001)(356005)(82740400003)(54906003)(40460700003)(316002)(2616005)(478600001)(36756003)(5660300002)(6666004)(26005)(9786002)(36860700001)(2906002)(7636003)(41300700001)(1076003)(102446001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: q7LTyMfJ8D6RL/fO/R9S6ECCwszlvNl5iXR3ORTT1d5FMnEvJSbEscUQiZ18pKDPL70nXy+P73dH711CqvyOryA4WbCdPAYLDUXqJEPjhEYWGE74WJoukOHgQuCZJlhDMcSnSwnEPmcZ7uQ0lmixh2YmhTjQJZVzHM9+v+v/nOvQQAOCFoF9710T8Jv23ZrZtkLMdWS71Dt433J1/M949TQDYjXzIMvLI6maZjVFmu8c04T09XWpp3kv/Oh8Z4QjTQ0Kl6tBhmuXCImI1mJEYV0g0DnHJFc3HRNEUxGj45erSTgh7Xp6AIIO06STKDC0tFyPuZ1kwFVjDyr8SPrJUJVRbApK2THw+KiyySAuyBAzayHaH+WYetC8vIpeGSxsacZts6UBzt1NgYRmrvKzoIJkWgtLlNEwpGsepCBB3MO4TWaTeTwVLz55LnsNKE3aRtOaifbLnYVPBml3JYzmTfUAL2ISZ1SaKkSFglnYmW71TtpMfRSZ+IURvdtzOafurOwPNWVptmkYD5O0kZvO1OZHv4d9fVEz8hqKSC1BqSkLJxr6Ibr7XL8TR09QXm7i2v3/So3/KGqV2nL0r5u9qFzDC+1ofqf7OJ+b7O02GacPumLOBx38/gKIh4jiG7c/mpvNhlBJ2GEP/qatlmCvzzuHGiDkQx0sszYkuveYo70WUdpseEne2wTxJqdtRqb+nvMA7Ei11BjNq2/f2XZ4rLqPRa75ShmLm1Nz33xs6Mv/bujR5oAbIU1kBmJhKjMa6UOE4sqCH4UbaYy2d5aE2K7t77FzNXPXJjgKcHaMe885PMikME4hEmCPn1MxTwagtXAmSB+LjmFeLwMLx/6VMQ==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(396003)(346002)(40470700004)(46966006)(36840700001)(70206006)(40460700003)(54906003)(316002)(336012)(6916009)(26005)(36860700001)(426003)(8676002)(47076005)(83380400001)(70586007)(82310400005)(36756003)(40480700001)(4326008)(44832011)(2906002)(186003)(6666004)(9786002)(8936002)(7696005)(41300700001)(478600001)(1076003)(2616005)(7636003)(82740400003)(356005)(5660300002)(102446001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 14:26:19.5813
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2022 14:26:22.4812
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72586925-0de9-4c2f-9e35-08da6a5bd060
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95942d39-92d2-4fb9-b71e-08da6a5bd218
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0060.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT030.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5211
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR02MB7418
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Xilinx Versal board uses the arm,pl011 ip. However the
-axi port that it is connected to has a limitation that it allows
-only 32-bit accesses. So to differentiate we add a compatible.
+From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 
-Add support for Uart used in Xilinx Versal SOCs as a platform
-device.
+The xilinx uart used in Versal SOC follows arm pl011 implementation
+with just a minor change in data bus width. The minimum data
+transaction width in Versal SOC is 32-bit as specified in the
+TRM (Chapter 39: Transaction attributes). Pl011 defaults to 16-bit
+in the driver.
+So, add the xilinx uart as platform device with properties specified
+in 'vendor_data' structure.
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 ---
- Documentation/devicetree/bindings/serial/pl011.yaml | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
-index d8aed84abcd3..bf094ab93086 100644
---- a/Documentation/devicetree/bindings/serial/pl011.yaml
-+++ b/Documentation/devicetree/bindings/serial/pl011.yaml
-@@ -24,9 +24,13 @@ select:
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 97ef41cb2721..096a56f64d17 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -152,6 +152,21 @@ static const struct vendor_data vendor_sbsa = {
+ 	.fixed_options		= true,
+ };
  
- properties:
-   compatible:
--    items:
--      - const: arm,pl011
--      - const: arm,primecell
-+    oneOf:
-+      - items:
-+          - const: arm,pl011
-+          - const: arm,primecell
-+      - items:
-+          - const: arm,pl011
-+          - const: arm,xlnx-uart # xilinx uart as platform device
++static const struct vendor_data vendor_xlnx = {
++	.reg_offset             = pl011_std_offsets,
++	.ifls                   = UART011_IFLS_RX4_8 | UART011_IFLS_TX4_8,
++	.fr_busy                = UART01x_FR_BUSY,
++	.fr_dsr                 = UART01x_FR_DSR,
++	.fr_cts                 = UART01x_FR_CTS,
++	.fr_ri                  = UART011_FR_RI,
++	.access_32b             = true,
++	.oversampling           = false,
++	.dma_threshold          = false,
++	.cts_event_workaround   = false,
++	.always_enabled         = true,
++	.fixed_options          = false,
++};
++
+ #ifdef CONFIG_ACPI_SPCR_TABLE
+ static const struct vendor_data vendor_qdt_qdf2400_e44 = {
+ 	.reg_offset		= pl011_std_offsets,
+@@ -2581,6 +2596,7 @@ static int __init pl011_early_console_setup(struct earlycon_device *device,
+ }
+ OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
+ OF_EARLYCON_DECLARE(pl011, "arm,sbsa-uart", pl011_early_console_setup);
++OF_EARLYCON_DECLARE(pl011, "arm,xlnx-uart", pl011_early_console_setup);
  
-   reg:
-     maxItems: 1
+ /*
+  * On Qualcomm Datacenter Technologies QDF2400 SOCs affected by
+@@ -2824,6 +2840,7 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ {
+ 	struct uart_amba_port *uap;
+ 	struct resource *r;
++	int xlnx_uart = 0;
+ 	int portnr, ret;
+ 	int baudrate;
+ 
+@@ -2834,6 +2851,7 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ 	if (pdev->dev.of_node) {
+ 		struct device_node *np = pdev->dev.of_node;
+ 
++		xlnx_uart = of_device_is_compatible(np, "arm,xlnx-uart");
+ 		ret = of_property_read_u32(np, "current-speed", &baudrate);
+ 		if (ret)
+ 			return ret;
+@@ -2863,13 +2881,23 @@ static int sbsa_uart_probe(struct platform_device *pdev)
+ #endif
+ 		uap->vendor = &vendor_sbsa;
+ 
++	uap->port.ops   = &sbsa_uart_pops;
++
++	if (xlnx_uart) {
++		uap->vendor = &vendor_xlnx;
++		uap->clk = devm_clk_get(&pdev->dev, NULL);
++		if (IS_ERR(uap->clk))
++			return PTR_ERR(uap->clk);
++
++		uap->port.ops = &amba_pl011_pops;
++	}
++
+ 	uap->reg_offset	= uap->vendor->reg_offset;
+ 	uap->fifosize	= 32;
+ 	uap->port.iotype = uap->vendor->access_32b ? UPIO_MEM32 : UPIO_MEM;
+-	uap->port.ops	= &sbsa_uart_pops;
+ 	uap->fixed_baud = baudrate;
+ 
+-	snprintf(uap->type, sizeof(uap->type), "SBSA");
++	snprintf(uap->type, sizeof(uap->type), "%s\n", (xlnx_uart ? "xlnx_uart" : "SBSA"));
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 
+@@ -2893,6 +2921,7 @@ static int sbsa_uart_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id sbsa_uart_of_match[] = {
+ 	{ .compatible = "arm,sbsa-uart", },
++	{ .compatible = "arm,xlnx-uart", },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, sbsa_uart_of_match);
 -- 
 2.17.1
 
