@@ -2,176 +2,219 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A01C433EF
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Jul 2022 15:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46B4CCA48B
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Jul 2022 23:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231796AbiGTPCa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Jul 2022 11:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
+        id S231439AbiGTXv7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 20 Jul 2022 19:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbiGTPC3 (ORCPT
+        with ESMTP id S231370AbiGTXv6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Jul 2022 11:02:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC94F53D0B;
-        Wed, 20 Jul 2022 08:02:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62CAEB8202A;
-        Wed, 20 Jul 2022 15:02:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB88C341CB;
-        Wed, 20 Jul 2022 15:02:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658329346;
-        bh=YtXNC0/HbHYd73S2MobPGIYi5L9P9glepVHyLjo+yIE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WeS2QTCfdwxKUm2Er62+u2E95wrofLc1yybYMswFHp+dmQrUiVQBwIosgsXsPshzR
-         jzgW5Rup6xg+AjB29uFeFNMvj+5+92NYhLGzFumjtIEBqUUfSmkJ7mjeckEmvKg9ch
-         Ab0u0GqcnDcGYjeskkdr0Xvitv7QSCGnSXsuYk5knmzkF8HQFpPtdg0v2rYkfff+QI
-         qh1HIxmTG1e6Sgg/2lmhnzisZBsjuiKwN/oXF2h66/iaaT6U/kfPs1qSm18/X8W5mI
-         jAfJUhciK/zABb2FduQ4o/v3x+QFIM7PhMRKW3+UeP3yCaGhHLZCnxnU3IS4i7lpuO
-         1quOQ4/YMlycQ==
-Received: by mail-ua1-f46.google.com with SMTP id e19so714319uaa.0;
-        Wed, 20 Jul 2022 08:02:25 -0700 (PDT)
-X-Gm-Message-State: AJIora+20BbG7wzpqa8l0YlXe/7H01rZRYKck7LfMmhslbqKtJfl9joe
-        yamQMwZ/71NUaRP1r/HKaQG1HN2YUPVXsKnWcw==
-X-Google-Smtp-Source: AGRyM1u2rvqON7In/cjBTV1BEYMObzvukL/7uaEqk3luqEFv5gH/ltfpcdvrVdJNgSqhpGcgP0J7P/PCo3+FieGYmTM=
-X-Received: by 2002:a05:6130:291:b0:383:3b9:7024 with SMTP id
- q17-20020a056130029100b0038303b97024mr14187591uac.43.1658329344829; Wed, 20
- Jul 2022 08:02:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220720142612.19779-1-shubhrajyoti.datta@xilinx.com> <20220720142612.19779-3-shubhrajyoti.datta@xilinx.com>
-In-Reply-To: <20220720142612.19779-3-shubhrajyoti.datta@xilinx.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 20 Jul 2022 09:02:13 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLP-vKMPvKLt3PXDeW+rTOAKVX68Wo8tGyezFgJ+VTYjA@mail.gmail.com>
-Message-ID: <CAL_JsqLP-vKMPvKLt3PXDeW+rTOAKVX68Wo8tGyezFgJ+VTYjA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] serial: pl011: Add support for Xilinx Uart
-To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        git <git@xilinx.com>,
+        Wed, 20 Jul 2022 19:51:58 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0476743DE
+        for <linux-serial@vger.kernel.org>; Wed, 20 Jul 2022 16:51:53 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id y141so203624pfb.7
+        for <linux-serial@vger.kernel.org>; Wed, 20 Jul 2022 16:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=u7DYu0Gw/d+Qv4eQps3D3O2LfE0rqomK9h/ORzUIG+Q=;
+        b=YM68qEGcB7V0b7Rf0p9q3U0CBrQwvL1Pgye0RSR8M6uir9t3QuBpUb9CIqhl7zpLzt
+         Ao0S/Lb+RrMOUQF+4bUl06BbKr99yXMBmis/cHNzMLy7NKjoL2+VOj8n2prVNOq9BP6a
+         Mfe/Fot9FzGnoLYKEFA4Qqsvo0XRpIbr9EQAg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=u7DYu0Gw/d+Qv4eQps3D3O2LfE0rqomK9h/ORzUIG+Q=;
+        b=hNzXWAT9cKVAlXEahxbSRrU0XjiP9EAxBukK6q7Cr71Wz7Cw5bIyLDv5S0cRa3j9PP
+         hKiqvINBUw0N9nfn4qfnFtiaBo7KfXSjpD8nl2CEnw2amw687/JiVP8dyxyStqAt9qza
+         KK/IqW891M23/OunyzyDFcSUfCl06VrGN3q/l2911V4j5svhJV9rdfgoANFvpFwaEnSU
+         nZAa3fhQT2WQM2r4MrBwn2uDQ0a6+ZzXm/HV+AVBjiXXeCBxS5lxhGs4yjGsGLqCsL6l
+         KQxVA+3OwKycGFmt7v0O8hKtozQSN99LNPtAuY6OLwMmUUtuWhqclZXS1cOOnSR/zWjZ
+         kY1g==
+X-Gm-Message-State: AJIora82OScgk/ia20HWCaB3XhcVwseI7zY88tkWOdCHCTyhlZAdfzrb
+        ZjUFyQQNcBAJrLJiNF5YklDmrg==
+X-Google-Smtp-Source: AGRyM1u7M2xR4x12JwYIuJAyqIyWCnUkPMz6ebyMu8nMudRwiShEyQg2JvTKydooYsWmvqzX3dYowg==
+X-Received: by 2002:a05:6a00:23c9:b0:52a:cedd:3992 with SMTP id g9-20020a056a0023c900b0052acedd3992mr40987168pfc.43.1658361113294;
+        Wed, 20 Jul 2022 16:51:53 -0700 (PDT)
+Received: from ubuntu-22.localdomain ([192.19.222.250])
+        by smtp.gmail.com with ESMTPSA id z1-20020aa79f81000000b0052ba78e7c20sm209171pfr.97.2022.07.20.16.51.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jul 2022 16:51:52 -0700 (PDT)
+From:   William Zhang <william.zhang@broadcom.com>
+To:     william.zhang@broadcom.com
+Cc:     joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCMBCA
+        ARM ARCHITECTURE), Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-i2c@vger.kernel.org (open list:I2C SUBSYSTEM HOST DRIVERS),
+        linux-mtd@lists.infradead.org (open list:MEMORY TECHNOLOGY DEVICES
+        (MTD)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-pci@vger.kernel.org (open list:PCI NATIVE HOST BRIDGE AND
+        ENDPOINT DRIVERS),
+        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK),
+        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
+        linux-mips@vger.kernel.org (open list:BROADCOM BMIPS MIPS ARCHITECTURE),
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        linux-watchdog@vger.kernel.org (open list:WATCHDOG DEVICE DRIVERS),
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 0/9] arm64: bcmbca: Move BCM4908 SoC support under ARCH_BCMBCA
+Date:   Wed, 20 Jul 2022 16:51:35 -0700
+Message-Id: <20220720235135.29044-1-william.zhang@broadcom.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000016c29805e4454913"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 8:26 AM Shubhrajyoti Datta
-<shubhrajyoti.datta@xilinx.com> wrote:
->
-> From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
->
-> The xilinx uart used in Versal SOC follows arm pl011 implementation
-> with just a minor change in data bus width. The minimum data
-> transaction width in Versal SOC is 32-bit as specified in the
-> TRM (Chapter 39: Transaction attributes). Pl011 defaults to 16-bit
-> in the driver.
-> So, add the xilinx uart as platform device with properties specified
-> in 'vendor_data' structure.
->
-> Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 33 +++++++++++++++++++++++++++++++--
->  1 file changed, 31 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 97ef41cb2721..096a56f64d17 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -152,6 +152,21 @@ static const struct vendor_data vendor_sbsa = {
->         .fixed_options          = true,
->  };
->
-> +static const struct vendor_data vendor_xlnx = {
-> +       .reg_offset             = pl011_std_offsets,
-> +       .ifls                   = UART011_IFLS_RX4_8 | UART011_IFLS_TX4_8,
-> +       .fr_busy                = UART01x_FR_BUSY,
-> +       .fr_dsr                 = UART01x_FR_DSR,
-> +       .fr_cts                 = UART01x_FR_CTS,
-> +       .fr_ri                  = UART011_FR_RI,
-> +       .access_32b             = true,
-> +       .oversampling           = false,
-> +       .dma_threshold          = false,
-> +       .cts_event_workaround   = false,
-> +       .always_enabled         = true,
-> +       .fixed_options          = false,
-> +};
-> +
->  #ifdef CONFIG_ACPI_SPCR_TABLE
->  static const struct vendor_data vendor_qdt_qdf2400_e44 = {
->         .reg_offset             = pl011_std_offsets,
-> @@ -2581,6 +2596,7 @@ static int __init pl011_early_console_setup(struct earlycon_device *device,
->  }
->  OF_EARLYCON_DECLARE(pl011, "arm,pl011", pl011_early_console_setup);
->  OF_EARLYCON_DECLARE(pl011, "arm,sbsa-uart", pl011_early_console_setup);
-> +OF_EARLYCON_DECLARE(pl011, "arm,xlnx-uart", pl011_early_console_setup);
->
->  /*
->   * On Qualcomm Datacenter Technologies QDF2400 SOCs affected by
-> @@ -2824,6 +2840,7 @@ static int sbsa_uart_probe(struct platform_device *pdev)
->  {
->         struct uart_amba_port *uap;
->         struct resource *r;
-> +       int xlnx_uart = 0;
->         int portnr, ret;
->         int baudrate;
->
-> @@ -2834,6 +2851,7 @@ static int sbsa_uart_probe(struct platform_device *pdev)
->         if (pdev->dev.of_node) {
->                 struct device_node *np = pdev->dev.of_node;
->
-> +               xlnx_uart = of_device_is_compatible(np, "arm,xlnx-uart");
->                 ret = of_property_read_u32(np, "current-speed", &baudrate);
->                 if (ret)
->                         return ret;
-> @@ -2863,13 +2881,23 @@ static int sbsa_uart_probe(struct platform_device *pdev)
->  #endif
->                 uap->vendor = &vendor_sbsa;
->
-> +       uap->port.ops   = &sbsa_uart_pops;
+--00000000000016c29805e4454913
+Content-Transfer-Encoding: 8bit
 
-SBSA is only a subset of PL011 functionality. I don't think you want
-to use that. Is there some reason you can't set uap->port.iotype to
-UPIO_MEM32 based on 'reg-io-width' in pl011_probe()? The console setup
-would need something too, but it should be the same as 8250 setup
-IIRC.
+Now that Broadcom Broadband arch ARCH_BCMBCA is in the kernel, this
+patch series migrates the existing broadband chip BCM4908 support to
+ARCH_BCMBCA.
 
-> +
-> +       if (xlnx_uart) {
-> +               uap->vendor = &vendor_xlnx;
-> +               uap->clk = devm_clk_get(&pdev->dev, NULL);
-> +               if (IS_ERR(uap->clk))
-> +                       return PTR_ERR(uap->clk);
-> +
-> +               uap->port.ops = &amba_pl011_pops;
+William Zhang (9):
+  dt-bindings: arm64: bcmbca: Merge BCM4908 into BCMBCA
+  dt-bindings: arm64: bcmbca: Update BCM4908 description
+  arm64: dts: bcmbca: update BCM4908 board dts files
+  arm64: dts: Move BCM4908 dts to bcmbca folder
+  arm64: dts: Add BCM4908 generic board dts
+  arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
+  arm64: bcmbca: Merge ARCH_BCM4908 to ARCH_BCMBCA
+  MAINTAINERS: Add BCM4908 maintainer to BCMBCA entry
+  arm64: defconfig: remove BCM4908
 
-None of this would be needed either.
+ .../bindings/arm/bcm/brcm,bcm4908.yaml        | 42 -------------------
+ .../bindings/arm/bcm/brcm,bcmbca.yaml         | 25 +++++++++++
+ MAINTAINERS                                   |  1 +
+ arch/arm64/Kconfig.platforms                  | 10 +----
+ arch/arm64/boot/dts/broadcom/Makefile         |  1 -
+ arch/arm64/boot/dts/broadcom/bcm4908/Makefile |  5 ---
+ arch/arm64/boot/dts/broadcom/bcmbca/Makefile  |  5 +++
+ .../bcm4906-netgear-r8000p.dts                |  2 +-
+ .../bcm4906-tplink-archer-c2300-v1.dts        |  2 +-
+ .../broadcom/{bcm4908 => bcmbca}/bcm4906.dtsi |  0
+ .../bcm4908-asus-gt-ac5300.dts                |  2 +-
+ .../bcm4908-netgear-raxe500.dts               |  2 +-
+ .../broadcom/{bcm4908 => bcmbca}/bcm4908.dtsi |  0
+ .../boot/dts/broadcom/bcmbca/bcm94908.dts     | 30 +++++++++++++
+ arch/arm64/configs/defconfig                  |  1 -
+ drivers/i2c/busses/Kconfig                    |  4 +-
+ drivers/mtd/parsers/Kconfig                   |  6 +--
+ drivers/net/ethernet/broadcom/Kconfig         |  4 +-
+ drivers/pci/controller/Kconfig                |  2 +-
+ drivers/phy/broadcom/Kconfig                  |  4 +-
+ drivers/pinctrl/bcm/Kconfig                   |  4 +-
+ drivers/reset/Kconfig                         |  2 +-
+ drivers/soc/bcm/bcm63xx/Kconfig               |  4 +-
+ drivers/tty/serial/Kconfig                    |  4 +-
+ drivers/watchdog/Kconfig                      |  2 +-
+ 25 files changed, 84 insertions(+), 80 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/bcm/brcm,bcm4908.yaml
+ delete mode 100644 arch/arm64/boot/dts/broadcom/bcm4908/Makefile
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4906-netgear-r8000p.dts (96%)
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4906-tplink-archer-c2300-v1.dts (99%)
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4906.dtsi (100%)
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4908-asus-gt-ac5300.dts (97%)
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4908-netgear-raxe500.dts (89%)
+ rename arch/arm64/boot/dts/broadcom/{bcm4908 => bcmbca}/bcm4908.dtsi (100%)
+ create mode 100644 arch/arm64/boot/dts/broadcom/bcmbca/bcm94908.dts
 
-> +       }
-> +
->         uap->reg_offset = uap->vendor->reg_offset;
->         uap->fifosize   = 32;
->         uap->port.iotype = uap->vendor->access_32b ? UPIO_MEM32 : UPIO_MEM;
-> -       uap->port.ops   = &sbsa_uart_pops;
->         uap->fixed_baud = baudrate;
->
-> -       snprintf(uap->type, sizeof(uap->type), "SBSA");
-> +       snprintf(uap->type, sizeof(uap->type), "%s\n", (xlnx_uart ? "xlnx_uart" : "SBSA"));
->
->         r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->
-> @@ -2893,6 +2921,7 @@ static int sbsa_uart_remove(struct platform_device *pdev)
->
->  static const struct of_device_id sbsa_uart_of_match[] = {
->         { .compatible = "arm,sbsa-uart", },
-> +       { .compatible = "arm,xlnx-uart", },
->         {},
->  };
->  MODULE_DEVICE_TABLE(of, sbsa_uart_of_match);
-> --
-> 2.17.1
->
+-- 
+2.34.1
+
+
+--00000000000016c29805e4454913
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
+fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
+BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
+YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
+BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
+MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
+YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
+Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
+HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
+BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
++EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
+abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
+ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
+W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
+1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
+MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
+VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
+SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIC+VGi0iJxiJTnPCM53DAIYniJ5B
+RZK3GO6r3CaUkXk9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
+MDcyMDIzNTE1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
+AwQCATANBgkqhkiG9w0BAQEFAASCAQBZLz7sf9dse+D9zZpDwivDvMhOuVj+XQ/+Ph18GJjUT5LB
+ge5C2lfz3L3GR4wgrcXO+pnwuK9RrRWB8IFknkBhV1yeJbl7qd86YqEE2kC/tsxyPVJQ5CZnfcWw
+j04pgplpf07gINpurEmZyFMi2Pl1VZG4Pxzs0jJVSuryY0WrdATfHWB853tQlfdPTQhz+tb9blTj
++NHRzU0Z8uRFuh8e57IoahVbp0oVfDXR77/VmDf6kIbIM1EdmmcApRybkqnO7E1JzS73q9hW2T9G
+3faPsmgypTPE+UzOjqRPJN5RMDFM8naTSCOVICU87Df4/MIqKt19KzgmrnIAZBSzUPdT
+--00000000000016c29805e4454913--
