@@ -2,181 +2,215 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6047ECCA487
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jul 2022 19:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBE4C43334
+	for <linux-serial@archiver.kernel.org>; Thu, 21 Jul 2022 21:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiGUToz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Jul 2022 15:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
+        id S233766AbiGUVpw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 21 Jul 2022 17:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiGUToy (ORCPT
+        with ESMTP id S233499AbiGUVpw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Jul 2022 15:44:54 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15785E83B
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jul 2022 12:44:52 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so6237469pjq.4
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jul 2022 12:44:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to;
-        bh=mFRvmd4oXsWBbt/4lWHC2Stjt3105+Dp6g0iUYk9uVs=;
-        b=Ouc1ANwbnAyqsALYl2jWSJmj0cn/jhidPH5iPFAn3+GWySVZM5F5345uF0Y+E+0AeA
-         BCqcpWjBUWT0boWaWf8iweltRD7pUN/o2R6xxJ+j1gNjmnMzJmwKrwzuSqVHMObmBdT9
-         xUcWaeN+UzIJI1qvbmzfJ5g7qB3YcG7Ar7QMQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to;
-        bh=mFRvmd4oXsWBbt/4lWHC2Stjt3105+Dp6g0iUYk9uVs=;
-        b=t54qLPFTe3quzH//1VLu7iDpeOvYTROPPI0xmyrgYBs7UWNzJS2pQGEho+ezUIvy/g
-         S72f5LZjA0zusBJkjlDt01c12v8Zpnfl3pTRZEtn37sOC0/UFZz8LQ7meodQ/KtLjXv5
-         kFFXDsHxJdhVxNk+cC0SdH0yUAmcUTad9e3icyDxMh9PVdswlnEqUHPOr9jA+vvRiwRS
-         Jw3Rmognzeg9C4cYCNufvzftCWl4od8WFK8d4b0KGACFr4uDCFDapsyd5YZg8PGBOM1U
-         HfdlQVVlgstRnRB1Njb4H02sYG4Orqf1zD+KHfm+M0tVG71t+UYh56G3HJwpHihwCNUk
-         a6/w==
-X-Gm-Message-State: AJIora8ZGG1SoTraLDOxsaf9tz40V1S6FmSI23jd6yCeM9H6I9/DFW4+
-        FQszk60DSG0GmQrB8cx82wJmMQ==
-X-Google-Smtp-Source: AGRyM1sXPRTKiCfiOqrfAHZj+YagpcWf/s3PKVeIA1vCXDF1wkASg5yaaHi4v0oUtKj48902SgJv+w==
-X-Received: by 2002:a17:902:ce86:b0:16c:8a4e:746a with SMTP id f6-20020a170902ce8600b0016c8a4e746amr42701961plg.168.1658432692196;
-        Thu, 21 Jul 2022 12:44:52 -0700 (PDT)
-Received: from bcacpedev-irv-3.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id k8-20020a170902ce0800b0016c4f96b0aesm2054954plg.297.2022.07.21.12.44.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Jul 2022 12:44:50 -0700 (PDT)
-Subject: Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <20220721000740.29624-1-william.zhang@broadcom.com>
- <67a913c5cc1672152a34370f952b93eb@milecki.pl>
-From:   William Zhang <william.zhang@broadcom.com>
-Message-ID: <d4ad6923-9192-8590-730f-d1d2e88a0f14@broadcom.com>
-Date:   Thu, 21 Jul 2022 12:44:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.4.0
+        Thu, 21 Jul 2022 17:45:52 -0400
+X-Greylist: delayed 1275 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 14:45:50 PDT
+Received: from luna (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net [86.15.83.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E87718E32
+        for <linux-serial@vger.kernel.org>; Thu, 21 Jul 2022 14:45:50 -0700 (PDT)
+Received: from ben by luna with local (Exim 4.96)
+        (envelope-from <ben@luna.fluff.org>)
+        id 1oEdep-001ttl-2D;
+        Thu, 21 Jul 2022 22:24:31 +0100
+From:   Ben Dooks <ben-linux@fluff.org>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        Ben Dooks <ben-linux@fluff.org>
+Subject: [PATCH] serial: stm32: make info structs static to avoid sparse warnings
+Date:   Thu, 21 Jul 2022 22:24:30 +0100
+Message-Id: <20220721212430.453192-1-ben-linux@fluff.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <67a913c5cc1672152a34370f952b93eb@milecki.pl>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000085bb7705e455f328"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
---00000000000085bb7705e455f328
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+The info structs are local only to the stm32-usart.c driver and are
+triggering sparse warnings about being undecalred. Move these into
+the main driver code and make them static to avoid the following
+warnings:
 
+drivers/tty/serial/stm32-usart.h:42:25: warning: symbol 'stm32f4_info' was not declared. Should it be static?
+drivers/tty/serial/stm32-usart.h:63:25: warning: symbol 'stm32f7_info' was not declared. Should it be static?
+drivers/tty/serial/stm32-usart.h:85:25: warning: symbol 'stm32h7_info' was not declared. Should it be static?
 
+Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+---
+ drivers/tty/serial/stm32-usart.c | 69 ++++++++++++++++++++++++++++++++
+ drivers/tty/serial/stm32-usart.h | 68 -------------------------------
+ 2 files changed, 69 insertions(+), 68 deletions(-)
 
-On 07/21/2022 12:30 AM, Rafał Miłecki wrote:
-> On 2022-07-21 02:07, William Zhang wrote:
->> Replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
-> 
-> Commit messages should generally answer *why* instead of *what*.
-> 
-> That helps subsystem maintainers review/approve your change without
-> having to walk through the whole series.
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 0973b03eeeaa..01f1ab2c18c0 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -35,6 +35,75 @@
+ #include "serial_mctrl_gpio.h"
+ #include "stm32-usart.h"
+ 
++
++/* Register offsets */
++static struct stm32_usart_info stm32f4_info = {
++	.ofs = {
++		.isr	= 0x00,
++		.rdr	= 0x04,
++		.tdr	= 0x04,
++		.brr	= 0x08,
++		.cr1	= 0x0c,
++		.cr2	= 0x10,
++		.cr3	= 0x14,
++		.gtpr	= 0x18,
++		.rtor	= UNDEF_REG,
++		.rqr	= UNDEF_REG,
++		.icr	= UNDEF_REG,
++	},
++	.cfg = {
++		.uart_enable_bit = 13,
++		.has_7bits_data = false,
++		.fifosize = 1,
++	}
++};
++
++static struct stm32_usart_info stm32f7_info = {
++	.ofs = {
++		.cr1	= 0x00,
++		.cr2	= 0x04,
++		.cr3	= 0x08,
++		.brr	= 0x0c,
++		.gtpr	= 0x10,
++		.rtor	= 0x14,
++		.rqr	= 0x18,
++		.isr	= 0x1c,
++		.icr	= 0x20,
++		.rdr	= 0x24,
++		.tdr	= 0x28,
++	},
++	.cfg = {
++		.uart_enable_bit = 0,
++		.has_7bits_data = true,
++		.has_swap = true,
++		.fifosize = 1,
++	}
++};
++
++static struct stm32_usart_info stm32h7_info = {
++	.ofs = {
++		.cr1	= 0x00,
++		.cr2	= 0x04,
++		.cr3	= 0x08,
++		.brr	= 0x0c,
++		.gtpr	= 0x10,
++		.rtor	= 0x14,
++		.rqr	= 0x18,
++		.isr	= 0x1c,
++		.icr	= 0x20,
++		.rdr	= 0x24,
++		.tdr	= 0x28,
++	},
++	.cfg = {
++		.uart_enable_bit = 0,
++		.has_7bits_data = true,
++		.has_swap = true,
++		.has_wakeup = true,
++		.has_fifo = true,
++		.fifosize = 16,
++	}
++};
++
+ static void stm32_usart_stop_tx(struct uart_port *port);
+ static void stm32_usart_transmit_chars(struct uart_port *port);
+ static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch);
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index ee69c203b926..0ec41a732c88 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -38,74 +38,6 @@ struct stm32_usart_info {
+ 
+ #define UNDEF_REG 0xff
+ 
+-/* Register offsets */
+-struct stm32_usart_info stm32f4_info = {
+-	.ofs = {
+-		.isr	= 0x00,
+-		.rdr	= 0x04,
+-		.tdr	= 0x04,
+-		.brr	= 0x08,
+-		.cr1	= 0x0c,
+-		.cr2	= 0x10,
+-		.cr3	= 0x14,
+-		.gtpr	= 0x18,
+-		.rtor	= UNDEF_REG,
+-		.rqr	= UNDEF_REG,
+-		.icr	= UNDEF_REG,
+-	},
+-	.cfg = {
+-		.uart_enable_bit = 13,
+-		.has_7bits_data = false,
+-		.fifosize = 1,
+-	}
+-};
+-
+-struct stm32_usart_info stm32f7_info = {
+-	.ofs = {
+-		.cr1	= 0x00,
+-		.cr2	= 0x04,
+-		.cr3	= 0x08,
+-		.brr	= 0x0c,
+-		.gtpr	= 0x10,
+-		.rtor	= 0x14,
+-		.rqr	= 0x18,
+-		.isr	= 0x1c,
+-		.icr	= 0x20,
+-		.rdr	= 0x24,
+-		.tdr	= 0x28,
+-	},
+-	.cfg = {
+-		.uart_enable_bit = 0,
+-		.has_7bits_data = true,
+-		.has_swap = true,
+-		.fifosize = 1,
+-	}
+-};
+-
+-struct stm32_usart_info stm32h7_info = {
+-	.ofs = {
+-		.cr1	= 0x00,
+-		.cr2	= 0x04,
+-		.cr3	= 0x08,
+-		.brr	= 0x0c,
+-		.gtpr	= 0x10,
+-		.rtor	= 0x14,
+-		.rqr	= 0x18,
+-		.isr	= 0x1c,
+-		.icr	= 0x20,
+-		.rdr	= 0x24,
+-		.tdr	= 0x28,
+-	},
+-	.cfg = {
+-		.uart_enable_bit = 0,
+-		.has_7bits_data = true,
+-		.has_swap = true,
+-		.has_wakeup = true,
+-		.has_fifo = true,
+-		.fifosize = 16,
+-	}
+-};
+-
+ /* USART_SR (F4) / USART_ISR (F7) */
+ #define USART_SR_PE		BIT(0)
+ #define USART_SR_FE		BIT(1)
+-- 
+2.35.1
 
-Will update in v2.
-
---00000000000085bb7705e455f328
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBWg7DKgph6o1nKUoO9QlhtR24QW
-Zh2VjmtnGiRUTUCfMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDcyMTE5NDQ1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQCqZzregqzog8YjMtxsPiv0DfzyqkrtETIQ8csgvPn/UVGv
-qzKsD6ExiWlQKlScAsuNtB8u7Se3VPAYrQTcnP49guKov0RYEPBvkubYRQVltlTNHiG+PfJ+xQZe
-bseRh4DiBy9SU1C2wm7o3p6KlBPAagDZN+zdKH5hIfRcZTfYStBpBklJho0jWiuQAbr3+5dBqhn3
-hXTzyFTaEpAYppuH3466Zb9+WI3lePl4qjEt97dE5yk7dfCVK8LfDlH/iBiPA8Bg8m3LeE/BCmo7
-arj2A26+KA+RgpqXih2tAX91Ze6gDe3ZaQJN0CiTyJjmayXBNg6QMtYWv4Ne5kYdW7Px
---00000000000085bb7705e455f328--
