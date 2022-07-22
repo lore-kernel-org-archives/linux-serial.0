@@ -2,215 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBE4C43334
-	for <linux-serial@archiver.kernel.org>; Thu, 21 Jul 2022 21:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D89C433EF
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Jul 2022 06:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233766AbiGUVpw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 Jul 2022 17:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S230399AbiGVGLm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 22 Jul 2022 02:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233499AbiGUVpw (ORCPT
+        with ESMTP id S229593AbiGVGLl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 Jul 2022 17:45:52 -0400
-X-Greylist: delayed 1275 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jul 2022 14:45:50 PDT
-Received: from luna (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net [86.15.83.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E87718E32
-        for <linux-serial@vger.kernel.org>; Thu, 21 Jul 2022 14:45:50 -0700 (PDT)
-Received: from ben by luna with local (Exim 4.96)
-        (envelope-from <ben@luna.fluff.org>)
-        id 1oEdep-001ttl-2D;
-        Thu, 21 Jul 2022 22:24:31 +0100
-From:   Ben Dooks <ben-linux@fluff.org>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        Ben Dooks <ben-linux@fluff.org>
-Subject: [PATCH] serial: stm32: make info structs static to avoid sparse warnings
-Date:   Thu, 21 Jul 2022 22:24:30 +0100
-Message-Id: <20220721212430.453192-1-ben-linux@fluff.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 22 Jul 2022 02:11:41 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA722870A;
+        Thu, 21 Jul 2022 23:11:39 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R301e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=yixingrui@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VK4.lyy_1658470295;
+Received: from localhost.localdomain(mailfrom:yixingrui@linux.alibaba.com fp:SMTPD_---0VK4.lyy_1658470295)
+          by smtp.aliyun-inc.com;
+          Fri, 22 Jul 2022 14:11:36 +0800
+From:   Xingrui Yi <yixingrui@linux.alibaba.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xingrui Yi <yixingrui@linux.alibaba.com>
+Subject: [PATCH] vt: remove old FONT ioctls definitions in uapi
+Date:   Fri, 22 Jul 2022 14:11:33 +0800
+Message-Id: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+X-Mailer: git-send-email 2.15.0
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The info structs are local only to the stm32-usart.c driver and are
-triggering sparse warnings about being undecalred. Move these into
-the main driver code and make them static to avoid the following
-warnings:
+As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
+old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
+for years instead.
 
-drivers/tty/serial/stm32-usart.h:42:25: warning: symbol 'stm32f4_info' was not declared. Should it be static?
-drivers/tty/serial/stm32-usart.h:63:25: warning: symbol 'stm32f7_info' was not declared. Should it be static?
-drivers/tty/serial/stm32-usart.h:85:25: warning: symbol 'stm32h7_info' was not declared. Should it be static?
+However, unused definitions of these ioctl numbers and "strut
+consolefontdesc" still exist in a uapi header. They could have been removed
+since no userspace was using them. Otherwise they will become a
+misleading for users, and users will fail with ENOTTY with wrong call.
 
-Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+We are moving old font ioctl numbers definitions here to guide users to
+use KDFONTOP.
+
+Signed-off-by: Xingrui Yi <yixingrui@linux.alibaba.com>
 ---
- drivers/tty/serial/stm32-usart.c | 69 ++++++++++++++++++++++++++++++++
- drivers/tty/serial/stm32-usart.h | 68 -------------------------------
- 2 files changed, 69 insertions(+), 68 deletions(-)
+ include/uapi/linux/kd.h | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 0973b03eeeaa..01f1ab2c18c0 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -35,6 +35,75 @@
- #include "serial_mctrl_gpio.h"
- #include "stm32-usart.h"
+diff --git a/include/uapi/linux/kd.h b/include/uapi/linux/kd.h
+index ee929ece4112..d739b17fc942 100644
+--- a/include/uapi/linux/kd.h
++++ b/include/uapi/linux/kd.h
+@@ -6,19 +6,6 @@
  
-+
-+/* Register offsets */
-+static struct stm32_usart_info stm32f4_info = {
-+	.ofs = {
-+		.isr	= 0x00,
-+		.rdr	= 0x04,
-+		.tdr	= 0x04,
-+		.brr	= 0x08,
-+		.cr1	= 0x0c,
-+		.cr2	= 0x10,
-+		.cr3	= 0x14,
-+		.gtpr	= 0x18,
-+		.rtor	= UNDEF_REG,
-+		.rqr	= UNDEF_REG,
-+		.icr	= UNDEF_REG,
-+	},
-+	.cfg = {
-+		.uart_enable_bit = 13,
-+		.has_7bits_data = false,
-+		.fifosize = 1,
-+	}
-+};
-+
-+static struct stm32_usart_info stm32f7_info = {
-+	.ofs = {
-+		.cr1	= 0x00,
-+		.cr2	= 0x04,
-+		.cr3	= 0x08,
-+		.brr	= 0x0c,
-+		.gtpr	= 0x10,
-+		.rtor	= 0x14,
-+		.rqr	= 0x18,
-+		.isr	= 0x1c,
-+		.icr	= 0x20,
-+		.rdr	= 0x24,
-+		.tdr	= 0x28,
-+	},
-+	.cfg = {
-+		.uart_enable_bit = 0,
-+		.has_7bits_data = true,
-+		.has_swap = true,
-+		.fifosize = 1,
-+	}
-+};
-+
-+static struct stm32_usart_info stm32h7_info = {
-+	.ofs = {
-+		.cr1	= 0x00,
-+		.cr2	= 0x04,
-+		.cr3	= 0x08,
-+		.brr	= 0x0c,
-+		.gtpr	= 0x10,
-+		.rtor	= 0x14,
-+		.rqr	= 0x18,
-+		.isr	= 0x1c,
-+		.icr	= 0x20,
-+		.rdr	= 0x24,
-+		.tdr	= 0x28,
-+	},
-+	.cfg = {
-+		.uart_enable_bit = 0,
-+		.has_7bits_data = true,
-+		.has_swap = true,
-+		.has_wakeup = true,
-+		.has_fifo = true,
-+		.fifosize = 16,
-+	}
-+};
-+
- static void stm32_usart_stop_tx(struct uart_port *port);
- static void stm32_usart_transmit_chars(struct uart_port *port);
- static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch);
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index ee69c203b926..0ec41a732c88 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -38,74 +38,6 @@ struct stm32_usart_info {
+ /* 0x4B is 'K', to avoid collision with termios and vt */
  
- #define UNDEF_REG 0xff
- 
--/* Register offsets */
--struct stm32_usart_info stm32f4_info = {
--	.ofs = {
--		.isr	= 0x00,
--		.rdr	= 0x04,
--		.tdr	= 0x04,
--		.brr	= 0x08,
--		.cr1	= 0x0c,
--		.cr2	= 0x10,
--		.cr3	= 0x14,
--		.gtpr	= 0x18,
--		.rtor	= UNDEF_REG,
--		.rqr	= UNDEF_REG,
--		.icr	= UNDEF_REG,
--	},
--	.cfg = {
--		.uart_enable_bit = 13,
--		.has_7bits_data = false,
--		.fifosize = 1,
--	}
+-#define GIO_FONT	0x4B60	/* gets font in expanded form */
+-#define PIO_FONT	0x4B61	/* use font in expanded form */
+-
+-#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
+-#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
+-struct consolefontdesc {
+-	unsigned short charcount;	/* characters in font (256 or 512) */
+-	unsigned short charheight;	/* scan lines per character (1-32) */
+-	char __user *chardata;		/* font data in expanded form */
 -};
 -
--struct stm32_usart_info stm32f7_info = {
--	.ofs = {
--		.cr1	= 0x00,
--		.cr2	= 0x04,
--		.cr3	= 0x08,
--		.brr	= 0x0c,
--		.gtpr	= 0x10,
--		.rtor	= 0x14,
--		.rqr	= 0x18,
--		.isr	= 0x1c,
--		.icr	= 0x20,
--		.rdr	= 0x24,
--		.tdr	= 0x28,
--	},
--	.cfg = {
--		.uart_enable_bit = 0,
--		.has_7bits_data = true,
--		.has_swap = true,
--		.fifosize = 1,
--	}
--};
+-#define PIO_FONTRESET   0x4B6D	/* reset to default font */
 -
--struct stm32_usart_info stm32h7_info = {
--	.ofs = {
--		.cr1	= 0x00,
--		.cr2	= 0x04,
--		.cr3	= 0x08,
--		.brr	= 0x0c,
--		.gtpr	= 0x10,
--		.rtor	= 0x14,
--		.rqr	= 0x18,
--		.isr	= 0x1c,
--		.icr	= 0x20,
--		.rdr	= 0x24,
--		.tdr	= 0x28,
--	},
--	.cfg = {
--		.uart_enable_bit = 0,
--		.has_7bits_data = true,
--		.has_swap = true,
--		.has_wakeup = true,
--		.has_fifo = true,
--		.fifosize = 16,
--	}
--};
--
- /* USART_SR (F4) / USART_ISR (F7) */
- #define USART_SR_PE		BIT(0)
- #define USART_SR_FE		BIT(1)
+ #define GIO_CMAP	0x4B70	/* gets colour palette on VGA+ */
+ #define PIO_CMAP	0x4B71	/* sets colour palette on VGA+ */
+ 
 -- 
-2.35.1
+2.27.0
 
