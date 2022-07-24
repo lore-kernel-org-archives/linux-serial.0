@@ -2,93 +2,149 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD32C433EF
-	for <linux-serial@archiver.kernel.org>; Sat, 23 Jul 2022 20:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5F1CCA48A
+	for <linux-serial@archiver.kernel.org>; Sun, 24 Jul 2022 09:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238468AbiGWUox (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 23 Jul 2022 16:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        id S231414AbiGXJHJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 24 Jul 2022 05:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238420AbiGWUow (ORCPT
+        with ESMTP id S230321AbiGXJHI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 23 Jul 2022 16:44:52 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA35D1B7BF
-        for <linux-serial@vger.kernel.org>; Sat, 23 Jul 2022 13:44:51 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id q16so7082855pgq.6
-        for <linux-serial@vger.kernel.org>; Sat, 23 Jul 2022 13:44:51 -0700 (PDT)
+        Sun, 24 Jul 2022 05:07:08 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E27165A8;
+        Sun, 24 Jul 2022 02:07:07 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id t1so13866080lft.8;
+        Sun, 24 Jul 2022 02:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QVGUGb8CKotf1INyoHtVPTbvbGHrouTipBeJg0RyviM=;
-        b=C952au4kP2fHzBsISV0jnK+fE5GuiDIrWFFUoEqvpJWznM0IKLR9Rx7gdPwT1HoCJX
-         yp48lmkuXZ5BliWtOKj5nJSeX1mQq2MvgQPYmIXWwWfGpiBvihqPbRU5fNxNFsRuZw07
-         2AumDiKlfswtIKmb7eCkKwIkv/9lbonI/W3tm9mVpsGohMFec0aNXZmFZLkxGNezRxGP
-         JX96Yxiaphm1Xn789MYfML8tVk2FJ7AsSZCWtJRPfarRzzzckofzg1Z2bA6V/XMdafsP
-         IJesWtpFQas4WAomlLT6C0qy0ySfr9HOekOZVlf3iXbxW3PsKbmCok0WTed3I86Hj8Xy
-         q1iA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=twHHobYLA9lRy1K5OK4RAuGFOI4ai78W7xr1iypX7js=;
+        b=VUAVlC4793nwMj0kejd/LhnswSxMM1OmuJnU+Y7zuLWh8lITr/u5/kEmAjG8nOedw1
+         3D8L48ZYToS9vbVLlbDtBLTuHeAgwUX75/c7/F1jEtQZmDwoYOq59g9/Lvh3Rz0n9KxE
+         VZ1VQFUJLTG+Lgc3XAVicvaSEWojoQxVrcXTAnh1vSxZolGik5ggF6+NI+LDZvLilTv+
+         czXZLmxjbN3FhsuRqAy5kOBufRBN6cIoCSUTAQardjBDcYSpf3bVH5I94V4qB1lpCdOH
+         jDf/QBEvPtpnaszZW7KcMkQzFl5sCmSyTA9WplsVWipGLd4rmk+asNaSMk7N7qf2ot5s
+         AWZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QVGUGb8CKotf1INyoHtVPTbvbGHrouTipBeJg0RyviM=;
-        b=SmxC73mJWFjjpAgGylBPCngavnLXSY5Rnh908N3847x0uGuDot6/2L5bFDWEpF22q2
-         T9UsgePdTrLdcA9caXH9ivis7KYi+Wty6w26RJMh4EfPKmvrFjYQH01OG5S6fw61cr02
-         1clCO0e7TuGMYi3j4IMOGjfhr4UB/6rBQmN2dxRQJ52T/FCSSSmZgKKb/0Gh2lNGhtYl
-         MOz1Fs6BtkTc+ANZwY2dpsI0KolZBFj0ilnxej5zUpGukMnVGjv5D6ewdrJbDwTTTiIR
-         E+fzI0PEyzHDVikdj0qDR2ti+MlcKJ3Trv+W6R5rKBWv/oWH1qpVf/cN519d0lNASmC4
-         DwAg==
-X-Gm-Message-State: AJIora+X9UxQjEkdgjbETm5A81ajdwon4Ciejyjcf0Oqbp1sxSi4aLIu
-        sqEjNWaLsmtOV0dF13h4Fv86Ng==
-X-Google-Smtp-Source: AGRyM1vnkOdFiFE+GmThkbCNapsdUpE3R0cWy4UyW+Uyxq9LVHEvdVJxEBQ5Nw6N7aZ2mwkXtwjnww==
-X-Received: by 2002:a05:6a00:16cb:b0:52b:cc59:9468 with SMTP id l11-20020a056a0016cb00b0052bcc599468mr6058338pfc.46.1658609091313;
-        Sat, 23 Jul 2022 13:44:51 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:c00a:a073:a406:cc30:f4ec:f10a])
-        by smtp.gmail.com with ESMTPSA id u14-20020a170902e80e00b0016a6caacaefsm6187950plg.103.2022.07.23.13.44.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 13:44:51 -0700 (PDT)
-From:   Jagan Teki <jagan@edgeble.ai>
-To:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kever Yang <kever.yang@rock-chips.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        Jagan Teki <jagan@edgeble.ai>, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 12/22] dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RV1126
-Date:   Sun, 24 Jul 2022 02:13:25 +0530
-Message-Id: <20220723204335.750095-13-jagan@edgeble.ai>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220723204335.750095-1-jagan@edgeble.ai>
-References: <20220723204335.750095-1-jagan@edgeble.ai>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=twHHobYLA9lRy1K5OK4RAuGFOI4ai78W7xr1iypX7js=;
+        b=sZVGnbMXPj+CDknV38b4KBWevIf1fw/rmmOUuKAFwajE2uspw2E1FZdh8PUV8bSy11
+         rdND8T8A2e4PJcryu+nr9DVKDfRztD7e8ld+/SV+lKpYsUR+CkorkWmo/mhJ25S3A3JZ
+         aF+ohJzVoVmnaQiW1nQ6ZkOn6BL0TUbjThkuEVdjJ2UlFmr2vguQ6xCmZq0Aw3uU553U
+         ratiHYtvb7GjNoEfWrGlAEkO7FtBsTsgo4qmZWExcv7agZeKAb3g+89lXAxx9LfPQN8h
+         SbfFWIVefy9j3xJ58As5PmVp5dsoDN6UWB/T3I63gqoJxC14RHhMYaGGHlV8I8PPYt05
+         Ki6g==
+X-Gm-Message-State: AJIora85jSXeCZk7DRWp+IusOtq+ZH/mlubCXbKqZPtZaLo8G+xtMzws
+        6y+X1sNumBatb1J3kaDvaEwA9TGK3vGsBRYfBAo=
+X-Google-Smtp-Source: AGRyM1vDCtTZd7D/kRrJ5xi2dNk8sTtQOjt4UXxL6XCbt6MQn01Nys6x/RDb3QuYl6R/HvowptRbbh75st7Lo99vuaw=
+X-Received: by 2002:a05:6512:693:b0:48a:7c23:1896 with SMTP id
+ t19-20020a056512069300b0048a7c231896mr2976280lfe.111.1658653626041; Sun, 24
+ Jul 2022 02:07:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com>
+ <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
+ <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com>
+ <20220723030226.8E43CC341C6@smtp.kernel.org>
+In-Reply-To: <20220723030226.8E43CC341C6@smtp.kernel.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Sun, 24 Jul 2022 12:06:54 +0300
+Message-ID: <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
+Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Olof Johansson <olof@lixom.net>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Thomas G leixner <tglx@linutronix.de>,
+        Patrick Venture <venture@google.com>,
+        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Nancy Yuen <yuenn@google.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Document compatible string for Rockchip RV1126 SoC.
+Hi Stephen,
 
-Cc: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Jagan Teki <jagan@edgeble.ai>
----
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Thanks for your detailed explanation!
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 12137fe80acf..4f47d4e4dd94 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -34,6 +34,7 @@ properties:
-               - rockchip,rk3399-uart
-               - rockchip,rk3568-uart
-               - rockchip,rv1108-uart
-+              - rockchip,rv1126-uart
-           - const: snps,dw-apb-uart
-       - items:
-           - enum:
--- 
-2.25.1
+On Sat, 23 Jul 2022 at 06:02, Stephen Boyd <sboyd@kernel.org> wrote:
+>
+> Quoting Tomer Maimon (2022-07-19 03:04:43)
+> > On Mon, 18 Jul 2022 at 22:14, Stephen Boyd <sboyd@kernel.org> wrote:
+> > >
+> > >
+> > > So the clk and reset driver should be the same driver, or one driver
+> > > should register the other and use the auxiliary bus to express the
+> > > relationship. That way we know that the drivers are tightly coupled and
+> > > aren't going to stomp over each other.
+> > I think it is very problematic to use the same driver for the reset
+> > and the clocks also because The NPCM reset driver is an old driver
+> > that was used also to the older NPCM BMC SoC so it will be problematic
+> > to use the clock and reset driver in the same space.
+> > indeed the reset and clocks are using the same memory region but they
+> > are not using the same registers, is it not enough?
+> > Please be aware that the NPCM reset driver is checking that it is
+> > using the reset registers before calling I/O functions.
+>
+> To put it simply, platform device drivers should use platform device
+> APIs. The platform device APIs hide the fact that the firmware is ACPI
+> or DT or nothing at all. The usage of of_address_to_resource() is
+> problematic.
+>
+> After converting that to platform APIs you'll get janitor style cleanups
+> trying to convert to devm_platform_ioremap_resource(). We'll have to
+> discuss this again when that happens, even if there's a comment in the
+> code indicating we can't reserve the IO space because there's another
+> driver. These problems have happened in the past, fun times!
+>
+> Furthermore, in DT, reg properties aren't supposed to overlap. When that
+> happens it usually indicates the DT is being written to describe driver
+> structure instead of the IP blocks that are delivered by the hardware
+> engineer. In this case it sounds like a combined clk and reset IP block
+> because they piled all the SoC glue stuff into a register range. Are
+> there more features in this IO range?
 
+No, this range only combined the reset and clock together, but it
+combined in a way that we cannot split it to two or even three
+different registers...
+
+I do see a way to combine the clock and the reset driver, the NPCM
+reset driver is serving other NPCM BMC's.
+Should we use regmap to handle the clock registers instead of ioremap?
+
+Best regards,
+
+Tomer
