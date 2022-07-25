@@ -2,149 +2,158 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5F1CCA48A
-	for <linux-serial@archiver.kernel.org>; Sun, 24 Jul 2022 09:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D417C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Jul 2022 05:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiGXJHJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 24 Jul 2022 05:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
+        id S231506AbiGYFCs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Jul 2022 01:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiGXJHI (ORCPT
+        with ESMTP id S229552AbiGYFCr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 24 Jul 2022 05:07:08 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E27165A8;
-        Sun, 24 Jul 2022 02:07:07 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id t1so13866080lft.8;
-        Sun, 24 Jul 2022 02:07:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=twHHobYLA9lRy1K5OK4RAuGFOI4ai78W7xr1iypX7js=;
-        b=VUAVlC4793nwMj0kejd/LhnswSxMM1OmuJnU+Y7zuLWh8lITr/u5/kEmAjG8nOedw1
-         3D8L48ZYToS9vbVLlbDtBLTuHeAgwUX75/c7/F1jEtQZmDwoYOq59g9/Lvh3Rz0n9KxE
-         VZ1VQFUJLTG+Lgc3XAVicvaSEWojoQxVrcXTAnh1vSxZolGik5ggF6+NI+LDZvLilTv+
-         czXZLmxjbN3FhsuRqAy5kOBufRBN6cIoCSUTAQardjBDcYSpf3bVH5I94V4qB1lpCdOH
-         jDf/QBEvPtpnaszZW7KcMkQzFl5sCmSyTA9WplsVWipGLd4rmk+asNaSMk7N7qf2ot5s
-         AWZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=twHHobYLA9lRy1K5OK4RAuGFOI4ai78W7xr1iypX7js=;
-        b=sZVGnbMXPj+CDknV38b4KBWevIf1fw/rmmOUuKAFwajE2uspw2E1FZdh8PUV8bSy11
-         rdND8T8A2e4PJcryu+nr9DVKDfRztD7e8ld+/SV+lKpYsUR+CkorkWmo/mhJ25S3A3JZ
-         aF+ohJzVoVmnaQiW1nQ6ZkOn6BL0TUbjThkuEVdjJ2UlFmr2vguQ6xCmZq0Aw3uU553U
-         ratiHYtvb7GjNoEfWrGlAEkO7FtBsTsgo4qmZWExcv7agZeKAb3g+89lXAxx9LfPQN8h
-         SbfFWIVefy9j3xJ58As5PmVp5dsoDN6UWB/T3I63gqoJxC14RHhMYaGGHlV8I8PPYt05
-         Ki6g==
-X-Gm-Message-State: AJIora85jSXeCZk7DRWp+IusOtq+ZH/mlubCXbKqZPtZaLo8G+xtMzws
-        6y+X1sNumBatb1J3kaDvaEwA9TGK3vGsBRYfBAo=
-X-Google-Smtp-Source: AGRyM1vDCtTZd7D/kRrJ5xi2dNk8sTtQOjt4UXxL6XCbt6MQn01Nys6x/RDb3QuYl6R/HvowptRbbh75st7Lo99vuaw=
-X-Received: by 2002:a05:6512:693:b0:48a:7c23:1896 with SMTP id
- t19-20020a056512069300b0048a7c231896mr2976280lfe.111.1658653626041; Sun, 24
- Jul 2022 02:07:06 -0700 (PDT)
+        Mon, 25 Jul 2022 01:02:47 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2066.outbound.protection.outlook.com [40.107.21.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F92EB87B;
+        Sun, 24 Jul 2022 22:02:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HkRvDCfpW3/+zrdeGx9XYAKBqlfMeNrC4FWMK0vtNdScEh/qTEGQGo1ZzBcW9fgaLRFc97RK35U6DeF+dwu4vdTlto+M8tciOlMEGlvbbU1c5vryLbsc0y5yO7XMF/u2Zz3N3IdbidIKJ9rO8cmirVee9wgmCTqdtdOn6benOMkvRIYO+onbWR4AVnzt7ikRMYW6M7KMXN1L3zOCc/Pp8avnNZLU1UX6wmb5+kiZ3FiKaKgWtOmQZ6VvPpjMTCqwoGaG6+QNS1oyWB5HE55fgUPwmJ0g0Tq+TmGcpg5mqXzpWKXuWuKVoyP/zOWRCXXfJ2SNNtWaRrmuIqlUUxFP2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V7iwT3Qvduzu5ySyyEt+LzY3ltcfpQkjxSSGpxAX4Sc=;
+ b=T2YU5N4e5t5lHSCP4gHkQizOqJi8/H72gI/2Y+fvHc0STSbIaOXLT0dYF012eMzY1HdTWYY6scDDElpxr6XLb0cz83+J6mPSdiGsV2jvlOj6hs3EAYnd/tOC0Aor7YolpNzd/iiTXmoPTVoambNOXXZt9wtpDe8Ae33goX0yU46DyzcgyPAF3kWTqfmC1U0Da477Lxh4UwFFq2B6EZ4sdbVKT7BmGhToSdQbSdYHwQQHHHfdbJcxQqRvAjON/daNFNLIN1E0Ye42NM8vPxnoSKv3wgQQXOiaaAaUwMVWbHq9VOfhEAE+BahAwhs/TSxAMiIHGMgUV4NFGwjVDTdfbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V7iwT3Qvduzu5ySyyEt+LzY3ltcfpQkjxSSGpxAX4Sc=;
+ b=Rf8EhoojlQl4T8xR41kco8sw+8pi/c5LZh8plnlBGDqaTSxHJYneJWjHjO5fwfaZ3cENnXwWZYJ/LqKWzd02qvc3I17YwTY0xv4Vy3eDVbnc0qlAEZ2LC3e0EorzpUYmMBJFaMQOKeJOgo2NlWN0DIob6piuWU36qhhRQpDKRxU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB7PR04MB5499.eurprd04.prod.outlook.com (2603:10a6:10:8b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.25; Mon, 25 Jul
+ 2022 05:02:43 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::4c81:58fd:464d:3160]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::4c81:58fd:464d:3160%8]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
+ 05:02:43 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, michael@walle.cc
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH V2] tty: serial: fsl_lpuart: correct the count of break characters
+Date:   Mon, 25 Jul 2022 13:01:15 +0800
+Message-Id: <20220725050115.12396-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0202.apcprd06.prod.outlook.com (2603:1096:4:1::34)
+ To AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com>
- <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
- <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com>
- <20220723030226.8E43CC341C6@smtp.kernel.org>
-In-Reply-To: <20220723030226.8E43CC341C6@smtp.kernel.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Sun, 24 Jul 2022 12:06:54 +0300
-Message-ID: <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 73977573-a2aa-486e-e5c8-08da6dfae865
+X-MS-TrafficTypeDiagnostic: DB7PR04MB5499:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: i4FwzwpBWfMW2O3Dqd+ma9gaiRAUjB4hGjAVgy5FUSGXJVq3nP9sEcIlW23yqSXbjQj9FaxUSkxk+cXT8fA3M3CLjo8j/Vu+xQs/kTMtdMC7u9AhEr5raI+epmJjWoeUX7oBy3Xz16e0vnFMYIWOE/+26ALfRcmbACNhqE7YXtoQjvLEzrO/HvZ2NuV0ik/idCT5I/cmSQ7N2iCf7JSdOxk1mHAz0/PvnQYBrdBg442GyvbWpql/qHhQ3oM18csndg6p0rti/PeYfXUtHiMYMtsPYwhdDx5rjqTsj8rDdOeyqTnqDZMx8qHFpyknPPPr/oqWmqHzp+ZxnLaPjxb6OvG+9EglIk2Kew21/QlQP1yIj3Ma8lbD/3FenjQgqc1yMKRvB2aeftSq1Md3nJrAGwMSY/lf8ieR8fLAJTRmWrJmN8KEZ/gQjeAwYGVQMLGSTbqTg+lVdveLDbSBac4XLz86/jyqsrwcyAcRU1prt1yU1SNiCCECWJ4hnn3eLIMZgorjBpPgjSfS6ycfrl5GbMoYjg5LRiGIKJysxtaqWW5ZrSIPPMRhP6bPV9SCqyYx2pDtfbhpkKPnjstenq+vJn+M/Pv4WgB1qjW+iKt3+6PjeK2KV7rw1FLQoPoakRK0Hy82k80mmtQag5tWKDn2eILiqcyKB/KoEa83IjeFMB27zxLMnkyWSHZWbedL/F5EYBs07dZSFtCYoqw5aeAFnYIQVvIsyBmyaQxQfA/c1e52m0iD6e25cxxznxT41ajI68iM99b2zy+ypRPAMhCPhTsD1QioWOrpLB3n2wykbzAtkt3KUEkcNWrxEUsW9XXF
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(366004)(346002)(376002)(136003)(1076003)(6666004)(2616005)(38350700002)(186003)(83380400001)(4326008)(38100700002)(66556008)(36756003)(2906002)(66946007)(316002)(478600001)(6486002)(8936002)(6506007)(44832011)(5660300002)(6512007)(86362001)(66476007)(26005)(8676002)(52116002)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AKc+DoBxIJp3hYR1r3aUCuotXQvVAjCuIBaoqGJdqzrWJGdcuT1eq76eKogN?=
+ =?us-ascii?Q?o33Bl63WesBW5tdlhaXwviG91ESlO+t9YWBh7c3zmikNMXbjEKg4P/+HtEyc?=
+ =?us-ascii?Q?vaGduyk0e2QmGHXge03v1N0jwkNwwvRaYNlk38mJSdbKqn8r0gON3AfCd4kR?=
+ =?us-ascii?Q?IbL6g3BY4SXk9AUBeGBOWaILiyC33u8lE/4h+IJvnqNZtCliXoEYpzdQskMC?=
+ =?us-ascii?Q?OusVv6b8ZRXi90UdQUZn3+f6ehcqShzFIQI0tzcvMYuNKIX6OUiWmUMxyHHe?=
+ =?us-ascii?Q?LRD3ZWW2ImGVSZqo3RiVD3jv+ZUsctMChFihfhj2R47MkP9qmViG138RAqJh?=
+ =?us-ascii?Q?1pW62LcXVdZImKqR2AzU/9loIIAN0nL5NGJk9uq0SDypxNPIEdn+nL2NWNSa?=
+ =?us-ascii?Q?CUbQ/eM1Uul7mPshTF84dxH/uyYynVOlnvbz3/B3dpv9iGdeaFilK1jkWRqn?=
+ =?us-ascii?Q?eYeubfoD7QlvvYhHwk8CzFyVlvJOTRfWZVflr0ZX88B4WX4+4EyIW4PYdYwj?=
+ =?us-ascii?Q?g0eAEH9XNqBM84p1b9CgVwAsPZeZ6RfbuboqNKUQP3wuglsTCE8ZeAhm8ybp?=
+ =?us-ascii?Q?NdMnhkot8AJbAWt9XDAU2P4REv5lFolXlFKKTSsFmDpNYh+e/4c0agvSVdW5?=
+ =?us-ascii?Q?mxCaHL6gwDVGLGlz4HALTGzpAVMt4Zc899BwtGN2X3jry+XtWKoeyfnoyY2b?=
+ =?us-ascii?Q?zmyxxyxoIOzG9e9UVi0nzEROs5pfXPHAr4hYDtGpRADS2CFVoLP7Ro4GdbRX?=
+ =?us-ascii?Q?OaKenLctjeoGRdhRHHEozGDcKgok7JCOauN5BgfMdBSaswonmzIbX27t2q0f?=
+ =?us-ascii?Q?17Z1K8DtmYufVkf1rKV4JTR91cbytnQZanfZEHHwxk58aPhoAwWzg/PHNdN2?=
+ =?us-ascii?Q?4PJtPEUjSSZIsRbuvhpm6b55UMG+FJmINRB5FX+OAJleM+p64lSKAdxFQLoS?=
+ =?us-ascii?Q?9BtITiGEQcKeG7yNWwzL2/Ec3RYEKsulsH06DCEUNwlCO85v3q52rM53dzQb?=
+ =?us-ascii?Q?WJu+V9RnnhypMkGpUgUZ+M115zm3/IIJnU+14z5MloDU0sbp91C6bRdK3KFH?=
+ =?us-ascii?Q?zgZh1pGNwZfW4ntGt93033BuDkaBOvCQu3QGabSbH1RA4CK2H7HLhFiVJkRp?=
+ =?us-ascii?Q?Pn+XSMbyfhTJ8wb37HoD15fYUV4n2Lm2zw2nVUd9s12pr7Ws4GlXI7zzUF3b?=
+ =?us-ascii?Q?ivmFU59V36l3+WceVzGvr+Tru/ssKpVDfCcEcT6tBq07GwSdbZ+RaMyuCv+/?=
+ =?us-ascii?Q?UJhyGjVXytd3mPzXZXov891dApJJVYYIFwpC/zrrHacOxuZLb2atfV5ud3uU?=
+ =?us-ascii?Q?on7AfnLL61xUQLlRXSEssPp3HCRqVYX6AsVObI9BZ7AYRjtQ+G+f/+SYPEzT?=
+ =?us-ascii?Q?trm5tijxyuPqI+Tspva/uUiOiRKKxVHU/O56XpeWrFmICzOGxHtVwmp29M9D?=
+ =?us-ascii?Q?FBaN2d2Ow3l5gUzRtKuLwFEgSIXurdbXvZaBLxEItdCeq4VMv/tV0DQoHNkS?=
+ =?us-ascii?Q?J4U00YQEea7VrxvvBHtNlh4ym1FJcH9VN7CkmbNCoVz2sIR7TkJxLHyCMFCj?=
+ =?us-ascii?Q?nbtHLvdvK2T03m7s1PdMSca6nZ/RDJc6ymdJNdEL?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73977573-a2aa-486e-e5c8-08da6dfae865
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 05:02:43.6933
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lsKDSZ9IIvF6R2JzcrDCucO50XSSYrhXvgpvPpWv2wFwN2jraYf7aBY1rF55ZuldiZAfeQt/1mQzA6oFRBY9CQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5499
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Stephen,
+The LPUART can't distinguish between a break signal and a framing error,
+so need to count the break characters if there is a framing error and
+received data is zero instead of the parity error.
 
-Thanks for your detailed explanation!
+Fixes: 5541a9bacfe5 ("serial: fsl_lpuart: handle break and make sysrq work")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Reviewed-by: Michael Walle <michael@walle.cc>
+---
+Changes in V2:
+1. Take this fix patch out of the previous patch set separately.
+2. Add the Reviewed-by tag.
+---
+ drivers/tty/serial/fsl_lpuart.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-On Sat, 23 Jul 2022 at 06:02, Stephen Boyd <sboyd@kernel.org> wrote:
->
-> Quoting Tomer Maimon (2022-07-19 03:04:43)
-> > On Mon, 18 Jul 2022 at 22:14, Stephen Boyd <sboyd@kernel.org> wrote:
-> > >
-> > >
-> > > So the clk and reset driver should be the same driver, or one driver
-> > > should register the other and use the auxiliary bus to express the
-> > > relationship. That way we know that the drivers are tightly coupled and
-> > > aren't going to stomp over each other.
-> > I think it is very problematic to use the same driver for the reset
-> > and the clocks also because The NPCM reset driver is an old driver
-> > that was used also to the older NPCM BMC SoC so it will be problematic
-> > to use the clock and reset driver in the same space.
-> > indeed the reset and clocks are using the same memory region but they
-> > are not using the same registers, is it not enough?
-> > Please be aware that the NPCM reset driver is checking that it is
-> > using the reset registers before calling I/O functions.
->
-> To put it simply, platform device drivers should use platform device
-> APIs. The platform device APIs hide the fact that the firmware is ACPI
-> or DT or nothing at all. The usage of of_address_to_resource() is
-> problematic.
->
-> After converting that to platform APIs you'll get janitor style cleanups
-> trying to convert to devm_platform_ioremap_resource(). We'll have to
-> discuss this again when that happens, even if there's a comment in the
-> code indicating we can't reserve the IO space because there's another
-> driver. These problems have happened in the past, fun times!
->
-> Furthermore, in DT, reg properties aren't supposed to overlap. When that
-> happens it usually indicates the DT is being written to describe driver
-> structure instead of the IP blocks that are delivered by the hardware
-> engineer. In this case it sounds like a combined clk and reset IP block
-> because they piled all the SoC glue stuff into a register range. Are
-> there more features in this IO range?
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 1c3c6844fa36..8a4aae7dbd99 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -990,12 +990,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 
+ 		if (sr & (UARTSTAT_PE | UARTSTAT_OR | UARTSTAT_FE)) {
+ 			if (sr & UARTSTAT_PE) {
++				sport->port.icount.parity++;
++			} else if (sr & UARTSTAT_FE) {
+ 				if (is_break)
+ 					sport->port.icount.brk++;
+ 				else
+-					sport->port.icount.parity++;
+-			} else if (sr & UARTSTAT_FE) {
+-				sport->port.icount.frame++;
++					sport->port.icount.frame++;
+ 			}
+ 
+ 			if (sr & UARTSTAT_OR)
+@@ -1010,12 +1010,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 			sr &= sport->port.read_status_mask;
+ 
+ 			if (sr & UARTSTAT_PE) {
++				flg = TTY_PARITY;
++			} else if (sr & UARTSTAT_FE) {
+ 				if (is_break)
+ 					flg = TTY_BREAK;
+ 				else
+-					flg = TTY_PARITY;
+-			} else if (sr & UARTSTAT_FE) {
+-				flg = TTY_FRAME;
++					flg = TTY_FRAME;
+ 			}
+ 
+ 			if (sr & UARTSTAT_OR)
+-- 
+2.17.1
 
-No, this range only combined the reset and clock together, but it
-combined in a way that we cannot split it to two or even three
-different registers...
-
-I do see a way to combine the clock and the reset driver, the NPCM
-reset driver is serving other NPCM BMC's.
-Should we use regmap to handle the clock registers instead of ioremap?
-
-Best regards,
-
-Tomer
