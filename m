@@ -2,147 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571B8C43334
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Jul 2022 17:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE54C43334
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Jul 2022 23:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236357AbiGYRXc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Jul 2022 13:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        id S237509AbiGYX0N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiGYRXa (ORCPT
+        with ESMTP id S232764AbiGYX0M (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Jul 2022 13:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA82214D18;
-        Mon, 25 Jul 2022 10:23:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 465B0B81023;
-        Mon, 25 Jul 2022 17:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D523DC341C6;
-        Mon, 25 Jul 2022 17:23:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658769802;
-        bh=fchiwXgbBdTjI1tnnwCi+jTVEwh6cgK0qLJkFVlCACE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UqKK0uJQDwEvh2Vi54J+93uJuKGLM7IAOnAOwLCMCuksblRTIRvEgXkjLeUwqPW4N
-         5AlvtwsxU8J+i6CNRj/GwiuTygIy05ACwDSzeTQ+zvHZZeFsgMNuaEmyOq9f2QGPgo
-         jzadUidSTOzLEpy1Nhq2yX1MX85TEzM+PBpLT4HGtOXqtYBeAfqJkxRmMvfjDsm9aI
-         K/31R1brUtwHQtk8FOCFFXUBR+qLE9ofcMp7SDDnxR0K3xBtPT9c3I7y/tmztyWRFy
-         F7zgU4j4dUOu+92AJ19L5FXRwcSmVR2o1dhXqEDJi9+Ppq0vOBeD2FIAOdLMZ4hn+j
-         Y3FxR5pnKkL0w==
-Date:   Mon, 25 Jul 2022 19:23:14 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, rafal@milecki.pl,
-        krzysztof.kozlowski@linaro.org, Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mon, 25 Jul 2022 19:26:12 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A671B7BD;
+        Mon, 25 Jul 2022 16:26:11 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so9805197otk.0;
+        Mon, 25 Jul 2022 16:26:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xnFhTvVlYrrcoWqTeF1r68lRRBQLPoPsbaCYWGup+Vo=;
+        b=d7j/7PXmdW+xeL5i5UKxOiQBIQLJ/WsF45VTkelkoGoMEGCQbth3ntrFfB/F9uwKuT
+         jv9pLn4fWLKnJw/BHDmXNavktG0WtVo9/wgEvjfod5bnhXho1Vgt2CVvr2RtBABkW5Ih
+         0AQES2JpVebO1iJJE+S60AN+rEf9R6KlBCEMaNv+7X8cjadgwXhPZisCsfturdZMCsrT
+         rzju5RBzwHuebjazusBbr5koQCYP/QbsuViSh3wyubr8nv9O3jSKkeq96d85jgc8Rni/
+         wZ6kPnyvEjBEeavPgVPlc+xd1HOd1ivvztFGHKpjIgCvC2nJjQH/NnnwAzF69iMVD2tB
+         6zag==
+X-Gm-Message-State: AJIora/8JiqDwJ6JXWH/MmJw8Bv1WLJGdSAykhlRIOZ4U38f874TRrq/
+        AAKEx4ZYvsOs88W+0qLYhA==
+X-Google-Smtp-Source: AGRyM1tSrCX6+vSPu5meOoqpG8k5p7fMqZhx876vaGZXdOsAHkQhAM0U3pW+khOSX46P3sFlouD54w==
+X-Received: by 2002:a9d:6f01:0:b0:61c:b224:e7c9 with SMTP id n1-20020a9d6f01000000b0061cb224e7c9mr5740297otq.245.1658791571112;
+        Mon, 25 Jul 2022 16:26:11 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id s41-20020a4a96ac000000b00435a59fba01sm5383225ooi.47.2022.07.25.16.26.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 16:26:10 -0700 (PDT)
+Received: (nullmailer pid 2952292 invoked by uid 1000);
+        Mon, 25 Jul 2022 23:26:08 -0000
+Date:   Mon, 25 Jul 2022 17:26:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jagan Teki <jagan@edgeble.ai>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Kever Yang <kever.yang@rock-chips.com>,
+        linux-serial@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
-        <linux-mtd@lists.infradead.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" 
-        <linux-mips@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>
-Subject: Re: [PATCH v2 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-Message-ID: <Yt7RgsTA/1TmMcbU@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, rafal@milecki.pl,
-        krzysztof.kozlowski@linaro.org, Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" <linux-mtd@lists.infradead.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" <linux-pci@vger.kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" <linux-mips@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>
-References: <20220725055402.6013-1-william.zhang@broadcom.com>
- <20220725055402.6013-7-william.zhang@broadcom.com>
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 12/22] dt-bindings: serial: snps-dw-apb-uart: Document
+ Rockchip RV1126
+Message-ID: <20220725232608.GA2952235-robh@kernel.org>
+References: <20220723204335.750095-1-jagan@edgeble.ai>
+ <20220723204335.750095-13-jagan@edgeble.ai>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cDMN9LvOKh7YHFAv"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220725055402.6013-7-william.zhang@broadcom.com>
+In-Reply-To: <20220723204335.750095-13-jagan@edgeble.ai>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Sun, 24 Jul 2022 02:13:25 +0530, Jagan Teki wrote:
+> Document compatible string for Rockchip RV1126 SoC.
+> 
+> Cc: linux-serial@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
+> ---
+>  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
---cDMN9LvOKh7YHFAv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun, Jul 24, 2022 at 10:53:59PM -0700, William Zhang wrote:
-> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
-> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
-> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
->=20
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
->=20
-
-Acked-by: Wolfram Sang <wsa@kernel.org> (for i2c)
-
-
---cDMN9LvOKh7YHFAv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLe0X0ACgkQFA3kzBSg
-KbYqKBAAh7tkSiVNXcYCzGYcFhSLUkuioAtbrLXR6vkeUJ6qMvd2WkG15238Ti4s
-KlFKMBOWT2L+reNiojNZlZ2QMc/U1f/itwXDlViRuwpHBsITqGK+vGE1DH8eiCFP
-A5cPFVTh/jXJwGPQmXVzmZ8+opgeBbDg/KJI4PlX0I7KtNhdeArtlCf1EXBZiiOi
-QePGA9J4JahuNyjo33zq5Xv1OtyaPFe6hFRtCKR4tsGIHtrJlRtDy/x0Av2hj4fz
-m5tju8M/szl7hFyO15x9gg98xif+hTcgOS1H01D29vK74y7iZ61ExKGZ4/4eHz23
-3DWL6bANwKiE0CHnJzS9TLPTBrZdv3FHjCATrzJPaVs1VloRBuF86Bo7RFl6Zoi8
-fX0j3twBJ8ZqMPEVE4Cw4zHZ2gbAMcQwupF5TTwkPoFrObQJ0Zgx9HrRhTK8HxlO
-SiHSdGUJ8LaQq/oZL1OrPJOYVOknOJCWtqfoksGRee+zAjK3muZSEqaJxOjiTawv
-xYXDrpbKTEpL+WiEAIvXB4ViWm4YFU7SyDLhizLDRxYQsX2SM1i+phxe/aF98VOb
-6CyTctT+bwk/4XZRk3AXLAQq5/haStsr0mf//sUaiJxbdutgWlnnztwHvtZX4hdJ
-6h2BPcjqESC3cUfMFPT44QPaa+XZ0YlkTZWyRUP4b+bJNgn2TII=
-=c2vg
------END PGP SIGNATURE-----
-
---cDMN9LvOKh7YHFAv--
+Acked-by: Rob Herring <robh@kernel.org>
