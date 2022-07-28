@@ -2,119 +2,115 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0455CC25B06
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 19:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416B6C3F6B0
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 21:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233264AbiG1TWW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jul 2022 15:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S232163AbiG1VFH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jul 2022 17:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiG1TWU (ORCPT
+        with ESMTP id S229735AbiG1VFF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jul 2022 15:22:20 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DBA1A05E;
-        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 6so2256476pgb.13;
-        Thu, 28 Jul 2022 12:22:19 -0700 (PDT)
+        Thu, 28 Jul 2022 17:05:05 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA706246;
+        Thu, 28 Jul 2022 14:05:04 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id j22so5209472ejs.2;
+        Thu, 28 Jul 2022 14:05:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
-        b=lB+pWhhlv93nZ1uF9MlIOnX5O59BjNqfBlzyuwaJ9IcEqZIikDytWL8FxK9mRR7bGC
-         CP0N3vcVC4GRQyBqp/aXDsHM+Rp/kL+AcBtbGgawHiyB0n2SQ/S9YTLhVKYgLJzYvnfa
-         DRgHjFYGggf4djkLYGpyCKIAfFc4nCcIoEjsFfGVMZ1/sB2/Jgb8jz20AGsMwpQd4Rhb
-         5lHHgqgPkKGl66JAg/+e1Wkvj9UiHeRANwaOr3+bwehcQ5WJ52Rwi+bf7sjW1dQxqAEB
-         0wInCPsCu9FBE5kiqsjVn81pQZUQnEayOJ4Rp+zGMKxlzT+3V1MGecumxQBkOPnllvzK
-         p+iw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=MGd+LwdnoFiDkdx9krfKLdtj5Dt+fVCB4Sh2nY5wr3c=;
+        b=XF5dl8tQGdES7zL4V8n959l0CmDhfnXFccMVTbYlBUZLfCjQCW2qPMmfbke3Yd/FlX
+         9fABsmDUHF7O04RUphiNEmVpnNa0o23+ZIp6qz2Az2maaFB95cUS2ePsseQJdQ3OSfP2
+         DThFEvF+SzgTIl3wbZG0rnpOug+EUOHtBqSFTlOlcuBSXE6F8myfgnBWOZOVb8hoCvRn
+         8p7q8CTOwd6agOrclnY9O5I0Se3vNDlRCzTK7hrjbwu0o0sJN6ID6fRP9CHGgWB+HAAs
+         Xnv1Czpa6LOkvjKxnkvJ9XZjINUpRvoqhTQCCbHWn+wKOjPVhKAQyOeKNsajyvA2Tl0o
+         /GCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EFOAo/QdtEPRv+rmfrGIwUMKLAu+6hzcQDL1f3TAQNM=;
-        b=irglV27uulHB7xGlavq7wJq+OWG1Pi6Aw9k9FKOFJIio3ETkwpBw5qFVt7bbmNwKOw
-         TH/ON1/OYg+Us/xaO0vhBaIxyfbP7BpbGTIAL0qZTDHb2xBEeUj7E40VDt7T5T52W0Vy
-         u+tbtfA9XkbkCiL5nWaXAIoyzmwAtdDWPl+xvQrlHOB1cjN+xVaRxVoMpW9iw3oP5bDx
-         0UZvB2cVuzafW0Uuf6UxC5LKRROo/pujw6NV4LKVFu4dz4WJMfxIqezIrV2g24OVcstg
-         9U2NPvkEQmS/YHSetnMDgOGEZ1juTFEhSBCYR9VGI1DyWjZ+EgkFYiiEg6ItedX4RV1G
-         aOhA==
-X-Gm-Message-State: AJIora8+ABlM6yjJXM2FAwHDWGyDzeLeYqPgJAiXgl2znlIaaqu8Dml8
-        juVaIkI+9S2i0adDs/H8kY0=
-X-Google-Smtp-Source: AGRyM1tj9cuz/W4LAd9BMq4WIOZkxkrW2UJLCS/AeNw+AhegYlhfdsgfmykyQIPR9LbFViQAWRDZ3w==
-X-Received: by 2002:a63:ce0f:0:b0:41a:f0ee:c28e with SMTP id y15-20020a63ce0f000000b0041af0eec28emr190116pgf.43.1659036138925;
-        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m8-20020a654c88000000b0040cfb5151fcsm1282985pgt.74.2022.07.28.12.22.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 12:22:18 -0700 (PDT)
-Message-ID: <db9560c1-7fc7-405e-bee1-3827a943b712@gmail.com>
-Date:   Thu, 28 Jul 2022 12:22:12 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=MGd+LwdnoFiDkdx9krfKLdtj5Dt+fVCB4Sh2nY5wr3c=;
+        b=Uug6i2tfZ03Hlh9SFk2zAHtDZwCS6JWrhQNFoo7vdXqvbFhmDjO9G4U1u0E8T3fqHZ
+         PFQF8lJzzPqGIQxuQBAbdqQJPXANtzHypvPy4CQGy18ntT0Rz/2kX9voFB16SdzDV2HF
+         eFDPeiMxMEKOTgI4iOlvfFEJzKlbddVw2H5gJ0zePX3wJtbPZB2M7gtEuMMwqUdQLz1d
+         qB9RTon9rD84AQ+t4uSUCtCRErUP5+M78pJbMOPrM4YCPwXe5OmodZTnBwixkiskSg+2
+         21ZUeH97Da58eeuPZIZvphN6ZYbp5pdMky6sntxiXTtzFXQs2//lDm/KsgeXDbFSGAEd
+         H55A==
+X-Gm-Message-State: AJIora/ZF89RFcqf8JtHEwd/NuaiySMZf9sVCmZjUSgtNFtHzcTNiEpN
+        mmFMJ1/XXTHafzrwcVbAyrSTCv+9yZt3B3zVJEAQzEF6
+X-Google-Smtp-Source: AGRyM1vIJyFbUCmOiimEZBEdct0ZkX1TyGOZoJ6hXXMz38/QWz/mBQddZF4BdD7EfWT5LvGdGdK4c7G8zYJPWMb/alg=
+X-Received: by 2002:a17:907:28d6:b0:72b:7497:76b with SMTP id
+ en22-20020a17090728d600b0072b7497076bmr523196ejc.365.1659042302373; Thu, 28
+ Jul 2022 14:05:02 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, krzysztof.kozlowski@linaro.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <20220725055402.6013-1-william.zhang@broadcom.com>
- <20220725055402.6013-7-william.zhang@broadcom.com>
- <63797827553783061a0ad5e897ed6538@milecki.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <63797827553783061a0ad5e897ed6538@milecki.pl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-2-markuss.broks@gmail.com> <YuKfaVG/ZbYtFjS/@kroah.com>
+In-Reply-To: <YuKfaVG/ZbYtFjS/@kroah.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 28 Jul 2022 23:04:24 +0200
+Message-ID: <CAHp75Vfz8e1j4qZ6XY6WqMR4E9fKFxrTxj7P6KraXzSLk_NhxQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] drivers: serial: earlycon: Pass device-tree node
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 7/27/22 05:31, Rafał Miłecki wrote:
-> On 2022-07-25 07:53, William Zhang wrote:
->> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
->> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
->> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
->>
->> Signed-off-by: William Zhang <william.zhang@broadcom.com>
->> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
->> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
-> 
-> I still think it may be a bad idea for all below drivers. Please see my
-> previous e-mail:
-> Re: [RESEND PATCH 6/9] arm64: bcmbca: Make BCM4908 drivers depend on ARCH_BCMBCA
-> https://lore.kernel.org/linux-arm-kernel/eee8c85652e6dac69420a876d03f67c4@milecki.pl/
-> 
-> I think we should:
-> 1. Keep ARCH_BCM4908 for 4908 specific drivers (e.g. mtd, pinctrl, net)
-> 2. Use ARCH_BCMBCA for more generic drivers (e.g. I2C, PCI,serial, WD)
+On Thu, Jul 28, 2022 at 4:41 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Thu, Jul 28, 2022 at 05:28:18PM +0300, Markuss Broks wrote:
+> > Pass a pointer to device-tree node in case the driver probed from
+> > OF. This makes early console drivers able to fetch options from
+> > device-tree node properties.
 
-IMHO here is no point in keeping an ARCH_BCM4908 anymore when the whole point of the patch series is to do a broad conversion of ARCH_BCM4908 into ARCH_BCMBCA. Even if some of the drivers are considered or thought to be 4908-specific, this is not going to be an issue in practice because there ought to be appropriate compatible strings such that even if you built a 4908-specific driver into a generic ARCH_BCMCA kernel, the actual probing would only happen on 4908.
+...
 
-Now let us flip it the other way round, let's say we keep ARCH_BCM4908 as a sub-arch of ARCH_BCMBCA, then this sets a precedent for adding more and more of those ARCH_BCM4906, ARCH_BCM4912 etc. etc to future kernels under the same reasons that we might want to gate certain drivers to certain sub-arches. But what good does that do?
+> > +     unsigned long node;
+>
+> That should not be an unsigned long, but rather an 'int'.  Something got
+> messed up, of_setup_earlycon() should be changed to reflect this before
+> propagating the error to other places in the kernel.
 
-At some point we got to make it simple for the users, and the simplest way is to have ARCH_BCMBCA only and let DT dictate the device specific probing.
+It's a pointer, but what puzzles me, why it can't be declared as a such:
+
+ struct device_node *node;
+
+?
+
+> And it's not really a "node" but an "offset", right?
+
+Seems no.
+
 -- 
-Florian
+With Best Regards,
+Andy Shevchenko
