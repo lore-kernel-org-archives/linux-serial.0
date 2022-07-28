@@ -2,82 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79972C19F2C
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 06:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDFBC04A68
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 08:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233915AbiG1GLT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S234931AbiG1I0P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jul 2022 04:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiG1GLE (ORCPT
+        with ESMTP id S234026AbiG1I0O (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:11:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0AF32471;
-        Wed, 27 Jul 2022 23:11:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7825034E38;
-        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658988657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
-        b=v8Kt1Q6MD6zQltNlJjd/wpPuB9jWbp6SEF+Q160+WtgNTYN2lqgkFSGvXpShVzACh1B+JM
-        Gm9GX1zoKCttSEHMzdj4OFyOmReAQp+YnRA4AEmlu4+/pidpPfLg8tF4+4SpmJN4HzAUh4
-        vdMCKILwuuPo2qcxOuf3BUQa/47papw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658988657;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
-        b=vKgoEU7osz62vusnS4Q2KkAjhb9LfWNTTrvdy/8NdtThkDB+zli3UUqQXhOSUy0FiGZcwj
-        lBHE9v1Cuwkp0ACg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
+        Thu, 28 Jul 2022 04:26:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579225A899;
+        Thu, 28 Jul 2022 01:26:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 853102C142;
-        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4/6] Documentation: serial: link uart_ops properly
-Date:   Thu, 28 Jul 2022 08:10:54 +0200
-Message-Id: <20220728061056.20799-4-jslaby@suse.cz>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728061056.20799-1-jslaby@suse.cz>
-References: <20220728061056.20799-1-jslaby@suse.cz>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F115D61BB0;
+        Thu, 28 Jul 2022 08:26:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1499C433D6;
+        Thu, 28 Jul 2022 08:26:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658996773;
+        bh=BE1Uf+u1Zq72ZASnCeBKBLimp68pHrCgnFdgo08tN54=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZpNAlTLjLV4qOnyUNzXseY2L3I4tIZRxIiIHi304cDyWHFa1ZfCLGo22Rz/hworxb
+         2mr8AxqZLRaAqGvt+l6JNKNQxgXXc4Zklo/UXQxUfWQKV/WNwisSKUeNhChEAEkd/f
+         g/NXEjIk6kfIzf+bfvGD3ZjW9ZWdFe//6UrahDRY=
+Date:   Thu, 28 Jul 2022 10:26:10 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Xingrui Yi <yixingrui@linux.alibaba.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
+Message-ID: <YuJIIl/LwGwuYdib@kroah.com>
+References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The syntax to reference a struct in text is "struct XY". So reference
-uart_ops properly, so that hyperlinks work.
+On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
+> As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
+> old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
+> for years instead.
+> 
+> However, unused definitions of these ioctl numbers and "strut
+> consolefontdesc" still exist in a uapi header. They could have been removed
+> since no userspace was using them. Otherwise they will become a
+> misleading for users, and users will fail with ENOTTY with wrong call.
+> 
+> We are moving old font ioctl numbers definitions here to guide users to
+> use KDFONTOP.
+> 
+> Signed-off-by: Xingrui Yi <yixingrui@linux.alibaba.com>
+> ---
+>  include/uapi/linux/kd.h | 13 -------------
+>  1 file changed, 13 deletions(-)
+> 
+> diff --git a/include/uapi/linux/kd.h b/include/uapi/linux/kd.h
+> index ee929ece4112..d739b17fc942 100644
+> --- a/include/uapi/linux/kd.h
+> +++ b/include/uapi/linux/kd.h
+> @@ -6,19 +6,6 @@
+>  
+>  /* 0x4B is 'K', to avoid collision with termios and vt */
+>  
+> -#define GIO_FONT	0x4B60	/* gets font in expanded form */
+> -#define PIO_FONT	0x4B61	/* use font in expanded form */
+> -
+> -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
+> -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
+> -struct consolefontdesc {
+> -	unsigned short charcount;	/* characters in font (256 or 512) */
+> -	unsigned short charheight;	/* scan lines per character (1-32) */
+> -	char __user *chardata;		/* font data in expanded form */
+> -};
+> -
+> -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
+> -
+>  #define GIO_CMAP	0x4B70	/* gets colour palette on VGA+ */
+>  #define PIO_CMAP	0x4B71	/* sets colour palette on VGA+ */
+>  
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- Documentation/driver-api/serial/driver.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Did you rebuild a distribution like Debian to verify that these values
+and structure are not used anywhere?
 
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index cae280f39189..13b580e887b4 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -39,7 +39,7 @@ Locking
- 
- It is the responsibility of the low level hardware driver to perform the
- necessary locking using port->lock.  There are some exceptions (which
--are described in the uart_ops listing below.)
-+are described in the struct uart_ops listing below.)
- 
- There are two locks.  A per-port spinlock, and an overall semaphore.
- 
--- 
-2.37.1
+thanks,
 
+greg k-h
