@@ -2,93 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDFBC04A68
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 08:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEC7C04A68
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 08:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234931AbiG1I0P (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jul 2022 04:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
+        id S234631AbiG1IfN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jul 2022 04:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234026AbiG1I0O (ORCPT
+        with ESMTP id S234827AbiG1IfL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jul 2022 04:26:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579225A899;
-        Thu, 28 Jul 2022 01:26:14 -0700 (PDT)
+        Thu, 28 Jul 2022 04:35:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEAF6314;
+        Thu, 28 Jul 2022 01:35:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F115D61BB0;
-        Thu, 28 Jul 2022 08:26:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1499C433D6;
-        Thu, 28 Jul 2022 08:26:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80E1EB82304;
+        Thu, 28 Jul 2022 08:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF047C433B5;
+        Thu, 28 Jul 2022 08:35:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658996773;
-        bh=BE1Uf+u1Zq72ZASnCeBKBLimp68pHrCgnFdgo08tN54=;
+        s=korg; t=1658997308;
+        bh=K8YQMrKoUYhUC1VKHP9tpQP4rPcZmTUjYsgeLL0atBY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZpNAlTLjLV4qOnyUNzXseY2L3I4tIZRxIiIHi304cDyWHFa1ZfCLGo22Rz/hworxb
-         2mr8AxqZLRaAqGvt+l6JNKNQxgXXc4Zklo/UXQxUfWQKV/WNwisSKUeNhChEAEkd/f
-         g/NXEjIk6kfIzf+bfvGD3ZjW9ZWdFe//6UrahDRY=
-Date:   Thu, 28 Jul 2022 10:26:10 +0200
+        b=Le2xzw+2132kAijLaUyGGQT/+OI6TCbLDJJXe4hRW+JCURXbYUf8GgbHcKzg4s7mg
+         XGKtiK9u20N7bpJMOhrQD01VNFdsMfnJ6fw/Kvu69DIj2bkODUgkXSRKpr7coUiCpf
+         j9ZEcnbZJKUS8NOATYfqefhuyFxgbaD5dCYzPaVw=
+Date:   Thu, 28 Jul 2022 10:35:05 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xingrui Yi <yixingrui@linux.alibaba.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
-Message-ID: <YuJIIl/LwGwuYdib@kroah.com>
-References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     linux-serial@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit in CS7
+ mode
+Message-ID: <YuJKObb/XQJ4woBK@kroah.com>
+References: <20220714185858.615373-1-shenwei.wang@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220714185858.615373-1-shenwei.wang@nxp.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
-> As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
-> old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
-> for years instead.
+On Thu, Jul 14, 2022 at 01:58:58PM -0500, Shenwei Wang wrote:
+> The LPUART hardware doesn't zero out the parity bit on the received
+> characters. This behavior won't impact the use cases of CS8 because
+> the parity bit is the 9th bit which is not currently used by software.
+> But the parity bit for CS7 must be zeroed out by software in order to
+> get the correct raw data.
 > 
-> However, unused definitions of these ioctl numbers and "strut
-> consolefontdesc" still exist in a uapi header. They could have been removed
-> since no userspace was using them. Otherwise they will become a
-> misleading for users, and users will fail with ENOTTY with wrong call.
-> 
-> We are moving old font ioctl numbers definitions here to guide users to
-> use KDFONTOP.
-> 
-> Signed-off-by: Xingrui Yi <yixingrui@linux.alibaba.com>
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
 > ---
->  include/uapi/linux/kd.h | 13 -------------
->  1 file changed, 13 deletions(-)
+> changes in v2
+> - remove the "inline" keyword from the function of lpuart_tty_insert_flip_string;
 > 
-> diff --git a/include/uapi/linux/kd.h b/include/uapi/linux/kd.h
-> index ee929ece4112..d739b17fc942 100644
-> --- a/include/uapi/linux/kd.h
-> +++ b/include/uapi/linux/kd.h
-> @@ -6,19 +6,6 @@
->  
->  /* 0x4B is 'K', to avoid collision with termios and vt */
->  
-> -#define GIO_FONT	0x4B60	/* gets font in expanded form */
-> -#define PIO_FONT	0x4B61	/* use font in expanded form */
-> -
-> -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
-> -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
-> -struct consolefontdesc {
-> -	unsigned short charcount;	/* characters in font (256 or 512) */
-> -	unsigned short charheight;	/* scan lines per character (1-32) */
-> -	char __user *chardata;		/* font data in expanded form */
-> -};
-> -
-> -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
-> -
->  #define GIO_CMAP	0x4B70	/* gets colour palette on VGA+ */
->  #define PIO_CMAP	0x4B71	/* sets colour palette on VGA+ */
->  
+> changes in v1
+> - fix the code indent and whitespace issue;
 
-Did you rebuild a distribution like Debian to verify that these values
-and structure are not used anywhere?
+Please work with your email admins to fix up your systems as it is
+showing this is an invalid signature when validating it:
+	✗ BADSIG: DKIM/nxp.com
+
+Soon I will just reject patches like this as you don't want people to
+impersonate your domain, right?
 
 thanks,
 
