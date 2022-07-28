@@ -2,52 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C661C19F2A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79972C19F2C
 	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 06:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234072AbiG1GLS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S233915AbiG1GLT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233763AbiG1GLB (ORCPT
+        with ESMTP id S233794AbiG1GLE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:11:01 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F853244C;
+        Thu, 28 Jul 2022 02:11:04 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0AF32471;
         Wed, 27 Jul 2022 23:11:00 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4C9935C142;
-        Thu, 28 Jul 2022 06:10:58 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7825034E38;
+        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658988658; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1658988657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vE3lqgObhp+xA4CyyUBOqxikMk/zmslrA0px/M7XVgY=;
-        b=KNc2WxSpTyu1g7K8XE/yQXYhfBVta8Eh9L99DzXD9sKP5uWOnaWYzTkSJttRi5xnqYyBvO
-        KHjwkJgVyYITeeaGQe6tTsiiOmXkdBt5KhTIbddt7EimrtG2ugj9qyO6tQtkamoWujd2ty
-        QC4r5qca6ugGz65m5Hgj7uk3sYdCltA=
+        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
+        b=v8Kt1Q6MD6zQltNlJjd/wpPuB9jWbp6SEF+Q160+WtgNTYN2lqgkFSGvXpShVzACh1B+JM
+        Gm9GX1zoKCttSEHMzdj4OFyOmReAQp+YnRA4AEmlu4+/pidpPfLg8tF4+4SpmJN4HzAUh4
+        vdMCKILwuuPo2qcxOuf3BUQa/47papw=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658988658;
+        s=susede2_ed25519; t=1658988657;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vE3lqgObhp+xA4CyyUBOqxikMk/zmslrA0px/M7XVgY=;
-        b=hp/b23j1V7WHnGijucEuuEH7LDw+6fZ/Q3QntjVBTpWgR7U1UhsQUNou6vfnKGUHlDaUaE
-        eaIA1OwikoziGdDw==
+        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
+        b=vKgoEU7osz62vusnS4Q2KkAjhb9LfWNTTrvdy/8NdtThkDB+zli3UUqQXhOSUy0FiGZcwj
+        lBHE9v1Cuwkp0ACg==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1F3172C142;
-        Thu, 28 Jul 2022 06:10:58 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 853102C142;
+        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 6/6] tty: serial: document uart_get_console()
-Date:   Thu, 28 Jul 2022 08:10:56 +0200
-Message-Id: <20220728061056.20799-6-jslaby@suse.cz>
+Subject: [PATCH 4/6] Documentation: serial: link uart_ops properly
+Date:   Thu, 28 Jul 2022 08:10:54 +0200
+Message-Id: <20220728061056.20799-4-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728061056.20799-1-jslaby@suse.cz>
 References: <20220728061056.20799-1-jslaby@suse.cz>
@@ -57,53 +57,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This was the only function mentioned in the text, but was neither linked
-nor documented. So document and link it, so that hyperlinking works in
-the text.
+The syntax to reference a struct in text is "struct XY". So reference
+uart_ops properly, so that hyperlinks work.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- Documentation/driver-api/serial/driver.rst |  2 +-
- drivers/tty/serial/serial_core.c           | 13 +++++++++----
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ Documentation/driver-api/serial/driver.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index e1b440f2c02b..23c6b956cd90 100644
+index cae280f39189..13b580e887b4 100644
 --- a/Documentation/driver-api/serial/driver.rst
 +++ b/Documentation/driver-api/serial/driver.rst
-@@ -76,7 +76,7 @@ Other functions
-            uart_add_one_port uart_remove_one_port uart_console_write
-            uart_parse_earlycon uart_parse_options uart_set_options
-            uart_get_lsr_info uart_handle_dcd_change uart_handle_cts_change
--           uart_try_toggle_sysrq
-+           uart_try_toggle_sysrq uart_get_console
+@@ -39,7 +39,7 @@ Locking
  
- Other notes
- -----------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 14d309850d2e..12c87cd201a7 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2087,10 +2087,15 @@ void uart_console_write(struct uart_port *port, const char *s,
- }
- EXPORT_SYMBOL_GPL(uart_console_write);
+ It is the responsibility of the low level hardware driver to perform the
+ necessary locking using port->lock.  There are some exceptions (which
+-are described in the uart_ops listing below.)
++are described in the struct uart_ops listing below.)
  
--/*
-- *	Check whether an invalid uart number has been specified, and
-- *	if so, search for the first available port that does have
-- *	console support.
-+/**
-+ * uart_get_console - get uart port for console
-+ * @ports: ports to search in
-+ * @nr: number of @ports
-+ * @co: console to search for
-+ * Returns: uart_port for the console @co
-+ *
-+ * Check whether an invalid uart number has been specified (as @co->index), and
-+ * if so, search for the first available port that does have console support.
-  */
- struct uart_port * __init
- uart_get_console(struct uart_port *ports, int nr, struct console *co)
+ There are two locks.  A per-port spinlock, and an overall semaphore.
+ 
 -- 
 2.37.1
 
