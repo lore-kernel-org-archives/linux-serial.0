@@ -2,85 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9B1C04A68
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 11:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D37C19F29
+	for <linux-serial@archiver.kernel.org>; Thu, 28 Jul 2022 14:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235757AbiG1Lsv (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
+        id S231731AbiG1O2o (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235656AbiG1Lsu (ORCPT
+        with ESMTP id S229531AbiG1O2n (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:48:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C5351438;
-        Thu, 28 Jul 2022 04:48:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C69C9B82323;
-        Thu, 28 Jul 2022 11:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E2CDC433D6;
-        Thu, 28 Jul 2022 11:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659008927;
-        bh=7yLMJnxn+yCfCmx9YAg2I3p2Jc9Uy24ZRDfydiXpLeE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SrC1bHjf2Rxd6xIjCNJWDmVzeiGjFEKHQQJJoWdDpoBEF5kL1CrhjVtH76D1FdbI+
-         E5gK8SJpJ255J9p3LMrBqR2ZFNeNafaeN+BOctzLnyHCNihBN+JU/Wb+aHPfGoPyTE
-         tfqCiHjeYP1t7Q2WhomElUb59XnMVGE1EMP5EIsU=
-Date:   Thu, 28 Jul 2022 13:48:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Datta, Shubhrajyoti" <shubhrajyoti.datta@amd.com>
-Cc:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "git@xilinx.com" <git@xilinx.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/7] tty: xilinx_uartps: Check the clk_enable return value
-Message-ID: <YuJ3nPM9mhCHFQN2@kroah.com>
-References: <20220429081422.3630070-1-shubhrajyoti.datta@xilinx.com>
- <20220429081422.3630070-3-shubhrajyoti.datta@xilinx.com>
- <YnQ4e7afL/ghGnA2@kroah.com>
- <BY5PR12MB49028F76B4701BA309913A6181969@BY5PR12MB4902.namprd12.prod.outlook.com>
+        Thu, 28 Jul 2022 10:28:43 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE3065D48;
+        Thu, 28 Jul 2022 07:28:42 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id sz17so3446369ejc.9;
+        Thu, 28 Jul 2022 07:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gvXbeuK/nDPmsZZTRnDVNdv3SfvIgHhFwFU2kIzHG68=;
+        b=UUn+zotXHe6ND+iqyztenRNM6eQqekQZejLSPdmR7TqJ/qPLS7+rJB6KdPHJxTiZK+
+         q3BotwxEHcUR0oxFWmR8c3559LeGfizKqWvCE/alvuJctwxRL+0/gyKCu9GT2leHLrOY
+         x6tXIjp7tGWh5atJIbhoXTGnFxQq658fGLd3SHG4ZCyiHaQh+hZLHXksYqUzfQJzK2cv
+         Y0LACEGoBZWEGxcBTk5kV+NcgEpQ30wdddhf+ysl1YBNQjYAYClayxzS9uXCs2IkNZnR
+         OOT27cxCpxgBMtOTuQyLc9fuI8ymnflO2gnBwmGQSNljurU5u2C3BQ7S9PDmoZyfO6h9
+         e0mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gvXbeuK/nDPmsZZTRnDVNdv3SfvIgHhFwFU2kIzHG68=;
+        b=A+k/JTpdFYWttticERrj01uw8e9nqMOqqqpofWA0LmqhYEaJXKjcRmBHKv0OL9XvJ4
+         iQ6S/42SF1CQXTZ9GX0xoVzW6rL3i2GO4v2SJ684AOoBvvViD2ONAcxI6te3CtrBX25k
+         ih/skHD17aNktL81ZVopS7p2wMdhfVXn23sS0Y+7xQwbL2sEKkk5bQNPkwAnNV8H+Z3Y
+         uzGNQDarxtp2JSrY+zIMGDTSRPOdDWaITFeabPHqMHv0nU1/nZniYd33Auc7dARAYnmV
+         zZbENdAHNJYm+LICSaxUh74cMdt9/Y0g8LpWGvL5KkYs91KbuAbyHMicIxrjeL1Ow8jK
+         a11A==
+X-Gm-Message-State: AJIora/6Pq+lV3lD5k8eX79+IjxQTbXHAxNj/d7To7xG6sYa5BTjeEzO
+        rOLPITw9Dw4JAWEDoTEtUC4AuxP/qecyApbz
+X-Google-Smtp-Source: AGRyM1usb4SPM3cGqtqin0Wwas0cy7iM0Lq2zERxvCAmcTEakP2TyeXIbIB/uwiXZ00pIE3dJWi/UQ==
+X-Received: by 2002:a17:907:6d01:b0:72f:53f:7a25 with SMTP id sa1-20020a1709076d0100b0072f053f7a25mr20932970ejc.126.1659018519713;
+        Thu, 28 Jul 2022 07:28:39 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([23.154.177.9])
+        by smtp.gmail.com with ESMTPSA id y1-20020aa7d501000000b0043cce1d3a0fsm755949edq.87.2022.07.28.07.28.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 07:28:39 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH 0/2] Add generic framebuffer support to EFI earlycon driver
+Date:   Thu, 28 Jul 2022 17:28:17 +0300
+Message-Id: <20220728142824.3836-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY5PR12MB49028F76B4701BA309913A6181969@BY5PR12MB4902.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 11:09:10AM +0000, Datta, Shubhrajyoti wrote:
-> [AMD Official Use Only - General]
-> 
-> Hi Greg,
-> 
-> > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Friday, May 6, 2022 2:20 AM
-> > To: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> > Cc: linux-serial@vger.kernel.org; michal.simek@xilinx.com;
-> > jirislaby@kernel.org; git@xilinx.com; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH 2/7] tty: xilinx_uartps: Check the clk_enable return value
-> > 
-> > On Fri, Apr 29, 2022 at 01:44:17PM +0530, Shubhrajyoti Datta wrote:
-> > > Check the clk_enable return value.
-> > 
-> > That says what, but not why.
-> > 
-> Will fix v2.
-> > >
-> > > Addresses-Coverity: Event check_return.
-> > 
-> > Shouldn't this be a covertity id?
-> 
-> I could not find the warning in the Coverity that is run on the linux kernel. 
-> Somehow was seeing int when I was running  locally.
+Make the EFI earlycon driver be suitable for any linear framebuffers.
+This should be helpful for early porting of boards with no other means of
+output, like smartphones/tablets. There seems to be an issue with early_ioremap
+function on ARM32, but I am unable to find the exact cause. It appears the mappings
+returned by it are somehow incorrect, thus the driver is disabled on ARM. EFI early
+console was disabled on IA64 previously, so I kept it in EFI earlycon Kconfig.
 
-Ok, then there's no need to reference coverity at all then :)
+This patch also changes behavior on EFI systems, by selecting the mapping type
+based on if the framebuffer region intersects with system RAM. If it does, it's
+common sense that it should be in RAM as a whole, and so the system RAM mapping is
+used. It was tested to be working on my PC (Intel Z490 platform).
 
-thanks,
+Markuss Broks (2):
+  drivers: serial: earlycon: Pass device-tree node
+  efi: earlycon: Add support for generic framebuffers and move to fbdev
+    subsystem
 
-greg k-h
+ .../admin-guide/kernel-parameters.txt         |  12 +-
+ MAINTAINERS                                   |   5 +
+ drivers/firmware/efi/Kconfig                  |   6 +-
+ drivers/firmware/efi/Makefile                 |   1 -
+ drivers/firmware/efi/earlycon.c               | 246 --------------
+ drivers/tty/serial/earlycon.c                 |   3 +
+ drivers/video/fbdev/Kconfig                   |  11 +
+ drivers/video/fbdev/Makefile                  |   1 +
+ drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
+ include/linux/serial_core.h                   |   1 +
+ 10 files changed, 331 insertions(+), 256 deletions(-)
+ delete mode 100644 drivers/firmware/efi/earlycon.c
+ create mode 100644 drivers/video/fbdev/earlycon.c
+
+-- 
+2.37.0
+
