@@ -2,81 +2,207 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AD9C00144
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 13:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FDDC00144
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 22:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbiG2NrD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        id S229683AbiG2WDs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Jul 2022 18:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236258AbiG2NrC (ORCPT
+        with ESMTP id S231449AbiG2WDr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:47:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C545357FB
-        for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 06:47:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D4061F28
-        for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 13:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B885C433D6;
-        Fri, 29 Jul 2022 13:47:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659102420;
-        bh=fEdDpsT3y7K/2xz0Z9xDsbbn3g6LtyjCObDqBM0CUyk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R7XUw99YIJOBdFHVNKyWzVeWdI3kPqwCq2TiF+gjwTbCakUT6qk9ocGoMe2gdL2CC
-         yiSAh2k7pL9kxKjnrndT3FrtuUecZ6weX5b/5YJKeE+OfNtcmj4V3oD2XqJlGAxS9+
-         FD2FgJm2c1v8heXq8Nd9Fsw6laYWYQZrHyxv3Xbo=
-Date:   Fri, 29 Jul 2022 15:46:57 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc:     linux-serial@vger.kernel.org, michal.simek@xilinx.com,
-        shubhrajyoti.datta@gmail.com, git@amd.com
-Subject: Re: [PATCH v2 2/7] tty: xilinx_uartps: Update copyright text to
- correct format
-Message-ID: <YuPk0bAqMIg33EQw@kroah.com>
-References: <20220729114748.18332-1-shubhrajyoti.datta@xilinx.com>
- <20220729114748.18332-3-shubhrajyoti.datta@xilinx.com>
+        Fri, 29 Jul 2022 18:03:47 -0400
+X-Greylist: delayed 2515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 15:03:46 PDT
+Received: from tartarus.angband.pl (tartarus.angband.pl [51.83.246.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB798BABC
+        for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 15:03:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=angband.pl;
+        s=tartarus; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EuRhSvlTzxBIhrA8hHoMAr8WfhmsTnDFuycwSZ/LtBA=; b=Ma0kBF6RN+JBt2bYT3Kz0EjO7v
+        oExYZT4RXMOts6tgdGZEeTNgAsBzapat1zb+ZZgODOpZxYGbjm+/22XSfoicQxX6EpBiTty+stpex
+        BEGg48NMhgLF7tsol/AGQrOnLKp5hDMIrFdNIH0Znfm9/Hq5AB94wwvEAS614vLib9WM=;
+Received: from kilobyte by tartarus.angband.pl with local (Exim 4.94.2)
+        (envelope-from <kilobyte@angband.pl>)
+        id 1oHXQT-00648v-4t; Fri, 29 Jul 2022 23:21:41 +0200
+Date:   Fri, 29 Jul 2022 23:21:41 +0200
+From:   Adam Borowski <kilobyte@angband.pl>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Xingrui Yi <yixingrui@linux.alibaba.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
+Message-ID: <YuRPZX4S3DHsLeDs@angband.pl>
+References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+ <YuJIIl/LwGwuYdib@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220729114748.18332-3-shubhrajyoti.datta@xilinx.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YuJIIl/LwGwuYdib@kroah.com>
+X-Junkbait: aaron@angband.pl, zzyx@angband.pl
+X-SA-Exim-Connect-IP: <locally generated>
+X-SA-Exim-Mail-From: kilobyte@angband.pl
+X-SA-Exim-Scanned: No (on tartarus.angband.pl); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 05:17:43PM +0530, Shubhrajyoti Datta wrote:
-> From: Michal Simek <michal.simek@xilinx.com>
-> 
-> Based on recommended guidance Copyright term should be also present in
-> front of (c). That's why aligned drivers to match this pattern.
-> It helps automated tools with source code scanning.
-> 
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 51fd09e14eda..8d2c21718869 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -2,7 +2,7 @@
->  /*
->   * Cadence UART driver (found in Xilinx Zynq)
->   *
-> - * 2011 - 2014 (C) Xilinx Inc.
-> + * Copyright (c) 2011 - 2014 Xilinx, Inc.
+On Thu, Jul 28, 2022 at 10:26:10AM +0200, Greg KH wrote:
+> On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
+> > As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
+> > old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
+> > for years instead.
+> > 
+> > However, unused definitions of these ioctl numbers and "strut
+> > consolefontdesc" still exist in a uapi header. They could have been removed
+> > since no userspace was using them. Otherwise they will become a
+> > misleading for users, and users will fail with ENOTTY with wrong call.
 
-This is great, but as you did just touch this thing in 2022, shouldn't
-you write this as:
-	Copyright (c) 2011 - 2014, 2022 Xilinx, Inc.
+> > -#define GIO_FONT	0x4B60	/* gets font in expanded form */
+> > -#define PIO_FONT	0x4B61	/* use font in expanded form */
+> > -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
+> > -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
+> > -struct consolefontdesc {
+> > -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
 
-You can do an add-on patch for that if you want.
+> Did you rebuild a distribution like Debian to verify that these values
+> and structure are not used anywhere?
 
-thanks,
+I just did.  https://codesearch.debian.net lists packages to check:
+aalib
+busybox
+cde
+console-cyrillic
+dietlibc
+doclifter
+emscripten
+fpc
+gargoyle-free
+gcc-10
+gcc-11
+gcc-12
+gcc-9
+gcc-arm-none-eabi
+gcc-avr
+gcc-riscv64-unknown-elf
+gcc-snapshot
+hurd
+kbd
+kfreebsd-10
+lazarus
+libabigail
+libexplain
+linux
+llvm-toolchain-11
+llvm-toolchain-12
+llvm-toolchain-13
+llvm-toolchain-14
+llvm-toolchain-9
+llvm-toolchain-snapshot
+lynx
+manpages-l10n
+sequeler
+strace
+stress-ng
+systemd
+trinity
+vala
+valgrind
 
-greg k-h
+Of these, I've ignored the kernels, and built only the latest released
+version of a compiler.
+
+.--====[ aalib ]
+aalinux.c: In function ‘linux_init’:
+aalinux.c:106:34: error: storage size of ‘desc’ isn’t known
+  106 |           struct consolefontdesc desc;
+      |                                  ^~~~
+aalinux.c:109:26: error: ‘GIO_FONTX’ undeclared (first use in this function)
+  109 |           i = ioctl (fd, GIO_FONTX, &desc);
+      |                          ^~~~~~~~~
+`----
+
+.--====[ kbd ]
+kdfontop.c: In function ‘kfont_restore_font’:
+kdfontop.c:27:23: error: ‘PIO_FONTRESET’ undeclared (first use in this function)
+   27 |         if (ioctl(fd, PIO_FONTRESET, 0)) {
+      |                       ^~~~~~~~~~~~~
+kdfontop.c: In function ‘get_font_giofontx’:
+kdfontop.c:89:32: error: storage size of ‘cfd’ isn’t known
+kdfontop.c:102:30: error: ‘GIO_FONTX’ undeclared
+kdfontop.c: In function ‘get_font_giofont’:
+kdfontop.c:137:30: error: ‘GIO_FONT’ undeclared
+kdfontop.c: In function ‘put_font_piofontx’:
+kdfontop.c:242:32: error: storage size of ‘cfd’ isn’t known
+kdfontop.c:262:31: error: ‘PIO_FONTX’ undeclared
+kdfontop.c: In function ‘put_font_piofont’:
+kdfontop.c:299:31: error: ‘PIO_FONT’ undeclared
+`----
+
+.--====[ gcc-12 ]
+../../../../src/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp:850:29: error: 'GIO_FONT' was not declared in this scope
+  850 |   unsigned IOCTL_GIO_FONT = GIO_FONT;
+      |                             ^~~~~~~~
+`----
+
+.--====[ llvm-toolchain-14 ]
+/<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:865:29: error: use of undeclared identifier 'GIO_FONT'
+  unsigned IOCTL_GIO_FONT = GIO_FONT;
+                            ^
+/<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:898:29: error: use of undeclared identifier 'PIO_FONT'
+  unsigned IOCTL_PIO_FONT = PIO_FONT;
+                            ^
+`----
+
+.--====[ libexplain ]
+libexplain/buffer/consolefontdesc.c: In function ‘explain_buffer_consolefontdesc’:
+libexplain/buffer/consolefontdesc.c:34:48: error: invalid application of ‘sizeof’ to incomplete type ‘c
+onst struct consolefontdesc’
+   34 |     if (explain_is_efault_pointer(value, sizeof(*value)))
+      |                                                ^
+libexplain/buffer/consolefontdesc.c:43:14: error: invalid use of undefined type ‘const struct consolefo
+ntdesc’
+   43 |         value->charcount,
+      |              ^~
+`----
+
+.--====[ trinity ]
+In file included from ioctls/vt.c:8:
+ioctls/vt.c:48:15: error: ‘GIO_FONT’ undeclared here (not in a function)
+   48 |         IOCTL(GIO_FONT),
+      |               ^~~~~~~~
+include/ioctls.h:53:22: note: in definition of macro ‘IOCTL’
+   53 |         { .request = _request, .name = #_request, }
+      |                      ^~~~~~~~
+ioctls/vt.c:49:15: error: ‘PIO_FONT’ undeclared here (not in a function)
+   49 |         IOCTL(PIO_FONT),
+      |               ^~~~~~~~
+ioctls/vt.c:50:15: error: ‘GIO_FONTX’ undeclared here (not in a function)
+ioctls/vt.c:51:15: error: ‘PIO_FONTX’ undeclared here (not in a function)
+ioctls/vt.c:52:15: error: ‘PIO_FONTRESET’ undeclared here (not in a function)
+`----
+
+
+So there _are_ failures in userspace.
+But let's take a look at them:
+
+* aalib: dead upstream since 2001, this code is broken
+* kbd: uses KDFONTOP, falls back if unsupported
+* libsanitizer (bundled in gcc, llvm-toolchain): can drop
+* libexplain: can drop
+* trinity: can drop
+
+So we have one real failure, one fallback, and a few "lists all ioctls".
+I'd say that's acceptable.  Especially because presence of code that list
+all ioctls means we would never done any clean-up otherwise.
+
+
+Meow!
+-- 
+⢀⣴⠾⠻⢶⣦⠀ Aryans: split from other Indo-Europeans ~2900-2000BC → Ural →
+⣾⠁⢠⠒⠀⣿⡁     Bactria → settled 2000-1000BC in northwest India.
+⢿⡄⠘⠷⠚⠋⠀ Gypsies: came ~1000AD from northern India; aryan.
+⠈⠳⣄⠀⠀⠀⠀ Germans: IE people who came ~2800BC to Scandinavia; not aryan.
