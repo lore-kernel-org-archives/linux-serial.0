@@ -2,67 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 107B8C00144
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 07:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5623FC19F2B
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 07:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234371AbiG2H3V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        id S232795AbiG2Hw5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233949AbiG2H3V (ORCPT
+        with ESMTP id S230115AbiG2Hw4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:29:21 -0400
-Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C3A80498
-        for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 00:29:20 -0700 (PDT)
-Received: by mail.coredeal.pl (Postfix, from userid 1002)
-        id C01EEA867B; Fri, 29 Jul 2022 07:29:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
-        t=1659079757; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
-        h=Date:From:To:Subject:From;
-        b=S0zKXcCI9KKHySAeUZsTp5Gn74NJEJFbWDp8vI839vsfuzzCcNiKTxHyDVwdX0PzA
-         4Zl2z0LAiAKwFaGp3I2752IuUYq3DhKHbEsE+jQTNrSlilheIeBavD8FsMQeRkshQA
-         Gva8ZusgTbcnM6GR2T6EK2uZleK3Qhs3oAOaGx0VWb26mNbK/zIimte5Gc3mojFPkI
-         k/GHee1PCnIe/3VgUWjBaOFE2hsAX19FEEpkkoseaGasXZDm0BmXy4qviv6eDLlvqI
-         FwS4K19vmP+g3g7h1WN4cY9TnSVFE4STa5QY8XQ3tzx8CBTvmwbiYz/4jDibSa/xdH
-         DsrEDolSLQGkA==
-Received: by mail.coredeal.pl for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 07:29:16 GMT
-Message-ID: <20220729063000-0.1.4l.17zlm.0.9152hgaa4b@coredeal.pl>
-Date:   Fri, 29 Jul 2022 07:29:16 GMT
-From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
-To:     <linux-serial@vger.kernel.org>
-Subject: Biznesowy angielski
-X-Mailer: mail.coredeal.pl
+        Fri, 29 Jul 2022 03:52:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25E7E016;
+        Fri, 29 Jul 2022 00:52:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 136ECB826FE;
+        Fri, 29 Jul 2022 07:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 685EEC433D6;
+        Fri, 29 Jul 2022 07:52:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659081172;
+        bh=OYdvV1YvlA/eN4XOJblBaobdFexkVmkDwauRhOeGPlY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n8duhNOi5jT8T0Yyk11vj2ck80+7yMAUrjAuEnCEawa3e738bgm8tNWh1JElV1wtc
+         e1zmW/TnfLSmUW86TW2o+OfA58EDdeamGD1yhA8uXGNQp0u6Uow4o3ZEHvi7BE0JXG
+         cvVRbA0UxTxLSTiJUEy5GGMR/GS1YoYTDb6QR2uk=
+Date:   Fri, 29 Jul 2022 09:52:50 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit
+ in CS7 mode
+Message-ID: <YuOR0nA5EYnNQOYh@kroah.com>
+References: <20220714185858.615373-1-shenwei.wang@nxp.com>
+ <YuJKObb/XQJ4woBK@kroah.com>
+ <AM9PR04MB8274C49685CC127AE48FB3DD89969@AM9PR04MB8274.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AM9PR04MB8274C49685CC127AE48FB3DD89969@AM9PR04MB8274.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+A: http://en.wikipedia.org/wiki/Top_post
+Q: Were do I find info about this thing called top-posting?
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
-czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
-swoich pracownik=C3=B3w?
+A: No.
+Q: Should I include quotations after my reply?
 
-Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
-w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
-ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
-=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+http://daringfireball.net/2007/07/on_top
 
-Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
-=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
-re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
-o=C5=BCliwo=C5=9Bci biznesowe.=20
+On Thu, Jul 28, 2022 at 06:15:09PM +0000, Shenwei Wang wrote:
+> Hi Greg,
+> 
+> I tried to send an email again to check this DKIM badsig issue, but everything looked fine here. Can you please let me know how you validated the signature? The following is my DKIM validating info:
 
-Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
- kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
-za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
-=2E
+I use b4, and here's what I used and you should be able to duplicate it
+yourself:
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
-w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+$ b4 am -t https://lore.kernel.org/r/20220714185858.615373-1-shenwei.wang@nxp.com
+Grabbing thread from lore.kernel.org/all/20220714185858.615373-1-shenwei.wang%40nxp.com/t.mbox.gz
+Analyzing 5 messages in the thread
+Checking attestation on all messages, may take a moment...
+---
+  ✗ [PATCH v2 1/1] serial: fsl_lpuart: zero out parity bit in CS7 mode
+  ---
+  ✗ BADSIG: DKIM/nxp.com
+---
+Total patches: 1
+---
+ Link: https://lore.kernel.org/r/20220714185858.615373-1-shenwei.wang@nxp.com
+ Base: not specified
+       git am ./v2_20220714_shenwei_wang_serial_fsl_lpuart_zero_out_parity_bit_in_cs7_mode.mbx
 
+thanks,
 
-Pozdrawiam
-Krzysztof Maj
+greg k-h
