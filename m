@@ -2,207 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FDDC00144
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 22:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B89C19F29
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 22:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbiG2WDs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jul 2022 18:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        id S239577AbiG2W4H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Jul 2022 18:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231449AbiG2WDr (ORCPT
+        with ESMTP id S239413AbiG2W4G (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jul 2022 18:03:47 -0400
-X-Greylist: delayed 2515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 15:03:46 PDT
-Received: from tartarus.angband.pl (tartarus.angband.pl [51.83.246.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB798BABC
-        for <linux-serial@vger.kernel.org>; Fri, 29 Jul 2022 15:03:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=angband.pl;
-        s=tartarus; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=EuRhSvlTzxBIhrA8hHoMAr8WfhmsTnDFuycwSZ/LtBA=; b=Ma0kBF6RN+JBt2bYT3Kz0EjO7v
-        oExYZT4RXMOts6tgdGZEeTNgAsBzapat1zb+ZZgODOpZxYGbjm+/22XSfoicQxX6EpBiTty+stpex
-        BEGg48NMhgLF7tsol/AGQrOnLKp5hDMIrFdNIH0Znfm9/Hq5AB94wwvEAS614vLib9WM=;
-Received: from kilobyte by tartarus.angband.pl with local (Exim 4.94.2)
-        (envelope-from <kilobyte@angband.pl>)
-        id 1oHXQT-00648v-4t; Fri, 29 Jul 2022 23:21:41 +0200
-Date:   Fri, 29 Jul 2022 23:21:41 +0200
-From:   Adam Borowski <kilobyte@angband.pl>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Xingrui Yi <yixingrui@linux.alibaba.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
-Message-ID: <YuRPZX4S3DHsLeDs@angband.pl>
-References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
- <YuJIIl/LwGwuYdib@kroah.com>
+        Fri, 29 Jul 2022 18:56:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E741E89A7C;
+        Fri, 29 Jul 2022 15:56:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8905BB82A02;
+        Fri, 29 Jul 2022 22:56:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12528C433D6;
+        Fri, 29 Jul 2022 22:56:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659135363;
+        bh=zk29gmNkOWKkDPAyPj1KjLUZzxwFt6lvMvWIi2eO2Lc=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=QfcqUVGobKwRR3DAPC3w8Y/kVCpprAGZdplH6sAVBNMroIEmwLYn9rQ2TUd+lg4x7
+         jkTqCFSFnU+THaJGobcDJ0gav0im3GXsUM5hrG4Z3UaD2HfBBLT5LENuAs3gkYFCKd
+         MqO3B7iD1p5gxL9cGRphF5rzi27JXEErT+flJzx+vlX0XjXx2dUmFeFVZdsmNO4dAr
+         7o+GXFViDrxwcDMM19aeb8JVsHTNFl+vjJzIQxdKbsBz8+CY+0wX7T4BolRiNJ0c3p
+         /FJ6w6TBUItx3/TaF1kitcByu4ufl2RUZUJasoEBGlx/IvP2/nADsB7hMGK3b5VaAK
+         7o68VE9qS5kpg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YuJIIl/LwGwuYdib@kroah.com>
-X-Junkbait: aaron@angband.pl, zzyx@angband.pl
-X-SA-Exim-Connect-IP: <locally generated>
-X-SA-Exim-Mail-From: kilobyte@angband.pl
-X-SA-Exim-Scanned: No (on tartarus.angband.pl); SAEximRunCond expanded to false
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
+References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com> <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com> <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com> <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
+Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Olof Johansson <olof@lixom.net>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Thomas G leixner <tglx@linutronix.de>,
+        Patrick Venture <venture@google.com>,
+        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Nancy Yuen <yuenn@google.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Date:   Fri, 29 Jul 2022 15:56:01 -0700
+User-Agent: alot/0.10
+Message-Id: <20220729225603.12528C433D6@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:26:10AM +0200, Greg KH wrote:
-> On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
-> > As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
-> > old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
-> > for years instead.
-> > 
-> > However, unused definitions of these ioctl numbers and "strut
-> > consolefontdesc" still exist in a uapi header. They could have been removed
-> > since no userspace was using them. Otherwise they will become a
-> > misleading for users, and users will fail with ENOTTY with wrong call.
+Quoting Tomer Maimon (2022-07-24 02:06:54)
+> On Sat, 23 Jul 2022 at 06:02, Stephen Boyd <sboyd@kernel.org> wrote:
+> > Furthermore, in DT, reg properties aren't supposed to overlap. When that
+> > happens it usually indicates the DT is being written to describe driver
+> > structure instead of the IP blocks that are delivered by the hardware
+> > engineer. In this case it sounds like a combined clk and reset IP block
+> > because they piled all the SoC glue stuff into a register range. Are
+> > there more features in this IO range?
+>=20
+> No, this range only combined the reset and clock together, but it
+> combined in a way that we cannot split it to two or even three
+> different registers...
 
-> > -#define GIO_FONT	0x4B60	/* gets font in expanded form */
-> > -#define PIO_FONT	0x4B61	/* use font in expanded form */
-> > -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
-> > -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
-> > -struct consolefontdesc {
-> > -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
+Because it is jumbled in some range?
 
-> Did you rebuild a distribution like Debian to verify that these values
-> and structure are not used anywhere?
+>=20
+> I do see a way to combine the clock and the reset driver, the NPCM
+> reset driver is serving other NPCM BMC's.
+> Should we use regmap to handle the clock registers instead of ioremap?
 
-I just did.  https://codesearch.debian.net lists packages to check:
-aalib
-busybox
-cde
-console-cyrillic
-dietlibc
-doclifter
-emscripten
-fpc
-gargoyle-free
-gcc-10
-gcc-11
-gcc-12
-gcc-9
-gcc-arm-none-eabi
-gcc-avr
-gcc-riscv64-unknown-elf
-gcc-snapshot
-hurd
-kbd
-kfreebsd-10
-lazarus
-libabigail
-libexplain
-linux
-llvm-toolchain-11
-llvm-toolchain-12
-llvm-toolchain-13
-llvm-toolchain-14
-llvm-toolchain-9
-llvm-toolchain-snapshot
-lynx
-manpages-l10n
-sequeler
-strace
-stress-ng
-systemd
-trinity
-vala
-valgrind
-
-Of these, I've ignored the kernels, and built only the latest released
-version of a compiler.
-
-.--====[ aalib ]
-aalinux.c: In function ‘linux_init’:
-aalinux.c:106:34: error: storage size of ‘desc’ isn’t known
-  106 |           struct consolefontdesc desc;
-      |                                  ^~~~
-aalinux.c:109:26: error: ‘GIO_FONTX’ undeclared (first use in this function)
-  109 |           i = ioctl (fd, GIO_FONTX, &desc);
-      |                          ^~~~~~~~~
-`----
-
-.--====[ kbd ]
-kdfontop.c: In function ‘kfont_restore_font’:
-kdfontop.c:27:23: error: ‘PIO_FONTRESET’ undeclared (first use in this function)
-   27 |         if (ioctl(fd, PIO_FONTRESET, 0)) {
-      |                       ^~~~~~~~~~~~~
-kdfontop.c: In function ‘get_font_giofontx’:
-kdfontop.c:89:32: error: storage size of ‘cfd’ isn’t known
-kdfontop.c:102:30: error: ‘GIO_FONTX’ undeclared
-kdfontop.c: In function ‘get_font_giofont’:
-kdfontop.c:137:30: error: ‘GIO_FONT’ undeclared
-kdfontop.c: In function ‘put_font_piofontx’:
-kdfontop.c:242:32: error: storage size of ‘cfd’ isn’t known
-kdfontop.c:262:31: error: ‘PIO_FONTX’ undeclared
-kdfontop.c: In function ‘put_font_piofont’:
-kdfontop.c:299:31: error: ‘PIO_FONT’ undeclared
-`----
-
-.--====[ gcc-12 ]
-../../../../src/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp:850:29: error: 'GIO_FONT' was not declared in this scope
-  850 |   unsigned IOCTL_GIO_FONT = GIO_FONT;
-      |                             ^~~~~~~~
-`----
-
-.--====[ llvm-toolchain-14 ]
-/<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:865:29: error: use of undeclared identifier 'GIO_FONT'
-  unsigned IOCTL_GIO_FONT = GIO_FONT;
-                            ^
-/<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:898:29: error: use of undeclared identifier 'PIO_FONT'
-  unsigned IOCTL_PIO_FONT = PIO_FONT;
-                            ^
-`----
-
-.--====[ libexplain ]
-libexplain/buffer/consolefontdesc.c: In function ‘explain_buffer_consolefontdesc’:
-libexplain/buffer/consolefontdesc.c:34:48: error: invalid application of ‘sizeof’ to incomplete type ‘c
-onst struct consolefontdesc’
-   34 |     if (explain_is_efault_pointer(value, sizeof(*value)))
-      |                                                ^
-libexplain/buffer/consolefontdesc.c:43:14: error: invalid use of undefined type ‘const struct consolefo
-ntdesc’
-   43 |         value->charcount,
-      |              ^~
-`----
-
-.--====[ trinity ]
-In file included from ioctls/vt.c:8:
-ioctls/vt.c:48:15: error: ‘GIO_FONT’ undeclared here (not in a function)
-   48 |         IOCTL(GIO_FONT),
-      |               ^~~~~~~~
-include/ioctls.h:53:22: note: in definition of macro ‘IOCTL’
-   53 |         { .request = _request, .name = #_request, }
-      |                      ^~~~~~~~
-ioctls/vt.c:49:15: error: ‘PIO_FONT’ undeclared here (not in a function)
-   49 |         IOCTL(PIO_FONT),
-      |               ^~~~~~~~
-ioctls/vt.c:50:15: error: ‘GIO_FONTX’ undeclared here (not in a function)
-ioctls/vt.c:51:15: error: ‘PIO_FONTX’ undeclared here (not in a function)
-ioctls/vt.c:52:15: error: ‘PIO_FONTRESET’ undeclared here (not in a function)
-`----
-
-
-So there _are_ failures in userspace.
-But let's take a look at them:
-
-* aalib: dead upstream since 2001, this code is broken
-* kbd: uses KDFONTOP, falls back if unsupported
-* libsanitizer (bundled in gcc, llvm-toolchain): can drop
-* libexplain: can drop
-* trinity: can drop
-
-So we have one real failure, one fallback, and a few "lists all ioctls".
-I'd say that's acceptable.  Especially because presence of code that list
-all ioctls means we would never done any clean-up otherwise.
-
-
-Meow!
--- 
-⢀⣴⠾⠻⢶⣦⠀ Aryans: split from other Indo-Europeans ~2900-2000BC → Ural →
-⣾⠁⢠⠒⠀⣿⡁     Bactria → settled 2000-1000BC in northwest India.
-⢿⡄⠘⠷⠚⠋⠀ Gypsies: came ~1000AD from northern India; aryan.
-⠈⠳⣄⠀⠀⠀⠀ Germans: IE people who came ~2800BC to Scandinavia; not aryan.
+Sure? Using regmap or not looks like a parallel discussion. How does it
+help use platform APIs?
