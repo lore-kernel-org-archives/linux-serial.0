@@ -2,88 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5623FC19F2B
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 07:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B18C19F2A
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 07:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232795AbiG2Hw5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
+        id S235149AbiG2H5c (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbiG2Hw4 (ORCPT
+        with ESMTP id S235036AbiG2H5b (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:52:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25E7E016;
-        Fri, 29 Jul 2022 00:52:55 -0700 (PDT)
+        Fri, 29 Jul 2022 03:57:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DD07E027;
+        Fri, 29 Jul 2022 00:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136ECB826FE;
-        Fri, 29 Jul 2022 07:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 685EEC433D6;
-        Fri, 29 Jul 2022 07:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2F5D61BF8;
+        Fri, 29 Jul 2022 07:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CEAAC433D6;
+        Fri, 29 Jul 2022 07:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659081172;
-        bh=OYdvV1YvlA/eN4XOJblBaobdFexkVmkDwauRhOeGPlY=;
+        s=korg; t=1659081450;
+        bh=kGpstCAAwPkGYsBYA0Sv1cWBhpQqBl9cZdq6KbVZpIc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n8duhNOi5jT8T0Yyk11vj2ck80+7yMAUrjAuEnCEawa3e738bgm8tNWh1JElV1wtc
-         e1zmW/TnfLSmUW86TW2o+OfA58EDdeamGD1yhA8uXGNQp0u6Uow4o3ZEHvi7BE0JXG
-         cvVRbA0UxTxLSTiJUEy5GGMR/GS1YoYTDb6QR2uk=
-Date:   Fri, 29 Jul 2022 09:52:50 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Shenwei Wang <shenwei.wang@nxp.com>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH V2 1/1] serial: fsl_lpuart: zero out parity bit
- in CS7 mode
-Message-ID: <YuOR0nA5EYnNQOYh@kroah.com>
-References: <20220714185858.615373-1-shenwei.wang@nxp.com>
- <YuJKObb/XQJ4woBK@kroah.com>
- <AM9PR04MB8274C49685CC127AE48FB3DD89969@AM9PR04MB8274.eurprd04.prod.outlook.com>
+        b=C5ZbaoWIRXMrNQTc535bsP0zIPJb4o4x7G+72avOewl26tmgUH0fnYcLGAm1TRjkG
+         wqEuTzdTP5GGSarwRrwLDIPmR7ZtpH/JQSaxOqnbgevhFJYaZFL/c+mM1lO2blfykq
+         e/98jXo2dQ75Q6EsD/pRVQ6C38alFpyauc3p8dHA=
+Date:   Fri, 29 Jul 2022 09:57:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/2] drivers: serial: earlycon: Pass device-tree node
+Message-ID: <YuOS5yUfNlTOtI6U@kroah.com>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-2-markuss.broks@gmail.com>
+ <YuKfaVG/ZbYtFjS/@kroah.com>
+ <CAHp75Vfz8e1j4qZ6XY6WqMR4E9fKFxrTxj7P6KraXzSLk_NhxQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AM9PR04MB8274C49685CC127AE48FB3DD89969@AM9PR04MB8274.eurprd04.prod.outlook.com>
+In-Reply-To: <CAHp75Vfz8e1j4qZ6XY6WqMR4E9fKFxrTxj7P6KraXzSLk_NhxQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A: http://en.wikipedia.org/wiki/Top_post
-Q: Were do I find info about this thing called top-posting?
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
-A: No.
-Q: Should I include quotations after my reply?
-
-http://daringfireball.net/2007/07/on_top
-
-On Thu, Jul 28, 2022 at 06:15:09PM +0000, Shenwei Wang wrote:
-> Hi Greg,
+On Thu, Jul 28, 2022 at 11:04:24PM +0200, Andy Shevchenko wrote:
+> On Thu, Jul 28, 2022 at 4:41 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> > On Thu, Jul 28, 2022 at 05:28:18PM +0300, Markuss Broks wrote:
+> > > Pass a pointer to device-tree node in case the driver probed from
+> > > OF. This makes early console drivers able to fetch options from
+> > > device-tree node properties.
 > 
-> I tried to send an email again to check this DKIM badsig issue, but everything looked fine here. Can you please let me know how you validated the signature? The following is my DKIM validating info:
+> ...
+> 
+> > > +     unsigned long node;
+> >
+> > That should not be an unsigned long, but rather an 'int'.  Something got
+> > messed up, of_setup_earlycon() should be changed to reflect this before
+> > propagating the error to other places in the kernel.
+> 
+> It's a pointer, but what puzzles me, why it can't be declared as a such:
+> 
+>  struct device_node *node;
+> 
+> ?
 
-I use b4, and here's what I used and you should be able to duplicate it
-yourself:
+It should not be a pointer, trace things backwards, it comes from a call
+to of_setup_earlycon() from early_init_dt_scan_chosen_stdout() which has
+offset declared as an int, and then does:
+	if (of_setup_earlycon(match, offset, options) == 0)
 
-$ b4 am -t https://lore.kernel.org/r/20220714185858.615373-1-shenwei.wang@nxp.com
-Grabbing thread from lore.kernel.org/all/20220714185858.615373-1-shenwei.wang%40nxp.com/t.mbox.gz
-Analyzing 5 messages in the thread
-Checking attestation on all messages, may take a moment...
----
-  ✗ [PATCH v2 1/1] serial: fsl_lpuart: zero out parity bit in CS7 mode
-  ---
-  ✗ BADSIG: DKIM/nxp.com
----
-Total patches: 1
----
- Link: https://lore.kernel.org/r/20220714185858.615373-1-shenwei.wang@nxp.com
- Base: not specified
-       git am ./v2_20220714_shenwei_wang_serial_fsl_lpuart_zero_out_parity_bit_in_cs7_mode.mbx
+So why would it be a node?
 
-thanks,
+> > And it's not really a "node" but an "offset", right?
+> 
+> Seems no.
+
+Really?  What am I missing here?
+
+confused,
 
 greg k-h
