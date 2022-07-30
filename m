@@ -2,105 +2,226 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B89C19F29
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Jul 2022 22:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D54C19F2B
+	for <linux-serial@archiver.kernel.org>; Sat, 30 Jul 2022 08:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239577AbiG2W4H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Jul 2022 18:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
+        id S232415AbiG3IzL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239413AbiG2W4G (ORCPT
+        with ESMTP id S229720AbiG3IzK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Jul 2022 18:56:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E741E89A7C;
-        Fri, 29 Jul 2022 15:56:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8905BB82A02;
-        Fri, 29 Jul 2022 22:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12528C433D6;
-        Fri, 29 Jul 2022 22:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659135363;
-        bh=zk29gmNkOWKkDPAyPj1KjLUZzxwFt6lvMvWIi2eO2Lc=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=QfcqUVGobKwRR3DAPC3w8Y/kVCpprAGZdplH6sAVBNMroIEmwLYn9rQ2TUd+lg4x7
-         jkTqCFSFnU+THaJGobcDJ0gav0im3GXsUM5hrG4Z3UaD2HfBBLT5LENuAs3gkYFCKd
-         MqO3B7iD1p5gxL9cGRphF5rzi27JXEErT+flJzx+vlX0XjXx2dUmFeFVZdsmNO4dAr
-         7o+GXFViDrxwcDMM19aeb8JVsHTNFl+vjJzIQxdKbsBz8+CY+0wX7T4BolRiNJ0c3p
-         /FJ6w6TBUItx3/TaF1kitcByu4ufl2RUZUJasoEBGlx/IvP2/nADsB7hMGK3b5VaAK
-         7o68VE9qS5kpg==
-Content-Type: text/plain; charset="utf-8"
+        Sat, 30 Jul 2022 04:55:10 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747B1F43;
+        Sat, 30 Jul 2022 01:55:09 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id tk8so12115687ejc.7;
+        Sat, 30 Jul 2022 01:55:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bxfY1htXxbYgZJF5B+dESeWX+UdX+4GjUNZm08CoJ8E=;
+        b=YbS/lcslcbmkXpey5cpFq+X/ytIJj3qLqsAi5z2w3lorLorzgulYzXLv7skrAU7gN0
+         EX8kGu++8KCaP8JbTGm7Bo3U8kDDvcQXkGjM1MLqVjThH9BjNQnNUYSsBpwGPt78mnIV
+         OmvNjkD5/22LUnX3abOBs3Ip/74gtvYpkMEqaB47rKWbISEtyBK4LuIyQGvszb2bZdoL
+         CgvYhVFbtXuOgKbSqVay5FL3qu2DJiuNMGh1IjG0TKwGsmXbUFFznpLlY3RbMcwjVw9M
+         adMX/40d2nJLNi65Qz4IOrP2vL7GL5fg4YlumPSgmRc3Lgb1LQGlkLtbz97XAWPK/J7w
+         FrgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bxfY1htXxbYgZJF5B+dESeWX+UdX+4GjUNZm08CoJ8E=;
+        b=QXCKSPv1a/lGjPkdu9538fZa3ZWu1gFi+KWhDhgH2AkJvxXrqUAb+H+jlhm4XCS4ms
+         EF65XDo4YB1K229xJ4H1GMWiRMtYnDV3s7nx0BELxvSQOv3d9y4v/EsUDviE16/eigER
+         S8OkqPxNWCvgeSx2imUMp0/msB27p8GNMG9/Dwpk6Zs/mMFz8IfI5edHOwBZ05FCiflr
+         g9mGaroQtBBSoTvrAe9a811QQQDRgoaksGru54rG9ifnxhrezQNdl1//BpmynEYGtUvQ
+         fxnskJXx9IPFkgCyezvuJJTt2cEvd77ULpeZMciDTFS3fcGZy1DnWPzhYT1P6uDzAsWf
+         gYVg==
+X-Gm-Message-State: AJIora8pZusH4ReJ3SYqcx0wcuYINDKf4vmey5oOlR+aBrXfHxHqvJJH
+        I5vhqKwiwQS/h8JU7RcKFu0=
+X-Google-Smtp-Source: AGRyM1sheQBaWBbZ2/dbYWLUaQqAMJRtzg5nrxQDGH46I4vLTxOvUd/Zbug1LN1Ia1i+sismD/uiGg==
+X-Received: by 2002:a17:907:970c:b0:72e:e972:5c73 with SMTP id jg12-20020a170907970c00b0072ee9725c73mr5518137ejc.352.1659171307805;
+        Sat, 30 Jul 2022 01:55:07 -0700 (PDT)
+Received: from [0.0.0.0] ([81.17.18.61])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170906319300b0072b8fbc9be1sm2699005ejy.187.2022.07.30.01.54.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 Jul 2022 01:55:07 -0700 (PDT)
+Message-ID: <3c55e119-5b6f-25ab-99c9-2c99b1dfd9e9@gmail.com>
+Date:   Sat, 30 Jul 2022 14:54:41 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com> <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com> <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com> <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
+ and move to fbdev subsystem
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Date:   Fri, 29 Jul 2022 15:56:01 -0700
-User-Agent: alot/0.10
-Message-Id: <20220729225603.12528C433D6@smtp.kernel.org>
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Herring <robh@kernel.org>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-3-markuss.broks@gmail.com>
+ <CAHp75VdaDyyqRw9fAkUOhNjsyifeozVx6JuYXSU1HpoO+VHDNA@mail.gmail.com>
+From:   Markuss Broks <markuss.broks@gmail.com>
+In-Reply-To: <CAHp75VdaDyyqRw9fAkUOhNjsyifeozVx6JuYXSU1HpoO+VHDNA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Tomer Maimon (2022-07-24 02:06:54)
-> On Sat, 23 Jul 2022 at 06:02, Stephen Boyd <sboyd@kernel.org> wrote:
-> > Furthermore, in DT, reg properties aren't supposed to overlap. When that
-> > happens it usually indicates the DT is being written to describe driver
-> > structure instead of the IP blocks that are delivered by the hardware
-> > engineer. In this case it sounds like a combined clk and reset IP block
-> > because they piled all the SoC glue stuff into a register range. Are
-> > there more features in this IO range?
->=20
-> No, this range only combined the reset and clock together, but it
-> combined in a way that we cannot split it to two or even three
-> different registers...
+Hi Andy,
 
-Because it is jumbled in some range?
+On 7/29/22 00:19, Andy Shevchenko wrote:
+> On Thu, Jul 28, 2022 at 4:32 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>>
+>> Add early console support for generic linear framebuffer devices.
+>> This driver supports probing from cmdline early parameters
+>> or from the device-tree using information in simple-framebuffer node.
+>> The EFI functionality should be retained in whole.
+>> The driver was disabled on ARM because of a bug in early_ioremap
+>> implementation on ARM.
+> 
+> ...
+> 
+>> -               efifb,[options]
+>> +               efifb
+>>                          Start an early, unaccelerated console on the EFI
+>> -                       memory mapped framebuffer (if available). On cache
+>> -                       coherent non-x86 systems that use system memory for
+>> -                       the framebuffer, pass the 'ram' option so that it is
+>> -                       mapped with the correct attributes.
+>> +                       memory mapped framebuffer (if available).
+> 
+> If somebody passes those (legacy) options, what will happen?
 
->=20
-> I do see a way to combine the clock and the reset driver, the NPCM
-> reset driver is serving other NPCM BMC's.
-> Should we use regmap to handle the clock registers instead of ioremap?
+Those would be ignored. Instead it would be automatically determined if 
+framebuffer is located in RAM or in the I/O space.
 
-Sure? Using regmap or not looks like a parallel discussion. How does it
-help use platform APIs?
+> 
+> ...
+> 
+>>   config EFI_EARLYCON
+>> -       def_bool y
+>> -       depends on SERIAL_EARLYCON && !ARM && !IA64
+>> -       select FONT_SUPPORT
+>> -       select ARCH_USE_MEMREMAP_PROT
+>> +       bool "EFI early console support"
+>> +       depends on FB_EARLYCON && !IA64
+> 
+> This doesn't sound right. Previously on my configuration it was
+> selected automatically, now I need to select it explicitly? I mean
+> that for me EFI_EARLYCON should be selected by default as it was
+> before.
+
+The problem I had with EFI_EARLYCON selected by default was that it 
+would also carry fbdev with itself. Luckily, that's solved if it's moved 
+to console subsystem.
+
+> 
+> ...
+> 
+>> +static int __init simplefb_earlycon_remap_fb(void)
+>> +{
+>> +       int is_ram;
+> 
+> + blank line.
+> 
+>> +       /* bail if there is no bootconsole or it has been disabled already */
+>> +       if (!earlycon_console || !(earlycon_console->flags & CON_ENABLED))
+>> +               return 0;
+>> +
+>> +       is_ram = region_intersects(info.phys_base, info.size,
+>> +                                  IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE);
+>> +       is_ram = is_ram == REGION_INTERSECTS;
+> 
+> Was it in the original code? Otherwise, I would go with plain conditional:
+> 
+>    if (region_intersects())
+>      base = ...
+>    else
+>      base = ...
+
+It wasn't in original code. Original code assumed MEMREMAP_WC always
+unless "ram" was specified as an option to efifb (e.g.
+earlycon=efifb,ram). This code instead checks if the framebuffer is in 
+RAM, and sets the mapping accordingly.
+
+Another issue is that region_intersects() returns REGION_INTERSECTS 
+(defined as 0) when true. I suppose we could use something like:
+
+if (region_intersects() == REGION_INTERSECTS)
+...
+
+> 
+>> +       info.virt_base = memremap(info.phys_base, info.size,
+>> +                                 is_ram ? MEMREMAP_WB : MEMREMAP_WC);
+>> +
+>> +       return info.virt_base ? 0 : -ENOMEM;
+>> +}
+> 
+> ...
+> 
+>> +static void simplefb_earlycon_write_char(u8 *dst, unsigned char c, unsigned int h)
+>> +{
+>> +       const u8 *src;
+>> +       int m, n, bytes;
+>> +       u8 x;
+>> +
+>> +       bytes = BITS_TO_BYTES(font->width);
+>> +       src = font->data + c * font->height * bytes + h * bytes;
+>> +
+>> +       for (m = 0; m < font->width; m++) {
+>> +               n = m % 8;
+>> +               x = *(src + m / 8);
+>> +               if ((x >> (7 - n)) & 1)
+>> +                       memset(dst, 0xff, (info.depth / 8));
+>> +               else
+>> +                       memset(dst, 0, (info.depth / 8));
+>> +               dst += (info.depth / 8);
+>> +       }
+>> +}
+> 
+> Wondering if we already have something like this in DRM/fbdev and can
+> split into a generic helper.
+> 
+> ...
+> 
+>> +       ret = sscanf(device->options, "%u,%u,%u", &info.x, &info.y, &info.depth);
+>> +       if (ret != 3)
+>> +               return -ENODEV;
+> 
+> Don't we have some standard template of this, something like XxYxD,
+> where X, Y, and D are respective decimal numbers?
+
+I'm not aware of this.
+
+> 
+
+-Markuss
