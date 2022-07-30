@@ -2,119 +2,211 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0608C19F29
-	for <linux-serial@archiver.kernel.org>; Sat, 30 Jul 2022 10:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7702C04A68
+	for <linux-serial@archiver.kernel.org>; Sat, 30 Jul 2022 12:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233573AbiG3K0R (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 30 Jul 2022 06:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
+        id S234365AbiG3MAe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 30 Jul 2022 08:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbiG3K0P (ORCPT
+        with ESMTP id S234285AbiG3MAe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 30 Jul 2022 06:26:15 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0871A387;
-        Sat, 30 Jul 2022 03:26:13 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id b16so930437edd.4;
-        Sat, 30 Jul 2022 03:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=l0Q/7yx9FyNBDJt9oRASfJ20HzyIqt7jep5RdGQdu90=;
-        b=kdqdPdfXhJMF2w1UJLc87Kqy9nPsRpmxfI7UKx53cigvdJ8cyHSe54qVTNrI6YQ0Tn
-         40e+x/LcCMjU1pxuJWC+nZ8aRHGqVld5kwZ1Kf0w2Wgur79tXLwBh8rSq7YTbVMzMqbk
-         1DVwsy130N3THSReljll0MNEFs1HbZd5Yc7XZhC6J8NFJyPr9KtVAq/ofE+uV3mQFAqm
-         YcSjWpwVAZ6pSrKIGOB2GVK7ucXlONSqQZGGXgFnYb6gbJ2qbeujZjYkqMyYIUmYZt9l
-         pXeFF3PVa+MNUjpPgdY/w8jcldeydqpOp1/z9Z+4B9V1O/PWa0bQ/CIPZBtROnIJTDNo
-         EzMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=l0Q/7yx9FyNBDJt9oRASfJ20HzyIqt7jep5RdGQdu90=;
-        b=DlYZFmDD62xjawkHSLI3Uc3PyBz2wNLDPuIl1mOYK9VV7/h91GerICRFvEsXAY6Uwp
-         niT838OU8ofu7hNCUUWhEDsLGscZVfNH+Ja+Spp8L4L/7+6lFjPz7OqD5l+uXUVWT+HI
-         M5AN0N6KnxlTcIXGd/mBgsJ/BQGDN+EuLlxIOzne3T1f6GpnoyuqN+CLTtxj7l0etTMV
-         oLkJIR0gentzF6sDeJW+57gryLTXa921YV6NW/SazwTdcNw+KDs/xfsgzKJMrW95DMZi
-         Jb7kAKcGz3WUhci0l68QHEJpnQLLgm3zgbEnD019XB7ZRs3e6LTiWbvKF9x6apNAX9SM
-         YLQA==
-X-Gm-Message-State: AJIora93ugdPyKob0ENkZa1IH3heP/No4y3ZE0XuMPHFqcqWaXxeQYyY
-        Omv4I5yALPWaePmQ7X+i6vNO+HS8M7JhO9JtiF0=
-X-Google-Smtp-Source: AGRyM1uzdkY14o0hN5mVxeuk86vh5sIURGkQFnGzfLTCYvW7dVNz/f6Do420hxAyaoLNy5TcoYGS9EXPlPGIYYkEMTM=
-X-Received: by 2002:a05:6402:2714:b0:43c:1c1:717e with SMTP id
- y20-20020a056402271400b0043c01c1717emr7419196edd.67.1659176771666; Sat, 30
- Jul 2022 03:26:11 -0700 (PDT)
+        Sat, 30 Jul 2022 08:00:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B0613EAB;
+        Sat, 30 Jul 2022 05:00:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2A4AB80E05;
+        Sat, 30 Jul 2022 12:00:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC21C433C1;
+        Sat, 30 Jul 2022 12:00:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659182429;
+        bh=g0xyjqQPMC6JiTcqLBVlrILQwBUFyXz8xSHhDNEJgIw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LKK7ipEBEPJnvmDQ801tH/Axl5jnuwKZA2DrRuIOPfngpoWMd9c3WIyjizkj/+Oh0
+         6FMz7OIBdbFZ+adxKLso0OBCLfAfxaGopigcyicmgYQO/LbwmWGLm+AytFFFqOkqw3
+         dTLW2EUrfBvYCaY3U+XjE6UDC8fkvOriIjGzWkb4=
+Date:   Sat, 30 Jul 2022 14:00:26 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Adam Borowski <kilobyte@angband.pl>
+Cc:     Xingrui Yi <yixingrui@linux.alibaba.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
+Message-ID: <YuUdWoa7UFHmkNu9@kroah.com>
+References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+ <YuJIIl/LwGwuYdib@kroah.com>
+ <YuRPZX4S3DHsLeDs@angband.pl>
 MIME-Version: 1.0
-References: <20220728142824.3836-1-markuss.broks@gmail.com>
- <20220728142824.3836-3-markuss.broks@gmail.com> <CAHp75VdaDyyqRw9fAkUOhNjsyifeozVx6JuYXSU1HpoO+VHDNA@mail.gmail.com>
- <3c55e119-5b6f-25ab-99c9-2c99b1dfd9e9@gmail.com>
-In-Reply-To: <3c55e119-5b6f-25ab-99c9-2c99b1dfd9e9@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 30 Jul 2022 12:25:34 +0200
-Message-ID: <CAHp75Vcu2C-+XyVtLrX8Awxb18uNx6_n3CCCVUyekL4yP755Xw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
- and move to fbdev subsystem
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YuRPZX4S3DHsLeDs@angband.pl>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jul 30, 2022 at 10:55 AM Markuss Broks <markuss.broks@gmail.com> wrote:
-> On 7/29/22 00:19, Andy Shevchenko wrote:
-> > On Thu, Jul 28, 2022 at 4:32 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+On Fri, Jul 29, 2022 at 11:21:41PM +0200, Adam Borowski wrote:
+> On Thu, Jul 28, 2022 at 10:26:10AM +0200, Greg KH wrote:
+> > On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
+> > > As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
+> > > old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
+> > > for years instead.
+> > > 
+> > > However, unused definitions of these ioctl numbers and "strut
+> > > consolefontdesc" still exist in a uapi header. They could have been removed
+> > > since no userspace was using them. Otherwise they will become a
+> > > misleading for users, and users will fail with ENOTTY with wrong call.
+> 
+> > > -#define GIO_FONT	0x4B60	/* gets font in expanded form */
+> > > -#define PIO_FONT	0x4B61	/* use font in expanded form */
+> > > -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
+> > > -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
+> > > -struct consolefontdesc {
+> > > -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
+> 
+> > Did you rebuild a distribution like Debian to verify that these values
+> > and structure are not used anywhere?
+> 
+> I just did.  https://codesearch.debian.net lists packages to check:
+> aalib
+> busybox
+> cde
+> console-cyrillic
+> dietlibc
+> doclifter
+> emscripten
+> fpc
+> gargoyle-free
+> gcc-10
+> gcc-11
+> gcc-12
+> gcc-9
+> gcc-arm-none-eabi
+> gcc-avr
+> gcc-riscv64-unknown-elf
+> gcc-snapshot
+> hurd
+> kbd
+> kfreebsd-10
+> lazarus
+> libabigail
+> libexplain
+> linux
+> llvm-toolchain-11
+> llvm-toolchain-12
+> llvm-toolchain-13
+> llvm-toolchain-14
+> llvm-toolchain-9
+> llvm-toolchain-snapshot
+> lynx
+> manpages-l10n
+> sequeler
+> strace
+> stress-ng
+> systemd
+> trinity
+> vala
+> valgrind
+> 
+> Of these, I've ignored the kernels, and built only the latest released
+> version of a compiler.
+> 
+> .--====[ aalib ]
+> aalinux.c: In function ‘linux_init’:
+> aalinux.c:106:34: error: storage size of ‘desc’ isn’t known
+>   106 |           struct consolefontdesc desc;
+>       |                                  ^~~~
+> aalinux.c:109:26: error: ‘GIO_FONTX’ undeclared (first use in this function)
+>   109 |           i = ioctl (fd, GIO_FONTX, &desc);
+>       |                          ^~~~~~~~~
+> `----
+> 
+> .--====[ kbd ]
+> kdfontop.c: In function ‘kfont_restore_font’:
+> kdfontop.c:27:23: error: ‘PIO_FONTRESET’ undeclared (first use in this function)
+>    27 |         if (ioctl(fd, PIO_FONTRESET, 0)) {
+>       |                       ^~~~~~~~~~~~~
+> kdfontop.c: In function ‘get_font_giofontx’:
+> kdfontop.c:89:32: error: storage size of ‘cfd’ isn’t known
+> kdfontop.c:102:30: error: ‘GIO_FONTX’ undeclared
+> kdfontop.c: In function ‘get_font_giofont’:
+> kdfontop.c:137:30: error: ‘GIO_FONT’ undeclared
+> kdfontop.c: In function ‘put_font_piofontx’:
+> kdfontop.c:242:32: error: storage size of ‘cfd’ isn’t known
+> kdfontop.c:262:31: error: ‘PIO_FONTX’ undeclared
+> kdfontop.c: In function ‘put_font_piofont’:
+> kdfontop.c:299:31: error: ‘PIO_FONT’ undeclared
+> `----
+> 
+> .--====[ gcc-12 ]
+> ../../../../src/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp:850:29: error: 'GIO_FONT' was not declared in this scope
+>   850 |   unsigned IOCTL_GIO_FONT = GIO_FONT;
+>       |                             ^~~~~~~~
+> `----
+> 
+> .--====[ llvm-toolchain-14 ]
+> /<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:865:29: error: use of undeclared identifier 'GIO_FONT'
+>   unsigned IOCTL_GIO_FONT = GIO_FONT;
+>                             ^
+> /<<PKGBUILDDIR>>/compiler-rt/lib/sanitizer_common/sanitizer_platform_limits_posix.cpp:898:29: error: use of undeclared identifier 'PIO_FONT'
+>   unsigned IOCTL_PIO_FONT = PIO_FONT;
+>                             ^
+> `----
+> 
+> .--====[ libexplain ]
+> libexplain/buffer/consolefontdesc.c: In function ‘explain_buffer_consolefontdesc’:
+> libexplain/buffer/consolefontdesc.c:34:48: error: invalid application of ‘sizeof’ to incomplete type ‘c
+> onst struct consolefontdesc’
+>    34 |     if (explain_is_efault_pointer(value, sizeof(*value)))
+>       |                                                ^
+> libexplain/buffer/consolefontdesc.c:43:14: error: invalid use of undefined type ‘const struct consolefo
+> ntdesc’
+>    43 |         value->charcount,
+>       |              ^~
+> `----
+> 
+> .--====[ trinity ]
+> In file included from ioctls/vt.c:8:
+> ioctls/vt.c:48:15: error: ‘GIO_FONT’ undeclared here (not in a function)
+>    48 |         IOCTL(GIO_FONT),
+>       |               ^~~~~~~~
+> include/ioctls.h:53:22: note: in definition of macro ‘IOCTL’
+>    53 |         { .request = _request, .name = #_request, }
+>       |                      ^~~~~~~~
+> ioctls/vt.c:49:15: error: ‘PIO_FONT’ undeclared here (not in a function)
+>    49 |         IOCTL(PIO_FONT),
+>       |               ^~~~~~~~
+> ioctls/vt.c:50:15: error: ‘GIO_FONTX’ undeclared here (not in a function)
+> ioctls/vt.c:51:15: error: ‘PIO_FONTX’ undeclared here (not in a function)
+> ioctls/vt.c:52:15: error: ‘PIO_FONTRESET’ undeclared here (not in a function)
+> `----
+> 
+> 
+> So there _are_ failures in userspace.
+> But let's take a look at them:
+> 
+> * aalib: dead upstream since 2001, this code is broken
+> * kbd: uses KDFONTOP, falls back if unsupported
+> * libsanitizer (bundled in gcc, llvm-toolchain): can drop
+> * libexplain: can drop
+> * trinity: can drop
+> 
+> So we have one real failure, one fallback, and a few "lists all ioctls".
+> I'd say that's acceptable.  Especially because presence of code that list
+> all ioctls means we would never done any clean-up otherwise.
 
-...
+Nope, we can't break exiting tools, especially for things like gcc or
+llvm which do get built often.  We've been down this path before, and
+had to revert things in the past.  We can only remove stuff like this
+when all users are gone.
 
-> I suppose we could use something like:
->
-> if (region_intersects() == REGION_INTERSECTS)
+Please work with the gcc and llvm developers to remove those usages,
+along with the other packages and maybe we can revisit this in 5 years
+or so.
 
-Yes.
+thanks,
 
-...
-
-> >> +       ret = sscanf(device->options, "%u,%u,%u", &info.x, &info.y, &info.depth);
-> >> +       if (ret != 3)
-> >> +               return -ENODEV;
-> >
-> > Don't we have some standard template of this, something like XxYxD,
-> > where X, Y, and D are respective decimal numbers?
->
-> I'm not aware of this.
-
-I believe we won't introduce more chaos in already existing formats of
-one or another thing, so I prefer to be stuck with in practice use
-(e.g. "1024x768x16" without quotes for x=1024, y=768, depth=16).
-
--- 
-With Best Regards,
-Andy Shevchenko
+greg k-h
