@@ -2,140 +2,112 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C3DC19F29
-	for <linux-serial@archiver.kernel.org>; Tue,  2 Aug 2022 16:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA46C3F6B0
+	for <linux-serial@archiver.kernel.org>; Tue,  2 Aug 2022 20:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237624AbiHBQje (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44970 "EHLO
+        id S231542AbiHBUHH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 2 Aug 2022 16:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238242AbiHBQjX (ORCPT
+        with ESMTP id S231130AbiHBUHH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:39:23 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2045.outbound.protection.outlook.com [40.107.21.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79233B7;
-        Tue,  2 Aug 2022 09:39:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nCaxdJ8rwhpOJpS1ByUxR66ZYtfVWEXPtrSmTKDqkzhDyvkcVwhOWXumRiiCFTebCWSNhyvYxgXPfpqkoxYHJpofFJ/ZBHk/WBAL4t7jddv/7BKamMvLbbW9oecVfeOebS3TEmIWOJ7uFMxF2OhuaQkn7feCTwcZPfKqnrAqdl7/40f6qqs9VQSGSy9cLAhXKdjsmzY+/FX2hxVvdiKNCOhXjM5ZVpUCE0XP3KnNeZFXotWyKLPULXLIMcsiyLup+VxXmfeLZOMWVDq9hutYNfFJzdey9yb9yoj8Dfgi3rLr6zm/bdChHI7H1gEN24bCWkx7SNbZif9JfMNOe+79wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QBsmwof8M2VQXE/Ow2fjGaI2m2Mh04WmfLABZJ74jSc=;
- b=E1l772ZctiaFJa9DMCdBwGmTjBYZoTbCpzY7r4k/OpxsPWszdlS7f5fRw9sszITFbeT9xCdtd1up65kAzNbGZhkvdi1QqvoIq88f0iaZkJ4lGSrM8NkDu5GxqCfGMk4jvhzyNuvD+DpiGpldX0y0+i6Bis6jTS/2xoiNmIpWbN/5J+6kEAw8t/eeabNThCOg8ZDbwzZEsb4YC4o7QtBHjM5ZQsYUgq6Kh1c2ovqy2hwwyCF/rb+3KgpW02RK6Xijl3eJUqhBalNAkrGuIt5SLfpsl3URk6Q5yhhtztQe42YSEBQlclvXpyQg4ojIFBSCUJjxp5ADTkCceoxPzL9fpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QBsmwof8M2VQXE/Ow2fjGaI2m2Mh04WmfLABZJ74jSc=;
- b=M5snyk9J+Hgjp+JhH9OYLXCwSSW5sEjowMz9mXUOpputx+0YcMBugXXEfJtpwyjHZ/Vpr4cAIe9jj8ppo+wZytgcMSCh4qa0hMl8fgVCFxaSRqVmz5ejWcMkfhuoSx86pX17Yf//CBfTy1qpOwLmktdBlRL5BWj9CJLYUEC5GAg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::23)
- by AM0PR0402MB3555.eurprd04.prod.outlook.com (2603:10a6:208:1f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Tue, 2 Aug
- 2022 16:39:18 +0000
-Received: from AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::747c:397f:a003:dbca]) by AM9PR04MB8274.eurprd04.prod.outlook.com
- ([fe80::747c:397f:a003:dbca%4]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 16:39:18 +0000
-From:   Shenwei Wang <shenwei.wang@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Nicolas Diaz <nicolas.diaz@nxp.com>
-Subject: [PATCH 1/1] serial: fsl_lpuart: RS485 RTS polariy is inverse
-Date:   Tue,  2 Aug 2022 11:38:54 -0500
-Message-Id: <20220802163854.1055323-1-shenwei.wang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR07CA0057.namprd07.prod.outlook.com
- (2603:10b6:a03:60::34) To AM9PR04MB8274.eurprd04.prod.outlook.com
- (2603:10a6:20b:3e8::23)
+        Tue, 2 Aug 2022 16:07:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A1552455;
+        Tue,  2 Aug 2022 13:07:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AF08B8205F;
+        Tue,  2 Aug 2022 20:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE374C433C1;
+        Tue,  2 Aug 2022 20:07:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659470823;
+        bh=HwCCgESqSTo/2CN28EWAYXXLjrse6e9dUQkjjom2q+M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mfDIeQT+Iu2H0brjp1DrXu6A3zhjPEh/l5DPTIwo/nvPaOMOWSDgHSEL8Ubye6+cI
+         lnzNEd2GvHY1k6P4wpip0k229b5O/qrhqt7o5RP0Idiu3EcA2QrPaLoEThFnaafVqt
+         X56WfBhqYmSz2OGgZMkKPTOzo07EguGA0omO7OeMHC1nJzz81de06Mt2vB9///TLLN
+         9VGpIZ42XaFUreDLhp0H7m4yuuObTRRsNXGjMZyJ9N7Xl0HFLWGxY1bz7AMO5ia7/2
+         d12o7pvtD49M4R8Zc0JT70TBL9dHjXT+Gev94pWBiFkVDd3ljjT5/o+dTSVvH61ak3
+         gmHNV4ArRvFng==
+From:   broonie@kernel.org
+To:     Greg KH <greg@kroah.com>, Douglas Anderson <dianders@chromium.org>,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: linux-next: build failure after merge of the tty tree
+Date:   Tue,  2 Aug 2022 21:06:49 +0100
+Message-Id: <20220802200649.2122084-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c8ee8897-28e3-4003-7398-08da74a58b75
-X-MS-TrafficTypeDiagnostic: AM0PR0402MB3555:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /RqzAW7mUW4MP+38PLGXfCqENz9OabPDnB78PYp74JlfcZ4Q0HrhCPezNl5VAMDWv9XNe2dgHPlmtn13rt0oLfSG93wN0p6zJSwyeg1tQa8DcQuVBfRbYQLUL3jqlvPG6Sn/DdqaYkwyDXLs7yzKfrH2IYC0oBLJhRfHwYpC2rNxaVDSF1mFWIEkDR0wE5h17D4dDcV+5MWs7+aFnH0tXPd4DRwmL+NrBMGHOYOhy4anLqv/sdMgglFlcIVJ0vk7nKLDdqws+C3gt3dscPPJ8rLSs6B6YgIRgAV2ZL2CV/yJoJ4onTlSakbGXGNrBxLDPzJlTeOResadl43lEbr1DdXOvUyI9WiVwDqoBS5M529H8Imb8aRUVsiljpzAKYqiMwJejJp6zb2KQSbSRy3Pou6HHh3DtzWRrL4WwR+Vgys05/9skYw7cxSWEFGj2vw0aEEDRe/PNX9ZNqdIUVDzLpdjiFdSLrYLXfQvjvfFIxGvm+xqFIjX745z7b/PBh2DoR0CIWTwzwSQPpJSzbiBZjW8SM9tElFOsi4KMPDehuZrlmVlkNIdM34YvrM8uTxkH3Qil+p//Xy+Rc79r8/dnLiEwDoxRP4TJ2kWpFnFA5d8fl9/EyeezyOFtGZMVWF2J7+gozWgefkAFKLeECB0jpquSPWjSXoh0RwpzReXMqPnp6loU7xfjJnngNmqLtuAfWHh9SwG/1V9t/JAHmzPaUCv5KxEBWXPuvmxe1G9tt2MKCgX/iMnWaWItEQpq682Z9GOsO+33anP+FopiETrKKPXFTKYwc4ailxoiIePgeFX3Cfd0zPj1S/49sHsWkHn
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8274.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(38100700002)(66946007)(2906002)(4326008)(8676002)(5660300002)(38350700002)(8936002)(186003)(478600001)(6486002)(86362001)(66556008)(1076003)(44832011)(2616005)(66476007)(83380400001)(316002)(55236004)(6506007)(54906003)(6666004)(52116002)(36756003)(26005)(6512007)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lf6YMq4QUv8GFlLTQYntSzwnOlzmMmIehUt3U4qyT0ungCWqQJhH6TQvt8Oy?=
- =?us-ascii?Q?4iJz6mOzUVILU0gX0L+BCFmPz56meUZ9cCC3aMfUZzR/hQXUFJeUBOMIEX9N?=
- =?us-ascii?Q?a5adxDHN5M2xvSmYKkIPI4LTMHrxnMMeIsvr9x6qRBHCOvafxPTmPAExXpwI?=
- =?us-ascii?Q?Iu3dLkAuDZIlx07CIedxZSP5hDbIfDB6DVIhHkzbI/XyT/BrJYsi0Nz6jl5n?=
- =?us-ascii?Q?21J8SdDpXHElCv0ARqGEjve/NuluKNcMxz2FhrcuNM0Wl+tyyH/iV6t34FiH?=
- =?us-ascii?Q?nsAN9WljMb5L00rRiiTn4itJY7SlpxeMVDzVmy0NEvBJPqq/zrsAzRtt6Pnq?=
- =?us-ascii?Q?yqsNcypq3/AzmQvf9CR0RTPonoleyWJZ9ATmGkYiz2rRabTWXoKnH75qmgo2?=
- =?us-ascii?Q?LFBiT7S03JEO6EectR7YOHj9mSqzPGh9kyuQ4Etms3C011gRYYtrSi5rBLhA?=
- =?us-ascii?Q?ArxvB4ee4kw1TZ1kxyCen46hXqiu7QNWTHObDQ9JxkmijoL3bwVphXoVDZvM?=
- =?us-ascii?Q?oQzd09zHyooXZGXDIjH8HQ/pzWpBLDLd0l8+9HWWaOAXoMVDG5ZahvsZUMjE?=
- =?us-ascii?Q?YPFtdEb8dflQR5dzoIwbIvmd4lZQtfsxyjU87lhlAj9riC6h1pnNSgLCUJQ7?=
- =?us-ascii?Q?BFPLLe4H81h5SvFgO68UlVGcGwOuFA6dUNYdEm72XX10NzB88XTIh/xgu4Rj?=
- =?us-ascii?Q?pqI71tmC6XdAbo6qGkINt+2Hi/UlONME72MNL2S+LTMVWPWIlG4hH1oE0A+Q?=
- =?us-ascii?Q?+ld4Yje3cChfGMN2LWWbs7HFMJrweEMRXg+hCi0u3YVBf/7pRrIoznMaeAoP?=
- =?us-ascii?Q?zNoSnPqIv2Qm3ePxFxNAghlIa8pNE4KxHwVewUVxpeKtonTVeXRpOC6AzExX?=
- =?us-ascii?Q?1rkPkze2LjrgG7Vw5KQPeIhJVKxnushBOFK9BqISi3q4e3gn3saAVnz4SXZS?=
- =?us-ascii?Q?NwYwo6f/XDxHjAr/6HyP8SYiOAT9ZiW4Smvb2DPLJBptsv/+VE+8qqlNOnqB?=
- =?us-ascii?Q?77S6P7DcGmokiwgH2D9MuCQAek+lWdmuuX56O8lU2nRDooW4kZAHXMbI3In/?=
- =?us-ascii?Q?+s69O46QQaKsyDPbLdeQzkPf9Um4pqXeaOk2wTvSmVlNsl9W5Pn3XHXb5tDb?=
- =?us-ascii?Q?HpRaG3F/sP2ksVplphk4gkBIe9xaFC2jdVKtZkdfpfwJFkkIfFOGFK680GtV?=
- =?us-ascii?Q?Eklf67grJ5LQ3ZCPXZgFqp5uDHnyqDw7PW4chPnmzQ73YuwXexCUKIqBZ3ho?=
- =?us-ascii?Q?0rbt5S4pVsdVLa9pd3WLboYtiU+4S9derdu4HSPJzQRSKC1y7w1hEOol6Wyf?=
- =?us-ascii?Q?R1zJ9s8BJby8ws236QFUTxEu3nanFrpbD57K+sdgtXjf0J3MbFMCc5nYKIhw?=
- =?us-ascii?Q?S+w3wCbWO89xIN+cepCHHvLsmTWGgz+hbaJeEFzeY4H9W5KvUAgoURjH+vkt?=
- =?us-ascii?Q?5POoKpAlWVoxONQ9SVjtHig9pdMmO5Fa7x/sXLGyCjplwaXaUeHdazH8cHUw?=
- =?us-ascii?Q?U2k+HTXYYz4DZejkdgrWO2mI6SGveW3MpLWM7eRacZ26YBA9DWNfbM1H/uIh?=
- =?us-ascii?Q?lG4oIOvfdaWkwd8REDoJuHVvJk9/GGQMIs/KyEt+mPTBFYGgO4U/IQZ9bnwV?=
- =?us-ascii?Q?UQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8ee8897-28e3-4003-7398-08da74a58b75
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8274.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 16:39:18.5440
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 00VUTnEaOTi5TKFyWnyh9XFJSmhGq2iChRBD/9mFlTzfHLcBolCCiJ+ScsjkMr8NbLyz7C3pTAt5I30XfvSpXg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3555
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The setting of RS485 RTS polarity is inverse in the current driver.
+Hi all,
 
-When the property of 'rs485-rts-active-low' is enabled in the dts node,
-the RTS signal should be LOW during sending. Otherwise, if there is no
-such a property, the RTS should be HIGH during sending.
+After merging the tty tree, today's linux-next build (x86 allmodconfig)
+failed like this:
 
-Signed-off-by: Nicolas Diaz <nicolas.diaz@nxp.com>
-Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In file included from /tmp/next/build/include/linux/device.h:15,
+                 from /tmp/next/build/include/linux/node.h:18,
+                 from /tmp/next/build/include/linux/cpu.h:17,
+                 from /tmp/next/build/include/linux/of_device.h:5,
+                 from /tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:14:
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c: In function 'qcom_geni_serial_set_termios':
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1039:4: error: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'unsigned int' [-Werror=format=]
+ 1039 |    "Couldn't find suitable clock rate for %lu\n",
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/next/build/include/linux/dev_printk.h:110:16: note: in definition of macro 'dev_printk_index_wrap'
+  110 |   _p_func(dev, fmt, ##__VA_ARGS__);   \
+      |                ^~~
+/tmp/next/build/include/linux/dev_printk.h:144:49: note: in expansion of macro 'dev_fmt'
+  144 |  dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+      |                                                 ^~~~~~~
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1038:3: note: in expansion of macro 'dev_err'
+ 1038 |   dev_err(port->se.dev,
+      |   ^~~~~~~
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1039:45: note: format string is defined here
+ 1039 |    "Couldn't find suitable clock rate for %lu\n",
+      |                                           ~~^
+      |                                             |
+      |                                             long unsigned int
+      |                                           %u
+In file included from /tmp/next/build/include/linux/printk.h:573,
+                 from /tmp/next/build/include/linux/kernel.h:29,
+                 from /tmp/next/build/include/linux/clk.h:13,
+                 from /tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:7:
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1044:24: error: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Werror=format=]
+ 1044 |  dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/next/build/include/linux/dynamic_debug.h:134:15: note: in definition of macro '__dynamic_func_call'
+  134 |   func(&id, ##__VA_ARGS__);  \
+      |               ^~~~~~~~~~~
+/tmp/next/build/include/linux/dynamic_debug.h:166:2: note: in expansion of macro '_dynamic_func_call'
+  166 |  _dynamic_func_call(fmt,__dynamic_dev_dbg,   \
+      |  ^~~~~~~~~~~~~~~~~~
+/tmp/next/build/include/linux/dev_printk.h:155:2: note: in expansion of macro 'dynamic_dev_dbg'
+  155 |  dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+      |  ^~~~~~~~~~~~~~~
+/tmp/next/build/include/linux/dev_printk.h:155:23: note: in expansion of macro 'dev_fmt'
+  155 |  dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+      |                       ^~~~~~~
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1044:2: note: in expansion of macro 'dev_dbg'
+ 1044 |  dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
+      |  ^~~~~~~
+/tmp/next/build/drivers/tty/serial/qcom_geni_serial.c:1044:40: note: format string is defined here
+ 1044 |  dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
+      |                                      ~~^
+      |                                        |
+      |                                        long unsigned int
+      |                                      %u
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index afa0f941c862f..abc3a3674bc39 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1394,9 +1394,9 @@ static int lpuart_config_rs485(struct uart_port *port, struct ktermios *termios,
- 		 * Note: UART is assumed to be active high.
- 		 */
- 		if (rs485->flags & SER_RS485_RTS_ON_SEND)
--			modem &= ~UARTMODEM_TXRTSPOL;
--		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
- 			modem |= UARTMODEM_TXRTSPOL;
-+		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
-+			modem &= ~UARTMODEM_TXRTSPOL;
- 	}
- 
- 	writeb(modem, sport->port.membase + UARTMODEM);
--- 
-2.25.1
+Caused by commit
 
+  c474c775716edd46a5 ("tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.")
+
+I have used the tree from 20220727 instead.
