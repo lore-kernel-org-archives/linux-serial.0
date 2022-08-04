@@ -2,157 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCD8C19F28
-	for <linux-serial@archiver.kernel.org>; Wed,  3 Aug 2022 18:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6EAC00144
+	for <linux-serial@archiver.kernel.org>; Thu,  4 Aug 2022 06:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiHCStW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 3 Aug 2022 14:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        id S231201AbiHDGVt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 4 Aug 2022 02:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiHCStW (ORCPT
+        with ESMTP id S230177AbiHDGVs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 3 Aug 2022 14:49:22 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5055A2D5
-        for <linux-serial@vger.kernel.org>; Wed,  3 Aug 2022 11:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659552561; x=1691088561;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PVFJ+W1+V2F8+E0v5Cs8PRQ84wGwqYgt+0KK4TrU+7U=;
-  b=bqcgm/mwKqPNI3sXeDjiJuiMenFvtyBV55y0SCURtro2crJQptX5wDuJ
-   fsalWlOMfrsNYQ/W3+YOry1vBnqegdBr2R+Tb+kev84DaTnShbj527kBV
-   OctTXo+s0lrUEDFcE83fE3NvxYPdkhqC3AX0UZJ/6TUTXwk20LFYofYb/
-   L83NkHnniJ1wLH7faRxbfiG1oBwO/5dnrP1Vj2sUv1NTHWPMostbFnEY9
-   xGMceXi/oD2m/hBFb3p5Ct0HgbyY5FBYf5JsOyzGeKR0En43VaBXTPzus
-   DXGIFDw9V1W5pMRr4ZhCXiC9P6eBH791UQ0+hmV9pccwZ78fUXlRX4s1u
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="315620092"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="315620092"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 11:49:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="578763872"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 11:49:19 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJJQk-000HZN-1d;
-        Wed, 03 Aug 2022 18:49:18 +0000
-Date:   Thu, 04 Aug 2022 02:48:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 0fec518018cc5ceffa706370b6e3acbbb1e3c798
-Message-ID: <62eac317.kvsZ8KsEGYuo4VaF%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 4 Aug 2022 02:21:48 -0400
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675A52981F;
+        Wed,  3 Aug 2022 23:21:47 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id e13so5088777edj.12;
+        Wed, 03 Aug 2022 23:21:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=N6k+tlzFgkowCn7rYkdkXMm4KWRMRkrYOnyQhdzh6bI=;
+        b=rM1cPnfD6U30NQtIfcs3RkwwK2v85z+z241ixuJHp5g/TJZdicDpgjbOKqVaI9X6JJ
+         brOtHJCy3aYSFEycKJ1c+6LvebA0SPAZe6HpW0/6hhevOqCntGRzlqvzm73yp0TwZGIR
+         GEp+pwHdn7cXcLPALMduDsrKhRHTsyeBA/f36YQupT6uHOFYMRZ0O8hOPHRhdj2oUjQE
+         LBGaJsq0D/kjd/kOOHNYqj/0HYrH0pGTMWfyM55NAQU3N46bJxIlsAohmjLmm9nN8sC5
+         ywLGSrRfSJvk2nxIsEmySi9XFCeuUZhwujFk6KGt9dJ544g4n5uoB0eytW3kexyYfb33
+         cd6Q==
+X-Gm-Message-State: ACgBeo3JAp6QBNYfaVtTqHIV0qaAAhHsvlNHxDc7aAm6abCxPH1IJDq5
+        vNmcCVLdmdtybf1ALYQ4rDQ=
+X-Google-Smtp-Source: AA6agR72QiqXNtcjKdiDiMaEETiudPcSB7MqYAYSS9Bhnfm9pED3uSy8J1YN/qnVz/UWT/Fvrw64ng==
+X-Received: by 2002:a05:6402:424d:b0:43e:8bd8:f531 with SMTP id g13-20020a056402424d00b0043e8bd8f531mr461066edb.266.1659594105950;
+        Wed, 03 Aug 2022 23:21:45 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id k21-20020a17090632d500b0072af102e65csm7942780ejk.152.2022.08.03.23.21.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 23:21:45 -0700 (PDT)
+Message-ID: <9fdbd349-b464-8075-f377-ed442761b827@kernel.org>
+Date:   Thu, 4 Aug 2022 08:21:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] tty: serial: lpuart: disable flow control when wait
+ transmit engine complete
+Content-Language: en-US
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20220803015512.25472-1-sherry.sun@nxp.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220803015512.25472-1-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 0fec518018cc5ceffa706370b6e3acbbb1e3c798  tty: serial: qcom-geni-serial: Fix %lu -> %u in print statements
+On 03. 08. 22, 3:55, Sherry Sun wrote:
+> When TX fifo has dirty data, user initialize the port and wait transmit
+> engine complete, it should disable the flow control, otherwise tx fifo
+> never be empty.
 
-elapsed time: 717m
+Sorry I cannot parse the above. Care to rephrase? (And maybe spellcheck?)
 
-configs tested: 81
-configs skipped: 2
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>   drivers/tty/serial/fsl_lpuart.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index fc7d235a1e27..f0fccd2ff7ac 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -2172,6 +2172,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+>   	uart_update_timeout(port, termios->c_cflag, baud);
+>   
+>   	/* wait transmit engin complete */
+> +	lpuart32_write(&sport->port, 0, UARTMODIR);
+>   	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+>   
+>   	/* disable transmit and receive */
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                                defconfig
-i386                             allyesconfig
-i386                          randconfig-a014
-x86_64                              defconfig
-s390                 randconfig-r044-20220803
-i386                          randconfig-a012
-x86_64                               rhel-8.3
-i386                          randconfig-a016
-powerpc                           allnoconfig
-x86_64                           allyesconfig
-i386                          randconfig-a001
-arm                                 defconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-i386                          randconfig-a003
-powerpc                          allmodconfig
-mips                             allyesconfig
-arm                              allyesconfig
-sh                               allmodconfig
-m68k                             allmodconfig
-riscv                randconfig-r042-20220803
-i386                          randconfig-a005
-arm64                            allyesconfig
-x86_64                           rhel-8.3-kvm
-arc                              allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-alpha                            allyesconfig
-m68k                             allyesconfig
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-ia64                             allmodconfig
-x86_64                        randconfig-a015
-x86_64                        randconfig-a006
-x86_64                        randconfig-a002
-x86_64                        randconfig-a004
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-ia64                             alldefconfig
-mips                            ar7_defconfig
-arm                       multi_v4t_defconfig
-xtensa                              defconfig
-arm64                               defconfig
-um                                  defconfig
-sh                         microdev_defconfig
-sh                          urquell_defconfig
-powerpc              randconfig-c003-20220803
-i386                          randconfig-c001
-arm                           h5000_defconfig
-m68k                           sun3_defconfig
-sh                             shx3_defconfig
-loongarch                           defconfig
-arm                        cerfcube_defconfig
-arm                           tegra_defconfig
-nios2                               defconfig
-loongarch                         allnoconfig
-m68k                            mac_defconfig
-sh                   secureedge5410_defconfig
-arm                      footbridge_defconfig
-sh                          landisk_defconfig
-powerpc                      makalu_defconfig
-sh                          sdk7780_defconfig
-arm                            qcom_defconfig
-
-clang tested configs:
-i386                          randconfig-a015
-i386                          randconfig-a011
-i386                          randconfig-a002
-hexagon              randconfig-r041-20220803
-i386                          randconfig-a013
-i386                          randconfig-a006
-i386                          randconfig-a004
-hexagon              randconfig-r045-20220803
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-x86_64                        randconfig-a001
-x86_64                        randconfig-a014
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+js
+suse labs
