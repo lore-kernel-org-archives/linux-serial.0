@@ -2,84 +2,78 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6929BC00140
-	for <linux-serial@archiver.kernel.org>; Fri,  5 Aug 2022 06:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EF5C00140
+	for <linux-serial@archiver.kernel.org>; Fri,  5 Aug 2022 08:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236103AbiHEGXz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 5 Aug 2022 02:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S237666AbiHEISz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbiHEGXy (ORCPT
+        with ESMTP id S231347AbiHEISy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 5 Aug 2022 02:23:54 -0400
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC385A3D8;
-        Thu,  4 Aug 2022 23:23:53 -0700 (PDT)
-Received: by mail-ed1-f41.google.com with SMTP id b96so2242642edf.0;
-        Thu, 04 Aug 2022 23:23:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=lSzazp4IeqQAxjSxCTiM6IIef8FSwkAGeIFyEp8bbW8=;
-        b=sapD9pwzfamCAD+TEEnV3hUFmBzJJfELbnw2+NYTEIyqsPhDuzdi4D5QwdB+0mZx4O
-         bGxV999O87BLabWc6n6NBpIjkiB7vGyZgwwvOQ1mtCZPtOLFcz1g0x4eGWEgbH8+PGUO
-         CHLxZXSLG9uvNMjl+QSXElLsCQXBJPngJJaYxU494QrhvCPuTMaKyFAhh1LGiTktBX5Z
-         hV7saG7J3xfr/dIEKilTTishxQHisrrWAsJMfUDMuY2IC4U7erhegX2rIWJYh+SB3CKm
-         sYxza4+KulSbcd/Ga2OkkKmii8pilz584VIxvLetnUM/SXFLP/qWq9mwEnidZisj4oIs
-         HsFw==
-X-Gm-Message-State: ACgBeo1i55VwumWC2Yukrig3Znxl7TN0abRNBhOd/2fK0nQ8/aZfKr22
-        mqV0MHqPztVg+atVlCidARQ=
-X-Google-Smtp-Source: AA6agR7JfOIsUi61tf8PKiHiROvK+umLKkQHpRB7QosKc1O4XZoIWJizrdKe41LiNuqThsOTc1rg1Q==
-X-Received: by 2002:a05:6402:4442:b0:43b:c866:21be with SMTP id o2-20020a056402444200b0043bc86621bemr5373348edb.28.1659680632342;
-        Thu, 04 Aug 2022 23:23:52 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id g6-20020a170906538600b0072b609d9a36sm1242446ejo.16.2022.08.04.23.23.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 23:23:51 -0700 (PDT)
-Message-ID: <f0cb47c3-04b8-7bef-ed84-8aa7a9b05ec3@kernel.org>
-Date:   Fri, 5 Aug 2022 08:23:50 +0200
+        Fri, 5 Aug 2022 04:18:54 -0400
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3B174DF7
+        for <linux-serial@vger.kernel.org>; Fri,  5 Aug 2022 01:18:52 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 13EB930000870;
+        Fri,  5 Aug 2022 10:18:51 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 09F748957C0; Fri,  5 Aug 2022 10:18:51 +0200 (CEST)
+Date:   Fri, 5 Aug 2022 10:18:51 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Roosen Henri <Henri.Roosen@ginzinger.com>
+Cc:     "chao.zeng@siemens.com" <chao.zeng@siemens.com>,
+        "LinoSanfilippo@gmx.de" <LinoSanfilippo@gmx.de>,
+        "baocheng_su@163.com" <baocheng_su@163.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "p.rosenberger@kunbus.com" <p.rosenberger@kunbus.com>,
+        "baocheng.su@siemens.com" <baocheng.su@siemens.com>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "rgc@hms.se" <rgc@hms.se>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Subject: Re: [PATCH] serial: Fix incorrect rs485 polarity on uart open
+Message-ID: <20220805081851.GA21615@wunner.de>
+References: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
+ <8f538a8903795f22f9acc94a9a31b03c9c4ccacb.camel@ginzinger.com>
+ <20220804155210.GA350@wunner.de>
+ <72acc08080f3675f529160270be840b06629761c.camel@ginzinger.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [EXT] Re: [PATCH 1/1] serial: fsl_lpuart: RS485 RTS polariy is
- inverse
-Content-Language: en-US
-To:     Shenwei Wang <shenwei.wang@nxp.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Nicolas Diaz <nicolas.diaz@nxp.com>
-References: <20220802163854.1055323-1-shenwei.wang@nxp.com>
- <c63877d8-4df2-778e-7e3d-2fdd0e14d4e1@kernel.org>
- <AM9PR04MB8274F4B0895FF2BA4467DA90899F9@AM9PR04MB8274.eurprd04.prod.outlook.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <AM9PR04MB8274F4B0895FF2BA4467DA90899F9@AM9PR04MB8274.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72acc08080f3675f529160270be840b06629761c.camel@ginzinger.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 04. 08. 22, 16:35, Shenwei Wang wrote:
->> On 02. 08. 22, 18:38, Shenwei Wang wrote:
->>> The setting of RS485 RTS polarity is inverse in the current driver.
->>>
->>> When the property of 'rs485-rts-active-low' is enabled in the dts
->>> node, the RTS signal should be LOW during sending. Otherwise, if there
->>> is no such a property, the RTS should be HIGH during sending.
->>
->> What commit this fixes? I.e. I am missing a Fixes tag below.
+On Thu, Aug 04, 2022 at 04:11:26PM +0000, Roosen Henri wrote:
+> On Thu, 2022-08-04 at 17:52 +0200, Lukas Wunner wrote:
+> > On Thu, Aug 04, 2022 at 02:38:23PM +0000, Roosen Henri wrote:
+> > > unfortunately this commit, which has been backported to v5.4.x,
+> > > seems
+> > > to break RS485 functionality on our iMX boards.
+> > 
+> > What exactly broke?  Are you seeing incorrect polarity after opening
+> > the tty but correct polarity after the first send? Or is polarity
+> > always incorrect?
 > 
-> It is a fix for the following commit:
-> Fixes: 03895cf41d18 ("tty: serial: fsl_lpuart: Add support for RS-485")
+> I'm not sure about the state before opening, I have to measure that
+> when I'm back at the office.
 > 
-> Should I send out a new version to update it?
+> After opening, the polarity is always incorrect (inverted) when this
+> patch is applied. We open the tty and try to receive, which now fails
+> because the rs485 transmitter is on.
 
-It's up to Greg, but I guess so.
+Does reception work after you send something?
 
--- 
-js
-suse labs
+Please provide the contents of the pinctrl_uart2_rs485 node in your DT.
+
+Thanks,
+
+Lukas
