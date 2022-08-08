@@ -2,155 +2,68 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8560C25B0D
-	for <linux-serial@archiver.kernel.org>; Mon,  8 Aug 2022 13:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE73C00140
+	for <linux-serial@archiver.kernel.org>; Mon,  8 Aug 2022 15:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242737AbiHHNIY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 8 Aug 2022 09:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S243008AbiHHPQG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbiHHNIX (ORCPT
+        with ESMTP id S235105AbiHHPQG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 8 Aug 2022 09:08:23 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F785FC3;
-        Mon,  8 Aug 2022 06:08:21 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id v2so3953756lfi.6;
-        Mon, 08 Aug 2022 06:08:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kuwKOcuHMSa3dQs4wZk02jLSCcVnoSCO8BTxrJsZ3Y4=;
-        b=IYwHZ8LA2fZ7gErBWUeZRWrXrXcZ6uS3hcMeDarJm6ToovrHlgcqqP/eWdXpacp202
-         xwIn6d7/Luovgbo/HgFzReARSGvhONTCDx3JdOr1llSLDhQvdWzfS1mN9sl34zCdZJNd
-         1DsRdBdoDF92Eradj/s/i375nOTe+T1T7Ep8I2/DuzbVE16Hxdl/6cIyXh02/TY/roNi
-         W/zIpQ6rXCnZTLS+TJPf7acziyb2sJboIX+OLKAvLwFm5y6kABAFEV2ync5FcUqoMnIa
-         kW9ueMp78HO9crFMJURQp9Zi7SAyTfOTP0Rqk41mQXUhVvc/gy/Z+cgBDOe27t6VLZM8
-         N+rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kuwKOcuHMSa3dQs4wZk02jLSCcVnoSCO8BTxrJsZ3Y4=;
-        b=FmtHphtqTPjVu33qb9c921RBQChXSsn/7LaG47eH4tZb9Rr5PUvAGrl9uHmlzdxQeJ
-         ok5/dGhGH6zBTgK9vpVyDAG+YpKAZFE49FEmasJq7sXWWTvPlXkmEa8tLgIx/qgpke9i
-         YcQhiAhqMpWOcLfAjCwEaPrxw42bEzTiy7W90Srhg4HzIxUdfqot7ffFs//Lsv9VfqYQ
-         FURJpSxVBsRq60ka0ysdxsYE5kM+MuKQ8lLPfZ4iLL5jLbN7I/9Ctw43CIQoGusENWB3
-         MCyJkcdn66FRLF2mefltlJeTVKJLXIsDoFVohJJBaflqffTT64LlnFlWsDToH+J6bPGh
-         GgvA==
-X-Gm-Message-State: ACgBeo27Su7+SjptgJdQb5t9yxO3s8q4HGnMX5WaM6X2y1swVNKR72jG
-        pzQTJz9Mw/6HxU+LwJ6Ev5TfUw/72sllrusMDlg=
-X-Google-Smtp-Source: AA6agR7S/N6SzCu6WvUjst8DGTx8TkblKLEFyaeVt8VBRNP4uVQsWXwmfnx40tW0I14GvvaFNjJgxmSK42sdlLgTy00=
-X-Received: by 2002:a05:6512:168b:b0:48a:9f4a:9d37 with SMTP id
- bu11-20020a056512168b00b0048a9f4a9d37mr6462916lfb.576.1659964100152; Mon, 08
- Aug 2022 06:08:20 -0700 (PDT)
+        Mon, 8 Aug 2022 11:16:06 -0400
+Received: from bg5.exmail.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768151021;
+        Mon,  8 Aug 2022 08:16:04 -0700 (PDT)
+X-QQ-mid: bizesmtp64t1659971746tpxd3omy
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 08 Aug 2022 23:15:38 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: ILHsT53NKPjMUaRwTA/y5eY0zF6EgkGSYuEzDp2fnQ5Tip1yTzO1GSzF7D2Yq
+        38ddwSfIjiJnA4KNxu/nycjVgPkTPfoLy+0x/EyCMsc4gE+NzEDzm62TP4mUxqaVcjybWce
+        tZkumjoFIhOLSiKVKO6IJefmV3NLuLtleqb6jwelbtc+4sI9vma9pn2fAJ88NB8a83h1btx
+        pJpJE9i78dXpE54ild0oUzdpZpib1SRAzhcFSo8J54eeJgeFWs0MGo4wZzyuVsm3tGJnIsy
+        658mh7zv1qpJ2SqOfEKlpGCgp9r72lcyA3wS3nQckIqs1osgVaeyJC92sByBummjxdqzDw0
+        j2oEh4DK5sG85k6cQfDaFwtb4hJSKaN9aWOLfnHxPO+Nv7K5OIs1XxUFqPa+SxY6Bb5Ucz6
+X-QQ-GoodBg: 0
+From:   shaomin Deng <dengshaomin@cdjrlc.com>
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] serial: fsl_lpuart: Remove repeated word
+Date:   Mon,  8 Aug 2022 11:15:37 -0400
+Message-Id: <20220808151537.846-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com>
- <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
- <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com>
- <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
- <20220729225603.12528C433D6@smtp.kernel.org> <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com>
- <20220804200549.60512C433C1@smtp.kernel.org> <CAP6Zq1j2r9df0CpT7pi32JuVLQBDjt7cCK7LmDJehtufG8M4-Q@mail.gmail.com>
-In-Reply-To: <CAP6Zq1j2r9df0CpT7pi32JuVLQBDjt7cCK7LmDJehtufG8M4-Q@mail.gmail.com>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 8 Aug 2022 16:08:08 +0300
-Message-ID: <CAP6Zq1ib==k_E3XaS2bZB3m=yn0B_3hL2XuaHe1UiyM670snoA@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Stephen,
+Remove the repeated word "as" in comments.
 
-Sorry, just to make it clear.
+Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, 8 Aug 2022 at 15:37, Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> Hi Stephen,
->
-> Thanks for your reply.
->
-> On Thu, 4 Aug 2022 at 23:05, Stephen Boyd <sboyd@kernel.org> wrote:
-> >
-> > Quoting Tomer Maimon (2022-08-04 07:01:30)
-> > > On Sat, 30 Jul 2022 at 01:56, Stephen Boyd <sboyd@kernel.org> wrote:
-> > > >
-> > > > Because it is jumbled in some range?
-> > > Yes.
-> > > >
-> > > > >
-> > > > > I do see a way to combine the clock and the reset driver, the NPCM
-> > > > > reset driver is serving other NPCM BMC's.
-> > > > > Should we use regmap to handle the clock registers instead of ioremap?
-> > > >
-> > > > Sure? Using regmap or not looks like a parallel discussion. How does it
-> > > > help use platform APIs?
-> > > I mean to use regmap API instead of platform API for handing the clock
-> > > and reset registers.
-> > > the regmap API gives only one user access to R/W (lock).
-> > > I will be happy to get more suggestions, on how should we solve this situation.
-> > >
-> >
-> > Using platform APIs means using platform_*() functions, not of_*()
-> > functions, which are open-firmware/DT related. Regmap can be used to
-> > operate on registers mapped as __iomem, which is different from platform
-> > APIs.
-> I will use platform_get_resource() and devm_ioremap_resource()
-> functions in the next version.
-I will use platform_get_resource() and ioremap() function next
-veriosn, is it fine?
->
-> >
-> > Is having a lock even necessary? Do the reset and clk controls live
-> You are right,  lock use is not necessary.
-> > within a shared register where we would need to prevent one driver from
-> > accessing that register at the same time as the other?
-> reset and clk drivers are living fine with shared registers, we don't
-> need to handle the register access between the clk and the reset
-> drivers.
->
-> Best regards,
->
-> Tomer
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 8fe0494d4057..acd527f95c9b 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2776,7 +2776,7 @@ static int __maybe_unused lpuart_suspend(struct device *dev)
+ 		 * EDMA driver during suspend will forcefully release any
+ 		 * non-idle DMA channels. If port wakeup is enabled or if port
+ 		 * is console port or 'no_console_suspend' is set the Rx DMA
+-		 * cannot resume as as expected, hence gracefully release the
++		 * cannot resume as expected, hence gracefully release the
+ 		 * Rx DMA path before suspend and start Rx DMA path on resume.
+ 		 */
+ 		if (irq_wake) {
+-- 
+2.35.1
 
-Best regards,
 
-Tomer
