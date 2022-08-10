@@ -2,101 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52369C3F6B0
-	for <linux-serial@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48DCC25B08
+	for <linux-serial@archiver.kernel.org>; Wed, 10 Aug 2022 08:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344175AbiHISGG (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39984 "EHLO
+        id S231290AbiHJIZs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 10 Aug 2022 04:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344672AbiHISFT (ORCPT
+        with ESMTP id S231708AbiHJIZp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:05:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF2827CEA;
-        Tue,  9 Aug 2022 11:02:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 649EEB81722;
-        Tue,  9 Aug 2022 18:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22D78C433D7;
-        Tue,  9 Aug 2022 18:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660068148;
-        bh=lJgNFnKBAD3W6+nMLS3KtRGHN5jjeaSLik2catrtBLQ=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=EVR37ynfgVxGgjgEcwtYqTtzrPixXH1kEcatTawE2JTaQLXiYyQYFS0BBFgeu+h8v
-         EZPPjLlL/PYOBVCfiH6txoSdeeTnHfasPst7YWKv2JM/YJ4GYmcU3rR37gYXoG6T8G
-         tP3gn/ge/WhxnN44ArX0nXU7HFUhS3tkP4Zx6HylJl5+wXPeC49Wp/ofPrRlTGdNNQ
-         CUQ1VOZ0EcrHZIDDngG6IXDCLZo9KD7Y73NN7nfVNkqbmKCVH7EvYpfFwnsb1DQ10F
-         j2JbGFZ3NV0Bqz36vvyXli++/yhGzj4O+GzL4xloblwzImWisqCTTFFhT3W0ST4dWB
-         IuAaqtX+CtyuQ==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 10 Aug 2022 04:25:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BC826113;
+        Wed, 10 Aug 2022 01:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660119944; x=1691655944;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=5ATw0VTrbYx/w/efXJbAdex8AhTtbEgFmRBtW+ZH5hI=;
+  b=bGc3rXDxyor+pjYx78m+WvV/XBGnhcD/8sqflFk/NPmo3KfUf5IWO+uj
+   K/YTPVRS9cVIpKXN1yRmFmrhCp4xMKkFU5iAlJz2qyXpr4YcdFyCMa52Q
+   NOkRiMvYYvwhZaBrlCWI/Ed8wyOesAVEiMIC7qeGrr0HheLjApi2cUU6g
+   bZiUwqs6a05hGEQ29PhDLVqiE828tUsR2PIcZG/DxylG2KP/WzxIC5usH
+   jpAq92PM7/dVMq4l+sGeiHCrHk7OETsKzYh+Noazve6vbZAaenUn89rt7
+   JLA/4N6WkHtty8tv2OWTxCArJoUPknB7NR6de9QlJFKCSmZFW1KHi+d92
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="316975943"
+X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
+   d="scan'208";a="316975943"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:44 -0700
+X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
+   d="scan'208";a="664801047"
+Received: from vaslau-mobl.ger.corp.intel.com ([10.252.62.177])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:42 -0700
+Date:   Wed, 10 Aug 2022 11:26:05 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] serial: pic32_uart: Utilize
+ uart_console_enabled()
+In-Reply-To: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <7fb01d46-b67-2eff-d54d-c96b079dc5c@linux.intel.com>
+References: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAP6Zq1ib==k_E3XaS2bZB3m=yn0B_3hL2XuaHe1UiyM670snoA@mail.gmail.com>
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com> <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com> <20220729225603.12528C433D6@smtp.kernel.org> <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com> <20220804200549.60512C433C1@smtp.kernel.org> <CAP6Zq1j2r9df0CpT7pi32JuVLQBDjt7cCK7LmDJehtufG8M4-Q@mail.gmail.com> <CAP6Zq1ib==k_E3XaS2bZB3m=yn0B_3hL2XuaHe1UiyM670snoA@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Date:   Tue, 09 Aug 2022 11:02:26 -0700
-User-Agent: alot/0.10
-Message-Id: <20220809180228.22D78C433D7@smtp.kernel.org>
+Content-Type: multipart/mixed; boundary="8323329-726611098-1660119969=:1755"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Tomer Maimon (2022-08-08 06:08:08)
-> On Mon, 8 Aug 2022 at 15:37, Tomer Maimon <tmaimon77@gmail.com> wrote:
-> > > Using platform APIs means using platform_*() functions, not of_*()
-> > > functions, which are open-firmware/DT related. Regmap can be used to
-> > > operate on registers mapped as __iomem, which is different from platf=
-orm
-> > > APIs.
-> > I will use platform_get_resource() and devm_ioremap_resource()
-> > functions in the next version.
-> I will use platform_get_resource() and ioremap() function next
-> veriosn, is it fine?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-As stated earlier it will work for now but eventually you'll get patches
-from janitors trying to convert to a devm based API that reserves the
-register region. Can you ioremap the register once and register an
-auxiliary device and driver for the reset (or clk) part so that the
-driver can be moved out to the drivers/reset/ path?
+--8323329-726611098-1660119969=:1755
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
+On Sun, 7 Aug 2022, Andy Shevchenko wrote:
+
+> The serial core already provides a helper to check if the given port
+> is an enabled console. Utilize it instead of open coded variant.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+-- 
+ i.
+
+> ---
+>  drivers/tty/serial/pic32_uart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+> index f418f1de66b3..1562c2a48467 100644
+> --- a/drivers/tty/serial/pic32_uart.c
+> +++ b/drivers/tty/serial/pic32_uart.c
+> @@ -943,7 +943,7 @@ static int pic32_uart_probe(struct platform_device *pdev)
+>  	}
+>  
+>  #ifdef CONFIG_SERIAL_PIC32_CONSOLE
+> -	if (uart_console(port) && (pic32_console.flags & CON_ENABLED)) {
+> +	if (uart_console_enabled(port)) {
+>  		/* The peripheral clock has been enabled by console_setup,
+>  		 * so disable it till the port is used.
+>  		 */
+> 
+
+--8323329-726611098-1660119969=:1755--
