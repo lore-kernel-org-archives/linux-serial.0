@@ -2,98 +2,245 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042C5C19F2D
-	for <linux-serial@archiver.kernel.org>; Thu, 11 Aug 2022 06:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EACC19F2A
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Aug 2022 10:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiHKGSW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 11 Aug 2022 02:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
+        id S234535AbiHKKsr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Aug 2022 06:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiHKGSW (ORCPT
+        with ESMTP id S234584AbiHKKsr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 11 Aug 2022 02:18:22 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE5E83BE5
-        for <linux-serial@vger.kernel.org>; Wed, 10 Aug 2022 23:18:19 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 0B6D010045BEA;
-        Thu, 11 Aug 2022 08:18:17 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id CA3016DC1E6; Thu, 11 Aug 2022 08:18:16 +0200 (CEST)
-Date:   Thu, 11 Aug 2022 08:18:16 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Roosen Henri <Henri.Roosen@ginzinger.com>
-Cc:     "chao.zeng@siemens.com" <chao.zeng@siemens.com>,
-        "LinoSanfilippo@gmx.de" <LinoSanfilippo@gmx.de>,
-        "baocheng_su@163.com" <baocheng_su@163.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "p.rosenberger@kunbus.com" <p.rosenberger@kunbus.com>,
-        "baocheng.su@siemens.com" <baocheng.su@siemens.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "rgc@hms.se" <rgc@hms.se>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
-Subject: Re: [PATCH] serial: Fix incorrect rs485 polarity on uart open
-Message-ID: <20220811061816.GA7472@wunner.de>
-References: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
- <8f538a8903795f22f9acc94a9a31b03c9c4ccacb.camel@ginzinger.com>
- <20220804155210.GA350@wunner.de>
- <72acc08080f3675f529160270be840b06629761c.camel@ginzinger.com>
- <20220805081851.GA21615@wunner.de>
- <33b4b797-cd4a-436e-8e03-4bc5d7dd69ff.d000f9d8-ed3e-456c-b23a-5a86eac57608.c023ef82-f7f7-4a43-92f1-8642a4f822e1@emailsignatures365.codetwo.com>
- <33b4b797-cd4a-436e-8e03-4bc5d7dd69ff.0668d69a-b7f6-4fc6-94cd-e3b904d4ce63.488ca449-4f1c-444b-8de0-1344d3aeb879@emailsignatures365.codetwo.com>
- <dae58f1aba37d89baa446f955db77cb4e557dcd0.camel@ginzinger.com>
+        Thu, 11 Aug 2022 06:48:47 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BEE92F44;
+        Thu, 11 Aug 2022 03:48:45 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id a7so32844160ejp.2;
+        Thu, 11 Aug 2022 03:48:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=2psXapoZ13xPQOZjFEvN9Z4DOi1cREWK0pz2T2YJtmo=;
+        b=IpaDm60Ez/kHnqKOqwLqecSOwt+TofmQl/BUc7MHOIkH+fULgLOPOjr9Aw3pYpBSBv
+         R42mufR3uBI1vhL2XhmgmHEcUOGhJgWprd7YeDkcdO7VPwITvhzUs5N9bqCJnBBY6pRX
+         TFKmzXSL1kiu7hQ1UM8NGEUUbrQqAN9KMyUZMn57TtSuFmaOzXKbG6ICXX17Yw5kpCcT
+         elrAgNcjQg16pGxgqd5BX1u9AweMno7CSdUgcZyt5ioxbgN8AlIEtvilOgwLtU+xKODg
+         osd0C5snWFdL8DWNjt8XsYm/sYoxWe9a18UN+nWiheue9WpSWe8C5dkfys8QQzNXFQP2
+         DVGA==
+X-Gm-Message-State: ACgBeo1keGsGLQTGG8T2pNsCcORl7bVTfmz427qRZ34bkA5IU8tbUDEd
+        eYXvNLOXCXmjp3BTnV0LQINQw+PsaC8=
+X-Google-Smtp-Source: AA6agR7YlDJTfvAKpbFW/hQM6n5lS76ql3UMmCt24HIKcucEnGQwv4lfDeC9lNHbbPYUxsv5aMUahQ==
+X-Received: by 2002:a17:907:2e19:b0:730:acf0:4921 with SMTP id ig25-20020a1709072e1900b00730acf04921mr21902909ejc.416.1660214924186;
+        Thu, 11 Aug 2022 03:48:44 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id f15-20020a50ee8f000000b0043bc4b28464sm9002313edr.34.2022.08.11.03.48.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Aug 2022 03:48:43 -0700 (PDT)
+Message-ID: <2fd0f4e5-8b5d-4257-4700-71e68cff29f6@kernel.org>
+Date:   Thu, 11 Aug 2022 12:48:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dae58f1aba37d89baa446f955db77cb4e557dcd0.camel@ginzinger.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH] serial: stm32: make info structs static to avoid sparse
+ warnings
+Content-Language: en-US
+To:     Ben Dooks <ben-linux@fluff.org>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     gregkh@linuxfoundation.org, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com
+References: <20220721212430.453192-1-ben-linux@fluff.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220721212430.453192-1-ben-linux@fluff.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 11:20:24AM +0000, Roosen Henri wrote:
-> On Fri, 2022-08-05 at 10:18 +0200, Lukas Wunner wrote:
-> > On Thu, Aug 04, 2022 at 04:11:26PM +0000, Roosen Henri wrote:
-> > > On Thu, 2022-08-04 at 17:52 +0200, Lukas Wunner wrote:
-> > > > On Thu, Aug 04, 2022 at 02:38:23PM +0000, Roosen Henri wrote:
-> > > > > unfortunately this commit, which has been backported to v5.4.x,
-> > > > > seems
-> > > > > to break RS485 functionality on our iMX boards.
+On 21. 07. 22, 23:24, Ben Dooks wrote:
+> The info structs are local only to the stm32-usart.c driver and are
+> triggering sparse warnings about being undecalred. Move these into
+> the main driver code and make them static to avoid the following
+> warnings:
+> 
+> drivers/tty/serial/stm32-usart.h:42:25: warning: symbol 'stm32f4_info' was not declared. Should it be static?
+> drivers/tty/serial/stm32-usart.h:63:25: warning: symbol 'stm32f7_info' was not declared. Should it be static?
+> drivers/tty/serial/stm32-usart.h:85:25: warning: symbol 'stm32h7_info' was not declared. Should it be static?
 
-Thanks for the report and sorry for the breakage.
+Right, I would go even further. There is no point in having a separate 
+header. So could you move the whole content to .c?
 
-I see what the problem is.  The serial core assumes that RTS in mctrl
-has inverted semantics and that doesn't hold for mctrl_gpio.
+> Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+> ---
+>   drivers/tty/serial/stm32-usart.c | 69 ++++++++++++++++++++++++++++++++
+>   drivers/tty/serial/stm32-usart.h | 68 -------------------------------
+>   2 files changed, 69 insertions(+), 68 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+> index 0973b03eeeaa..01f1ab2c18c0 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -35,6 +35,75 @@
+>   #include "serial_mctrl_gpio.h"
+>   #include "stm32-usart.h"
+>   
+> +
+> +/* Register offsets */
+> +static struct stm32_usart_info stm32f4_info = {
+> +	.ofs = {
+> +		.isr	= 0x00,
+> +		.rdr	= 0x04,
+> +		.tdr	= 0x04,
+> +		.brr	= 0x08,
+> +		.cr1	= 0x0c,
+> +		.cr2	= 0x10,
+> +		.cr3	= 0x14,
+> +		.gtpr	= 0x18,
+> +		.rtor	= UNDEF_REG,
+> +		.rqr	= UNDEF_REG,
+> +		.icr	= UNDEF_REG,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 13,
+> +		.has_7bits_data = false,
+> +		.fifosize = 1,
+> +	}
+> +};
+> +
+> +static struct stm32_usart_info stm32f7_info = {
+> +	.ofs = {
+> +		.cr1	= 0x00,
+> +		.cr2	= 0x04,
+> +		.cr3	= 0x08,
+> +		.brr	= 0x0c,
+> +		.gtpr	= 0x10,
+> +		.rtor	= 0x14,
+> +		.rqr	= 0x18,
+> +		.isr	= 0x1c,
+> +		.icr	= 0x20,
+> +		.rdr	= 0x24,
+> +		.tdr	= 0x28,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 0,
+> +		.has_7bits_data = true,
+> +		.has_swap = true,
+> +		.fifosize = 1,
+> +	}
+> +};
+> +
+> +static struct stm32_usart_info stm32h7_info = {
+> +	.ofs = {
+> +		.cr1	= 0x00,
+> +		.cr2	= 0x04,
+> +		.cr3	= 0x08,
+> +		.brr	= 0x0c,
+> +		.gtpr	= 0x10,
+> +		.rtor	= 0x14,
+> +		.rqr	= 0x18,
+> +		.isr	= 0x1c,
+> +		.icr	= 0x20,
+> +		.rdr	= 0x24,
+> +		.tdr	= 0x28,
+> +	},
+> +	.cfg = {
+> +		.uart_enable_bit = 0,
+> +		.has_7bits_data = true,
+> +		.has_swap = true,
+> +		.has_wakeup = true,
+> +		.has_fifo = true,
+> +		.fifosize = 16,
+> +	}
+> +};
+> +
+>   static void stm32_usart_stop_tx(struct uart_port *port);
+>   static void stm32_usart_transmit_chars(struct uart_port *port);
+>   static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch);
+> diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+> index ee69c203b926..0ec41a732c88 100644
+> --- a/drivers/tty/serial/stm32-usart.h
+> +++ b/drivers/tty/serial/stm32-usart.h
+> @@ -38,74 +38,6 @@ struct stm32_usart_info {
+>   
+>   #define UNDEF_REG 0xff
+>   
+> -/* Register offsets */
+> -struct stm32_usart_info stm32f4_info = {
+> -	.ofs = {
+> -		.isr	= 0x00,
+> -		.rdr	= 0x04,
+> -		.tdr	= 0x04,
+> -		.brr	= 0x08,
+> -		.cr1	= 0x0c,
+> -		.cr2	= 0x10,
+> -		.cr3	= 0x14,
+> -		.gtpr	= 0x18,
+> -		.rtor	= UNDEF_REG,
+> -		.rqr	= UNDEF_REG,
+> -		.icr	= UNDEF_REG,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 13,
+> -		.has_7bits_data = false,
+> -		.fifosize = 1,
+> -	}
+> -};
+> -
+> -struct stm32_usart_info stm32f7_info = {
+> -	.ofs = {
+> -		.cr1	= 0x00,
+> -		.cr2	= 0x04,
+> -		.cr3	= 0x08,
+> -		.brr	= 0x0c,
+> -		.gtpr	= 0x10,
+> -		.rtor	= 0x14,
+> -		.rqr	= 0x18,
+> -		.isr	= 0x1c,
+> -		.icr	= 0x20,
+> -		.rdr	= 0x24,
+> -		.tdr	= 0x28,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 0,
+> -		.has_7bits_data = true,
+> -		.has_swap = true,
+> -		.fifosize = 1,
+> -	}
+> -};
+> -
+> -struct stm32_usart_info stm32h7_info = {
+> -	.ofs = {
+> -		.cr1	= 0x00,
+> -		.cr2	= 0x04,
+> -		.cr3	= 0x08,
+> -		.brr	= 0x0c,
+> -		.gtpr	= 0x10,
+> -		.rtor	= 0x14,
+> -		.rqr	= 0x18,
+> -		.isr	= 0x1c,
+> -		.icr	= 0x20,
+> -		.rdr	= 0x24,
+> -		.tdr	= 0x28,
+> -	},
+> -	.cfg = {
+> -		.uart_enable_bit = 0,
+> -		.has_7bits_data = true,
+> -		.has_swap = true,
+> -		.has_wakeup = true,
+> -		.has_fifo = true,
+> -		.fifosize = 16,
+> -	}
+> -};
+> -
+>   /* USART_SR (F4) / USART_ISR (F7) */
+>   #define USART_SR_PE		BIT(0)
+>   #define USART_SR_FE		BIT(1)
 
-I guess the takeaway is that deasserting RS485 Transmit Enable is
-really driver-specific.  In particular, imx.c has support for using
-CTS to drive Transmit Enable and the serial core can't deassert that
-on probe because it doesn't know about this driver-specific feature.
+thanks,
+-- 
+js
+suse labs
 
-In the case of imx.c, the driver already deasserts Transmit Enable via:
-imx_uart_probe()
-  uart_rs485_config()
-    imx_uart_rs485_config()
-
-(Those function names refer to current mainline, uart_rs485_config()
-will be newly introduced in v6.0.)
-
-Thus, just deleting deassertion from uart_configure_port() should fix
-the issue for imx.c:
-
--		if (port->rs485.flags & SER_RS485_ENABLED &&
--		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
--			port->mctrl |= TIOCM_RTS;
-
-I need to go through all other rs485-capable drivers to check whether
-the same is true for them or which ones need to be amended.  Please
-stand by.
-
-Thanks,
-
-Lukas
