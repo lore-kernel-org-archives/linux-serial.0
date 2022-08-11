@@ -2,95 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C48DCC25B08
-	for <linux-serial@archiver.kernel.org>; Wed, 10 Aug 2022 08:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 042C5C19F2D
+	for <linux-serial@archiver.kernel.org>; Thu, 11 Aug 2022 06:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231290AbiHJIZs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 10 Aug 2022 04:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46146 "EHLO
+        id S229786AbiHKGSW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 11 Aug 2022 02:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231708AbiHJIZp (ORCPT
+        with ESMTP id S229437AbiHKGSW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 10 Aug 2022 04:25:45 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BC826113;
-        Wed, 10 Aug 2022 01:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660119944; x=1691655944;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=5ATw0VTrbYx/w/efXJbAdex8AhTtbEgFmRBtW+ZH5hI=;
-  b=bGc3rXDxyor+pjYx78m+WvV/XBGnhcD/8sqflFk/NPmo3KfUf5IWO+uj
-   K/YTPVRS9cVIpKXN1yRmFmrhCp4xMKkFU5iAlJz2qyXpr4YcdFyCMa52Q
-   NOkRiMvYYvwhZaBrlCWI/Ed8wyOesAVEiMIC7qeGrr0HheLjApi2cUU6g
-   bZiUwqs6a05hGEQ29PhDLVqiE828tUsR2PIcZG/DxylG2KP/WzxIC5usH
-   jpAq92PM7/dVMq4l+sGeiHCrHk7OETsKzYh+Noazve6vbZAaenUn89rt7
-   JLA/4N6WkHtty8tv2OWTxCArJoUPknB7NR6de9QlJFKCSmZFW1KHi+d92
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="316975943"
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="316975943"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:44 -0700
-X-IronPort-AV: E=Sophos;i="5.93,226,1654585200"; 
-   d="scan'208";a="664801047"
-Received: from vaslau-mobl.ger.corp.intel.com ([10.252.62.177])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 01:25:42 -0700
-Date:   Wed, 10 Aug 2022 11:26:05 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/2] serial: pic32_uart: Utilize
- uart_console_enabled()
-In-Reply-To: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <7fb01d46-b67-2eff-d54d-c96b079dc5c@linux.intel.com>
-References: <20220806225643.40897-1-andriy.shevchenko@linux.intel.com>
+        Thu, 11 Aug 2022 02:18:22 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE5E83BE5
+        for <linux-serial@vger.kernel.org>; Wed, 10 Aug 2022 23:18:19 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 0B6D010045BEA;
+        Thu, 11 Aug 2022 08:18:17 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id CA3016DC1E6; Thu, 11 Aug 2022 08:18:16 +0200 (CEST)
+Date:   Thu, 11 Aug 2022 08:18:16 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Roosen Henri <Henri.Roosen@ginzinger.com>
+Cc:     "chao.zeng@siemens.com" <chao.zeng@siemens.com>,
+        "LinoSanfilippo@gmx.de" <LinoSanfilippo@gmx.de>,
+        "baocheng_su@163.com" <baocheng_su@163.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "p.rosenberger@kunbus.com" <p.rosenberger@kunbus.com>,
+        "baocheng.su@siemens.com" <baocheng.su@siemens.com>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "rgc@hms.se" <rgc@hms.se>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>
+Subject: Re: [PATCH] serial: Fix incorrect rs485 polarity on uart open
+Message-ID: <20220811061816.GA7472@wunner.de>
+References: <9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de>
+ <8f538a8903795f22f9acc94a9a31b03c9c4ccacb.camel@ginzinger.com>
+ <20220804155210.GA350@wunner.de>
+ <72acc08080f3675f529160270be840b06629761c.camel@ginzinger.com>
+ <20220805081851.GA21615@wunner.de>
+ <33b4b797-cd4a-436e-8e03-4bc5d7dd69ff.d000f9d8-ed3e-456c-b23a-5a86eac57608.c023ef82-f7f7-4a43-92f1-8642a4f822e1@emailsignatures365.codetwo.com>
+ <33b4b797-cd4a-436e-8e03-4bc5d7dd69ff.0668d69a-b7f6-4fc6-94cd-e3b904d4ce63.488ca449-4f1c-444b-8de0-1344d3aeb879@emailsignatures365.codetwo.com>
+ <dae58f1aba37d89baa446f955db77cb4e557dcd0.camel@ginzinger.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-726611098-1660119969=:1755"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dae58f1aba37d89baa446f955db77cb4e557dcd0.camel@ginzinger.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Aug 05, 2022 at 11:20:24AM +0000, Roosen Henri wrote:
+> On Fri, 2022-08-05 at 10:18 +0200, Lukas Wunner wrote:
+> > On Thu, Aug 04, 2022 at 04:11:26PM +0000, Roosen Henri wrote:
+> > > On Thu, 2022-08-04 at 17:52 +0200, Lukas Wunner wrote:
+> > > > On Thu, Aug 04, 2022 at 02:38:23PM +0000, Roosen Henri wrote:
+> > > > > unfortunately this commit, which has been backported to v5.4.x,
+> > > > > seems
+> > > > > to break RS485 functionality on our iMX boards.
 
---8323329-726611098-1660119969=:1755
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+Thanks for the report and sorry for the breakage.
 
-On Sun, 7 Aug 2022, Andy Shevchenko wrote:
+I see what the problem is.  The serial core assumes that RTS in mctrl
+has inverted semantics and that doesn't hold for mctrl_gpio.
 
-> The serial core already provides a helper to check if the given port
-> is an enabled console. Utilize it instead of open coded variant.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+I guess the takeaway is that deasserting RS485 Transmit Enable is
+really driver-specific.  In particular, imx.c has support for using
+CTS to drive Transmit Enable and the serial core can't deassert that
+on probe because it doesn't know about this driver-specific feature.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+In the case of imx.c, the driver already deasserts Transmit Enable via:
+imx_uart_probe()
+  uart_rs485_config()
+    imx_uart_rs485_config()
 
--- 
- i.
+(Those function names refer to current mainline, uart_rs485_config()
+will be newly introduced in v6.0.)
 
-> ---
->  drivers/tty/serial/pic32_uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-> index f418f1de66b3..1562c2a48467 100644
-> --- a/drivers/tty/serial/pic32_uart.c
-> +++ b/drivers/tty/serial/pic32_uart.c
-> @@ -943,7 +943,7 @@ static int pic32_uart_probe(struct platform_device *pdev)
->  	}
->  
->  #ifdef CONFIG_SERIAL_PIC32_CONSOLE
-> -	if (uart_console(port) && (pic32_console.flags & CON_ENABLED)) {
-> +	if (uart_console_enabled(port)) {
->  		/* The peripheral clock has been enabled by console_setup,
->  		 * so disable it till the port is used.
->  		 */
-> 
+Thus, just deleting deassertion from uart_configure_port() should fix
+the issue for imx.c:
 
---8323329-726611098-1660119969=:1755--
+-		if (port->rs485.flags & SER_RS485_ENABLED &&
+-		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
+-			port->mctrl |= TIOCM_RTS;
+
+I need to go through all other rs485-capable drivers to check whether
+the same is true for them or which ones need to be amended.  Please
+stand by.
+
+Thanks,
+
+Lukas
