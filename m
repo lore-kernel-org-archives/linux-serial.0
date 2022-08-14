@@ -2,100 +2,182 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68195C19F2D
-	for <linux-serial@archiver.kernel.org>; Sat, 13 Aug 2022 15:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC11C282E7
+	for <linux-serial@archiver.kernel.org>; Sun, 14 Aug 2022 00:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239898AbiHMPwe (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 13 Aug 2022 11:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        id S229870AbiHNABn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 13 Aug 2022 20:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiHMPwa (ORCPT
+        with ESMTP id S229555AbiHNABm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 13 Aug 2022 11:52:30 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD60663A5;
-        Sat, 13 Aug 2022 08:52:29 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d16so3075164pll.11;
-        Sat, 13 Aug 2022 08:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=wXlUQdFctfwLyRD5zF+7rXToKitnaCZz9jhyoAy8hSA=;
-        b=ZL44Ch7WG8igTcjx9l0J1ExwWSXMhlQX+OAcqFmgXsEOOMORc7I2tzoY3XL/Kb8Brh
-         R9xeR6CgPpPqgxzDmTyQtYzqZaJB79WtnvWoIXG4GjcXj/Po+lylEl/WnQtMNkNTMPb2
-         sBIaJIccsiG/TqSkjEFLFiyTGwIAgxuzVQRRuu1fkxPgsmIZcoWWpc53iwcrEHnZK2c1
-         tafgqPnvoK2Rqd75dksyOeT+qhDdLQhsVlBBl67/okXpI2ixNpJ8YdpgN1Az9z7d0lGn
-         6ixgLhCh6odGDt+81t8PwLPVETX10wUrGP4JKbEifkd6VVWzBHpndtndmEGO/3vJsIw0
-         mFfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=wXlUQdFctfwLyRD5zF+7rXToKitnaCZz9jhyoAy8hSA=;
-        b=4hhrY1Vwwd/3G+BxPWgjVFERxL//YP92S1IvT9YCfyNbrq57k+fg6PL8yaVQ+Ljgz8
-         FeDmgQrOeUEelGpKNewUVI7j+xd6EgmRMMiP71jhpSFsD1UGTHQBbK/5aY0+4q/XoOqp
-         aCRPhhG32jf+NvewzglPvUcVJ+lGmWXi7FglmQWok1WGhnVf/JLUbK1Wixmf3YhWXjDy
-         E+7mqm3Q+nbvVof0+yGiyM9DkNuzP1XhG93ZFhbCH72tIG9dqvUO4GFzhtcu+CCt9TI+
-         An+GqkGVBVU4j5/X7LP9C3BYXvBB3OOoG62+FJvpIuwB9lOzqFjp3FOoDE/kfadReZw6
-         CEoQ==
-X-Gm-Message-State: ACgBeo02d8+DiNti5zhyyJ1hG8i+33/IjT7fDDo4Zd75fcOOvuk3qTc2
-        bmfKmzMZQPDucZgNypKWak0QQWKMXwtTeuswvpwlkg==
-X-Google-Smtp-Source: AA6agR4I327JQGY91FLmMpaq95gWBOEVRN82vcRnVLfzpjqKa9eXdL9ON+1WO34Qh7oQifTwAO01xQ==
-X-Received: by 2002:a17:90b:3711:b0:1f5:179c:ad64 with SMTP id mg17-20020a17090b371100b001f5179cad64mr19079838pjb.11.1660405949027;
-        Sat, 13 Aug 2022 08:52:29 -0700 (PDT)
-Received: from localhost.localdomain ([182.160.5.243])
-        by smtp.gmail.com with ESMTPSA id 10-20020a62190a000000b0052e2435784asm3726245pfz.8.2022.08.13.08.52.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 08:52:28 -0700 (PDT)
-From:   Tuo Cao <91tuocao@gmail.com>
-To:     alcooperx@gmail.com, gregkh@linuxfoundation.org
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        91tuocao@gmail.com
-Subject: [PATCH] serial: 8250_bcm7271: move spin_lock_irqsave to spin_lock in irq handler
-Date:   Sat, 13 Aug 2022 23:51:13 +0800
-Message-Id: <20220813155113.13427-1-91tuocao@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 13 Aug 2022 20:01:42 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CA518B03;
+        Sat, 13 Aug 2022 17:01:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660435300; x=1691971300;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7ki15VuR/ZcrHb6KOsI4Hb28mSfS0dHDolz9tJFyhME=;
+  b=Np4Z0EnSBaSouKZRCiG3j10gJ8VaArpWHEqS6HVtjliIeBL905Ej61ba
+   tJmeN+nsgAkTynBHLA2bsi8N0jgn+npKpEv4o0bn2vp7/1+E1ZrQOhyPx
+   6MKdYy/h34uTgWtT0mkP8nY9GeEjkHUkzLTWKLmBrz041HcMsED/friEl
+   bjS4CacaUrkLtW4Vwzpu4/BXy1SadvI467OVoYcgrf3fQduwS4SZWASev
+   zX4YwZ+iL/L7u+SLCY/WZ+q/oieB8BaJMyivAjclRaeSEQMYk++7nnVey
+   0RFbf7Ln50WdObKU1TDe3OoHOM8qlmBDJlM8DxNiebNQM4JBi+wK3n9Re
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="274839294"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="274839294"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 17:01:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="851912119"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 13 Aug 2022 17:01:34 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oN14P-0002Cw-1K;
+        Sun, 14 Aug 2022 00:01:33 +0000
+Date:   Sun, 14 Aug 2022 08:01:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v2 3/3] efi: earlycon: Add support for generic
+ framebuffers and move to console subsystem
+Message-ID: <202208140705.bU9i1c1t-lkp@intel.com>
+References: <20220806163255.10404-4-markuss.broks@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220806163255.10404-4-markuss.broks@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-it is unnecessary to call spin_lock_irqsave in a irq handler.
+Hi Markuss,
 
-Signed-off-by: Tuo Cao <91tuocao@gmail.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+I love your patch! Perhaps something to improve:
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 8efdc271eb75..fb525c435723 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -560,7 +560,6 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	struct uart_port *up = dev_id;
- 	struct device *dev = up->dev;
- 	struct brcmuart_priv *priv = up->private_data;
--	unsigned long flags;
- 	u32 interrupts;
- 	u32 rval;
- 	u32 tval;
-@@ -569,7 +568,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if (interrupts == 0)
- 		return IRQ_NONE;
- 
--	spin_lock_irqsave(&up->lock, flags);
-+	spin_lock(&up->lock);
- 
- 	/* Clear all interrupts */
- 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
-@@ -583,7 +582,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if ((rval | tval) == 0)
- 		dev_warn(dev, "Spurious interrupt: 0x%x\n", interrupts);
- 
--	spin_unlock_irqrestore(&up->lock, flags);
-+	spin_unlock(&up->lock);
- 	return IRQ_HANDLED;
- }
- 
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on efi/next staging/staging-testing usb/usb-testing linus/master v5.19 next-20220812]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Markuss-Broks/Add-generic-framebuffer-support-to-EFI-earlycon-driver/20220807-003646
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: loongarch-randconfig-s031-20220807 (https://download.01.org/0day-ci/archive/20220814/202208140705.bU9i1c1t-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/97dfc2aa69b065de769a191352afe2099c52fedb
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Markuss-Broks/Add-generic-framebuffer-support-to-EFI-earlycon-driver/20220807-003646
+        git checkout 97dfc2aa69b065de769a191352afe2099c52fedb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=loongarch SHELL=/bin/bash drivers/video/console/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/video/console/earlycon.c:43:24: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *static [toplevel] virt_base @@     got void * @@
+   drivers/video/console/earlycon.c:43:24: sparse:     expected void [noderef] __iomem *static [toplevel] virt_base
+   drivers/video/console/earlycon.c:43:24: sparse:     got void *
+>> drivers/video/console/earlycon.c:53:30: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void *addr @@     got void [noderef] __iomem *static [toplevel] virt_base @@
+   drivers/video/console/earlycon.c:53:30: sparse:     expected void *addr
+   drivers/video/console/earlycon.c:53:30: sparse:     got void [noderef] __iomem *static [toplevel] virt_base
+>> drivers/video/console/earlycon.c:63:39: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
+   drivers/video/console/earlycon.c:63:39: sparse:     expected void *
+   drivers/video/console/earlycon.c:63:39: sparse:     got void [noderef] __iomem *
+>> drivers/video/console/earlycon.c:74:24: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __iomem *addr @@     got void *addr @@
+   drivers/video/console/earlycon.c:74:24: sparse:     expected void [noderef] __iomem *addr
+   drivers/video/console/earlycon.c:74:24: sparse:     got void *addr
+
+vim +43 drivers/video/console/earlycon.c
+
+    29	
+    30	static int __init simplefb_earlycon_remap_fb(void)
+    31	{
+    32		unsigned long mapping;
+    33		/* bail if there is no bootconsole or it has been disabled already */
+    34		if (!earlycon_console || !(earlycon_console->flags & CON_ENABLED))
+    35			return 0;
+    36	
+    37		if (region_intersects(info.phys_base, info.size,
+    38				      IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE) == REGION_INTERSECTS)		
+    39			mapping = MEMREMAP_WB;
+    40		else
+    41			mapping = MEMREMAP_WC;
+    42	
+  > 43		info.virt_base = memremap(info.phys_base, info.size, mapping);
+    44	
+    45		return info.virt_base ? 0 : -ENOMEM;
+    46	}
+    47	early_initcall(simplefb_earlycon_remap_fb);
+    48	
+    49	static int __init simplefb_earlycon_unmap_fb(void)
+    50	{
+    51		/* unmap the bootconsole fb unless keep_bootcon has left it enabled */
+    52		if (info.virt_base && !(earlycon_console->flags & CON_ENABLED))
+  > 53			memunmap(info.virt_base);
+    54		return 0;
+    55	}
+    56	late_initcall(simplefb_earlycon_unmap_fb);
+    57	
+    58	static __ref void *simplefb_earlycon_map(unsigned long start, unsigned long len)
+    59	{
+    60		pgprot_t fb_prot;
+    61	
+    62		if (info.virt_base)
+  > 63			return info.virt_base + start;
+    64	
+    65		fb_prot = PAGE_KERNEL;
+    66		return early_memremap_prot(info.phys_base + start, len, pgprot_val(fb_prot));
+    67	}
+    68	
+    69	static __ref void simplefb_earlycon_unmap(void *addr, unsigned long len)
+    70	{
+    71		if (info.virt_base)
+    72			return;
+    73	
+  > 74		early_memunmap(addr, len);
+    75	}
+    76	
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
