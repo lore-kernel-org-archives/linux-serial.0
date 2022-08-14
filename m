@@ -2,48 +2,48 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D8EC282E7
-	for <linux-serial@archiver.kernel.org>; Sun, 14 Aug 2022 16:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBACC32765
+	for <linux-serial@archiver.kernel.org>; Sun, 14 Aug 2022 16:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241552AbiHNQ2V (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:28:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S242428AbiHNQcZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242341AbiHNQ1j (ORCPT
+        with ESMTP id S242948AbiHNQbj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:27:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636221A82F;
-        Sun, 14 Aug 2022 09:23:39 -0700 (PDT)
+        Sun, 14 Aug 2022 12:31:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFAE22B2F;
+        Sun, 14 Aug 2022 09:26:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41FBAB80AEE;
-        Sun, 14 Aug 2022 16:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AFD4C43470;
-        Sun, 14 Aug 2022 16:23:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8584B80B83;
+        Sun, 14 Aug 2022 16:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB9FC433B5;
+        Sun, 14 Aug 2022 16:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494216;
+        s=k20201202; t=1660494374;
         bh=wL+I1X6OYqaa+s1yOlsuInujXPWsQqoekriR1F0yces=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LX1vvYxddXiF7Dm0fpmnYAtWJP3OZWh4up2YBmrm/gnjxJDl6/dcf2m0X3ylsoI9m
-         D8TkYrEc/2I9Xjff7ESb3PAVJXbisWpJ6J9QM8hwlvZcbJ4cCvPIDN8L9n6IFSEIMb
-         R701H28M7SUPJn4ugYsi0mOA2Fa7KjhN00pqOuE7K2zgunfJnyZ3SCkGAxw/2c4K9B
-         boGW0ZgyEdTaI6k+JQc3CM6GaJR+n9YTIRS+e7uqE+cTe7xO2dNhOQy0w+7TsTOT+i
-         zMxpVXN3gXjWh71uSgjKRy9N/IM6XtG/SPgjnF/72YMcqgVdc8nLuatt+U92YqZTXs
-         tf4HA8PgWJ9sQ==
+        b=RygRltfJ9OERYuxFH3kJV8hBdtbR399T92MT3eVnFIK1gsXpDW8cgSFxt8hLTsbbu
+         Q6Y1fm1+CadpahyFBsFgNTUvmatP/qyxb5gZNaOOKfDukXHXhaqEdvh//s2KIcgfbs
+         +cta+tS2goxdJdzhSxlcXRHRnuUC5Sns53Th8QZ0i2fzpMTCFw7F2M2PxoC2rBgyAd
+         VDWCV7uTfzlgWXjy/zY1YDyD9yiFb3KHGue+HMkUriHHDwVqFn+e9RqBwZ5gl+Q76H
+         dWr31hLUWBTFQ9E6DP29Xq4XlxDMkuFRZEHwphLHvosgEXS5SdOfTj+EzMVkg6xqbZ
+         tbHyqBmmFbHMQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Liang He <windhl@126.com>, Timur Tabi <timur@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 02/39] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Sun, 14 Aug 2022 12:22:51 -0400
-Message-Id: <20220814162332.2396012-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 02/28] tty: serial: Fix refcount leak bug in ucc_uart.c
+Date:   Sun, 14 Aug 2022 12:25:42 -0400
+Message-Id: <20220814162610.2397644-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
-References: <20220814162332.2396012-1-sashal@kernel.org>
+In-Reply-To: <20220814162610.2397644-1-sashal@kernel.org>
+References: <20220814162610.2397644-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
