@@ -2,45 +2,45 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AB4C25B0F
-	for <linux-serial@archiver.kernel.org>; Sun, 14 Aug 2022 16:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCE5C2BB43
+	for <linux-serial@archiver.kernel.org>; Sun, 14 Aug 2022 16:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243267AbiHNQkd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 14 Aug 2022 12:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57414 "EHLO
+        id S243155AbiHNQmi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 14 Aug 2022 12:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243125AbiHNQjy (ORCPT
+        with ESMTP id S243255AbiHNQk0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 14 Aug 2022 12:39:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383DFC79;
-        Sun, 14 Aug 2022 09:30:05 -0700 (PDT)
+        Sun, 14 Aug 2022 12:40:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2B4646C;
+        Sun, 14 Aug 2022 09:30:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D20F9B80AEE;
-        Sun, 14 Aug 2022 16:30:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA28C433D7;
-        Sun, 14 Aug 2022 16:30:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C076DB80B74;
+        Sun, 14 Aug 2022 16:30:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8926C433D6;
+        Sun, 14 Aug 2022 16:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660494602;
-        bh=TcBl72HrHmjDRathhtjfFih6aIlKLd2vED0J2ncQORk=;
+        s=k20201202; t=1660494644;
+        bh=nKTuBtM4erHTsf5Z3wnlxZdKoymi6bvTtcHKXHd7hkU=;
         h=From:To:Cc:Subject:Date:From;
-        b=FDJT1EfQ1erLqnoybCmsCInf0WQptADAtvuPouPxmse7ozv8MPclnD/0ANovjpB9G
-         m2Ym0hRLFboLdkNWWyZjNG2H3vKKgAhJo1WWXDTFVmEegRjGkaYUv1Dqq0GsaYxFX+
-         AsXHQxwAEgcik/Y4Haqa2AQk+JopFU3A3uED3ksY/Nlcdv6TvC9eiwCE5BLlbVpk1+
-         NPP2L8NGJftnjzo5cd3HuoKogzJD2bRKgQq7zbKpBAGc6m7KLr3Ddmv+PLXHxaTYok
-         DpV4iTWAR0bdWrhv4b6pSUXBvTFqHXBkmQUZ7XAHraYjMc7A9vE2B8gZbOV7LOzbZ+
-         6zssGA+RI71XQ==
+        b=TZW9OK6QvkQ/MBcZgKzIFqBW8Kd/Asbt4jubdznXZLrFJS6xXi1BYPPUu5/wHwRY4
+         QuvAHByELoEGjk/Kdf+5eYanJURWO9qquS0anA1wQJnC9fTSGIy+pelLsUu60NQn55
+         cI7fDfmQmqzd7UDYhLjz836W426Bw78M6P6ek3HGNLl9GR/lGYgEblR+NTPf6M7Ohf
+         xtYU59W2sc0It1Gq1p1Yw1XUlnRZ9yInct+LeNeJrBcLA54NBJ6Kx2ycGDfA1Fbt/d
+         MulqVn9AWNapnCOmnbi1ntBXLTTFMUfW7ULnSec9cFcb9tUADwe7hMNbVk8obV6Uvk
+         2Ucrmo/wWQcBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Liang He <windhl@126.com>, Timur Tabi <timur@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 1/9] tty: serial: Fix refcount leak bug in ucc_uart.c
-Date:   Sun, 14 Aug 2022 12:29:51 -0400
-Message-Id: <20220814162959.2399011-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 1/8] tty: serial: Fix refcount leak bug in ucc_uart.c
+Date:   Sun, 14 Aug 2022 12:30:34 -0400
+Message-Id: <20220814163041.2399552-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
@@ -68,7 +68,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 55b702775786..40b8e414f48f 100644
+index 481eb2989a1e..ed1658b61e54 100644
 --- a/drivers/tty/serial/ucc_uart.c
 +++ b/drivers/tty/serial/ucc_uart.c
 @@ -1143,6 +1143,8 @@ static unsigned int soc_info(unsigned int *rev_h, unsigned int *rev_l)
