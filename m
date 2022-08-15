@@ -2,116 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8542FC00140
-	for <linux-serial@archiver.kernel.org>; Mon, 15 Aug 2022 12:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FD5C28B2C
+	for <linux-serial@archiver.kernel.org>; Mon, 15 Aug 2022 16:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiHOMNq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 15 Aug 2022 08:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54956 "EHLO
+        id S232825AbiHOQ6B (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 15 Aug 2022 12:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232167AbiHOMN3 (ORCPT
+        with ESMTP id S232889AbiHOQ5m (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 15 Aug 2022 08:13:29 -0400
-Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C049E252BA
-        for <linux-serial@vger.kernel.org>; Mon, 15 Aug 2022 05:13:28 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id NYqxo2sw0XaJmNYqxoyvCx; Mon, 15 Aug 2022 14:05:56 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 15 Aug 2022 14:05:56 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] serial: icom: Fix some indentation
-Date:   Mon, 15 Aug 2022 14:05:50 +0200
-Message-Id: <037fc7510ff88945e3f0a5756de4cfd135c59849.1660565015.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Mon, 15 Aug 2022 12:57:42 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7FB275C1;
+        Mon, 15 Aug 2022 09:57:41 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id b7so5761627qvq.2;
+        Mon, 15 Aug 2022 09:57:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=dT9Pg0cgomgnI0kkqHjm6eb1hxEl1p1LNNw04+pYAiw=;
+        b=UAbnyBq77vyYNRVvJhwDaocodBZTdW/rY26aTPJ3tUoVcG8kLbkvDeuHoCDVazGTqp
+         U3sWT1HisJNc/seNXOnderJHWURJq9o4MgfiwPF0JBbdfW64WPTclAeuu4L0OJZbxuLR
+         TcysGwk8ohcgr0uCvm6OGzo6qR8haErFewbD2I0+n3DaZN4NDE5GhwIJaJ5iAKsS7YjB
+         J67OCySu8M6iaLP6QU0K9qUMuaaQNz53rc7Mc+kihyUpk4ZXKxciQTtZMWWmzwdTR1iK
+         ylcJ2kUbrNKv0MWTDSbr31gytziDJYbVssAOt0Ez9SBA8elvqQr5y6onp0bOpYZVWs0k
+         Af3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=dT9Pg0cgomgnI0kkqHjm6eb1hxEl1p1LNNw04+pYAiw=;
+        b=0YCUM/sxNd+XW1rz+aOEJFmU57WhC3pLKbfffXI+n+rlWZk/W6rfXokcDwTazXcrcX
+         GrAtRd2P5GGgLddw68da9ChN+9CKbg1BHAPEvRJgHQ0VFe1HiWEDPLDTwsFykjTDCLGL
+         HEji4/S47365BacyPSsIxbr5Irak2OkclqzoQy766AlbS/7tp0H4h7WUQbXZy5IIR8y2
+         KvPEU6TP3pLZ+bbYB/IY4zj0rHl+qBjvYvDZgl2uszYsiKn5QRqvTf+1d+KuDvs/1vzH
+         ulKQQjHs1HFVDk3PXBkMr/05Pr/cyRbqeG60jBRrIhZDtP+XIoPVZeFDjuXvWjcII6gR
+         tIRQ==
+X-Gm-Message-State: ACgBeo3DUcLc2Ozbkn9bG7AbqpJLfbvrnk3QCoU3BpvkIr4IkcAdHZAk
+        yFGtlHJ5BxNJWxby0g1qYnw=
+X-Google-Smtp-Source: AA6agR5+e4ITrllG9Zdjcav/qnQ/K77ki/+NPhNuFZ+FfibDMeCZLlBPNoSOkBpDKq1B9dRdFkv1qQ==
+X-Received: by 2002:a05:6214:62a:b0:476:858d:b2c8 with SMTP id a10-20020a056214062a00b00476858db2c8mr13917327qvx.65.1660582660417;
+        Mon, 15 Aug 2022 09:57:40 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id f8-20020ac84648000000b0033e51aea00esm8459756qto.25.2022.08.15.09.57.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 09:57:39 -0700 (PDT)
+Message-ID: <584ebb0e-2d55-348f-18f7-a555c3a359b9@gmail.com>
+Date:   Mon, 15 Aug 2022 09:57:30 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
+ ARCH_BCMBCA
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        f.fainelli@gmail.com, krzysztof.kozlowski@linaro.org,
+        rafal@milecki.pl, Guenter Roeck <linux@roeck-us.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
+        <linux-mtd@lists.infradead.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
+        <linux-pci@vger.kernel.org>,
+        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
+        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" 
+        <linux-mips@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>
+References: <20220803175455.47638-1-william.zhang@broadcom.com>
+ <20220803175455.47638-7-william.zhang@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220803175455.47638-7-william.zhang@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-checkpatch and smatch report some code alignment issues.
+On 8/3/22 10:54, William Zhang wrote:
+> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
+> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
+> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
+> Acked-by: Wolfram Sang <wsa@kernel.org> (for i2c)
+> Acked-by: Philipp Zabel <p.zabel@pengutronix.de> (for reset)
 
-So remove some unneeded leading spaces to fix the warnings.
-
-While at it remove some {} around a single statement and convert some
-spaces into a tab.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/tty/serial/icom.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 45df29947fe8..3ac81622c4fb 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1727,10 +1727,10 @@ static int icom_probe(struct pci_dev *dev,
- 
- 	retval = pci_request_regions(dev, "icom");
- 	if (retval) {
--		 dev_err(&dev->dev, "pci_request_regions FAILED\n");
--		 pci_disable_device(dev);
--		 return retval;
--	 }
-+		dev_err(&dev->dev, "pci_request_regions FAILED\n");
-+		pci_disable_device(dev);
-+		return retval;
-+	}
- 
- 	pci_set_master(dev);
- 
-@@ -1754,9 +1754,9 @@ static int icom_probe(struct pci_dev *dev,
- 
- 	retval = icom_alloc_adapter(&icom_adapter);
- 	if (retval) {
--		 dev_err(&dev->dev, "icom_alloc_adapter FAILED\n");
--		 retval = -EIO;
--		 goto probe_exit0;
-+		dev_err(&dev->dev, "icom_alloc_adapter FAILED\n");
-+		retval = -EIO;
-+		goto probe_exit0;
- 	}
- 
- 	icom_adapter->base_addr_pci = pci_resource_start(dev, 0);
-@@ -1778,11 +1778,10 @@ static int icom_probe(struct pci_dev *dev,
- 		goto probe_exit1;
- 	}
- 
--	 /* save off irq and request irq line */
--	 retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
--	 if (retval) {
--		  goto probe_exit2;
--	 }
-+	/* save off irq and request irq line */
-+	retval = request_irq(dev->irq, icom_interrupt, IRQF_SHARED, ICOM_DRIVER_NAME, (void *)icom_adapter);
-+	if (retval)
-+		goto probe_exit2;
- 
- 	retval = icom_load_ports(icom_adapter);
- 
-@@ -1798,11 +1797,11 @@ static int icom_probe(struct pci_dev *dev,
- 			icom_port->uart_port.fifosize = 16;
- 			icom_port->uart_port.ops = &icom_ops;
- 			icom_port->uart_port.line =
--		        icom_port->port + icom_adapter->index * 4;
-+			icom_port->port + icom_adapter->index * 4;
- 			if (uart_add_one_port (&icom_uart_driver, &icom_port->uart_port)) {
- 				icom_port->status = ICOM_PORT_OFF;
- 				dev_err(&dev->dev, "Device add failed\n");
--			 } else
-+			} else
- 				dev_info(&dev->dev, "Device added\n");
- 		}
- 	}
+Applied to https://github.com/Broadcom/stblinux/commits/drivers/next, 
+thanks!
 -- 
-2.34.1
-
+Florian
