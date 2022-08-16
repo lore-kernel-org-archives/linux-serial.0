@@ -2,41 +2,41 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B70DC32793
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83200C32796
 	for <linux-serial@archiver.kernel.org>; Tue, 16 Aug 2022 12:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234637AbiHPMIO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
+        id S234598AbiHPMIL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 16 Aug 2022 08:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiHPMHp (ORCPT
+        with ESMTP id S235236AbiHPMHg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:07:45 -0400
+        Tue, 16 Aug 2022 08:07:36 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1C4D62;
-        Tue, 16 Aug 2022 04:58:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3EF558C;
+        Tue, 16 Aug 2022 04:57:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660651092; x=1692187092;
+  t=1660651079; x=1692187079;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jViNROObNO3h6Uyd+viPlFHM6zP9PKpgfEeghIlk4cw=;
-  b=F/B58Oud4Dt7w9NvXdipCymfhxan2EoWMKT34l041LL1XZWLWVNVo+Ut
-   ZMSlTCEXC9xYrWkBgNFNucRshMQGYNgbKFZdb7dkw4QGqTBlgQgTyGUqG
-   Y/3h4JAQLig1uVQXad6IkKNGf7o2iHXnFLXwAt9Lb48UOGyS1LxSk6BkE
-   41/3iHdPt5SXeEoP7fpVp5cFsGXnXwlSLWYGtZozQQrLzeiOav0rh52rM
-   e4gbFk8DrGSSgaZMnCWS5FwefchtgFhmcY28VKcxzG79aE9J7h3k/npw8
-   CAOpDSi58206mkLOPzOmGXxmUWMyM8IWtVUGVji9ZwmWoWXL/Vth0HYu1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199344"
+  bh=FWpF8vLkYDl4M3MyshEfxpRafeqCfa7Sw6RRzait/5k=;
+  b=XUAZ22TweaypUjnlaWTKw4oZTS8fs47d0+9W6BhLQKzJjjBeNe+0vc+s
+   ZPEmQvEem2LAUkgxVMoonTNrsoya9aJxTqhDDKel4FLh9LqOvmUU/InXN
+   uvxusMUgpw/YI6XNyt/E4L76JVLeGtuH48ErgvgZY5w6X3fGU3y9cxrlP
+   ejxl5nkHVWPzzC8l7ArdFQKMr2IovpEvX/IFq27vK0aeoW0qMDY47e25X
+   IzaKJdkhCW1Q55KtUu2p7OyPynbnzcGNCxGb9NvJU22f4g+pXMIqRfRuZ
+   TZpS7w9YoawL31L+swc7zRpD+UncDxJtTZEPgwYbazs3Rk4KBd+kE1FP/
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356199319"
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="356199344"
+   d="scan'208";a="356199319"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:11 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:57:59 -0700
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="667080819"
+   d="scan'208";a="667080793"
 Received: from tturcu-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.51.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:58:09 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 04:57:56 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -45,9 +45,9 @@ To:     linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Johan Hovold <johan@kernel.org>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5/8] tty: Make ldisc ->set_termios() old ktermios const
-Date:   Tue, 16 Aug 2022 14:57:36 +0300
-Message-Id: <20220816115739.10928-6-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 2/8] tty: Fix comment style in tty_termios_input_baud_rate()
+Date:   Tue, 16 Aug 2022 14:57:33 +0300
+Message-Id: <20220816115739.10928-3-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
 References: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com>
@@ -58,50 +58,26 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-There should be no reason to adjust old ktermios which is going to get
-discarded anyway.
+Add proper spacing to comment.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/n_tty.c       | 2 +-
- include/linux/tty_ldisc.h | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/tty_baudrate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 3afdd9033a9c..597019690ae6 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1758,7 +1758,7 @@ static int n_tty_receive_buf2(struct tty_struct *tty, const unsigned char *cp,
-  *
-  * Locking: Caller holds @tty->termios_rwsem
-  */
--static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
-+static void n_tty_set_termios(struct tty_struct *tty, const struct ktermios *old)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
+diff --git a/drivers/tty/tty_baudrate.c b/drivers/tty/tty_baudrate.c
+index 4e3fd756dfc7..f9b49939c27b 100644
+--- a/drivers/tty/tty_baudrate.c
++++ b/drivers/tty/tty_baudrate.c
+@@ -92,7 +92,7 @@ speed_t tty_termios_input_baud_rate(const struct ktermios *termios)
+ 	if (cbaud == B0)
+ 		return tty_termios_baud_rate(termios);
  
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index ede6f2157f32..dcb61ec11424 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -130,7 +130,7 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
-  *	a pointer to wordsize-sensitive structure belongs here, but most of
-  *	ldiscs will happily leave it %NULL.
-  *
-- * @set_termios: [TTY] ``void ()(struct tty_struct *tty, struct ktermios *old)``
-+ * @set_termios: [TTY] ``void ()(struct tty_struct *tty, const struct ktermios *old)``
-  *
-  *	This function notifies the line discpline that a change has been made
-  *	to the termios structure.
-@@ -227,7 +227,7 @@ struct tty_ldisc_ops {
- 			unsigned long arg);
- 	int	(*compat_ioctl)(struct tty_struct *tty, unsigned int cmd,
- 			unsigned long arg);
--	void	(*set_termios)(struct tty_struct *tty, struct ktermios *old);
-+	void	(*set_termios)(struct tty_struct *tty, const struct ktermios *old);
- 	__poll_t (*poll)(struct tty_struct *tty, struct file *file,
- 			     struct poll_table_struct *wait);
- 	void	(*hangup)(struct tty_struct *tty);
+-	/* Magic token for arbitrary speed via c_ispeed*/
++	/* Magic token for arbitrary speed via c_ispeed */
+ 	if (cbaud == BOTHER)
+ 		return termios->c_ispeed;
+ 
 -- 
 2.30.2
 
