@@ -2,121 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6307AC25B0E
-	for <linux-serial@archiver.kernel.org>; Tue, 16 Aug 2022 12:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A7DC2BB41
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Aug 2022 08:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235122AbiHPMNj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 16 Aug 2022 08:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
+        id S232065AbiHQIDK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235446AbiHPMNU (ORCPT
+        with ESMTP id S229624AbiHQIDI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 16 Aug 2022 08:13:20 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7E4B44;
-        Tue, 16 Aug 2022 05:08:27 -0700 (PDT)
+        Wed, 17 Aug 2022 04:03:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C96A2;
+        Wed, 17 Aug 2022 01:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660651707; x=1692187707;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660723385; x=1692259385;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=RDrxEWvz7k6Dum1EVZKsL+hLIXjBY4xQVpMumbMEgZM=;
-  b=CF2T9cD3xxt0H1FsyGQ80jhmqfqnDhLXdRERqXUp4u4JwH89WvR30laz
-   Eev6aTyWxBtBroue760PAgQFS5hMs4FUSA+3Pl83VQbkgC8twClFD7cy5
-   1N4HxjufeFCJSAvIH71KCV6D4a5DfH0KfbkuDopriGOASb7S0rucZbXD9
-   eIeEcCZE8sniw6BmNtYWwusGPthR74pPlK6CMNpzz///8eTc+/AdkW3na
-   4A3aAha7Qrrr9QlcZnu+Jv2izlVhJH6SKTdLuPAQSv8Shm9B9VLP6OHhm
-   ngM4aYJP2uXUN0AAdAheCgnpcUghpJpsN0p8EqMx0erPhrvIrlAQhwggh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="356201199"
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="356201199"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:08:26 -0700
-X-IronPort-AV: E=Sophos;i="5.93,241,1654585200"; 
-   d="scan'208";a="635864826"
-Received: from tturcu-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.51.153])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:08:24 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 1/1] serial: 8250: Add helper for clearing IER
-Date:   Tue, 16 Aug 2022 15:07:59 +0300
-Message-Id: <20220816120759.11552-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+  bh=NR972ITJen90HoEiRrQftltI+Alot7Bl1nWm8R7vdcY=;
+  b=MOmavYttQXBm6nzUqCKn+kjIs3u15PQXCMxTzaik4XY5D3dWOD/kjAVU
+   PEiSYUao7fXohZJ1tFJe+QWU5mFKyswizWU675ulGXXi3Ao+KNyyOax/T
+   RNzwKLpya70SQEIxdkHr83tn3zzvoHe2IreJ/xNZNZm/yI6/AXMo4q43s
+   9zjLLgC04GntVIVsKNqA7dFO4fGd82UUYDkGVFSen6lVylrID8uGN9gTq
+   dHvFmYGRjVFwWClMnqJfEzHDI/q105eQXS9M3/Sy5RBYtrSou+lTQPwec
+   lPysQ0TKK5E+rNaHztOy2uiF/c9pkbR8tDjporQp00dXsYFLL2nB39eQ+
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="109399450"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 01:03:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 17 Aug 2022 01:03:03 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 01:02:58 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH 0/5] Make atmel serial driver aware of GCLK
+Date:   Wed, 17 Aug 2022 10:55:13 +0300
+Message-ID: <20220817075517.49575-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A number of places want to clear IER with the same CAP_UUE trick.
-Create a helper for that.
+This series of patches introduces the GCLK as a potential clock source for
+the baudrate generator of UART on sama5d2 SoCs. Unlike the serial mode of
+the USART offered by FLEXCOM, the UART does not provide a fractional part
+that can be added to the clock divisor to obtain a more accurate result,
+which greatly decreases the flexibility available for producing a higher
+variety of baudrates. Now, with the last patch of the series, the driver
+will check for a GCLK in the DT. If provided, whenever `atmel_set_termios`
+is called, unless there is a fractional part, the driver will compare the
+error rate between the desired baudrate and the actual baudrate obtained
+through each of the available clock sources and will choose the clock source
+with the lowest error rate. While at it, convert the DT binding
+for UART/USART to json-schema, update the FLEXCOM binding to reference the
+new UART/USART binding and differentiate between the SPI of USART and the
+SPI of FLEXCOM.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_port.c | 24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+The first three patches of this patch series depend on this patch series
+converting atmel-flexcom bindings to json-schema:
+https://lore.kernel.org/all/20220708115619.254073-1-kavyasree.kotagiri@microchip.com/
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 39b35a61958c..25e4761e3c57 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -752,6 +752,14 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 	serial8250_rpm_put(p);
- }
- 
-+static void serial8250_clear_IER(struct uart_8250_port *up)
-+{
-+	if (up->capabilities & UART_CAP_UUE)
-+		serial_out(up, UART_IER, UART_IER_UUE);
-+	else
-+		serial_out(up, UART_IER, 0);
-+}
-+
- #ifdef CONFIG_SERIAL_8250_RSA
- /*
-  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
-@@ -1329,10 +1337,7 @@ static void autoconfig(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, save_mcr);
- 	serial8250_clear_fifos(up);
- 	serial_in(up, UART_RX);
--	if (up->capabilities & UART_CAP_UUE)
--		serial_out(up, UART_IER, UART_IER_UUE);
--	else
--		serial_out(up, UART_IER, 0);
-+	serial8250_clear_IER(up);
- 
- out_unlock:
- 	spin_unlock_irqrestore(&port->lock, flags);
-@@ -2142,10 +2147,7 @@ static void serial8250_put_poll_char(struct uart_port *port,
- 	 *	First save the IER then disable the interrupts
- 	 */
- 	ier = serial_port_in(port, UART_IER);
--	if (up->capabilities & UART_CAP_UUE)
--		serial_port_out(port, UART_IER, UART_IER_UUE);
--	else
--		serial_port_out(port, UART_IER, 0);
-+	serial8250_clear_IER(up);
- 
- 	wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
- 	/*
-@@ -3383,11 +3385,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	 *	First save the IER then disable the interrupts
- 	 */
- 	ier = serial_port_in(port, UART_IER);
--
--	if (up->capabilities & UART_CAP_UUE)
--		serial_port_out(port, UART_IER, UART_IER_UUE);
--	else
--		serial_port_out(port, UART_IER, 0);
-+	serial8250_clear_IER(up);
- 
- 	/* check scratch reg to see if port powered off during system sleep */
- 	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
+Sergiu Moga (5):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding
+  dt-bindings: mfd: atmel,at91-usart: convert to json-schema
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+    binding
+  clk: at91: sama5d2: Add Generic Clocks for UART/USART
+  tty: serial: atmel: Make the driver aware of the existence of GCLK
+
+ .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |  18 +-
+ .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+ drivers/clk/at91/sama5d2.c                    |  10 +
+ drivers/tty/serial/atmel_serial.c             |  52 ++++-
+ drivers/tty/serial/atmel_serial.h             |   1 +
+ 6 files changed, 264 insertions(+), 105 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
+
 -- 
-2.30.2
+2.25.1
 
