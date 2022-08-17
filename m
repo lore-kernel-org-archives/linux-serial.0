@@ -2,98 +2,64 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F88C32789
-	for <linux-serial@archiver.kernel.org>; Wed, 17 Aug 2022 08:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61073C32792
+	for <linux-serial@archiver.kernel.org>; Wed, 17 Aug 2022 08:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbiHQIDy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 17 Aug 2022 04:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S234126AbiHQIJD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 17 Aug 2022 04:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233927AbiHQIDq (ORCPT
+        with ESMTP id S234042AbiHQIJC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 17 Aug 2022 04:03:46 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456EA3CBD2;
-        Wed, 17 Aug 2022 01:03:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660723413; x=1692259413;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vcTzOtyWjobS5W/aThT1AJ1c0537v1+hlKeSaS5KGas=;
-  b=Fu1ZdGK6Z9My3yY8fqVcsHXz8FUsGzEy+o0EADakMizw43iGU/v6nKrf
-   qUoCXJQpT0Q/rWkL7owEtBpjawIyv3+dO3u53jbtApf/MP1+R+oCLsnEB
-   Qb6tc0/BH0W+2hUQaSP3o5Bfdfx/6lKFTee7l06ZRU0mGOZM4jW/5nwX+
-   ra4ypcY0YOGyfnKPeoVWQwhTDXFKXYZ9HSJIYNc2tvTktjsaKFQoN3TSw
-   OoXm06sqahpQY4vcQuGJ4D/ehZ7DhWAKNJkCmUFtgFdTPao9IOIe85/l2
-   7v/lXdql3AuJuSkFa3n48XQiVPuHfEPJeLyznUntQFIqS15fT3h1kvlLF
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="176721251"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 01:03:32 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 17 Aug 2022 01:03:23 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 01:03:18 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <lee@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH 4/5] clk: at91: sama5d2: Add Generic Clocks for UART/USART
-Date:   Wed, 17 Aug 2022 10:55:17 +0300
-Message-ID: <20220817075517.49575-5-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220817075517.49575-1-sergiu.moga@microchip.com>
-References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+        Wed, 17 Aug 2022 04:09:02 -0400
+X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 17 Aug 2022 01:08:59 PDT
+Received: from mail.fadrush.pl (mail.fadrush.pl [54.37.225.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7431A4E86F
+        for <linux-serial@vger.kernel.org>; Wed, 17 Aug 2022 01:08:59 -0700 (PDT)
+Received: by mail.fadrush.pl (Postfix, from userid 1002)
+        id BC00C22DEA; Wed, 17 Aug 2022 08:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fadrush.pl; s=mail;
+        t=1660723291; bh=bD6j9gIFU6CLTaCGl0Ow9oeIxtirvTfMeNZSfLEZQ+I=;
+        h=Date:From:To:Subject:From;
+        b=nE7O/xQcjE9wodBTaTpLmek7lwZBfmWhYOl2mh/cLoxdmfZMNPKjOYXJDKiVArEym
+         kQJK5A4SduUrMx4eNXKqI3p1hDi/WpPNVRDXyIpnGiSURwKbuitF3ABeTp9pRJ0QOJ
+         wh6SS2PUp+44EzQPf8j1sAvUicaaw5NhWD794Os7AXBCGRCZvJvK00FhEpPEAQAFwf
+         jIFjHHH95oVK1qgOhVuwrVTlF4UEWesZh5EwZvjY8ni6SsZdDO/6ub/evqtZ/1L2Zf
+         EkqYbbMYLNEqybVglJy2Qknfr//ITXsC4scpgsV9nSkJ3WK6vG8+/IEG+JQtpaoC5S
+         DsEHujCXndUkA==
+Received: by mail.fadrush.pl for <linux-serial@vger.kernel.org>; Wed, 17 Aug 2022 08:00:09 GMT
+Message-ID: <20220817064500-0.1.12.8bdh.0.44q597qipb@fadrush.pl>
+Date:   Wed, 17 Aug 2022 08:00:09 GMT
+From:   "Jakub Olejniczak" <jakub.olejniczak@fadrush.pl>
+To:     <linux-serial@vger.kernel.org>
+Subject: =?UTF-8?Q?Zwi=C4=99kszenie_p=C5=82ynno=C5=9Bci_finansowej?=
+X-Mailer: mail.fadrush.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add the generic clocks for UART/USART in the sama5d2 driver to allow them
-to be registered in the Common Clock Framework.
+Dzie=C5=84 dobry,
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- drivers/clk/at91/sama5d2.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, poniewa=C5=BC chcia=C5=82bym za=
+proponowa=C4=87 wygodne rozwi=C4=85zanie, kt=C3=B3re umo=C5=BCliwi Pa=C5=84=
+stwa firmie stabilny rozw=C3=B3j.=20
 
-diff --git a/drivers/clk/at91/sama5d2.c b/drivers/clk/at91/sama5d2.c
-index cfd0f5e23b99..84156dc52bff 100644
---- a/drivers/clk/at91/sama5d2.c
-+++ b/drivers/clk/at91/sama5d2.c
-@@ -120,6 +120,16 @@ static const struct {
- 	struct clk_range r;
- 	int chg_pid;
- } sama5d2_gck[] = {
-+	{ .n = "flx0_gclk",   .id = 19, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx1_gclk",   .id = 20, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx2_gclk",   .id = 21, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx3_gclk",   .id = 22, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx4_gclk",   .id = 23, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart0_gclk",  .id = 24, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart1_gclk",  .id = 25, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart2_gclk",  .id = 26, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart3_gclk",  .id = 27, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart4_gclk",  .id = 28, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
- 	{ .n = "sdmmc0_gclk", .id = 31, .chg_pid = INT_MIN, },
- 	{ .n = "sdmmc1_gclk", .id = 32, .chg_pid = INT_MIN, },
- 	{ .n = "tcb0_gclk",   .id = 35, .chg_pid = INT_MIN, .r = { .min = 0, .max = 83000000 }, },
--- 
-2.25.1
+Konkurencyjne otoczenie wymaga ci=C4=85g=C5=82ego ulepszania i poszerzeni=
+a oferty, co z kolei wi=C4=85=C5=BCe si=C4=99 z konieczno=C5=9Bci=C4=85 i=
+nwestowania. Brak odpowiedniego kapita=C5=82u powa=C5=BCnie ogranicza tem=
+po rozwoju firmy.
 
+Od wielu lat z powodzeniem pomagam firmom w uzyskaniu najlepszej formy fi=
+nansowania z banku oraz UE. Mam sta=C5=82ych Klient=C3=B3w, kt=C3=B3rzy n=
+adal ch=C4=99tnie korzystaj=C4=85 z moich us=C5=82ug, a tak=C5=BCe poleca=
+j=C4=85 je innym.
+
+Czy chcieliby Pa=C5=84stwo skorzysta=C4=87 z pomocy wykwalifikowanego i d=
+o=C5=9Bwiadczonego doradcy finansowego?
+
+
+Pozdrawiam
+Jakub Olejniczak
