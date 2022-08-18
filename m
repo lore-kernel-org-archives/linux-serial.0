@@ -2,85 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF1AC3F6B0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 11:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D5DC3F6B0
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 14:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244025AbiHRLvE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Aug 2022 07:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
+        id S1343522AbiHROr3 (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Aug 2022 10:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244150AbiHRLvD (ORCPT
+        with ESMTP id S245520AbiHROrX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Aug 2022 07:51:03 -0400
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0174B796BC;
-        Thu, 18 Aug 2022 04:51:02 -0700 (PDT)
-Received: by mail-qk1-f180.google.com with SMTP id j6so871221qkl.10;
-        Thu, 18 Aug 2022 04:51:01 -0700 (PDT)
+        Thu, 18 Aug 2022 10:47:23 -0400
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69885BBA43;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
+Received: by mail-qk1-f171.google.com with SMTP id b9so1263559qka.2;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=SreAxbYciiL0aFDEl5y08mJ8PU75aS88DW1FMIWLw8M=;
-        b=aSwXdjJdDhsJGVDOKh3AyktItL+o4REsb/I+EuONFBFO96eTfsmyRy7O10gRj9qz69
-         M9rkOV5C/eQyQniA7VRyQJkeJirW6tNm4sU8KAmV1VgXzqOK2qcjJLKxGp2VoAh/kwuP
-         9bvoj8+MLQKtjyCDioXrOuo7DZHqZ9Bzyu33Tp4ktxRwYNYlS373ayZTaT4A2syH2MVG
-         kP5Y6An/d+Lm+WLb/etySDMVRE4L//U9O9HpqtxOwVGxbI9ODek8OZSVO47BBwIl7DWp
-         f4lGJ1H0MMUz5b4qyDKU8S25J5t+TqFpaEHdtyWRtVu2sBjfd63Ubqn1YOncnNso/cWd
-         GnVg==
-X-Gm-Message-State: ACgBeo3FHJ4BoueDlZiEMECAaRpjbvQBrcYTKt1bcSthX9yFbcZ+tqyM
-        lZ5FdHi6WXSUXIX4l/n1qTCNrz8N+2pByA==
-X-Google-Smtp-Source: AA6agR6u03jUrekyab+QtkmzP60rsTSGFf1JKZPviDNGxHW6bLOoTyXYt00qBy1ZHoiqvY77waoVAg==
-X-Received: by 2002:a37:65c2:0:b0:6bb:2869:c183 with SMTP id z185-20020a3765c2000000b006bb2869c183mr1721563qkb.84.1660823460845;
-        Thu, 18 Aug 2022 04:51:00 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id q8-20020a05620a2a4800b006bb756ce754sm1431187qkp.55.2022.08.18.04.51.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 04:51:00 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-33365a01f29so34235107b3.2;
-        Thu, 18 Aug 2022 04:51:00 -0700 (PDT)
-X-Received: by 2002:a81:1e45:0:b0:336:bade:e0 with SMTP id e66-20020a811e45000000b00336bade00e0mr1696618ywe.358.1660823460004;
- Thu, 18 Aug 2022 04:51:00 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gdljhD4izytPCTwhmdt8DBVVfc0NydPAltPgDipKvog=;
+        b=z21x2EFoAdNeIjrz68Au7PO2e9cPtW0hiwQpPagWD378YKOU24Kiv1WLGGLpLtisUR
+         qBk1cmhmh7sPvwMU6eHzIXmgq+kg2d4NgE7GPDq+clkNTZWsKVrEkvZHry8FMONDW8J9
+         4iyi6nFbvprD/o0eEeck5HAahW/0disiGm6noXG21VzPGXb/RMwxvQ7/uVMkG85ronW6
+         8XN593sIqFSPghnVuC1jOYMbZZrT5j9/A1BN7SBDsaej93rC4JGzkUNA0qsKEi6pxiij
+         YjLgrpuureSyFZwfk1xtddwhKp4WQvLJWgZc1C3Pikmm1CUdimKmpKPNKsCyl+whQ5nd
+         Lipg==
+X-Gm-Message-State: ACgBeo3Lvc0nxCHMN1kJlXgiwEYJAiFy5FrXDoCOIJu4RxxQJadrpjOJ
+        xCzgVISjm1KCKluhLunPMw==
+X-Google-Smtp-Source: AA6agR6os7Il7llhYeMa4bR2kBtfZkcv6PCsh86UdfBNsIhRKKgO+IREW4lBHpdZzuhJU3WR6VLMIQ==
+X-Received: by 2002:a05:620a:2286:b0:6bb:5fa4:58 with SMTP id o6-20020a05620a228600b006bb5fa40058mr2241995qkh.202.1660834040446;
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:25d2:ea0d:b91c:d10a:6423:3870])
+        by smtp.gmail.com with ESMTPSA id n1-20020ac86741000000b0031eebfcb369sm1049301qtp.97.2022.08.18.07.47.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: (nullmailer pid 1843176 invoked by uid 1000);
+        Thu, 18 Aug 2022 14:47:13 -0000
+Date:   Thu, 18 Aug 2022 08:47:13 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH] MAINTAINERS: Update email of Neil Armstrong
+Message-ID: <20220818144713.GC1829017-robh@kernel.org>
+References: <20220816095617.948678-1-narmstrong@baylibre.com>
 MIME-Version: 1.0
-References: <20220726174929.950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220726174929.950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 18 Aug 2022 13:50:49 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU_jVGwc=FND4DB2d7O8ntJG4VtH3V7HR_JG9dYHc2KLg@mail.gmail.com>
-Message-ID: <CAMuHMdU_jVGwc=FND4DB2d7O8ntJG4VtH3V7HR_JG9dYHc2KLg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: renesas,scif: Document RZ/Five SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816095617.948678-1-narmstrong@baylibre.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 7:49 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> The SCIF block on the RZ/Five SoC is identical to one found on the RZ/G2UL
-> SoC. "renesas,scif-r9a07g043" compatible string will be used on the
-> RZ/Five SoC so to make this clear, update the comment to include RZ/Five
-> SoC.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Tue, Aug 16, 2022 at 11:56:17AM +0200, Neil Armstrong wrote:
+> From: Neil Armstrong <neil.armstrong@linaro.org>
+> 
+> My professional e-mail will change and the BayLibre one will
+> bounce after mid-september of 2022.
+> 
+> This updates the MAINTAINERS file, the YAML bindings and adds an
+> entry in the .mailmap file.
+> 
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> ---
+>  .mailmap                                      |  1 +
+>  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
+>  .../display/amlogic,meson-dw-hdmi.yaml        |  2 +-
+>  .../bindings/display/amlogic,meson-vpu.yaml   |  2 +-
+>  .../display/bridge/analogix,anx7814.yaml      |  2 +-
+>  .../bindings/display/bridge/ite,it66121.yaml  |  2 +-
+>  .../display/panel/sgd,gktw70sdae4se.yaml      |  2 +-
+>  .../bindings/i2c/amlogic,meson6-i2c.yaml      |  2 +-
+>  .../mailbox/amlogic,meson-gxbb-mhu.yaml       |  2 +-
+>  .../bindings/media/amlogic,axg-ge2d.yaml      |  2 +-
+>  .../bindings/media/amlogic,gx-vdec.yaml       |  2 +-
+>  .../media/amlogic,meson-gx-ao-cec.yaml        |  2 +-
+>  .../devicetree/bindings/mfd/khadas,mcu.yaml   |  2 +-
+>  .../bindings/net/amlogic,meson-dwmac.yaml     |  2 +-
+>  .../bindings/phy/amlogic,axg-mipi-dphy.yaml   |  2 +-
+>  .../phy/amlogic,meson-g12a-usb2-phy.yaml      |  2 +-
+>  .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml |  2 +-
+>  .../bindings/power/amlogic,meson-ee-pwrc.yaml |  2 +-
+>  .../bindings/reset/amlogic,meson-reset.yaml   |  2 +-
+>  .../bindings/rng/amlogic,meson-rng.yaml       |  2 +-
+>  .../bindings/serial/amlogic,meson-uart.yaml   |  2 +-
+>  .../bindings/soc/amlogic/amlogic,canvas.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson-gx-spicc.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson6-spifc.yaml    |  2 +-
+>  .../usb/amlogic,meson-g12a-usb-ctrl.yaml      |  2 +-
+>  .../watchdog/amlogic,meson-gxbb-wdt.yaml      |  2 +-
+>  MAINTAINERS                                   | 20 +++++++++----------
+>  27 files changed, 36 insertions(+), 35 deletions(-)
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Applied, thanks!
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Rob
