@@ -2,107 +2,161 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D5DC3F6B0
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 14:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F06C28B2B
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 21:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343522AbiHROr3 (ORCPT
+        id S1346518AbiHRVIJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Aug 2022 10:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
+        Thu, 18 Aug 2022 17:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245520AbiHROrX (ORCPT
+        with ESMTP id S1346244AbiHRVHb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Aug 2022 10:47:23 -0400
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69885BBA43;
-        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id b9so1263559qka.2;
-        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=gdljhD4izytPCTwhmdt8DBVVfc0NydPAltPgDipKvog=;
-        b=z21x2EFoAdNeIjrz68Au7PO2e9cPtW0hiwQpPagWD378YKOU24Kiv1WLGGLpLtisUR
-         qBk1cmhmh7sPvwMU6eHzIXmgq+kg2d4NgE7GPDq+clkNTZWsKVrEkvZHry8FMONDW8J9
-         4iyi6nFbvprD/o0eEeck5HAahW/0disiGm6noXG21VzPGXb/RMwxvQ7/uVMkG85ronW6
-         8XN593sIqFSPghnVuC1jOYMbZZrT5j9/A1BN7SBDsaej93rC4JGzkUNA0qsKEi6pxiij
-         YjLgrpuureSyFZwfk1xtddwhKp4WQvLJWgZc1C3Pikmm1CUdimKmpKPNKsCyl+whQ5nd
-         Lipg==
-X-Gm-Message-State: ACgBeo3Lvc0nxCHMN1kJlXgiwEYJAiFy5FrXDoCOIJu4RxxQJadrpjOJ
-        xCzgVISjm1KCKluhLunPMw==
-X-Google-Smtp-Source: AA6agR6os7Il7llhYeMa4bR2kBtfZkcv6PCsh86UdfBNsIhRKKgO+IREW4lBHpdZzuhJU3WR6VLMIQ==
-X-Received: by 2002:a05:620a:2286:b0:6bb:5fa4:58 with SMTP id o6-20020a05620a228600b006bb5fa40058mr2241995qkh.202.1660834040446;
-        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:25d2:ea0d:b91c:d10a:6423:3870])
-        by smtp.gmail.com with ESMTPSA id n1-20020ac86741000000b0031eebfcb369sm1049301qtp.97.2022.08.18.07.47.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
-Received: (nullmailer pid 1843176 invoked by uid 1000);
-        Thu, 18 Aug 2022 14:47:13 -0000
-Date:   Thu, 18 Aug 2022 08:47:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        Neil Armstrong <neil.armstrong@linaro.org>
-Subject: Re: [PATCH] MAINTAINERS: Update email of Neil Armstrong
-Message-ID: <20220818144713.GC1829017-robh@kernel.org>
-References: <20220816095617.948678-1-narmstrong@baylibre.com>
+        Thu, 18 Aug 2022 17:07:31 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E9C659F6
+        for <linux-serial@vger.kernel.org>; Thu, 18 Aug 2022 14:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=5u5k4vzlov+GUrj+0PwOSdEzosh
+        g8bGFzvUgPqOtae0=; b=BNaD9E04oGprhC6A1g29ULmFRfHirfZ4swMOgxVvqYz
+        r++eldM5QvJNnrqvQqh8/yh7oW1/tIiJIWW8DxtV+J7ygu9OKrmK5JeXKlcZfBNi
+        Ly7kaYu19vzx5nZNwRVlOMq2G/Sn9lXMB2AWFhH1qDAwH5yRIe49k0nYbrc8Cr/U
+        =
+Received: (qmail 3961618 invoked from network); 18 Aug 2022 23:01:13 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:01:13 +0200
+X-UD-Smtp-Session: l3s3148p1@P6MbSIrm6dgucref
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH] tty: move from strlcpy with unused retval to strscpy
+Date:   Thu, 18 Aug 2022 23:01:12 +0200
+Message-Id: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816095617.948678-1-narmstrong@baylibre.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 11:56:17AM +0200, Neil Armstrong wrote:
-> From: Neil Armstrong <neil.armstrong@linaro.org>
-> 
-> My professional e-mail will change and the BayLibre one will
-> bounce after mid-september of 2022.
-> 
-> This updates the MAINTAINERS file, the YAML bindings and adds an
-> entry in the .mailmap file.
-> 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
->  .mailmap                                      |  1 +
->  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
->  .../display/amlogic,meson-dw-hdmi.yaml        |  2 +-
->  .../bindings/display/amlogic,meson-vpu.yaml   |  2 +-
->  .../display/bridge/analogix,anx7814.yaml      |  2 +-
->  .../bindings/display/bridge/ite,it66121.yaml  |  2 +-
->  .../display/panel/sgd,gktw70sdae4se.yaml      |  2 +-
->  .../bindings/i2c/amlogic,meson6-i2c.yaml      |  2 +-
->  .../mailbox/amlogic,meson-gxbb-mhu.yaml       |  2 +-
->  .../bindings/media/amlogic,axg-ge2d.yaml      |  2 +-
->  .../bindings/media/amlogic,gx-vdec.yaml       |  2 +-
->  .../media/amlogic,meson-gx-ao-cec.yaml        |  2 +-
->  .../devicetree/bindings/mfd/khadas,mcu.yaml   |  2 +-
->  .../bindings/net/amlogic,meson-dwmac.yaml     |  2 +-
->  .../bindings/phy/amlogic,axg-mipi-dphy.yaml   |  2 +-
->  .../phy/amlogic,meson-g12a-usb2-phy.yaml      |  2 +-
->  .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml |  2 +-
->  .../bindings/power/amlogic,meson-ee-pwrc.yaml |  2 +-
->  .../bindings/reset/amlogic,meson-reset.yaml   |  2 +-
->  .../bindings/rng/amlogic,meson-rng.yaml       |  2 +-
->  .../bindings/serial/amlogic,meson-uart.yaml   |  2 +-
->  .../bindings/soc/amlogic/amlogic,canvas.yaml  |  2 +-
->  .../bindings/spi/amlogic,meson-gx-spicc.yaml  |  2 +-
->  .../bindings/spi/amlogic,meson6-spifc.yaml    |  2 +-
->  .../usb/amlogic,meson-g12a-usb-ctrl.yaml      |  2 +-
->  .../watchdog/amlogic,meson-gxbb-wdt.yaml      |  2 +-
->  MAINTAINERS                                   | 20 +++++++++----------
->  27 files changed, 36 insertions(+), 35 deletions(-)
+Follow the advice of the below link and prefer 'strscpy' in this
+subsystem. Conversion is 1:1 because the return value is not used.
+Generated by a coccinelle script.
 
-Applied, thanks!
+Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ drivers/tty/hvc/hvcs.c           | 2 +-
+ drivers/tty/serial/earlycon.c    | 6 +++---
+ drivers/tty/serial/serial_core.c | 2 +-
+ drivers/tty/serial/sunsu.c       | 6 +++---
+ drivers/tty/serial/sunzilog.c    | 6 +++---
+ 5 files changed, 11 insertions(+), 11 deletions(-)
 
-Rob
+diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+index 9b7e8246a464..b79ce8d34f11 100644
+--- a/drivers/tty/hvc/hvcs.c
++++ b/drivers/tty/hvc/hvcs.c
+@@ -839,7 +839,7 @@ static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
+ 	hvcsd->p_partition_ID  = pi->partition_ID;
+ 
+ 	/* copy the null-term char too */
+-	strlcpy(hvcsd->p_location_code, pi->location_code,
++	strscpy(hvcsd->p_location_code, pi->location_code,
+ 		sizeof(hvcsd->p_location_code));
+ }
+ 
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 88d08ba1ca83..a5f380584cda 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -67,7 +67,7 @@ static void __init earlycon_init(struct earlycon_device *device,
+ 	if (*s)
+ 		earlycon->index = simple_strtoul(s, NULL, 10);
+ 	len = s - name;
+-	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
++	strscpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+ 	earlycon->data = &early_console_dev;
+ }
+ 
+@@ -123,7 +123,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+ 		device->baud = simple_strtoul(options, NULL, 0);
+ 		length = min(strcspn(options, " ") + 1,
+ 			     (size_t)(sizeof(device->options)));
+-		strlcpy(device->options, options, length);
++		strscpy(device->options, options, length);
+ 	}
+ 
+ 	return 0;
+@@ -304,7 +304,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 
+ 	if (options) {
+ 		early_console_dev.baud = simple_strtoul(options, NULL, 0);
+-		strlcpy(early_console_dev.options, options,
++		strscpy(early_console_dev.options, options,
+ 			sizeof(early_console_dev.options));
+ 	}
+ 	earlycon_init(&early_console_dev, match->name);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 12c87cd201a7..3561a160cbd5 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2497,7 +2497,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+ 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
+ 		break;
+ 	default:
+-		strlcpy(address, "*unknown*", sizeof(address));
++		strscpy(address, "*unknown*", sizeof(address));
+ 		break;
+ 	}
+ 
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 84d545e5a8c7..d5dcb612804e 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1217,13 +1217,13 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
+ 	serio->id.type = SERIO_RS232;
+ 	if (up->su_type == SU_PORT_KBD) {
+ 		serio->id.proto = SERIO_SUNKBD;
+-		strlcpy(serio->name, "sukbd", sizeof(serio->name));
++		strscpy(serio->name, "sukbd", sizeof(serio->name));
+ 	} else {
+ 		serio->id.proto = SERIO_SUN;
+ 		serio->id.extra = 1;
+-		strlcpy(serio->name, "sums", sizeof(serio->name));
++		strscpy(serio->name, "sums", sizeof(serio->name));
+ 	}
+-	strlcpy(serio->phys,
++	strscpy(serio->phys,
+ 		(!(up->port.line & 1) ? "su/serio0" : "su/serio1"),
+ 		sizeof(serio->phys));
+ 
+diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
+index c14275d83b0b..c44cf613ff1a 100644
+--- a/drivers/tty/serial/sunzilog.c
++++ b/drivers/tty/serial/sunzilog.c
+@@ -1307,13 +1307,13 @@ static void sunzilog_register_serio(struct uart_sunzilog_port *up)
+ 	serio->id.type = SERIO_RS232;
+ 	if (up->flags & SUNZILOG_FLAG_CONS_KEYB) {
+ 		serio->id.proto = SERIO_SUNKBD;
+-		strlcpy(serio->name, "zskbd", sizeof(serio->name));
++		strscpy(serio->name, "zskbd", sizeof(serio->name));
+ 	} else {
+ 		serio->id.proto = SERIO_SUN;
+ 		serio->id.extra = 1;
+-		strlcpy(serio->name, "zsms", sizeof(serio->name));
++		strscpy(serio->name, "zsms", sizeof(serio->name));
+ 	}
+-	strlcpy(serio->phys,
++	strscpy(serio->phys,
+ 		((up->flags & SUNZILOG_FLAG_CONS_KEYB) ?
+ 		 "zs/serio0" : "zs/serio1"),
+ 		sizeof(serio->phys));
+-- 
+2.35.1
+
