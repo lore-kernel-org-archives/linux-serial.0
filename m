@@ -2,148 +2,107 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170A9C00140
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 07:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7F5C00140
+	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 08:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbiHRHS7 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Aug 2022 03:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        id S241591AbiHRIbp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Aug 2022 04:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233020AbiHRHS6 (ORCPT
+        with ESMTP id S240785AbiHRIbn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Aug 2022 03:18:58 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F968C006;
-        Thu, 18 Aug 2022 00:18:57 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id a4so523958qto.10;
-        Thu, 18 Aug 2022 00:18:57 -0700 (PDT)
+        Thu, 18 Aug 2022 04:31:43 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AB38C00A
+        for <linux-serial@vger.kernel.org>; Thu, 18 Aug 2022 01:31:41 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id w5so1220971lfq.5
+        for <linux-serial@vger.kernel.org>; Thu, 18 Aug 2022 01:31:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=96Fu9Q82W8bT1rRZfU++c0oI3k3yt63UqY8b1dg1TC4=;
-        b=cYYb/lMWH/blELa8K53woeD9hnWX1+Q2w5sN4+kUmjcGV2L548qGYZkS4vX2OfWi5l
-         YC3EQeB1qEcQSJ8QQW6yGqrApPjz3FIggbVc4SNKEa8/yf6SE+HMRmZ4fykGRMvu3mqb
-         4Iy8j9xtN3sjmNFN4+em9yRL6C9UyIj7LYFmfETByjnqP+fu/R7pMY3qZ47lPvhMTXcD
-         4draO15r1OoLAcRAcKwL0jEq+T/6pc3zHLvaIRcRX+IeuduC3SCFkcmMzCGg/T27HzrE
-         rQSGG32K7LGnWCy/fi+qTqjQqZjXfS6hfvq50GQu05FeTtAFoitzULXfRSgFqlC+v9vv
-         sjAw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=+AYPEavLhHjc8NjLvs2dPmTNTkd/CClCaa85BTp1bjY=;
+        b=STFobP21Yf2PS4rMrkrrI1sUpvSs479ohgcZAloOUX2+29lmRpHvnoKRozLgY8Ad4Q
+         aiWmAQbPCyFB18jyBhZs/wvxpouI7EfXvY9QWLqMilE33HTFMFEwmvjMWS5dEj2Veu8T
+         PhCSZVEijtHF0t3bMsBPGBmMbm5631aFxu+Kov7KCEo5LCI39jgo9Nsw6jOWCqAYCZVR
+         140b0tmSgLrB1BClwsCeVREqpChu1a883q80Fg+91UPcYTDbtGqW7bf03ANXbtgFl1vV
+         hc8EPuYMOCVWmyJObWXiqaWZyI+ObhZXSk5L7bf2EVy4hptRFSCq8NmvJDrZ6vqi6jOh
+         qoXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=96Fu9Q82W8bT1rRZfU++c0oI3k3yt63UqY8b1dg1TC4=;
-        b=CuVhyaze+p1QNphJB8LeQGLRf/SFFwhyxCmEISQsBNApik0hTV7AXU/42SxReIZ/Em
-         T31FBYdxYFk+gy0ExZOZlHwUjebMLsBA1x6LUhl8q2gooVQUDxYgs89a9ZIcp5JCA4Yk
-         2XHYYrcR4B7dk6/uVkNc1oMjz6ugBf669QO4Qc49HnGv39fdA3Begs47cenU4U5YsvFd
-         S56oFWXLAYd15fv6FRQpjMZG+zrirxzylNpmyR0GbNfosJcD4Ohs5W9kH9zfvxKgN1kG
-         dB+y39bACPgWl8AZMLqLeNzJFmrxFippf6TCPILtjXB15fxxmXI4NpWwK33HID9Y3+wv
-         vT5g==
-X-Gm-Message-State: ACgBeo1iTNViWLNgi/M/V7wbSQP9ODkTP/iS30SoR4ecgJxika5U6wgc
-        T7sca26v5Xzm+wSMHBJYFSM2dsHshnmzwETrIPK7dPveJ5A=
-X-Google-Smtp-Source: AA6agR586pCiTcqAZLaiIIfQjJOw4iAtAbXVHmGEmsT1yb5p+b1J4ukXq0N04Yfc/N3LB53JJjPWjLFBdXWEKhqI/BU=
-X-Received: by 2002:a05:622a:14cf:b0:343:5b6:68ca with SMTP id
- u15-20020a05622a14cf00b0034305b668camr1451554qtx.195.1660807136374; Thu, 18
- Aug 2022 00:18:56 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+AYPEavLhHjc8NjLvs2dPmTNTkd/CClCaa85BTp1bjY=;
+        b=x49+gYZuv++r7cjbFdVDbQD9tzXz0m8BpqP5pimJWXyVQ3daj8eA3SOr+N5PtW4CPt
+         oBYeTwDFrgOiajWM3iWOipVa/gzI9kegl+6ADcZaMebA3KP2pzU6pWEl9fpGgF8Ix0d5
+         7Z/3OFai2Z7BVZfNxzHleqWqZAaCQyrpsPgxloB133yGIxUHm4/iSX0Nyur2rKeVxijS
+         MaOdbW9yLV78MHjiYVm7HDS3iysJY/P4DCE5vwx5HQVrNikOGp76062HFVCRzv4mKlYx
+         L+6wLMuCuz9tDDY/DAhEYmIM2lv8wERIXqAUgl2zwDjmKXI6b1ox6CKuoMBbYLzRM02p
+         7wBQ==
+X-Gm-Message-State: ACgBeo0TDxZ2OtdSVqxpWJV2Tgb7GAEmNZYJwtiaaRdKZ+GM7fFNA8nQ
+        8ZgIQMVyhV8PtJtSNI8qS6Z9iw==
+X-Google-Smtp-Source: AA6agR5X7kpcMjGLMeLZIEZPXs6j4sMZGb7uMlfWVX7VavZBdDerNtf9zWUanDu7lBUtNOuVQzN/iA==
+X-Received: by 2002:a05:6512:118a:b0:492:a32d:3678 with SMTP id g10-20020a056512118a00b00492a32d3678mr575248lfr.259.1660811499593;
+        Thu, 18 Aug 2022 01:31:39 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:ae:539c:53ab:2635:d4f2:d6d5? (d15l54z9nf469l8226z-4.rev.dnainternet.fi. [2001:14bb:ae:539c:53ab:2635:d4f2:d6d5])
+        by smtp.gmail.com with ESMTPSA id e24-20020a2e9e18000000b0025e48907929sm134615ljk.23.2022.08.18.01.31.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 01:31:39 -0700 (PDT)
+Message-ID: <6741e694-1400-bf76-b0f2-67a42c43edd0@linaro.org>
+Date:   Thu, 18 Aug 2022 11:31:37 +0300
 MIME-Version: 1.0
-References: <20220816120759.11552-1-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220816120759.11552-1-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 18 Aug 2022 10:18:19 +0300
-Message-ID: <CAHp75Vf-2daFdRiB_ZqA6QshaEO5iLn-XQn8fBENZoCkkf_nKA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] serial: 8250: Add helper for clearing IER
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/5] dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI
+ child node ref binding
+Content-Language: en-US
+To:     Sergiu Moga <sergiu.moga@microchip.com>, lee@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, radu_nicolae.pirea@upb.ro,
+        richard.genoud@gmail.com, mturquette@baylibre.com,
+        sboyd@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        admin@hifiphile.com, kavyasree.kotagiri@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20220817075517.49575-1-sergiu.moga@microchip.com>
+ <20220817075517.49575-2-sergiu.moga@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220817075517.49575-2-sergiu.moga@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 3:14 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> A number of places want to clear IER with the same CAP_UUE trick.
-> Create a helper for that.
-
-No objections,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+On 17/08/2022 10:55, Sergiu Moga wrote:
+> Another functionality of FLEXCOM is that of SPI. In order for
+> the proper validation of the SPI children nodes through the binding
+> to occur, the proper binding for SPI must be referenced.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 24 +++++++++++-------------
->  1 file changed, 11 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 39b35a61958c..25e4761e3c57 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -752,6 +752,14 @@ static void serial8250_set_sleep(struct uart_8250_po=
-rt *p, int sleep)
->         serial8250_rpm_put(p);
->  }
->
-> +static void serial8250_clear_IER(struct uart_8250_port *up)
-> +{
-> +       if (up->capabilities & UART_CAP_UUE)
-> +               serial_out(up, UART_IER, UART_IER_UUE);
-> +       else
-> +               serial_out(up, UART_IER, 0);
-> +}
-> +
->  #ifdef CONFIG_SERIAL_8250_RSA
->  /*
->   * Attempts to turn on the RSA FIFO.  Returns zero on failure.
-> @@ -1329,10 +1337,7 @@ static void autoconfig(struct uart_8250_port *up)
->         serial8250_out_MCR(up, save_mcr);
->         serial8250_clear_fifos(up);
->         serial_in(up, UART_RX);
-> -       if (up->capabilities & UART_CAP_UUE)
-> -               serial_out(up, UART_IER, UART_IER_UUE);
-> -       else
-> -               serial_out(up, UART_IER, 0);
-> +       serial8250_clear_IER(up);
->
->  out_unlock:
->         spin_unlock_irqrestore(&port->lock, flags);
-> @@ -2142,10 +2147,7 @@ static void serial8250_put_poll_char(struct uart_p=
-ort *port,
->          *      First save the IER then disable the interrupts
->          */
->         ier =3D serial_port_in(port, UART_IER);
-> -       if (up->capabilities & UART_CAP_UUE)
-> -               serial_port_out(port, UART_IER, UART_IER_UUE);
-> -       else
-> -               serial_port_out(port, UART_IER, 0);
-> +       serial8250_clear_IER(up);
->
->         wait_for_xmitr(up, UART_LSR_BOTH_EMPTY);
->         /*
-> @@ -3383,11 +3385,7 @@ void serial8250_console_write(struct uart_8250_por=
-t *up, const char *s,
->          *      First save the IER then disable the interrupts
->          */
->         ier =3D serial_port_in(port, UART_IER);
-> -
-> -       if (up->capabilities & UART_CAP_UUE)
-> -               serial_port_out(port, UART_IER, UART_IER_UUE);
-> -       else
-> -               serial_port_out(port, UART_IER, 0);
-> +       serial8250_clear_IER(up);
->
->         /* check scratch reg to see if port powered off during system sle=
-ep */
->         if (up->canary && (up->canary !=3D serial_port_in(port, UART_SCR)=
-)) {
-> --
-> 2.30.2
->
+>  .../devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml       | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> index 568da7cb630c..e158af47c326 100644
+> --- a/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> @@ -78,10 +78,9 @@ patternProperties:
+>        of USART bindings.
+>  
+>    "^spi@[0-9a-f]+$":
+> -    type: object
+> +    $ref: ../spi/atmel,at91rm9200-spi.yaml
+
+Full schemas path, so:
+
+/schemas/spi/atmel....
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+Best regards,
+Krzysztof
