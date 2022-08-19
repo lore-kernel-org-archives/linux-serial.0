@@ -2,161 +2,196 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F06C28B2B
-	for <linux-serial@archiver.kernel.org>; Thu, 18 Aug 2022 21:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0122FC00140
+	for <linux-serial@archiver.kernel.org>; Fri, 19 Aug 2022 02:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346518AbiHRVIJ (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 18 Aug 2022 17:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
+        id S243729AbiHSC7a (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 18 Aug 2022 22:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346244AbiHRVHb (ORCPT
+        with ESMTP id S241692AbiHSC73 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 18 Aug 2022 17:07:31 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E9C659F6
-        for <linux-serial@vger.kernel.org>; Thu, 18 Aug 2022 14:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=5u5k4vzlov+GUrj+0PwOSdEzosh
-        g8bGFzvUgPqOtae0=; b=BNaD9E04oGprhC6A1g29ULmFRfHirfZ4swMOgxVvqYz
-        r++eldM5QvJNnrqvQqh8/yh7oW1/tIiJIWW8DxtV+J7ygu9OKrmK5JeXKlcZfBNi
-        Ly7kaYu19vzx5nZNwRVlOMq2G/Sn9lXMB2AWFhH1qDAwH5yRIe49k0nYbrc8Cr/U
-        =
-Received: (qmail 3961618 invoked from network); 18 Aug 2022 23:01:13 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:01:13 +0200
-X-UD-Smtp-Session: l3s3148p1@P6MbSIrm6dgucref
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        sparclinux@vger.kernel.org
-Subject: [PATCH] tty: move from strlcpy with unused retval to strscpy
-Date:   Thu, 18 Aug 2022 23:01:12 +0200
-Message-Id: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 18 Aug 2022 22:59:29 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15529D2774
+        for <linux-serial@vger.kernel.org>; Thu, 18 Aug 2022 19:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660877969; x=1692413969;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=20JSDe1RS+Eq7MkEfdAwatpnj47MqIHb2gbCbOepvtA=;
+  b=Hrh29msjqgw3da7ozzga6ifTADJXUDf9hhbyTnTf5Ke64JK3s26IILqm
+   tu0b1BGByttRioqyV3qtH2ftSlxWvpB0auXHURfEjwzrXk+FdxAitkkiD
+   mjTrkx9Gf7BdmJI8dH2fv4oA8dp91sqspWB0k9/vLqJKWf5nad/U8sFtL
+   3YmsAg/D7JVhYMEm/daJOYUWWpPbjOim5uHEzABeLci45ClNJSVRH4cdN
+   y48daaFdyBIhlaoldLa+XayCeIkwwtlKU9Ey4J2L0+0WFMWI8js/EMgbY
+   HSvrHuiU/dqqxMO81lA37X7rRsloMIH/RVfZMrZ/GjK6MNfzK457+xgMS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="354662582"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="354662582"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 19:59:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="608054023"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 18 Aug 2022 19:59:27 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOsEI-0000zk-2I;
+        Fri, 19 Aug 2022 02:59:26 +0000
+Date:   Fri, 19 Aug 2022 10:58:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ b5a5b9d5f28d23b84f06b45c61dcad95b07d41bc
+Message-ID: <62fefc5e.MA8EtQsWo7nkim1+%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Follow the advice of the below link and prefer 'strscpy' in this
-subsystem. Conversion is 1:1 because the return value is not used.
-Generated by a coccinelle script.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: b5a5b9d5f28d23b84f06b45c61dcad95b07d41bc  serial: document start_rx member at struct uart_ops
 
-Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- drivers/tty/hvc/hvcs.c           | 2 +-
- drivers/tty/serial/earlycon.c    | 6 +++---
- drivers/tty/serial/serial_core.c | 2 +-
- drivers/tty/serial/sunsu.c       | 6 +++---
- drivers/tty/serial/sunzilog.c    | 6 +++---
- 5 files changed, 11 insertions(+), 11 deletions(-)
+elapsed time: 723m
 
-diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-index 9b7e8246a464..b79ce8d34f11 100644
---- a/drivers/tty/hvc/hvcs.c
-+++ b/drivers/tty/hvc/hvcs.c
-@@ -839,7 +839,7 @@ static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
- 	hvcsd->p_partition_ID  = pi->partition_ID;
- 
- 	/* copy the null-term char too */
--	strlcpy(hvcsd->p_location_code, pi->location_code,
-+	strscpy(hvcsd->p_location_code, pi->location_code,
- 		sizeof(hvcsd->p_location_code));
- }
- 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 88d08ba1ca83..a5f380584cda 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -67,7 +67,7 @@ static void __init earlycon_init(struct earlycon_device *device,
- 	if (*s)
- 		earlycon->index = simple_strtoul(s, NULL, 10);
- 	len = s - name;
--	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
-+	strscpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
- 	earlycon->data = &early_console_dev;
- }
- 
-@@ -123,7 +123,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
- 		device->baud = simple_strtoul(options, NULL, 0);
- 		length = min(strcspn(options, " ") + 1,
- 			     (size_t)(sizeof(device->options)));
--		strlcpy(device->options, options, length);
-+		strscpy(device->options, options, length);
- 	}
- 
- 	return 0;
-@@ -304,7 +304,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- 
- 	if (options) {
- 		early_console_dev.baud = simple_strtoul(options, NULL, 0);
--		strlcpy(early_console_dev.options, options,
-+		strscpy(early_console_dev.options, options,
- 			sizeof(early_console_dev.options));
- 	}
- 	earlycon_init(&early_console_dev, match->name);
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 12c87cd201a7..3561a160cbd5 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2497,7 +2497,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
- 			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
- 		break;
- 	default:
--		strlcpy(address, "*unknown*", sizeof(address));
-+		strscpy(address, "*unknown*", sizeof(address));
- 		break;
- 	}
- 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 84d545e5a8c7..d5dcb612804e 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1217,13 +1217,13 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
- 	serio->id.type = SERIO_RS232;
- 	if (up->su_type == SU_PORT_KBD) {
- 		serio->id.proto = SERIO_SUNKBD;
--		strlcpy(serio->name, "sukbd", sizeof(serio->name));
-+		strscpy(serio->name, "sukbd", sizeof(serio->name));
- 	} else {
- 		serio->id.proto = SERIO_SUN;
- 		serio->id.extra = 1;
--		strlcpy(serio->name, "sums", sizeof(serio->name));
-+		strscpy(serio->name, "sums", sizeof(serio->name));
- 	}
--	strlcpy(serio->phys,
-+	strscpy(serio->phys,
- 		(!(up->port.line & 1) ? "su/serio0" : "su/serio1"),
- 		sizeof(serio->phys));
- 
-diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-index c14275d83b0b..c44cf613ff1a 100644
---- a/drivers/tty/serial/sunzilog.c
-+++ b/drivers/tty/serial/sunzilog.c
-@@ -1307,13 +1307,13 @@ static void sunzilog_register_serio(struct uart_sunzilog_port *up)
- 	serio->id.type = SERIO_RS232;
- 	if (up->flags & SUNZILOG_FLAG_CONS_KEYB) {
- 		serio->id.proto = SERIO_SUNKBD;
--		strlcpy(serio->name, "zskbd", sizeof(serio->name));
-+		strscpy(serio->name, "zskbd", sizeof(serio->name));
- 	} else {
- 		serio->id.proto = SERIO_SUN;
- 		serio->id.extra = 1;
--		strlcpy(serio->name, "zsms", sizeof(serio->name));
-+		strscpy(serio->name, "zsms", sizeof(serio->name));
- 	}
--	strlcpy(serio->phys,
-+	strscpy(serio->phys,
- 		((up->flags & SUNZILOG_FLAG_CONS_KEYB) ?
- 		 "zs/serio0" : "zs/serio1"),
- 		sizeof(serio->phys));
+configs tested: 119
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+um                           x86_64_defconfig
+um                             i386_defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+x86_64                           rhel-8.3-kvm
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+riscv                randconfig-r042-20220818
+s390                 randconfig-r044-20220818
+arc                  randconfig-r043-20220818
+mips                      loongson3_defconfig
+sh                          polaris_defconfig
+arc                          axs103_defconfig
+powerpc                       maple_defconfig
+sh                        edosk7705_defconfig
+i386                             allyesconfig
+i386                                defconfig
+powerpc                         wii_defconfig
+sh                               j2_defconfig
+mips                  decstation_64_defconfig
+powerpc                      cm5200_defconfig
+mips                            gpr_defconfig
+sh                   rts7751r2dplus_defconfig
+sh                                  defconfig
+sh                               alldefconfig
+arm                           sunxi_defconfig
+arc                 nsimosci_hs_smp_defconfig
+loongarch                        alldefconfig
+m68k                                defconfig
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+loongarch                           defconfig
+loongarch                         allnoconfig
+um                                  defconfig
+ia64                             alldefconfig
+arm                            mps2_defconfig
+sparc                             allnoconfig
+m68k                         amcore_defconfig
+xtensa                              defconfig
+ia64                                defconfig
+arm                           sama5_defconfig
+sparc                       sparc64_defconfig
+m68k                        m5307c3_defconfig
+i386                          randconfig-c001
+m68k                           sun3_defconfig
+sh                           sh2007_defconfig
+arm                          gemini_defconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+arm64                               defconfig
+m68k                          hp300_defconfig
+sh                          landisk_defconfig
+openrisc                       virt_defconfig
+arm                          pxa910_defconfig
+sh                        apsh4ad0a_defconfig
+arm                            pleb_defconfig
+parisc                generic-64bit_defconfig
+sh                          rsk7201_defconfig
+mips                         db1xxx_defconfig
+mips                       bmips_be_defconfig
+arm                        clps711x_defconfig
+arm                      footbridge_defconfig
+arm                            qcom_defconfig
+nios2                            allyesconfig
+nios2                               defconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+arm                        realview_defconfig
+arm                        keystone_defconfig
+arm                             ezx_defconfig
+xtensa                  audio_kc705_defconfig
+
+clang tested configs:
+hexagon              randconfig-r045-20220818
+hexagon              randconfig-r041-20220818
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+mips                          ath25_defconfig
+powerpc                          allmodconfig
+mips                        omega2p_defconfig
+arm                             mxs_defconfig
+x86_64                        randconfig-k001
+arm                  colibri_pxa270_defconfig
+hexagon                             defconfig
+arm                         bcm2835_defconfig
+arm                         s5pv210_defconfig
+arm                         shannon_defconfig
+riscv                randconfig-r042-20220819
+s390                 randconfig-r044-20220819
+hexagon              randconfig-r045-20220819
+hexagon              randconfig-r041-20220819
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
