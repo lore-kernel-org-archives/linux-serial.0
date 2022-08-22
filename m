@@ -2,100 +2,63 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C75BC28D13
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 14:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7AEC28D13
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 14:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235637AbiHVOL1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S235133AbiHVOZW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235667AbiHVOL0 (ORCPT
+        with ESMTP id S231395AbiHVOZV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:11:26 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73B133E2A;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id w13so4388565pgq.7;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
-        b=bphPJ9HNniChNozFrr8pN3OyWuoEb0pXuMv2UiJ0i+iBLZzhawlJHDZRkhECE4YNRk
-         ZuuvFb/T8k2Ul/mSmo3vLbqKo/o7QHfSCSXrKXurOnL5AEribeJAX9XKncFDzmmhfe/e
-         lssIcPM5I1Utx9D+nI3KVKZ1bWHdAx4FsW8l6A1k48LMbW+Ji6dH67g5DKF2S9rXJted
-         8P8yYeSPTNmXm9qoazNSrjLOr8gazh7WRUGI7DEDU58LIi+HMy4ajgou0wG1ZkW+9tut
-         x0PsilyPTvamDP9z8HJjabhd+bioVKOwnNbrKagLIZVvTx9ou5yq2lLkH8dfa8pdmlXX
-         fBlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
-        b=DxEpcfoe04PxzC+aElqQW2IWaBmS2V9nafXl2xj16lmfNkxOWlzt/99ftVbHnl0abc
-         PZV9IZnHrHiPbqv9DBGWxdXzOzq1zfHko6S/6GKzSNM6aUtg7wffiPvmcD5MuTSAnX2/
-         j5gBxbJu9uYRF1Y8//Vdeg5bZJJMwahz2wOb6A896HDtlODIiHulS8EP8Dg4731P8Ob1
-         4n6CwFUcEn52PKQv1yxc5oQQOJag+1paOYcvVaml21cjMJCPWXWTt75aNGWb8dPiZKrW
-         Wr9LdxK3dkeGMOE/2/B4Iv7Wo2gi8Mvo+Qt/Kc4v6CzLOeShDHKgn3AHrBhWzwjiawi/
-         Wbnw==
-X-Gm-Message-State: ACgBeo0cv80xFLz20MWCVv3bpuWISXACKjxZ3goreBPgFgiT3uL2v1Du
-        rcJjeLABxfLjjrxI7hNgBkwCi1pDG+2vFOgt7VE=
-X-Google-Smtp-Source: AA6agR6adpyvp+DDP9uK/VhDoIlFGyKFzKJohwDSBAIOeH9QK3/ZoHCTz84zb/mdVjiQ1SJPy+2DVw==
-X-Received: by 2002:a05:6a00:1402:b0:536:bf1c:3d16 with SMTP id l2-20020a056a00140200b00536bf1c3d16mr3320102pfu.20.1661177484185;
-        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
-Received: from localhost.localdomain ([182.160.5.243])
-        by smtp.gmail.com with ESMTPSA id r17-20020aa79631000000b00535d3caa66fsm3099167pfg.197.2022.08.22.07.11.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 07:11:23 -0700 (PDT)
-From:   Tuo Cao <91tuocao@gmail.com>
-To:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        91tuocao@gmail.com
-Subject: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to spin_lock in interrupt handler
-Date:   Mon, 22 Aug 2022 22:11:10 +0800
-Message-Id: <20220822141110.17199-1-91tuocao@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 22 Aug 2022 10:25:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AF72B626;
+        Mon, 22 Aug 2022 07:25:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B146FB81215;
+        Mon, 22 Aug 2022 14:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A414C433C1;
+        Mon, 22 Aug 2022 14:25:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661178318;
+        bh=pNi1D6IsPfHbA4OaT5X8Z2eDmluRjMaicFJaFUgPQOA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FoaknaEu1jH9/lxfYGieRE7NsDFaHCXIMDLgAmZPG8ysnwE+8Zpzo0TataGNMPMrY
+         3jzeDgI3TbsNSxPAGN2vFMsQu6PYgGMPAqWf/F0j1ChoobzMlLmNdLouZnbTzU6xcg
+         BVTF00hiznXj3eqOMP8FpckNdl6WqQ6oRNfhJ9xc=
+Date:   Mon, 22 Aug 2022 16:25:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tuo Cao <91tuocao@gmail.com>
+Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
+ spin_lock in interrupt handler
+Message-ID: <YwORy3QMbRUSlBZE@kroah.com>
+References: <20220822141110.17199-1-91tuocao@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822141110.17199-1-91tuocao@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-it is unnecessary to call spin_lock_irqsave in a interrupt handler.
+On Mon, Aug 22, 2022 at 10:11:10PM +0800, Tuo Cao wrote:
+> it is unnecessary to call spin_lock_irqsave in a interrupt handler.
 
-Signed-off-by: Tuo Cao <91tuocao@gmail.com>
----
- drivers/tty/serial/8250/8250_bcm7271.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Yes, but it is safer to do so, right?
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 8efdc271eb75..fb525c435723 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -560,7 +560,6 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	struct uart_port *up = dev_id;
- 	struct device *dev = up->dev;
- 	struct brcmuart_priv *priv = up->private_data;
--	unsigned long flags;
- 	u32 interrupts;
- 	u32 rval;
- 	u32 tval;
-@@ -569,7 +568,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if (interrupts == 0)
- 		return IRQ_NONE;
- 
--	spin_lock_irqsave(&up->lock, flags);
-+	spin_lock(&up->lock);
- 
- 	/* Clear all interrupts */
- 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
-@@ -583,7 +582,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
- 	if ((rval | tval) == 0)
- 		dev_warn(dev, "Spurious interrupt: 0x%x\n", interrupts);
- 
--	spin_unlock_irqrestore(&up->lock, flags);
-+	spin_unlock(&up->lock);
- 	return IRQ_HANDLED;
- }
- 
--- 
-2.17.1
+Why is this change needed?
 
+Did you test it on real hardware to verify it works?
+
+We need a lot more information in the changelog text before being able
+to accept this.
+
+thanks,
+
+greg k-h
