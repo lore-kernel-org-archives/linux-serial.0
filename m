@@ -2,137 +2,206 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109F9C00140
-	for <linux-serial@archiver.kernel.org>; Sun, 21 Aug 2022 10:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60902C32789
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 07:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiHUKQi (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 21 Aug 2022 06:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S233120AbiHVHYN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Aug 2022 03:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiHUKQg (ORCPT
+        with ESMTP id S229782AbiHVHYM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 21 Aug 2022 06:16:36 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70048.outbound.protection.outlook.com [40.107.7.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1946F120B0;
-        Sun, 21 Aug 2022 03:16:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hj3SYMmsdCTTvfVbkeQRhr1iuvTa1ml0MUhxMGksroSUeceuWS4ai2VGT4Wl8S+M1s0anZWzd5sFM/MPEaLyIXWJm6kV+NYo4f/I5vAlazuI6urLlRBH6pBV0/zPZWXg+i0+k15H1BdtGLWUfv+sidvM8prR5bpKiO1UNRIuBclSNSx6ADZD/e80wL7M79pirYJuz30CuuMBTR/FD5cMAG9kR0aioqIvpZn329UoNkgtUFiqvh/OUpaopuEZ4cihuaeDAYCIiU5uGTWQuHCEtggIU/J6MLuETgRW0xbgjoN1DvXM16AIeMV8CS/qgU/cGZchWPzwZM8UnVAZ4Avkqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sh8V9SfX8ZnIH1WS76ORFoVHS+aWdB7VGEaN+jy6mXA=;
- b=UCfhGEyJ00h6WI3yU0V9+YSBiaVLBIfEYu+GfQhecs8kjGTksZpaD5zWdzTqblWBlFTsHEpIcaZDJUtcDNudcm7BuZqAdMQFtwUIQMoUjOooBunjQpQx4Vdi2MRQZz1QvfAeKdwFnCV41EQ7rjzSd1ZtMubnFWumnqkY5nIWKUlhZWKhJEAAhTV1BBhO/yqd2azG9tuxzDWCTXh4TG+YW0J3Qyv37l3T3VdLte6qnMDipTb+ipHQ8r8IjB5zThUWU5g4ZHPdHS96ck4vKfeUPckl4FM7+Z8PzM2XWDD94BrO7uNVf/VsGI/oUxFlo+HJJ6SacZf03Eg3eqY04WcYuw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sh8V9SfX8ZnIH1WS76ORFoVHS+aWdB7VGEaN+jy6mXA=;
- b=k+wUDfkUcOdEs+gbz0D4Fnh3IiVq4aWIcIef0LLqFTrfgfIqrHpowocfNjiHNE4hC5Sev7NJsKvoP4IfjA6TwHjsbGNOMwIAhgfnQVb7vmYxn2NSe4qlQPPPm63HVVZFFhmvb6VOvt4vkOsrz4FZ+AUyV6uaO91fdsMJRZwd3H4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8411.eurprd04.prod.outlook.com (2603:10a6:10:24c::9)
- by AM9PR04MB7554.eurprd04.prod.outlook.com (2603:10a6:20b:2da::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Sun, 21 Aug
- 2022 10:16:32 +0000
-Received: from DB9PR04MB8411.eurprd04.prod.outlook.com
- ([fe80::582a:9810:a2d2:94f4]) by DB9PR04MB8411.eurprd04.prod.outlook.com
- ([fe80::582a:9810:a2d2:94f4%5]) with mapi id 15.20.5546.021; Sun, 21 Aug 2022
- 10:16:32 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH V3] tty: serial: lpuart: disable flow control while waiting for the transmit engine to complete
-Date:   Sun, 21 Aug 2022 18:15:27 +0800
-Message-Id: <20220821101527.10066-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2P153CA0010.APCP153.PROD.OUTLOOK.COM (2603:1096::20) To
- DB9PR04MB8411.eurprd04.prod.outlook.com (2603:10a6:10:24c::9)
+        Mon, 22 Aug 2022 03:24:12 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 00:24:07 PDT
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0B2983F
+        for <linux-serial@vger.kernel.org>; Mon, 22 Aug 2022 00:24:06 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202208220723037b8b4624b9016de5bd
+        for <linux-serial@vger.kernel.org>;
+        Mon, 22 Aug 2022 09:23:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=gTZkKlqN+Thq2gMBr0iu+geENL6ZPXLfTMRZqHvYKpY=;
+ b=M0sTY0kN/yG/LxIfRwTeXgxT3mqc1UxP0eeVa/XiLIfOQhG9BSaim46BlBzPduTYl8KRDy
+ w55HV2rM59XpMeFZlXmaI+TlF7d7uiOG72kZvrufRKSbaQobEAKnqbVXeE5isC2j7HD4MVfH
+ wone+8xWP6+lRD7p/quzE34xRGzH8=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 3/6] tty: n_gsm: replace use of gsm_read_ea() with gsm_read_ea_val()
+Date:   Mon, 22 Aug 2022 09:21:35 +0200
+Message-Id: <20220822072138.3123-3-daniel.starke@siemens.com>
+In-Reply-To: <20220822072138.3123-1-daniel.starke@siemens.com>
+References: <20220822072138.3123-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f79e3e56-c976-4044-2b1f-08da835e3802
-X-MS-TrafficTypeDiagnostic: AM9PR04MB7554:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mlY+BnUAPzh04rYmYGtcbiRpPYrwFvSZDgQhLzOFH6Glh/w/YpMWmaH5M7odJttAB3ettwR7UBEFQxSSOcTjJDqmQei7Wbwm42Cfo/os/kj0DJKS/98SS/32b9d9MknNCs5NIQdutu8ITcdWRHv6/RAka2a5K7xqil0rmyiKmTMGR7DPLeqGvbnZMln9uQYYBY4HzDNEeeF2fOqefKBOaY8/4TwFx2o6Z7jFm0uEkMjfwWgDQCWo6fOvJpTMveGlKSigRgXVve3I6mbUGcIg3ArayAXap1wjqTtfIVyFwZ6dps9oFriWSlyLgHvnzQFDmoZLUKSqc6VsLpm/yGywYJsUnrEt4grm8Xz2m9Mob/XgVFvSeEaX9ZyJfrG2LIZQG6f8HH703WK4TjxFHfpl3BxwlNXeLUJfCO/UxSqz12crkl4G5Q6dnt3FQ+3VpL+St/smGIy3AVT7hxteBnZ0UqJIQ/+wMrGdvBikM4gQbdmaQ7HIcr/H78jIjg+Lm1CacR1nWWRMhzkgle4Hv/AOxN6kcbcv25sPPqTxayJboXEx1I7jN7o1oWgdqzs98zz0pi5WI6EsOF+nu32lCXfsHOqJhknhsOCJEOAxfKEdWoiZgeCWvn3kIDoWXDX4hhvKx1GWz+hyUlRBaZz8kMqHUqcI/42hz1BoFvGawjU3WZLbLKNIAiwt9TxaBxoBFyjuKdCCQi8sbP0JXiJ3gqM+GZvHzz0Qp+t4OU7tfMEQPZy0cUOp/TUjwRr5oTBIhP3d
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8411.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(366004)(136003)(396003)(346002)(38100700002)(38350700002)(6486002)(478600001)(186003)(83380400001)(2906002)(44832011)(36756003)(5660300002)(41300700001)(8936002)(1076003)(86362001)(4326008)(66556008)(8676002)(66476007)(66946007)(6666004)(2616005)(6506007)(52116002)(6512007)(316002)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D8/0GYsszQ0ToOTC74izl0QuLkXP4ymCvE3VxTKP/jVVyBIhW7Cyf9aqCUPa?=
- =?us-ascii?Q?CWugtFO1/r17XBUizCKXxhtFVb7XlsNjEOevY9dMPIqb+wE0RCNOCA2dtAxT?=
- =?us-ascii?Q?5hYmZROhSX5evikobDpWTgOlwHzlhcKUuCV2JdaY4bN2/gqjXoveMPhja+lb?=
- =?us-ascii?Q?mm+Phu7d5APgiJ8C7hNvmgW4WI4y7yoYIRm1Us3jTyRIjAQVgDXlX+ZMqL3K?=
- =?us-ascii?Q?NDZ9zVi7ec3+gtRUdKBbjzjDN7CraJxZwoxJHsSS8AIn/rJUz4uHdKcvkAt5?=
- =?us-ascii?Q?vb+2JobrRKsCObk1Hyk8sWwksZkw5oKgCCsCs5VBdWEIzfoopZTh9l4wGg5t?=
- =?us-ascii?Q?CtCH5S8zaxG53KaAyCt3yrzkWMB63CQFBmeOh1IipOsULNGlraASwUyLm7aS?=
- =?us-ascii?Q?2ROiC9ppCinhWDNoHvEa4HuoZom+CqOoIytK+l/5kduskDq+dlwfp+ZGmob2?=
- =?us-ascii?Q?8n9103lvc2RkMq8Vd/Z+71Ri0mUa8KD2ME87rW+NRVTkwMX1g8Sb5dzEVVNt?=
- =?us-ascii?Q?ujrS916VmgRZXb6BV5M8fRelOtMXWBh2Ns7tWOu+8sdxdSyHmUbjZdk5xRhz?=
- =?us-ascii?Q?noc/2e+vMLONkmoW2CsKb1cjJ/MGyeJo9NejBTKOi7CuZf38qtC7bQp0jhZT?=
- =?us-ascii?Q?seo9+g6fKch2EWf+jRZoJctWLiWjrzoCeK3i0Z1wLynjPHhbOHLGPKb8Wv6r?=
- =?us-ascii?Q?ss+sVQLL4bNUH1m4e3/ThYXJ0VBbjjOs2E4pT4Y9L06A6uedx6RFp7AmMMNU?=
- =?us-ascii?Q?n3VnWPO9Jv8hlU2UNg6afJMUCFYuOJthsz0dego1ZDlFZnEXjLlHEUZ/t0EY?=
- =?us-ascii?Q?tF2C3qIJW6ZFAdZRQFt3lC3OGiDKOG32zI1MbL5veY73EKatACkD1yLFpI/B?=
- =?us-ascii?Q?8sDXI7r6eSgN9LWKl7g5UhiJcXW1qQDg1d84JrGecrjKWfCdLrh0e8PPjPR2?=
- =?us-ascii?Q?KoSpdiOTKpIekHfwQZGBwoa51a6wkPMdwIvtDznRQiKLWM8080fQ37oS6PYI?=
- =?us-ascii?Q?lA/MyFx9DhtehtWezz8oJYim4dh2NnFVyO2ux0WQlwAAa6WZFrYHAI7u2HuT?=
- =?us-ascii?Q?8tATq+EshMSOeH0UnTe/vCm0yyJFTGEbsRyHVtzcw+k01IYmX2mvhshTnPZy?=
- =?us-ascii?Q?NVHhKxM4r8aioKaVx0yv6zDzmI5o/x53sw3yQvhll8gL85OH9oHs4DZcXZQV?=
- =?us-ascii?Q?2T3ecsUYz0Du9S6x/NfFPrLUkOJNvd2r1iK5erI4ysIwRzGQtjkOUM/HXb6W?=
- =?us-ascii?Q?Ypmvf/9zh/pyBhvKYeATkc1vdINhZe9pNpWAEqfduwJKbablIG9ZXZ2I6Rb/?=
- =?us-ascii?Q?EZepBOxBpmRajSUJYNCPhjVIVSm1c1SW17CLkdzKJIDHFMFBNfpzQtDCcH1b?=
- =?us-ascii?Q?8vBBkFRti4WKncEPJjlWUqPmuIsK5VuVIhFREadI/bBfoc1naqjtPUpMj2Rg?=
- =?us-ascii?Q?nE1PT0gpYNXR4jsgg1wvupLeWKiRQwSu9BtUErrbCXv5CdaAjIvpKNZ2r5Nh?=
- =?us-ascii?Q?Ck5HQBBFlbmlA4vIdtoyyTHGy5RaYYTz0BSxggf47MzGq/cA6KHa4B/vtodT?=
- =?us-ascii?Q?9RXqjgZSdHORIR51/cNs1DtpMPENKRn4cqJ1CXjR?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f79e3e56-c976-4044-2b1f-08da835e3802
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8411.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2022 10:16:31.9301
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TjF3kI/oeyuSr32YCJhAW2D21SnHYFI2hM/XzYUgkidBtDB025TL0JPJq9Q29m4ihncBdKgACF5hVNtGThc1Jg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7554
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When the user initializes the uart port, and waits for the transmit
-engine to complete in lpuart32_set_termios(), if the UART TX fifo has
-dirty data and the UARTMODIR enable the flow control, the TX fifo may
-never be empty. So here we should disable the flow control first to make
-sure the transmit engin can complete.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Fixes: 380c966c093e ("tty: serial: fsl_lpuart: add 32-bit register interface support")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Replace the use of gsm_read_ea() with gsm_read_ea_val() where applicable to
+improve code readability and avoid errors like in the past.
+
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
-Changes in V3:
-1. Add the Fixes tag.
+ drivers/tty/n_gsm.c | 97 +++++++++++++++++++++++----------------------
+ 1 file changed, 50 insertions(+), 47 deletions(-)
 
-Changes in V2:
-1. Rephrase the commit log as suggested by Jiri.
----
- drivers/tty/serial/fsl_lpuart.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index f6c33cd228c8..fb2ad5d0d368 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2191,6 +2191,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	uart_update_timeout(port, termios->c_cflag, baud);
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index ed399d57b197..c87525b70e81 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1418,18 +1418,13 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 	unsigned int modem = 0;
+ 	struct gsm_dlci *dlci;
+ 	int len = clen;
+-	int slen;
++	int cl = clen;
+ 	const u8 *dp = data;
+ 	struct tty_struct *tty;
  
- 	/* wait transmit engin complete */
-+	lpuart32_write(&sport->port, 0, UARTMODIR);
- 	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+-	while (gsm_read_ea(&addr, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	/* Must be at least one byte following the EA */
+-	len--;
+-	if (len <= 0)
++	len = gsm_read_ea_val(&addr, data, cl);
++
++	if (len < 1)
+ 		return;
  
- 	/* disable transmit and receive */
+ 	addr >>= 1;
+@@ -1438,15 +1433,21 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
+ 		return;
+ 	dlci = gsm->dlci[addr];
+ 
+-	slen = len;
+-	while (gsm_read_ea(&modem, *dp++) == 0) {
+-		len--;
+-		if (len == 0)
+-			return;
+-	}
+-	len--;
++	/* Must be at least one byte following the EA */
++	if ((cl - len) < 1)
++		return;
++
++	dp += len;
++	cl -= len;
++
++	/* get the modem status */
++	len = gsm_read_ea_val(&modem, dp, cl);
++
++	if (len < 1)
++		return;
++
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem, slen - len);
++	gsm_process_modem(tty, dlci, modem, cl);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -1921,8 +1922,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	struct tty_port *port = &dlci->port;
+ 	struct tty_struct *tty;
+ 	unsigned int modem = 0;
+-	int len = clen;
+-	int slen = 0;
++	int len;
+ 
+ 	if (debug & 16)
+ 		pr_debug("%d bytes for tty\n", len);
+@@ -1933,24 +1933,22 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	case 3:		/* Packetised uininterruptible voice/data */
+ 		break;
+ 	case 2:		/* Asynchronous serial with line state in each frame */
+-		while (gsm_read_ea(&modem, *data++) == 0) {
+-			len--;
+-			slen++;
+-			if (len == 0)
+-				return;
+-		}
+-		len--;
+-		slen++;
++		len = gsm_read_ea_val(&modem, data, clen);
++		if (len < 1)
++			return;
+ 		tty = tty_port_tty_get(port);
+ 		if (tty) {
+-			gsm_process_modem(tty, dlci, modem, slen);
++			gsm_process_modem(tty, dlci, modem, len);
+ 			tty_wakeup(tty);
+ 			tty_kref_put(tty);
+ 		}
++		/* Skip processed modem data */
++		data += len;
++		clen -= len;
+ 		fallthrough;
+ 	case 1:		/* Line state will go via DLCI 0 controls only */
+ 	default:
+-		tty_insert_flip_string(port, data, len);
++		tty_insert_flip_string(port, data, clen);
+ 		tty_flip_buffer_push(port);
+ 	}
+ }
+@@ -1971,24 +1969,29 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ {
+ 	/* See what command is involved */
+ 	unsigned int command = 0;
+-	while (len-- > 0) {
+-		if (gsm_read_ea(&command, *data++) == 1) {
+-			int clen = *data++;
+-			len--;
+-			/* FIXME: this is properly an EA */
+-			clen >>= 1;
+-			/* Malformed command ? */
+-			if (clen > len)
+-				return;
+-			if (command & 1)
+-				gsm_control_message(dlci->gsm, command,
+-								data, clen);
+-			else
+-				gsm_control_response(dlci->gsm, command,
+-								data, clen);
+-			return;
+-		}
+-	}
++	const u8 *dp = data;
++	int clen = 0;
++	int dlen;
++
++	/* read the command */
++	dlen = gsm_read_ea_val(&command, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* read any control data */
++	dlen = gsm_read_ea_val(&clen, dp, len);
++	len -= dlen;
++	dp += dlen;
++
++	/* Malformed command? */
++	if (clen > len)
++		return;
++
++	if (command & 1)
++		gsm_control_message(dlci->gsm, command, dp, clen);
++	else
++		gsm_control_response(dlci->gsm, command, dp, clen);
++	return;
+ }
+ 
+ /**
 -- 
-2.17.1
+2.34.1
 
