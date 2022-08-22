@@ -2,170 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A3DC28D13
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 14:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C75BC28D13
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 14:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbiHVOGK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Aug 2022 10:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
+        id S235637AbiHVOL1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235465AbiHVOGI (ORCPT
+        with ESMTP id S235667AbiHVOL0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Aug 2022 10:06:08 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150CA26AD6;
-        Mon, 22 Aug 2022 07:06:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661177167; x=1692713167;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WxpzUL26H200ZgJ78BIfcOFc7J6X4Yom54/sexDTpps=;
-  b=V9dAV//gmkKFcRUhW6Pf0wfHKAetHq10jdfnzIKN074FSbcWL2IXhQVE
-   OWPPTg6jsPkLNf7YyvVWw6UbMI8pWpnsQ9xg0QIYYBSRLBOpdEcbl9Rwz
-   VobHP6d/hMOuPAcKIOmAlllquM62Fa6h+m4LKM66X7CNGZWK0+3Igcn0T
-   kYRBLKIyLv891M0H1ZNonm82Xq1s+2JNLOJ+03lKjOaQSQNA+1f1BzukU
-   1qTriRrM8U3T7ecqGvcjpxyh4Vbt/J14y83c6VMHvHwSiB/E7s4lOOnPM
-   cRiIyfDa0l6JQh+PNcAipdSkqYGA5zjnpU4Orbavbp8ippBDSG615+hye
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294209617"
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="294209617"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:05:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
-   d="scan'208";a="937051599"
-Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 22 Aug 2022 07:05:37 -0700
-Received: from kbuild by dd9b29378baa with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oQ83d-0000CR-19;
-        Mon, 22 Aug 2022 14:05:37 +0000
-Date:   Mon, 22 Aug 2022 22:05:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "D. Starke" <daniel.starke@siemens.com>,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: Re: [PATCH 3/6] tty: n_gsm: replace use of gsm_read_ea() with
- gsm_read_ea_val()
-Message-ID: <202208222147.WfFRmf1r-lkp@intel.com>
-References: <20220822072138.3123-3-daniel.starke@siemens.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822072138.3123-3-daniel.starke@siemens.com>
+        Mon, 22 Aug 2022 10:11:26 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73B133E2A;
+        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id w13so4388565pgq.7;
+        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
+        b=bphPJ9HNniChNozFrr8pN3OyWuoEb0pXuMv2UiJ0i+iBLZzhawlJHDZRkhECE4YNRk
+         ZuuvFb/T8k2Ul/mSmo3vLbqKo/o7QHfSCSXrKXurOnL5AEribeJAX9XKncFDzmmhfe/e
+         lssIcPM5I1Utx9D+nI3KVKZ1bWHdAx4FsW8l6A1k48LMbW+Ji6dH67g5DKF2S9rXJted
+         8P8yYeSPTNmXm9qoazNSrjLOr8gazh7WRUGI7DEDU58LIi+HMy4ajgou0wG1ZkW+9tut
+         x0PsilyPTvamDP9z8HJjabhd+bioVKOwnNbrKagLIZVvTx9ou5yq2lLkH8dfa8pdmlXX
+         fBlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=p7nFqFJ6GyduwW/jaAManajXS9BcTBoJW3Oy3Zrj+Us=;
+        b=DxEpcfoe04PxzC+aElqQW2IWaBmS2V9nafXl2xj16lmfNkxOWlzt/99ftVbHnl0abc
+         PZV9IZnHrHiPbqv9DBGWxdXzOzq1zfHko6S/6GKzSNM6aUtg7wffiPvmcD5MuTSAnX2/
+         j5gBxbJu9uYRF1Y8//Vdeg5bZJJMwahz2wOb6A896HDtlODIiHulS8EP8Dg4731P8Ob1
+         4n6CwFUcEn52PKQv1yxc5oQQOJag+1paOYcvVaml21cjMJCPWXWTt75aNGWb8dPiZKrW
+         Wr9LdxK3dkeGMOE/2/B4Iv7Wo2gi8Mvo+Qt/Kc4v6CzLOeShDHKgn3AHrBhWzwjiawi/
+         Wbnw==
+X-Gm-Message-State: ACgBeo0cv80xFLz20MWCVv3bpuWISXACKjxZ3goreBPgFgiT3uL2v1Du
+        rcJjeLABxfLjjrxI7hNgBkwCi1pDG+2vFOgt7VE=
+X-Google-Smtp-Source: AA6agR6adpyvp+DDP9uK/VhDoIlFGyKFzKJohwDSBAIOeH9QK3/ZoHCTz84zb/mdVjiQ1SJPy+2DVw==
+X-Received: by 2002:a05:6a00:1402:b0:536:bf1c:3d16 with SMTP id l2-20020a056a00140200b00536bf1c3d16mr3320102pfu.20.1661177484185;
+        Mon, 22 Aug 2022 07:11:24 -0700 (PDT)
+Received: from localhost.localdomain ([182.160.5.243])
+        by smtp.gmail.com with ESMTPSA id r17-20020aa79631000000b00535d3caa66fsm3099167pfg.197.2022.08.22.07.11.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 07:11:23 -0700 (PDT)
+From:   Tuo Cao <91tuocao@gmail.com>
+To:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        91tuocao@gmail.com
+Subject: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to spin_lock in interrupt handler
+Date:   Mon, 22 Aug 2022 22:11:10 +0800
+Message-Id: <20220822141110.17199-1-91tuocao@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Starke",
+it is unnecessary to call spin_lock_irqsave in a interrupt handler.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Tuo Cao <91tuocao@gmail.com>
+---
+ drivers/tty/serial/8250/8250_bcm7271.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v6.0-rc2 next-20220822]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/D-Starke/tty-n_gsm-add-enumeration-for-gsm-encodings/20220822-152532
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: i386-randconfig-a003-20220822 (https://download.01.org/0day-ci/archive/20220822/202208222147.WfFRmf1r-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/66ec0ad14dba76f793ec89ecdc7e6d7b3c550873
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review D-Starke/tty-n_gsm-add-enumeration-for-gsm-encodings/20220822-152532
-        git checkout 66ec0ad14dba76f793ec89ecdc7e6d7b3c550873
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/tty/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/tty/n_gsm.c:1928:34: warning: variable 'len' is uninitialized when used here [-Wuninitialized]
-                   pr_debug("%d bytes for tty\n", len);
-                                                  ^~~
-   include/linux/printk.h:588:26: note: expanded from macro 'pr_debug'
-           dynamic_pr_debug(fmt, ##__VA_ARGS__)
-                                   ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:163:22: note: expanded from macro 'dynamic_pr_debug'
-                              pr_fmt(fmt), ##__VA_ARGS__)
-                                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
-           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                                 ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
-                   func(&id, ##__VA_ARGS__);               \
-                               ^~~~~~~~~~~
-   drivers/tty/n_gsm.c:1925:9: note: initialize the variable 'len' to silence this warning
-           int len;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +/len +1928 drivers/tty/n_gsm.c
-
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1907  
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1908  /**
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1909   *	gsm_dlci_data		-	data arrived
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1910   *	@dlci: channel
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1911   *	@data: block of bytes received
-724ac070ffc7a1 drivers/tty/n_gsm.c  Jiri Slaby          2020-08-18  1912   *	@clen: length of received block
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1913   *
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1914   *	A UI or UIH frame has arrived which contains data for a channel
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1915   *	other than the control channel. If the relevant virtual tty is
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1916   *	open we shovel the bits down it, if not we drop them.
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1917   */
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1918  
-4feb7a4a124444 drivers/tty/n_gsm.c  Tony Lindgren       2019-01-13  1919  static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1920  {
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1921  	/* krefs .. */
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1922  	struct tty_port *port = &dlci->port;
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1923  	struct tty_struct *tty;
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1924  	unsigned int modem = 0;
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1925  	int len;
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1926  
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1927  	if (debug & 16)
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03 @1928  		pr_debug("%d bytes for tty\n", len);
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1929  	switch (dlci->adaption)  {
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1930  	/* Unsupported types */
-3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1931  	case 4:		/* Packetised interruptible data */
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1932  		break;
-3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1933  	case 3:		/* Packetised uininterruptible voice/data */
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1934  		break;
-3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1935  	case 2:		/* Asynchronous serial with line state in each frame */
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1936  		len = gsm_read_ea_val(&modem, data, clen);
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1937  		if (len < 1)
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1938  			return;
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1939  		tty = tty_port_tty_get(port);
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1940  		if (tty) {
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1941  			gsm_process_modem(tty, dlci, modem, len);
-1adf6fee58ca25 drivers/tty/n_gsm.c  Daniel Starke       2022-04-14  1942  			tty_wakeup(tty);
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1943  			tty_kref_put(tty);
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1944  		}
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1945  		/* Skip processed modem data */
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1946  		data += len;
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1947  		clen -= len;
-df561f6688fef7 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2020-08-23  1948  		fallthrough;
-3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1949  	case 1:		/* Line state will go via DLCI 0 controls only */
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1950  	default:
-66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1951  		tty_insert_flip_string(port, data, clen);
-2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1952  		tty_flip_buffer_push(port);
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1953  	}
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1954  }
-e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1955  
-
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 8efdc271eb75..fb525c435723 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -560,7 +560,6 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
+ 	struct uart_port *up = dev_id;
+ 	struct device *dev = up->dev;
+ 	struct brcmuart_priv *priv = up->private_data;
+-	unsigned long flags;
+ 	u32 interrupts;
+ 	u32 rval;
+ 	u32 tval;
+@@ -569,7 +568,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
+ 	if (interrupts == 0)
+ 		return IRQ_NONE;
+ 
+-	spin_lock_irqsave(&up->lock, flags);
++	spin_lock(&up->lock);
+ 
+ 	/* Clear all interrupts */
+ 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
+@@ -583,7 +582,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
+ 	if ((rval | tval) == 0)
+ 		dev_warn(dev, "Spurious interrupt: 0x%x\n", interrupts);
+ 
+-	spin_unlock_irqrestore(&up->lock, flags);
++	spin_unlock(&up->lock);
+ 	return IRQ_HANDLED;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
