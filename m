@@ -2,145 +2,170 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3ABC32789
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 13:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A3DC28D13
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 14:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234639AbiHVNDu (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Aug 2022 09:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        id S235472AbiHVOGK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Aug 2022 10:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbiHVNDs (ORCPT
+        with ESMTP id S235465AbiHVOGI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Aug 2022 09:03:48 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAE065E7;
-        Mon, 22 Aug 2022 06:03:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hiFMsai9WWZXsQeK/tUx/ZhguEREFQQ5bK9UbaNPgdJFuEGYK++KSyHwBprgjvNjbTLkuw7l3JxVq/s+CKZ2J8yrk1L5OdLvbvTXiWaYjrU2Mg51a+BJhqrpbC77kVPTR2OEiTncf8nf5PoXeAZXwh3eoWE4CIajaTnPtLvnnB1AZimKdXooOOyTkDiWR17Dr2eFX7fy0x9pMlM2OK7yZPl69sZOUabbIs7DQ4dYmbz9TqZfD0MnZqPJhC0npWYnGRyKgDF8I87YqCJ3nnQXR7bKqxtqepfeFdxNjJS+iNrHrzBd4kupaE/JzMfyJeKWE9uU++DRVbDuTjnjH4g8Dg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tWfBXcwfmlqGEh6Rg6C0H0HLF4yWFlVyxAh2k+t4PIA=;
- b=GbJXunWzCvRi+owdfqNC8TOtGtOatumvALYldIcfX5ge5MJ8welNShy3bl4XTjKMseB6wdN2kgUCg4e7hMEHp9CqtfekwUb81vNPRzz71QmsO6HH3Du8M7gvmwJaFMqayNVaSstGSyOnukDpOdyMzlqO7ifAn7538/RjUbzpDrFkRTzDCDboIFsuNk/sGE69Y8zT74oQeydc7yQsRkoi1Fw3UxrnPluMfFIrYabv8V8LcIOU/21WeVtBa/5EatmIykZztU7qD6ODiHDmdafmSjUO0alhCZ4YMlWeX909W3AiE48qMnmj8W/6OnTNz/ShKYGwYqNZqOZRLvxJEQRRBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tWfBXcwfmlqGEh6Rg6C0H0HLF4yWFlVyxAh2k+t4PIA=;
- b=x3jxyqC2y89MFGjFgZ2jx6G5xLYVb/jIQgDCr1QkgiblljHfVM6LWxME6oZfEzihatVpcS/e+Wz2wF4Z+7oznjKGGXxSiTA0oVp5mhFa36dHoAHgPA+uSYFKv0SbOMOF2+/KqfGhxsycrlfUEGFgLNdOmx59nQ+AwVMlgyjvxoI=
-Received: from BN9PR03CA0153.namprd03.prod.outlook.com (2603:10b6:408:f4::8)
- by DM4PR12MB5197.namprd12.prod.outlook.com (2603:10b6:5:394::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Mon, 22 Aug
- 2022 13:03:44 +0000
-Received: from BN8NAM11FT116.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f4:cafe::73) by BN9PR03CA0153.outlook.office365.com
- (2603:10b6:408:f4::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21 via Frontend
- Transport; Mon, 22 Aug 2022 13:03:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT116.mail.protection.outlook.com (10.13.176.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5546.7 via Frontend Transport; Mon, 22 Aug 2022 13:03:43 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 22 Aug
- 2022 08:03:42 -0500
-Received: from xhdlakshmis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Mon, 22 Aug 2022 08:03:40 -0500
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
-To:     <linux-serial@vger.kernel.org>
-CC:     <git@amd.com>, <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <gregkh@linuxfoundation.org>,
-        <shubhrajyoti.datta@gmail.com>
-Subject: [PATCH v3 2/2] serial: pl011: Add reg-io-width parameters
-Date:   Mon, 22 Aug 2022 18:33:33 +0530
-Message-ID: <20220822130333.5353-3-shubhrajyoti.datta@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220822130333.5353-1-shubhrajyoti.datta@amd.com>
-References: <20220822130333.5353-1-shubhrajyoti.datta@amd.com>
+        Mon, 22 Aug 2022 10:06:08 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150CA26AD6;
+        Mon, 22 Aug 2022 07:06:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661177167; x=1692713167;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WxpzUL26H200ZgJ78BIfcOFc7J6X4Yom54/sexDTpps=;
+  b=V9dAV//gmkKFcRUhW6Pf0wfHKAetHq10jdfnzIKN074FSbcWL2IXhQVE
+   OWPPTg6jsPkLNf7YyvVWw6UbMI8pWpnsQ9xg0QIYYBSRLBOpdEcbl9Rwz
+   VobHP6d/hMOuPAcKIOmAlllquM62Fa6h+m4LKM66X7CNGZWK0+3Igcn0T
+   kYRBLKIyLv891M0H1ZNonm82Xq1s+2JNLOJ+03lKjOaQSQNA+1f1BzukU
+   1qTriRrM8U3T7ecqGvcjpxyh4Vbt/J14y83c6VMHvHwSiB/E7s4lOOnPM
+   cRiIyfDa0l6JQh+PNcAipdSkqYGA5zjnpU4Orbavbp8ippBDSG615+hye
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294209617"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="294209617"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 07:05:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="937051599"
+Received: from lkp-server01.sh.intel.com (HELO dd9b29378baa) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 22 Aug 2022 07:05:37 -0700
+Received: from kbuild by dd9b29378baa with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oQ83d-0000CR-19;
+        Mon, 22 Aug 2022 14:05:37 +0000
+Date:   Mon, 22 Aug 2022 22:05:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: Re: [PATCH 3/6] tty: n_gsm: replace use of gsm_read_ea() with
+ gsm_read_ea_val()
+Message-ID: <202208222147.WfFRmf1r-lkp@intel.com>
+References: <20220822072138.3123-3-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8ea2f661-f5ec-4608-ebe2-08da843ebe17
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5197:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Y0lzt2d8oEMgfs8f//w+BBo+XXGsLTTY8YGgvn9JSNw2pXKvw/rX69itRbkq4F2KTLjIraraLjz1Rpwsw2FiznXS2IriWIR6+RKdp7NYir/ro0KaGco0ANZ4xDUORkfIS4clJ7cw+0nwJxdvVYznvAoaBLkJCmWmj9+EXMzLsEt1rf5nJwxAYRTwkmtz90AnKoFDlqtMaNkaAZ27NAT3dum0AW5HolmrHhZZfStRh+cnTD9/fm5XVJyYJqg9HHZ9ns0sfhWf1GNrNgnY9ioQGFnag2y3WOPN6ie/v5x+wYqmWi3cykVAaNItPFSo6PTj5qInE8Z5OmxyPw7A4AEM0ea/cVtTZes4ZmIiuADZSgI/DGQT0Z2k9YGlGZVZzUsVY29TDS+MwvAUGw5rWDUtfQFF3d8Y2/pKMepi2vlX97997Hl4BbJpwr2fg+h2oJMvRtOHhg2JTlEkf8qtJQA/JnZ3KnCtTKp/8t8IzCasUY/fgxB5r6OL1xSgEBYqyxXl83JynFo1FozRcT4JxdiVETYz9Blk1w1wzSPtaxj7vfco79Y9reVSKA5qt1KzX3TeZ509mGlg+aCuTBNypHeIN+xVIoqGZ/R+2+m1wEEveyik0fCVdyIxUpcV3mUfqmBuDe8zcCe34uKaZ43w0Qofcto32Y+qbtPf93VavNNZ2Nx8wCpp/XVs2ojz5+jkTKnGwyMX0RoR5Zb8uXzcMzSYI4bxRENFYk/vuPT1YPvauhD/bqaaLzqzrPDIBXINmUlXp0NPEM8Nl8wfIZszevN0sOPGLGhiCKivcXFYXl8SndM=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(396003)(376002)(46966006)(40470700004)(36840700001)(82740400003)(8676002)(4326008)(70586007)(86362001)(54906003)(6916009)(70206006)(36756003)(36860700001)(81166007)(356005)(186003)(1076003)(426003)(336012)(83380400001)(26005)(6666004)(41300700001)(478600001)(47076005)(40460700003)(316002)(40480700001)(8936002)(82310400005)(2906002)(2616005)(44832011)(5660300002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 13:03:43.7799
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ea2f661-f5ec-4608-ebe2-08da843ebe17
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT116.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5197
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822072138.3123-3-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Hi Starke",
 
-Some of the implementations can read only 32 bits because of
-the interface limitations of the port they are connected to.
-Add a parameter reg-io-width for supporting such platforms.
+Thank you for the patch! Perhaps something to improve:
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
----
-v3:
-use reg-io-width
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on linus/master v6.0-rc2 next-20220822]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
- drivers/tty/serial/amba-pl011.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/D-Starke/tty-n_gsm-add-enumeration-for-gsm-encodings/20220822-152532
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: i386-randconfig-a003-20220822 (https://download.01.org/0day-ci/archive/20220822/202208222147.WfFRmf1r-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/66ec0ad14dba76f793ec89ecdc7e6d7b3c550873
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review D-Starke/tty-n_gsm-add-enumeration-for-gsm-encodings/20220822-152532
+        git checkout 66ec0ad14dba76f793ec89ecdc7e6d7b3c550873
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/tty/
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 16a21422ddce..735451e44fbb 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2775,6 +2775,7 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	struct uart_amba_port *uap;
- 	struct vendor_data *vendor = id->data;
- 	int portnr, ret;
-+	u32 val;
- 
- 	portnr = pl011_find_free_port();
- 	if (portnr < 0)
-@@ -2798,6 +2799,21 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->port.rs485_config = pl011_rs485_config;
- 	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
- 
-+	if (device_property_read_u32(&dev->dev, "reg-io-width", &val) == 0) {
-+		switch (val) {
-+		case 1:
-+			uap->port.iotype = UPIO_MEM;
-+			break;
-+		case 4:
-+			uap->port.iotype = UPIO_MEM32;
-+			break;
-+		default:
-+			dev_warn(&dev->dev, "unsupported reg-io-width (%d)\n",
-+				 val);
-+			return -EINVAL;
-+		}
-+	}
-+
- 	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
- 	if (ret)
- 		return ret;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/n_gsm.c:1928:34: warning: variable 'len' is uninitialized when used here [-Wuninitialized]
+                   pr_debug("%d bytes for tty\n", len);
+                                                  ^~~
+   include/linux/printk.h:588:26: note: expanded from macro 'pr_debug'
+           dynamic_pr_debug(fmt, ##__VA_ARGS__)
+                                   ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:163:22: note: expanded from macro 'dynamic_pr_debug'
+                              pr_fmt(fmt), ##__VA_ARGS__)
+                                             ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                                 ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                   func(&id, ##__VA_ARGS__);               \
+                               ^~~~~~~~~~~
+   drivers/tty/n_gsm.c:1925:9: note: initialize the variable 'len' to silence this warning
+           int len;
+                  ^
+                   = 0
+   1 warning generated.
+
+
+vim +/len +1928 drivers/tty/n_gsm.c
+
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1907  
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1908  /**
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1909   *	gsm_dlci_data		-	data arrived
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1910   *	@dlci: channel
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1911   *	@data: block of bytes received
+724ac070ffc7a1 drivers/tty/n_gsm.c  Jiri Slaby          2020-08-18  1912   *	@clen: length of received block
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1913   *
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1914   *	A UI or UIH frame has arrived which contains data for a channel
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1915   *	other than the control channel. If the relevant virtual tty is
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1916   *	open we shovel the bits down it, if not we drop them.
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1917   */
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1918  
+4feb7a4a124444 drivers/tty/n_gsm.c  Tony Lindgren       2019-01-13  1919  static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1920  {
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1921  	/* krefs .. */
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1922  	struct tty_port *port = &dlci->port;
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1923  	struct tty_struct *tty;
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1924  	unsigned int modem = 0;
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1925  	int len;
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1926  
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1927  	if (debug & 16)
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03 @1928  		pr_debug("%d bytes for tty\n", len);
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1929  	switch (dlci->adaption)  {
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1930  	/* Unsupported types */
+3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1931  	case 4:		/* Packetised interruptible data */
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1932  		break;
+3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1933  	case 3:		/* Packetised uininterruptible voice/data */
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1934  		break;
+3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1935  	case 2:		/* Asynchronous serial with line state in each frame */
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1936  		len = gsm_read_ea_val(&modem, data, clen);
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1937  		if (len < 1)
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1938  			return;
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1939  		tty = tty_port_tty_get(port);
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1940  		if (tty) {
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1941  			gsm_process_modem(tty, dlci, modem, len);
+1adf6fee58ca25 drivers/tty/n_gsm.c  Daniel Starke       2022-04-14  1942  			tty_wakeup(tty);
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1943  			tty_kref_put(tty);
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1944  		}
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1945  		/* Skip processed modem data */
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1946  		data += len;
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1947  		clen -= len;
+df561f6688fef7 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2020-08-23  1948  		fallthrough;
+3e913eebdfbb56 drivers/tty/n_gsm.c  Gustavo A. R. Silva 2019-02-25  1949  	case 1:		/* Line state will go via DLCI 0 controls only */
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1950  	default:
+66ec0ad14dba76 drivers/tty/n_gsm.c  Daniel Starke       2022-08-22  1951  		tty_insert_flip_string(port, data, clen);
+2e124b4a390ca8 drivers/tty/n_gsm.c  Jiri Slaby          2013-01-03  1952  		tty_flip_buffer_push(port);
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1953  	}
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1954  }
+e1eaea46bb4020 drivers/char/n_gsm.c Alan Cox            2010-03-26  1955  
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
