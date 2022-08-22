@@ -2,89 +2,66 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DC0C32789
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 12:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3557C28D13
+	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 12:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbiHVMRK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Aug 2022 08:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S232600AbiHVMSV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234207AbiHVMRJ (ORCPT
+        with ESMTP id S233655AbiHVMSU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Aug 2022 08:17:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FB332046;
-        Mon, 22 Aug 2022 05:17:09 -0700 (PDT)
+        Mon, 22 Aug 2022 08:18:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF666177;
+        Mon, 22 Aug 2022 05:18:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB91FB81132;
-        Mon, 22 Aug 2022 12:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C999BC433C1;
-        Mon, 22 Aug 2022 12:17:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AC686112F;
+        Mon, 22 Aug 2022 12:18:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FD6C433D6;
+        Mon, 22 Aug 2022 12:18:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661170626;
-        bh=oWVM7idOqW4dR8gZgi5tDWNec1Qi+DE4xGa4+wIhJ+k=;
+        s=korg; t=1661170698;
+        bh=XFUaG+OdF42ahHuoyaxoXrWbqONRNSgJLOvnAojCSro=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RGnw2o5Mit1URHScHlF+Uf2BUBd3SEenSS5PaII1Ijo/TnhSrjb2HfXDQS7V8JCvM
-         uEmZGyvhdJ0zegqac9UsdphxW2Iey8d/3F/eUuvFhTtD8ryQZae+YoU1/T+uB7mox0
-         DjjiKBpVczWDCf/80lD5+7fVZ8Vya32iP1FoLEuU=
-Date:   Mon, 22 Aug 2022 14:17:03 +0200
+        b=U/fqAf99ZA0xT0XJsyFC8OFOe2StPNMI8ydOFiWIYt0CocuQ2mPDK6nJNS3+aLtFi
+         psVKfxlMSMVJHoVdgCaTiYVLwRSYTpb+R95LNrgRQuG2d7XbegW2a+zUP9iQwKuGUQ
+         9VTXnVTs1n2WOyzIPfHZ29G+OWMVhqwkikZPU5A4=
+Date:   Mon, 22 Aug 2022 14:18:15 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH] tty/serial: fix repeated words in comments
-Message-ID: <YwNzv6GXPTG46D3r@kroah.com>
-References: <20220822120901.17913-1-yuanjilin@cdjrlc.com>
+Cc:     jirislaby@kernel.org, jason.wessel@windriver.com,
+        daniel.thompson@linaro.org, dianders@chromium.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net
+Subject: Re: [PATCH] tty/seria: fix repeated words in comments
+Message-ID: <YwN0B+CgNj6j6q6y@kroah.com>
+References: <20220822120633.16753-1-yuanjilin@cdjrlc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822120901.17913-1-yuanjilin@cdjrlc.com>
+In-Reply-To: <20220822120633.16753-1-yuanjilin@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 08:09:01PM +0800, Jilin Yuan wrote:
->  Delete the redundant word 'power'.
->  Delete the redundant word 'long'.
+On Mon, Aug 22, 2022 at 08:06:33PM +0800, Jilin Yuan wrote:
+>  Delete the redundant word 'as'.
+>  Delete the redundant word 'the'.
 > 
 > Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->  drivers/tty/serial/imx.c         | 2 +-
->  drivers/tty/serial/samsung_tty.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 30edb35a6a15..c72e0dad3544 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2069,7 +2069,7 @@ imx_uart_console_get_options(struct imx_port *sport, int *baud,
->  		{	/*
->  			 * The next code provides exact computation of
->  			 *   baud_raw = round(((uartclk/16) * (ubir + 1)) / (ubmr + 1))
-> -			 * without need of float support or long long division,
-> +			 * without need of float support or long division,
 
-The original is correct here.
+Your subject line is incorrect :(
 
->  			 * which would be required to prevent 32bit arithmetic overflow
->  			 */
->  			unsigned int mul = ubir + 1;
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index d5ca904def34..af799b79ba25 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -1353,7 +1353,7 @@ static int apple_s5l_serial_startup(struct uart_port *port)
->  	return ret;
->  }
->  
-> -/* power power management control */
-> +/* power management control */
+Again, post a patch series, not a random set of patches with all the
+same subject line, not reflecting what file you are touching.
 
-Are you sure this isn't also correct?
+I would recommend learning how the development process works first by
+contributing to drivers/staging/ and not going out of that area until
+you have some experience and know how to do this correctly.
+
+good luck!
 
 greg k-h
