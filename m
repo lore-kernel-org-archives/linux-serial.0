@@ -2,106 +2,60 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F584C32774
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 05:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567A4C32774
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 06:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240456AbiHWF6Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Aug 2022 01:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S240045AbiHWGU6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240399AbiHWF6M (ORCPT
+        with ESMTP id S239296AbiHWGU5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Aug 2022 01:58:12 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D3F5FF46;
-        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id x19so11904505plc.5;
-        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=kOs/jcTHYsbej5MeX8EJYJ3A6QtxNAQXK0zGIk4XV7Q=;
-        b=Z1DtFuuH9I0FCIzeU/iRHjWTnLu6j/SnUynHLg28niEJOH9cP/pSiJz2f47CjKJkFq
-         nJJuP/rr4oM77VXx5GEddEdK3JJGOuQKkfjr63fuwBXQ/qCEwSOLbTPmhnUdHJ5q77Ki
-         x5Q89gK8OIT3AVNoAM6PxdZ+cF2zX0NqMVZ2b9G1aG/oTGEaYV9uDHrsKhFUuzqYUCkD
-         FSKIBmSOfC17d0fM2yfa5NxwuXftynFAQObPrztgDQ0R2zpOt71WJNjJ7IyCBnSCLF9S
-         XW9xMKUMibwX2j/Ig/TPEKJnIOuYAJOcrHUdzPDcaJaSmN40Gxuvl/EkJMwVpyV884zr
-         ETUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=kOs/jcTHYsbej5MeX8EJYJ3A6QtxNAQXK0zGIk4XV7Q=;
-        b=cNFXFvZAHcdU/JSzyg6KAICf/R/0HNbSDeeR7ZbjlmcZ0NCKDiQJ+BNvQfcvCAeON8
-         Gj6okp0cFccfwn1ANZAKhmtmd90+cxrRUgSDa5hFiiAQ3HacuGaypazDQF7LLtrCI5W/
-         w0vLPbwg6UXwfV50xB3vGf/fshtlxaIRVDukuXAoUBNel4dfT92/cnjwo5QVaWcQLSFB
-         3T76tUYMvM+kEunVdWMO7F8y9nPNYIe+UC+cvXqO/LA1h/PzI6OynQBjIFm15P/eY8PM
-         +wO6xgRXLqtfkfWx6toFC0JDwwSZKkTMVDo1rabndC+va0fSfIzVWSJk2edjVt2BwM4J
-         5Zrg==
-X-Gm-Message-State: ACgBeo3g5R4d2Br3Ab6nsGFELYw2FhtfxPpLeMVNgj0tFprdVcbicvcw
-        9Hxq2hDkHZuMdJLgDABLXiiW7rAuRz4=
-X-Google-Smtp-Source: AA6agR58wVy4H5++RAMV1HgRQmfJcbiXY5u64q3YPSmYVZPZHr11Q+kxtjqqgm4ycswK+KViydWHUQ==
-X-Received: by 2002:a17:90a:dc15:b0:1fa:c517:7f14 with SMTP id i21-20020a17090adc1500b001fac5177f14mr1797889pjv.117.1661234287000;
-        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id k10-20020aa79d0a000000b0053612ec8859sm7522332pfp.209.2022.08.22.22.58.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 22:58:06 -0700 (PDT)
-From:   lily <floridsleeves@gmail.com>
-To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        lily <floridsleeves@gmail.com>
-Subject: [PATCH v1] drivers/tty/serial: check the return value of uart_port_check()
-Date:   Mon, 22 Aug 2022 22:57:39 -0700
-Message-Id: <20220823055739.1451419-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 23 Aug 2022 02:20:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBE0491D7;
+        Mon, 22 Aug 2022 23:20:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35AD5B816BF;
+        Tue, 23 Aug 2022 06:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 456F7C433C1;
+        Tue, 23 Aug 2022 06:20:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661235653;
+        bh=K4n5U8Ku8HdJgTN/+cafpwXcsbx9WYqlkA5qGQNUk8w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a2dMCy9BuMRVGC0u33aaAWpR5K5P0p0w5LGsJJeRosSl1qNC2lptfFKn53Wymdn1F
+         OL8EvLmh9uwAyro8Of1ZS1GmLCfh8Osg2eRzSZvZHYVWYE66iHk5Qbzok05bl/c1XO
+         3RXd4n3PJe1/P2CXdnD58eB97D4/bxDkwDgqhwbE=
+Date:   Tue, 23 Aug 2022 08:20:50 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     lily <floridsleeves@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jirislaby@kernel.org
+Subject: Re: [PATCH v1] drivers/tty/serial: check the return value of
+ uart_port_check()
+Message-ID: <YwRxwr2J9ba/Agio@kroah.com>
+References: <20220823055739.1451419-1-floridsleeves@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823055739.1451419-1-floridsleeves@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_port_check() can return NULL pointer. Check its return value
-before dereference it.
+On Mon, Aug 22, 2022 at 10:57:39PM -0700, lily wrote:
+> uart_port_check() can return NULL pointer.
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- drivers/tty/serial/serial_core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+It can?  How will that happen?
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 12c87cd201a7..760e177166cf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -194,6 +194,9 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 	unsigned long page;
- 	int retval = 0;
- 
-+	if (!uport)
-+		return -EIO;
-+
- 	if (uport->type == PORT_UNKNOWN)
- 		return 1;
- 
-@@ -498,6 +501,8 @@ static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 	struct ktermios *termios;
- 	int hw_stopped;
- 
-+	if (!uport)
-+		return;
- 	/*
- 	 * If we have no tty, termios, or the port does not exist,
- 	 * then we can't set the parameters for this port.
-@@ -1045,6 +1050,8 @@ static int uart_get_lsr_info(struct tty_struct *tty,
- 	struct uart_port *uport = uart_port_check(state);
- 	unsigned int result;
- 
-+	if (!uport)
-+		return -EIO;
- 	result = uport->ops->tx_empty(uport);
- 
- 	/*
--- 
-2.25.1
+> Check its return value
+> before dereference it.
 
+How do you trigger this issue, and how was this change you made tested?
+
+thanks,
+
+greg k-h
