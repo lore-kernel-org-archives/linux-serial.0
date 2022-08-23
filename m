@@ -2,64 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D19ACC28D13
-	for <linux-serial@archiver.kernel.org>; Mon, 22 Aug 2022 17:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F584C32774
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 05:58:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236379AbiHVRtm (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 22 Aug 2022 13:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S240456AbiHWF6Y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Aug 2022 01:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235394AbiHVRtl (ORCPT
+        with ESMTP id S240399AbiHWF6M (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 22 Aug 2022 13:49:41 -0400
-X-Greylist: delayed 20201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 10:49:40 PDT
-Received: from vps-4763125.topmindpiolhos.com.br (vps-4763125.topmindpiolhos.com.br [162.214.118.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630CC13FBA
-        for <linux-serial@vger.kernel.org>; Mon, 22 Aug 2022 10:49:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=traderspiolhos.com; s=default; h=Content-Type:MIME-Version:Message-ID:
-        Reply-To:From:Date:Subject:To:Sender:Cc:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Gx7ZzmRiO1jF//eRabATK6SkBzw0dkqmCEUVgBaeagU=; b=kRlBRBNhmWMlxb2jLndqjJG43h
-        SG4bN4Gmh2RwhJbQwcRPO8fPW8qdQfujZIqtps++5NT8HVTXgftd28ds6UxcU41G3QhXIwqqvhiIf
-        efS3KOwx43Drzdca6PJNcvl61OAITn9K7vauUt2xiLmlxocLTjtmRk/wIy2hNRoBe8haNmKVFyCIJ
-        aq7HOyh5nR5vaQwsb5QM56jvOyKrOADvr1vvCW3zw/AWnJIDIiTN2bLyUQBU3xfmue8trQt2n5F09
-        2duSVD0NxPOErAdHUK/ih4M2jocMg5+iOWp5cCrnWMtGWaj6Os8K3CB4kMWYP4Vogll73Gow0lG94
-        sxQdFsQg==;
-Received: from traderspiolhos by vps-4763125.topmindpiolhos.com.br with local (Exim 4.95)
-        (envelope-from <traderspiolhos@vps-4763125.topmindpiolhos.com.br>)
-        id 1oQ6Ib-000145-0u
-        for linux-serial@vger.kernel.org;
-        Mon, 22 Aug 2022 09:12:57 -0300
-To:     linux-serial@vger.kernel.org
-Subject: The Telegraph: Jeden Tag erscheinen in Europa uber 900 neue Millionare
-X-PHP-Script: traderspiolhos.com/index.php for 191.101.31.39
-X-PHP-Originating-Script: 1064:class-phpmailer.php
-Date:   Mon, 22 Aug 2022 12:12:57 +0000
-From:   Traders Piolhos <edmar@traderspiolhos.com.br>
-Reply-To: edmar@traderspiolhos.com.br
-Message-ID: <0e216440a43975443eafa0e31f4a2e88@traderspiolhos.com>
-X-Mailer: PHPMailer 5.2.27 (https://github.com/PHPMailer/PHPMailer)
+        Tue, 23 Aug 2022 01:58:12 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D3F5FF46;
+        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id x19so11904505plc.5;
+        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=kOs/jcTHYsbej5MeX8EJYJ3A6QtxNAQXK0zGIk4XV7Q=;
+        b=Z1DtFuuH9I0FCIzeU/iRHjWTnLu6j/SnUynHLg28niEJOH9cP/pSiJz2f47CjKJkFq
+         nJJuP/rr4oM77VXx5GEddEdK3JJGOuQKkfjr63fuwBXQ/qCEwSOLbTPmhnUdHJ5q77Ki
+         x5Q89gK8OIT3AVNoAM6PxdZ+cF2zX0NqMVZ2b9G1aG/oTGEaYV9uDHrsKhFUuzqYUCkD
+         FSKIBmSOfC17d0fM2yfa5NxwuXftynFAQObPrztgDQ0R2zpOt71WJNjJ7IyCBnSCLF9S
+         XW9xMKUMibwX2j/Ig/TPEKJnIOuYAJOcrHUdzPDcaJaSmN40Gxuvl/EkJMwVpyV884zr
+         ETUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=kOs/jcTHYsbej5MeX8EJYJ3A6QtxNAQXK0zGIk4XV7Q=;
+        b=cNFXFvZAHcdU/JSzyg6KAICf/R/0HNbSDeeR7ZbjlmcZ0NCKDiQJ+BNvQfcvCAeON8
+         Gj6okp0cFccfwn1ANZAKhmtmd90+cxrRUgSDa5hFiiAQ3HacuGaypazDQF7LLtrCI5W/
+         w0vLPbwg6UXwfV50xB3vGf/fshtlxaIRVDukuXAoUBNel4dfT92/cnjwo5QVaWcQLSFB
+         3T76tUYMvM+kEunVdWMO7F8y9nPNYIe+UC+cvXqO/LA1h/PzI6OynQBjIFm15P/eY8PM
+         +wO6xgRXLqtfkfWx6toFC0JDwwSZKkTMVDo1rabndC+va0fSfIzVWSJk2edjVt2BwM4J
+         5Zrg==
+X-Gm-Message-State: ACgBeo3g5R4d2Br3Ab6nsGFELYw2FhtfxPpLeMVNgj0tFprdVcbicvcw
+        9Hxq2hDkHZuMdJLgDABLXiiW7rAuRz4=
+X-Google-Smtp-Source: AA6agR58wVy4H5++RAMV1HgRQmfJcbiXY5u64q3YPSmYVZPZHr11Q+kxtjqqgm4ycswK+KViydWHUQ==
+X-Received: by 2002:a17:90a:dc15:b0:1fa:c517:7f14 with SMTP id i21-20020a17090adc1500b001fac5177f14mr1797889pjv.117.1661234287000;
+        Mon, 22 Aug 2022 22:58:07 -0700 (PDT)
+Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
+        by smtp.googlemail.com with ESMTPSA id k10-20020aa79d0a000000b0053612ec8859sm7522332pfp.209.2022.08.22.22.58.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 22:58:06 -0700 (PDT)
+From:   lily <floridsleeves@gmail.com>
+To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        lily <floridsleeves@gmail.com>
+Subject: [PATCH v1] drivers/tty/serial: check the return value of uart_port_check()
+Date:   Mon, 22 Aug 2022 22:57:39 -0700
+Message-Id: <20220823055739.1451419-1-floridsleeves@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vps-4763125.topmindpiolhos.com.br
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [1064 991] / [47 12]
-X-AntiAbuse: Sender Address Domain - vps-4763125.topmindpiolhos.com.br
-X-Get-Message-Sender-Via: vps-4763125.topmindpiolhos.com.br: authenticated_id: traderspiolhos/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vps-4763125.topmindpiolhos.com.br: traderspiolhos
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Message Body:
-Sie konnten der nachste Millionar sein. Beeil dich http://news-zombies.carynconacher.com/bild-news-2085
+uart_port_check() can return NULL pointer. Check its return value
+before dereference it.
 
---
+Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 12c87cd201a7..760e177166cf 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -194,6 +194,9 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 	unsigned long page;
+ 	int retval = 0;
+ 
++	if (!uport)
++		return -EIO;
++
+ 	if (uport->type == PORT_UNKNOWN)
+ 		return 1;
+ 
+@@ -498,6 +501,8 @@ static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
+ 	struct ktermios *termios;
+ 	int hw_stopped;
+ 
++	if (!uport)
++		return;
+ 	/*
+ 	 * If we have no tty, termios, or the port does not exist,
+ 	 * then we can't set the parameters for this port.
+@@ -1045,6 +1050,8 @@ static int uart_get_lsr_info(struct tty_struct *tty,
+ 	struct uart_port *uport = uart_port_check(state);
+ 	unsigned int result;
+ 
++	if (!uport)
++		return -EIO;
+ 	result = uport->ops->tx_empty(uport);
+ 
+ 	/*
+-- 
+2.25.1
 
