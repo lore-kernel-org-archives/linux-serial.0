@@ -2,68 +2,83 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB81C32774
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 06:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97ADC32774
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 06:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239296AbiHWGWK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Aug 2022 02:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54376 "EHLO
+        id S240589AbiHWGZO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Aug 2022 02:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235968AbiHWGWJ (ORCPT
+        with ESMTP id S240577AbiHWGZM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Aug 2022 02:22:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225704B0DE;
-        Mon, 22 Aug 2022 23:22:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D801AB816BF;
-        Tue, 23 Aug 2022 06:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F17BC433C1;
-        Tue, 23 Aug 2022 06:22:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661235726;
-        bh=aGhwHLFCPyXlbGMjDTQLolc0eTz1F05VuSaLLqTjayg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J2weGI5tHBAlVRTBCsIZlHSXtkLBb+UPjKkvzn1y7nzwyd2yGxDW5BeiGdjGNqKkM
-         fD8c/wJlSGQJeDlyJXmLZeN1SeJ59HbPWhydRw3O19Afii1mauhFMXjSOGb8bB25u7
-         ipPggOwCfkgU2U9MZizd5jnfYCGhdFLkMuSBS46c=
-Date:   Tue, 23 Aug 2022 08:22:03 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     lily <floridsleeves@gmail.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tue, 23 Aug 2022 02:25:12 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 22 Aug 2022 23:25:10 PDT
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14DD3FA34
+        for <linux-serial@vger.kernel.org>; Mon, 22 Aug 2022 23:25:10 -0700 (PDT)
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20220823062404daa3899c154b96617e
+        for <linux-serial@vger.kernel.org>;
+        Tue, 23 Aug 2022 08:24:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=B1dzZJlG7TGF0lm6bL2tVAEmM2Y6LezQL41zIAhlggg=;
+ b=TtaJR7vSW7D6Y/VxG1HyJYEHVlVaDnw2woliDZikEja25884j+ACb82mSpemqAH4lzSrsk
+ aO8NAplhcNQBNWkVoG0E/3ioNiN/rW4gV1vZzC6hVpbe6InEtfsP9ed91TFwPiQN4b3t2wHp
+ Rh7yTln0g1gLzzo81iIL2QUoSaUMM=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
-Subject: Re: [PATCH v1] drivers/tty/serial: check the return value of
- uart_port_check()
-Message-ID: <YwRyC93rC/BAjR23@kroah.com>
-References: <20220823055739.1451419-1-floridsleeves@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 2/6] tty: n_gsm: name gsm tty device minors
+Date:   Tue, 23 Aug 2022 08:22:55 +0200
+Message-Id: <20220823062259.4754-2-daniel.starke@siemens.com>
+In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
+References: <20220823062259.4754-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823055739.1451419-1-floridsleeves@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 10:57:39PM -0700, lily wrote:
-> uart_port_check() can return NULL pointer. Check its return value
-> before dereference it.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Also, how did you find this issue?
+Add a macro which defines the possible number of virtual devices for n_gsm
+to improve code readability.
 
-> 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Also, your From: name does not match this one, so I can't take the patch
-even if it is ok :(
+No changes since v1.
 
-Please do initial kernel work in drivers/staging/ to get issues like
-this fixed up before moving to other portions of the kernel so that
-basic email problems do not bother other subsystem maintainers.
-
-thanks,
-
-greg k-h
-
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 5bf09d129357..ed399d57b197 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -164,6 +164,9 @@ struct gsm_dlci {
+ 	struct net_device *net; /* network interface, if created */
+ };
+ 
++/* Total number of supported devices */
++#define GSM_TTY_MINORS		256
++
+ /* DLCI 0, 62/63 are special or reserved see gsmtty_open */
+ 
+ #define NUM_DLCI		64
+@@ -3748,7 +3751,7 @@ static int __init gsm_init(void)
+ 		return status;
+ 	}
+ 
+-	gsm_tty_driver = tty_alloc_driver(256, TTY_DRIVER_REAL_RAW |
++	gsm_tty_driver = tty_alloc_driver(GSM_TTY_MINORS, TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV | TTY_DRIVER_HARDWARE_BREAK);
+ 	if (IS_ERR(gsm_tty_driver)) {
+ 		pr_err("gsm_init: tty allocation failed.\n");
+-- 
+2.34.1
 
