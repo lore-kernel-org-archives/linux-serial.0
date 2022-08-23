@@ -2,123 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C690C32772
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 08:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3678DC32772
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 13:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241532AbiHWIsc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Aug 2022 04:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
+        id S241202AbiHWNDO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346279AbiHWIrg (ORCPT
+        with ESMTP id S241561AbiHWNCy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Aug 2022 04:47:36 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9587C184
-        for <linux-serial@vger.kernel.org>; Tue, 23 Aug 2022 01:21:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661242907; x=1692778907;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=MylI7XOBn/b5O/7vdOnXg859J9QFJyAdC86rcBlOZsw=;
-  b=RvVFiD121Ti90HqFDfUX8snXdl/7ad5caF8JrETPQgIbs1L9ainwTkbe
-   ZhVOw9Kp++HTK4aunmDnUt05jHGFTsyuIoMXcih1SATjb9LYJGqCIRuxk
-   Ha5ftvQte4g46fB79dQnmgbEqrUMJAExI7r2MTz8c/iRyfDLS6U2cC01w
-   UhWkQrsuT/rGZWEHOclBuTcy8pxUwOofw3kTWJMqggivH98/WjV6uQ9gN
-   iXTIEOTJLs6SYvW/tQ5Mg9YmJscrGgu5LYfk74+peTaVp9aTSoZMUVPnL
-   /qRuddI1b0GfmbkNWGuxlAk2SMPayERoi5ejwycckp6QLt0XuSeqdPvOP
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="274010458"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="274010458"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 01:19:13 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="638556695"
-Received: from kimtingt-mobl.gar.corp.intel.com ([10.252.42.4])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 01:19:10 -0700
-Date:   Tue, 23 Aug 2022 11:19:02 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 0/8] tty/serial: Convert ->set_termios() related callchains
- to const old ktermios
-In-Reply-To: <alpine.DEB.2.21.2208202144450.36368@angie.orcam.me.uk>
-Message-ID: <14ce34f-d67-b0ec-753c-8285e85cc473@linux.intel.com>
-References: <20220816115739.10928-1-ilpo.jarvinen@linux.intel.com> <CAHp75VeDnT3q9kZMd0H_PXK-2pyhwke6FwOh+-5=RtubjLzsiw@mail.gmail.com> <6368fa4b-4232-9e2c-24e3-70115af88d2e@linux.intel.com> <alpine.DEB.2.21.2208202144450.36368@angie.orcam.me.uk>
+        Tue, 23 Aug 2022 09:02:54 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5548E71709
+        for <linux-serial@vger.kernel.org>; Tue, 23 Aug 2022 03:05:54 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id by6so13011782ljb.11
+        for <linux-serial@vger.kernel.org>; Tue, 23 Aug 2022 03:05:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=fqiKf0BLmyvWe2DRPuWRUrG4aK91/YgL5gBtIo6rx9g=;
+        b=LoiI+fUpOhA1S1wXC+DDHIPlSPyLAwqz9ZCZKx2TTD7x7kVulTbdCgOkMUVWfVvM2I
+         ij+gK+GnOjgRyoor6WAHRrPWyU0d8vjG2tYUJnz/XEwbbIuKM4aqMVd7C2T14rWs8eZU
+         hYck/orrrsSYJnfsQ/1zmCJA5TR02/7rTiDOqTBpJ9ox/+m4GoZNK633SSvyxdOnvMLd
+         17wJ4c6SjixrnIv46TnYWMgSO16i76TbI39YwbRoRSqiKaafDwYbPMzfJrWANyl9e8oG
+         R7gwI8vRFjHCHhpb51DgPHX2pcPt5uJcA/PAY3ONG5gbc3lL0kkYNLjwY0gWQeMp5WPO
+         neVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=fqiKf0BLmyvWe2DRPuWRUrG4aK91/YgL5gBtIo6rx9g=;
+        b=ElwFfrYbfDw1kQX0jsi8lzjaWopapgGyrPthuGZZQNC3eX1C6Qeqi/FPWuKC3Vas+H
+         V1vUVhcXdCsMjMiTudIBZwlmJ0RbINuv9HGd60nEV3JNVKfA7NrEP1kgbKODpvwWZEbB
+         1FOIVRN1R7qL96q0PnDWJvekRu8IhzKOMc8YN8nxcjLML/SE091GnumLMKIE58RsgnSJ
+         vBeKe7Hni7Evsw5xwOqd9dsUEP6cG3Znbmask7nhuBiFEWTpEZuHvpggJ+GCl17l/CKd
+         148pEWig88vr/6Ijk8i3eVM3ZX1dzPZZD0qHpNovbCRYGrAm8dumKx9iECN00mWfHL1y
+         RbNw==
+X-Gm-Message-State: ACgBeo2Szbzx5vfwVPFKUoBuC1vvLLsO+5S86TUeB0RcsNi9H/rD/AQF
+        xQYcQAhiB5k7K0qg/onbti6j9g==
+X-Google-Smtp-Source: AA6agR6HCVRRmiWdV5cSWBXh35gNbti1adFT+KGUdu3NvYpgxzuTmZLIS5eCk/RjQIlf2WsRqMTzCg==
+X-Received: by 2002:a2e:8415:0:b0:261:d673:4d6 with SMTP id z21-20020a2e8415000000b00261d67304d6mr562302ljg.223.1661249129314;
+        Tue, 23 Aug 2022 03:05:29 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id m17-20020a056512359100b00492cd4bd383sm1944255lfr.223.2022.08.23.03.05.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:05:28 -0700 (PDT)
+Message-ID: <17899835-b7fc-fa34-fec4-2462c7829f3d@linaro.org>
+Date:   Tue, 23 Aug 2022 13:05:27 +0300
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1735757789-1661242752=:1608"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: serial: pl011: Add a reg-io-width
+ parameter
+Content-Language: en-US
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>,
+        linux-serial@vger.kernel.org
+Cc:     git@amd.com, devicetree@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
+        shubhrajyoti.datta@gmail.com
+References: <20220822130333.5353-1-shubhrajyoti.datta@amd.com>
+ <20220822130333.5353-2-shubhrajyoti.datta@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220822130333.5353-2-shubhrajyoti.datta@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1735757789-1661242752=:1608
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Sat, 20 Aug 2022, Maciej W. Rozycki wrote:
-
-> On Thu, 18 Aug 2022, Ilpo Järvinen wrote:
+On 22/08/2022 16:03, Shubhrajyoti Datta wrote:
+> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 > 
-> > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > for all, but patch 3.
-> > > 
-> > > I'm not sure we can blindly use old_termios settings, is there any
-> > > guarantee that old_termios _always_ has a correct baud rate settings?
-> > 
-> > Old_termios is just the previous termios the port was using. If the 
-> > baudrate in termios was invalid already by then, it's another issue that 
-> > should be fixed (but I cannot see how that could occur assuming the 
-> > validation works).
-> > 
-> > How could it get wrong baud rate settings if the kernel sets (old_)termios 
-> > (earlier) through these same paths (which validated it)?
+> Some of the implementations support only 32-bit accesses.
+> Add a parameter reg-io-width for such platforms.
 > 
->  If the old baud rate in termios was invalid, then we would just resort to 
-> 9600 baud, so I wouldn't be concerned here as we need to set the baud rate 
-> to something anyway.
-
-I still assert that old baud rate should never be "invalid". When it was 
-set (earlier) through dz_set_termios(), it got validated and invalid 
-ones were corrected. I think a valid baud rate in tty->termios is an 
-invariant we just maintain on each call to dz_set_termios().
-
-> My only concern is whether `tty_termios_baud_rate' 
-> can ever return 0 for `old_termios', which would of course never happen 
-> with `uart_get_baud_rate'.
-
-dz_encode_baud_rate() disallows 0 as baud rate. I don't understand what 
-you're trying to say here.
-
-> But new code seems to me to be doing the right thing anyway.  That is if 
-> we're getting out of a hangup (which we don't currently handle with the 
-> modem lines anyway, but that's quite a different and complex matter) with 
-> an invalid baud rate, then we'll fail to encode it, then fail to encode 0, 
-> and finally resort to 9600 baud and write it back to `termios'.  So we'll 
-> get out of a hangup with a baud rate different to one requested, but that 
-> is as much as we can do in that case: we have fulfilled the request the 
-> best we could and `uart_get_baud_rate' would set the rate to 9600 baud 
-> anyway.
-
-This I kind of agree with but given the precondition where 0 baud rate is 
-always rejected by dz_encode_baud_rate(), I don't think this scenario can 
-materialize at all?
-
->  Given the observation above I have acked your patch.  Perhaps you could 
-> put some of the analysis above into the change description.
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> ---
+> v3:
+> patch addition
 > 
->   Maciej
+>  Documentation/devicetree/bindings/serial/pl011.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
+> index d8aed84abcd3..c8a4cbb178fe 100644
+> --- a/Documentation/devicetree/bindings/serial/pl011.yaml
+> +++ b/Documentation/devicetree/bindings/serial/pl011.yaml
+> @@ -94,6 +94,13 @@ properties:
+>    resets:
+>      maxItems: 1
+>  
+> +  reg-io-width:
+> +    description: |
 
--- 
- i.
+No need for |
 
---8323329-1735757789-1661242752=:1608--
+> +      The size (in bytes) of the IO accesses that should be performed
+> +      on the device.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+
+This is a standard type, so no need for $ref
+
+Best regards,
+Krzysztof
