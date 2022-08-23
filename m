@@ -2,109 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3678DC32772
-	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 13:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295D2C32772
+	for <linux-serial@archiver.kernel.org>; Tue, 23 Aug 2022 13:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbiHWNDO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 23 Aug 2022 09:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S238336AbiHWNKV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 23 Aug 2022 09:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241561AbiHWNCy (ORCPT
+        with ESMTP id S238281AbiHWNJr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 23 Aug 2022 09:02:54 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5548E71709
-        for <linux-serial@vger.kernel.org>; Tue, 23 Aug 2022 03:05:54 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id by6so13011782ljb.11
-        for <linux-serial@vger.kernel.org>; Tue, 23 Aug 2022 03:05:53 -0700 (PDT)
+        Tue, 23 Aug 2022 09:09:47 -0400
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A02457E026;
+        Tue, 23 Aug 2022 03:11:14 -0700 (PDT)
+Received: by mail-pf1-f178.google.com with SMTP id f17so6860729pfk.11;
+        Tue, 23 Aug 2022 03:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=fqiKf0BLmyvWe2DRPuWRUrG4aK91/YgL5gBtIo6rx9g=;
-        b=LoiI+fUpOhA1S1wXC+DDHIPlSPyLAwqz9ZCZKx2TTD7x7kVulTbdCgOkMUVWfVvM2I
-         ij+gK+GnOjgRyoor6WAHRrPWyU0d8vjG2tYUJnz/XEwbbIuKM4aqMVd7C2T14rWs8eZU
-         hYck/orrrsSYJnfsQ/1zmCJA5TR02/7rTiDOqTBpJ9ox/+m4GoZNK633SSvyxdOnvMLd
-         17wJ4c6SjixrnIv46TnYWMgSO16i76TbI39YwbRoRSqiKaafDwYbPMzfJrWANyl9e8oG
-         R7gwI8vRFjHCHhpb51DgPHX2pcPt5uJcA/PAY3ONG5gbc3lL0kkYNLjwY0gWQeMp5WPO
-         neVQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=6cz2LwXnYJOLYd61Se+LQLyoxLetDJDlLmQ9IRtJXFk=;
+        b=UboNgpxV1kT5Bjd+Fj9yjcjx4kDl4eEJq2D6RzW0KFtgfpVh6GC4db5qsznaJOn1uc
+         +IJJDBDpRAx3nGK2Okd/6uRPmByiDsWbwBaNlHDHBEF7HCSd9YDqxexZmvZzQwTyRvM1
+         InBKEhfsRHcX+V0tve0R3qPvETYns7RmZG5V9/V/CiG3xfOgo8TXvrLIr730S/pxv8RO
+         iFB2SxGEKVQEji8JfVou9Dopqf0Rc0RQY7HgasVGWPJeHoEOe9eJ3RcLdMil4GM/ucTm
+         vzqzJ1qtli8gZXxuhUREomOLJC8uEJjHYDsEs7LOuX4EsOnZyZK3882zGwnqnnvt/Liw
+         pIBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=fqiKf0BLmyvWe2DRPuWRUrG4aK91/YgL5gBtIo6rx9g=;
-        b=ElwFfrYbfDw1kQX0jsi8lzjaWopapgGyrPthuGZZQNC3eX1C6Qeqi/FPWuKC3Vas+H
-         V1vUVhcXdCsMjMiTudIBZwlmJ0RbINuv9HGd60nEV3JNVKfA7NrEP1kgbKODpvwWZEbB
-         1FOIVRN1R7qL96q0PnDWJvekRu8IhzKOMc8YN8nxcjLML/SE091GnumLMKIE58RsgnSJ
-         vBeKe7Hni7Evsw5xwOqd9dsUEP6cG3Znbmask7nhuBiFEWTpEZuHvpggJ+GCl17l/CKd
-         148pEWig88vr/6Ijk8i3eVM3ZX1dzPZZD0qHpNovbCRYGrAm8dumKx9iECN00mWfHL1y
-         RbNw==
-X-Gm-Message-State: ACgBeo2Szbzx5vfwVPFKUoBuC1vvLLsO+5S86TUeB0RcsNi9H/rD/AQF
-        xQYcQAhiB5k7K0qg/onbti6j9g==
-X-Google-Smtp-Source: AA6agR6HCVRRmiWdV5cSWBXh35gNbti1adFT+KGUdu3NvYpgxzuTmZLIS5eCk/RjQIlf2WsRqMTzCg==
-X-Received: by 2002:a2e:8415:0:b0:261:d673:4d6 with SMTP id z21-20020a2e8415000000b00261d67304d6mr562302ljg.223.1661249129314;
-        Tue, 23 Aug 2022 03:05:29 -0700 (PDT)
-Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id m17-20020a056512359100b00492cd4bd383sm1944255lfr.223.2022.08.23.03.05.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 03:05:28 -0700 (PDT)
-Message-ID: <17899835-b7fc-fa34-fec4-2462c7829f3d@linaro.org>
-Date:   Tue, 23 Aug 2022 13:05:27 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=6cz2LwXnYJOLYd61Se+LQLyoxLetDJDlLmQ9IRtJXFk=;
+        b=HmClqmUr4yrMgNgRavry2RgI4BbZm6PzOe/9ZUF4YcjrGPE7R1zDK0TL+1eQQ0MCSE
+         PKEhImpmQUhDDvOAKIiB91mknzoxD/WOojZXCGQdPi69J6hcp5V0pty9nu9kxM/WzCfn
+         hjsyVTmafTC41u6cJFlmEzy+Jz8wnwRxBEiqBpV3+pWM829vp3ilh7Q3tpXQdZgKU0c9
+         fFAPcNSStn6tKV6+LKmhf4/GA+cWSH25d1z4p1HvqEV4knVMouDwYKxmKZkB+aUkuzEd
+         yfJDD5h9NxRtlWEFmO9U7S+38HhXF9GgR0cMU3h5h0FD6MXZ1xC02YVQ7/vjROJdOtRF
+         yjdQ==
+X-Gm-Message-State: ACgBeo2ktldLX5sVXqFjW1Lu+DjWRIS9/yrKV1xiVfrDXNb1s3WCLKVS
+        6pqKT1t+xR7vokXjoOdZ44I=
+X-Google-Smtp-Source: AA6agR6+gV64bMCZkfhFjFnwJCwoGqtEemCF5u67XouDXNb70rab8m97StWON1OgwRX6hcY/+SBL1g==
+X-Received: by 2002:a63:c5:0:b0:40d:d290:24ef with SMTP id 188-20020a6300c5000000b0040dd29024efmr20172457pga.141.1661249317084;
+        Tue, 23 Aug 2022 03:08:37 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-56.three.co.id. [116.206.28.56])
+        by smtp.gmail.com with ESMTPSA id n15-20020a170902d2cf00b0016c2cdea409sm3578195plc.280.2022.08.23.03.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 03:08:36 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 9CBA710113A; Tue, 23 Aug 2022 17:08:33 +0700 (WIB)
+Date:   Tue, 23 Aug 2022 17:08:33 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jilin Yuan <yuanjilin@cdjrlc.com>, jirislaby@kernel.org,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] serial/jsm: fix repeated words in comments
+Message-ID: <YwSnIYalaRCGggTA@debian.me>
+References: <20220822121457.21004-1-yuanjilin@cdjrlc.com>
+ <YwN09jVOF4WKw4yZ@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: pl011: Add a reg-io-width
- parameter
-Content-Language: en-US
-To:     Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>,
-        linux-serial@vger.kernel.org
-Cc:     git@amd.com, devicetree@vger.kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
-        shubhrajyoti.datta@gmail.com
-References: <20220822130333.5353-1-shubhrajyoti.datta@amd.com>
- <20220822130333.5353-2-shubhrajyoti.datta@amd.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220822130333.5353-2-shubhrajyoti.datta@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwN09jVOF4WKw4yZ@kroah.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22/08/2022 16:03, Shubhrajyoti Datta wrote:
-> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+On Mon, Aug 22, 2022 at 02:22:14PM +0200, Greg KH wrote:
+> On Mon, Aug 22, 2022 at 08:14:57PM +0800, Jilin Yuan wrote:
+> >  Delete the redundant word 'way'.
 > 
-> Some of the implementations support only 32-bit accesses.
-> Add a parameter reg-io-width for such platforms.
-> 
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> ---
-> v3:
-> patch addition
-> 
->  Documentation/devicetree/bindings/serial/pl011.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
-> index d8aed84abcd3..c8a4cbb178fe 100644
-> --- a/Documentation/devicetree/bindings/serial/pl011.yaml
-> +++ b/Documentation/devicetree/bindings/serial/pl011.yaml
-> @@ -94,6 +94,13 @@ properties:
->    resets:
->      maxItems: 1
->  
-> +  reg-io-width:
-> +    description: |
+> Again, not redundant.
 
-No need for |
+Hi Greg,
 
-> +      The size (in bytes) of the IO accesses that should be performed
-> +      on the device.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
+The original comment means "The assumption is that the flow control
+should have stopped the way things are flowed, before the flow got into
+the state that some data have to be dropped.".
 
-This is a standard type, so no need for $ref
+Thanks.
 
-Best regards,
-Krzysztof
+-- 
+An old man doll... just what I always wanted! - Clara
