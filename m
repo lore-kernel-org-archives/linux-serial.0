@@ -2,56 +2,50 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A360DC64990
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Aug 2022 08:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 036D6C04AA5
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Aug 2022 09:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237583AbiHYI6t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S234323AbiHYJRT (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237510AbiHYI6q (ORCPT
+        with ESMTP id S230481AbiHYJRS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:58:46 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9CBA896F;
-        Thu, 25 Aug 2022 01:58:37 -0700 (PDT)
+        Thu, 25 Aug 2022 05:17:18 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B0E9F8C5;
+        Thu, 25 Aug 2022 02:17:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661417917; x=1692953917;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xWcqRqK9GSZt9NznWIFPcoPcb1DvRs46teeJkfDwcKk=;
-  b=BH9+8xdaFNVEJwYngzSF0QvALLrV34bK68anUupewcQyt+0afe3tW7uq
-   Fi8iwBU2s88gQ9J6XPEqPebIn81iDOT5XjrkdKPdmWEcMdQQI17tVjzrV
-   VHu6Rsm0WvtMYym/d3/zMGuIRb+U3JK7/pvovbEx+nej5NtEn7fOZn7jL
-   Z1LWZSvTkFQ/Vjg2bHFF6QBHOX+ucWIgkw726BHtTB7em+/wiThLDfMyn
-   J6062YIYL6Ng4mTHhXMPj9qaS0U0x9oq4fhved3QQUuIoX3h14Zug4YOZ
-   inMVEin6H09B6DUyXYo5RU+jOFJEdoBEnpMwGMPHYgLCZeI9gc9vE1zil
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="273941445"
+  t=1661419037; x=1692955037;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4exIY7gU9hzEUKw5Nvq0efoD/gksy5jNEO5nY/heknk=;
+  b=BLiscJOo3Uxd9qW+TYDRJJ1d7faPUfkrxySfp4MlN7ROEF1r+swbHau9
+   OY9osE0Q6A27mPYkEsJwSuro42rt/mAXYxyqjMmXRFrjDE6QjogP9GXFD
+   0WTKy6mUA+RomC9d+QttqbolWeHWNlmumSTa5aTqqIg6isQI0rEzP6j8u
+   2S5v2J1/SR14YQbVKSd+b/f1pVgu0NUH3Y6LJwzw7vexyYKPTXZIfriTB
+   aVJW7fEq60s7PfPj6qhCbhTIQ4mlgBNivZAwnr5WjM2HrIlClHcKtR3KR
+   3N2uG7OxW/O+DTMSB0cSpxxQxJoFdcl5li3AA36RiQXBYQbe+zP64eqBN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="355917152"
 X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="273941445"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 01:58:37 -0700
+   d="scan'208";a="355917152"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:17:17 -0700
 X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="670893955"
+   d="scan'208";a="938254118"
 Received: from mblazque-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.101])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 01:58:34 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:17:15 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5/5] serial: tegra: Remove custom frame size calculation
-Date:   Thu, 25 Aug 2022 11:58:10 +0300
-Message-Id: <20220825085810.7290-6-ilpo.jarvinen@linux.intel.com>
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a larger patch series)
+Date:   Thu, 25 Aug 2022 12:17:04 +0300
+Message-Id: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com>
-References: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -59,60 +53,28 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The number of bits can be calculated using tty_get_frame_size(), no
-need for the driver to do it on its own.
+Add uart_xmit_advance() helper to handle circular xmit buffer
+advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+that previously lacked to accounting for DMA Tx.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial-tegra.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Greg,
+I've a another series on top this which is tty-next material making the
+rest of the drivers to use uart_xmit_advance(). That series obviously
+depends on the patch 1/3 of this series so if you end up putting these
+3 patches into tty-linus, I'll need it to be merged into tty-next at
+some point (I'm not in a big hurry with this so if you choose to delay
+the merge, it's not a big deal).
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index ad4f3567ff90..5a56bd20abcd 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1278,7 +1278,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	unsigned long flags;
- 	unsigned int lcr;
- 	unsigned char char_bits;
--	int symb_bit = 1;
- 	struct clk *parent_clk = clk_get_parent(tup->uart_clk);
- 	unsigned long parent_clk_rate = clk_get_rate(parent_clk);
- 	int max_divider = (tup->cdata->support_clk_src_div) ? 0x7FFF : 0xFFFF;
-@@ -1305,7 +1304,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	termios->c_cflag &= ~CMSPAR;
- 
- 	if ((termios->c_cflag & PARENB) == PARENB) {
--		symb_bit++;
- 		if (termios->c_cflag & PARODD) {
- 			lcr |= UART_LCR_PARITY;
- 			lcr &= ~UART_LCR_EPAR;
-@@ -1318,22 +1316,18 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	}
- 
- 	char_bits = tty_get_char_size(termios->c_cflag);
--	symb_bit += char_bits;
- 	lcr &= ~UART_LCR_WLEN8;
- 	lcr |= UART_LCR_WLEN(char_bits);
- 
- 	/* Stop bits */
--	if (termios->c_cflag & CSTOPB) {
-+	if (termios->c_cflag & CSTOPB)
- 		lcr |= UART_LCR_STOP;
--		symb_bit += 2;
--	} else {
-+	else
- 		lcr &= ~UART_LCR_STOP;
--		symb_bit++;
--	}
- 
- 	tegra_uart_write(tup, lcr, UART_LCR);
- 	tup->lcr_shadow = lcr;
--	tup->symb_bit = symb_bit;
-+	tup->symb_bit = tty_get_frame_size(termios->c_cflag);
- 
- 	/* Baud rate. */
- 	baud = uart_get_baud_rate(u, termios, oldtermios,
+Ilpo Järvinen (3):
+  serial: Create uart_xmit_advance()
+  serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+  serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+
+ drivers/tty/serial/serial-tegra.c |  5 ++---
+ drivers/tty/serial/tegra-tcu.c    |  2 +-
+ include/linux/serial_core.h       | 17 +++++++++++++++++
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
 -- 
 2.30.2
 
