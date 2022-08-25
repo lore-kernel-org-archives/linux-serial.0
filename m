@@ -2,95 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26212C28D13
-	for <linux-serial@archiver.kernel.org>; Thu, 25 Aug 2022 13:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F3DC28D13
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Aug 2022 14:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242457AbiHYNSF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37478 "EHLO
+        id S240942AbiHYOdc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242433AbiHYNSD (ORCPT
+        with ESMTP id S241762AbiHYOdb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:18:03 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC92201B6;
-        Thu, 25 Aug 2022 06:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661433482; x=1692969482;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qNYpsD0QAUqamHJ10Nj5m4QpCERSM1jcCkSlZAiHlgU=;
-  b=P27U3gyn1BuiY6RrTltUMI8aYZkrF1RYjSr9nCA2eaCWE18PSXfDJzBy
-   p60vo+XqKaoKfybh1zIIO1v9kiPMXblg7HHpcOcOwnw8+vzMfGEsSCKlY
-   h47lw3/6LpW81dS+/UHSpJoenBUw5YkcsuemHxr2Mv0wLtCnoxqZkH2Uk
-   ShHOcKuRblkjhVU1InB8Fhpd6uPeL58Q4vfy9sMs6GB7MViAE/n04RfPl
-   Q4CaCEkzRAfQx6trA8UIxNGHT6tfdMWDqIFtnnarqvKIY7FdhY4i/xih9
-   S26i/0d1dEmZ36AnrYecV+MKo7g/Ci5VQ6OUv9vzLKqhsv4OfIOZWeUUR
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="294234940"
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="294234940"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 06:18:02 -0700
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="670974585"
-Received: from mblazque-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.101])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 06:18:00 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thu, 25 Aug 2022 10:33:31 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A07B9C52E;
+        Thu, 25 Aug 2022 07:33:29 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 4ED8892009D; Thu, 25 Aug 2022 16:33:28 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 47FE792009C;
+        Thu, 25 Aug 2022 15:33:28 +0100 (BST)
+Date:   Thu, 25 Aug 2022 15:33:28 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
-        "Maciej W . Rozycki" <macro@orcam.me.uk>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 2/2] serial: dz: Remove custom DZ_WAKEUP_CHARS
-Date:   Thu, 25 Aug 2022 16:17:46 +0300
-Message-Id: <20220825131746.21257-3-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220825131746.21257-1-ilpo.jarvinen@linux.intel.com>
-References: <20220825131746.21257-1-ilpo.jarvinen@linux.intel.com>
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] serial: dz: Replace DZ_XMIT_SIZE with
+ UART_XMIT_SIZE
+In-Reply-To: <89359013-85fe-76e1-a425-fabdfa3572f9@linux.intel.com>
+Message-ID: <alpine.DEB.2.21.2208251454480.26998@angie.orcam.me.uk>
+References: <20220825091918.8398-1-ilpo.jarvinen@linux.intel.com> <alpine.DEB.2.21.2208251219120.26998@angie.orcam.me.uk> <89359013-85fe-76e1-a425-fabdfa3572f9@linux.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Almost all serial drivers use WAKEUP_CHARS (256) from serial_core.h which
-also matches what n_tty_poll() uses for asserting EPOLLOUT.
+On Thu, 25 Aug 2022, Ilpo Järvinen wrote:
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/dz.c | 2 +-
- drivers/tty/serial/dz.h | 3 ---
- 2 files changed, 1 insertion(+), 4 deletions(-)
+> >  Also I'd rather:
+> > 
+> > #define DZ_WAKEUP_CHARS      UART_XMIT_SIZE
+> > 
+> > and there's no need to include <linux/serial_core.h> in dz.h as the driver 
+> > itself already does that (and dz.h is an auxiliary private header).
+> > 
+> >  Thanks for your submission.
+> 
+> I have started to becomes more inclined into the direction of dropping 
+> DZ_WAKEUP_CHARS entirely and use WAKEUP_CHARS like most of the drivers do
+> after staring now at WAKEUP_CHARS & uart_write_wakeup() lines just now.
+> 
+> There is just a handful of exceptions, rest of the drivers all use 256 as 
+> WAKEUP_CHARS. dz uses 1024 (4k/4) and rest of the exceptions use 
+> uart_circ_empty() but I suspect they should also be just converted to 
+> use WAKEUP_CHARS.
 
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index 5d2588f3e6a9..5df46f22abaa 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -283,7 +283,7 @@ static inline void dz_transmit_chars(struct dz_mux *mux)
- 	dz_out(dport, DZ_TDR, tmp);
- 	dport->port.icount.tx++;
- 
--	if (uart_circ_chars_pending(xmit) < DZ_WAKEUP_CHARS)
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&dport->port);
- 
- 	/* Are we are done. */
-diff --git a/drivers/tty/serial/dz.h b/drivers/tty/serial/dz.h
-index 3b3e31954f24..4b502bfad560 100644
---- a/drivers/tty/serial/dz.h
-+++ b/drivers/tty/serial/dz.h
-@@ -124,7 +124,4 @@
- 
- #define DZ_NB_PORT 4
- 
--#define DZ_XMIT_SIZE   4096                 /* buffer size */
--#define DZ_WAKEUP_CHARS   DZ_XMIT_SIZE/4
--
- #endif /* DZ_SERIAL_H */
--- 
-2.30.2
+ It may have to do with the particularly low speed of the machines the 
+driver/hardware is used with, one of the slowest Linux has ever supported 
+(I think only the m68k port may serve slower machines) and certainly the 
+slowest and earliest MIPS processors, down to R2000 clocked at 12MHz.
 
+ Also bear in mind that the DZ11 interface is a serial line multiplexer 
+rather than a classic single or multiple UART, handling up to 8 lines via 
+shared Tx/Rx buffers (the original implementation was in the form of a 
+rather large discrete board built of SSI chips).  In this particular 
+integrated ASIC implementation 4 lines are handled and a character to be 
+transmitted may have to wait for the other 3 lines to be handled first.  
+
+ This may have contributed to the choice made by the original implementer 
+here and any change will have to be thoroughly understood and evaluated.
+
+ See <https://gunkies.org/wiki/DZ11_asynchronous_serial_line_interface> 
+for an overview of the device, technical documentation, and a photo of a 
+specimen dating back to mid 1970s.
+
+  Maciej
