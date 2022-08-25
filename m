@@ -2,128 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B0CC00140
-	for <linux-serial@archiver.kernel.org>; Wed, 24 Aug 2022 14:29:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4DDC28D13
+	for <linux-serial@archiver.kernel.org>; Thu, 25 Aug 2022 06:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237850AbiHXO3z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 24 Aug 2022 10:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
+        id S236661AbiHYG6y (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239228AbiHXO3y (ORCPT
+        with ESMTP id S236593AbiHYG6w (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 24 Aug 2022 10:29:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B451D10D0;
-        Wed, 24 Aug 2022 07:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661351388; x=1692887388;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=p+lH+5Wlft7OPjVPOMmWKBVBb/o4houeAm+ShSEsIt0=;
-  b=wqpAip+yeFY2/53mvk97BPGaCDl8Ikjrtdx47aVJoIRdqqBfV+D5ds70
-   zD25NBY9SGBruptgFeBy/7upP5BCRb03tGG65eBRLXmoBw7kjplrY2s4H
-   9EhcqLbusfWqFhfchVDaFeK9SH5Ug6iVRWVuNgJJV/Go4b+stGg5+oro/
-   6vdVSEv5EZFWqYyBEYHLExXkVD33UEBzI+4RukzZmy8z73mpUkN7e2CVh
-   K0uWXFxr+2B3oKiQKZg1pc6e60K4EiAAUbUu8UTxbp3u2O7hkrenph28o
-   MJMyyVtCx5Qa7q3BSVdPH+zFc7A2/1q9rm7tr7jqwIeCqQV9OEI4bspap
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="177706682"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 07:29:48 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 07:29:47 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 07:29:44 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <rmk+kernel@arm.linux.org.uk>, <claudio@evidence.eu.com>,
-        <rick@efn.org>, <ryan@bluewatersys.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH v2] tty: serial: atmel: Preserve previous USART mode if RS485 disabled
-Date:   Wed, 24 Aug 2022 17:29:03 +0300
-Message-ID: <20220824142902.502596-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 25 Aug 2022 02:58:52 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3FCA1D2A
+        for <linux-serial@vger.kernel.org>; Wed, 24 Aug 2022 23:58:51 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id s1so24195941lfp.6
+        for <linux-serial@vger.kernel.org>; Wed, 24 Aug 2022 23:58:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ru9SpbqH38i+/HCULGGRRkwAB5xZGhAPPEBe8VIbuVY=;
+        b=grbaP9d3L824VTVSPhpmGWtTulHg7jns+IAx4lpJsJOqyLymPeeFFU5dqLxIPNJwhJ
+         024mT8CasogSt2BX33fxd3nik+37FvmstNMi02rolF4bz0tZJOVC4H0naYVwkieoN+o1
+         A+oa31wiAe5yHC8o359JEwwkrxK9fvgtKNmb0cffoJXJJOWqpBhsJe4oST+eNSaaWbkB
+         YOD3n4iLS21QNiA0DYteZp1Bc/y0yr9RuTbMG9S1j7CEPVagcsx0XCpQgLiTXCzpkCKN
+         iT3tqDO/r/cxJ+e73ACO1brs02Rl/m4vRIgrkeg954zY71o8LAaTiO3Edu9+XcRTnGGy
+         lqCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ru9SpbqH38i+/HCULGGRRkwAB5xZGhAPPEBe8VIbuVY=;
+        b=L/E5sHKPxJKgjZCmIKyNg59IkKJxuNpSv2yl1dyZZM7vX/bjMXBPz/eGV5XGhQ/y4m
+         eKqttu/4KX7HYaRpy0dFqL1O9yTcEH3zOSOhOe8o/9kE3Trp0K1oD/E4R5/5rAowJH2n
+         DhNGilJ9FvAAhY+p0pbVqTjYB8WtqhgiHQfQtBqlWd+W9MsQ/qYwHmqkbli8KSevRl/O
+         BAnJOSFqDDsn2cqSJPBzBao4zhDdkJQqnbI79TYzE86oRnwEXb6Ak/+luZS5k3jb4shF
+         LhSYIHx+g/wH61Wi1XUw3157bcqNLyoshdzT8SqzAOSryz4EDv2klVkAuN5CgBPFz0ll
+         EHZw==
+X-Gm-Message-State: ACgBeo0APpLFi7abvl+NZyyC1qaJ2uxCoBHhYDCACWwaSDnMrMNhS33I
+        oUtvA3fbDS+p/to0zmQuNtl6MzcS76LmYR0ZU7s=
+X-Google-Smtp-Source: AA6agR7EbTEOcaW559NfuYrmueSa1EcTuokes0+mBX/MzT3e/12MgVlIf1TsZJXwfRkZjD4TJC2VHw==
+X-Received: by 2002:ac2:5d2c:0:b0:493:221:f011 with SMTP id i12-20020ac25d2c000000b004930221f011mr674330lfb.349.1661410729501;
+        Wed, 24 Aug 2022 23:58:49 -0700 (PDT)
+Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id g5-20020a056512118500b00492f1755d8bsm327259lfr.243.2022.08.24.23.58.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 23:58:49 -0700 (PDT)
+Message-ID: <bd3f90cd-865a-3119-c416-9654db0805da@linaro.org>
+Date:   Thu, 25 Aug 2022 09:58:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] dt-bindings: serial: samsung: Add 'power-domains'
+ property
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220823145649.3118479-1-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220823145649.3118479-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Whenever the atmel_rs485_config() driver method would be called,
-the USART mode is reset to normal mode before even checking if
-RS485 flag is set, thus resulting in losing the previous USART
-mode in the case where the checking fails.
-
-Some tools, such as `linux-serial-test`, lead to the driver calling
-this method when doing the setup of the serial port: after setting the
-port mode (Hardware Flow Control, Normal Mode, RS485 Mode, etc.),
-`linux-serial-test` tries to enable/disable RS485 depending on
-the commandline arguments that were passed.
-
-Example of how this issue could reveal itself:
-When doing a serial communication with Hardware Flow Control through
-`linux-serial-test`, the tool would lead to the driver roughly doing
-the following:
-- set the corresponding bit to 1 (ATMEL_US_USMODE_HWHS bit in the
-ATMEL_US_MR register) through the atmel_set_termios() to enable
-Hardware Flow Control
-- disable RS485 through the atmel_config_rs485() method
-Thus, when the latter is called, the mode will be reset and the
-previously set bit is unset, leaving USART in normal mode instead of
-the expected Hardware Flow Control mode.
-
-This fix ensures that this reset is only done if the checking for
-RS485 succeeds and that the previous mode is preserved otherwise.
-
-Fixes: e8faff7330a35 ("ARM: 6092/1: atmel_serial: support for RS485 communications")
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
+On 23/08/2022 17:56, Rob Herring wrote:
+> Some Samsung UARTs are in a power domain, so allow 'power-domains'
+> property.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
 
-v1 -> v2:
-- split commit message to slightly shorter bits such that it would
-be easier to read
-- add Reviewed-by tag
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-
-
- drivers/tty/serial/atmel_serial.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 0a0b46ee0955..c29b1fb48694 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -298,9 +298,6 @@ static int atmel_config_rs485(struct uart_port *port, struct ktermios *termios,
- 
- 	mode = atmel_uart_readl(port, ATMEL_US_MR);
- 
--	/* Resetting serial mode to RS232 (0x0) */
--	mode &= ~ATMEL_US_USMODE;
--
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
- 		dev_dbg(port->dev, "Setting UART to RS485\n");
- 		if (rs485conf->flags & SER_RS485_RX_DURING_TX)
-@@ -310,6 +307,7 @@ static int atmel_config_rs485(struct uart_port *port, struct ktermios *termios,
- 
- 		atmel_uart_writel(port, ATMEL_US_TTGR,
- 				  rs485conf->delay_rts_after_send);
-+		mode &= ~ATMEL_US_USMODE;
- 		mode |= ATMEL_US_USMODE_RS485;
- 	} else {
- 		dev_dbg(port->dev, "Setting UART to RS232\n");
--- 
-2.25.1
-
+Best regards,
+Krzysztof
