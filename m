@@ -2,77 +2,102 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2104CECAAD4
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 16:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A85CFECAAA3
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 16:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344677AbiHZQB6 (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
+        id S230256AbiHZQE3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Aug 2022 12:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344700AbiHZQBz (ORCPT
+        with ESMTP id S233247AbiHZQE1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:01:55 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8C7D3444;
-        Fri, 26 Aug 2022 09:01:54 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id h22so1582340qtu.2;
-        Fri, 26 Aug 2022 09:01:54 -0700 (PDT)
+        Fri, 26 Aug 2022 12:04:27 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C74D4779;
+        Fri, 26 Aug 2022 09:04:27 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id j1so1384742qvv.8;
+        Fri, 26 Aug 2022 09:04:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=n2+dMPy2K7fo8g/XVO6oLoG9YstnR6LpwprL/jGVfrg=;
-        b=Wznyr51DfwIlXTAcFFB7EU0/mOgECJ7qcyamDo8thQEMuIsm7dG4AzCfiwyf1kDSVr
-         W45soWcIZw5uvx4ruwLBX1JTyUnrjnn6Wjt5+anbIoSYBA17F/X2l1ks1Mx71eeJaxOx
-         AdvlgMeChdpiv2fp+Fwnbh1Kodl+Fct4zrabLUZ8X70bwQ5pUZ425N/0CQbu4RxArO3w
-         3sFY2xbAqDINyZ6zdQSoWSZ46EQ4/8AG19X/49veCp1V7qVYTbcC9oyX1GKWX7GMbHV8
-         Fl55JxKUAjLlU2E9ny7E0sW2lBD1N9eJuPpqmL+G3KCq0m6Dz4bYs95JvQxVHwEEqocF
-         q9CA==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=FeNwIbGSnin/6lpCxdAU71xVZ3XiHSxLN5ZJ0/sc5G0=;
+        b=buuUZ0d/2nkVQRZuHDDqYtaT7TzNu324SLpv4R10HSLnwhDQ96WJVTnKtR7zum0t1r
+         hqj2e0FMaD6GbufjOJ4k9zx3ZUqUNUUZyPkO0lahpnsaJBBptUclrfCtMuU9efsK6FXO
+         2UEynvZ5f62lHMWe/gcTdeOgbu5jBoMFgqkhiTV6KhEUNElx0rs4cVYkE86I1Q4HFjSY
+         2R9r/IJTqVgCguPDvErK+IEOMNmyzUp9lN4EC/OHyRu0rlB4wUvg4WTyTGdIRpTn1DGV
+         59ibKqH5KGO5FyeGk1djPNZVC5NZe+orkbYsqEKimpJUj6+jVJwK5STuzPRpCpqylF5/
+         oWZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=n2+dMPy2K7fo8g/XVO6oLoG9YstnR6LpwprL/jGVfrg=;
-        b=ZOtdbMNOCYKMYEpmIzz3qg3c+0WcbEM1rJZueXXobteVr3LajYl/aHCNmGEbx0oGnS
-         0kMQ5YnkgUYd2nxHxZot4kHPuZ9nvaVnEwJD94KgnHAHHWxdHb6KRk0mKGx0rJL4Y8Rp
-         ojcXp+Jfm9KtewFPDKGfWSj/cuPhlK7xqyTI8KSjVTZjAgqP9oE1uyTsPsYp98vOQXtb
-         H7V5MoJPCBeXoV19hnT75BRmzakKEykVt2oMhKZbeTHQ1m5GK8ZmKmmokU+lCDiKOkDY
-         3c1Wj/PGMX7jQW6mOGa8b3IErubqLEURHSkKEuKyGBh9YE0Ld6mjUUhrdZoUYK7ITVSL
-         YnBg==
-X-Gm-Message-State: ACgBeo1y1a0/IqiTMmccUSbHdyhWJh3fD2pV3ZdPRhOPGuuWqNu+3b0V
-        yvICfDMsILIxU7YqLeoxA/fajsk0tbO03w6f7Muig68qeqM=
-X-Google-Smtp-Source: AA6agR7K74SWRACvY818br3dUrpwzySIZUk87d3KiMupGeottKKPN+aAyHONaSKkMse+j6LAhVoQ+mWf7MboAccgSMM=
-X-Received: by 2002:a05:622a:491:b0:344:95bf:8f05 with SMTP id
- p17-20020a05622a049100b0034495bf8f05mr326066qtx.61.1661529713464; Fri, 26 Aug
- 2022 09:01:53 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=FeNwIbGSnin/6lpCxdAU71xVZ3XiHSxLN5ZJ0/sc5G0=;
+        b=y1n6GlnSlLPsYFN2gvFfYfNkD27jqsU8Pb0/u8qdzrksvoGDy3YJDetatJynGl/ZXn
+         xLcbmAYvhQhskA/06+33W26/s3n6Zoubkg31U78Gv4sKBxUUQ6Tvo2qlGZK+jvzfRCsv
+         CyQfmPuoyFUdN80G5mVD7W+k+AMXbdYtkr5pJ+CK81a7fzXbyKMmEyi655Ygv/vSQ1Wm
+         YSTfPQQGhPUF6bFMLxWqEkfQnF8YK0iyYPZniVxGZb+quh+qPy23u9xj/ubjVzgI2H/I
+         LbHm30kiNwhH27YI61K9LbKUvOJHERpfZmNH1oHFA3uaH9/uioCq5E0bZEDKFPDsiBDI
+         BIyA==
+X-Gm-Message-State: ACgBeo0Abu4CPeTfHevSWCJk+Sa4Z4zf7pbnhAviCbcHQ1loYdJkKJ8X
+        YzhAByu52P8YIIa/5aBwUogRTeaD0uYdYfjvKjw=
+X-Google-Smtp-Source: AA6agR7GxQegK7svGSDjOShs7ExKxeZkw77WPZE227Ogs36elAiNCLBVrcaeegmHRf0Y5x7Clj39vvbXehqfnaKq9E0=
+X-Received: by 2002:ad4:5baf:0:b0:476:6a9e:b5e1 with SMTP id
+ 15-20020ad45baf000000b004766a9eb5e1mr300030qvq.64.1661529866149; Fri, 26 Aug
+ 2022 09:04:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826083612.1699194-1-floridsleeves@gmail.com>
-In-Reply-To: <20220826083612.1699194-1-floridsleeves@gmail.com>
+References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Aug 2022 19:01:17 +0300
-Message-ID: <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of uart_port_check()
-To:     Li Zhong <floridsleeves@gmail.com>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
+Date:   Fri, 26 Aug 2022 19:03:50 +0300
+Message-ID: <CAHp75VeJ2KR_-JUfW_3LEgB1ezQQzJ_2jLbH8vcWOtTSDAhKdQ@mail.gmail.com>
+Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
+ larger patch series)
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
+On Thu, Aug 25, 2022 at 12:19 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
 >
-> uart_port_check() will return NULL pointer when state->uart_port is
-> NULL. Check the return value before dereference it to avoid
-> null-pointer-dereference error.
+> Add uart_xmit_advance() helper to handle circular xmit buffer
+> advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+> that previously lacked to accounting for DMA Tx.
 
-Have you taken the locking into consideration?
-If no, please do, if yes, expand your commit message to explain why
-the current locking scheme doesn't prevent an error from happening.
+For the whole series
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Thanks for fixing this issue.
 
--- 
+> Greg,
+> I've a another series on top this which is tty-next material making the
+> rest of the drivers to use uart_xmit_advance(). That series obviously
+> depends on the patch 1/3 of this series so if you end up putting these
+> 3 patches into tty-linus, I'll need it to be merged into tty-next at
+> some point (I'm not in a big hurry with this so if you choose to delay
+> the merge, it's not a big deal).
+>
+> Ilpo J=C3=A4rvinen (3):
+>   serial: Create uart_xmit_advance()
+>   serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+>   serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+>
+>  drivers/tty/serial/serial-tegra.c |  5 ++---
+>  drivers/tty/serial/tegra-tcu.c    |  2 +-
+>  include/linux/serial_core.h       | 17 +++++++++++++++++
+>  3 files changed, 20 insertions(+), 4 deletions(-)
+>
+> --
+> 2.30.2
+>
+
+
+--=20
 With Best Regards,
 Andy Shevchenko
