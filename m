@@ -2,102 +2,87 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A85CFECAAA3
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 16:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE8BECAAA3
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 17:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbiHZQE3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        id S1344830AbiHZRjB (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Aug 2022 13:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiHZQE1 (ORCPT
+        with ESMTP id S1344903AbiHZRix (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:04:27 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C74D4779;
-        Fri, 26 Aug 2022 09:04:27 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id j1so1384742qvv.8;
-        Fri, 26 Aug 2022 09:04:26 -0700 (PDT)
+        Fri, 26 Aug 2022 13:38:53 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D62E1A8D
+        for <linux-serial@vger.kernel.org>; Fri, 26 Aug 2022 10:38:50 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id n24so2224671ljc.13
+        for <linux-serial@vger.kernel.org>; Fri, 26 Aug 2022 10:38:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=FeNwIbGSnin/6lpCxdAU71xVZ3XiHSxLN5ZJ0/sc5G0=;
-        b=buuUZ0d/2nkVQRZuHDDqYtaT7TzNu324SLpv4R10HSLnwhDQ96WJVTnKtR7zum0t1r
-         hqj2e0FMaD6GbufjOJ4k9zx3ZUqUNUUZyPkO0lahpnsaJBBptUclrfCtMuU9efsK6FXO
-         2UEynvZ5f62lHMWe/gcTdeOgbu5jBoMFgqkhiTV6KhEUNElx0rs4cVYkE86I1Q4HFjSY
-         2R9r/IJTqVgCguPDvErK+IEOMNmyzUp9lN4EC/OHyRu0rlB4wUvg4WTyTGdIRpTn1DGV
-         59ibKqH5KGO5FyeGk1djPNZVC5NZe+orkbYsqEKimpJUj6+jVJwK5STuzPRpCpqylF5/
-         oWZA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=e2IfiBb0W8qqFbCW2qSjgP3+vMQrquSqpbONfR0RqQA=;
+        b=kv7O+CHk3Xotu+SMyz7bFHT+oaIsYprV/N2I5Kob2cbI92pGqeTTyhpT8+gMSg1BjO
+         6hDabb2ZamzgLvPpW9m9fVAF9EdXRLoBTczVWoesjQtGFFfnV/rArQJNAb1JzrablBVa
+         y3XpkoFODbBDragyspimZ4L3vfM8SPsBD8UJ1+zE4pzmhNABgRRmLPW/Rsd2kN2lQhvl
+         vnpNrsSH4yIO3ikR4daNNTess1LN/TTI2qxhGa0h0ML46SZrdRY1R4KlrlSOC/fPWKvO
+         lgNtrjckynPIAEdYjjRmB+PVn15QxNF7a3Zyw7Li+IB51j8078dZ3EJH5NjvpgsWTtWU
+         RTTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=FeNwIbGSnin/6lpCxdAU71xVZ3XiHSxLN5ZJ0/sc5G0=;
-        b=y1n6GlnSlLPsYFN2gvFfYfNkD27jqsU8Pb0/u8qdzrksvoGDy3YJDetatJynGl/ZXn
-         xLcbmAYvhQhskA/06+33W26/s3n6Zoubkg31U78Gv4sKBxUUQ6Tvo2qlGZK+jvzfRCsv
-         CyQfmPuoyFUdN80G5mVD7W+k+AMXbdYtkr5pJ+CK81a7fzXbyKMmEyi655Ygv/vSQ1Wm
-         YSTfPQQGhPUF6bFMLxWqEkfQnF8YK0iyYPZniVxGZb+quh+qPy23u9xj/ubjVzgI2H/I
-         LbHm30kiNwhH27YI61K9LbKUvOJHERpfZmNH1oHFA3uaH9/uioCq5E0bZEDKFPDsiBDI
-         BIyA==
-X-Gm-Message-State: ACgBeo0Abu4CPeTfHevSWCJk+Sa4Z4zf7pbnhAviCbcHQ1loYdJkKJ8X
-        YzhAByu52P8YIIa/5aBwUogRTeaD0uYdYfjvKjw=
-X-Google-Smtp-Source: AA6agR7GxQegK7svGSDjOShs7ExKxeZkw77WPZE227Ogs36elAiNCLBVrcaeegmHRf0Y5x7Clj39vvbXehqfnaKq9E0=
-X-Received: by 2002:ad4:5baf:0:b0:476:6a9e:b5e1 with SMTP id
- 15-20020ad45baf000000b004766a9eb5e1mr300030qvq.64.1661529866149; Fri, 26 Aug
- 2022 09:04:26 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=e2IfiBb0W8qqFbCW2qSjgP3+vMQrquSqpbONfR0RqQA=;
+        b=iTNTBZCfWnsA+7ZknU6XQSQZRzUwfop672iPLX4SsgyxD1clyXiDa6BOZ5sMWL0M7b
+         3oZyP/PVIvcbRfdEF4VNivqtdPjhvkuP0a04AB3jsJNMYJ6Lj5/oO3baVA7ZPjArE4ip
+         dTr7VSPv62kyE/Ol+WU0rcbInMzTp1E/renIhKsbjV7e3lA8aP2BHtA5XnewF8JKkSOX
+         84n4CBCpClTpAIFKMxBJwk76opQw3Erqev9TIgFxgofLaivlChic0ZkuALxDzTk03hca
+         B8ZSf16D9KA4DLDwmx3QIF19v1g27Ds8KbZS9o6H9KkW0r0VVvkNGaWi3eO+uTdNCJfe
+         qHBA==
+X-Gm-Message-State: ACgBeo2o6hRuQ+qUXoJil181esOH3iIJYbt//QJUYoZlf+BvtZgvrZFf
+        DV3g+qtx6wI7ifqln4L2NzrBlg==
+X-Google-Smtp-Source: AA6agR6kKJcOX2vRNumOkiAthPve37jQ6XfAbkTySIH4NYnC7nkBamSfP5cdxg1q0EHBUCXVoMQ6VA==
+X-Received: by 2002:a2e:3504:0:b0:261:e52c:80b8 with SMTP id z4-20020a2e3504000000b00261e52c80b8mr2501617ljz.144.1661535529301;
+        Fri, 26 Aug 2022 10:38:49 -0700 (PDT)
+Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id s30-20020a19771e000000b00477c0365b20sm429768lfc.188.2022.08.26.10.38.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 10:38:47 -0700 (PDT)
+Message-ID: <32009f7c-ce00-d2a7-0794-166da6293bde@linaro.org>
+Date:   Fri, 26 Aug 2022 20:38:46 +0300
 MIME-Version: 1.0
-References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Aug 2022 19:03:50 +0300
-Message-ID: <CAHp75VeJ2KR_-JUfW_3LEgB1ezQQzJ_2jLbH8vcWOtTSDAhKdQ@mail.gmail.com>
-Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
- larger patch series)
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v4 1/2] dt-bindings: serial: pl011: Add a reg-io-width
+ parameter
+Content-Language: en-US
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>,
+        linux-serial@vger.kernel.org
+Cc:     git@amd.com, devicetree@vger.kernel.org, jirislaby@kernel.org,
+        linux@armlinux.org.uk, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org, gregkh@linuxfoundation.org
+References: <20220826120559.2122-1-shubhrajyoti.datta@amd.com>
+ <20220826120559.2122-2-shubhrajyoti.datta@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220826120559.2122-2-shubhrajyoti.datta@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 12:19 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> Add uart_xmit_advance() helper to handle circular xmit buffer
-> advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
-> that previously lacked to accounting for DMA Tx.
-
-For the whole series
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Thanks for fixing this issue.
-
-> Greg,
-> I've a another series on top this which is tty-next material making the
-> rest of the drivers to use uart_xmit_advance(). That series obviously
-> depends on the patch 1/3 of this series so if you end up putting these
-> 3 patches into tty-linus, I'll need it to be merged into tty-next at
-> some point (I'm not in a big hurry with this so if you choose to delay
-> the merge, it's not a big deal).
->
-> Ilpo J=C3=A4rvinen (3):
->   serial: Create uart_xmit_advance()
->   serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
->   serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
->
->  drivers/tty/serial/serial-tegra.c |  5 ++---
->  drivers/tty/serial/tegra-tcu.c    |  2 +-
->  include/linux/serial_core.h       | 17 +++++++++++++++++
->  3 files changed, 20 insertions(+), 4 deletions(-)
->
-> --
-> 2.30.2
->
+On 26/08/2022 15:05, Shubhrajyoti Datta wrote:
+> Some of the implementations support only 32-bit accesses.
+> Add a parameter reg-io-width for such platforms.
+> 
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
