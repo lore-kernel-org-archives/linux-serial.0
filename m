@@ -2,193 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C12ECAAD4
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 15:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A40ECAAA3
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 15:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344606AbiHZPvd (ORCPT
+        id S1344657AbiHZPyg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        Fri, 26 Aug 2022 11:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344497AbiHZPvc (ORCPT
+        with ESMTP id S1344606AbiHZPyc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:51:32 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27739CEB36;
-        Fri, 26 Aug 2022 08:51:31 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id r6so1543307qtx.6;
-        Fri, 26 Aug 2022 08:51:31 -0700 (PDT)
+        Fri, 26 Aug 2022 11:54:32 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA441D076E;
+        Fri, 26 Aug 2022 08:54:31 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id f4so1419481qkl.7;
+        Fri, 26 Aug 2022 08:54:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc;
-        bh=FesPnI2XuGI2A/F80YHcfjcFtoY5eMqDAbWBbAutgu0=;
-        b=Tb1NPOfLTTuZPV2OEeyPMKLrpCOa8GCeaT0SfZHEK1oPlezyF0I58nu8WzeKr9AW0y
-         Om0g2tQUPpuHWClziyqnLqltAWbr+sjQ1oCYMCnTOchwtO9/Uyq8eW7wrYQlC4G60rjS
-         5KHcMSODDfgszM9scFQhvPE25sO7yDB7vGPEFX1LcFRNNvb/Staxrf8f7pFmIdWmHigQ
-         Dl70sf7T82JxR8xYxTVeRZZE2cNtazPkTwd/SqUGJZLCfIkosqtgwuwuyfBD5pdk18Jy
-         3mYVORFJwlPkuayJ6qdEFEnoariQUKPkvTd0ZlGr3ugh7PGZREdBasFgOQfurMS6fg6e
-         jP5g==
+        bh=VoZZLFDbWcdv8jm5ypqJnq3zDL5dbLMry5IM4+TKOHU=;
+        b=RZWfljlS2yVC7jjEUkW2mCrFIs87PdpSGPxhOzMEUQ/nOdUtXO7EVRhu6PlQbgfoyQ
+         o0ynanbHMIkqYmxYfn24DyXGzAoZ+Gfoa/3piKJOFOx5e/e6YxRhhZhpxAzdGyB9VXp/
+         cIb/iUcPrBiUl66uQR5c8rD6HLvlQcbuvhAEsXSRx0MDD8Az7IAV7vy3j+jdaeoPbZ4j
+         rodnmGgwyg+zsobw0x0mkMPwzSXz8CMg9noZhgq3Jw1hWEQ8kDgD0AMsCQ9UCbh8+x2K
+         eMaM/FLtU730nYNwKgxNe4Ei27zg3ZtYnvm8nzPacW9Zo2ZvC1NxhI6YhthBGuuXk332
+         6zLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=FesPnI2XuGI2A/F80YHcfjcFtoY5eMqDAbWBbAutgu0=;
-        b=BhEHOPWbDbLGZy8JumzHRvcG5SF/p9cXZqKhVv2HcKRkTAKACQKRS9Ksn5FMXNKrLu
-         vXWx5Hb8f5LDhE/ieIai9XTPD5vMKR4m7uRailHX9yk/u+UAqxpGxa+wWrzf8RjMdPT4
-         LfpKVFzAfeeyyKd2TjDvOnvr0mgmQiAryyhhjcShKyHFzOq+Eh28wwCLBkZpKTB66QPl
-         n646bBbf5vrtsOH0VkW4rc5LeWwcdqg1E0CqpTy4pEDX6BYNeMGEO+tAD+cf0NC3D9tN
-         nDNXlFLAc8SWkjCIFlPP3BrRv8VPstpCBYzBC/rWU/teymoYbWmkd8oMpyqhjRVNeVqr
-         SB4Q==
-X-Gm-Message-State: ACgBeo1oCvvA9domtZh6pjzjtyhWkiPpN1xn5Pt3viTIRivl5ET97kqn
-        YQHHQUixFccvkueVy9kSxgXOae2bA92fV2LSb+4=
-X-Google-Smtp-Source: AA6agR4VGlk6KoIe8nbYogc4V3QKG0ZzM46cFZPVa7XoeVTCBC/6A5ViPmzidBFCq+bvi9tj/xF7S/yx8QEsIIGspxY=
-X-Received: by 2002:ac8:7dd0:0:b0:344:afc1:b11d with SMTP id
- c16-20020ac87dd0000000b00344afc1b11dmr277022qte.195.1661529090174; Fri, 26
- Aug 2022 08:51:30 -0700 (PDT)
+        bh=VoZZLFDbWcdv8jm5ypqJnq3zDL5dbLMry5IM4+TKOHU=;
+        b=nqcy6qv/sfciNtL2xxJet2bfYPyAIn48E+RP4hYFPAyioVAS8gRJxix6iE8YU0PIvI
+         bRxzdZkaFIuAjYrPmTsPm7qEPbrV1mJStZopcq5ocDuIGhgjGIeqWIjnenVasZuV9toO
+         RU63pM0lxdRQbFBIFOs3EHz3PseanEF5an+6pgfaSODUL4Dta1YtktTb4U8UlwGt6dYK
+         06+jmWhElsqFlzPbC0Yv/5T+WhPNR8tfG+hWBuNnaiXSNVlNqe/0xLLN7ejyq+7IDo5e
+         oBrSc4JV38RqVaoyIF6/h3o5/nPxDuOGjGV/lASBVjxng3hoorFQNchx2c4TDbHJ/Okt
+         fMvA==
+X-Gm-Message-State: ACgBeo2Qi8qhr5HBig13rPVHizm6PmKODxAp+eFHhxlno+e/cbZG3o7/
+        SAYIwhfpMUAdh9PX8lTew9LhmkkhRr3nhbYgZ8qwYki+Foo=
+X-Google-Smtp-Source: AA6agR5pcvtrmJk0mlfYcddOwvV0H3YXuIYkXI5Yhm6gnI6usWDdSLbolwyPHS713FQzXN+lqi8w/8Qd9uHygvW4SiY=
+X-Received: by 2002:a05:620a:2987:b0:6ba:dc04:11ae with SMTP id
+ r7-20020a05620a298700b006badc0411aemr252697qkp.748.1661529270876; Fri, 26 Aug
+ 2022 08:54:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826144629.11507-1-ilpo.jarvinen@linux.intel.com> <20220826144629.11507-4-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220826144629.11507-4-ilpo.jarvinen@linux.intel.com>
+References: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com> <20220825085810.7290-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220825085810.7290-3-ilpo.jarvinen@linux.intel.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Aug 2022 18:50:54 +0300
-Message-ID: <CAHp75Vc4NfZE6DxFnfeAS9fxnZHpxMjacHy1TsG8ib+FiCqFLQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] serial: Add kserial_rs485 to avoid wasted space due
- to .padding
+Date:   Fri, 26 Aug 2022 18:53:55 +0300
+Message-ID: <CAHp75Vf+ksuv6Y_xY=qPdGT7XTZGKpDwPT5UDqwBMUwkW47gRA@mail.gmail.com>
+Subject: Re: [PATCH 2/5] serial: cpm_uart: Remove custom frame size calculation
 To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 5:51 PM Ilpo J=C3=A4rvinen
+On Thu, Aug 25, 2022 at 11:58 AM Ilpo J=C3=A4rvinen
 <ilpo.jarvinen@linux.intel.com> wrote:
 >
-> Struct serial_rs485 has a .padding field to make uapi updates easier.
-
-The struct
-
-> It wastes space, however. Create struct kserial_rs485 which is a kerner
-> counterpart w/o padding.
+> The number of bits can be calculated using helpers in core, no need for
+> the driver to do it on its own.
 >
-> kernel_serial_rs485_to_user_rs485()'s rs485 can now become const as
-> padding is dealt within the local variable.
+> The mode register is programmed with frame bits minus 1, rearrange the
+> comments related to that "feature" closer to the actual write.
 
 ...
 
-> -static int user_rs485_to_kernel_serial_rs485(struct serial_rs485 *rs485,
-> +static int user_rs485_to_kernel_serial_rs485(struct kserial_rs485 *rs485=
-,
->                                              const struct serial_rs485 __=
-user *rs485_user)
->  {
-> -       if (copy_from_user(rs485, rs485_user, sizeof(*rs485)))
-> +       struct serial_rs485 rs485_uapi;
-> +
-> +       if (copy_from_user(&rs485_uapi, rs485_user, sizeof(*rs485)))
->                 return -EFAULT;
+> +               out_be16(&smcp->smc_smcmr, smcr_mk_clen(tty_get_frame_siz=
+e(termios->c_cflag) - 1) |
+> +                                          cval | SMCMR_SM_UART | prev_mo=
+de);
+>         } else {
+>                 out_be16(&pinfo->sccup->scc_genscc.scc_mrblr, pinfo->rx_f=
+ifosize);
+>                 out_be16(&pinfo->sccup->scc_maxidl, maxidl);
+> -               out_be16(&sccp->scc_psmr, (sbits << 12) | scval);
+> +               out_be16(&sccp->scc_psmr, (UART_LCR_WLEN(tty_get_char_siz=
+e(termios->c_cflag))
+> +                                          << 12) | scval);
 
-> +       *rs485 =3D *((struct kserial_rs485 *)&rs485_uapi);
+Seems it's better to calc it beforehand in the temporary variable for
+both branches of the conditional and fix a bit strange indentation
+here.
 
-So with all assets we have we can be sure that on BE64 / BE32 machines
-this will be flawless. Is this assumption correct?
+>         }
 
->         return 0;
->  }
-
-...
-
->  static int kernel_serial_rs485_to_user_rs485(struct serial_rs485 __user =
-*rs485_user,
-> -                                            struct serial_rs485 *rs485)
-> +                                            const struct kserial_rs485 *=
-rs485)
->  {
-> +       struct serial_rs485 rs485_uapi;
-
-> +       *((struct kserial_rs485 *)&rs485_uapi) =3D *rs485;
-
-Ditto.
-
-+ Blank line?
-
->         /* Return clean padding area to userspace */
-> -       memset(rs485->padding0, 0, sizeof(rs485->padding0));
-> -       memset(rs485->padding1, 0, sizeof(rs485->padding1));
-> +       memset(rs485_uapi.padding0, 0, sizeof(rs485_uapi.padding0));
-> +       memset(rs485_uapi.padding1, 0, sizeof(rs485_uapi.padding1));
->
-> -       if (copy_to_user(rs485_user, rs485, sizeof(*rs485)))
-> +       if (copy_to_user(rs485_user, &rs485_uapi, sizeof(rs485_uapi)))
->                 return -EFAULT;
->
->         return 0;
-
-...
-
-> +/* Compile-time asserts for kserial_rs485 and serial_rs485 equality (exc=
-ept padding) */
-
-struct kserial_rs485
-struct serial_rs485
-
-(rationale: standard representation in text / comments and be a link
-in case if this is converted to kernel doc)
-
-...
-
-> +/*
-> + * Must match with serial_rs485 in include/uapi/linux/serial.h excluding=
- the
-
-Ditto.
-
-> + * padding.
-> + */
-> +struct kserial_rs485 {
-> +       __u32   flags;                  /* RS485 feature flags */
-> +       __u32   delay_rts_before_send;  /* Delay before send (millisecond=
-s) */
-> +       __u32   delay_rts_after_send;   /* Delay after send (milliseconds=
-) */
-> +       struct {
-> +               __u8    addr_recv;
-> +               __u8    addr_dest;
-> +       };
-
-Btw, can't we convert them to kernel doc?
-
-> +};
-
-...
-
-> + * There's kernel counterpart kserial_rs485 of this struct without paddi=
-ng.
-
-struct kserial_rs485
 
 --=20
 With Best Regards,
