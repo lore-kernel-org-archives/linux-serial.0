@@ -2,62 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE82ECAAD4
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 15:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C12ECAAD4
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 15:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244076AbiHZPmt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48562 "EHLO
+        id S1344606AbiHZPvd (ORCPT
+        <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiHZPms (ORCPT
+        with ESMTP id S1344497AbiHZPvc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:42:48 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CF92252C;
-        Fri, 26 Aug 2022 08:42:47 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id l5so1534631qtv.4;
-        Fri, 26 Aug 2022 08:42:47 -0700 (PDT)
+        Fri, 26 Aug 2022 11:51:32 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27739CEB36;
+        Fri, 26 Aug 2022 08:51:31 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id r6so1543307qtx.6;
+        Fri, 26 Aug 2022 08:51:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc;
-        bh=UFYQwmu3rx37rlaV8i6ZO9uxfEYKF+2shE4ZpYEpXS0=;
-        b=E3xS99QZ67M2h0xfnm0VDKCylMbX5vRHMTg/Ekxj0HA9cukoYWwbOCkO1UIZgGnmT+
-         ZNaw78blv4nAGekONnxH0iNYZmuDcathGUWYm4e3bo2PhXd2D9nc7xlP+GRbHYKuWM9f
-         2B9ZBXkrwVHXivhiHK9+JU05/e91rdQJbOBneio8fOgeJDcA9o4ufmgC/Y+zOPOaJn8c
-         JUDV+QD6f8VWhYqG9/PR6RjIQAZrPpKGrrKRjhXFKi9V6Ci0NZTiXeM+xrM7T6LAum43
-         DdA0vnamqruIuq4btn0Bz3+zMs0EoOk5jHctBOocmTY/XSUa66Jakqry3h2d4/zrxsmW
-         Ge8Q==
+        bh=FesPnI2XuGI2A/F80YHcfjcFtoY5eMqDAbWBbAutgu0=;
+        b=Tb1NPOfLTTuZPV2OEeyPMKLrpCOa8GCeaT0SfZHEK1oPlezyF0I58nu8WzeKr9AW0y
+         Om0g2tQUPpuHWClziyqnLqltAWbr+sjQ1oCYMCnTOchwtO9/Uyq8eW7wrYQlC4G60rjS
+         5KHcMSODDfgszM9scFQhvPE25sO7yDB7vGPEFX1LcFRNNvb/Staxrf8f7pFmIdWmHigQ
+         Dl70sf7T82JxR8xYxTVeRZZE2cNtazPkTwd/SqUGJZLCfIkosqtgwuwuyfBD5pdk18Jy
+         3mYVORFJwlPkuayJ6qdEFEnoariQUKPkvTd0ZlGr3ugh7PGZREdBasFgOQfurMS6fg6e
+         jP5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=UFYQwmu3rx37rlaV8i6ZO9uxfEYKF+2shE4ZpYEpXS0=;
-        b=xfGS6vD8+F55/Dy1XrTcbMTaYaD2R0j7JtBij4fy9blzDw5hRqPsmL8Mz0K6+JeAi+
-         0BuRLXHFWrMpwRvj6+X0Owx2Jzh1ImU2WjUtuyKwtbNNO2uVk18u1WOyLcJ21nZyZXY8
-         gbwQ+R/anbFWTpKQVJGZmuCzY2bg1uanSiA/c6LSgZ8YI7rG0K5hrmefXsmOaLTjEv6F
-         b/JJ1+EMvEnrJVj4T+LjxVqHwwz9uTUi3nxAM/DXSGYddi526MxH+fKsUmCoxED+T9YX
-         fB4mZf+mOX/vFcoYgvZqPdp+eGObxaZeZFi0H76D9cu3E8mPA3suWdVtKCkFrMiSodjg
-         5KVw==
-X-Gm-Message-State: ACgBeo1dGBFTMI7GDSKuR7QtpeZd90G6bOzYOk4xV2/0n8m9K0r873Uh
-        MQg4qA6LwWfDOjJkIl4BgmWcUbSzJ1+5ahf4l2JPNy8/bWE=
-X-Google-Smtp-Source: AA6agR79yyBV/4OsWRReLPHNkWaTO++FBqvIDX8IR/keAnrVwQdeR4bl6BBuHUsQrakm0ZSX9myzbyqFXg44YIBIXuM=
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
- v6-20020ac85786000000b003433051170dmr234782qta.429.1661528566343; Fri, 26 Aug
- 2022 08:42:46 -0700 (PDT)
+        bh=FesPnI2XuGI2A/F80YHcfjcFtoY5eMqDAbWBbAutgu0=;
+        b=BhEHOPWbDbLGZy8JumzHRvcG5SF/p9cXZqKhVv2HcKRkTAKACQKRS9Ksn5FMXNKrLu
+         vXWx5Hb8f5LDhE/ieIai9XTPD5vMKR4m7uRailHX9yk/u+UAqxpGxa+wWrzf8RjMdPT4
+         LfpKVFzAfeeyyKd2TjDvOnvr0mgmQiAryyhhjcShKyHFzOq+Eh28wwCLBkZpKTB66QPl
+         n646bBbf5vrtsOH0VkW4rc5LeWwcdqg1E0CqpTy4pEDX6BYNeMGEO+tAD+cf0NC3D9tN
+         nDNXlFLAc8SWkjCIFlPP3BrRv8VPstpCBYzBC/rWU/teymoYbWmkd8oMpyqhjRVNeVqr
+         SB4Q==
+X-Gm-Message-State: ACgBeo1oCvvA9domtZh6pjzjtyhWkiPpN1xn5Pt3viTIRivl5ET97kqn
+        YQHHQUixFccvkueVy9kSxgXOae2bA92fV2LSb+4=
+X-Google-Smtp-Source: AA6agR4VGlk6KoIe8nbYogc4V3QKG0ZzM46cFZPVa7XoeVTCBC/6A5ViPmzidBFCq+bvi9tj/xF7S/yx8QEsIIGspxY=
+X-Received: by 2002:ac8:7dd0:0:b0:344:afc1:b11d with SMTP id
+ c16-20020ac87dd0000000b00344afc1b11dmr277022qte.195.1661529090174; Fri, 26
+ Aug 2022 08:51:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826144629.11507-1-ilpo.jarvinen@linux.intel.com> <20220826144629.11507-3-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220826144629.11507-3-ilpo.jarvinen@linux.intel.com>
+References: <20220826144629.11507-1-ilpo.jarvinen@linux.intel.com> <20220826144629.11507-4-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220826144629.11507-4-ilpo.jarvinen@linux.intel.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Aug 2022 18:42:10 +0300
-Message-ID: <CAHp75Vf5v3dvm1FeJa-KNNiqKKYfc9S8xjcMPJPTKYjZFjunSA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] serial: add helpers to copy serial_rs485 from/to userspace
+Date:   Fri, 26 Aug 2022 18:50:54 +0300
+Message-ID: <CAHp75Vc4NfZE6DxFnfeAS9fxnZHpxMjacHy1TsG8ib+FiCqFLQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] serial: Add kserial_rs485 to avoid wasted space due
+ to .padding
 To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
         Lino Sanfilippo <LinoSanfilippo@gmx.de>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -68,122 +87,108 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On Fri, Aug 26, 2022 at 5:51 PM Ilpo J=C3=A4rvinen
 <ilpo.jarvinen@linux.intel.com> wrote:
 >
-> Due to the padding fields, the copying will need to a bit more than
-> usual.
->
-> Move padding clearing into the helper that copies back to userspace.
+> Struct serial_rs485 has a .padding field to make uapi updates easier.
 
-If you agree on the below and address as suggested,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+The struct
 
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/serial_core.c | 41 +++++++++++++++++++++-----------
->  1 file changed, 27 insertions(+), 14 deletions(-)
+> It wastes space, however. Create struct kserial_rs485 which is a kerner
+> counterpart w/o padding.
 >
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 9c1bf36b7a93..6d57cfdeda9d 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1375,10 +1375,6 @@ static void uart_sanitize_serial_rs485(struct uart=
-_port *port, struct serial_rs4
->         rs485->flags &=3D supported_flags;
->
->         uart_sanitize_serial_rs485_delays(port, rs485);
-> -
-> -       /* Return clean padding area to userspace */
+> kernel_serial_rs485_to_user_rs485()'s rs485 can now become const as
+> padding is dealt within the local variable.
+
+...
+
+> -static int user_rs485_to_kernel_serial_rs485(struct serial_rs485 *rs485,
+> +static int user_rs485_to_kernel_serial_rs485(struct kserial_rs485 *rs485=
+,
+>                                              const struct serial_rs485 __=
+user *rs485_user)
+>  {
+> -       if (copy_from_user(rs485, rs485_user, sizeof(*rs485)))
+> +       struct serial_rs485 rs485_uapi;
+> +
+> +       if (copy_from_user(&rs485_uapi, rs485_user, sizeof(*rs485)))
+>                 return -EFAULT;
+
+> +       *rs485 =3D *((struct kserial_rs485 *)&rs485_uapi);
+
+So with all assets we have we can be sure that on BE64 / BE32 machines
+this will be flawless. Is this assumption correct?
+
+>         return 0;
+>  }
+
+...
+
+>  static int kernel_serial_rs485_to_user_rs485(struct serial_rs485 __user =
+*rs485_user,
+> -                                            struct serial_rs485 *rs485)
+> +                                            const struct kserial_rs485 *=
+rs485)
+>  {
+> +       struct serial_rs485 rs485_uapi;
+
+> +       *((struct kserial_rs485 *)&rs485_uapi) =3D *rs485;
+
+Ditto.
+
++ Blank line?
+
+>         /* Return clean padding area to userspace */
 > -       memset(rs485->padding0, 0, sizeof(rs485->padding0));
 > -       memset(rs485->padding1, 0, sizeof(rs485->padding1));
->  }
+> +       memset(rs485_uapi.padding0, 0, sizeof(rs485_uapi.padding0));
+> +       memset(rs485_uapi.padding1, 0, sizeof(rs485_uapi.padding1));
 >
->  static void uart_set_rs485_termination(struct uart_port *port,
-> @@ -1407,6 +1403,28 @@ int uart_rs485_config(struct uart_port *port)
->  }
->  EXPORT_SYMBOL_GPL(uart_rs485_config);
+> -       if (copy_to_user(rs485_user, rs485, sizeof(*rs485)))
+> +       if (copy_to_user(rs485_user, &rs485_uapi, sizeof(rs485_uapi)))
+>                 return -EFAULT;
 >
-> +static int user_rs485_to_kernel_serial_rs485(struct serial_rs485 *rs485,
-> +                                            const struct serial_rs485 __=
-user *rs485_user)
+>         return 0;
 
-What about
+...
 
-serial_rs485_from_user()
+> +/* Compile-time asserts for kserial_rs485 and serial_rs485 equality (exc=
+ept padding) */
 
-> +{
-> +       if (copy_from_user(rs485, rs485_user, sizeof(*rs485)))
-> +               return -EFAULT;
-> +
-> +       return 0;
-> +}
-> +
-> +static int kernel_serial_rs485_to_user_rs485(struct serial_rs485 __user =
-*rs485_user,
-> +                                            struct serial_rs485 *rs485)
+struct kserial_rs485
+struct serial_rs485
 
-serial_rs485_to_user()
+(rationale: standard representation in text / comments and be a link
+in case if this is converted to kernel doc)
 
-?
+...
 
-> +{
-> +       /* Return clean padding area to userspace */
-> +       memset(rs485->padding0, 0, sizeof(rs485->padding0));
-> +       memset(rs485->padding1, 0, sizeof(rs485->padding1));
-> +
-> +       if (copy_to_user(rs485_user, rs485, sizeof(*rs485)))
-> +               return -EFAULT;
-> +
-> +       return 0;
-> +}
-> +
->  static int uart_get_rs485_config(struct uart_port *port,
->                          struct serial_rs485 __user *rs485_user)
->  {
-> @@ -1417,10 +1435,7 @@ static int uart_get_rs485_config(struct uart_port =
-*port,
->         rs485 =3D port->rs485;
->         spin_unlock_irqrestore(&port->lock, flags);
->
-> -       if (copy_to_user(rs485_user, &rs485, sizeof(rs485)))
-> -               return -EFAULT;
-> -
-> -       return 0;
-> +       return kernel_serial_rs485_to_user_rs485(rs485_user, &rs485);
->  }
->
->  static int uart_set_rs485_config(struct tty_struct *tty, struct uart_por=
-t *port,
-> @@ -1433,8 +1448,9 @@ static int uart_set_rs485_config(struct tty_struct =
-*tty, struct uart_port *port,
->         if (!port->rs485_config)
->                 return -ENOTTY;
->
-> -       if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
-> -               return -EFAULT;
-> +       ret =3D user_rs485_to_kernel_serial_rs485(&rs485, rs485_user);
-> +       if (ret)
-> +               return ret;
->
->         ret =3D uart_check_rs485_flags(port, &rs485);
->         if (ret)
-> @@ -1450,10 +1466,7 @@ static int uart_set_rs485_config(struct tty_struct=
- *tty, struct uart_port *port,
->         if (ret)
->                 return ret;
->
-> -       if (copy_to_user(rs485_user, &port->rs485, sizeof(port->rs485)))
-> -               return -EFAULT;
-> -
-> -       return 0;
-> +       return kernel_serial_rs485_to_user_rs485(rs485_user, &port->rs485=
-);
->  }
->
->  static int uart_get_iso7816_config(struct uart_port *port,
-> --
-> 2.30.2
->
+> +/*
+> + * Must match with serial_rs485 in include/uapi/linux/serial.h excluding=
+ the
 
+Ditto.
+
+> + * padding.
+> + */
+> +struct kserial_rs485 {
+> +       __u32   flags;                  /* RS485 feature flags */
+> +       __u32   delay_rts_before_send;  /* Delay before send (millisecond=
+s) */
+> +       __u32   delay_rts_after_send;   /* Delay after send (milliseconds=
+) */
+> +       struct {
+> +               __u8    addr_recv;
+> +               __u8    addr_dest;
+> +       };
+
+Btw, can't we convert them to kernel doc?
+
+> +};
+
+...
+
+> + * There's kernel counterpart kserial_rs485 of this struct without paddi=
+ng.
+
+struct kserial_rs485
 
 --=20
 With Best Regards,
