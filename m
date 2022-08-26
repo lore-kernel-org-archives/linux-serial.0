@@ -2,108 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32265ECAAA3
-	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 08:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 272C1ECAAD5
+	for <linux-serial@archiver.kernel.org>; Fri, 26 Aug 2022 12:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343663AbiHZIgh (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
+        id S231208AbiHZMGS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245301AbiHZIgb (ORCPT
+        with ESMTP id S230157AbiHZMGQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:36:31 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BD1659E8;
-        Fri, 26 Aug 2022 01:36:29 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id 72so921106pfx.9;
-        Fri, 26 Aug 2022 01:36:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=YbMT0C8eUp0BW2NLRGkZ4JXaxnOUCNokkqd9eU3Ah6g=;
-        b=OANVg3+i8e1pyB4GoKs9n/x+tPP2Pw20uXs2QHJe9hUvr8xRcQGNTFih4ntnhgIPdo
-         dRDl+KXQ7VwEDHObGZiCjBrSrOIpqRZ83z6O3rhRWf8nA60HlW86YTKOzDBzx4z+4JmU
-         TtLvZ3lQA2P25AmSGCvCYL4PvQM8vTOsnSPd4ooddB/fEjDl9DGv2Q8Q2/mAjMvTxqfw
-         1rjdOnkzmT9GLR4V4bY3ekNbzMl+EY8L/+PJrDuk5kW30rEpokVOGkUM/w1b1nCjR2ut
-         f026g2ACumth+/Kezvri9BY20e66IizatFtNFazVyiR0F0ZDzA+FYAXY1LtJ+EnH0zZQ
-         rSag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=YbMT0C8eUp0BW2NLRGkZ4JXaxnOUCNokkqd9eU3Ah6g=;
-        b=cXu11Mfs0HlaTMNO5pz+rao7aIP86buBxQrxO/wBwrb91keUqLuDvRl6UyyxrMG21k
-         Ya8bOSsgedk6wn+3nQbsnwmTSIWrpzpv2OtR94+OI4sAkuHX6zLsFyYmPK/FVBkDIQfP
-         Nn2Jp8ctiopvyzy0ClzvGwD779R7iAUsC7est3j24CJoiM65gat/+XLFwjo/uSFgI0Fl
-         AFGT2tDaDzt5wLK/BADq11jm5CiTubDi+VI7Oh0mvPpxbGTZLf9hv6i7glgJNgkxaeHU
-         kGRZbb7mMpl2xoyI+kOfUv4at4nDdOQ6qgOIi+JYuFg8D6OubMsJDLItP1E8NMt4ZzH/
-         9eHw==
-X-Gm-Message-State: ACgBeo16kehQc/VGZk0USINWC4D5kzdxtNGs6duOk09fFugjQiPY2xTm
-        Q8yYjUYNlMfwH7ipNbV93GvbaEmak1q+NA==
-X-Google-Smtp-Source: AA6agR5Gn/w0xJuK9y28teAbU2uTs4udROg7HXllc6MKFBc5aLZJDcpQss9kWbimLF4KZM1PzG8dgQ==
-X-Received: by 2002:a65:6541:0:b0:42b:1b04:327b with SMTP id a1-20020a656541000000b0042b1b04327bmr2407864pgw.145.1661502988188;
-        Fri, 26 Aug 2022 01:36:28 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id x25-20020aa78f19000000b005377c74c409sm1095054pfr.4.2022.08.26.01.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 01:36:27 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH v2] drivers/tty/serial: check the return value of uart_port_check()
-Date:   Fri, 26 Aug 2022 01:36:12 -0700
-Message-Id: <20220826083612.1699194-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 26 Aug 2022 08:06:16 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on20609.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::609])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F317052FD6;
+        Fri, 26 Aug 2022 05:06:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A1jbW0r26Ilwz+EDG6m9KwOxBofodn5G2CDii8Lr7VM9oy9IuWSH3Sv1rHCNOTQ1gmuzR9PrlpSXdIq+8eXima/aaQH2Cjf4V/SzoxxedzMm0qHCiUebrtkjdLcdpZflHEHvKOIEm6EkzlNpxFhn7KC9C+Ziz6IhboS+Rlp/+wKFQnOfC9bEQK4QQG3mdz/SrlRASM72/wbPVHP+EbT9+rkU+IT1s22UyomS4c0LV8oFtqQ676etH2A8I+g+Ud6hhsdLxKGR2brTq/BSEuFIu+XmPn7biyrZjPjSadxQbVIrb0uodPSzn8yuTIG5bxpk5rvfErPW7KajaCizKi3YFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TPzu8dVUrSfrtWN0hqaprjSFhJDHzO3lmmkEWATwOKQ=;
+ b=oZ+O2QxibA30f7HZPiT63AqW1/89gNlggN3MgsWV6RdwglzsllKr88OdtRG7ng7IlB9LZVARLhFXf4bbLJuyW9qgEMfUX/zyIqyxiZx9ry67JcR+72MIXElHRKVke4G+lOVld3nh4yR/bUKZ4GDvEOqeAQGuf6So+wxiRBnE1YZRAUnBr4+MCX3066I/ugDLxEeM6yJ8ZY2P3QQGr4KJSJwr7gKAxiKOOqXRHH3fF/GGHeS1QXc+Cg2SqKsEMUa8+Fq+OlSe53ybdMFR2eiL69DQyNI2B+9/ph6JqurMszLUFwkMNKwONjiRZBCFsfue+VgVM6jptFnc3VD87wXndg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TPzu8dVUrSfrtWN0hqaprjSFhJDHzO3lmmkEWATwOKQ=;
+ b=X4CCCwdyfuArgQ4pIoCcFRgaxzFOdKnGdYkfqYZUGnqG0UbMMz7fZXVmo7nIKKCn93qYdHH5Nntp+UPXbrkoTtvE8N9XQwUgmndmBuOVU0MjsHoSJelxx7vh6kmSmS57+FQxJRpif7KAU36aNcRT7OHxJWt0mDbIpf7cSysIPiI=
+Received: from DS7PR03CA0228.namprd03.prod.outlook.com (2603:10b6:5:3ba::23)
+ by SJ0PR12MB5610.namprd12.prod.outlook.com (2603:10b6:a03:423::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 12:06:05 +0000
+Received: from DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3ba:cafe::d9) by DS7PR03CA0228.outlook.office365.com
+ (2603:10b6:5:3ba::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22 via Frontend
+ Transport; Fri, 26 Aug 2022 12:06:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT089.mail.protection.outlook.com (10.13.173.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5566.15 via Frontend Transport; Fri, 26 Aug 2022 12:06:04 +0000
+Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 26 Aug
+ 2022 07:06:04 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
+ (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 26 Aug
+ 2022 05:06:03 -0700
+Received: from xhdlakshmis40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Fri, 26 Aug 2022 07:06:01 -0500
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
+To:     <linux-serial@vger.kernel.org>
+CC:     <git@amd.com>, <devicetree@vger.kernel.org>,
+        <jirislaby@kernel.org>, <linux@armlinux.org.uk>,
+        <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
+        <gregkh@linuxfoundation.org>
+Subject: [PATCH v4 0/2] serial: pl011: Add xilinx uart
+Date:   Fri, 26 Aug 2022 17:35:57 +0530
+Message-ID: <20220826120559.2122-1-shubhrajyoti.datta@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: eb232308-81bc-432e-08f5-08da875b5a26
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB5610:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qRj2Fkysh19kzBY4z6Qo/xPjJVfRque9jUoYuBEPwTmXK0O2Yqam4wVu4oOyyt9qww2759ueA6fDQ4VqEzpU02JqaGzxQQL2ZoFsgoht7On+4HL4JjA8g4tZYFa6cNRhqZMYc/gfViiDpskhznpBqh2c/Xajd8sohXZYe1Hx1dADsxXN35z9NFw7BlnTyUTu9GN4ZOqPxgKOWCGCtdZIdWgvFm3wXmA3PeR7s4G70mDdvE3pZrBl3bFptycP+hhCKKRvipUduxQdH7CQn1KvnRlMjZxaLN4Q8tsIQU9A+RpZE/OcmX3/jX6r9bIMZuXpTadIb1YAIqp40FdAUZVGhcB4kMV3cHI6dT0kYMAVoFedTAlZgBNEZZOTihQjWFyuLPclZttLEhv/C16SaTzhaW9GAvhdXxLLgXGQDLQ2mmmodSFMZ8VwF+A1DEw1i7kL2Y0TlPXyys5eZI7T4u09viv5onloxdtKIoAZHEBebU7N+99JvVJu3IZSc2UCyZlG1KJT4x4c6Vrw4+fOCFFzFoyl4RFznCxYTrzpnDWswiAPLMAQIj2g+mI7RviiozHiOZ36kB0bhE8sP+ytxhWmMK3gcCXFljvQJ1sOk4TaumXSfJcABY0KlybWp8/+jRyocbtFV21FtrnIVlJIZpJzjnfbCwUttLM9yggz3epoPGq2+nf3dbVYBoU5w+JMT3a6EoPjcFw66grX42YJFgbi8KsQtYD9JiqrrIc9h5T0PrSzHfEbJODLDKWrW2W8MNx8pU2NfW7vOxDMacXaNiIqY/bNCxPs2Naesra4fv104lz0Efx+giWE/AVgs/8BVBOD
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(396003)(136003)(376002)(36840700001)(46966006)(40470700004)(26005)(426003)(41300700001)(83380400001)(2906002)(1076003)(2616005)(336012)(186003)(36860700001)(82740400003)(81166007)(40460700003)(47076005)(356005)(40480700001)(86362001)(4326008)(82310400005)(8676002)(70206006)(70586007)(478600001)(8936002)(5660300002)(316002)(36756003)(54906003)(4744005)(6916009)(6666004)(44832011)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 12:06:04.9468
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb232308-81bc-432e-08f5-08da875b5a26
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT089.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5610
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_port_check() will return NULL pointer when state->uart_port is
-NULL. Check the return value before dereference it to avoid
-null-pointer-dereference error.
+-Support uart peripheral in Xilinx Versal SOC.
+Add parameter reg-io-width.
+Add the dt-binding for the same
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- drivers/tty/serial/serial_core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+v2: 
+Update the commit message to reflect the AXI limitation.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 12c87cd201a7..760e177166cf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -194,6 +194,9 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 	unsigned long page;
- 	int retval = 0;
- 
-+	if (!uport)
-+		return -EIO;
-+
- 	if (uport->type == PORT_UNKNOWN)
- 		return 1;
- 
-@@ -498,6 +501,8 @@ static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
- 	struct ktermios *termios;
- 	int hw_stopped;
- 
-+	if (!uport)
-+		return;
- 	/*
- 	 * If we have no tty, termios, or the port does not exist,
- 	 * then we can't set the parameters for this port.
-@@ -1045,6 +1050,8 @@ static int uart_get_lsr_info(struct tty_struct *tty,
- 	struct uart_port *uport = uart_port_check(state);
- 	unsigned int result;
- 
-+	if (!uport)
-+		return -EIO;
- 	result = uport->ops->tx_empty(uport);
- 
- 	/*
+v3:
+Add reg-io-width.
+
+v4:
+Fix the binding comments
+
+Shubhrajyoti Datta (2):
+  dt-bindings: serial: pl011: Add a reg-io-width parameter
+  serial: pl011: Add reg-io-width parameters
+
+ .../devicetree/bindings/serial/pl011.yaml        |  6 ++++++
+ drivers/tty/serial/amba-pl011.c                  | 16 ++++++++++++++++
+ 2 files changed, 22 insertions(+)
+
 -- 
-2.25.1
+2.17.1
 
