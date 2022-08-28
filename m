@@ -2,94 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59710ECAAD2
-	for <linux-serial@archiver.kernel.org>; Sat, 27 Aug 2022 09:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2219ECAAD5
+	for <linux-serial@archiver.kernel.org>; Sun, 28 Aug 2022 19:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbiH0Jmc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 27 Aug 2022 05:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S229687AbiH1T5p (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 28 Aug 2022 15:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232646AbiH0Jmb (ORCPT
+        with ESMTP id S229654AbiH1T5o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 27 Aug 2022 05:42:31 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694396FF8;
-        Sat, 27 Aug 2022 02:42:31 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id p48-20020a4a95f3000000b0044b0f5a8d17so675460ooi.0;
-        Sat, 27 Aug 2022 02:42:31 -0700 (PDT)
+        Sun, 28 Aug 2022 15:57:44 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB13A1A828;
+        Sun, 28 Aug 2022 12:57:43 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l5so2238685pjy.5;
+        Sun, 28 Aug 2022 12:57:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=rqXbDU0e1tN4j5qNVRfAuljmb4yEN9erSBSwCMYT9p4=;
-        b=ClMxVp+vwHXZuCvXg9uAgklzyD8SdlevrrCBTD0YEFrqGGPCOFJzyyISmPpuF27pqp
-         Gg0k14dwf5ws2PSjWdiX8zm1tWEgYY9jMXoQcCFeSPe3aHRLDD1DK0ubptEBXt4e5AWX
-         /ycS1tINPMWt6jWr43uERP3X097Qh/yRP61wdaUbDXIHSGc5OF1pqZpJ4Dll0iY/ukrO
-         8P+J+gHcWofpYWC938hYiu0BNJ08y/EQIqch3XMlEIZqHjBo6aweYjCNjYIexL5VsNMK
-         cURhZ7AUK1um6itvwquxmRr2FiIf0NFIy1q8ehRKrOx7UKgnat9IuEPRyFlqxKipye9A
-         N6Bw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=q5YGEqsHqMMcpZN0BNxfGiTaBPFWGtrq9H6tvKU0+rg=;
+        b=qWPNvHlAyTHlInanJaFYfRFXlZBT+TX2QNsGqPhsPAWtK8/GibUSD68Wl3yVIVDxlY
+         aXySwKFePG5czrHvdpU5Ma+6PinN5YWGDeR3IsPCC8BLjlhgWVXCuOPq24QR+tex+Nzb
+         yAZZIRJ1tjHq90TTcyBvpVoV0tdq5yOKtk5RLV6rP0gC7n7xZV+3MBi87HnVQvteseDG
+         qEYRN4joHw8zkOHHKJJFNlSl2uVvNiAwwktTZE3nNb3K8BzaetNpGHTVpiwKLztndRRA
+         WEqOzCcx964y2nhQ9gfhKh55vViKSuuyVWrwpOIFdhxS1QlETRNUMGF40evpwhR24+FO
+         cZiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=rqXbDU0e1tN4j5qNVRfAuljmb4yEN9erSBSwCMYT9p4=;
-        b=zqrG5fhYw4LnYDg+4LsiNKnd1AcllaA76lemVygAcbE5WZPfO7L+QECRsQrg3bQTAQ
-         Pr8dCLRZalT2uVdxmSprW2xhwqcHWIRPZHH01Uh6YtPdBeHfdXNrF4z8hpNx9BjCRq9g
-         QngTV5H3EztQ7hpU6ehKTwpBNhIyqydlSn8koF95HCGbPLuBdVTxCs+bNgYp5NmREDLP
-         5+odBhJK/45zjduCp7XRTYgSC5ugWG6q6e20dGu2jUyiqWK7vem5mdwUX7Lu4676kKC0
-         YtZhKsVkSqpKcbltbhJvBUsIhIntz90OyBDAMERZ/6dcV02VAmlmMHw+y8AHaCuhieR/
-         Vo7g==
-X-Gm-Message-State: ACgBeo0SKYAeK/Av2bH5+TJcrOnJo0De7lEhuTHNJqu5+BkzsA+kkddM
-        mvXa2eW4+JQPLNao5Za6s0mVQNzYvsK9MVhsNF0k7kje9Koi6g==
-X-Google-Smtp-Source: AA6agR7B9I6t4g5X3YmiBGfhO1RGQqgDYZA8IWaaMnL2zcRgHEWvokmIMvvJe4Yh7jD5YugeIEhqZwAPSP+Qq9w1Y58=
-X-Received: by 2002:a4a:d154:0:b0:449:681b:3e76 with SMTP id
- o20-20020a4ad154000000b00449681b3e76mr2496123oor.47.1661593350486; Sat, 27
- Aug 2022 02:42:30 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=q5YGEqsHqMMcpZN0BNxfGiTaBPFWGtrq9H6tvKU0+rg=;
+        b=H5ibzcRJZd646S5uv3Xgrx0UYKJHf7skQfeb6J5KSc3WTTYWq4nNHTOnqU9bILjnn1
+         kMqFlqhIYE7i6qN7GbhRNl4UUxOOdUStXmbSzETP/7DrbFfrbEBIQKEAAi3lbaiggwsE
+         NCWFzNSgikaDAKk9kfhogL4U7ylp3rM8djetNduvAAAazJb3O+pFvlHHhaukajzimZRF
+         ZjIfin7t0kprApn61gHrIczQXSvmE6JKc2zgxZShvph8/08xBSO2qbx3hslgEml1kjkF
+         ednk4qklMbrlsVxZ1WGAOPT1nYlKl9lfiEe/OlkCDgTCUsrLf3YJYRtl1yNwJljbSQl6
+         F+Zw==
+X-Gm-Message-State: ACgBeo1LUKBoJxDdZNjnV5FKyMORKEWnhhUyd0454Jk9+SYnCDlinsV+
+        oVOTx/h0KyG6WWsJ42sprPVRBNN9RHftArQe4bQ=
+X-Google-Smtp-Source: AA6agR77AELTXWpNgLMwzcB+5fsDDjjG2HmgdsnCscQIx6pKzjsY3QH4HgMJ7ENHSEOQzuuMW8lJS8DUiyPZHCXUfv0=
+X-Received: by 2002:a17:902:e5cc:b0:16f:1e31:da6c with SMTP id
+ u12-20020a170902e5cc00b0016f1e31da6cmr13394291plf.66.1661716662953; Sun, 28
+ Aug 2022 12:57:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220822141110.17199-1-91tuocao@gmail.com> <YwORy3QMbRUSlBZE@kroah.com>
-In-Reply-To: <YwORy3QMbRUSlBZE@kroah.com>
-From:   tuo cao <91tuocao@gmail.com>
-Date:   Sat, 27 Aug 2022 17:42:19 +0800
-Message-ID: <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
-Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
- spin_lock in interrupt handler
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220826083612.1699194-1-floridsleeves@gmail.com> <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com>
+In-Reply-To: <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com>
+From:   Li Zhong <floridsleeves@gmail.com>
+Date:   Sun, 28 Aug 2022 12:57:32 -0700
+Message-ID: <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com>
+Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of uart_port_check()
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-No, whether it's spin_lock_irqsave() or spin_lock(), the security is
-the same. Since this commit:e58aa3d2d0cc01ad8d6f7f640a0670433f794922,
-interrupt nesting is disabled, which means interrupts has disabled in
-the interrupt handlers. So, it is unnecessary to call
-spin_lock_irqsave in a interrupt handler. And it takes less time
-obviously to use spin_lock()=EF=BC=8Cso I think this change is needed.
+On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
+> >
+> > uart_port_check() will return NULL pointer when state->uart_port is
+> > NULL. Check the return value before dereference it to avoid
+> > null-pointer-dereference error.
+>
+> Have you taken the locking into consideration?
+> If no, please do, if yes, expand your commit message to explain why
+> the current locking scheme doesn't prevent an error from happening.
+>
 
-Finally, I'm sorry I lacked real hardware to verify it and can't
-provide changelog text.
+The locking is taken into consideration but these three checks do not need to
+unlock in error-handling because unlock() will be called in the callers. Will
+add the comment in v2 patch.
 
-Thanks.
-
-Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B48=E6=9C=8822=E6=
-=97=A5=E5=91=A8=E4=B8=80 22:25=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Mon, Aug 22, 2022 at 10:11:10PM +0800, Tuo Cao wrote:
-> > it is unnecessary to call spin_lock_irqsave in a interrupt handler.
->
-> Yes, but it is safer to do so, right?
->
-> Why is this change needed?
->
-> Did you test it on real hardware to verify it works?
->
-> We need a lot more information in the changelog text before being able
-> to accept this.
->
-> thanks,
->
-> greg k-h
+> --
+> With Best Regards,
+> Andy Shevchenko
