@@ -2,216 +2,110 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFECECAAD4
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7047ECAAD4
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbiH2H1H (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
+        id S229449AbiH2HlS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiH2H1G (ORCPT
+        with ESMTP id S229481AbiH2HlQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:27:06 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4664DB7E;
-        Mon, 29 Aug 2022 00:27:04 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id w19so13920933ejc.7;
-        Mon, 29 Aug 2022 00:27:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=ihc40JxKK2nHoxN+hvEaP8iMq51h54dF712kIrTQgIE=;
-        b=ScdtI89OV3/qtD1Hx3MQotHqp49oxhLaULxVqi8437l9VCjmvNHGtEfHul7HLYM4yH
-         zFpn8jbiXHYw0bUub042VZRScwoD8LNFm2GETkTT17B7+ac9k0s5choM6DhtBQX2Ko4i
-         4T6DvkOefEhFYU2thtaWT5mc4aRp/VJgkNEtmSoB7S0+6x+7aRtzDTgOuJWYg/Cmbp59
-         XJGejykXKMGKU0lif0GH4Qg5EUYT2ob5A2ELig8pQ5W4LnZeot0h9Z9J82GXi3WwVMJJ
-         vUHmpXsymUwvMOf0Xat95x5iqhUci1iEj1hxUIziqlbNplYpqX3KA/a//Rs+qz0VLqHb
-         GLMg==
-X-Gm-Message-State: ACgBeo1wnUiS/R1VpfUhyEfeXhTglLXwDJ2J+7H39dNGWug6FKLmRvSL
-        dDA7NIwvNVix5O0J8dwcD2qt4d4rje8=
-X-Google-Smtp-Source: AA6agR64SosFnzlC166YRLWgO0I/pGAqsn6f1OpyAro7yNC4sZLuSkZTPC6B3a4D0wt1cImVL6TQKQ==
-X-Received: by 2002:a17:907:2e19:b0:73e:f770:eddd with SMTP id ig25-20020a1709072e1900b0073ef770edddmr9117697ejc.249.1661758023429;
-        Mon, 29 Aug 2022 00:27:03 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id h3-20020a0564020e0300b00446a5fdaf0fsm5323090edh.45.2022.08.29.00.27.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 00:27:02 -0700 (PDT)
-Message-ID: <0a1f4ce9-4158-b8ab-1837-68da06f20407@kernel.org>
-Date:   Mon, 29 Aug 2022 09:27:01 +0200
+        Mon, 29 Aug 2022 03:41:16 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2909F4BD07;
+        Mon, 29 Aug 2022 00:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661758876; x=1693294876;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=fz7J/Y7mUf5DLvjGaLTmGi9JJkLfeFFeluiGCuYuXGA=;
+  b=jHsXYnxdkYObW8blDzysE0Xrpe8ByozHoM/I3Qx1ZgWJ6u7NCo96CkDV
+   nIWd5bxzIkF6htzixYrEYks4VWloGJdkPtRx4yZUu3tT37oGRSjStm7yW
+   Gj5G4G4jL9pAhpFwtZUU3kBV9pKUQooN0Y+KWnQqVQEjCVgPq/tX00z+U
+   PB+ny7izL/TIYMnATA9BxMFuh9zY0HPAb1LH+YeyEv93x3+m2McKm1O+3
+   LPL8HOyhirIg3RnNOe7RQGHs0fk+7ql3c6OvLZESWuBGvgKRgz+rOzzMj
+   G2CzSW3vCnrNOu7E0+zYznpNhP7pjnukZhRx5UUYcRVCBln7wyb6GZEzU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="295610894"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="295610894"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:41:15 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="640835783"
+Received: from kvehmane-mobl1.ger.corp.intel.com ([10.251.220.41])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:41:13 -0700
+Date:   Mon, 29 Aug 2022 10:41:14 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
+ larger patch series)
+In-Reply-To: <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
+Message-ID: <55cf3faf-2616-09c-57c3-35e7b11e55@linux.intel.com>
+References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com> <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH 3/3] tty: serial: use uart_port_tx_limit() helper
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-References: <20220411105405.9519-1-jslaby@suse.cz>
- <20220411105405.9519-4-jslaby@suse.cz> <20220411115141.o2i3rlfcyzg6qlnz@pali>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220411115141.o2i3rlfcyzg6qlnz@pali>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-2083064837-1661758877=:1928"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11. 04. 22, 13:51, Pali Rohár wrote:
-> On Monday 11 April 2022 12:54:05 Jiri Slaby wrote:
->> uart_port_tx_limit() is a new helper to send characters to the device.
->> Use it in these drivers.
->>
->> It means we have to define two new uart hooks: tx_ready() and put_char()
->> to do the real job now.
->>
->> And mux.c also needs to define tx_done(). But I'm not sure if the driver
->> really wants to wait for all the characters to dismiss from the HW fifo
->> at this code point. Hence I marked this as FIXME.
->>
->> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->> Cc: Russell King <linux@armlinux.org.uk>
->> Cc: Florian Fainelli <f.fainelli@gmail.com>
->> Cc: bcm-kernel-feedback-list@broadcom.com
->> Cc: "Pali Rohár" <pali@kernel.org>
->> Cc: Kevin Cernekee <cernekee@gmail.com>
->> Cc: Palmer Dabbelt <palmer@dabbelt.com>
->> Cc: Paul Walmsley <paul.walmsley@sifive.com>
->> Cc: Orson Zhai <orsonzhai@gmail.com>
->> Cc: Baolin Wang <baolin.wang7@gmail.com>
->> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
->> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
->> Cc: linux-riscv@lists.infradead.org
->> ---
->>   drivers/tty/serial/21285.c           | 40 +++++++--------------
->>   drivers/tty/serial/altera_jtaguart.c | 43 ++++++----------------
->>   drivers/tty/serial/amba-pl010.c      | 40 ++++-----------------
->>   drivers/tty/serial/apbuart.c         | 37 ++++---------------
->>   drivers/tty/serial/bcm63xx_uart.c    | 48 ++++++-------------------
->>   drivers/tty/serial/mux.c             | 48 ++++++++-----------------
->>   drivers/tty/serial/mvebu-uart.c      | 47 +++++++-----------------
->>   drivers/tty/serial/omap-serial.c     | 53 +++++++---------------------
->>   drivers/tty/serial/pxa.c             | 43 +++++-----------------
->>   drivers/tty/serial/rp2.c             | 36 ++++++-------------
->>   drivers/tty/serial/serial_txx9.c     | 40 ++++-----------------
->>   drivers/tty/serial/sifive.c          | 48 ++++---------------------
->>   drivers/tty/serial/sprd_serial.c     | 41 ++++-----------------
->>   drivers/tty/serial/st-asc.c          | 51 ++++----------------------
->>   drivers/tty/serial/vr41xx_siu.c      | 42 ++++------------------
->>   15 files changed, 143 insertions(+), 514 deletions(-)
-> ...
->> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
->> index 0429c2a54290..3d07ab9eb15e 100644
->> --- a/drivers/tty/serial/mvebu-uart.c
->> +++ b/drivers/tty/serial/mvebu-uart.c
->> @@ -194,6 +194,16 @@ static unsigned int mvebu_uart_tx_empty(struct uart_port *port)
->>   	return (st & STAT_TX_EMP) ? TIOCSER_TEMT : 0;
->>   }
->>   
->> +static bool mvebu_uart_tx_ready(struct uart_port *port)
->> +{
->> +	return !(readl(port->membase + UART_STAT) & STAT_TX_FIFO_FUL);
-> 
-> mvebu-uart.c driver in its tx_ready function should probably use
-> STAT_TX_RDY macro (access to STAT_TX_RDY bit in register).
-> 
-> Documentation for UART1 (STD) about this bit says:
-> 
-> This bit is set when TRANS_HLD (our UART_TSH macro) is empty and ready
-> for the CPU to write the next character to be transmitted out. The TSR
-> can still shift out the previous character when this bit is set. This
-> bit is cleared when the CPU writes to TRANS_HLD.
-> 
-> For UART2 (EXT) there is just information: UART Tx Ready for 1 Byte
-> Write. UART2 (EXT) has also bit (bit 5) which indicates that CPU can
-> load 4 bytes, but seems that this is not used by mvebu-uart.c driver.
-> 
-> Macro STAT_TX_RDY() is polled also in wait_for_xmitr() function.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Hi,
-so care to send fixes for the two issues :)? The series is not meant to 
-change behavior...
+--8323329-2083064837-1661758877=:1928
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
->> +}
->> +
->> +static void mvebu_uart_put_char(struct uart_port *port, unsigned char ch)
->> +{
->> +	writel(ch, port->membase + UART_TSH(port));
->> +}
->> +
->>   static unsigned int mvebu_uart_get_mctrl(struct uart_port *port)
->>   {
->>   	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
->> @@ -324,40 +334,7 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
->>   
->>   static void mvebu_uart_tx_chars(struct uart_port *port, unsigned int status)
->>   {
->> -	struct circ_buf *xmit = &port->state->xmit;
->> -	unsigned int count;
->> -	unsigned int st;
->> -
->> -	if (port->x_char) {
->> -		writel(port->x_char, port->membase + UART_TSH(port));
->> -		port->icount.tx++;
->> -		port->x_char = 0;
->> -		return;
->> -	}
->> -
->> -	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
->> -		mvebu_uart_stop_tx(port);
->> -		return;
->> -	}
->> -
->> -	for (count = 0; count < port->fifosize; count++) {
->> -		writel(xmit->buf[xmit->tail], port->membase + UART_TSH(port));
->> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
->> -		port->icount.tx++;
->> -
->> -		if (uart_circ_empty(xmit))
->> -			break;
->> -
->> -		st = readl(port->membase + UART_STAT);
->> -		if (st & STAT_TX_FIFO_FUL)
->> -			break;
-> 
-> I see that driver here currently use STAT_TX_FIFO_FUL for checking if it
-> can do next iteration and write next character to UART_TSH.
-> 
-> Documentation about this bit says that ... the FIFO is full, which is
-> indicated by TX_FIFO_FULL. TX_READY status is set as long as the FIFO is
-> not full. The Tx ready status is cleared when in THR FIFO is full.
-> 
-> In case driver does not use 4 byte loads for UART2, TX_READY and
-> !TX_FIFO_FULL are probably same...
-> 
-> Anyway, mvebu_uart_tx_chars() is called from the mvebu_uart_tx_isr()
-> interrupt handler which is registered for CTRL_RX_RDY_INT interrupt
-> which should signal when TX_READY is set.
-> 
->> -	}
->> -
->> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->> -		uart_write_wakeup(port);
->> -
->> -	if (uart_circ_empty(xmit))
->> -		mvebu_uart_stop_tx(port);
->> +	uart_port_tx_limit(port, port->fifosize);
->>   }
->>   
->>   static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
->> @@ -654,6 +631,8 @@ static void mvebu_uart_put_poll_char(struct uart_port *port, unsigned char c)
->>   
->>   static const struct uart_ops mvebu_uart_ops = {
->>   	.tx_empty	= mvebu_uart_tx_empty,
->> +	.tx_ready	= mvebu_uart_tx_ready,
->> +	.put_char	= mvebu_uart_put_char,
->>   	.set_mctrl	= mvebu_uart_set_mctrl,
->>   	.get_mctrl	= mvebu_uart_get_mctrl,
->>   	.stop_tx	= mvebu_uart_stop_tx,
+On Mon, 29 Aug 2022, Jiri Slaby wrote:
 
-thanks,
+> On 25. 08. 22, 11:17, Ilpo Järvinen wrote:
+> > Add uart_xmit_advance() helper to handle circular xmit buffer
+> > advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+> > that previously lacked to accounting for DMA Tx.
+> > 
+> > Greg,
+> > I've a another series on top this which is tty-next material making the
+> > rest of the drivers to use uart_xmit_advance(). That series obviously
+> > depends on the patch 1/3 of this series so if you end up putting these
+> > 3 patches into tty-linus, I'll need it to be merged into tty-next at
+> > some point (I'm not in a big hurry with this so if you choose to delay
+> > the merge, it's not a big deal).
+> 
+> Hi,
+> could you hold off with the latter series? I'll send a v2 of TX path cleanup
+> shortly. You'd then need to update much less places (if my series is
+> accepted):
+> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=2d9ade0412f7e5edacc7f791ebbf773d6481b453
+> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=fd55062d74a8c137d30388c6e25ebd5c06a04517
+> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=a1df5129cc0cf174a8cd03e187c6a5e890d313e4
+> 
+> v1 was here (but was doing a call for every character):
+> https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
+
+Sure, I can hold off a while (as long as we're speaking of reasonable 
+timescales :-)). Looking into your patches, they also seemed to lack that 
+icount.tx++ thing.
+
 -- 
-js
-suse labs
+ i.
 
+> > Ilpo Järvinen (3):
+> >    serial: Create uart_xmit_advance()
+> >    serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+> >    serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+> > 
+> >   drivers/tty/serial/serial-tegra.c |  5 ++---
+> >   drivers/tty/serial/tegra-tcu.c    |  2 +-
+> >   include/linux/serial_core.h       | 17 +++++++++++++++++
+> >   3 files changed, 20 insertions(+), 4 deletions(-)
+> > 
+> 
+> thanks,
+> 
+
+--8323329-2083064837-1661758877=:1928--
