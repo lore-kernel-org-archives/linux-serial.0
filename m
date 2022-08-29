@@ -2,84 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92AA7ECAAD4
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA1CECAAD4
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229488AbiH2HJd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
+        id S229591AbiH2HXa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2HJc (ORCPT
+        with ESMTP id S229468AbiH2HX2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:09:32 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4ACF4D25B;
-        Mon, 29 Aug 2022 00:09:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661756971; x=1693292971;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=baQTIOLDQEoqRnoLj/vI0QftoJ6RTiQ+sRuCKDr2yh8=;
-  b=DOxvuE8fBFmAKEWaFQyVQ+Hia82a0kJVjqcDBWfsMfYagQvIgOufnrDY
-   8iayJkIboMiFC1cxhdnOeZkyDDHNlUGEhQ7EDIJ4fEfqHh/bRzziDgw8P
-   Cz88ohVthVjTvsDM8V6w1qL7cyoVmZLhMbY+ArTkeYM8QgX/YmS/rlbkc
-   Ceb/Xw2ppaDirXsy5NZ68gS0crwIIr3BlqNJlgdvBd8G/l8odj8b+hbcq
-   f7mkGd3To7EWUEj98pkVQQZvoXpF6lDYh1/Ti1eTTJZF7fwc38Ujjh26w
-   xPHJ0qBouIO6yF5mQzte96B3GppSWv62fBQXe6WWGAjwF0n0/0tCqEZIz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="277841578"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="277841578"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:09:30 -0700
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="672268649"
-Received: from kvehmane-mobl1.ger.corp.intel.com ([10.251.220.41])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:09:28 -0700
-Date:   Mon, 29 Aug 2022 10:09:25 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Li Zhong <floridsleeves@gmail.com>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of
- uart_port_check()
-In-Reply-To: <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com>
-Message-ID: <2033d06d-10a4-5a57-d650-7541c39990ee@linux.intel.com>
-References: <20220826083612.1699194-1-floridsleeves@gmail.com> <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com> <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com>
+        Mon, 29 Aug 2022 03:23:28 -0400
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D49354DB7C;
+        Mon, 29 Aug 2022 00:23:27 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id nc14so9014704ejc.4;
+        Mon, 29 Aug 2022 00:23:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Rtt2y/T0FmKk18/Gg97piT4mN8veRCiqvd6/yN8Atd0=;
+        b=M23d/kCqmCKSd/G1DXvPYA6GefaFWsIbsbMC2zXzG98eHiH+WoLrX0S14pAK6uF9z5
+         Y4spcL4hEut46Xu9jrKd0qyypKi1z3uDZT8m1c+2wGTl7d1Y7eX/Ymj5AN3gx6HGe5pz
+         SOAgc9Ed/Rwop4LvaFo5ECu53zTComwsZZhjA62EzhpVpUL2kkP8P6ro4j6kNJ9xFwB3
+         dQ+OxhJb10B/RxYGXoVocXUwxM/m+EeSMi1WZ2EgMc8k26W7ZsANUIplO8Vpst4DrPwi
+         /Y1EN10xHo2BScNWnYsN4RNvHzMjlr01AjqJCB09jwDWO5YkXW2Q5XPDW/9n5ujEJ8t7
+         1QGg==
+X-Gm-Message-State: ACgBeo0JVyojHZBD9a96hV2cOIgolrV0up2vkZ1EMFL28aCVnCg3fYyQ
+        M4bwy0k0Szlw5vJMNhzffbo=
+X-Google-Smtp-Source: AA6agR5d0olylVvB5BFwzH64hGODpDTvWwMREyWRUHrBK4/kYB5QIMMqxHWa3pY+fbv692mQaGM9Sw==
+X-Received: by 2002:a17:907:1b1f:b0:72f:56db:cce9 with SMTP id mp31-20020a1709071b1f00b0072f56dbcce9mr12351068ejc.605.1661757806409;
+        Mon, 29 Aug 2022 00:23:26 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906210100b0073d61238ae1sm4085451ejt.83.2022.08.29.00.23.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 00:23:25 -0700 (PDT)
+Message-ID: <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
+Date:   Mon, 29 Aug 2022 09:23:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
+ larger patch series)
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, 28 Aug 2022, Li Zhong wrote:
-
-> On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> >
-> > On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
-> > >
-> > > uart_port_check() will return NULL pointer when state->uart_port is
-> > > NULL. Check the return value before dereference it to avoid
-> > > null-pointer-dereference error.
-> >
-> > Have you taken the locking into consideration?
-> > If no, please do, if yes, expand your commit message to explain why
-> > the current locking scheme doesn't prevent an error from happening.
-> >
+On 25. 08. 22, 11:17, Ilpo Järvinen wrote:
+> Add uart_xmit_advance() helper to handle circular xmit buffer
+> advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+> that previously lacked to accounting for DMA Tx.
 > 
-> The locking is taken into consideration but these three checks do not need to
-> unlock in error-handling because unlock() will be called in the callers. Will
-> add the comment in v2 patch.
+> Greg,
+> I've a another series on top this which is tty-next material making the
+> rest of the drivers to use uart_xmit_advance(). That series obviously
+> depends on the patch 1/3 of this series so if you end up putting these
+> 3 patches into tty-linus, I'll need it to be merged into tty-next at
+> some point (I'm not in a big hurry with this so if you choose to delay
+> the merge, it's not a big deal).
 
-I think he meant you should indicate why the current locking doesn't cover 
-the case you're fixing, not whether this function should call unlock() or 
-not.
+Hi,
+could you hold off with the latter series? I'll send a v2 of TX path 
+cleanup shortly. You'd then need to update much less places (if my 
+series is accepted):
+https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=2d9ade0412f7e5edacc7f791ebbf773d6481b453
+https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=fd55062d74a8c137d30388c6e25ebd5c06a04517
+https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=a1df5129cc0cf174a8cd03e187c6a5e890d313e4
 
+v1 was here (but was doing a call for every character):
+https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
+
+> Ilpo Järvinen (3):
+>    serial: Create uart_xmit_advance()
+>    serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+>    serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+> 
+>   drivers/tty/serial/serial-tegra.c |  5 ++---
+>   drivers/tty/serial/tegra-tcu.c    |  2 +-
+>   include/linux/serial_core.h       | 17 +++++++++++++++++
+>   3 files changed, 20 insertions(+), 4 deletions(-)
+> 
+
+thanks,
 -- 
- i.
+js
+suse labs
 
