@@ -2,110 +2,164 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7047ECAAD4
-	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1883ECAAD4
+	for <linux-serial@archiver.kernel.org>; Mon, 29 Aug 2022 07:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbiH2HlS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        id S229468AbiH2Hog (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiH2HlQ (ORCPT
+        with ESMTP id S229455AbiH2Hof (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:41:16 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2909F4BD07;
-        Mon, 29 Aug 2022 00:41:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661758876; x=1693294876;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=fz7J/Y7mUf5DLvjGaLTmGi9JJkLfeFFeluiGCuYuXGA=;
-  b=jHsXYnxdkYObW8blDzysE0Xrpe8ByozHoM/I3Qx1ZgWJ6u7NCo96CkDV
-   nIWd5bxzIkF6htzixYrEYks4VWloGJdkPtRx4yZUu3tT37oGRSjStm7yW
-   Gj5G4G4jL9pAhpFwtZUU3kBV9pKUQooN0Y+KWnQqVQEjCVgPq/tX00z+U
-   PB+ny7izL/TIYMnATA9BxMFuh9zY0HPAb1LH+YeyEv93x3+m2McKm1O+3
-   LPL8HOyhirIg3RnNOe7RQGHs0fk+7ql3c6OvLZESWuBGvgKRgz+rOzzMj
-   G2CzSW3vCnrNOu7E0+zYznpNhP7pjnukZhRx5UUYcRVCBln7wyb6GZEzU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="295610894"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="295610894"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:41:15 -0700
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="640835783"
-Received: from kvehmane-mobl1.ger.corp.intel.com ([10.251.220.41])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:41:13 -0700
-Date:   Mon, 29 Aug 2022 10:41:14 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
- larger patch series)
-In-Reply-To: <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
-Message-ID: <55cf3faf-2616-09c-57c3-35e7b11e55@linux.intel.com>
-References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com> <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
+        Mon, 29 Aug 2022 03:44:35 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D114F1AE
+        for <linux-serial@vger.kernel.org>; Mon, 29 Aug 2022 00:44:31 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id e13so8151614wrm.1
+        for <linux-serial@vger.kernel.org>; Mon, 29 Aug 2022 00:44:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc;
+        bh=QjEcd75RqT3WIgUp2pbtkalTMer+nFUQbbPAvaSW25U=;
+        b=VUiIlhoZuw+u+tFb6JwkhBtkBhQutnnVLYzhx28QiSHqKDIy073Pl3gg6hbx25hxiU
+         NpQbV39LEsHQPIYG5NIjf/zpr2i/EoKjMZR/u4mlHC1gIsH98yxq6j3YA9ro3cl89W75
+         VE+9R7XjbrC3t5w3C9txQ9wO/MCDF/7Av2T2alAyhRJkeOC+u+XEv/cB/dLtNpOv/F9P
+         XCbetVBFMArzO8UXwsfEn/L1BJYp1177u9GHxccLXiUb4j+WH0fWWrfgoqfZH71We7sK
+         Frt6Yb5jjZsGjKVa/BwlHizl5JEqH4ftCYFwMtZ9ls2XAJ2SUOmya77P3Zncwz9KCoWp
+         +YIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=QjEcd75RqT3WIgUp2pbtkalTMer+nFUQbbPAvaSW25U=;
+        b=tKm4V195Wu1Jc28e9vPOgwKO8xl7cX0/l6f6lUjn58PHYYeNAMW6BX1PGWnHbVy49P
+         BQ4qO6gPXioQHAPzm40yKQz+msDxtQiE/zkiQHHGPeA9R/Ps4bQgmfv4OPj7kdAeW3UO
+         2qGP0UJNneIXO3r0mYvL7k+/IDfk4pqdDauLzt6uosa7I9Jl6/wj2/IDP/V7rENqjav5
+         weVFZedTsTHTAzBRiKv0ibRXvrZ8DB1nCy0PS2V2iU+IyznAaXf1GVKfI1AQhulyOIz8
+         I1MIzgmou6ok6uhLzXxfj0w/ZRizIst+W52LRQHAjDkYF7WDvP8zbAo4oON0cv5ve6L2
+         FeTQ==
+X-Gm-Message-State: ACgBeo1YtX2XouOAkWR0OHfxt04/A+M01tDouds0PVP4Szz8AVP156+o
+        GnUezv7lUZJtMSjZcsIACM3PpA==
+X-Google-Smtp-Source: AA6agR6/W5X5eALXzIWGgg5gZJiu0WA3BEvbZhHKVoGSnQpMk97J1Zsl0Ln0n+YGVwhaoFPX4wTETA==
+X-Received: by 2002:a5d:4a01:0:b0:21d:8ce1:8b6d with SMTP id m1-20020a5d4a01000000b0021d8ce18b6dmr5606743wrq.718.1661759069804;
+        Mon, 29 Aug 2022 00:44:29 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:6124:6b74:2847:d37b? ([2a01:e0a:982:cbb0:6124:6b74:2847:d37b])
+        by smtp.gmail.com with ESMTPSA id i12-20020a1c540c000000b003a2f2bb72d5sm8939722wmb.45.2022.08.29.00.44.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 00:44:29 -0700 (PDT)
+Message-ID: <f14d517b-90c9-3741-6f41-6c82a7521f46@baylibre.com>
+Date:   Mon, 29 Aug 2022 09:44:28 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2083064837-1661758877=:1928"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] tty: serial: meson: Use devm_clk_get_enabled() helper
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+References: <3f18638cb3cf08ed8817addca1402ed5e3bd3602.1661328361.git.christophe.jaillet@wanadoo.fr>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <3f18638cb3cf08ed8817addca1402ed5e3bd3602.1661328361.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2083064837-1661758877=:1928
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Mon, 29 Aug 2022, Jiri Slaby wrote:
-
-> On 25. 08. 22, 11:17, Ilpo Järvinen wrote:
-> > Add uart_xmit_advance() helper to handle circular xmit buffer
-> > advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
-> > that previously lacked to accounting for DMA Tx.
-> > 
-> > Greg,
-> > I've a another series on top this which is tty-next material making the
-> > rest of the drivers to use uart_xmit_advance(). That series obviously
-> > depends on the patch 1/3 of this series so if you end up putting these
-> > 3 patches into tty-linus, I'll need it to be merged into tty-next at
-> > some point (I'm not in a big hurry with this so if you choose to delay
-> > the merge, it's not a big deal).
+On 24/08/2022 10:06, Christophe JAILLET wrote:
+> The devm_clk_get_enabled() helper:
+>     - calls devm_clk_get()
+>     - calls clk_prepare_enable() and registers what is needed in order to
+>       call clk_disable_unprepare() when needed, as a managed resource.
 > 
-> Hi,
-> could you hold off with the latter series? I'll send a v2 of TX path cleanup
-> shortly. You'd then need to update much less places (if my series is
-> accepted):
-> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=2d9ade0412f7e5edacc7f791ebbf773d6481b453
-> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=fd55062d74a8c137d30388c6e25ebd5c06a04517
-> https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?h=devel&id=a1df5129cc0cf174a8cd03e187c6a5e890d313e4
+> This simplifies the code, the error handling paths and avoid the need of
+> a dedicated function used with devm_add_action_or_reset().
 > 
-> v1 was here (but was doing a call for every character):
-> https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
-
-Sure, I can hold off a while (as long as we're speaking of reasonable 
-timescales :-)). Looking into your patches, they also seemed to lack that 
-icount.tx++ thing.
-
--- 
- i.
-
-> > Ilpo Järvinen (3):
-> >    serial: Create uart_xmit_advance()
-> >    serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
-> >    serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
-> > 
-> >   drivers/tty/serial/serial-tegra.c |  5 ++---
-> >   drivers/tty/serial/tegra-tcu.c    |  2 +-
-> >   include/linux/serial_core.h       | 17 +++++++++++++++++
-> >   3 files changed, 20 insertions(+), 4 deletions(-)
-> > 
+> That said, meson_uart_probe_clock() is now more or less the same as
+> devm_clk_get_enabled(), so use this function directly instead.
 > 
-> thanks,
+> This also fixes an (unlikely) unchecked devm_add_action_or_reset() error.
 > 
+> Based on my test with allyesconfig, this reduces the .o size from:
+>     text	   data	    bss	    dec	    hex	filename
+>     16350	   5016	    128	  21494	   53f6	drivers/tty/serial/meson_uart.o
+> down to:
+>     15415	   4784	    128	  20327	   4f67	drivers/tty/serial/meson_uart.o
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> devm_clk_get_enabled() is new and is part of 6.0-rc1
+> 
+> If the message "couldn't enable clk\n" is of any use, it could be added
+> in meson_uart_probe_clocks() with a dev_err_probe() call. It wouldn't be
+> exactly the same meaning, but at least something would be logged.
+> ---
+>   drivers/tty/serial/meson_uart.c | 29 +++--------------------------
+>   1 file changed, 3 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index 6c8db19fd572..26de08bf181e 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -667,29 +667,6 @@ static struct uart_driver meson_uart_driver = {
+>   	.cons		= MESON_SERIAL_CONSOLE,
+>   };
+>   
+> -static inline struct clk *meson_uart_probe_clock(struct device *dev,
+> -						 const char *id)
+> -{
+> -	struct clk *clk = NULL;
+> -	int ret;
+> -
+> -	clk = devm_clk_get(dev, id);
+> -	if (IS_ERR(clk))
+> -		return clk;
+> -
+> -	ret = clk_prepare_enable(clk);
+> -	if (ret) {
+> -		dev_err(dev, "couldn't enable clk\n");
+> -		return ERR_PTR(ret);
+> -	}
+> -
+> -	devm_add_action_or_reset(dev,
+> -			(void(*)(void *))clk_disable_unprepare,
+> -			clk);
+> -
+> -	return clk;
+> -}
+> -
+>   static int meson_uart_probe_clocks(struct platform_device *pdev,
+>   				   struct uart_port *port)
+>   {
+> @@ -697,15 +674,15 @@ static int meson_uart_probe_clocks(struct platform_device *pdev,
+>   	struct clk *clk_pclk = NULL;
+>   	struct clk *clk_baud = NULL;
+>   
+> -	clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
+> +	clk_pclk = devm_clk_get_enabled(&pdev->dev, "pclk");
+>   	if (IS_ERR(clk_pclk))
+>   		return PTR_ERR(clk_pclk);
+>   
+> -	clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
+> +	clk_xtal = devm_clk_get_enabled(&pdev->dev, "xtal");
+>   	if (IS_ERR(clk_xtal))
+>   		return PTR_ERR(clk_xtal);
+>   
+> -	clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
+> +	clk_baud = devm_clk_get_enabled(&pdev->dev, "baud");
+>   	if (IS_ERR(clk_baud))
+>   		return PTR_ERR(clk_baud);
+>   
 
---8323329-2083064837-1661758877=:1928--
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
