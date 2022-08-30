@@ -2,82 +2,79 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA23FECAAD1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 15:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED568ECAAD8
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 17:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbiH3PXO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45294 "EHLO
+        id S229522AbiH3RDD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbiH3PXF (ORCPT
+        with ESMTP id S229873AbiH3RCs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:23:05 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E218B6D7D;
-        Tue, 30 Aug 2022 08:23:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661872985; x=1693408985;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=djTr8S5hFVJQCZAcmEv77RdKFem4vVtFK/sUITgcoUI=;
-  b=QjlUyt9lhkD27EQUkj8+F7gqWwcoGwJx/VYcq0c0FAgyEsBZivxROACj
-   QdvrNVK++88R3/q3xVfRnsrbMi9Dgo53Scp17EcVAJyfWwIvVuZIsc5KT
-   a9jPDrmoLiAV/l9miD1b4G65tYlSFPO4WZxw+TB+JRPMA2hcx13tEtcPz
-   XCNsrsx+2olpz/mJPWutHKoCNmF9FN8h8Xjeqf3iOLJAKXSnlYh9emkO+
-   gKHJtv0N4KF8KW9xty8bKO2L61F8EyE5dlrt3GIAqxZPs/o6jJ41kwP2v
-   An4tidmS/3H3ykjj5PQr51NU2iGni3XAJO264yp4i0sJiiXIUA6F7876z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="293947323"
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="293947323"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 08:23:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="588645647"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 30 Aug 2022 08:23:03 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7B544AD; Tue, 30 Aug 2022 18:23:17 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_men_mcb: Remove duplicate UAPI:serial_core inclusion
-Date:   Tue, 30 Aug 2022 18:23:13 +0300
-Message-Id: <20220830152313.14650-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 30 Aug 2022 13:02:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F085564DC;
+        Tue, 30 Aug 2022 10:02:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1270DB81CE7;
+        Tue, 30 Aug 2022 17:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40CBC433B5;
+        Tue, 30 Aug 2022 17:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661878935;
+        bh=zuE5tGcx5l76KiYALJlcPI3yxgrWlUht/PYPUm0d3Pc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rMMt+yf0YcS4YEGrBZB3F8AKE8BCcZVzmWFFz5+lOWh5M6+cnzxTA/5Ilr29ggpTd
+         LTm988Wa1stViNGxb3TSbRxMaU52eIyctqWYLZMWqtWNugkSZ+eCqdjwCkbbYYnUC3
+         FNym7noYDd09zQb/M0pWXTnT1+JCbkTWwgPkxWkcZEcOoeoEv5qMNvLu/adXRKJMFZ
+         2wefNSf3OAKwz1WBKSYA0MecFVgpkes/qc2riKV40RTnuaF4q4BaKXAJWjEwunPw8+
+         g16VRLATLmKPNQDaoAxu+JtNKgVC0Jt3ia4/ubETBpdjZCAz3dAe8W6/dMBVMBYLQ/
+         3ekIe/uXwGWTA==
+Received: by mail-ot1-f48.google.com with SMTP id t8-20020a9d5908000000b0063b41908168so441189oth.8;
+        Tue, 30 Aug 2022 10:02:15 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2HqwhdyRBfB55CvNjdmqo94KnlBrB/8wlXCf3NFOhEyl/Qcsei
+        PSzkhgCUSJLbii0hVTSi+KbEt37Pi3EUhrl0A1E=
+X-Google-Smtp-Source: AA6agR6f59zdB8lJJrFAGXPCZn/Rpe0ho5wIpCSfjqQnPjR+27z8ENLOP8XFp8/Lw2qT/IwjRESPQOWObdDrjOI8nmU=
+X-Received: by 2002:a05:6830:b85:b0:605:4e76:f077 with SMTP id
+ a5-20020a0568300b8500b006054e76f077mr8547324otv.211.1661878934868; Tue, 30
+ Aug 2022 10:02:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com> <20220830084925.5608-2-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220830084925.5608-2-ilpo.jarvinen@linux.intel.com>
+From:   Timur Tabi <timur@kernel.org>
+Date:   Tue, 30 Aug 2022 12:01:37 -0500
+X-Gmail-Original-Message-ID: <CAOZdJXXDaqG5uR-A3gC4qrFBwtbm7ZwFp0oXwUYGVDU=Ru-gPQ@mail.gmail.com>
+Message-ID: <CAOZdJXXDaqG5uR-A3gC4qrFBwtbm7ZwFp0oXwUYGVDU=Ru-gPQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] serial: ucc_uart: Remove custom frame size calculation
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Timur Tabi <timur@kernel.org>,
+        PowerPC Mailing List <linuxppc-dev@lists.ozlabs.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The UAPI serial_core.h is guaranteed to be included by in-kernel
-one (with the same name). Individual drivers do not need to include
-it explicitly. Remove it from the driver.
+On Tue, Aug 30, 2022 at 3:49 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> The number of bits can be calculated using tty_get_frame_size(), no
+> need for the driver to do it on its own.
+>
+> Also remove a comment on number of bits that doesn't match the code nor
+> the comment on ucc_uart_pram's rx_length ("minus 1" part differs). That
+> comment seems a verbatim copy of that in cpm_uart/cpm_uart_core.c
+> anyway so perhaps it was just copied over w/o much thinking.
+>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-Note, it's a single driver in the entire kernel that does this.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_men_mcb.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-index 737c4c31e8a0..f46ca13ff4aa 100644
---- a/drivers/tty/serial/8250/8250_men_mcb.c
-+++ b/drivers/tty/serial/8250/8250_men_mcb.c
-@@ -7,7 +7,6 @@
- #include <linux/serial.h>
- #include <linux/serial_core.h>
- #include <linux/serial_8250.h>
--#include <uapi/linux/serial_core.h>
- 
- #define MEN_UART_ID_Z025 0x19
- #define MEN_UART_ID_Z057 0x39
--- 
-2.35.1
-
+Acked-by: Timur Tabi <timur@kernel.org>
