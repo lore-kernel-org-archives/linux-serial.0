@@ -2,106 +2,141 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06451ECAAD4
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 08:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAB7ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 08:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiH3Ito (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60726 "EHLO
+        id S231719AbiH3IuI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiH3Itl (ORCPT
+        with ESMTP id S231681AbiH3IuD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:49:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF98B99D2;
-        Tue, 30 Aug 2022 01:49:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A77CFB81887;
-        Tue, 30 Aug 2022 08:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C9BBC433D7;
-        Tue, 30 Aug 2022 08:49:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661849377;
-        bh=y+1MMFa8GkCF5J8xOBa4wpAmNDUFKU7en8TBxW//a4E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Bf1YtPs307mo8lMrBvPJ8JYzsN4hPwgTGnjeruF2ZT+1HYnd27ANo4lCmBvYw6VuQ
-         2XxLEk1UupnJaBo6WfhMPaUkQ7okqnaaO9IlK6tMeOhVGHNOJT8Nvn6H+iLkIHrqoI
-         YzbnTxjGWzGZRSZHOSZBz4hrQkidgYl3DUpQ/ghA=
-Date:   Tue, 30 Aug 2022 10:49:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Tue, 30 Aug 2022 04:50:03 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2976389;
+        Tue, 30 Aug 2022 01:49:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661849390; x=1693385390;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QY5pcFaRk9Pil+zQdIFM0ph2NdnnrO8rptdre2dGddM=;
+  b=YNDvWjNq5XGMft/wUqLv2Iwlx3iyRNEGwcCLZ9yR5criVEvrX5rrs/ji
+   muQQKf2ljYRPpXuEe+8RvyDOQAyZsDS2lQKWyT9u1yyMCiN+ILjt62iD0
+   paIMfDli4BUr0GdLJbfPO1i0/25ugepfzhRg4YT0A8QhOXzMkigRmb7La
+   gaQnNb8kzk5IkWzQTTDuHC5eVUapORDR+lmMxN4M+uTeCjoUTE19/0GPS
+   3JawpnoPaaXP8NBj78Vu6R1J1M7QpXutlCnxVXe3acxK8Q1hojG3Cvqbr
+   OjeN2zAsCWAHcb6GH2uvL8HU0aNA2GoOd9WUWp88zFpEUg3TwvgD8ARNj
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="293866306"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="293866306"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 01:49:49 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="672761845"
+Received: from arnesgom-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.54.235])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 01:49:44 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH v2 4/4] serial: Add kserial_rs485 to avoid wasted space
- due to .padding
-Message-ID: <Yw3PHg0imhJyb9sf@kroah.com>
-References: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com>
- <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
+        Timur Tabi <timur@kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2 1/5] serial: ucc_uart: Remove custom frame size calculation
+Date:   Tue, 30 Aug 2022 11:49:21 +0300
+Message-Id: <20220830084925.5608-2-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com>
+References: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 10:29:56AM +0300, Ilpo Järvinen wrote:
-> The struct serial_rs485 has a .padding field to make uapi updates
-> easier. It wastes space, however. Create struct kserial_rs485 which is
-> a kerner counterpart w/o padding.
+The number of bits can be calculated using tty_get_frame_size(), no
+need for the driver to do it on its own.
 
-"kernel"?
+Also remove a comment on number of bits that doesn't match the code nor
+the comment on ucc_uart_pram's rx_length ("minus 1" part differs). That
+comment seems a verbatim copy of that in cpm_uart/cpm_uart_core.c
+anyway so perhaps it was just copied over w/o much thinking.
 
-And what is the size difference now?
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/ucc_uart.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
-> +/**
-> + * struct kserial_rs485 - kernel-side struct for controlling RS485 settings.
-> + * @flags:			RS485 feature flags
-> + * @delay_rts_before_send:	Delay before send (milliseconds)
-> + * @delay_rts_after_send:	Delay after send (milliseconds)
-> + * @addr_recv:			Receive filter for RS485 addressing mode
-> + *				(used only when %SER_RS485_ADDR_RECV is set).
-> + * @addr_dest:			Destination address for RS485 addressing mode
-> + *				(used only when %SER_RS485_ADDR_DEST is set).
-> + *
-> + * Must match with struct serial_rs485 in include/uapi/linux/serial.h excluding
-> + * the padding.
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 3cc9ef08455c..7331964163c5 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -853,13 +853,6 @@ static void qe_uart_set_termios(struct uart_port *port,
+ 	u16 upsmr = ioread16be(&uccp->upsmr);
+ 	struct ucc_uart_pram __iomem *uccup = qe_port->uccup;
+ 	u16 supsmr = ioread16be(&uccup->supsmr);
+-	u8 char_length = 2; /* 1 + CL + PEN + 1 + SL */
+-
+-	/* Character length programmed into the mode register is the
+-	 * sum of: 1 start bit, number of data bits, 0 or 1 parity bit,
+-	 * 1 or 2 stop bits, minus 1.
+-	 * The value 'bits' counts this for us.
+-	 */
+ 
+ 	/* byte size */
+ 	upsmr &= UCC_UART_UPSMR_CL_MASK;
+@@ -869,22 +862,18 @@ static void qe_uart_set_termios(struct uart_port *port,
+ 	case CS5:
+ 		upsmr |= UCC_UART_UPSMR_CL_5;
+ 		supsmr |= UCC_UART_SUPSMR_CL_5;
+-		char_length += 5;
+ 		break;
+ 	case CS6:
+ 		upsmr |= UCC_UART_UPSMR_CL_6;
+ 		supsmr |= UCC_UART_SUPSMR_CL_6;
+-		char_length += 6;
+ 		break;
+ 	case CS7:
+ 		upsmr |= UCC_UART_UPSMR_CL_7;
+ 		supsmr |= UCC_UART_SUPSMR_CL_7;
+-		char_length += 7;
+ 		break;
+ 	default:	/* case CS8 */
+ 		upsmr |= UCC_UART_UPSMR_CL_8;
+ 		supsmr |= UCC_UART_SUPSMR_CL_8;
+-		char_length += 8;
+ 		break;
+ 	}
+ 
+@@ -892,13 +881,11 @@ static void qe_uart_set_termios(struct uart_port *port,
+ 	if (termios->c_cflag & CSTOPB) {
+ 		upsmr |= UCC_UART_UPSMR_SL;
+ 		supsmr |= UCC_UART_SUPSMR_SL;
+-		char_length++;  /* + SL */
+ 	}
+ 
+ 	if (termios->c_cflag & PARENB) {
+ 		upsmr |= UCC_UART_UPSMR_PEN;
+ 		supsmr |= UCC_UART_SUPSMR_PEN;
+-		char_length++;  /* + PEN */
+ 
+ 		if (!(termios->c_cflag & PARODD)) {
+ 			upsmr &= ~(UCC_UART_UPSMR_RPM_MASK |
+@@ -953,7 +940,7 @@ static void qe_uart_set_termios(struct uart_port *port,
+ 	iowrite16be(upsmr, &uccp->upsmr);
+ 	if (soft_uart) {
+ 		iowrite16be(supsmr, &uccup->supsmr);
+-		iowrite8(char_length, &uccup->rx_length);
++		iowrite8(tty_get_frame_size(termios->c_cflag), &uccup->rx_length);
+ 
+ 		/* Soft-UART requires a 1X multiplier for TX */
+ 		qe_setbrg(qe_port->us_info.rx_clock, baud, 16);
+-- 
+2.30.2
 
-Why must this match?  And how is that going to be enforced?
-
-> + */
-> +struct kserial_rs485 {
-> +	__u32	flags;
-> +	__u32	delay_rts_before_send;
-> +	__u32	delay_rts_after_send;
-> +	struct {
-> +		__u8    addr_recv;
-> +		__u8    addr_dest;
-> +	};
-
-As this is an in-kernel structure, this should be "u32" and "u8" now.
-
-thanks,
-
-greg k-h
