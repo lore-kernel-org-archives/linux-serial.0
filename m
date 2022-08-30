@@ -2,89 +2,111 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7C6ECAAD1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 06:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78F1ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 06:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiH3Gq2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        id S229764AbiH3GtO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiH3Gq2 (ORCPT
+        with ESMTP id S229490AbiH3GtN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:46:28 -0400
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CE35E57A;
-        Mon, 29 Aug 2022 23:46:27 -0700 (PDT)
-Received: by mail-ed1-f50.google.com with SMTP id u6so12853401eda.12;
-        Mon, 29 Aug 2022 23:46:27 -0700 (PDT)
+        Tue, 30 Aug 2022 02:49:13 -0400
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCB35F9BC;
+        Mon, 29 Aug 2022 23:49:12 -0700 (PDT)
+Received: by mail-ed1-f51.google.com with SMTP id a36so9094024edf.5;
+        Mon, 29 Aug 2022 23:49:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=5Yaa0kovEFloTn1R4Z/IqbqPs448soNcE+Du57d7eds=;
-        b=hdz6sZqtpfYfECKPxWE7Vj5UQzfla0QR0EWgQfeGPBHjmeNy4AuaFThoxd2VKB66vo
-         NXCmQ4TQD4DCr7KeEg//VLe16N3jerH7DHWFcNa53txse3e+iIMyuevP5wno4Xk8QnS4
-         Ebhq7oc6/bdBY/CiTAu4+fK3siroqO7tRfbaL1pv86RmvBY839B1EzmY8P6mQaugVkUy
-         iy4pAZ+CyOUM7s6QsmhQ9ms+wLdBCNuBMXElq7dPr08DxZugXVjhJ57od49Ea4vPffy9
-         o8xw5ljqEoSnNcSX5HGZdh0WoYhP+8pXRwy0y2wK1r95j/MGKw2JdxV+28+okONIJr+2
-         GOxg==
-X-Gm-Message-State: ACgBeo3eJv1aMLKU3L5sGyWf6ckxi3jgSrSxMrRKivjHLm9AmKtfbGlf
-        mCrr6vEOSCGhRC7F0ErSlRq7VZv6SZ+reg==
-X-Google-Smtp-Source: AA6agR5PUA7stEBakbVfcABDXRQcLNsi+cAHDXuEnG4nxGAwFnh6e5rfj6mKS9cu1xiiMlxsI6mxbg==
-X-Received: by 2002:a05:6402:270b:b0:448:76f0:4f55 with SMTP id y11-20020a056402270b00b0044876f04f55mr6355483edd.215.1661841985955;
-        Mon, 29 Aug 2022 23:46:25 -0700 (PDT)
+        bh=PuuakMlbSUWdRa3bhVkS+N7uIpC9ls42yK9ElE4J+og=;
+        b=nsGjsbXJMUyRukifeVX7Fx92h7yZGRF5U89db1VGGijgx7B7udq4wxpqOS66osEJrM
+         tq4HCToPVRBApC6spOAGRZsySN6zH3TdYW5cCPIg6loT4XZjNlwmFz7glUKv8Vyyqc9V
+         nUph0IVaH0N7gDE9NYFxDocJZuIni4XEA4XlOykedc0LeA03tOZTDlKgHiqO714kLWOo
+         hO7HyMzjf74wNu4KE3jVPT9ZI1hO9U62xXMfcWyDnUBBNxZqEHyY8U1EPKsaiPkgHTwj
+         TUhbjoLS3i4x3gwjTQ43KRfD96jRIoW0szQFa9ZeDDZeA4p9zyQTYsmlUzicRRIA1GsH
+         +ZvA==
+X-Gm-Message-State: ACgBeo0OOGC2q+rFfu6J9Nshl7yhc8GaulwXcrI+IAYyI4BIKMqrM6Fd
+        yeM53ESbJsFJrPSrxhtT3ienJTfTxsZ3ew==
+X-Google-Smtp-Source: AA6agR6YtGWaXN4JX9mGLsOYayZmeKKLwouftX09f9KWnsT7Z6oJA/Ih9LRjD8DG2khZxpgIHh6BhQ==
+X-Received: by 2002:a05:6402:241d:b0:443:39c5:808b with SMTP id t29-20020a056402241d00b0044339c5808bmr19377344eda.39.1661842150816;
+        Mon, 29 Aug 2022 23:49:10 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id t19-20020a056402525300b00445bda73fbesm4666707edd.33.2022.08.29.23.46.24
+        by smtp.gmail.com with ESMTPSA id g6-20020a170906198600b0073dc6def190sm5307502ejd.158.2022.08.29.23.49.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 23:46:25 -0700 (PDT)
-Message-ID: <0885a541-9ea5-ea8c-f3ee-61162ef77d8b@kernel.org>
-Date:   Tue, 30 Aug 2022 08:46:24 +0200
+        Mon, 29 Aug 2022 23:49:10 -0700 (PDT)
+Message-ID: <3801995e-1eb5-1184-a9ba-2cec1d19bc58@kernel.org>
+Date:   Tue, 30 Aug 2022 08:49:08 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.0
-Subject: Re: [PATCH 3/3] serial: pch_uart: CIRC_CNT_TO_END() is enough
+Subject: Re: [PATCH v2 1/6] tty: n_gsm: add enumeration for gsm encodings
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220823141839.165244-1-ilpo.jarvinen@linux.intel.com>
- <20220823141839.165244-3-ilpo.jarvinen@linux.intel.com>
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220823062259.4754-1-daniel.starke@siemens.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220823141839.165244-3-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220823062259.4754-1-daniel.starke@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23. 08. 22, 16:18, Ilpo Järvinen wrote:
-> Testing also CIRC_CNT() with CIRC_CNT_TO_END() is unnecessary because
-> to latter alone covers all necessary cases.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->   drivers/tty/serial/pch_uart.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+On 23. 08. 22, 8:22, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 8a9065e4a903..116a2e76093d 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -898,9 +898,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
->   		fifo_size--;
->   	}
->   
-> -	bytes = min((int)CIRC_CNT(xmit->head, xmit->tail,
-> -			     UART_XMIT_SIZE), CIRC_CNT_TO_END(xmit->head,
-> -			     xmit->tail, UART_XMIT_SIZE));
-> +	bytes = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
->   	if (!bytes) {
->   		dev_dbg(priv->port.dev, "%s 0 bytes return\n", __func__);
->   		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_TX_INT);
+> Add an enumeration for the gsm mux encoding types to improve code
+> readability and to avoid invalid values. Only two values are defined by the
+> standard:
+> - basic option mode
+> - advanced option mode (uses ISO HDLC standard transparency mechanism)
+> 
+> Also remove redundant configuration in gsmld_open(). The same value is
+> already set in gsm_alloc_mux() which is also called in gsmld_open().
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>   drivers/tty/n_gsm.c | 31 +++++++++++++++++--------------
+>   1 file changed, 17 insertions(+), 14 deletions(-)
+> 
+> No changes since v1.
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index caa5c14ed57f..5bf09d129357 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+...
+> @@ -2651,7 +2656,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+>   {
+>   	memset(c, 0, sizeof(*c));
+>   	c->adaption = gsm->adaption;
+> -	c->encapsulation = gsm->encoding;
+> +	c->encapsulation = (int)gsm->encoding;
 
+IIRC, the C standard says enum behave like int. So why is the cast needed?
+
+>   	c->initiator = gsm->initiator;
+>   	c->t1 = gsm->t1;
+>   	c->t2 = gsm->t2;
+...
+> @@ -2942,8 +2947,6 @@ static int gsmld_open(struct tty_struct *tty)
+>   	tty->receive_room = 65536;
+>   
+>   	/* Attach the initial passive connection */
+> -	gsm->encoding = 1;
+> -
+
+This doesn't relate to "add enumeration for gsm encodings". Why do you 
+remove this line?
+
+>   	gsmld_attach_gsm(tty, gsm);
+
+thanks,
 -- 
 js
 suse labs
