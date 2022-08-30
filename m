@@ -2,120 +2,109 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64103ECAAD4
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 08:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD57ECAAD4
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 08:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231794AbiH3IvB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
+        id S230315AbiH3Iw6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231764AbiH3IuZ (ORCPT
+        with ESMTP id S231768AbiH3Iwd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:50:25 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A615F4D;
-        Tue, 30 Aug 2022 01:50:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661849407; x=1693385407;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+zvycWgHswi1PPV0RnXSYc/K43LbVY11y+f+/3GNfko=;
-  b=DrF8CrfrKWH2GYBJJKgEpms4Q8xRoMgM81F6lSwDFdpYMjOEWulUzv19
-   yZuGLCnUGTGvrNLSpSviZjep2S6sKb5hSyMI0pLdYGg+KqAIPc+O/p/vh
-   O5G7ub1NkkgPGwqQdu0wSD8Hf3MCYIhNEGFZyxMN/d5frib6wg7tAfA2T
-   7z6qP8cJeRQqV+cOG9Otcl8fX1NFgM78ffLx2lDN/IWwfF4ab7FQW2q3I
-   W+5geqxhB8gTqItiBXrcdmDPMfeXWeWAUwRxEDxtTB6/x9aZ3sV503fzh
-   N7Kc5BIRLGTJX4RL660HldqI90cSSSu8A218nEfXUPL/nj/FRA8PBcOTQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="293866357"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="293866357"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 01:50:03 -0700
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672761927"
-Received: from arnesgom-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.54.235])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 01:50:00 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org,
+        Tue, 30 Aug 2022 04:52:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6AF9A967;
+        Tue, 30 Aug 2022 01:52:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C35ABB81888;
+        Tue, 30 Aug 2022 08:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE725C433D7;
+        Tue, 30 Aug 2022 08:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661849542;
+        bh=GfTk307VAPbulMgNaAUsMDt2ahKUcbPofgSTa8PhAiQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DyAjFc9HC2ltJIBwtejCLHGP0+sh4+HuJH4YfCl6P8VLxiBLSdh4bYf4KeN7al3lV
+         5PLJQlBjMnWL25yCyRqMVhzRZ3gM02EAmzOaeMviC4al0M8ZWWAUGB8MNMawubTwtT
+         eF2q9bnUCiff/VsE6cHX2ADN9bnv18PGyeNm8ssg=
+Date:   Tue, 30 Aug 2022 10:52:19 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v2 5/5] serial: tegra: Remove custom frame size calculation
-Date:   Tue, 30 Aug 2022 11:49:25 +0300
-Message-Id: <20220830084925.5608-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com>
-References: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com>
+        Jonathan Corbet <corbet@lwn.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH v2 4/4] serial: Add kserial_rs485 to avoid wasted space
+ due to .padding
+Message-ID: <Yw3Pw9kwDDKXuqC+@kroah.com>
+References: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com>
+ <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The number of bits can be calculated using tty_get_frame_size(), no
-need for the driver to do it on its own.
+On Tue, Aug 30, 2022 at 10:29:56AM +0300, Ilpo Järvinen wrote:
+> -static int serial_rs485_from_user(struct serial_rs485 *rs485,
+> +static int serial_rs485_from_user(struct kserial_rs485 *rs485,
+>  				  const struct serial_rs485 __user *rs485_user)
+>  {
+> -	if (copy_from_user(rs485, rs485_user, sizeof(*rs485)))
+> +	struct serial_rs485 rs485_uapi;
+> +
+> +	if (copy_from_user(&rs485_uapi, rs485_user, sizeof(*rs485)))
+>  		return -EFAULT;
+>  
+> +	*rs485 = *((struct kserial_rs485 *)&rs485_uapi);
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/serial-tegra.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Ah, you are mapping this on top of the existing structure, so there was
+no padding in the original one, why say that?
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index ad4f3567ff90..5a56bd20abcd 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -1278,7 +1278,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	unsigned long flags;
- 	unsigned int lcr;
- 	unsigned char char_bits;
--	int symb_bit = 1;
- 	struct clk *parent_clk = clk_get_parent(tup->uart_clk);
- 	unsigned long parent_clk_rate = clk_get_rate(parent_clk);
- 	int max_divider = (tup->cdata->support_clk_src_div) ? 0x7FFF : 0xFFFF;
-@@ -1305,7 +1304,6 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	termios->c_cflag &= ~CMSPAR;
- 
- 	if ((termios->c_cflag & PARENB) == PARENB) {
--		symb_bit++;
- 		if (termios->c_cflag & PARODD) {
- 			lcr |= UART_LCR_PARITY;
- 			lcr &= ~UART_LCR_EPAR;
-@@ -1318,22 +1316,18 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	}
- 
- 	char_bits = tty_get_char_size(termios->c_cflag);
--	symb_bit += char_bits;
- 	lcr &= ~UART_LCR_WLEN8;
- 	lcr |= UART_LCR_WLEN(char_bits);
- 
- 	/* Stop bits */
--	if (termios->c_cflag & CSTOPB) {
-+	if (termios->c_cflag & CSTOPB)
- 		lcr |= UART_LCR_STOP;
--		symb_bit += 2;
--	} else {
-+	else
- 		lcr &= ~UART_LCR_STOP;
--		symb_bit++;
--	}
- 
- 	tegra_uart_write(tup, lcr, UART_LCR);
- 	tup->lcr_shadow = lcr;
--	tup->symb_bit = symb_bit;
-+	tup->symb_bit = tty_get_frame_size(termios->c_cflag);
- 
- 	/* Baud rate. */
- 	baud = uart_get_baud_rate(u, termios, oldtermios,
--- 
-2.30.2
+> +/*
+> + * Compile-time asserts for struct kserial_rs485 and struct serial_rs485 equality
+> + * (except padding).
 
+This does not take into account any padding, in fact it's the opposite
+as all of this:
+
+> + */
+> +static_assert(offsetof(struct kserial_rs485, flags) ==
+> +	      offsetof(struct serial_rs485, flags));
+> +static_assert(offsetof(struct kserial_rs485, delay_rts_before_send) ==
+> +	      offsetof(struct serial_rs485, delay_rts_before_send));
+> +static_assert(offsetof(struct kserial_rs485, delay_rts_after_send) ==
+> +	      offsetof(struct serial_rs485, delay_rts_after_send));
+> +static_assert(offsetof(struct kserial_rs485, addr_recv) ==
+> +	      offsetof(struct serial_rs485, addr_recv));
+> +static_assert(offsetof(struct kserial_rs485, addr_dest) ==
+> +	      offsetof(struct serial_rs485, addr_dest));
+> +static_assert(sizeof(struct kserial_rs485) <= sizeof(struct serial_rs485));
+
+Is there to ensure that the offsets are exactly the same, no padding
+involved anywhere.
+
+So I don't understand the problem you are trying to solve here,
+
+greg k-h
