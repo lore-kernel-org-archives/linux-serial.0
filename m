@@ -2,94 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74D2ECAAD8
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:00:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7C9ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbiH3HAy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
+        id S229653AbiH3HUa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiH3HAw (ORCPT
+        with ESMTP id S230266AbiH3HU3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:00:52 -0400
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A7C6F566;
-        Tue, 30 Aug 2022 00:00:44 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id a36so9124878edf.5;
-        Tue, 30 Aug 2022 00:00:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=xV3abq7+2rnbmJWT5ZvT6yxw5guw2CyFyWdbIvvWMJA=;
-        b=a3rOa3KumgObTHu1BD0se6vYXFnT/rouwl6Q8ucjoh8olMHup+AU9M0th4a37b/SHI
-         ZTLAaoayu0+WwMazygUzWkD1tn+UkItE+s0Lf3NoxJBa8LTRpHnL3rDXW/VkvdnXA7kL
-         /ZCjiXnkWL+Rkk2cbwMRQ/eh5FZX/e62HnfD5OPA/UGSjileWlyOFwtZLVK/nH+svUy/
-         uiNGLeh5W6oR0+VInQ9AqP7MeTWZQ0RnJFgAz7hhfwUYMleFIOY2YwfW/pVxdgBLm3PR
-         k3upRYVao6zjqWh3h0TjvF8Ao8/NpBA0idJNDEVL7ByWDxZHnW3eD33JUWmsWTR97NfH
-         J4tQ==
-X-Gm-Message-State: ACgBeo2uZ+vTwFLWOYHdwOJs5RlJcRpJhaxSyJRGqOMUIGsq9fTbdy/K
-        BeVhGms2cdTIFK3Xnp2at5E=
-X-Google-Smtp-Source: AA6agR4tGOGu91wzrBwm/B8UAYaCNCFPwtb9QkVXj889cIUIe4ZPADcJyTRWviMB/KKXN9s8TAs1+A==
-X-Received: by 2002:a05:6402:34cd:b0:448:8286:23f0 with SMTP id w13-20020a05640234cd00b00448828623f0mr5440366edc.40.1661842842861;
-        Tue, 30 Aug 2022 00:00:42 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id u18-20020a1709061db200b0073d7d9deb73sm5380485ejh.68.2022.08.30.00.00.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 00:00:42 -0700 (PDT)
-Message-ID: <1d8d0d72-a5b7-724e-a70a-71d9fd3330c4@kernel.org>
-Date:   Tue, 30 Aug 2022 09:00:41 +0200
+        Tue, 30 Aug 2022 03:20:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDFE5004C;
+        Tue, 30 Aug 2022 00:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661844028; x=1693380028;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=axUyRkQDEujGll+U4gNW9NGbIqhXvci7jUZVzKU+b8k=;
+  b=XaeWYzd6ovApkXvJrbc3owRwl6Torv9LDkkSUYVU/dOhHXhSQSQuGT6e
+   eK7gXiPogyOVBYU6xymhW/XaLo/5UgHIoVHV4JHie7AWlWInz3nrQsVKx
+   DnDJpNlmwFHrFpZ+uxZ+eZy5MM2WmvwNwvhuWVqlJeE+J5EpMZ9Ia6Snk
+   KhnUM+QW4AJvjLYNYjX1LQyg6/BVP/ufjbH2F1MuKIZKXGUVVLkCopRaC
+   hfjukD293rmIc/vIAOOWDXV6TKE7p3s8l6awfYealJOUnn35bdbG3K5rJ
+   kFw99rLDyDs5UOr65zqQJZ7ol4OmhTWXXQYMGIqt0ewz87VWhPV7Sykqh
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321231777"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="321231777"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:27 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="672728650"
+Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:25 -0700
+Date:   Tue, 30 Aug 2022 10:20:20 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Li Zhong <floridsleeves@gmail.com>
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of
+ uart_port_check()
+In-Reply-To: <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
+Message-ID: <40e16474-99d2-2359-a545-4a437f555ec1@linux.intel.com>
+References: <20220826083612.1699194-1-floridsleeves@gmail.com> <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com> <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com> <2033d06d-10a4-5a57-d650-7541c39990ee@linux.intel.com>
+ <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v2 5/6] tty: n_gsm: name the debug bits
-Content-Language: en-US
-To:     "D. Starke" <daniel.starke@siemens.com>,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220823062259.4754-1-daniel.starke@siemens.com>
- <20220823062259.4754-5-daniel.starke@siemens.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220823062259.4754-5-daniel.starke@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-68519279-1661842936=:1864"
+Content-ID: <2edbf640-1cd7-a490-7077-b3c91cf8135f@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 23. 08. 22, 8:22, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> Introduce defines to name the various debug bits used within the code to
-> improve readability and to make its specific use clear.
-> 
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->   drivers/tty/n_gsm.c | 31 +++++++++++++++++++------------
->   1 file changed, 19 insertions(+), 12 deletions(-)
-> 
-> No changes since v1.
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 5a20561c0a5d..fcf2d52d5095 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -63,6 +63,13 @@
->   static int debug;
->   module_param(debug, int, 0600);
->   
-> +/* Module debug bits */
-> +#define DBG_DUMP	(1 << 0) /* Data transmission dump. */
-> +#define DBG_CD_ON	(1 << 1) /* Always assume CD line on. */
-> +#define DBG_DATA	(1 << 2) /* Data transmission details. */
-> +#define DBG_ERRORS	(1 << 3) /* Details for fail conditions. */
-> +#define DBG_TTY		(1 << 4) /* Transmission statistics for DLCI TTYs. */
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Could you use BIT() instead?
+--8323329-68519279-1661842936=:1864
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <7768bd39-e4a3-2d53-551f-1d81a45711d3@linux.intel.com>
 
-thanks,
+On Mon, 29 Aug 2022, Li Zhong wrote:
+
+> On Mon, Aug 29, 2022 at 12:09 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> >
+> > On Sun, 28 Aug 2022, Li Zhong wrote:
+> >
+> > > On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
+> > > <andy.shevchenko@gmail.com> wrote:
+> > > >
+> > > > On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
+> > > > >
+> > > > > uart_port_check() will return NULL pointer when state->uart_port is
+> > > > > NULL. Check the return value before dereference it to avoid
+> > > > > null-pointer-dereference error.
+> > > >
+> > > > Have you taken the locking into consideration?
+> > > > If no, please do, if yes, expand your commit message to explain why
+> > > > the current locking scheme doesn't prevent an error from happening.
+> > > >
+> > >
+> > > The locking is taken into consideration but these three checks do not need to
+> > > unlock in error-handling because unlock() will be called in the callers. Will
+> > > add the comment in v2 patch.
+> >
+> > I think he meant you should indicate why the current locking doesn't cover
+> > the case you're fixing, not whether this function should call unlock() or
+> > not.
+> >
+> 
+> Thanks for clarifications. The locking does not guarantee the return value of
+> uart_port_check()  is not NULL.
+
+Please put such explanation into the commit message like Andy was asking, 
+thank you.
+
+And make sure you properly mention what has changed for any new version 
+of any patch you send so that Greg don't need to auto-mail you about it 
+(and end up ignoring your patch).
+
+> Actually in line 773 of this file
+> (drivers/tty/serial/serial_core.c), uart_port_check() is also called in
+> critical section but still there is check on whether the return value is NULL.
+
+Existance of such a check elsewhere alone isn't enough to guarantee that 
+the check is necessary (and not even that the check in that other place 
+would be necessary). You need a deeper analysis than that. I'm not 
+claiming its either way here, just pointing out to the direction/details 
+you should consider while writing the analysis of the problem.
+
+
 -- 
-js
-suse labs
-
+ i.
+--8323329-68519279-1661842936=:1864--
