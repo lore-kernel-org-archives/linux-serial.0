@@ -2,57 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFDBECAAA1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 06:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAB7ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 06:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiH3Gz0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S229636AbiH3G7l (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiH3GzZ (ORCPT
+        with ESMTP id S230311AbiH3G7k (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:55:25 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722EBDF23;
-        Mon, 29 Aug 2022 23:55:21 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id cu2so20243248ejb.0;
-        Mon, 29 Aug 2022 23:55:21 -0700 (PDT)
+        Tue, 30 Aug 2022 02:59:40 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52952C00DA;
+        Mon, 29 Aug 2022 23:59:39 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id fy31so19781075ejc.6;
+        Mon, 29 Aug 2022 23:59:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=UPXJ1JqGigKFmyD9U/hiuxsOSi9xW0X3BsnOgNCxc0w=;
-        b=UTlnTHLuKDdgEQydVpgsFP5L7frav0d1NKNZR7Kpn9j0Ygj6ntrr6+ciWdMHxQdVNA
-         Q9MpxUDVck+wpnGe1fBUj/o1JOK36roJ5m/Eo9XGrGbg9c/vNgzupKexRS1kiAcnO1Oq
-         Jk6xZAsJ1RgWu8A/X19SLrObHI9RHYT1nVVmttAM1QdewevOTTYSXtIriRZDswKi8B9l
-         5s+XcfDP6AAGAOeR/V+d2hS3q140/I5Y1iNIoIOGFffnCZHMrjHXxE1hDmOcnAAKkIRz
-         bNXhT7PjFveGJr+nwZfnECzDUIPA2lxDep5GQ3C5WnRGwCr4y2iueC5qi/Zot7DeOsMU
-         U4AQ==
-X-Gm-Message-State: ACgBeo20sGPWjQQFiu7U0JoY6wUJhUpxE+LCrLy23L5M8jBxrXcmXJgD
-        1MSAWd3lNlmOlNLX7egK2dI=
-X-Google-Smtp-Source: AA6agR5tLpVcq4TB+Wma0x0M4j3UnQqurgLeChLbe8oncg++th8Y0G6ch7qXXpgLNgRrw2X52XMatg==
-X-Received: by 2002:a17:907:9625:b0:730:ad62:9c86 with SMTP id gb37-20020a170907962500b00730ad629c86mr15882997ejc.281.1661842519955;
-        Mon, 29 Aug 2022 23:55:19 -0700 (PDT)
+        bh=udLDyvqYEWiFFMc7PF4o3+l6dw+FJ84syS3HsmSGTcA=;
+        b=nybnJGTvo1weV/qzWwUP+2cXrQ3ED9Pyh5MQbj+W47K8nM0QkwohrSGjtUZ+enM9Dd
+         9H/dpixKrroTtehrQoZBETDDFHs4Lc16eS4ItdSSEgnMOEp0zkiuO/KFIynJQ5q7AtmX
+         WhwzJWS8uCNmND9xfR0x9cBEwLrV6lLM1UUITeH7CJYAN9G47QWEjWoHyFWjd6Ril9cJ
+         cpZu5YJayw8DVVe4g++Bqihs6zwGPm6opVytoqD5Hb3FP1J6WvLmj8WeZsDZ1eAHzQ+G
+         XRsvh/gqMh+imm+GUJuZC0Qy1V4cHNjpT9t+TCLjfo+rzfsBaWpzh1Mb20MnoUcrvwZv
+         KiYQ==
+X-Gm-Message-State: ACgBeo3Qk8xuvnHZGreVeZ3nBWoPFxikEv1ww6ESppxi9QtkRGIbtoTf
+        nFtxQtobfkPdmDH+RUP6S9U7jbk7N9ltVA==
+X-Google-Smtp-Source: AA6agR6Flm8qe4jXyOfHveehL6f0JSYaqRNWgZurTFrHZIkwS7S7R7X/1vOMlUKm8gI2O12IYevEbg==
+X-Received: by 2002:a17:907:728d:b0:731:8396:ea86 with SMTP id dt13-20020a170907728d00b007318396ea86mr16058182ejc.361.1661842777858;
+        Mon, 29 Aug 2022 23:59:37 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id h8-20020a50ed88000000b004463b99bc09sm6756792edr.88.2022.08.29.23.55.19
+        by smtp.gmail.com with ESMTPSA id w23-20020aa7cb57000000b0043a61f6c389sm5638914edt.4.2022.08.29.23.59.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 23:55:19 -0700 (PDT)
-Message-ID: <387a0d37-6a75-d721-87dd-86219f61ef86@kernel.org>
-Date:   Tue, 30 Aug 2022 08:55:18 +0200
+        Mon, 29 Aug 2022 23:59:37 -0700 (PDT)
+Message-ID: <fe014b7b-a1d2-9be9-625b-2f630934c56c@kernel.org>
+Date:   Tue, 30 Aug 2022 08:59:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.0
-Subject: Re: [PATCH v2 3/6] tty: n_gsm: replace use of gsm_read_ea() with
- gsm_read_ea_val()
+Subject: Re: [PATCH v2 4/6] tty: n_gsm: introduce gsm_control_command()
+ function
 Content-Language: en-US
 To:     "D. Starke" <daniel.starke@siemens.com>,
         linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org
 References: <20220823062259.4754-1-daniel.starke@siemens.com>
- <20220823062259.4754-3-daniel.starke@siemens.com>
+ <20220823062259.4754-4-daniel.starke@siemens.com>
 From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220823062259.4754-3-daniel.starke@siemens.com>
+In-Reply-To: <20220823062259.4754-4-daniel.starke@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -62,192 +62,79 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On 23. 08. 22, 8:22, D. Starke wrote:
 > From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> Replace the use of gsm_read_ea() with gsm_read_ea_val() where applicable to
-> improve code readability and avoid errors like in the past.
-
-What errors?
-
-> Reported-by: kernel test robot <lkp@intel.com>
-
-Perhaps you have a link?
-
+> Move the content of gsm_control_transmit() to a new function
+> gsm_control_command() with a more generic signature and analog to
+> gsm_control_reply(). Use this within gsm_control_transmit().
+> 
+> This is needed to simplify upcoming functional additions.
+> 
 > Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 > ---
->   drivers/tty/n_gsm.c | 99 +++++++++++++++++++++++----------------------
->   1 file changed, 51 insertions(+), 48 deletions(-)
+>   drivers/tty/n_gsm.c | 30 +++++++++++++++++++++++-------
+>   1 file changed, 23 insertions(+), 7 deletions(-)
 > 
-> Changes since v1:
-> Fixed use of wrong variable in debug output within gsm_dlci_data().
+> No changes since v1.
 > 
-> Link: https://lore.kernel.org/all/202208222147.WfFRmf1r-lkp@intel.com/
-
-Ah, you do. This should have been above...
-
 > diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index ed399d57b197..9535e84f3063 100644
+> index 9535e84f3063..5a20561c0a5d 100644
 > --- a/drivers/tty/n_gsm.c
 > +++ b/drivers/tty/n_gsm.c
-> @@ -1418,18 +1418,13 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
->   	unsigned int modem = 0;
->   	struct gsm_dlci *dlci;
->   	int len = clen;
-> -	int slen;
-> +	int cl = clen;
->   	const u8 *dp = data;
->   	struct tty_struct *tty;
+> @@ -1316,6 +1316,28 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
+>    */
 >   
-> -	while (gsm_read_ea(&addr, *dp++) == 0) {
-> -		len--;
-> -		if (len == 0)
-> -			return;
-> -	}
-> -	/* Must be at least one byte following the EA */
-> -	len--;
-> -	if (len <= 0)
-> +	len = gsm_read_ea_val(&addr, data, cl);
-> +
-
-There should be likely no extra \n here between assignment and check of 
-the value (len).
-
-> +	if (len < 1)
->   		return;
 >   
->   	addr >>= 1;
-> @@ -1438,15 +1433,21 @@ static void gsm_control_modem(struct gsm_mux *gsm, const u8 *data, int clen)
->   		return;
->   	dlci = gsm->dlci[addr];
->   
-> -	slen = len;
-> -	while (gsm_read_ea(&modem, *dp++) == 0) {
-> -		len--;
-> -		if (len == 0)
-> -			return;
-> -	}
-> -	len--;
-> +	/* Must be at least one byte following the EA */
-> +	if ((cl - len) < 1)
-> +		return;
-> +
-> +	dp += len;
-> +	cl -= len;
-> +
-> +	/* get the modem status */
-> +	len = gsm_read_ea_val(&modem, dp, cl);
-> +
-> +	if (len < 1)
+> +/**
+> + *	gsm_control_command	-	send a command frame to a control
+> + *	@gsm: gsm channel
+> + *	@cmd: the command to use
+> + *	@data: data to follow encoded info
+> + *	@dlen: length of data
+> + *
+> + *	Encode up and queue a UI/UIH frame containing our command.
 
-The same here.
+These tabs after asterisks are not understood by kernel-doc. You should 
+add no new ones.
 
-> +		return;
+> + */
+> +static int gsm_control_command(struct gsm_mux *gsm, int cmd, u8 *data, int dlen)
+
+Can gsm and data be const? I assume gsm cannot due to call to 
+gsm_data_queue(). And what about cmd & dlen being uint? cmd seems to be 
+u8 at least...
+
+> +{
+> +	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
 > +
->   	tty = tty_port_tty_get(&dlci->port);
-> -	gsm_process_modem(tty, dlci, modem, slen - len);
-> +	gsm_process_modem(tty, dlci, modem, cl);
->   	if (tty) {
->   		tty_wakeup(tty);
->   		tty_kref_put(tty);
-> @@ -1921,11 +1922,10 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
->   	struct tty_port *port = &dlci->port;
->   	struct tty_struct *tty;
->   	unsigned int modem = 0;
-> -	int len = clen;
-> -	int slen = 0;
-> +	int len;
+> +	if (msg == NULL)
+> +		return -ENOMEM;
+
+\n here
+
+> +	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
+> +	msg->data[1] = (dlen << 1) | EA;
+> +	memcpy(msg->data + 2, data, dlen);
+> +	gsm_data_queue(gsm->dlci[0], msg);
+
+\n here
+
+> +	return 0;
+> +}
+> +
+>   /**
+>    *	gsm_control_reply	-	send a response frame to a control
+>    *	@gsm: gsm channel
+> @@ -1623,13 +1645,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
 >   
->   	if (debug & 16)
-> -		pr_debug("%d bytes for tty\n", len);
-> +		pr_debug("%d bytes for tty\n", clen);
->   	switch (dlci->adaption)  {
->   	/* Unsupported types */
->   	case 4:		/* Packetised interruptible data */
-> @@ -1933,24 +1933,22 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
->   	case 3:		/* Packetised uininterruptible voice/data */
->   		break;
->   	case 2:		/* Asynchronous serial with line state in each frame */
-> -		while (gsm_read_ea(&modem, *data++) == 0) {
-> -			len--;
-> -			slen++;
-> -			if (len == 0)
-> -				return;
-> -		}
-> -		len--;
-> -		slen++;
-> +		len = gsm_read_ea_val(&modem, data, clen);
-> +		if (len < 1)
-> +			return;
->   		tty = tty_port_tty_get(port);
->   		if (tty) {
-> -			gsm_process_modem(tty, dlci, modem, slen);
-> +			gsm_process_modem(tty, dlci, modem, len);
->   			tty_wakeup(tty);
->   			tty_kref_put(tty);
->   		}
-> +		/* Skip processed modem data */
-> +		data += len;
-> +		clen -= len;
->   		fallthrough;
->   	case 1:		/* Line state will go via DLCI 0 controls only */
->   	default:
-> -		tty_insert_flip_string(port, data, len);
-> +		tty_insert_flip_string(port, data, clen);
->   		tty_flip_buffer_push(port);
->   	}
->   }
-> @@ -1971,24 +1969,29 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+>   static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
 >   {
->   	/* See what command is involved */
->   	unsigned int command = 0;
-> -	while (len-- > 0) {
-> -		if (gsm_read_ea(&command, *data++) == 1) {
-> -			int clen = *data++;
-> -			len--;
-> -			/* FIXME: this is properly an EA */
-> -			clen >>= 1;
-> -			/* Malformed command ? */
-> -			if (clen > len)
-> -				return;
-> -			if (command & 1)
-> -				gsm_control_message(dlci->gsm, command,
-> -								data, clen);
-> -			else
-> -				gsm_control_response(dlci->gsm, command,
-> -								data, clen);
-> -			return;
-> -		}
-> -	}
-> +	const u8 *dp = data;
-
-Why is the local "dp" needed?
-
-> +	int clen = 0;
-> +	int dlen;
-
-Having lengths signed is mostly confusing. Shouldn't/couldn't they be 
-uint instead?
-
-> +	/* read the command */
-> +	dlen = gsm_read_ea_val(&command, dp, len);
-> +	len -= dlen;
-> +	dp += dlen;
-> +
-> +	/* read any control data */
-> +	dlen = gsm_read_ea_val(&clen, dp, len);
-> +	len -= dlen;
-> +	dp += dlen;
-> +
-> +	/* Malformed command? */
-> +	if (clen > len)
-> +		return;
-> +
-> +	if (command & 1)
-> +		gsm_control_message(dlci->gsm, command, dp, clen);
-> +	else
-> +		gsm_control_response(dlci->gsm, command, dp, clen);
-> +	return;
-
-An extra return.
-
+> -	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+> -	if (msg == NULL)
+> -		return;
+> -	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
+> -	msg->data[1] = (ctrl->len << 1) | EA;
+> -	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+> -	gsm_data_queue(gsm->dlci[0], msg);
+> +	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
 >   }
 
 thanks,
