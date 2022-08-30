@@ -2,98 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE23ECAAA1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 13:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA23FECAAD1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 15:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229559AbiH3NUG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S229476AbiH3PXO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiH3NUC (ORCPT
+        with ESMTP id S230242AbiH3PXF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:20:02 -0400
+        Tue, 30 Aug 2022 11:23:05 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B1223BEE;
-        Tue, 30 Aug 2022 06:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E218B6D7D;
+        Tue, 30 Aug 2022 08:23:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661865595; x=1693401595;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=/ijE9BGuWCakQ1nusZPEmzMxKtmth5A9VqsOhZVOJpM=;
-  b=JFbT/thbs2ot8K62D2yNjQ+1STQQ1pVThRPmTkvw+PHBwt9tkmdTFc0+
-   +TEt4I04BodsA+Xw3f2pdhzkwIuhGNtJ8mrHjIQk4eNqhLXMNRKiwRTA8
-   RLpFCO3vNHwDnqwTkj3jTT1jxsQ4XjftIDvVUZ9abW4QOx6z/kNUcYC+u
-   z1yiY63/WE5y6uVg0eDJTBYv7WbWsJbYMGTGX1nqT4N1GWt1Ctw3R0FdG
-   z9Dpwp3wDp8pHzlK+xrhHB99AqDGJ9afMe0exKmPrimSGK3ACZSxnZGlO
-   he+OOdIA5CAND1Rju2at9/BPOfvBGXindlT1x49HPRbWKBT9Lm3JOiOho
+  t=1661872985; x=1693408985;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=djTr8S5hFVJQCZAcmEv77RdKFem4vVtFK/sUITgcoUI=;
+  b=QjlUyt9lhkD27EQUkj8+F7gqWwcoGwJx/VYcq0c0FAgyEsBZivxROACj
+   QdvrNVK++88R3/q3xVfRnsrbMi9Dgo53Scp17EcVAJyfWwIvVuZIsc5KT
+   a9jPDrmoLiAV/l9miD1b4G65tYlSFPO4WZxw+TB+JRPMA2hcx13tEtcPz
+   XCNsrsx+2olpz/mJPWutHKoCNmF9FN8h8Xjeqf3iOLJAKXSnlYh9emkO+
+   gKHJtv0N4KF8KW9xty8bKO2L61F8EyE5dlrt3GIAqxZPs/o6jJ41kwP2v
+   An4tidmS/3H3ykjj5PQr51NU2iGni3XAJO264yp4i0sJiiXIUA6F7876z
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="293915245"
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="293947323"
 X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="293915245"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:19:42 -0700
+   d="scan'208";a="293947323"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 08:23:04 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="641370618"
-Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:19:41 -0700
-Date:   Tue, 30 Aug 2022 16:19:40 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+   d="scan'208";a="588645647"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 30 Aug 2022 08:23:03 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 7B544AD; Tue, 30 Aug 2022 18:23:17 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>
-cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] serial: Add uart_xmit_advance() + fixes part (of
- a larger patch series)
-In-Reply-To: <20220830131343.25968-1-ilpo.jarvinen@linux.intel.com>
-Message-ID: <c83d6b94-b589-ebbf-303f-1de084bc5676@linux.intel.com>
-References: <20220830131343.25968-1-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: 8250_men_mcb: Remove duplicate UAPI:serial_core inclusion
+Date:   Tue, 30 Aug 2022 18:23:13 +0300
+Message-Id: <20220830152313.14650-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-122507739-1661865583=:1864"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+The UAPI serial_core.h is guaranteed to be included by in-kernel
+one (with the same name). Individual drivers do not need to include
+it explicitly. Remove it from the driver.
 
---8323329-122507739-1661865583=:1864
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Note, it's a single driver in the entire kernel that does this.
 
-On Tue, 30 Aug 2022, Ilpo Järvinen wrote:
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> Add uart_xmit_advance() helper to handle circular xmit buffer
-> advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
-> that previously lacked to accounting for DMA Tx.
-> 
-> Greg,
-> I've a another series on top this which is tty-next material making the
-> rest of the drivers to use uart_xmit_advance(). That series obviously
-> depends on the patch 1/3 of this series so if you end up putting these
-> 3 patches into tty-linus, I'll need it to be merged into tty-next at
-> some point (I'm not in a big hurry with this so if you choose to delay
-> the merge, it's not a big deal).
-
-This merge, btw, is no longer that important because I agreed with Jiri to 
-wait for his tx loop rewrite series.
-
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 737c4c31e8a0..f46ca13ff4aa 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -7,7 +7,6 @@
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_8250.h>
+-#include <uapi/linux/serial_core.h>
+ 
+ #define MEN_UART_ID_Z025 0x19
+ #define MEN_UART_ID_Z057 0x39
 -- 
- i.
+2.35.1
 
-> v2:
-> - Correct tags
-> 
-> Ilpo Järvinen (3):
->   serial: Create uart_xmit_advance()
->   serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
->   serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
-> 
->  drivers/tty/serial/serial-tegra.c |  5 ++---
->  drivers/tty/serial/tegra-tcu.c    |  2 +-
->  include/linux/serial_core.h       | 17 +++++++++++++++++
->  3 files changed, 20 insertions(+), 4 deletions(-)
-> 
-> 
---8323329-122507739-1661865583=:1864--
