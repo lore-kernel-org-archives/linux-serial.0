@@ -2,42 +2,42 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49DEECAAD4
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 09:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50541ECAAD4
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 10:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbiH3Jgx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
+        id S230223AbiH3KSA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiH3JgX (ORCPT
+        with ESMTP id S229546AbiH3KRl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:36:23 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F293AEA334;
-        Tue, 30 Aug 2022 02:34:08 -0700 (PDT)
+        Tue, 30 Aug 2022 06:17:41 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BD96461;
+        Tue, 30 Aug 2022 03:14:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661852049; x=1693388049;
+  t=1661854493; x=1693390493;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=BZlFP+2gMdlipVyXYzNcamg3THGOdoHRiZzKamrAIYY=;
-  b=jv4SkrtHGqLF3daSd5ScPRGXlLOmFID8C67JL5Dq6R2917xRNKoX/73/
-   Zg9aUSPe0w5uaBjttG7HD2aceWPWvOIquszKvLqSIjt/eg2H1NLh9EhRU
-   hXhQIf3GjFI0rhDaUe0pF3sYoQMB8h6b0gPOMI8ppLWlaD594+u3vzI+E
-   ndXCKKg1sgOzb/CJo2aXAtDsKxXHDjQsLrVwuvbcvGpOlfOny+oqD0VOK
-   HLONp+Pyo6gglZl+mNdRZbaS7gMNhcVQGhc/FsxR1kMa92V8xCwY1gDYR
-   HTSr5T6xIOzpgWNtTXDEZ/ErOcpqiaV9P8qnujoA/4h2ESNYrNCQbKGVc
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="282102074"
+   references:mime-version:content-id;
+  bh=UgNERPcJtkcZ6uHTT9C3QVaF5md5rEDPHJWxiZf1opY=;
+  b=kRCtMSmVqJjPds+kQCtNossT5Yhn3Q1yMP5K27Jtt6LeM438zT+efill
+   +J+jml1Ytg67KjTC5fLT/IcTktPNu14G3RHFhjC1/DS9AgdlHqmaFdpE9
+   3GemL/61l08np71Z/ZhZKRFJlP48mC0xOJf6Goi4ZmVbsweR6LH+wING1
+   fAVDvFUnkC9imyE3yYQWdmtmRg01WHvzE3ITQOw/jLB9LVXCOlX9fXJuF
+   +v0rhYUF5rJ9YDNuNsjuSzHMMSOlr9UE28qgxtzAzS38HVkBTMRy2yrLA
+   2YeZsfYNVhdrZYoTChY6Jbx2GsOlVjO5o1BDBgnS3PSh7nvM//dLmIrYO
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="359100278"
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="282102074"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 02:34:07 -0700
+   d="scan'208";a="359100278"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:14:35 -0700
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="588532455"
+   d="scan'208";a="672797149"
 Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 02:34:01 -0700
-Date:   Tue, 30 Aug 2022 12:34:00 +0300 (EEST)
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:14:28 -0700
+Date:   Tue, 30 Aug 2022 13:14:27 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 cc:     Jiri Slaby <jirislaby@kernel.org>,
@@ -63,11 +63,12 @@ cc:     Jiri Slaby <jirislaby@kernel.org>,
         Lino Sanfilippo <LinoSanfilippo@gmx.de>
 Subject: Re: [PATCH v2 4/4] serial: Add kserial_rs485 to avoid wasted space
  due to .padding
-In-Reply-To: <Yw3PHg0imhJyb9sf@kroah.com>
-Message-ID: <31865b7-22f3-c07b-c934-83b44269eb3@linux.intel.com>
-References: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com> <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com> <Yw3PHg0imhJyb9sf@kroah.com>
+In-Reply-To: <Yw3Zf5cwJIlBAV2z@kroah.com>
+Message-ID: <55e7b5d8-9bf7-4186-fa5d-29e1e1b3a1d3@linux.intel.com>
+References: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com> <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com> <Yw3Pw9kwDDKXuqC+@kroah.com> <58d6748-ebd-e637-c1b2-b8e469e6d86d@linux.intel.com> <Yw3Zf5cwJIlBAV2z@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-437881220-1661852048=:1864"
+Content-Type: multipart/mixed; BOUNDARY="8323329-1914567423-1661852593=:1864"
+Content-ID: <e212410-9396-e748-6f82-3fb0839d31@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -75,68 +76,76 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-437881220-1661852048=:1864
-Content-Type: text/plain; charset=iso-8859-1
+--8323329-1914567423-1661852593=:1864
+Content-Type: text/plain; CHARSET=ISO-8859-15
 Content-Transfer-Encoding: 8BIT
+Content-ID: <1aefe4bc-c222-7b33-216c-7cd023ce365@linux.intel.com>
 
 On Tue, 30 Aug 2022, Greg Kroah-Hartman wrote:
 
-> On Tue, Aug 30, 2022 at 10:29:56AM +0300, Ilpo Järvinen wrote:
-> > The struct serial_rs485 has a .padding field to make uapi updates
-> > easier. It wastes space, however. Create struct kserial_rs485 which is
-> > a kerner counterpart w/o padding.
+> On Tue, Aug 30, 2022 at 12:26:29PM +0300, Ilpo Järvinen wrote:
+> > On Tue, 30 Aug 2022, Greg Kroah-Hartman wrote:
+
+> > > Ah, you are mapping this on top of the existing structure, so there was
+> > > no padding in the original one, why say that?
+> > 
+> > While I'm not exactly sure what you tried to say with this, I'll try to 
+> > answer regardless.
+> > 
+> > It's the opposite, there's padding in rs485_user, and therefore also in 
+> > rs485_uapi. Struct serial_rs485 has padding and is part of uapi so it 
+> > cannot be changed to remove the extra padding.
+> > 
+> > I cannot directly copy_from_user into *rs485 because it lacks the padding. 
+> > Thus, the immediate rs485_uapi and then assign to rs485.
 > 
-> "kernel"?
+> Padding could be in the middle of the structure, it's not obvious that
+> it is not there.  You are just trying to drop the trailing "unused
+> space", while all of the fields are identical otherwise.
 > 
-> And what is the size difference now?
+> So be specific about that, as padding is often in the middle of a
+> structure.
 
-Roughly 16B of padding is eliminated. That saving is then multiplied by 
-the times it appears in in-kernel structs (2x per uart_port, 1x per rs485 
-supporting driver). As said in my other reply, if you feel it's too 
-little gained by eliminating the padding, I can drop this patch, just let 
-me know.
+Ah, sorry. I didn't realize there would be such a way to misunderstand
+the message because I knew too well where the padding with this particular 
+struct is.
 
-> > +/**
-> > + * struct kserial_rs485 - kernel-side struct for controlling RS485 settings.
-> > + * @flags:			RS485 feature flags
-> > + * @delay_rts_before_send:	Delay before send (milliseconds)
-> > + * @delay_rts_after_send:	Delay after send (milliseconds)
-> > + * @addr_recv:			Receive filter for RS485 addressing mode
-> > + *				(used only when %SER_RS485_ADDR_RECV is set).
-> > + * @addr_dest:			Destination address for RS485 addressing mode
-> > + *				(used only when %SER_RS485_ADDR_DEST is set).
-> > + *
-> > + * Must match with struct serial_rs485 in include/uapi/linux/serial.h excluding
-> > + * the padding.
+> > If you feel ~32B per uart_port too little to be useful (and a little 
+> > more per driver), I can just drop this patch.
 > 
-> Why must this match?
+> I think 32 bytes per serial port is totally lost in the noise and would
+> not even be able to be measured at all due to how slabs are aligned
+> (meaning you are not actually saving any memory at all.)
+>
+> Can you notice any measurable savings on your systems?
 
-Because serial_rs485_from_user() and serial_rs485_to_user() just copy 
-things over from one struct type to another w/o considering the fields 
-individually. If that's not acceptable, I could make it copy field by 
-field but it didn't feel necessary to allow "real" fields to differ to 
-achieve padding elimination...
+It's not that straightforward. Many uart_ports are embedded into arrays
+like this:
 
-> And how is that going to be enforced?
+static struct ...[N];
 
-With static_assert()s in serial_core.c. I'll add a note about that into 
-the comment.
+...But then one could again say that, e.g., module alignment eats up all 
+potential benefits, etc.
 
-> > + */
-> > +struct kserial_rs485 {
-> > +	__u32	flags;
-> > +	__u32	delay_rts_before_send;
-> > +	__u32	delay_rts_after_send;
-> > +	struct {
-> > +		__u8    addr_recv;
-> > +		__u8    addr_dest;
-> > +	};
-> 
-> As this is an in-kernel structure, this should be "u32" and "u8" now.
+Obviously with big systems and small number of ports, this would never 
+matter much so while I believe likely could get some small looking number 
+for you I don't feel the effort needed to be anymore justified.
 
-Right, I'll change those.
+> And what is the code increase overall with this patch series?  :)
+
+The series was mostly shuffling existing code around, the only thing added 
+was that those struct copies so probably less than it looked.
+
+> I'm all for making things const, to prevent errors, but that could
+> probably be done without this type of change, right?
+
+OK, I'll drop this last patch. For the first three though, there's useful 
+stuff in them making some things more cleaner/consistent, I'll sort that 
+out.
+
+Thanks for your comments.
+
 
 -- 
  i.
-
---8323329-437881220-1661852048=:1864--
+--8323329-1914567423-1661852593=:1864--
