@@ -2,182 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF2AECAAD8
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E69ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiH3HXV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
+        id S230347AbiH3HaV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiH3HXU (ORCPT
+        with ESMTP id S230213AbiH3HaN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:23:20 -0400
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA34FB7749;
-        Tue, 30 Aug 2022 00:23:18 -0700 (PDT)
-Received: by mail-ed1-f52.google.com with SMTP id b16so12996787edd.4;
-        Tue, 30 Aug 2022 00:23:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=h92OFoHcscLoVZdNmDKj0YVmJDx8MKtyLOQI76zzz+M=;
-        b=k83E8nDFuipqYTB2qH9B9sRtQVhhuUg9TuQ+Ev4C+1hvosxHN2A/fC2d0PonvV4K0Q
-         YHaISBekDs08UhSoQOAuycA7VJngVGim4YwfRXW6Jowo/XFqNphbM97GZkcwpV2rpC5Q
-         hSfrDjz+aZ7NQqqqmRBNNHx13bCHAXtfBWFwHvx4e+qXLG3ckVtmopL3HE/mImVKkj1B
-         4jHZO2btLjDph1VTPtoH49QSTVBDS2pJN+XuBCbOKxlMsPK8S0uojnILA5wWUF+um+GW
-         CdgiUwTQNTHfjnftfCOFPtOzMptpKGEXbPax1QH4suQ5lRHUWoCq9NQReA7J53CZVuqi
-         fWJA==
-X-Gm-Message-State: ACgBeo1SMgp2in87fufqchIBa0i8xVn7eaV51zB0doc8np+6O6kW2mPm
-        UA8YTZvJsnS70BANhhzd5pI=
-X-Google-Smtp-Source: AA6agR6GdO78X7ShA7eIwVF55Gd83NZLVU+aV19Oza8mJ9lSkrZ242TTINijF+n3YBED4WKcswXFwA==
-X-Received: by 2002:a05:6402:451:b0:446:7349:f9e8 with SMTP id p17-20020a056402045100b004467349f9e8mr19853745edw.180.1661844197211;
-        Tue, 30 Aug 2022 00:23:17 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id p23-20020a056402045700b00447c646ad1asm6907975edw.57.2022.08.30.00.23.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 00:23:16 -0700 (PDT)
-Message-ID: <5df0c2fb-0eb4-e0fd-a517-b7ea1d4a8f4e@kernel.org>
-Date:   Tue, 30 Aug 2022 09:23:15 +0200
+        Tue, 30 Aug 2022 03:30:13 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F7B2CDE4;
+        Tue, 30 Aug 2022 00:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661844608; x=1693380608;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CJ3xfpDB50oRsgZT9ZtW5Rny2olH7LNef/rdMxD09qY=;
+  b=K0iTiSVSw/KrtGuBfpDY9jTfXJ53BrdGf6ps40Egp3LmimweCqVGFKH1
+   lmgT1/0SJ5At74T+6iPTqacwiFLuBfBTw1rZo83FMpBkZKGGBAPRxr2LT
+   Zep9nn7dWWCPVmg4znUxDSPinj8x7mxw/HrLaQmJuMUONQagCb3wPnT5p
+   lltIBsHt7mQrEoX2ggOP1u9Qimvuqmdi3/8kec1l7b4+UgH8LCeAlH12e
+   ThaEElEbCTjuTNUI79JuktDUf6g7N+f/x+m86pGVdQzYpKYtthrU6U5vQ
+   uJpwQlpT21LY16E2u+mXGEr9r8TZirEymLhiSKFLDy3Q6GgWLpb17cV1R
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="282077215"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="282077215"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:30:07 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="641262611"
+Received: from arnesgom-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.54.235])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:30:02 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v2 0/4] serial: Create kserial_rs485 to get rid of padding
+Date:   Tue, 30 Aug 2022 10:29:52 +0300
+Message-Id: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] tty: move from strlcpy with unused retval to strscpy
-Content-Language: en-US
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        sparclinux@vger.kernel.org
-References: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 18. 08. 22, 23:01, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
+serial_rs485 contains padding at the end to make extending it easier.
+Create kserial_rs485 counterpart w/o padding for kernel use leaving
+serial_rs485 only to be used for uapi.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+v2:
+- Address style comments (from Andy)
+- Convert most of the serial_rs485 & kserial_rs485 inline comments to
+  kernel doc
 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->   drivers/tty/hvc/hvcs.c           | 2 +-
->   drivers/tty/serial/earlycon.c    | 6 +++---
->   drivers/tty/serial/serial_core.c | 2 +-
->   drivers/tty/serial/sunsu.c       | 6 +++---
->   drivers/tty/serial/sunzilog.c    | 6 +++---
->   5 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
-> index 9b7e8246a464..b79ce8d34f11 100644
-> --- a/drivers/tty/hvc/hvcs.c
-> +++ b/drivers/tty/hvc/hvcs.c
-> @@ -839,7 +839,7 @@ static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
->   	hvcsd->p_partition_ID  = pi->partition_ID;
->   
->   	/* copy the null-term char too */
-> -	strlcpy(hvcsd->p_location_code, pi->location_code,
-> +	strscpy(hvcsd->p_location_code, pi->location_code,
->   		sizeof(hvcsd->p_location_code));
->   }
->   
-> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-> index 88d08ba1ca83..a5f380584cda 100644
-> --- a/drivers/tty/serial/earlycon.c
-> +++ b/drivers/tty/serial/earlycon.c
-> @@ -67,7 +67,7 @@ static void __init earlycon_init(struct earlycon_device *device,
->   	if (*s)
->   		earlycon->index = simple_strtoul(s, NULL, 10);
->   	len = s - name;
-> -	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
-> +	strscpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
->   	earlycon->data = &early_console_dev;
->   }
->   
-> @@ -123,7 +123,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
->   		device->baud = simple_strtoul(options, NULL, 0);
->   		length = min(strcspn(options, " ") + 1,
->   			     (size_t)(sizeof(device->options)));
-> -		strlcpy(device->options, options, length);
-> +		strscpy(device->options, options, length);
->   	}
->   
->   	return 0;
-> @@ -304,7 +304,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
->   
->   	if (options) {
->   		early_console_dev.baud = simple_strtoul(options, NULL, 0);
-> -		strlcpy(early_console_dev.options, options,
-> +		strscpy(early_console_dev.options, options,
->   			sizeof(early_console_dev.options));
->   	}
->   	earlycon_init(&early_console_dev, match->name);
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 12c87cd201a7..3561a160cbd5 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2497,7 +2497,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
->   			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
->   		break;
->   	default:
-> -		strlcpy(address, "*unknown*", sizeof(address));
-> +		strscpy(address, "*unknown*", sizeof(address));
->   		break;
->   	}
->   
-> diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-> index 84d545e5a8c7..d5dcb612804e 100644
-> --- a/drivers/tty/serial/sunsu.c
-> +++ b/drivers/tty/serial/sunsu.c
-> @@ -1217,13 +1217,13 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
->   	serio->id.type = SERIO_RS232;
->   	if (up->su_type == SU_PORT_KBD) {
->   		serio->id.proto = SERIO_SUNKBD;
-> -		strlcpy(serio->name, "sukbd", sizeof(serio->name));
-> +		strscpy(serio->name, "sukbd", sizeof(serio->name));
->   	} else {
->   		serio->id.proto = SERIO_SUN;
->   		serio->id.extra = 1;
-> -		strlcpy(serio->name, "sums", sizeof(serio->name));
-> +		strscpy(serio->name, "sums", sizeof(serio->name));
->   	}
-> -	strlcpy(serio->phys,
-> +	strscpy(serio->phys,
->   		(!(up->port.line & 1) ? "su/serio0" : "su/serio1"),
->   		sizeof(serio->phys));
->   
-> diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-> index c14275d83b0b..c44cf613ff1a 100644
-> --- a/drivers/tty/serial/sunzilog.c
-> +++ b/drivers/tty/serial/sunzilog.c
-> @@ -1307,13 +1307,13 @@ static void sunzilog_register_serio(struct uart_sunzilog_port *up)
->   	serio->id.type = SERIO_RS232;
->   	if (up->flags & SUNZILOG_FLAG_CONS_KEYB) {
->   		serio->id.proto = SERIO_SUNKBD;
-> -		strlcpy(serio->name, "zskbd", sizeof(serio->name));
-> +		strscpy(serio->name, "zskbd", sizeof(serio->name));
->   	} else {
->   		serio->id.proto = SERIO_SUN;
->   		serio->id.extra = 1;
-> -		strlcpy(serio->name, "zsms", sizeof(serio->name));
-> +		strscpy(serio->name, "zsms", sizeof(serio->name));
->   	}
-> -	strlcpy(serio->phys,
-> +	strscpy(serio->phys,
->   		((up->flags & SUNZILOG_FLAG_CONS_KEYB) ?
->   		 "zs/serio0" : "zs/serio1"),
->   		sizeof(serio->phys));
+Ilpo Järvinen (4):
+  serial: Rename vars in uart_get_rs485_config()
+  serial: add helpers to copy serial_rs485 from/to userspace
+  serial: Convert serial_rs485 to kernel doc
+  serial: Add kserial_rs485 to avoid wasted space due to .padding
+
+ .../driver-api/serial/serial-rs485.rst        |  2 +-
+ drivers/tty/serial/8250/8250.h                |  4 +-
+ drivers/tty/serial/8250/8250_dwlib.c          |  6 +-
+ drivers/tty/serial/8250/8250_exar.c           | 12 +--
+ drivers/tty/serial/8250/8250_fintek.c         |  6 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c        |  4 +-
+ drivers/tty/serial/8250/8250_pci.c            |  4 +-
+ drivers/tty/serial/8250/8250_port.c           |  4 +-
+ drivers/tty/serial/amba-pl011.c               |  4 +-
+ drivers/tty/serial/ar933x_uart.c              |  8 +-
+ drivers/tty/serial/atmel_serial.c             |  4 +-
+ drivers/tty/serial/fsl_lpuart.c               |  6 +-
+ drivers/tty/serial/imx.c                      |  6 +-
+ drivers/tty/serial/max310x.c                  |  4 +-
+ drivers/tty/serial/mcf.c                      |  4 +-
+ drivers/tty/serial/omap-serial.c              |  6 +-
+ drivers/tty/serial/sc16is7xx.c                |  6 +-
+ drivers/tty/serial/serial_core.c              | 87 +++++++++++++------
+ drivers/tty/serial/stm32-usart.c              | 12 +--
+ include/linux/serial_core.h                   | 29 ++++++-
+ include/uapi/linux/serial.h                   | 63 +++++++++-----
+ 21 files changed, 181 insertions(+), 100 deletions(-)
 
 -- 
-js
-suse labs
+2.30.2
 
