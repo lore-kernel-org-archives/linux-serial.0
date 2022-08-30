@@ -2,88 +2,73 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A212FECAAD4
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 11:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EB3ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 11:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiH3Lgx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
+        id S230362AbiH3Lhx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiH3Lgg (ORCPT
+        with ESMTP id S230398AbiH3Lhg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:36:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43771BD;
-        Tue, 30 Aug 2022 04:34:44 -0700 (PDT)
+        Tue, 30 Aug 2022 07:37:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602ACF7B2B;
+        Tue, 30 Aug 2022 04:36:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7396B81625;
-        Tue, 30 Aug 2022 11:33:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDE75C433D6;
-        Tue, 30 Aug 2022 11:33:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 651C5CE179E;
+        Tue, 30 Aug 2022 11:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A539C433C1;
+        Tue, 30 Aug 2022 11:35:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661859210;
-        bh=x37WWGK6ZK1GESVvhlxDTHmfP/06owgD+RlfqNBq3PQ=;
+        s=korg; t=1661859310;
+        bh=4x1wLad4lxqLcbPeEX3pXTHar7BXU+tX9ogUCdd1sS8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uUruHVqQDrYlogvWcGXb9PTi+PMEhjcSgpjJXizVZmjyz7kfMC1NKGBTVPFgooCxw
-         RroN4Ye87o+CWkh+Rjey96+2mAkgKSsct8dXSVHYZ7aW+BOnHd8LxDgQXEoEOSvQ+I
-         aQYnmoIPYguJQYBvFpL72aKPrO0pPQxMKEK7TPfo=
-Date:   Tue, 30 Aug 2022 13:33:27 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: icom: Fix some indentation
-Message-ID: <Yw31h38pq9WZNmKM@kroah.com>
-References: <037fc7510ff88945e3f0a5756de4cfd135c59849.1660565015.git.christophe.jaillet@wanadoo.fr>
+        b=l08TrNv4ZslTuo3zNpM5NDtTTcdAPtKu64zQnnDDfiqMo6RUICldc5ojANYH7aPRT
+         pN8xYy5oyeusKKIGYzK1EWG/at5VoW+uJbj7lPjAG8gop2o+oeoDTeUw6EprOQg0Va
+         QmyTDvfXr89f2sznYUbZjRV7fVzxWlGnOLuBUgtI=
+Date:   Tue, 30 Aug 2022 13:35:07 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     tuo cao <91tuocao@gmail.com>
+Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
+ spin_lock in interrupt handler
+Message-ID: <Yw316/3zuIXvm/Ty@kroah.com>
+References: <20220822141110.17199-1-91tuocao@gmail.com>
+ <YwORy3QMbRUSlBZE@kroah.com>
+ <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <037fc7510ff88945e3f0a5756de4cfd135c59849.1660565015.git.christophe.jaillet@wanadoo.fr>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 02:05:50PM +0200, Christophe JAILLET wrote:
-> checkpatch and smatch report some code alignment issues.
-> 
-> So remove some unneeded leading spaces to fix the warnings.
-> 
-> While at it remove some {} around a single statement and convert some
-> spaces into a tab.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/tty/serial/icom.c | 27 +++++++++++++--------------
->  1 file changed, 13 insertions(+), 14 deletions(-)
+On Sat, Aug 27, 2022 at 05:42:19PM +0800, tuo cao wrote:
+> No, whether it's spin_lock_irqsave() or spin_lock(), the security is
+> the same. Since this commit:e58aa3d2d0cc01ad8d6f7f640a0670433f794922,
+> interrupt nesting is disabled, which means interrupts has disabled in
+> the interrupt handlers. So, it is unnecessary to call
+> spin_lock_irqsave in a interrupt handler. And it takes less time
+> obviously to use spin_lock()，so I think this change is needed.
 
-Hi,
+I have no context at all here, please never top-post :(
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+And have you measured the time difference?  Is it a real thing?
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+> Finally, I'm sorry I lacked real hardware to verify it and can't
+> provide changelog text.
 
-- Your patch did many different things all at once, making it difficult
-  to review.  All Linux kernel patches need to only do one thing at a
-  time.  If you need to do multiple things (such as clean up all coding
-  style issues in a file/driver), do it in a sequence of patches, each
-  one doing only one thing.  This will make it easier to review the
-  patches to ensure that they are correct, and to help alleviate any
-  merge issues that larger patches can cause.
+Try to never do changes for drivers for functionality like this where
+you do not have the hardware to test for, until you get a lot more
+experience.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+good luck!
 
-thanks,
-
-greg k-h's patch email bot
+greg k-h
