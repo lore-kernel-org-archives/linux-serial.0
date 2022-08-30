@@ -2,121 +2,182 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7C9ECAAA1
-	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF2AECAAD8
+	for <linux-serial@archiver.kernel.org>; Tue, 30 Aug 2022 07:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiH3HUa (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
+        id S229818AbiH3HXV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbiH3HU3 (ORCPT
+        with ESMTP id S229531AbiH3HXU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:20:29 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDFE5004C;
-        Tue, 30 Aug 2022 00:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661844028; x=1693380028;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=axUyRkQDEujGll+U4gNW9NGbIqhXvci7jUZVzKU+b8k=;
-  b=XaeWYzd6ovApkXvJrbc3owRwl6Torv9LDkkSUYVU/dOhHXhSQSQuGT6e
-   eK7gXiPogyOVBYU6xymhW/XaLo/5UgHIoVHV4JHie7AWlWInz3nrQsVKx
-   DnDJpNlmwFHrFpZ+uxZ+eZy5MM2WmvwNwvhuWVqlJeE+J5EpMZ9Ia6Snk
-   KhnUM+QW4AJvjLYNYjX1LQyg6/BVP/ufjbH2F1MuKIZKXGUVVLkCopRaC
-   hfjukD293rmIc/vIAOOWDXV6TKE7p3s8l6awfYealJOUnn35bdbG3K5rJ
-   kFw99rLDyDs5UOr65zqQJZ7ol4OmhTWXXQYMGIqt0ewz87VWhPV7Sykqh
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321231777"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="321231777"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:27 -0700
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672728650"
-Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:25 -0700
-Date:   Tue, 30 Aug 2022 10:20:20 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Li Zhong <floridsleeves@gmail.com>
-cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of
- uart_port_check()
-In-Reply-To: <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
-Message-ID: <40e16474-99d2-2359-a545-4a437f555ec1@linux.intel.com>
-References: <20220826083612.1699194-1-floridsleeves@gmail.com> <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com> <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com> <2033d06d-10a4-5a57-d650-7541c39990ee@linux.intel.com>
- <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
+        Tue, 30 Aug 2022 03:23:20 -0400
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA34FB7749;
+        Tue, 30 Aug 2022 00:23:18 -0700 (PDT)
+Received: by mail-ed1-f52.google.com with SMTP id b16so12996787edd.4;
+        Tue, 30 Aug 2022 00:23:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=h92OFoHcscLoVZdNmDKj0YVmJDx8MKtyLOQI76zzz+M=;
+        b=k83E8nDFuipqYTB2qH9B9sRtQVhhuUg9TuQ+Ev4C+1hvosxHN2A/fC2d0PonvV4K0Q
+         YHaISBekDs08UhSoQOAuycA7VJngVGim4YwfRXW6Jowo/XFqNphbM97GZkcwpV2rpC5Q
+         hSfrDjz+aZ7NQqqqmRBNNHx13bCHAXtfBWFwHvx4e+qXLG3ckVtmopL3HE/mImVKkj1B
+         4jHZO2btLjDph1VTPtoH49QSTVBDS2pJN+XuBCbOKxlMsPK8S0uojnILA5wWUF+um+GW
+         CdgiUwTQNTHfjnftfCOFPtOzMptpKGEXbPax1QH4suQ5lRHUWoCq9NQReA7J53CZVuqi
+         fWJA==
+X-Gm-Message-State: ACgBeo1SMgp2in87fufqchIBa0i8xVn7eaV51zB0doc8np+6O6kW2mPm
+        UA8YTZvJsnS70BANhhzd5pI=
+X-Google-Smtp-Source: AA6agR6GdO78X7ShA7eIwVF55Gd83NZLVU+aV19Oza8mJ9lSkrZ242TTINijF+n3YBED4WKcswXFwA==
+X-Received: by 2002:a05:6402:451:b0:446:7349:f9e8 with SMTP id p17-20020a056402045100b004467349f9e8mr19853745edw.180.1661844197211;
+        Tue, 30 Aug 2022 00:23:17 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id p23-20020a056402045700b00447c646ad1asm6907975edw.57.2022.08.30.00.23.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 00:23:16 -0700 (PDT)
+Message-ID: <5df0c2fb-0eb4-e0fd-a517-b7ea1d4a8f4e@kernel.org>
+Date:   Tue, 30 Aug 2022 09:23:15 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-68519279-1661842936=:1864"
-Content-ID: <2edbf640-1cd7-a490-7077-b3c91cf8135f@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] tty: move from strlcpy with unused retval to strscpy
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
+        sparclinux@vger.kernel.org
+References: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220818210113.7469-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 18. 08. 22, 23:01, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 
---8323329-68519279-1661842936=:1864
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <7768bd39-e4a3-2d53-551f-1d81a45711d3@linux.intel.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-On Mon, 29 Aug 2022, Li Zhong wrote:
-
-> On Mon, Aug 29, 2022 at 12:09 AM Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> wrote:
-> >
-> > On Sun, 28 Aug 2022, Li Zhong wrote:
-> >
-> > > On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
-> > > <andy.shevchenko@gmail.com> wrote:
-> > > >
-> > > > On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
-> > > > >
-> > > > > uart_port_check() will return NULL pointer when state->uart_port is
-> > > > > NULL. Check the return value before dereference it to avoid
-> > > > > null-pointer-dereference error.
-> > > >
-> > > > Have you taken the locking into consideration?
-> > > > If no, please do, if yes, expand your commit message to explain why
-> > > > the current locking scheme doesn't prevent an error from happening.
-> > > >
-> > >
-> > > The locking is taken into consideration but these three checks do not need to
-> > > unlock in error-handling because unlock() will be called in the callers. Will
-> > > add the comment in v2 patch.
-> >
-> > I think he meant you should indicate why the current locking doesn't cover
-> > the case you're fixing, not whether this function should call unlock() or
-> > not.
-> >
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>   drivers/tty/hvc/hvcs.c           | 2 +-
+>   drivers/tty/serial/earlycon.c    | 6 +++---
+>   drivers/tty/serial/serial_core.c | 2 +-
+>   drivers/tty/serial/sunsu.c       | 6 +++---
+>   drivers/tty/serial/sunzilog.c    | 6 +++---
+>   5 files changed, 11 insertions(+), 11 deletions(-)
 > 
-> Thanks for clarifications. The locking does not guarantee the return value of
-> uart_port_check()  is not NULL.
-
-Please put such explanation into the commit message like Andy was asking, 
-thank you.
-
-And make sure you properly mention what has changed for any new version 
-of any patch you send so that Greg don't need to auto-mail you about it 
-(and end up ignoring your patch).
-
-> Actually in line 773 of this file
-> (drivers/tty/serial/serial_core.c), uart_port_check() is also called in
-> critical section but still there is check on whether the return value is NULL.
-
-Existance of such a check elsewhere alone isn't enough to guarantee that 
-the check is necessary (and not even that the check in that other place 
-would be necessary). You need a deeper analysis than that. I'm not 
-claiming its either way here, just pointing out to the direction/details 
-you should consider while writing the analysis of the problem.
-
+> diff --git a/drivers/tty/hvc/hvcs.c b/drivers/tty/hvc/hvcs.c
+> index 9b7e8246a464..b79ce8d34f11 100644
+> --- a/drivers/tty/hvc/hvcs.c
+> +++ b/drivers/tty/hvc/hvcs.c
+> @@ -839,7 +839,7 @@ static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
+>   	hvcsd->p_partition_ID  = pi->partition_ID;
+>   
+>   	/* copy the null-term char too */
+> -	strlcpy(hvcsd->p_location_code, pi->location_code,
+> +	strscpy(hvcsd->p_location_code, pi->location_code,
+>   		sizeof(hvcsd->p_location_code));
+>   }
+>   
+> diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+> index 88d08ba1ca83..a5f380584cda 100644
+> --- a/drivers/tty/serial/earlycon.c
+> +++ b/drivers/tty/serial/earlycon.c
+> @@ -67,7 +67,7 @@ static void __init earlycon_init(struct earlycon_device *device,
+>   	if (*s)
+>   		earlycon->index = simple_strtoul(s, NULL, 10);
+>   	len = s - name;
+> -	strlcpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+> +	strscpy(earlycon->name, name, min(len + 1, sizeof(earlycon->name)));
+>   	earlycon->data = &early_console_dev;
+>   }
+>   
+> @@ -123,7 +123,7 @@ static int __init parse_options(struct earlycon_device *device, char *options)
+>   		device->baud = simple_strtoul(options, NULL, 0);
+>   		length = min(strcspn(options, " ") + 1,
+>   			     (size_t)(sizeof(device->options)));
+> -		strlcpy(device->options, options, length);
+> +		strscpy(device->options, options, length);
+>   	}
+>   
+>   	return 0;
+> @@ -304,7 +304,7 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+>   
+>   	if (options) {
+>   		early_console_dev.baud = simple_strtoul(options, NULL, 0);
+> -		strlcpy(early_console_dev.options, options,
+> +		strscpy(early_console_dev.options, options,
+>   			sizeof(early_console_dev.options));
+>   	}
+>   	earlycon_init(&early_console_dev, match->name);
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 12c87cd201a7..3561a160cbd5 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2497,7 +2497,7 @@ uart_report_port(struct uart_driver *drv, struct uart_port *port)
+>   			 "MMIO 0x%llx", (unsigned long long)port->mapbase);
+>   		break;
+>   	default:
+> -		strlcpy(address, "*unknown*", sizeof(address));
+> +		strscpy(address, "*unknown*", sizeof(address));
+>   		break;
+>   	}
+>   
+> diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+> index 84d545e5a8c7..d5dcb612804e 100644
+> --- a/drivers/tty/serial/sunsu.c
+> +++ b/drivers/tty/serial/sunsu.c
+> @@ -1217,13 +1217,13 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
+>   	serio->id.type = SERIO_RS232;
+>   	if (up->su_type == SU_PORT_KBD) {
+>   		serio->id.proto = SERIO_SUNKBD;
+> -		strlcpy(serio->name, "sukbd", sizeof(serio->name));
+> +		strscpy(serio->name, "sukbd", sizeof(serio->name));
+>   	} else {
+>   		serio->id.proto = SERIO_SUN;
+>   		serio->id.extra = 1;
+> -		strlcpy(serio->name, "sums", sizeof(serio->name));
+> +		strscpy(serio->name, "sums", sizeof(serio->name));
+>   	}
+> -	strlcpy(serio->phys,
+> +	strscpy(serio->phys,
+>   		(!(up->port.line & 1) ? "su/serio0" : "su/serio1"),
+>   		sizeof(serio->phys));
+>   
+> diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
+> index c14275d83b0b..c44cf613ff1a 100644
+> --- a/drivers/tty/serial/sunzilog.c
+> +++ b/drivers/tty/serial/sunzilog.c
+> @@ -1307,13 +1307,13 @@ static void sunzilog_register_serio(struct uart_sunzilog_port *up)
+>   	serio->id.type = SERIO_RS232;
+>   	if (up->flags & SUNZILOG_FLAG_CONS_KEYB) {
+>   		serio->id.proto = SERIO_SUNKBD;
+> -		strlcpy(serio->name, "zskbd", sizeof(serio->name));
+> +		strscpy(serio->name, "zskbd", sizeof(serio->name));
+>   	} else {
+>   		serio->id.proto = SERIO_SUN;
+>   		serio->id.extra = 1;
+> -		strlcpy(serio->name, "zsms", sizeof(serio->name));
+> +		strscpy(serio->name, "zsms", sizeof(serio->name));
+>   	}
+> -	strlcpy(serio->phys,
+> +	strscpy(serio->phys,
+>   		((up->flags & SUNZILOG_FLAG_CONS_KEYB) ?
+>   		 "zs/serio0" : "zs/serio1"),
+>   		sizeof(serio->phys));
 
 -- 
- i.
---8323329-68519279-1661842936=:1864--
+js
+suse labs
+
