@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89895ECAAD1
-	for <linux-serial@archiver.kernel.org>; Wed, 31 Aug 2022 07:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 345ACECAAD3
+	for <linux-serial@archiver.kernel.org>; Wed, 31 Aug 2022 07:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiHaHki (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S230086AbiHaHki (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 31 Aug 2022 03:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiHaHkg (ORCPT
+        with ESMTP id S229686AbiHaHkg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 31 Aug 2022 03:40:36 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 00:40:30 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B0BB14D7
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 00:40:28 PDT
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E1AE23A
         for <linux-serial@vger.kernel.org>; Wed, 31 Aug 2022 00:40:27 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202208310739247ab39d2019a4e13dd9
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202208310739222e3267e984d7690fcd
         for <linux-serial@vger.kernel.org>;
-        Wed, 31 Aug 2022 09:39:24 +0200
+        Wed, 31 Aug 2022 09:39:23 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=nGvVUAIr6EVotI+lAvFGhAT1Y/xk9oR6QAFXkdDhLEw=;
- b=oZui0olsoyaKWY7sY/5bHi3zMsJicM6TzSPdIdIm3NgxLhoz8IU8gqcWDcHqtBzxpyKIQw
- ljw95J1G0F30ZF1feFaean/JYoLMtO3+D90EnCxSDV53kptic3fUOcb3DwpKyWynp9q6npC9
- u5FgaM+l7xBh+cqAva+9x280PeFYo=;
+ bh=xPAHuyCcauRzXbU2F0wSMbyCkn9ZpPEPIcMeTRGYZX4=;
+ b=RcmqXxPyY3VqVsNVXTbfPf8J7fUnCgEgBxrG1ryuOhv+flTFlG0IkLZSL2rDN0l7WtKr+A
+ 329i7qK7y2CunAv4rjuBT7uj3HQZQgen7ThvZSSzdAtN2GTHLbKms8lBucvGspaULvduW31A
+ OK8YQD3+4Er+fpMr97mBlIgI0pnpE=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 6/6] tty: n_gsm: add debug bit for user payload
-Date:   Wed, 31 Aug 2022 09:38:00 +0200
-Message-Id: <20220831073800.7459-6-daniel.starke@siemens.com>
+Subject: [PATCH v3 4/6] tty: n_gsm: introduce gsm_control_command() function
+Date:   Wed, 31 Aug 2022 09:37:58 +0200
+Message-Id: <20220831073800.7459-4-daniel.starke@siemens.com>
 In-Reply-To: <20220831073800.7459-1-daniel.starke@siemens.com>
 References: <20220831073800.7459-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,43 +46,79 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-A debug bit to output a complete transmission dump exists. Sometimes only
-the user frames are relevant. Add an additional bit which limits the
-transmission dump output to user data frames if set.
+Move the content of gsm_control_transmit() to a new function
+gsm_control_command() with a more generic signature and analog to
+gsm_control_reply(). Use this within gsm_control_transmit().
+
+This is needed to simplify upcoming functional additions.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/n_gsm.c | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
 Incorporated review comments from Jiri Slaby since v2:
-- changed (1 << n) to BIT(n) in the debug macro definitions
+- leading changed tab to space in function comment of gsm_control_command()
+- made function parameter data to const in gsm_control_command()
+- added extra line-feeds in gsm_control_command()
+- kept signess and constness of other parameters in gsm_control_command()
+  to align with gsm_control_reply() as stated in the commit message;
+  possible changes here are subject to a different commit which should
+  keep the changes in alignment to the signature of gsm_control_reply()
 
-Link: https://lore.kernel.org/all/1d8d0d72-a5b7-724e-a70a-71d9fd3330c4@kernel.org/
+Link: https://lore.kernel.org/all/fe014b7b-a1d2-9be9-625b-2f630934c56c@kernel.org/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f8a8c4059907..6588b84eed96 100644
+index 9d0b4f79b65a..e050d76385ba 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -69,6 +69,7 @@ module_param(debug, int, 0600);
- #define DBG_DATA	BIT(2) /* Data transmission details. */
- #define DBG_ERRORS	BIT(3) /* Details for fail conditions. */
- #define DBG_TTY		BIT(4) /* Transmission statistics for DLCI TTYs. */
-+#define DBG_PAYLOAD	BIT(5) /* Limits DBG_DUMP to payload frames. */
+@@ -1316,6 +1316,31 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
+  */
  
- /* Defaults: these are from the specification */
  
-@@ -598,6 +599,10 @@ static void gsm_print_packet(const char *hdr, int addr, int cr,
++/**
++ * gsm_control_command	-	send a command frame to a control
++ * @gsm: gsm channel
++ * @cmd: the command to use
++ * @data: data to follow encoded info
++ * @dlen: length of data
++ *
++ * Encode up and queue a UI/UIH frame containing our command.
++ */
++static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
++			       int dlen)
++{
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
++
++	if (msg == NULL)
++		return -ENOMEM;
++
++	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
++	msg->data[1] = (dlen << 1) | EA;
++	memcpy(msg->data + 2, data, dlen);
++	gsm_data_queue(gsm->dlci[0], msg);
++
++	return 0;
++}
++
+ /**
+  *	gsm_control_reply	-	send a response frame to a control
+  *	@gsm: gsm channel
+@@ -1621,13 +1646,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
+ 
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
  {
- 	if (!(debug & DBG_DUMP))
- 		return;
-+	/* Only show user payload frames if debug & DBG_PAYLOAD */
-+	if (!(debug & DBG_PAYLOAD) && addr != 0)
-+		if ((control & ~PF) == UI || (control & ~PF) == UIH)
-+			return;
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+-	if (msg == NULL)
+-		return;
+-	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
+-	msg->data[1] = (ctrl->len << 1) | EA;
+-	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+-	gsm_data_queue(gsm->dlci[0], msg);
++	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
+ }
  
- 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
- 
+ /**
 -- 
 2.34.1
 
