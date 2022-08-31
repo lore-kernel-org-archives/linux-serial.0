@@ -2,38 +2,38 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345ACECAAD3
-	for <linux-serial@archiver.kernel.org>; Wed, 31 Aug 2022 07:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42698ECAAD1
+	for <linux-serial@archiver.kernel.org>; Wed, 31 Aug 2022 07:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiHaHki (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 31 Aug 2022 03:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
+        id S230188AbiHaHkx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 31 Aug 2022 03:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbiHaHkg (ORCPT
+        with ESMTP id S230113AbiHaHkg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 31 Aug 2022 03:40:36 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 00:40:28 PDT
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E1AE23A
+X-Greylist: delayed 65 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 00:40:32 PDT
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247A6AE84A
         for <linux-serial@vger.kernel.org>; Wed, 31 Aug 2022 00:40:27 -0700 (PDT)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202208310739222e3267e984d7690fcd
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202208310739237f75408acb08a9c3ca
         for <linux-serial@vger.kernel.org>;
         Wed, 31 Aug 2022 09:39:23 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=xPAHuyCcauRzXbU2F0wSMbyCkn9ZpPEPIcMeTRGYZX4=;
- b=RcmqXxPyY3VqVsNVXTbfPf8J7fUnCgEgBxrG1ryuOhv+flTFlG0IkLZSL2rDN0l7WtKr+A
- 329i7qK7y2CunAv4rjuBT7uj3HQZQgen7ThvZSSzdAtN2GTHLbKms8lBucvGspaULvduW31A
- OK8YQD3+4Er+fpMr97mBlIgI0pnpE=;
+ bh=3J5YJMYogxurmh9Iy3+kLDwBkuAs+TWkBdMkdxAGFv0=;
+ b=TAMk0XOvgXPuMlvqMcWYvxWM9vdV/QgQL3YkE/3Le5eeiHOC3g8iEHEut542dJ96gb0xUL
+ RE3YOfDM8WnPKyB1gcYfYUnqdcLjPRGWh68MADdEdI5a6lJPvjjHPiyUsfVkLV/9lQWdwQBW
+ 2A5T+XcvZZ0kI6P3JISZk1u4X3jsA=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 4/6] tty: n_gsm: introduce gsm_control_command() function
-Date:   Wed, 31 Aug 2022 09:37:58 +0200
-Message-Id: <20220831073800.7459-4-daniel.starke@siemens.com>
+Subject: [PATCH v3 5/6] tty: n_gsm: name the debug bits
+Date:   Wed, 31 Aug 2022 09:37:59 +0200
+Message-Id: <20220831073800.7459-5-daniel.starke@siemens.com>
 In-Reply-To: <20220831073800.7459-1-daniel.starke@siemens.com>
 References: <20220831073800.7459-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,79 +46,145 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-Move the content of gsm_control_transmit() to a new function
-gsm_control_command() with a more generic signature and analog to
-gsm_control_reply(). Use this within gsm_control_transmit().
-
-This is needed to simplify upcoming functional additions.
+Introduce defines to name the various debug bits used within the code to
+improve readability and to make its specific use clear.
 
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 33 ++++++++++++++++++++++++++-------
- 1 file changed, 26 insertions(+), 7 deletions(-)
+ drivers/tty/n_gsm.c | 31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
 Incorporated review comments from Jiri Slaby since v2:
-- leading changed tab to space in function comment of gsm_control_command()
-- made function parameter data to const in gsm_control_command()
-- added extra line-feeds in gsm_control_command()
-- kept signess and constness of other parameters in gsm_control_command()
-  to align with gsm_control_reply() as stated in the commit message;
-  possible changes here are subject to a different commit which should
-  keep the changes in alignment to the signature of gsm_control_reply()
+- changed (1 << n) to BIT(n) in the debug macro definitions
 
-Link: https://lore.kernel.org/all/fe014b7b-a1d2-9be9-625b-2f630934c56c@kernel.org/
+Link: https://lore.kernel.org/all/1d8d0d72-a5b7-724e-a70a-71d9fd3330c4@kernel.org/
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 9d0b4f79b65a..e050d76385ba 100644
+index e050d76385ba..f8a8c4059907 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1316,6 +1316,31 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
-  */
+@@ -63,6 +63,13 @@
+ static int debug;
+ module_param(debug, int, 0600);
  
++/* Module debug bits */
++#define DBG_DUMP	BIT(0) /* Data transmission dump. */
++#define DBG_CD_ON	BIT(1) /* Always assume CD line on. */
++#define DBG_DATA	BIT(2) /* Data transmission details. */
++#define DBG_ERRORS	BIT(3) /* Details for fail conditions. */
++#define DBG_TTY		BIT(4) /* Transmission statistics for DLCI TTYs. */
++
+ /* Defaults: these are from the specification */
  
-+/**
-+ * gsm_control_command	-	send a command frame to a control
-+ * @gsm: gsm channel
-+ * @cmd: the command to use
-+ * @data: data to follow encoded info
-+ * @dlen: length of data
-+ *
-+ * Encode up and queue a UI/UIH frame containing our command.
-+ */
-+static int gsm_control_command(struct gsm_mux *gsm, int cmd, const u8 *data,
-+			       int dlen)
-+{
-+	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
-+
-+	if (msg == NULL)
-+		return -ENOMEM;
-+
-+	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
-+	msg->data[1] = (dlen << 1) | EA;
-+	memcpy(msg->data + 2, data, dlen);
-+	gsm_data_queue(gsm->dlci[0], msg);
-+
-+	return 0;
-+}
-+
- /**
-  *	gsm_control_reply	-	send a response frame to a control
-  *	@gsm: gsm channel
-@@ -1621,13 +1646,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
- 
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
+ #define T1	10		/* 100mS */
+@@ -535,7 +542,7 @@ static int gsm_register_devices(struct tty_driver *driver, unsigned int index)
+ 		 */
+ 		dev = tty_register_device(gsm_tty_driver, base + i, NULL);
+ 		if (IS_ERR(dev)) {
+-			if (debug & 8)
++			if (debug & DBG_ERRORS)
+ 				pr_info("%s failed to register device minor %u",
+ 					__func__, base + i);
+ 			for (i--; i >= 1; i--)
+@@ -589,7 +596,7 @@ static void gsm_unregister_devices(struct tty_driver *driver,
+ static void gsm_print_packet(const char *hdr, int addr, int cr,
+ 					u8 control, const u8 *data, int dlen)
  {
--	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
--	if (msg == NULL)
--		return;
--	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
--	msg->data[1] = (ctrl->len << 1) | EA;
--	memcpy(msg->data + 2, ctrl->data, ctrl->len);
--	gsm_data_queue(gsm->dlci[0], msg);
-+	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
+-	if (!(debug & 1))
++	if (!(debug & DBG_DUMP))
+ 		return;
+ 
+ 	pr_info("%s %d) %c: ", hdr, addr, "RC"[cr]);
+@@ -833,7 +840,7 @@ static int gsm_send_packet(struct gsm_mux *gsm, struct gsm_msg *msg)
+ 		len += 2;
+ 	}
+ 
+-	if (debug & 4)
++	if (debug & DBG_DATA)
+ 		gsm_hex_dump_bytes(__func__, gsm->txframe, len);
+ 	gsm_print_packet("-->", msg->addr, gsm->initiator, msg->ctrl, msg->data,
+ 			 msg->len);
+@@ -1766,7 +1773,7 @@ static int gsm_control_wait(struct gsm_mux *gsm, struct gsm_control *control)
+ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ {
+ 	del_timer(&dlci->t1);
+-	if (debug & 8)
++	if (debug & DBG_ERRORS)
+ 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
+ 	dlci->state = DLCI_CLOSED;
+ 	/* Prevent us from sending data before the link is up again */
+@@ -1800,7 +1807,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 	/* This will let a tty open continue */
+ 	dlci->state = DLCI_OPEN;
+ 	dlci->constipated = false;
+-	if (debug & 8)
++	if (debug & DBG_ERRORS)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Send current modem state */
+ 	if (dlci->addr)
+@@ -1836,7 +1843,7 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+ 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+-			if (debug & 8)
++			if (debug & DBG_ERRORS)
+ 				pr_info("DLCI %d opening in ADM mode.\n",
+ 					dlci->addr);
+ 			dlci->mode = DLCI_MODE_ADM;
+@@ -1941,7 +1948,7 @@ static void gsm_dlci_data(struct gsm_dlci *dlci, const u8 *data, int clen)
+ 	unsigned int modem = 0;
+ 	int len;
+ 
+-	if (debug & 16)
++	if (debug & DBG_TTY)
+ 		pr_debug("%d bytes for tty\n", clen);
+ 	switch (dlci->adaption)  {
+ 	/* Unsupported types */
+@@ -2029,7 +2036,7 @@ static void gsm_kick_timer(struct timer_list *t)
+ 		sent = gsm_dlci_data_sweep(gsm);
+ 	spin_unlock_irqrestore(&gsm->tx_lock, flags);
+ 
+-	if (sent && debug & 4)
++	if (sent && debug & DBG_DATA)
+ 		pr_info("%s TX queue stalled\n", __func__);
  }
  
- /**
+@@ -2163,7 +2170,7 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 
+ 	if (gsm->fcs != GOOD_FCS) {
+ 		gsm->bad_fcs++;
+-		if (debug & 4)
++		if (debug & DBG_DATA)
+ 			pr_debug("BAD FCS %02x\n", gsm->fcs);
+ 		return;
+ 	}
+@@ -2789,7 +2796,7 @@ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
+ 		set_bit(TTY_DO_WRITE_WAKEUP, &gsm->tty->flags);
+ 		return -ENOSPC;
+ 	}
+-	if (debug & 4)
++	if (debug & DBG_DATA)
+ 		gsm_hex_dump_bytes(__func__, data, len);
+ 	return gsm->tty->ops->write(gsm->tty, data, len);
+ }
+@@ -2876,7 +2883,7 @@ static void gsmld_receive_buf(struct tty_struct *tty, const unsigned char *cp,
+ 	struct gsm_mux *gsm = tty->disc_data;
+ 	char flags = TTY_NORMAL;
+ 
+-	if (debug & 4)
++	if (debug & DBG_DATA)
+ 		gsm_hex_dump_bytes(__func__, cp, count);
+ 
+ 	for (; count; count--, cp++) {
+@@ -3416,7 +3423,7 @@ static int gsm_carrier_raised(struct tty_port *port)
+ 	/* Not yet open so no carrier info */
+ 	if (dlci->state != DLCI_OPEN)
+ 		return 0;
+-	if (debug & 2)
++	if (debug & DBG_CD_ON)
+ 		return 1;
+ 
+ 	/*
 -- 
 2.34.1
 
