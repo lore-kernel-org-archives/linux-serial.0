@@ -2,107 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE059ECAAD5
-	for <linux-serial@archiver.kernel.org>; Fri,  2 Sep 2022 15:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1C5C54EE9
+	for <linux-serial@archiver.kernel.org>; Fri,  2 Sep 2022 15:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235685AbiIBPX5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 2 Sep 2022 11:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        id S235545AbiIBP2q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 2 Sep 2022 11:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235495AbiIBPXj (ORCPT
+        with ESMTP id S236077AbiIBP22 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 2 Sep 2022 11:23:39 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE86C27FF5;
-        Fri,  2 Sep 2022 07:56:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662130606; x=1693666606;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=SqK+KES9Kef0oX5qHsG81CZHcrCq/64MccAPPJRXZy8=;
-  b=VaY3NGSn+OVbm/gFjQk5fZtdYh2N/IiVzF5+HffmEVfiAU+gWeOzWT/5
-   5QgrRdsYXU+s38zOlxOuqhrNSbrRwpYSlexM1pX6osswK2rFtWjeLIzyf
-   qyD1D2pad/ka/DIzjB4bCwAt/Tk1q4VEm/FBRFuOrTflFoHAUKQCqzGDW
-   Ap9FIpbFDABrS1JQ5Mpciurbtjug2yGXzeltkepBRy/X053N0YxXQb/5e
-   lwA3IV16LqEonKtJPLBQpm1ff9XuRX61Fr2xjYgt2lSQeSvgGJYb2k0Z5
-   75/NbHFRMyt62yNcUybvmpXKMS7tBj9Z/qXnASiS5UKw6KejUSKFCh2fp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="296002859"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="296002859"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:56:45 -0700
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="674379798"
-Received: from vbykovni-mobl.ger.corp.intel.com ([10.252.53.17])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 07:56:41 -0700
-Date:   Fri, 2 Sep 2022 17:56:40 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 3/3] tty: serial: use
- DEFINE_UART_PORT_TX_HELPER_LIMITED()
-In-Reply-To: <20220901110657.3305-4-jslaby@suse.cz>
-Message-ID: <f45fab19-5034-cd9c-4133-ed74e5888193@linux.intel.com>
-References: <20220901110657.3305-1-jslaby@suse.cz> <20220901110657.3305-4-jslaby@suse.cz>
+        Fri, 2 Sep 2022 11:28:28 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9EE30559;
+        Fri,  2 Sep 2022 08:03:11 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id y17so1606454qvr.5;
+        Fri, 02 Sep 2022 08:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=uHtcV+yHCWPSDV3MpZ8WfDgtXH4RMpG2pUyZ60oa9MI=;
+        b=NmnxLL+Mf+Aq4TIE+J/Rx+FdYbNJXvMUmisd1jFlKELPxyhwMGj70ajLPKJV/dIEq/
+         Xdk7mskW45AKOKeA/qYjoHe0/z6vYODbReVO4dOo+G5lVVin7gXZCTDBuM7+m8C8MPYc
+         uKobNowxrxT4bbI9FHkdZtaL/LFxjclXtdbgS6y93lRYPGMBV9Y3+SaWxY4jkKylG/yg
+         Pa+apQ70z6imaKlJUnI65GGFccq3cBBhJKFnYp4qldkEvqM90hwl82/hlRYrFeRdHBHR
+         2guighArChJ4QhFIlIePFA0QP2am4BzlzXc9jtzezigHgVwrpbfdLGBcGc6mlKCYkZhU
+         bxxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=uHtcV+yHCWPSDV3MpZ8WfDgtXH4RMpG2pUyZ60oa9MI=;
+        b=HIU1RF74ekmUIB0e5MGlasjPGSxp+xWXQoGhQXbKXCL3ekUN3tSmx0qQzDwpwl6HIZ
+         o0W7Y9yug2qJQ0/VwEZ1vU7rP3HRwU8Y2OnGUt9TEOPlqlvng0LMIpGUEh+EOVjzl0ej
+         bu4DdRoaiO4t9csQbbAoVM4jDFkfmnsejSPZ7QwONImQJnThWoyOLMn566mWFL3EI3NH
+         LNoGNMV/GokL8i4mUTpLeh+m/VlXL/icR9uNLJ/UHL5xE3WH1aN5Ebmki9LU1rfKttB9
+         lo6oYERczbBCLfF3w7rWEb0AxhnYRXUY1NNCuUSHKoX4Dp8Lro1UufkJgfoPmG0mj9wo
+         1s3A==
+X-Gm-Message-State: ACgBeo1CnjY8awblZ2YGdzKEUpeMpTDGG9QUQQON7GaAZ/6Pdq34NK2x
+        b1dSpk8ay/WasdGUSPdtl/tbaAam1Raj51EcOxQ=
+X-Google-Smtp-Source: AA6agR4Ga9erVLbjOKv6kfUP9niDmSO0S/BawjuROQ9tShjiebnSl7urmBNmdBIDIbe2P/M+ymUVdlmjJcpIlHesmXw=
+X-Received: by 2002:a05:6214:c8f:b0:499:21eb:ba3b with SMTP id
+ r15-20020a0562140c8f00b0049921ebba3bmr10782648qvr.97.1662130990488; Fri, 02
+ Sep 2022 08:03:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1404598877-1662130606=:1647"
+References: <20220830180054.1998296-1-kumaravel.thiagarajan@microchip.com>
+ <20220830180054.1998296-2-kumaravel.thiagarajan@microchip.com>
+ <CAHp75VfraADCTmZATWTSsYtC5uk5bc=WDVVm0jtUVO90xdFd9g@mail.gmail.com>
+ <BN8PR11MB3668BAC07D493EE02AEAEB14E97B9@BN8PR11MB3668.namprd11.prod.outlook.com>
+ <63f48d1-f716-5040-c8d1-486087bd1c5e@linux.intel.com> <BN8PR11MB3668FA6A2247710ED7DEF16EE97A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+In-Reply-To: <BN8PR11MB3668FA6A2247710ED7DEF16EE97A9@BN8PR11MB3668.namprd11.prod.outlook.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 2 Sep 2022 18:02:34 +0300
+Message-ID: <CAHp75VfUq-JkfjD1YOj_+ST-eK=aW=8LoHOUW4zqpeA_QUZbyw@mail.gmail.com>
+Subject: Re: [PATCH v1 tty-next 1/2] 8250: microchip: pci1xxxx: Add driver for
+ the quad-uart function in the multi-function endpoint of pci1xxxx device.
+To:     Kumaravel Thiagarajan - I21417 
+        <Kumaravel.Thiagarajan@microchip.com>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Eric Tremblay <etremblay@distech-controls.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jeremy Kerr <jk@ozlabs.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Sep 2, 2022 at 2:57 PM <Kumaravel.Thiagarajan@microchip.com> wrote:
+> > -----Original Message-----
+> > From: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> > Sent: Thursday, September 1, 2022 7:12 PM
+> > On Thu, 1 Sep 2022, Kumaravel.Thiagarajan@microchip.com wrote:
 
---8323329-1404598877-1662130606=:1647
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+...
 
-On Thu, 1 Sep 2022, Jiri Slaby wrote:
+> > > > > +       const unsigned int standard_baud_list[] =3D {50, 75, 110,=
+ 134, 150,
+> > 300,
+> > > > > +                                               600, 1200, 1800, =
+2000, 2400, 3600,
+> > > > > +                                               4800, 7200, 9600,=
+ 19200, 38400, 57600,
+> > > > > +                                               115200, 125000, 1=
+36400, 150000, 166700,
+> > > > > +                                               187500, 214300, 2=
+50000, 300000, 375000,
+> > > > > +                                               500000, 750000,
+> > > > > + 1000000, 1500000};
+> > > >
+> > > > Why?!
+> > >
+> > > The standard baud rates are handled within serial8250_do_set_termios
+> > > which is invoked from within mchp_pci1xxxx_set_termios in first place=
+.
+> > > Hence if it matches with any of the standard baudrates, it can return
+> > > immediately.
+> >
+> > Care to explain why the baudrates in your table don't match those in
+> > tty_baudrate.c? ...It makes no sense to me that you call these "standar=
+d
+> > baud rates".
+> The baudrates in my table are from our legacy UART IP and these baudrates=
+ can be
+> generated by the hardware by updating UART_DLL & UART_DLM alone as done b=
+y the
+> serial8250_do_set_termios.
+> I noticed that some of the baud rates in tty_baudrate.c arenot listed in =
+this table
+> but will still be handled by the mchp_pci1xxxx_set_termios.
+> I can rename standard_baud_list to simply baud_list. Please let me know.
 
-> DEFINE_UART_PORT_TX_HELPER_LIMITED() is a new helper to send characters
-> to the device. Use it in these drivers.
-> 
-> mux.c also needs to define tx_done(). But I'm not sure if the driver
-> really wants to wait for all the characters to dismiss from the HW fifo
-> at this code point. Hence I marked this as FIXME.
+No, the point is avoid repeating what standard APIs already do. Just
+make sure you call it properly and provide _get/_set_divisor()
+callbacks. Note, your driver can cope with BOTHER and there all
+non-standard baud rates go.
 
-Indeed, it seems odd.
-
-This change looked good to me but I'll give my rev-by only after seeing 
-the next version.
-
--- 
- i.
-
-
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: "Pali Rohár" <pali@kernel.org>
-> Cc: Kevin Cernekee <cernekee@gmail.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: linux-riscv@lists.infradead.org
-
---8323329-1404598877-1662130606=:1647--
+--=20
+With Best Regards,
+Andy Shevchenko
