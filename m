@@ -2,67 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56081ECAAD3
-	for <linux-serial@archiver.kernel.org>; Sun,  4 Sep 2022 06:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3ACECAAD3
+	for <linux-serial@archiver.kernel.org>; Sun,  4 Sep 2022 08:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbiIDGUR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 4 Sep 2022 02:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
+        id S231560AbiIDIs3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 4 Sep 2022 04:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiIDGUQ (ORCPT
+        with ESMTP id S229537AbiIDIs2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 4 Sep 2022 02:20:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A95327CCF;
-        Sat,  3 Sep 2022 23:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32EAFB80C0A;
-        Sun,  4 Sep 2022 06:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D2B5C433D6;
-        Sun,  4 Sep 2022 06:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662272412;
-        bh=RE8YCa7OO1bHEGDf3RNzYclTV7vEm+CT+3ycRThtJMM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mDEctBveSUQtpguSZXKO4r7sABUOINuxfcCPeNG0nduSxARwMJgrON5vf4wMVqyuv
-         pGM3MggMqLbxkj/UB/2BO7NklL+pMRfbJzZiZ0UAieQYjgOCPGYjx+6bK4NTdBTTn/
-         nKeLvxCW274XUUSDkgoPaaLF/PTnKE2/W9Lq/L4I=
-Date:   Sun, 4 Sep 2022 08:20:09 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Li Zhong <floridsleeves@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org
-Subject: Re: [PATCH v3] drivers/tty/serial: check the return value of
- uart_port_check()
-Message-ID: <YxRDmX76WsjxuGzC@kroah.com>
-References: <20220904004524.2281227-1-floridsleeves@gmail.com>
+        Sun, 4 Sep 2022 04:48:28 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B3F043E48;
+        Sun,  4 Sep 2022 01:48:27 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-1273a47cdb6so1323742fac.13;
+        Sun, 04 Sep 2022 01:48:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=dGmayfXc9w/lfNLKggje5mvDJdeDpyPvfT6beacitTE=;
+        b=pJAs11c3l33RJL77Wqdaa+JvCT/GqfBuF0ZJYsoPdRjL8ctZFCJLK39J532rfKN2yW
+         uwW0eDK756uyD7Ys+hMocd0ymJF9wUJHkPUdp0bEP65c5EtKuCSHP0rzWrEU4OG2a1Qx
+         7qHU1t93qSVusyRqDooXhIolTJ26zV+pQ1rtpQ/TPXcJzsqZmOLnLvexSm4oVLvjCFae
+         /8OJ/9/AvQer9XWK49LjuAzrWP8+R7FBN2d7zrz1eXKRX8hGkYlSvyT9acg5wemX9eHd
+         hbUdJFu8ZJ16mwbx+fomesul5MOmFTjR9SqOAuVyfF+FcRCbBiwIs/twjBUS4KvayANi
+         Bcbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=dGmayfXc9w/lfNLKggje5mvDJdeDpyPvfT6beacitTE=;
+        b=228pq/DlEob+3Rr6PR9jq2VOmO46SeuaN3qvRkDcUzI9MHlKr6hBopDC6UYiNU7XcB
+         NtcgiMcCkNTLOHAeWDNHs8CVdv3x3FMWylo1xWkMtyOfGZmVWFxANuj+dSEx9j8HCiB4
+         oE0v9dnNB7CP+VyGhJyHbPEGZyY5yRZ6U6ytmR9wMDUowVJnkhUB33tbbg0Q1C0lT4DO
+         /cDh8aDqvjE21/xd7VK8R6HtQ0HZ/d3cFaDQjT7HpOb7B2qsGOLOcPAzhQbvzbBCbKM3
+         0Rk188Qt/SJ1y0a4G4RiEB57PwGXdMF4p0D8IcTCUWCh2/3v0iBhH/RdYuTLfGRTE3Kr
+         Oacw==
+X-Gm-Message-State: ACgBeo1uOPUfiMRkCsEct4STNV35tjgukx9AJRa4oltEJjE3RFHmtZxs
+        WYg0EV+Q/zufP3Owjy7HzlP7Vli5ow0T/vyBeks=
+X-Google-Smtp-Source: AA6agR5HItE5b9HOyknTNTcGei9/A5ATki8diaYMjR6pMorNY/bbPVSjJTN4QneULu0B2AH9AsK71cyWLXQUgibnKFg=
+X-Received: by 2002:a05:6870:3486:b0:10e:62b:159a with SMTP id
+ n6-20020a056870348600b0010e062b159amr6536755oah.254.1662281305739; Sun, 04
+ Sep 2022 01:48:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220904004524.2281227-1-floridsleeves@gmail.com>
+References: <20220822141110.17199-1-91tuocao@gmail.com> <YwORy3QMbRUSlBZE@kroah.com>
+ <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com> <Yw316/3zuIXvm/Ty@kroah.com>
+In-Reply-To: <Yw316/3zuIXvm/Ty@kroah.com>
+From:   tuo cao <91tuocao@gmail.com>
+Date:   Sun, 4 Sep 2022 16:48:13 +0800
+Message-ID: <CAEVeK2DfcvguQ__GroRY+erU+-4=ZKvPBf1V2poRxUF77G60OQ@mail.gmail.com>
+Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
+ spin_lock in interrupt handler
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Sep 03, 2022 at 05:45:24PM -0700, Li Zhong wrote:
-> uart_port_check() will return NULL pointer when state->uart_port is
-> NULL. Check the return value before dereference it to avoid
-> null-pointer-dereference error because the locking does not guarantee
-> the return value is not NULL. Here we do not need unlock in the error
-> handling because the mutex_unlock() is called in callers.
-> 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-> ---
-> 
-> v3: Add the reason why we need to check the NULL value in the commit
-> message.  The bug is detected by static analysis.
+Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B48=E6=9C=8830=E6=
+=97=A5=E5=91=A8=E4=BA=8C 19:35=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Sat, Aug 27, 2022 at 05:42:19PM +0800, tuo cao wrote:
+> > No, whether it's spin_lock_irqsave() or spin_lock(), the security is
+> > the same. Since this commit:e58aa3d2d0cc01ad8d6f7f640a0670433f794922,
+> > interrupt nesting is disabled, which means interrupts has disabled in
+> > the interrupt handlers. So, it is unnecessary to call
+> > spin_lock_irqsave in a interrupt handler. And it takes less time
+> > obviously to use spin_lock()=EF=BC=8Cso I think this change is needed.
+>
+> I have no context at all here, please never top-post :(
+>
+Sorry for causing you trouble. It should be OK this time.
 
-Great, then please follow the rules in
-Documentation/process/researcher-guidelines.rst and identify the tools
-you are using as well as everything else listed there.
+> And have you measured the time difference?  Is it a real thing?
+>
+Yes, sir. I have measured it, it is a read thing. The test code and
+log have been put on Github, please check:
+https://github.com/tuocao1991/api_test
 
-thanks,
+> > Finally, I'm sorry I lacked real hardware to verify it and can't
+> > provide changelog text.
+>
+> Try to never do changes for drivers for functionality like this where
+> you do not have the hardware to test for, until you get a lot more
+> experience.
+>
+I got it, thanks
 
-greg k-h
+> good luck!
+>
+> greg k-h
+
+Best Regards!
