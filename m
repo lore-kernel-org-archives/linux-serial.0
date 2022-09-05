@@ -2,139 +2,210 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8AFC6FA8D
-	for <linux-serial@archiver.kernel.org>; Mon,  5 Sep 2022 16:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C677EECAAD5
+	for <linux-serial@archiver.kernel.org>; Mon,  5 Sep 2022 18:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiIEQM3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 5 Sep 2022 12:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41750 "EHLO
+        id S229692AbiIESYA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 5 Sep 2022 14:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbiIEQMW (ORCPT
+        with ESMTP id S232269AbiIESXs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 5 Sep 2022 12:12:22 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D95A550B2
-        for <linux-serial@vger.kernel.org>; Mon,  5 Sep 2022 09:12:20 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p7so13749521lfu.3
-        for <linux-serial@vger.kernel.org>; Mon, 05 Sep 2022 09:12:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=rrWMFV+N+f8aARUW0ZNrAlxPcv8JN7PD06T7jx57Q7s=;
-        b=SS3wEpx17GrNgX9Fc+X/k3B/9tRMakRxRbH8xMVvVDq2ZdruXjZG7LTGx+p+6x1mMu
-         jepfNNJGN6O3or1m/v60nbMJcuavuaBqS1W9ZbCI7/Ya5z3pgt0zpvsfZ+Vf0Gm/heYu
-         eczsXHy88W6Mg1JHIpbb0P7YNYSyzRYzGs+l0DVwXxSOlLg2rcR5CeqOo6OzBjLvGMqL
-         DrJTFyVARk/EwFRMAPsXNAFdKReDopalSto5lm+nfMqaF87QF8hAYfYpMcjonMW2EaP1
-         wK9l1oULRf5bFySVuoLUYG40Bgn4zumjoEnRwUzL7guqlm2k3GdQGr1Y8UYGB929y+Qm
-         M9dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=rrWMFV+N+f8aARUW0ZNrAlxPcv8JN7PD06T7jx57Q7s=;
-        b=K8EXeCyXRws/TWU5uk/umQZZ8lIE9fzRmfYauFuM0fwJMlaF1gTdDRYjHHmrZl55bw
-         0BwF5EaAIgv9tfIbw2gR+mq47mm+z/Bl1QJrP2FFhiAW0GeF3LOhZfgY16eemXnb+7hi
-         C+4ub3x5v1CSdO8YLCvlfcb77KWjTi8Usi1ASj2wanPneGvVQSfIMBcBeaB+X5kPClWl
-         tJOlaJnTESGOXXTuGuFViyWJDe+RhNtcbJrLDStSgHg4YUG5dZYZvQv969iOZFWPFB/p
-         SFjj2pAZc6swOkNzzQgDqqcVw6Syrq4eARex3vdkDKh8y74fdbQADmfF9kcv4BipR7wD
-         51lQ==
-X-Gm-Message-State: ACgBeo1DVgWp05Ioej4vxfjZ90Fvwy+JJJMVjU2sy2zZ1tbnOR7RXRg3
-        D6R61hIj/bo2E66cUiWYI91zlw==
-X-Google-Smtp-Source: AA6agR5YbCPHG0VF+WgTYH8U/Qyjr4JX1+miUiqvPBNw4ceg3bXl8ITHJX7z4VES5+HrNXJDFKZYSw==
-X-Received: by 2002:ac2:5ccd:0:b0:495:79c7:f2f7 with SMTP id f13-20020ac25ccd000000b0049579c7f2f7mr3651296lfq.647.1662394338923;
-        Mon, 05 Sep 2022 09:12:18 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f19-20020ac25333000000b0048a9a756763sm1235025lfh.19.2022.09.05.09.12.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Sep 2022 09:12:18 -0700 (PDT)
-Message-ID: <80abf192-0313-aade-7780-604f4c9c6810@linaro.org>
-Date:   Mon, 5 Sep 2022 18:12:15 +0200
+        Mon, 5 Sep 2022 14:23:48 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1262528E0A
+        for <linux-serial@vger.kernel.org>; Mon,  5 Sep 2022 11:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662402228; x=1693938228;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZZI0drPdHAap2qyf1Eirh2O7nIQbXLQlMw9KysmF2oY=;
+  b=ICN4d04jfGexPI0Lt01oiSvLwzPvvv6CPx8NuboQqhL4hKvM2FwpaPMU
+   USAAoQn6kmUy/5AdElgnrX51/AjhcZ2HpRiS6LgS3tBGNzMR0H+8ndwNt
+   3Xx3pWJZ5LSKsrcYbAmp+eeoP3TFyxOTKX+l0V1D+JcoUrMFU+RJgNCAu
+   LGA9Yqtnn1ETmLmdQJ0kV4CUFn7TgUqGXy1GRRk69XJSIliaSLczRIjnm
+   kbGNUSN7io3wlz5BoSdPObUzX7ySg0uI+6bFR0+ehA/vpo/DnBAtDNyNs
+   KH6SOxuyu9NjlaI53JikMrJU4keSh95oVMgt8HnWtnePCXoxRwSxl7oyW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10461"; a="297223709"
+X-IronPort-AV: E=Sophos;i="5.93,291,1654585200"; 
+   d="scan'208";a="297223709"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2022 11:23:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,291,1654585200"; 
+   d="scan'208";a="682138559"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Sep 2022 11:23:46 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oVGl7-0004QG-26;
+        Mon, 05 Sep 2022 18:23:45 +0000
+Date:   Tue, 06 Sep 2022 02:23:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 35f2e3c267f07a42bc1bf08081e963b3a33e6d7c
+Message-ID: <63163ea0.iutkpx5k6CPnoQtR%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 2/5] dt-bindings: mfd: atmel,at91-usart: convert to
- json-schema
-Content-Language: en-US
-To:     Sergiu.Moga@microchip.com, lee@kernel.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
-        Claudiu.Beznea@microchip.com, radu_nicolae.pirea@upb.ro,
-        richard.genoud@gmail.com, mturquette@baylibre.com,
-        sboyd@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        admin@hifiphile.com, Kavyasree.Kotagiri@microchip.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20220817075517.49575-1-sergiu.moga@microchip.com>
- <20220817075517.49575-3-sergiu.moga@microchip.com>
- <942accc5-70aa-3bb2-63dd-306a39ee5ea4@linaro.org>
- <d1aad8ea-3852-f36b-366b-7aa67d2dd9d5@microchip.com>
- <YxYI8/bprIV2wd1c@google.com>
- <d6a498e7-838b-addf-bc7f-81e6805806d3@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <d6a498e7-838b-addf-bc7f-81e6805806d3@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05/09/2022 17:22, Sergiu.Moga@microchip.com wrote:
-> On 05.09.2022 17:37, Lee Jones wrote:
->>
->> On Fri, 19 Aug 2022, Sergiu.Moga@microchip.com wrote:
->>
->>> On 18.08.2022 11:39, Krzysztof Kozlowski wrote:
->>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>>>
->>>> On 17/08/2022 10:55, Sergiu Moga wrote:
->>>>> Convert at91 USART DT Binding for Atmel/Microchip SoCs to
->>>>> json-schema format.
->>>>>
->>>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
->>>>> ---
->>>>>    .../bindings/mfd/atmel,at91-usart.yaml        | 190 ++++++++++++++++++
->>>>>    .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
->>>>>    2 files changed, 190 insertions(+), 98 deletions(-)
->>>>>    create mode 100644 Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>>>>    delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>>>> new file mode 100644
->>>>> index 000000000000..cf15d73fa1e8
->>>>> --- /dev/null
->>>>> +++ b/Documentation/devicetree/bindings/mfd/atmel,at91-usart.yaml
->>>> One more thing - I think this should be in serial directory, not mfd,
->>>> even though it includes SPI. MFD is just a Linux naming/wrapper device.
->>>>
->>>> Best regards,
->>>> Krzysztof
->>>
->>> I would rather keep it in this directory, since its corresponding driver
->>> is also in the mfd directory.
->>
->> Looks like a UART driver to me.
->>
->> Which MFD driver does this pertain to?
->>
->> --
->> Lee Jones [李琼斯]
-> 
-> Hi,
-> 
-> It's this one: drivers/mfd/at91-usart.c[1]
-> 
-> 
-> [1] 
-> https://elixir.bootlin.com/linux/v6.0-rc4/source/drivers/mfd/at91-usart.c
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 35f2e3c267f07a42bc1bf08081e963b3a33e6d7c  Merge 6.0-rc4 into tty-next
 
-Which is not a "real MFD driver" because it probes exactly one child
-(depending on the chosen serial protocol). Aren't MFD supposed to have
-more then one child?
+elapsed time: 727m
 
+configs tested: 134
+configs skipped: 3
 
-Best regards,
-Krzysztof
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+i386                 randconfig-a001-20220905
+x86_64                              defconfig
+i386                 randconfig-a002-20220905
+i386                                defconfig
+x86_64               randconfig-a005-20220905
+x86_64               randconfig-a006-20220905
+i386                 randconfig-a003-20220905
+x86_64               randconfig-a002-20220905
+x86_64               randconfig-a004-20220905
+arm                                 defconfig
+arc                  randconfig-r043-20220905
+x86_64               randconfig-a001-20220905
+csky                              allnoconfig
+m68k                             allyesconfig
+x86_64                          rhel-8.3-func
+powerpc                           allnoconfig
+x86_64                               rhel-8.3
+alpha                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                           allyesconfig
+arc                               allnoconfig
+arc                              allyesconfig
+i386                 randconfig-a005-20220905
+x86_64               randconfig-a003-20220905
+arm                              allyesconfig
+alpha                             allnoconfig
+i386                 randconfig-a006-20220905
+riscv                             allnoconfig
+m68k                             allmodconfig
+arm64                            allyesconfig
+i386                             allyesconfig
+ia64                             allmodconfig
+i386                 randconfig-a004-20220905
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+i386                             alldefconfig
+powerpc                      mgcoge_defconfig
+sh                           se7343_defconfig
+arm                            mps2_defconfig
+openrisc                    or1ksim_defconfig
+sparc                               defconfig
+sh                               j2_defconfig
+sh                             espt_defconfig
+sh                 kfr2r09-romimage_defconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+i386                 randconfig-c001-20220905
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+arm                       imx_v6_v7_defconfig
+arc                              alldefconfig
+arm                         axm55xx_defconfig
+sh                           se7780_defconfig
+sh                   sh7770_generic_defconfig
+alpha                            alldefconfig
+powerpc                      pasemi_defconfig
+powerpc                      ep88xc_defconfig
+sh                           se7721_defconfig
+powerpc                  storcenter_defconfig
+sh                               alldefconfig
+arm                       omap2plus_defconfig
+powerpc                         ps3_defconfig
+arm                           sama5_defconfig
+arm                            qcom_defconfig
+nios2                            allyesconfig
+sh                     magicpanelr2_defconfig
+mips                           jazz_defconfig
+m68k                            q40_defconfig
+ia64                         bigsur_defconfig
+powerpc                  iss476-smp_defconfig
+mips                        vocore2_defconfig
+arc                        vdk_hs38_defconfig
+mips                         bigsur_defconfig
+arm                            zeus_defconfig
+m68k                          hp300_defconfig
+arm                        realview_defconfig
+arc                          axs103_defconfig
+alpha                               defconfig
+mips                     loongson1b_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+m68k                        m5272c3_defconfig
+m68k                             alldefconfig
+arm                  randconfig-c002-20220905
+x86_64               randconfig-c001-20220905
+mips                      loongson3_defconfig
+arm                           h3600_defconfig
+sh                        sh7757lcr_defconfig
+arm                            hisi_defconfig
+sh                          r7780mp_defconfig
+openrisc                 simple_smp_defconfig
+i386                          debian-10.3-kvm
+i386                        debian-10.3-kunit
+i386                         debian-10.3-func
+sh                             sh03_defconfig
+powerpc                      pcm030_defconfig
+riscv                               defconfig
+powerpc                     tqm8541_defconfig
+arm                           corgi_defconfig
+
+clang tested configs:
+i386                 randconfig-a012-20220905
+i386                 randconfig-a011-20220905
+s390                 randconfig-r044-20220905
+x86_64               randconfig-a012-20220905
+x86_64               randconfig-a011-20220905
+x86_64               randconfig-a016-20220905
+riscv                randconfig-r042-20220905
+hexagon              randconfig-r041-20220905
+x86_64               randconfig-a015-20220905
+hexagon              randconfig-r045-20220905
+i386                 randconfig-a016-20220905
+x86_64               randconfig-a014-20220905
+x86_64               randconfig-a013-20220905
+arm                  colibri_pxa270_defconfig
+powerpc                    socrates_defconfig
+i386                 randconfig-a014-20220905
+i386                 randconfig-a013-20220905
+powerpc                     ksi8560_defconfig
+i386                 randconfig-a015-20220905
+powerpc                     akebono_defconfig
+powerpc                      ppc64e_defconfig
+arm                     davinci_all_defconfig
+arm                           sama7_defconfig
+powerpc                       ebony_defconfig
+powerpc                      walnut_defconfig
+powerpc                 mpc8315_rdb_defconfig
+powerpc                    mvme5100_defconfig
+arm                        magician_defconfig
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
