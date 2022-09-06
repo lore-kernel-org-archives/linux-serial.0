@@ -2,178 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC1FC38145
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 19:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2FCC38145
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 20:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiIFTkA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 15:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        id S230230AbiIFUN3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 16:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiIFTj7 (ORCPT
+        with ESMTP id S230459AbiIFUNB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 15:39:59 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249B821E35
-        for <linux-serial@vger.kernel.org>; Tue,  6 Sep 2022 12:39:50 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id m17-20020a7bce11000000b003a5bedec07bso10276409wmc.0
-        for <linux-serial@vger.kernel.org>; Tue, 06 Sep 2022 12:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date;
-        bh=Q7k34QMFna+VMCWcVTBpDYwMMQqIocaQ24VXbz0U53E=;
-        b=fSlBCXUTu5f+ysIYWkhIOcXEh0jK1dX6We3GoYUzQZD/pi1UP7PLGgh3ddRR5nF4bd
-         IXrbHJCXywJEJD1/6lFMXsX2r6MtDTGZWi+ivQLGsdFh0rfWi0HwvRiTFhb2CKJArtDF
-         0cOn3TBXU4djET4/KpQEUGdEZGhaaUKc7Vuxs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Q7k34QMFna+VMCWcVTBpDYwMMQqIocaQ24VXbz0U53E=;
-        b=ZKwnFJ/KAx3Q1R5/ETaviCz5Sxnw7xKfi8vA4Iiap5s0dxazbMPQ1pIdfA7HJSZ0RU
-         A8YV8hU3hC2i8B8ugx2pGoDN/dqoBEzgAE/kv3hTM1XAdqbzusb+ORPn3TVZn/Tl931z
-         9zy23sD39fR7CKpQkUM3ttC7BiUOz6WUuYITq8si3HDkCFVjaXLhmunaVipCfkYqF/SZ
-         GuuFgcUquJVEh6apHuMTRMyHNLWmEvu3cuxKF9eASFzrhc3vJZBhbPyFIaunmp0W5BwY
-         62VRRrgPx7pU97jv6sh6DmunZxThTVhFTLlCdb0h1Ww/n5m/S+1nBqQF1Ygpid7Li2Ii
-         OcZw==
-X-Gm-Message-State: ACgBeo3rKWZpd+RtzynWzqXZiO5rdhm7q1HGu3u1flaXiaWtqPDHYqci
-        qyEwu8AeVXaOqfcBOw1NkNFbtA==
-X-Google-Smtp-Source: AA6agR7dO/5mx+p7Bq5UKEq1+BC5n76RbAm/1S4e5aby/E5HZfLdP8Mmz+/OpcL0OycEbj++i728uQ==
-X-Received: by 2002:a05:600c:1554:b0:3a6:23d7:1669 with SMTP id f20-20020a05600c155400b003a623d71669mr14922175wmg.70.1662493188711;
-        Tue, 06 Sep 2022 12:39:48 -0700 (PDT)
-Received: from phenom.ffwll.local (212-51-149-33.fiber7.init7.net. [212.51.149.33])
-        by smtp.gmail.com with ESMTPSA id e27-20020adf9bdb000000b0021f0ff1bc6csm8083000wrc.41.2022.09.06.12.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 12:39:48 -0700 (PDT)
-Date:   Tue, 6 Sep 2022 21:39:45 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
- and move to fbdev subsystem
-Message-ID: <YxeiAbw0OLb7OP7V@phenom.ffwll.local>
-Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Rob Herring <robh@kernel.org>
-References: <20220728142824.3836-1-markuss.broks@gmail.com>
- <20220728142824.3836-3-markuss.broks@gmail.com>
- <YuKfnAjB4gV0ki4A@kroah.com>
- <30ce6f21-0a91-81cb-8b03-5acff17c59ee@gmail.com>
- <YuKkxb7u3piHytJ8@kroah.com>
- <27b40940-b8a7-2755-1ef5-e97d6b35dd2a@gmail.com>
- <Yu9hWu8IseJlpCUK@kroah.com>
+        Tue, 6 Sep 2022 16:13:01 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AE4BFE91;
+        Tue,  6 Sep 2022 13:08:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662494901; x=1694030901;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BtSUgyZI0HU1Ciu5kPkV1iRG3MhKpjlp45UBeg7Ubto=;
+  b=UN4MlCwZaX5iWbehPmfGxDy41jQgVUUqunDFgJVf1dOOCLsE+v4gmBLK
+   YpyAh5J/VygCCLmYquPpNexopvjclbWukC1OSxNG4aYOhwlbQpu5O/+29
+   6sdcoJHzaWTpVtrYhztXHpG3ad9Fc1eEjjFF15kcKuFuXESVwVDlXxr3l
+   n7NvZM0fhqN7+CkQoJpUJiOVXOI/glY5MJ+ExDpetZh17Cn+LdpepqVbl
+   FShXwawUB/zCTwrahA7vv1iu33ty3ykxBXxE4X/Or0RS12kkZD0ajF5YS
+   rrrianKO3YmVAPWMS3AuqD48VZWaA3L0/69+T3f7+wNWD/yLHpZvtJy2Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="358409679"
+X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
+   d="scan'208";a="358409679"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 13:07:27 -0700
+X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
+   d="scan'208";a="614221316"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 13:07:21 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oVeqr-009MCy-3D;
+        Tue, 06 Sep 2022 23:07:18 +0300
+Date:   Tue, 6 Sep 2022 23:07:17 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de,
+        Basheer Ahmed Muddebihal 
+        <basheer.ahmed.muddebihal@linux.intel.com>
+Subject: Re: [PATCH v1 2/5] fpga: dfl: Move the DFH definitions
+Message-ID: <YxeoddLVHki/WDUu@smile.fi.intel.com>
+References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+ <20220906190426.3139760-3-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yu9hWu8IseJlpCUK@kroah.com>
-X-Operating-System: Linux phenom 5.18.0-4-amd64 
+In-Reply-To: <20220906190426.3139760-3-matthew.gerlach@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Aug 07, 2022 at 08:53:14AM +0200, Greg Kroah-Hartman wrote:
-> On Sat, Aug 06, 2022 at 07:26:07PM +0300, Markuss Broks wrote:
-> > Hi Greg,
-> > 
-> > On 7/28/22 18:01, Greg Kroah-Hartman wrote:
-> > > On Thu, Jul 28, 2022 at 05:52:04PM +0300, Markuss Broks wrote:
-> > > > Hi Greg,
-> > > > 
-> > > > On 7/28/22 17:39, Greg Kroah-Hartman wrote:
-> > > > > On Thu, Jul 28, 2022 at 05:28:19PM +0300, Markuss Broks wrote:
-> > > > > > Add early console support for generic linear framebuffer devices.
-> > > > > > This driver supports probing from cmdline early parameters
-> > > > > > or from the device-tree using information in simple-framebuffer node.
-> > > > > > The EFI functionality should be retained in whole.
-> > > > > > The driver was disabled on ARM because of a bug in early_ioremap
-> > > > > > implementation on ARM.
-> > > > > > 
-> > > > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-> > > > > > ---
-> > > > > >    .../admin-guide/kernel-parameters.txt         |  12 +-
-> > > > > >    MAINTAINERS                                   |   5 +
-> > > > > >    drivers/firmware/efi/Kconfig                  |   6 +-
-> > > > > >    drivers/firmware/efi/Makefile                 |   1 -
-> > > > > >    drivers/firmware/efi/earlycon.c               | 246 --------------
-> > > > > >    drivers/video/fbdev/Kconfig                   |  11 +
-> > > > > >    drivers/video/fbdev/Makefile                  |   1 +
-> > > > > >    drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
-> > > > > >    8 files changed, 327 insertions(+), 256 deletions(-)
-> > > > > >    delete mode 100644 drivers/firmware/efi/earlycon.c
-> > > > > >    create mode 100644 drivers/video/fbdev/earlycon.c
-> > > > > 
-> > > > > That should be a rename, not a delete/create, right?
-> > > > 
-> > > > Should this change be split into two separate commits,
-> > > > one for moving the file and the second for making changes?
-> > > 
-> > > Git will show a rename and modification properly, if you use -M to git
-> > > format-patch, so it should be fine.
-> > 
-> > It appears that there are so many changes Git would refuse to make it a
-> > "move" no matter what I do. What should be done here: should it be two
-> > separate commits for move/change or should it just be kept as delete/create?
+On Tue, Sep 06, 2022 at 12:04:23PM -0700, matthew.gerlach@linux.intel.com wrote:
+> From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
 > 
-> One commit to move the file, and then add your changes on top of it
-> might be the easiest to review, right?
+> Moving the DFH register offset and register definitions from
+> drivers/fpga/dfl.h to include/linux/dfl.h.  These definitions
 
-+1
+Single space?
 
-I think this should be a least
-- commit to move the file, as unchanged as possible
-- commit to auto-select the right mapping mode (or maybe that's only in
-  v2)
-- actual change to add the simplefb support with a clearly readable diff
+> need to be accessed by dfl drivers that are outside of
+> drivers/fpga.
 
-But also video/console is for Greg to maintain, I'm trying hard to not go
-even more stupid :-)
--Daniel
+...
+
+> +#define DFH			0x0
+> +#define GUID_L			0x8
+> +#define GUID_H			0x10
+> +#define NEXT_AFU		0x18
+
+While at it, you may make them same width, like "0x08".
+
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+With Best Regards,
+Andy Shevchenko
+
+
