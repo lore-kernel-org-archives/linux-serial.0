@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E749C6FA83
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 14:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B292ECAAD5
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 14:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242068AbiIFOjy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 10:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
+        id S232640AbiIFOjz (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 10:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239754AbiIFOi0 (ORCPT
+        with ESMTP id S242301AbiIFOjD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 10:38:26 -0400
+        Tue, 6 Sep 2022 10:39:03 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0D49A6A8;
-        Tue,  6 Sep 2022 07:00:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C64A9A95D;
+        Tue,  6 Sep 2022 07:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662472848; x=1694008848;
+  t=1662472866; x=1694008866;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=X/ar3dqdTBAXl4yVl+JbHybkXPhhp+6FzbNlV23f2H0=;
-  b=TumRLoQuuJJGOSgu5XUdHvbxCU81El62UYukzwZ2RD3Y0VARXe7cy5au
-   mXzwgzoFaOq2PHoHcq1PlTl/d8WMNx5kSU63gfn3ivP+jMw32GlKf723i
-   9tRE9y0YUTNRwA5ORFUzLOEaFKQxw9NnwHmcFvPr+ObHC834rwh8GKeNT
-   pB+rj8yr5Xmck3lgTETTVLRduny4QbdBytBtdwd4nbQ/nP2ALsu2J0WQT
-   SU7Mp3IxeexXEcK4zV9UTW4j4J5sbyQD6EFyrQgi9Xy/OXvsXhdyAqDNj
-   LFkit6NuAab6TWe5xitAPo+PU6eoZ5LBYabT/1Ht26WsjcnIm9YaBXLG6
-   g==;
+  bh=0iBvNvc6oWFi2GwjYfyBen8v+JZc1cmnAG1OVejo090=;
+  b=K3i+MMVc8YRojr/yv9RWxH/1vtnnZx7zQxf5eq6GC13ho3RGPDK3iokr
+   wIZ9FbzfNwR3XKZMvAuXPZRuH2L1Ymcw6ygxiKARUU3uusDbFwWZ7qAgf
+   MNMf7mgtURagmb/WEyMZzic0fH5/nGBAUR3cGCW9+u9fpg/VukNePGcXb
+   wf2VPHeC9eXsJ6p/OKF4O15JTIgJYarpQ7YUn7JjnnFAgxgJVj6fuqKYZ
+   jS7wA3aDZgWbzvybzTZD7gvay8zZz5FjOuDfD/5hghmesrV/wrEREzRAu
+   CuDZ2YrBhYnnKx0h7naGbgSiNQ3Hv9X0sWhUrVVIh7dgQgHH43Ua21735
+   w==;
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="175830153"
+   d="scan'208";a="175830176"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 06:57:30 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 06:57:33 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Sep 2022 06:57:21 -0700
+ 15.1.2507.12; Tue, 6 Sep 2022 06:57:31 -0700
 Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 6 Sep 2022 06:57:16 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 6 Sep 2022 06:57:26 -0700
 From:   Sergiu Moga <sergiu.moga@microchip.com>
 To:     <lee@kernel.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
@@ -53,9 +53,9 @@ CC:     <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
         <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v2 09/13] tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode Register
-Date:   Tue, 6 Sep 2022 16:55:08 +0300
-Message-ID: <20220906135511.144725-10-sergiu.moga@microchip.com>
+Subject: [PATCH v2 11/13] clk: at91: sama5d2: Add Generic Clocks for UART/USART
+Date:   Tue, 6 Sep 2022 16:55:10 +0300
+Message-ID: <20220906135511.144725-12-sergiu.moga@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220906135511.144725-1-sergiu.moga@microchip.com>
 References: <20220906135511.144725-1-sergiu.moga@microchip.com>
@@ -66,36 +66,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add definitions for the Baud Rate Source Clock bitmask of the
-Mode Register of UART IP's and its bitfields.
+Add the generic clocks for UART/USART in the sama5d2 driver to allow them
+to be registered in the Common Clock Framework.
 
 Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
 
 
 
 v1 -> v2:
-- Nothing, this patch was not here before
+- Added R-b tag
 
 
 
- drivers/tty/serial/atmel_serial.h | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/atmel_serial.h b/drivers/tty/serial/atmel_serial.h
-index 70d0611e56fd..ed64035ba6c3 100644
---- a/drivers/tty/serial/atmel_serial.h
-+++ b/drivers/tty/serial/atmel_serial.h
-@@ -68,6 +68,9 @@
- #define		ATMEL_US_NBSTOP_1		(0 << 12)
- #define		ATMEL_US_NBSTOP_1_5		(1 << 12)
- #define		ATMEL_US_NBSTOP_2		(2 << 12)
-+#define	ATMEL_UA_BRSRCCK	GENMASK(13, 12)	/* Clock Selection for UART */
-+#define		ATMEL_UA_BRSRCCK_PERIPH_CLK	(0 << 12)
-+#define		ATMEL_UA_BRSRCCK_GCLK		(1 << 12)
- #define	ATMEL_US_CHMODE		GENMASK(15, 14)	/* Channel Mode */
- #define		ATMEL_US_CHMODE_NORMAL		(0 << 14)
- #define		ATMEL_US_CHMODE_ECHO		(1 << 14)
+ drivers/clk/at91/sama5d2.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/clk/at91/sama5d2.c b/drivers/clk/at91/sama5d2.c
+index cfd0f5e23b99..84156dc52bff 100644
+--- a/drivers/clk/at91/sama5d2.c
++++ b/drivers/clk/at91/sama5d2.c
+@@ -120,6 +120,16 @@ static const struct {
+ 	struct clk_range r;
+ 	int chg_pid;
+ } sama5d2_gck[] = {
++	{ .n = "flx0_gclk",   .id = 19, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "flx1_gclk",   .id = 20, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "flx2_gclk",   .id = 21, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "flx3_gclk",   .id = 22, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "flx4_gclk",   .id = 23, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "uart0_gclk",  .id = 24, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "uart1_gclk",  .id = 25, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "uart2_gclk",  .id = 26, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "uart3_gclk",  .id = 27, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
++	{ .n = "uart4_gclk",  .id = 28, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
+ 	{ .n = "sdmmc0_gclk", .id = 31, .chg_pid = INT_MIN, },
+ 	{ .n = "sdmmc1_gclk", .id = 32, .chg_pid = INT_MIN, },
+ 	{ .n = "tcb0_gclk",   .id = 35, .chg_pid = INT_MIN, .r = { .min = 0, .max = 83000000 }, },
 -- 
 2.25.1
 
