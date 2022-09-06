@@ -2,102 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D878FECAAD5
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 10:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E47FECAAD5
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 10:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbiIFKX2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 06:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
+        id S239450AbiIFKuO (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 06:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239422AbiIFKWt (ORCPT
+        with ESMTP id S239901AbiIFKtf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 06:22:49 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9777A759;
-        Tue,  6 Sep 2022 03:22:02 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id c11so10478721wrp.11;
-        Tue, 06 Sep 2022 03:22:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=FO37cN0NhbSvcmbUWhzIYEmiT47YcrB62BYarlZD1xI=;
-        b=ZpNatYnfQ8sud2FmqEp8aR06XBWCCNFtvGJjH2zacgcwMK6wmqZk1t0PYu7tX/iq8Y
-         OiPSAeU3WXkfWxvIEbzpDJMyAED+y+ek66BEDWPd0+te189LCmJk3PKZUC8GqiU5XKRD
-         nu5CkM1mJkFbK/9tkfp75Zpmb3awZ2R/7hd7z4OyWbcQwc3J2STWj6uaE0esTWvssKKm
-         fpUK6YKD1kxBr/7wRfa+1swYGSdi7G0QCvBKrdi/lFYiVQBrNXCbyivtYKCKVrj2gEdJ
-         /9j8TaHjEvfijJP+Or4+QCfwlN/JoWoavyna4gFiTEFOaf0YIcZ2bV0CBLCXJAo1nLE9
-         ndGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=FO37cN0NhbSvcmbUWhzIYEmiT47YcrB62BYarlZD1xI=;
-        b=XBLklwvdMMGXB2+WHondK2UBUTP+qYuLKRXbo3aomYIMWtxArCVwjGg5sxqaSUg/bf
-         +TmX5AeRpqp29IipgikjLhOCXHOmyiIYVX7VSVplNyxviebLmt3GfcWP883KWXmcMH6f
-         HGW9ZRKssays7zIgjcuB5fFhL2qUSs6N+gXfcOTeDKIrlTw2yz5ha04iEoIiK76CCBcx
-         jxpeTYq5vMW6TX+BmtIBzdvcefM0/r42zLwmo1jB08qe7AtFCRaOtqWzjDU5cZWh8s9u
-         wTkefqrbgazSmQfwpcympFMihyBtHmn3M1bAAZOUfoewdMTKNW1ZxFG4Md+AVf97gxdF
-         x1+g==
-X-Gm-Message-State: ACgBeo1kQAdJNvhS4a5m1oWJBPEqryKNmWaSQZ7Sda1Gw7/I7SESmSWq
-        f6U4LzwE+pz5uZROCsaC+yE=
-X-Google-Smtp-Source: AA6agR78j7MRQwJPeo/IRiIhLjT4Ww1k4jN5nY5HzNbZeaeP26i4RxdXPB87mlAqe/Cr5CB26q3tmA==
-X-Received: by 2002:a05:6000:144f:b0:225:6d79:b44f with SMTP id v15-20020a056000144f00b002256d79b44fmr28650138wrx.190.1662459714478;
-        Tue, 06 Sep 2022 03:21:54 -0700 (PDT)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id h2-20020a5d4302000000b0021e51c039c5sm11922851wrq.80.2022.09.06.03.21.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 03:21:53 -0700 (PDT)
-Message-ID: <c7d0dc8a-f12b-d586-c7ce-10e329fdac2f@gmail.com>
-Date:   Tue, 6 Sep 2022 12:21:53 +0200
+        Tue, 6 Sep 2022 06:49:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E23264CC;
+        Tue,  6 Sep 2022 03:48:13 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D8C1333D51;
+        Tue,  6 Sep 2022 10:48:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1662461291; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wXg40FtDTQekKCv07crrElZ3bycY17ctga5/37ZAiuE=;
+        b=zsJoTTROoMn7ToJb08w/FhmULyJS6lXrjQ2hePviemxvzXYrjnhRpd8517I+WWSIXYE85C
+        JXVUMZbKmt0AbgguQ9DkpfqUxAThn2AuR285rz2DJkoxCZCH/BBd98buMOQZxY+uEKoBUF
+        a0c4lvrjPBT5R30q+fwiXLPTdNUMp4A=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1662461291;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wXg40FtDTQekKCv07crrElZ3bycY17ctga5/37ZAiuE=;
+        b=/oMrtaxMJfXLXWF5nVTzTlHygLO2oVpeeG6F66smS4A1HlLVqKRSHflMVmGKaQ170vMvrZ
+        eC5hXbzNXvcs5qDg==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A11862C142;
+        Tue,  6 Sep 2022 10:48:11 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 1/4] tty: serial: move and cleanup vt8500_tx_empty()
+Date:   Tue,  6 Sep 2022 12:48:02 +0200
+Message-Id: <20220906104805.23211-2-jslaby@suse.cz>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220906104805.23211-1-jslaby@suse.cz>
+References: <20220906104805.23211-1-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH] tty: serial: atmel: fix spelling typo in comment
-Content-Language: fr
-To:     Jiangshan Yi <13667453960@163.com>, gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Jiangshan Yi <yijiangshan@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>
-References: <20220906063957.2951323-1-13667453960@163.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20220906063957.2951323-1-13667453960@163.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 06/09/2022 à 08:39, Jiangshan Yi a écrit :
-> From: Jiangshan Yi <yijiangshan@kylinos.cn>
-> 
-> Fix spelling typo in comment.
-> 
-> Reported-by: k2ci <kernel-bot@kylinos.cn>
-> Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Make vt8500_tx_empty() more readable by introducing a new local variable
+and move the function before handle_tx(). That way we can reuse it in
+there too.
 
+Cc: <linux-arm-kernel@lists.infradead.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
 
-> ---
->  drivers/tty/serial/atmel_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 7450d3853031..7f8af2ea3fa5 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -40,7 +40,7 @@
->  /* Revisit: We should calculate this based on the actual port settings */
->  #define PDC_RX_TIMEOUT		(3 * 10)		/* 3 bytes */
->  
-> -/* The minium number of data FIFOs should be able to contain */
-> +/* The minimum number of data FIFOs should be able to contain */
->  #define ATMEL_MIN_FIFO_SIZE	8
->  /*
->   * These two offsets are substracted from the RX FIFO size to define the RTS
+Notes:
+    [v3] this is new in v3 -- extracted as a separate change from later
+         patches
+
+ drivers/tty/serial/vt8500_serial.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
+index 6f08136ce78a..9e2c745b4535 100644
+--- a/drivers/tty/serial/vt8500_serial.c
++++ b/drivers/tty/serial/vt8500_serial.c
+@@ -187,6 +187,13 @@ static void handle_rx(struct uart_port *port)
+ 	tty_flip_buffer_push(tport);
+ }
+ 
++static unsigned int vt8500_tx_empty(struct uart_port *port)
++{
++	unsigned int idx = vt8500_read(port, VT8500_URFIDX) & 0x1f;
++
++	return idx < 16 ? TIOCSER_TEMT : 0;
++}
++
+ static void handle_tx(struct uart_port *port)
+ {
+ 	struct circ_buf *xmit = &port->state->xmit;
+@@ -201,7 +208,7 @@ static void handle_tx(struct uart_port *port)
+ 		return;
+ 	}
+ 
+-	while ((vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16) {
++	while (vt8500_tx_empty(port)) {
+ 		if (uart_circ_empty(xmit))
+ 			break;
+ 
+@@ -260,12 +267,6 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static unsigned int vt8500_tx_empty(struct uart_port *port)
+-{
+-	return (vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16 ?
+-						TIOCSER_TEMT : 0;
+-}
+-
+ static unsigned int vt8500_get_mctrl(struct uart_port *port)
+ {
+ 	unsigned int usr;
+-- 
+2.37.3
 
