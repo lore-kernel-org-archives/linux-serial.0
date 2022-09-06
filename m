@@ -2,135 +2,178 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E0F7C6FA86
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 19:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC1FC38145
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 19:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbiIFTEg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 15:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        id S229903AbiIFTkA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 15:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbiIFTEa (ORCPT
+        with ESMTP id S229868AbiIFTj7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 15:04:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663516159;
-        Tue,  6 Sep 2022 12:04:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662491065; x=1694027065;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CqpjE8AeYqVUESQDZItbLGhRNWtI1PM4eAHT7QbqAhA=;
-  b=R2nUuZmmB13/hO6Pl61gOht7+EJIbOgiLY9y8CmkJIo22NjocgIDVCh+
-   fIgcaaCyAbOAmFEDCgJrcYWIoe2IWe6cpWWXB2h5x4kNxyJn0Xs9OaafY
-   D1M3mcM2sujJ5YxhfNL7re8290WhGrltsK8EcFKhb47zfY9DDZ6Kw1mum
-   ichDrXWtFEet+0zGjGdMGrFDb7zP+5+6oOdTI43iNy0Z11ofif4PkwHjl
-   4ef82iYoHlePodCQuWiryT+E5Ow3h9/+E+kE0yKaf5VwyKJCJRWeWUf7r
-   d/yzcqUhOy/APl474wT9FrNkrl1rDnmrTnRz858MjBH2NNTdM4Wm/D46f
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="283677338"
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="283677338"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:04:18 -0700
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="789782548"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:04:18 -0700
-From:   matthew.gerlach@linux.intel.com
-To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
-Cc:     Basheer Ahmed Muddebihal 
-        <basheer.ahmed.muddebihal@linux.intel.com>,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: [PATCH v1 3/5] fpga: dfl: Add DFHv1 Register Definitions
-Date:   Tue,  6 Sep 2022 12:04:24 -0700
-Message-Id: <20220906190426.3139760-4-matthew.gerlach@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
-References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+        Tue, 6 Sep 2022 15:39:59 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249B821E35
+        for <linux-serial@vger.kernel.org>; Tue,  6 Sep 2022 12:39:50 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id m17-20020a7bce11000000b003a5bedec07bso10276409wmc.0
+        for <linux-serial@vger.kernel.org>; Tue, 06 Sep 2022 12:39:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date;
+        bh=Q7k34QMFna+VMCWcVTBpDYwMMQqIocaQ24VXbz0U53E=;
+        b=fSlBCXUTu5f+ysIYWkhIOcXEh0jK1dX6We3GoYUzQZD/pi1UP7PLGgh3ddRR5nF4bd
+         IXrbHJCXywJEJD1/6lFMXsX2r6MtDTGZWi+ivQLGsdFh0rfWi0HwvRiTFhb2CKJArtDF
+         0cOn3TBXU4djET4/KpQEUGdEZGhaaUKc7Vuxs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Q7k34QMFna+VMCWcVTBpDYwMMQqIocaQ24VXbz0U53E=;
+        b=ZKwnFJ/KAx3Q1R5/ETaviCz5Sxnw7xKfi8vA4Iiap5s0dxazbMPQ1pIdfA7HJSZ0RU
+         A8YV8hU3hC2i8B8ugx2pGoDN/dqoBEzgAE/kv3hTM1XAdqbzusb+ORPn3TVZn/Tl931z
+         9zy23sD39fR7CKpQkUM3ttC7BiUOz6WUuYITq8si3HDkCFVjaXLhmunaVipCfkYqF/SZ
+         GuuFgcUquJVEh6apHuMTRMyHNLWmEvu3cuxKF9eASFzrhc3vJZBhbPyFIaunmp0W5BwY
+         62VRRrgPx7pU97jv6sh6DmunZxThTVhFTLlCdb0h1Ww/n5m/S+1nBqQF1Ygpid7Li2Ii
+         OcZw==
+X-Gm-Message-State: ACgBeo3rKWZpd+RtzynWzqXZiO5rdhm7q1HGu3u1flaXiaWtqPDHYqci
+        qyEwu8AeVXaOqfcBOw1NkNFbtA==
+X-Google-Smtp-Source: AA6agR7dO/5mx+p7Bq5UKEq1+BC5n76RbAm/1S4e5aby/E5HZfLdP8Mmz+/OpcL0OycEbj++i728uQ==
+X-Received: by 2002:a05:600c:1554:b0:3a6:23d7:1669 with SMTP id f20-20020a05600c155400b003a623d71669mr14922175wmg.70.1662493188711;
+        Tue, 06 Sep 2022 12:39:48 -0700 (PDT)
+Received: from phenom.ffwll.local (212-51-149-33.fiber7.init7.net. [212.51.149.33])
+        by smtp.gmail.com with ESMTPSA id e27-20020adf9bdb000000b0021f0ff1bc6csm8083000wrc.41.2022.09.06.12.39.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Sep 2022 12:39:48 -0700 (PDT)
+Date:   Tue, 6 Sep 2022 21:39:45 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
+ and move to fbdev subsystem
+Message-ID: <YxeiAbw0OLb7OP7V@phenom.ffwll.local>
+Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Rob Herring <robh@kernel.org>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-3-markuss.broks@gmail.com>
+ <YuKfnAjB4gV0ki4A@kroah.com>
+ <30ce6f21-0a91-81cb-8b03-5acff17c59ee@gmail.com>
+ <YuKkxb7u3piHytJ8@kroah.com>
+ <27b40940-b8a7-2755-1ef5-e97d6b35dd2a@gmail.com>
+ <Yu9hWu8IseJlpCUK@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yu9hWu8IseJlpCUK@kroah.com>
+X-Operating-System: Linux phenom 5.18.0-4-amd64 
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
+On Sun, Aug 07, 2022 at 08:53:14AM +0200, Greg Kroah-Hartman wrote:
+> On Sat, Aug 06, 2022 at 07:26:07PM +0300, Markuss Broks wrote:
+> > Hi Greg,
+> > 
+> > On 7/28/22 18:01, Greg Kroah-Hartman wrote:
+> > > On Thu, Jul 28, 2022 at 05:52:04PM +0300, Markuss Broks wrote:
+> > > > Hi Greg,
+> > > > 
+> > > > On 7/28/22 17:39, Greg Kroah-Hartman wrote:
+> > > > > On Thu, Jul 28, 2022 at 05:28:19PM +0300, Markuss Broks wrote:
+> > > > > > Add early console support for generic linear framebuffer devices.
+> > > > > > This driver supports probing from cmdline early parameters
+> > > > > > or from the device-tree using information in simple-framebuffer node.
+> > > > > > The EFI functionality should be retained in whole.
+> > > > > > The driver was disabled on ARM because of a bug in early_ioremap
+> > > > > > implementation on ARM.
+> > > > > > 
+> > > > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> > > > > > ---
+> > > > > >    .../admin-guide/kernel-parameters.txt         |  12 +-
+> > > > > >    MAINTAINERS                                   |   5 +
+> > > > > >    drivers/firmware/efi/Kconfig                  |   6 +-
+> > > > > >    drivers/firmware/efi/Makefile                 |   1 -
+> > > > > >    drivers/firmware/efi/earlycon.c               | 246 --------------
+> > > > > >    drivers/video/fbdev/Kconfig                   |  11 +
+> > > > > >    drivers/video/fbdev/Makefile                  |   1 +
+> > > > > >    drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
+> > > > > >    8 files changed, 327 insertions(+), 256 deletions(-)
+> > > > > >    delete mode 100644 drivers/firmware/efi/earlycon.c
+> > > > > >    create mode 100644 drivers/video/fbdev/earlycon.c
+> > > > > 
+> > > > > That should be a rename, not a delete/create, right?
+> > > > 
+> > > > Should this change be split into two separate commits,
+> > > > one for moving the file and the second for making changes?
+> > > 
+> > > Git will show a rename and modification properly, if you use -M to git
+> > > format-patch, so it should be fine.
+> > 
+> > It appears that there are so many changes Git would refuse to make it a
+> > "move" no matter what I do. What should be done here: should it be two
+> > separate commits for move/change or should it just be kept as delete/create?
+> 
+> One commit to move the file, and then add your changes on top of it
+> might be the easiest to review, right?
 
-This patch adds the definitions for DFHv1 header and related register
-bitfields.
++1
 
-Signed-off-by: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
----
- include/linux/dfl.h | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+I think this should be a least
+- commit to move the file, as unchanged as possible
+- commit to auto-select the right mapping mode (or maybe that's only in
+  v2)
+- actual change to add the simplefb support with a clearly readable diff
 
-diff --git a/include/linux/dfl.h b/include/linux/dfl.h
-index b5accdcfa368..61bcf20c1bc8 100644
---- a/include/linux/dfl.h
-+++ b/include/linux/dfl.h
-@@ -23,6 +23,16 @@
- #define GUID_H			0x10
- #define NEXT_AFU		0x18
- 
-+/*
-+ * DFHv1 Register Offset definitons
-+ * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
-+ * as common header registers
-+ */
-+#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
-+#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
-+#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
-+#define DFHv1_PARAM_DATA	0x8   /* Offset of Param data from Param header */
-+
- #define DFH_SIZE		0x8
- 
- /* Device Feature Header Register Bitfield */
-@@ -30,8 +40,35 @@
- #define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
- #define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
- #define DFH_EOL			BIT_ULL(40)		/* End of list */
-+#define DFH_VERSION		GENMASK_ULL(59, 52)	/* DFH version */
- #define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
- 
-+/*
-+ *  CSR Rel Bit, 1'b0 = relative (offset from feature DFH start),
-+ * 1'b1 = absolute (ARM or other non-PCIe use)
-+ */
-+#define DFHv1_CSR_ADDR_REL	BIT_ULL(0)
-+
-+/*
-+ * CSR Header Register Bit Definitions
-+ */
-+#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)  /* 63:1 of CSR address */
-+
-+/*
-+ * CSR SIZE Goup Register Bit Definitions
-+ */
-+#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	/* Enumeration instantiated IP */
-+#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	/* Group Features/interfaces */
-+#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		/* Presence of Parameters */
-+#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	/* Size of CSR Block in bytes */
-+
-+/*
-+ * PARAM Header Register Bit Definitions
-+ */
-+#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0) /* Id of this Param  */
-+#define DFHv1_PARAM_HDR_VERSION		GENMASK_ULL(31, 16) /* Version Param */
-+#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 32) /* Offset of next Param */
-+
- /**
-  * enum dfl_id_type - define the DFL FIU types
-  */
+But also video/console is for Greg to maintain, I'm trying hard to not go
+even more stupid :-)
+-Daniel
 -- 
-2.25.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
