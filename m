@@ -2,131 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1440ECAAD5
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 17:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9F5C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 19:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233996AbiIFRH2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 13:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53078 "EHLO
+        id S229594AbiIFTEW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 15:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233777AbiIFRG4 (ORCPT
+        with ESMTP id S229684AbiIFTEV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 13:06:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0E4186F7;
-        Tue,  6 Sep 2022 09:54:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25ECE615D3;
-        Tue,  6 Sep 2022 16:54:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C67EC43148;
-        Tue,  6 Sep 2022 16:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662483279;
-        bh=dlrLPJ9VW2sLiclVTeLOaDTCcrNnK0V5SGX9NqEZ+bQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mSScNXV5eNPo8Q03hxNBF1E7GxbLAdR4dQrRxWkLjglRTK1xh+T/4rqOjmigwjTY8
-         gqSPY7pxM2Ggi0f2szfwrD3iVoWzDhGiGopM1Z0DZ7FgzkuBRRMu/ufwHNQr3lGO7j
-         /bkDMZKGzDzt/B1TAdERWfCMAbQS3UYGOsU/xKBZKEhubggqoxorkrPeHBQQKTlyPd
-         npaAXKqlrsRd5G9PKa1D94x4RQ6LtShUNfs0BPs3MrpeW0KfYSXtMfF21voGUHmoTV
-         bKiCT3FrX8wBWHqftjbcK61d54GS/r0D9M9Z3nC68WpMODqU0FdeTJ6FFOtAEjC9Ln
-         IDwSJC/VY+Big==
-Received: by mail-lf1-f53.google.com with SMTP id bq23so18315491lfb.7;
-        Tue, 06 Sep 2022 09:54:39 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2h9Bjy83Bq1Js+bL7jx7EklI+g3ln/wafF3nQTFGWnb+vMEse0
-        6DomiANrPTYqE2KRWiAj2OB5aIptzKDCQiXg4OM=
-X-Google-Smtp-Source: AA6agR4ZsAa0US91WfUU+IaEHtFS7q8sGZYyOWOHOoq1tpEGuakqhXudOy2kGnEsGzQpN8MaarQDnosu8Aj4ieKBKDQ=
-X-Received: by 2002:a05:6512:2294:b0:494:8dc5:10af with SMTP id
- f20-20020a056512229400b004948dc510afmr9295038lfu.426.1662483277282; Tue, 06
- Sep 2022 09:54:37 -0700 (PDT)
+        Tue, 6 Sep 2022 15:04:21 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24D88D3CB;
+        Tue,  6 Sep 2022 12:04:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662491059; x=1694027059;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=noMjuag55LUNaeVDHiaxN2eVuWfjztTAREa6cfbKFAM=;
+  b=k7d5Jtbs15+bIwYtJ4rnGw0s5CfFrT5nrfNKvpHE2Tres7WVewO/mXyu
+   jrBm7I2HrHgWyQVVoEfX8FuVOjWRRL0PvBFQMz2ayvXu58UDiIQipGFMr
+   tf9d1jpNYS9o6Bg5Pv1aoV09Y247NslK27uXqCYNRR/iEVwgqXVzbVvbS
+   FvryX1Y9tC7mfB7C2Ql2i//whXfifTr1vdpVAX3tuUMrM2VrEzzrDi2Dn
+   Q9UyzMkLCat1WsPPlJ/dh+W1Xec1cxf3DXyI+eolkPMTFXaacsSp8Gp2F
+   P9Dmi0121VHr+NlugoJWD+tKT8bL8s+MoCefzpzLXWgMF75+von7VNpnq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="283677333"
+X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
+   d="scan'208";a="283677333"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:04:18 -0700
+X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
+   d="scan'208";a="789782539"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 12:04:18 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Cc:     Matthew Gerlach <matthew.gerlach@intel.com>
+Subject: [PATCH v1 0/5] Enhance definition of DFH and use enhancements for uart driver
+Date:   Tue,  6 Sep 2022 12:04:21 -0700
+Message-Id: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220806163255.10404-1-markuss.broks@gmail.com>
-In-Reply-To: <20220806163255.10404-1-markuss.broks@gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 6 Sep 2022 18:54:26 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHWWciFcO-ub4U4MB1VDifD_=bxiTVaTcBjTvYXzVTkgQ@mail.gmail.com>
-Message-ID: <CAMj1kXHWWciFcO-ub4U4MB1VDifD_=bxiTVaTcBjTvYXzVTkgQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] Add generic framebuffer support to EFI earlycon driver
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 6 Aug 2022 at 18:34, Markuss Broks <markuss.broks@gmail.com> wrote:
->
-> Make the EFI earlycon driver be suitable for any linear framebuffers.
-> This should be helpful for early porting of boards with no other means of
-> output, like smartphones/tablets. There seems to be an issue with early_ioremap
-> function on ARM32, but I am unable to find the exact cause. It appears the mappings
-> returned by it are somehow incorrect, thus the driver is disabled on ARM. EFI early
-> console was disabled on IA64 previously because of missing early_memremap_prot,
-> and this is inherited to this driver.
->
-> This patch also changes behavior on EFI systems, by selecting the mapping type
-> based on if the framebuffer region intersects with system RAM. If it does, it's
-> common sense that it should be in RAM as a whole, and so the system RAM mapping is
-> used. It was tested to be working on my PC (Intel Z490 platform), as well as several
-> ARM64 boards (Samsung Galaxy S9 (Exynos), iPad Air 2, Xiaomi Mi Pad 4, ...).
->
-> Markuss Broks (2):
->   drivers: serial: earlycon: Pass device-tree node
->   efi: earlycon: Add support for generic framebuffers and move to fbdev
->     subsystem
->
->
-> v1 -> v2:
->
-> - a new patch correcting serial/earlycon.c argument name to "offset" instead
->   of "node"
-> - move IA64 exclusion from EFI earlycon Kconfig to earlycon driver Kconfig
->   (IA64 has no early_memremap_prot)
-> - move driver from fbdev to console subsystem
-> - select EFI earlycon by default
+From: Matthew Gerlach <matthew.gerlach@intel.com>
 
-Wasn't EFI earlycon already enabled by default?
+This patchset enhances the definition of the Device Feature Header (DFH) used by
+the Device Feature List (DFL) bus and then uses the new enhancements in a uart
+driver.
 
-> - fetch stride manually from device-tree, as on some devices it seems stride
->   doesn't match the horizontal resolution * bpp.
-> - use saner format (e.g. 1920x1080x32 instead of 1920,1080,32).
->
->  .../admin-guide/kernel-parameters.txt         |  12 +-
->  MAINTAINERS                                   |   5 +
->  drivers/firmware/efi/Kconfig                  |   6 +-
->  drivers/firmware/efi/Makefile                 |   1 -
->  drivers/firmware/efi/earlycon.c               | 246 --------------
->  drivers/tty/serial/earlycon.c                 |   3 +
->  drivers/video/fbdev/Kconfig                   |  11 +
->  drivers/video/fbdev/Makefile                  |   1 +
->  drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
->  include/linux/serial_core.h                   |   1 +
->  10 files changed, 331 insertions(+), 256 deletions(-)
->  delete mode 100644 drivers/firmware/efi/earlycon.c
->  create mode 100644 drivers/video/fbdev/earlycon.c
->
-> --
-> 2.37.0
->
+Patch 1 updates the DFL documentation to provide the motivation behind the 
+enhancements to the definition of the DFH.
+
+Patch 2 moves some of the DFH definitions to include/linux/dfl.h so that
+they can be accessed by drivers outside of drivers/fpga.
+
+Patch 3 adds the definitions for DFHv1.
+
+Patch 4 defines and uses a DFHv1 parameter to provide a generic mechanism for
+describing MSIX interrupts used by a particular feature instance.
+
+Patch 5 adds a DFL uart driver that makes use of the new features of DFHv1.
+
+Basheer Ahmed Muddebihal (2):
+  fpga: dfl: Move the DFH definitions
+  fpga: dfl: Add DFHv1 Register Definitions
+
+Matthew Gerlach (3):
+  Documentation: fpga: dfl: Add documentation for DFHv1
+  fpga: dfl: add generic support for MSIX interrupts
+  tty: serial: 8250: add DFL bus driver for Altera 16550.
+
+ Documentation/fpga/dfl.rst         |  24 ++++
+ drivers/fpga/dfl.c                 |  59 ++++++---
+ drivers/fpga/dfl.h                 |  22 +---
+ drivers/tty/serial/8250/8250_dfl.c | 188 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig    |   9 ++
+ drivers/tty/serial/8250/Makefile   |   1 +
+ include/linux/dfl.h                |  80 +++++++++++-
+ 7 files changed, 347 insertions(+), 36 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+
+-- 
+2.25.1
+
