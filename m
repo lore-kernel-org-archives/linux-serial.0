@@ -2,112 +2,91 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19897ECAAD5
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 14:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C77AECAAD5
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 15:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232391AbiIFOx0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 10:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        id S233899AbiIFPzB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 11:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233360AbiIFOw6 (ORCPT
+        with ESMTP id S234387AbiIFPyd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 10:52:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A7A95B4;
-        Tue,  6 Sep 2022 07:09:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662473372; x=1694009372;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qnRuIvqb2EIJBjRR/INNwmO5YT4t+bc7TsYz9wHYHEA=;
-  b=Jo21PHGXDG1tZiUjZ0tHAPOkaphsG2G3IRDEEAKvQxg+lgKWEhjCETAz
-   kW1TPPOMVVqUWHNL0pMBpwZDBMOCmIRchn8eqvVlwlh5ak2TfGkoDkJIX
-   ZS41t/SrfpY5gAO2BMUowgujnH2SyBljKxrJDwHbbFouNuCyjEQx0p2Am
-   x49hJwoGG9KFcLzasWHzNjovB5LTHH7pQbfxfnRpZHBJEMnJRK1z/yrcA
-   OrJ0106dwRPFR2TfXF4qdILzpZcafrdoUfE9aiQKZo/KTfkxPTmmWPMZN
-   X2n3UAoGEOHyTzio36lvN8ypxKWJw0ad3rzby19ojnToFSbIxgqV2fxXn
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="112380574"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 06:57:42 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Sep 2022 06:57:42 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 6 Sep 2022 06:57:37 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <lee@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <richard.genoud@gmail.com>, <radu_nicolae.pirea@upb.ro>,
-        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jirislaby@kernel.org>, <admin@hifiphile.com>,
-        <sergiu.moga@microchip.com>, <kavyasree.kotagiri@microchip.com>,
-        <tudor.ambarus@microchip.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v2 13/13] dt-bindings: serial: atmel,at91-usart: Add gclk as a possible USART clock
-Date:   Tue, 6 Sep 2022 16:55:12 +0300
-Message-ID: <20220906135511.144725-14-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220906135511.144725-1-sergiu.moga@microchip.com>
+        Tue, 6 Sep 2022 11:54:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C23E8B98E;
+        Tue,  6 Sep 2022 08:12:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6FB8B81919;
+        Tue,  6 Sep 2022 15:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1405CC433C1;
+        Tue,  6 Sep 2022 15:12:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662477155;
+        bh=bD0yKhphSmBVVLUyMPYKB5NUPKImxamaOv37wNGzfVM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R/X1/ApvsqezV4eN1BIndC2/MAwkQm3YupuJBYQmD8izTSnTp/lrI35aWbBr4zeVc
+         RrxtZze9J3pTr5iwZMJWvEqU/rnzOxj7jVk2RnBIEPpBmvqamYQx7zcu17ut67cWKi
+         dRkfKWk30sRB8xj2AMRr3lzlVMbw9RHW09kJ9OnBYyEv7uLfy5xocv6HsKALoGXySt
+         ejOOkisZ96Ucfu1HHjJyLbB2sFPZm+NZfhiDksAp2OHDMd0cdYkr/6ne1hIpcUHcF0
+         Oge3E055C3Eev1I0kGxKPo51kJb7A/FLEOfwa+U13HiT1y0+KWMg6nK0jsTahy6JDx
+         rK3LGPYULPHmw==
+Date:   Tue, 6 Sep 2022 16:12:27 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     lee@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        richard.genoud@gmail.com, radu_nicolae.pirea@upb.ro,
+        gregkh@linuxfoundation.org, mturquette@baylibre.com,
+        sboyd@kernel.org, jirislaby@kernel.org, admin@hifiphile.com,
+        kavyasree.kotagiri@microchip.com, tudor.ambarus@microchip.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
+Subject: Re: [PATCH v2 01/13] spi: dt-bindings: atmel,at91rm9200-spi: Add DMA
+ related properties
+Message-ID: <YxdjW2HXcneKvP3c@sirena.org.uk>
 References: <20220906135511.144725-1-sergiu.moga@microchip.com>
+ <20220906135511.144725-2-sergiu.moga@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="RiykofuyQSrEwF40"
+Content-Disposition: inline
+In-Reply-To: <20220906135511.144725-2-sergiu.moga@microchip.com>
+X-Cookie: divorce, n:
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The Devicetree nodes for FLEXCOM's USART can also have an alternative
-clock source for the baudrate generator (other than the peripheral
-clock), namely the Generick Clock. Thus make the binding aware of
-this potential clock that someone may place in the clock related
-properties of the USART node.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
+--RiykofuyQSrEwF40
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Tue, Sep 06, 2022 at 04:55:00PM +0300, Sergiu Moga wrote:
+> The DT nodes of the SPI IP's may contain DMA related properties so
+> make sure that the binding is able to properly validate those as
+> well by making it aware of these optional properties.
 
+Acked-by: Mark Brown <broonie@kernel.org>
 
-v1 -> v2:
-- Nothing, this patch was not here before
+though it looks like perhaps this could just go separately?
 
+--RiykofuyQSrEwF40
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
- .../devicetree/bindings/serial/atmel,at91-usart.yaml   | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMXY1oACgkQJNaLcl1U
+h9CFSwf/f2WJjlGGmV0h/sjORBcMhneYZgMVZLsU1og4qFz2YDAOtYmPZnu9DQ+0
+Kra8RSJuu24fqcKgfjibNu9WMF9rhWVJCCW4Y0loHGBWWUf5ZFOXTLB0zor5WZjg
+nUodeAOO6krDC1SL5lmly3FP9DCEuYQoJ2PxH3Rh/3Vrvb0PWNbdGV6gJ8+KitmB
+eFlcVGlxggLpFxM7AZrpTY7cNt8XBmP3jQfo76+14nGSX5UsRIvvBt3To3ml3yyd
+wHF17Rb401msATbqq2sIy0GtR2ouz4KB42jNKYz7IF45cu8V053xJNwFY4P/5Epj
+XqqBL2HP7BaE5e8g7rqEqHrVv+jdXQ==
+=GClE
+-----END PGP SIGNATURE-----
 
-diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-index 4d80006963c7..db595b498bad 100644
---- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-+++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-@@ -36,10 +36,16 @@ properties:
-     maxItems: 1
- 
-   clock-names:
--    const: usart
-+    minItems: 1
-+    items:
-+      - const: usart
-+      - const: gclk
- 
-   clocks:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: USART Peripheral Clock
-+      - description: USART Generic Clock
- 
-   dmas:
-     items:
--- 
-2.25.1
-
+--RiykofuyQSrEwF40--
