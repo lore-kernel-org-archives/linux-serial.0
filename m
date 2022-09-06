@@ -2,43 +2,43 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8BDC6FA86
-	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 14:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19897ECAAD5
+	for <linux-serial@archiver.kernel.org>; Tue,  6 Sep 2022 14:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242210AbiIFOxH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 6 Sep 2022 10:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
+        id S232391AbiIFOx0 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 6 Sep 2022 10:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238686AbiIFOwc (ORCPT
+        with ESMTP id S233360AbiIFOw6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 6 Sep 2022 10:52:32 -0400
+        Tue, 6 Sep 2022 10:52:58 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1E411822;
-        Tue,  6 Sep 2022 07:09:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A7A95B4;
+        Tue,  6 Sep 2022 07:09:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662473361; x=1694009361;
+  t=1662473372; x=1694009372;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dtDdScaB2Cqk9xup07KTtoOWp5VAV/gnXhULPXe5f+M=;
-  b=ro4LImfpw4Mb+xGndUTlrKYDK92oC8dk3uZ0TFML/vQGUH2nMwNVyqbp
-   UVwVIsrIhWye4FAGXxAYzRqITW1qU/3jHKmCG5GIYKebsQiZhPL66eoxF
-   3ADI6bK2nP1nIo59Hw/+5Et7j9rGMTJwOV2l9p7YxH2S7J+4lFn9e+jFC
-   PNkImLdl4rdZPkNNlH/i1eUrBRHQZiBYvA96HFcvk70Z7oF9UIebF/b8m
-   tM7OQXaPpG3HFWDnv1IlLvlv1YPF0/kfAcSYhwTjYcLHU+Ey34FhzIm4w
-   G5lbj4fmc7cHxgF1WMiEfF7H9L5oKOnghswWYu5eqFUiXixjneREHoh2H
-   w==;
+  bh=qnRuIvqb2EIJBjRR/INNwmO5YT4t+bc7TsYz9wHYHEA=;
+  b=Jo21PHGXDG1tZiUjZ0tHAPOkaphsG2G3IRDEEAKvQxg+lgKWEhjCETAz
+   kW1TPPOMVVqUWHNL0pMBpwZDBMOCmIRchn8eqvVlwlh5ak2TfGkoDkJIX
+   ZS41t/SrfpY5gAO2BMUowgujnH2SyBljKxrJDwHbbFouNuCyjEQx0p2Am
+   x49hJwoGG9KFcLzasWHzNjovB5LTHH7pQbfxfnRpZHBJEMnJRK1z/yrcA
+   OrJ0106dwRPFR2TfXF4qdILzpZcafrdoUfE9aiQKZo/KTfkxPTmmWPMZN
+   X2n3UAoGEOHyTzio36lvN8ypxKWJw0ad3rzby19ojnToFSbIxgqV2fxXn
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="112380495"
+   d="scan'208";a="112380574"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 06:57:10 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 06:57:42 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Sep 2022 06:57:05 -0700
+ 15.1.2507.12; Tue, 6 Sep 2022 06:57:42 -0700
 Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 6 Sep 2022 06:57:00 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 6 Sep 2022 06:57:37 -0700
 From:   Sergiu Moga <sergiu.moga@microchip.com>
 To:     <lee@kernel.org>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
@@ -53,9 +53,9 @@ CC:     <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
         <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v2 06/13] dt-bindings: serial: atmel,at91-usart: Add SAM9260 compatibles to SAM9x60
-Date:   Tue, 6 Sep 2022 16:55:05 +0300
-Message-ID: <20220906135511.144725-7-sergiu.moga@microchip.com>
+Subject: [PATCH v2 13/13] dt-bindings: serial: atmel,at91-usart: Add gclk as a possible USART clock
+Date:   Tue, 6 Sep 2022 16:55:12 +0300
+Message-ID: <20220906135511.144725-14-sergiu.moga@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220906135511.144725-1-sergiu.moga@microchip.com>
 References: <20220906135511.144725-1-sergiu.moga@microchip.com>
@@ -66,34 +66,48 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add the AT91SAM9260 serial compatibles to the list of SAM9X60 compatibles
-in order to highlight the incremental characteristics of the SAM9X60
-serial IP.
+The Devicetree nodes for FLEXCOM's USART can also have an alternative
+clock source for the baudrate generator (other than the peripheral
+clock), namely the Generick Clock. Thus make the binding aware of
+this potential clock that someone may place in the clock related
+properties of the USART node.
 
 Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
 ---
+
 
 
 v1 -> v2:
 - Nothing, this patch was not here before
 
 
- Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+
+ .../devicetree/bindings/serial/atmel,at91-usart.yaml   | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-index b25535b7a4d2..4d80006963c7 100644
+index 4d80006963c7..db595b498bad 100644
 --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
 +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-@@ -26,6 +26,8 @@ properties:
-       - items:
-           - const: microchip,sam9x60-dbgu
-           - const: microchip,sam9x60-usart
-+          - const: atmel,at91sam9260-dbgu
-+          - const: atmel,at91sam9260-usart
- 
-   reg:
+@@ -36,10 +36,16 @@ properties:
      maxItems: 1
+ 
+   clock-names:
+-    const: usart
++    minItems: 1
++    items:
++      - const: usart
++      - const: gclk
+ 
+   clocks:
+-    maxItems: 1
++    minItems: 1
++    items:
++      - description: USART Peripheral Clock
++      - description: USART Generic Clock
+ 
+   dmas:
+     items:
 -- 
 2.25.1
 
