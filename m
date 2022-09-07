@@ -2,186 +2,135 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3820AC54EE9
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Sep 2022 07:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 415B8C38145
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Sep 2022 09:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiIGHyX (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Sep 2022 03:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S230156AbiIGJGF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Sep 2022 05:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbiIGHyP (ORCPT
+        with ESMTP id S230233AbiIGJGE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Sep 2022 03:54:15 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79875A027A;
-        Wed,  7 Sep 2022 00:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662537252; x=1694073252;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=87YBbu1op5hhfWmNSVCk7I506JwHeRwdRvMLzUnbh78=;
-  b=RtmQ9uzWOUEEbfm1gN6Fp6xDu3pUCGx1SdCdMXGgGeZKuPnnO3AujdDN
-   f1hQGIZSJNAiiv2Oce7WYwIWB6aIvgD3Vqn/t2EuvPly5j15IIWYNQ3jK
-   gP3E4Y1GyHsKnBMWIr2Od1S/eC1VavHbudknqEHtfu/wXn204P/2o1zps
-   qYJHFY5xksqZYBaUhbf85v1lj+wU5kPjbRsIBAGwEjz7jUhiC9kgwmyN7
-   ffKtZTELGr4tNEWE0ifSiA77w41eAbYqEt8kNs5QNw4aKc37QbtuI365Z
-   jYDqHiVj2mQEF2unA2UsAB2Qmik/niRFc1POWAzqQdU7KhYk12oMP81Ai
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
-   d="scan'208";a="179483124"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Sep 2022 00:54:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 7 Sep 2022 00:54:10 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12 via Frontend Transport; Wed, 7 Sep 2022 00:54:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cejnwl6RAa85sA4NKRYaGoXCMSf4iXC362IHQ9SDdpmAoWkTSWXNlNrRmJL1a+BPCHa5njy1gqwp0aFl3GZm5ERpZWSY5A6w4TB39ZT3IAtM7bvzGOgXJ9pq2/fHDNKGP8GpuoOOecAQzLSm4Fz7BH+Njh9lF/PIqwsHtsbWWf0SUG1/5wPAzyRlhvcxXG6K0MqVgRxIrJTR/C3YLe06luN6yXxnmCevgg51rZl7wF1HIspRvs6UjHBfNxNwqS5V4GaXPsB6u2h+INA/z9C0hua61y7bfBeuvGjGf12pIJttn+S9IF9d44+8E6ZeCJBjDKPHi92N8cDEwu2nwVtsZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=87YBbu1op5hhfWmNSVCk7I506JwHeRwdRvMLzUnbh78=;
- b=oJh6f3BQZ6I9UJh2VqkUjDjEDPcxPfQYsfzg+DxEBEbr37+duABJwep1nV6DpqUadi45kisTQj7QBVe5kpbw0zd960b0gHKmFRrzeV4cn0DGBy5i3s9Y7II6jqYmi5k/uInqUGdXqZY+eJChcFforkiUVqre2JuH5hfIIYIwtY9YYkxvTtREnKamJAt66BhN0HRxb4pvb+dX9SuNKw6uGuQQZGTmdiMynaHqXtn/4nI1Q/RfPwgd6xO0pQqZMDuU2dBrtqNhwKxlIPsJXal0KAorlAH2kFnmlshqNDmOwaCSUUBO8KIBcvQfJBXHN+T9F8Brf3T1NE21+U4sSdfEmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=87YBbu1op5hhfWmNSVCk7I506JwHeRwdRvMLzUnbh78=;
- b=lFgGhfD5Zebx7vwlGmZFTIfu803c7pPaD2OHHdOFyJIYfeMJHsdtCcbCJTI2qwEN8hWWDY96qA1yacDjRsu4FqhKJWpD2pio2jG5KRlsAjPGGFlwNLAeV0qRmThBEFKqkZBnMZTdiwXyqXzvEGDTKMJ592MtFhhbQzkWKF42fuo=
-Received: from BYAPR11MB2758.namprd11.prod.outlook.com (2603:10b6:a02:c9::11)
- by DM6PR11MB4692.namprd11.prod.outlook.com (2603:10b6:5:2aa::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12; Wed, 7 Sep
- 2022 07:54:07 +0000
-Received: from BYAPR11MB2758.namprd11.prod.outlook.com
- ([fe80::6852:5740:4bc9:d1b4]) by BYAPR11MB2758.namprd11.prod.outlook.com
- ([fe80::6852:5740:4bc9:d1b4%7]) with mapi id 15.20.5588.014; Wed, 7 Sep 2022
- 07:54:07 +0000
-From:   <Sergiu.Moga@microchip.com>
-To:     <robh@kernel.org>
-CC:     <mturquette@baylibre.com>, <jirislaby@kernel.org>,
-        <richard.genoud@gmail.com>, <Claudiu.Beznea@microchip.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <radu_nicolae.pirea@upb.ro>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <broonie@kernel.org>,
-        <Kavyasree.Kotagiri@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>, <linux-spi@vger.kernel.org>,
-        <alexandre.belloni@bootlin.com>, <Tudor.Ambarus@microchip.com>,
-        <gregkh@linuxfoundation.org>, <admin@hifiphile.com>,
-        <linux-serial@vger.kernel.org>, <lee@kernel.org>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
-        <Nicolas.Ferre@microchip.com>
-Subject: Re: [PATCH v2 01/13] spi: dt-bindings: atmel,at91rm9200-spi: Add DMA
- related properties
-Thread-Topic: [PATCH v2 01/13] spi: dt-bindings: atmel,at91rm9200-spi: Add DMA
- related properties
-Thread-Index: AQHYwfihVgiVqqq9j0S1uPP+f55xp63S7sQAgACrUoA=
-Date:   Wed, 7 Sep 2022 07:54:07 +0000
-Message-ID: <b52a5f41-f6a4-8e24-983b-9a6b53bf96c9@microchip.com>
-References: <20220906135511.144725-1-sergiu.moga@microchip.com>
- <20220906135511.144725-2-sergiu.moga@microchip.com>
- <1662500460.128889.1224960.nullmailer@robh.at.kernel.org>
-In-Reply-To: <1662500460.128889.1224960.nullmailer@robh.at.kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 156c4ab0-4f3d-4594-4b26-08da90a6244d
-x-ms-traffictypediagnostic: DM6PR11MB4692:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bN4b43II/yTAnF5OzXxa2rZZfAVX6HlkSwkkvblp55xu4vKWK548YA3X9EKmtP09URCD6KOpFsXzRfpzO0LlUcK1gu1i+U+UlwAhptwclOYY2jJk0fh2k0eFJehLuqRxZYx32LYs3bBFYM335hnN3d9ZDXZh/Rkgl/gvmO7gMvdHadKE64iL/ECNo8RcBlj17UNjDQKf3ko7n/BAaa1MVQPBXruVqykDRnycKF6OeiyFx6QoYBCwYzb00jiJeZ4l9mO+K6Sb1EfPokFWcs8436lr9V3PJHBzYcQyQafYHYhwpuv6s48Ji10QaJUdoG5vtkI1CVzen+3trl1u4MmVx7puRjq/CwxFgcm3e/Czws9HdApqIvTbb9yms03V65b0OgTjLfT7s3swNu0RzpeYxvo/CkKV48TnHIh57l711NtKHhNItGUMhSgyIR7aH9vvMoWy+Oz75sHykxOzuUcGvg/A6tZcxkhbG5qh4Kanhn0vk1x4BREivzQdZxr35Zo+UfZjC/HnIpvFuCPJtX4xq42OfeFsNGWSs6vjm/xhr4f5Fl7rhLUSVhzswUjsY7H9RTX7n79Ee3lVhISzMF2Z//gm22mIuqNU9so+O9M8Krt1KoxSRqBJxmC+FLaCuGuQP2ywEHxqI73cR/wSGfr8h80QYkuUcq3j2hP1ydb0xlASeSs9PLjBat8OMtLlmKlD32Pi7neOM+UNu9Chd8g19joGRGSSQHdl22XCsiN6wmsC15ia7x4ucam4P/dTCqHeCcrF5c5WA525YeLsNoWHYhKuZukSlFjlNQ0hXFNlOZYdTRtW4VYwKKkRE1wacJ1sevUof3T3OGdGF/Nj3GFMwA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB2758.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(376002)(366004)(136003)(346002)(396003)(107886003)(41300700001)(26005)(53546011)(6506007)(478600001)(6486002)(966005)(71200400001)(83380400001)(2616005)(8936002)(186003)(2906002)(5660300002)(7416002)(6916009)(6512007)(54906003)(4326008)(316002)(66946007)(66556008)(64756008)(8676002)(66476007)(76116006)(66446008)(91956017)(122000001)(36756003)(38070700005)(31686004)(86362001)(31696002)(38100700002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?a201K2EvVWl3VGJQaDlqV09rZUpjNXU2TkJ2SytNTXE1eWlMdDkxUmQxZTJO?=
- =?utf-8?B?SlB3T25rZDg3czh6NkgweGZwSWtkRFEweXdhTEdtZC94TWQvK3NKbGwrYlZs?=
- =?utf-8?B?Q29NLy9YRU0zYkthL3ZGNTNCWHRLN2h6S3lveHo2WjA4ZFpJUW4rTzFES1hL?=
- =?utf-8?B?S2NObHFPbFJpK3o2Z1YyNk4rMjZxcWhqbFVhYVZOaG5RNkdyS0h1YmgxVU5I?=
- =?utf-8?B?OE9jNjRpRTFOYjM5RzM1Q1l5T21rNUpWSzhGV3hOc3NkMUx0Y29rcmdwcVdI?=
- =?utf-8?B?YnBjcW9kaVlYVkJnUVJDeHF4OVZ6WThia25GOVA2ZjhLN2pXMldtT2ZuV3RJ?=
- =?utf-8?B?UVBTVDkwQVFpWGNWaW5KMXlVQW8rU2JaU1Z5bzFyRitUVVFrM29BajNmQ0tu?=
- =?utf-8?B?MEJZY0xsREFCVWsvdTNvOWdhRmV0dUVmNkxzeklXVGNYNUVJekFEelBqM2pE?=
- =?utf-8?B?a0FUMU8zNVYyK2wyNCtBWmtudzlwL2cza3dPYmdrcCtIdWRDeXIzSnhFMWhp?=
- =?utf-8?B?QWZyb2Z6VVB2WVVHaEp0YS9ZQ0NZT1hRZGY1cFB0SXZiMnVwQU1qSTRIRzlr?=
- =?utf-8?B?dFVFSk9rRVhSSUFPSVkxc04zcUd1RzA5U2s5YVNsa0FCOXdyUmp2T3lsNHp1?=
- =?utf-8?B?NHJNTE1PQWw3N1NOSFl3UXAwWjZ1Y05mQlMzUHpKSWF0dmVzSTVYS0NVdisy?=
- =?utf-8?B?djhDc3BPbGZrZHdhNnNvR2pRNi9iRER6a0N2d2paUmFhdG1hY0pOZHd2MHRD?=
- =?utf-8?B?d240L2NNMXIvRXFOc0EwNi9qRmtEYjUrOUI5cCtwNFkyZG9UNHFxUUlEN3hz?=
- =?utf-8?B?b0xJL282SDZWRkd1b0Z6MGxiUnc1dmY4SFBCUml5OVVEOStXSVI3QzkveWd6?=
- =?utf-8?B?c294RGxVd1lBY1cya09jOU1xWVV4YW1vMmZiSGVBMi9KUGhPZEpxK3NsZG9y?=
- =?utf-8?B?aG1LSitTVyt3MVJzUGdrb1lVRG8wc3JFUmNVQ1I2RDVoUkNwTjFYMmRMRUM1?=
- =?utf-8?B?RVNweXgraTJIQ1V5TlNQZWhQYzZ6K0ljbGFFeU50VUl1UnRFa1N3MFpGSHl1?=
- =?utf-8?B?ZVpOcEFmS3R3bDE5TjFrZ0dHQXA4cW5GdVhteHJST00vdGRkME01ZExXTU92?=
- =?utf-8?B?WjQrL3B4OXRnMjV2dWdVVXFWWjlxMG1hdlpRYllPVXhFQ0hYV2FPYWtKQW8r?=
- =?utf-8?B?Mzd5Smc5NUM0Q2pRQXp5RSt4RFVhSzVSajdtbm04UVJqamoyOVpRaGlqWlZi?=
- =?utf-8?B?U3ZWK0F0ZVY0OXJsNmNqRFl4TWhQS2ZVS3lFQnExazhYbUZVWUg0T2tWVHJL?=
- =?utf-8?B?Mm1qUHluVkJEMGIzOG9TVXNtNG11ekZFUS91Y1VFazh4NUQ2b1BDOUR3MVNW?=
- =?utf-8?B?MC9vZG1DeHFGMVdZVFRCVzBWbTJGVWR1UlVta3o5UU8xa1dOTEd1a2JUSGlv?=
- =?utf-8?B?bzBtYlFxV1JGSHdrQVJlL29tVWJWU05yamVsL2NBWkN1eVRPR3RoM2JwTzhT?=
- =?utf-8?B?VjVJaVJWZ0QxMWZFRHMrZm9wcDdWTm8rWUlaQ3QrSjNhcHkzK1h3ckxCOU1U?=
- =?utf-8?B?ak9SY3F2dGpDK0dUdHFNaWV3bmh1VW54OUNMSEoycEFhd2VDS2tNZVphT1ZC?=
- =?utf-8?B?a1JsY0ZYVVV2V2VQZk5wU0R4Zm42TGdGdFFDM3Y3MnhzQlMzRmNRZzhtRFNn?=
- =?utf-8?B?bFpNaXd6dXFGbXIrZjdYaXV0emVRMjVjYmhoZDVNelNqTUpETFROSjhTVm5Z?=
- =?utf-8?B?eFBiUGJzdWVHaExFVktpZXh3dHdsak93cm9QS28rMEZpQW16a3Z4bkowSkRl?=
- =?utf-8?B?L1Z0akJhQ1o4WjI4RU9kays1NjZ3c1JiTmp6QXdNZ0tHQVIzMnJOc1BMUHVT?=
- =?utf-8?B?ZWJmOUR2YTdrbGYwYmZDbmtBeW9KRDBVTXNEYkFmZWJCTXVWOWtDMitTeG1n?=
- =?utf-8?B?UmxOWStOQnN3aWNtYTJSMXNkTnhqbG5qd2tXNGpIcW9JVVQydU1nUlJ0TktN?=
- =?utf-8?B?d1h5T2pwbVhjWFN1RmNpdGdESVBFdDNRYU02ZDErRDBJUlhGYVdBaS9ubFFV?=
- =?utf-8?B?NCswTmlrVzNvQ0FvSmFrdGtDNWJtNmVFc1pJU0IwS3J5dGF4Wk53LytZY0R4?=
- =?utf-8?Q?9R9D66bJC/9nWG883vV8TKSfh?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <17A74718D4BFB447BCF01ABF35EBA054@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB2758.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 156c4ab0-4f3d-4594-4b26-08da90a6244d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2022 07:54:07.3893
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JzemuzlTRdK62mSkCNrD2GhsuUE/DfepLolEWJ/6Q86yt4EhOuc9Pj5zK8nPGjhxidco6nPfRbL3HP7QE5ZdBRkn0+xYJKERD4Tbmjme0Lc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4692
+        Wed, 7 Sep 2022 05:06:04 -0400
+X-Greylist: delayed 1392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 07 Sep 2022 02:06:03 PDT
+Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3A0606AB;
+        Wed,  7 Sep 2022 02:06:02 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id BE3772B058E5;
+        Wed,  7 Sep 2022 04:22:26 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Wed, 07 Sep 2022 04:22:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1662538946; x=1662542546; bh=X79Bowixk2
+        UfvY4aNNNBf2XN1vgN+OVQkvEi3n41B/0=; b=FHq3eWsWbj7AeTTcT3sCiG2Gid
+        zoMcoGnX87QaDKCL9Klc4femUTSwemZiQ3qSZVwFlxvWnOSM7bX1ZQzTRZr/ntO/
+        rUHgfMfaMnw/547ubHfdDxNcdibTQ2teOF/7DV2qlAmttNSlW7d5iyhtiWg/uUDJ
+        lO5qL1F586qegEJupGnmnHsI1IuCp/ImB2pbQwWZ70GdaaWn+oyXtexephhYdXmV
+        SQislyNm+YIIa72TtD5MTVU7il9ysVv6MvEvZIg7XCSWABdf8+1sk/oBKSO3pfZ1
+        uvi6NqIm6jxqcFGbLN03EAn7fM7h4L7Oi/Ji5N0dSTsTCHL9kkQrct9oFswQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1662538946; x=1662542546; bh=X79Bowixk2UfvY4aNNNBf2XN1vgN
+        +OVQkvEi3n41B/0=; b=i2fgw7Lm2RcMVoE6K+rIusyvnZ4lyDN5dx8+fgyWxbIF
+        +AqTwmsIDN0yb6WUldLlrs74GDun+0ghaNFmnjAZTG/kG/DTX2Ue6Jo6AoIEGfnp
+        m23C0krGK+yRAnjvF9vuguVXjMShUCvrdItalepOHerr8sWvWVCUH+p2pz2BA84o
+        9CL/mCBfzT64N5Sg+EM/Sn8zu3t4Mmkl8ZGk/QCKdH6GT+U+UaWKS/+FhXt/OrSz
+        UJnDAu8M6YDAc3UEYGHiyeS8WJGorrnO8HOYrXp9DGJehh1+4dezsYWVDALjUEnt
+        h56fIcvzomWG4T8yO1l/aiAYb7MXV5HfHSWhSnNe0w==
+X-ME-Sender: <xms:wFQYY3OkJ587gJqTFniHmGsoib1jkjdGST-qEVi3IKekB1A8gjk2Ww>
+    <xme:wFQYYx9zmv0pewFSnpE2qd-qg4VthrNbv2mqpQ6fzyLh1lG1ncg64YLF8XhxEzdRd
+    HxfOqHKeDJhq7DxaTA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddgtdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:wFQYY2Q2JbiXtN04GC_Hse6TtfQrs-R6JzVpCd0xqk1-TcpRmNZX_A>
+    <xmx:wFQYY7tsyffEhqi73XQbt5gJ44AMPaQ4LgT-tZrwxuBOXwBcKVpCPw>
+    <xmx:wFQYY_cRGxurafke8L8pYB345DBK3SybXlKUd3IJpkYtG6W6mxVuLQ>
+    <xmx:wlQYYynsfP7agf-9b5bKj6YVeu5IB60g4wd5G4IyoTohz3aQSZ3gRnFKefaSHW1i>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 32FE6B60083; Wed,  7 Sep 2022 04:22:24 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-927-gf4c98c8499-fm-20220826.002-gf4c98c84
+Mime-Version: 1.0
+Message-Id: <e2e2a0c7-d859-4255-94b6-b030aa9dc277@www.fastmail.com>
+In-Reply-To: <YxfBGDg6YkIQ6Wzq@phenom.ffwll.local>
+References: <20220806163255.10404-1-markuss.broks@gmail.com>
+ <20220806163255.10404-4-markuss.broks@gmail.com>
+ <YxfBGDg6YkIQ6Wzq@phenom.ffwll.local>
+Date:   Wed, 07 Sep 2022 10:22:03 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Daniel Vetter" <daniel@ffwll.ch>,
+        "Markuss Broks" <markuss.broks@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Helge Deller" <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Borislav Petkov" <bp@suse.de>,
+        "Kees Cook" <keescook@chromium.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Damien Le Moal" <damien.lemoal@opensource.wdc.com>,
+        "Thomas Zimmermann" <tzimmermann@suse.de>,
+        "Michal Suchanek" <msuchanek@suse.de>,
+        "Javier Martinez Canillas" <javierm@redhat.com>,
+        "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
+        "Wei Ming Chen" <jj251510319013@gmail.com>,
+        "Bartlomiej Zolnierkiewicz" <b.zolnierkie@samsung.com>,
+        "Tony Lindgren" <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v2 3/3] efi: earlycon: Add support for generic framebuffers and
+ move to console subsystem
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-T24gMDcuMDkuMjAyMiAwMDo0MSwgUm9iIEhlcnJpbmcgd3JvdGU6DQo+IA0KPiBPbiBUdWUsIDA2
-IFNlcCAyMDIyIDE2OjU1OjAwICswMzAwLCBTZXJnaXUgTW9nYSB3cm90ZToNCj4+IFRoZSBEVCBu
-b2RlcyBvZiB0aGUgU1BJIElQJ3MgbWF5IGNvbnRhaW4gRE1BIHJlbGF0ZWQgcHJvcGVydGllcyBz
-bw0KPj4gbWFrZSBzdXJlIHRoYXQgdGhlIGJpbmRpbmcgaXMgYWJsZSB0byBwcm9wZXJseSB2YWxp
-ZGF0ZSB0aG9zZSBhcw0KPj4gd2VsbCBieSBtYWtpbmcgaXQgYXdhcmUgb2YgdGhlc2Ugb3B0aW9u
-YWwgcHJvcGVydGllcy4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBTZXJnaXUgTW9nYSA8c2VyZ2l1
-Lm1vZ2FAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4NCj4+DQo+PiB2MSAtPiB2MjoNCj4+IC0g
-Tm90aGluZywgdGhpcyBwYXRjaCB3YXMgbm90IGhlcmUgYmVmb3JlDQo+Pg0KPj4NCj4+ICAgLi4u
-L2RldmljZXRyZWUvYmluZGluZ3Mvc3BpL2F0bWVsLGF0OTFybTkyMDAtc3BpLnlhbWwgIHwgMTAg
-KysrKysrKysrKw0KPj4gICAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKQ0KPj4NCj4g
-DQo+IFJ1bm5pbmcgJ21ha2UgZHRic19jaGVjaycgd2l0aCB0aGUgc2NoZW1hIGluIHRoaXMgcGF0
-Y2ggZ2l2ZXMgdGhlDQo+IGZvbGxvd2luZyB3YXJuaW5ncy4gQ29uc2lkZXIgaWYgdGhleSBhcmUg
-ZXhwZWN0ZWQgb3IgdGhlIHNjaGVtYSBpcw0KPiBpbmNvcnJlY3QuIFRoZXNlIG1heSBub3QgYmUg
-bmV3IHdhcm5pbmdzLg0KPiANCj4gTm90ZSB0aGF0IGl0IGlzIG5vdCB5ZXQgYSByZXF1aXJlbWVu
-dCB0byBoYXZlIDAgd2FybmluZ3MgZm9yIGR0YnNfY2hlY2suDQo+IFRoaXMgd2lsbCBjaGFuZ2Ug
-aW4gdGhlIGZ1dHVyZS4NCj4gDQo+IEZ1bGwgbG9nIGlzIGF2YWlsYWJsZSBoZXJlOiBodHRwczov
-L3BhdGNod29yay5vemxhYnMub3JnL3BhdGNoLw0KPiANCj4gDQo+IHNwaUA0MDA6IGRtYS1uYW1l
-czowOiAndHgnIHdhcyBleHBlY3RlZA0KPiAgICAgICAgICBhcmNoL2FybS9ib290L2R0cy9hdDkx
-LXNhbWE3ZzVlay5kdGINCj4gDQo+IHNwaUA0MDA6IGRtYS1uYW1lczoxOiAncngnIHdhcyBleHBl
-Y3RlZA0KPiAgICAgICAgICBhcmNoL2FybS9ib290L2R0cy9hdDkxLXNhbWE3ZzVlay5kdGINCj4g
-DQo+IHNwaUA0MDA6IFVuZXZhbHVhdGVkIHByb3BlcnRpZXMgYXJlIG5vdCBhbGxvd2VkICgnZG1h
-LW5hbWVzJyB3YXMgdW5leHBlY3RlZCkNCj4gICAgICAgICAgYXJjaC9hcm0vYm9vdC9kdHMvYXQ5
-MS1zYW1hN2c1ZWsuZHRiDQo+IA0KDQpIaSwNCg0KVGhpcyBzaG91bGQgYmUgc29sdmVkIGJ5IHRo
-ZSBuZXh0IHBhdGNoIG9mIHRoaXMgc2VyaWVzLiBJIGd1ZXNzIHRoaXMgDQp5YW1sIHByb3BlcnR5
-IGFkZGl0aW9uIHNob3VsZCBoYXZlIGNvbWUgYWZ0ZXIgdGhlIERUUyBmaXggcGF0Y2guDQo=
+On Tue, Sep 6, 2022, at 11:52 PM, Daniel Vetter wrote:
+> On Sat, Aug 06, 2022 at 07:32:24PM +0300, Markuss Broks wrote:
+>
+> Ok I have a more fundamental issue with this than the lack of proper patch
+> splitting I mentioned in the other thread.
+>
+> This is the wrong place.
+>
+> drivers/video/console is about the various vt console implementations,
+> which supply a struct consw to con_register_driver.
+
+You are right, that was my mistake. The original patch was for
+drivers/video/fbdev/, and I suggested moving it out of there because
+it does not depend on the fbdev subsystem, but clearly my suggestions
+of drivers/video/console was equally wrong.
+
+> This otoh is an (early) kernel/printk console implemented using struct
+> console. Totally different thing, and really shouldn't end up in
+> drivers/video/console imo. Somewhere in drivers/firmware might still be
+> the best place, the sysfb stuff is also there. Maybe
+> drivers/firmware/sysfb_earlycon.c?
+
+drivers/firmware/ is better but doesn't sound great to me either,
+since one important thing the patch does is to not make it depend
+on EFI firmware or BIOS style screen_info any more. 
+
+Maybe drivers/tty/earlycon_simplefb.c would work better, keeping
+it close to the earlycon base support in drivers/tty/serial/,
+the vt console and the old simplefb driver/, without tying to too
+closely to fbdev of UEFI.
+
+     Arnd
