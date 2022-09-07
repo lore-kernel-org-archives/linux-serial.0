@@ -2,135 +2,199 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0139C6FA83
-	for <linux-serial@archiver.kernel.org>; Wed,  7 Sep 2022 11:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 149BCC38145
+	for <linux-serial@archiver.kernel.org>; Wed,  7 Sep 2022 11:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiIGLaB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 7 Sep 2022 07:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
+        id S229506AbiIGL7e (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 7 Sep 2022 07:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiIGLaA (ORCPT
+        with ESMTP id S229529AbiIGL7c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 7 Sep 2022 07:30:00 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D01A72843;
-        Wed,  7 Sep 2022 04:29:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662550197; x=1694086197;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=TrnktqRIs+K86T7z1mbr+yegNoYFDmK9/RGPfMKeYaU=;
-  b=Ybwtqw8/9gpk3DwiA2bJfAED9wHEjA0VQhtfGuoRU3mNRwcPwTAJTiA1
-   EqrVZbHZvQQpCEoRaVs8iuJPxxjdNARmxVFTJ1ix6dhAoIJTvm4eZl/1Z
-   NO5PACLWxYSghiQ4XQhrN/g6ZUFHW8GMvCyFjAHTCDSvUyphk37+yqywl
-   D6mFII7Gh8Zqu7XEgc9W4Hia89x3O88m5vgkgriFGz/QENC9LbSsubmy7
-   845a2OZWLvfU/sfkHL7wNVV+MpWUIMk5TYB0UOeTm++SfY9kHRtb6BNQJ
-   Xj5/g/vZJPwthIYyytpiZ2RWSQ6VFaGHK0g7xZr5zyRAmFupzwWMt/YME
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="279859340"
-X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
-   d="scan'208";a="279859340"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 04:29:56 -0700
-X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
-   d="scan'208";a="676146243"
-Received: from dmatouse-mobl.ger.corp.intel.com ([10.251.223.53])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 04:29:50 -0700
-Date:   Wed, 7 Sep 2022 14:29:49 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sergiu.Moga@microchip.com
-cc:     lee@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
-        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
-        richard.genoud@gmail.com, radu_nicolae.pirea@upb.ro,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>, admin@hifiphile.com,
-        Kavyasree.Kotagiri@microchip.com, Tudor.Ambarus@microchip.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-spi@vger.kernel.org,
+        Wed, 7 Sep 2022 07:59:32 -0400
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BCAE03D;
+        Wed,  7 Sep 2022 04:59:31 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id CF3F42B05B84;
+        Wed,  7 Sep 2022 07:59:27 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Wed, 07 Sep 2022 07:59:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1662551967; x=
+        1662555567; bh=93TgYd152lsMJGukyVn+n+/KYrXdTp+yDhOzZKjQ6j4=; b=a
+        wpcaSjMpvQxH/r24XuOYbW7qzgwqAdiOOcxmaxHRSpFS2LCPs7/QaE7SECr3bjYK
+        2Z+jM3dw7YVeZ8RXWAD7G7FUfk+9OS3ywJEyDpRJAe7FpvG4kn8iLIETYUC2kkd4
+        eYqMwh/QjEC4DT3fuqot48hq6mCjuNZWUI8khrReQASrv67oy9hh2WdIRJHDANKT
+        ECnpC46+2xeAQE2iO1DLlrVGJx/+4bvljtivxPZkM2/eFoT2AVIwwXF0hNviWEpq
+        DOGp/Nfe3w+yxCXNN5cPZcEEVqwFDyA/E1K3DLpHistUEIn/z3bmlTVTr5ygN47z
+        Cvsrm/UjC2Fd3YRLfC83g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1662551967; x=
+        1662555567; bh=93TgYd152lsMJGukyVn+n+/KYrXdTp+yDhOzZKjQ6j4=; b=a
+        vHCxVUc2IdvYCG0t9AqWn7NS7WrBBG4UCH6F/qqtXeczJkJrszU9X1x2ZwdoIX/o
+        9qLujK/2ikjuw90nv2kxe+NZrtQB37QxU8HR+t8ibz6DgkUrk93UJ6ieXq89vNsI
+        /A+BKCEclvpZh0zRJoTINAHLB86Rjx91Yyqwlr1Xd4mQIwzm1xoiF/vM1C+QzzEo
+        q0gx5JitIaESQZ/3OX9Racmy3WsUUfhIl/QdfHwXTkV4JpazE1QXscwrqpXcXrAT
+        B1gOuIa/T5SEAmbA6PasO47lvyTWMOvkWuZh+gtFAjCAFBTIte9R6hrOZG4OwVBY
+        fGNqnc2owYBFb3g/YRBkg==
+X-ME-Sender: <xms:nYcYY1oX_Y-wC5X1wR2qHcedMPqDeTl2ns1mCbB3eSVEVlX0S7vCRQ>
+    <xme:nYcYY3rpq4yC_ZlA8DKRZLFXe4CRkFFkZ69MaOfwy-hjPWdrhiqqxEV64gkUfkY3U
+    wP2LK3OVcLpOVO3kTM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpefgkeeuleegieeghfduudeltdekfeffjeeuleehleefudettddtgfevueef
+    feeigeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:nocYYyNdzljoXCNjYeoa-shYLTaCax1-IzEHxZfwDo5DB0KdeyFC2Q>
+    <xmx:nocYYw6GsrKwte3Wldp8tl1SQ6nCpsO-Hhgts03HjI9va09UlTVk0g>
+    <xmx:nocYY05sn2_rs2Wz_CWm0LztL1KRLOObjYocAb11SdH-hhMiYV0sMQ>
+    <xmx:n4cYY6F0VJXmjySOdLPk-Wkcz93cHgkwuV-QLF1CUOJbLpr4VVDN7a0cUh4>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id DB8EBB60083; Wed,  7 Sep 2022 07:59:25 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-927-gf4c98c8499-fm-20220826.002-gf4c98c84
+Mime-Version: 1.0
+Message-Id: <715b40ba-1bcc-4582-bed1-ef41126c7b94@www.fastmail.com>
+In-Reply-To: <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
+References: <20220906104805.23211-1-jslaby@suse.cz>
+ <Yxcvbk281f/vy4vb@hovoldconsulting.com>
+ <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
+ <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
+Date:   Wed, 07 Sep 2022 13:59:05 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "Jiri Slaby" <jirislaby@kernel.org>,
+        "Johan Hovold" <johan@kernel.org>
+Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH v2 12/13] tty: serial: atmel: Make the driver aware of
- the existence of GCLK
-In-Reply-To: <f3e87d18-41aa-f1e2-e0fb-8944c9fb4910@microchip.com>
-Message-ID: <caf05bb5-26df-68ca-59a1-e84983294de@linux.intel.com>
-References: <20220906135511.144725-1-sergiu.moga@microchip.com> <20220906135511.144725-13-sergiu.moga@microchip.com> <3f98d634-789-a0bd-84e-cfc2a1de70af@linux.intel.com> <f3e87d18-41aa-f1e2-e0fb-8944c9fb4910@microchip.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-565948247-1662550196=:1717"
+        LKML <linux-kernel@vger.kernel.org>,
+        "Tobias Klauser" <tklauser@distanz.ch>,
+        "Richard Genoud" <richard.genoud@gmail.com>,
+        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
+        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+        "Vladimir Zapolskiy" <vz@mleia.com>,
+        "Liviu Dudau" <liviu.dudau@arm.com>,
+        "Sudeep Holla" <sudeep.holla@arm.com>,
+        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>,
+        "Shawn Guo" <shawnguo@kernel.org>,
+        "Sascha Hauer" <s.hauer@pengutronix.de>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        "Fabio Estevam" <festevam@gmail.com>,
+        "NXP Linux Team" <linux-imx@nxp.com>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
+        "Manivannan Sadhasivam" <mani@kernel.org>,
+        "Russell King" <linux@armlinux.org.uk>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "Kevin Cernekee" <cernekee@gmail.com>,
+        "Palmer Dabbelt" <palmer@dabbelt.com>,
+        "Paul Walmsley" <paul.walmsley@sifive.com>,
+        "Orson Zhai" <orsonzhai@gmail.com>,
+        "Baolin Wang" <baolin.wang7@gmail.com>,
+        "Chunyan Zhang" <zhang.lyra@gmail.com>,
+        "Patrice Chotard" <patrice.chotard@foss.st.com>,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v3 0/4] tty: TX helpers
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, Sep 7, 2022, at 12:16 PM, Ilpo J=C3=A4rvinen wrote:
+> On Wed, 7 Sep 2022, Jiri Slaby wrote:
+>> On 06. 09. 22, 13:30, Johan Hovold wrote:
+>> > On Tue, Sep 06, 2022 at 12:48:01PM +0200, Jiri Slaby wrote:
+>> > NAK
+>>=20
+>> I'd love to come up with something nicer. That would be a function in
+>> serial-core calling hooks like I had [1] for example. But provided al=
+l those
+>> CPU workarounds/thunks, it'd be quite expensive to call two functions=
+ per
+>> character.
+>>=20
+>> Or creating a static inline (having =C2=B1 the macro content) and the=
+ hooks as
+>> parameters and hope for optimizations to eliminate thunks (also sugge=
+sted in
+>> the past [1]).
+>>=20
+>> [1] https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
+>
+> I second Jiri here.
+>
+> Saving lines in drivers is not that important compared with all removi=
+ng=20
+> all the variants of the same thing that have crept there over the year=
+s.
+>
+> I suspect the main reason for the variants is that everybody just used=20
+> other drivers as examples and therefore we've a few "main" variant=20
+> branches depending on which of the drivers was used as an example for =
+the=20
+> other. That is hardly a good enough reason to keep them different and =
+as=20
+> long as each driver keeps its own function for this, it will eventuall=
+y=20
+> lead to similar differentiation so e.g. a one-time band-aid similariza=
+tion=20
+> would not help in the long run.
+>
+> Also, I don't understand why you see it unreadable when the actual cod=
+e is=20
+> out in the open in that macro. It's formatted much better than e.g.=20
+> read_poll_timeout() if you want an example of something that is hardly=20
+> readable ;-). I agree though there's a learning-curve, albeit small, t=
+hat=20
+> it actually creates a function but that doesn't seem to me as big of a=
+n=20
+> obstacle you seem to think.
 
---8323329-565948247-1662550196=:1717
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+I think it would help to replace the macro that defines
+the function with a set of macros that can be used in
+function bodies. This would avoid the __VA_ARGS__ stuff
+and allow readers that are unfamiliar with tty drivers to
+treat it as a function call.
 
-On Wed, 7 Sep 2022, Sergiu.Moga@microchip.com wrote:
+So e.g. instead of=20
 
-> On 07.09.2022 12:36, Ilpo Järvinen wrote:
-> > On Tue, 6 Sep 2022, Sergiu Moga wrote:
-> > 
-> >> Previously, the atmel serial driver did not take into account the
-> >> possibility of using the more customizable generic clock as its
-> >> baudrate generator. Unless there is a Fractional Part available to
-> >> increase accuracy, there is a high chance that we may be able to
-> >> generate a baudrate closer to the desired one by using the GCLK as the
-> >> clock source. Now, depending on the error rate between
-> >> the desired baudrate and the actual baudrate, the serial driver will
-> >> fallback on the generic clock. The generic clock must be provided
-> >> in the DT node of the serial that may need a more flexible clock source.
-> >>
-> >> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-> >> ---
+static DEFINE_UART_PORT_TX_HELPER_LIMITED(altera_jtaguart_do_tx_chars,
+		true,
+		writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG),
+		({}));
 
-> > Is percent accurate enough or would you perhaps want something slightly
-> > more accurate?
-> > 
-> 
-> 
-> It is accurate enough for the all the baudrates I have tested. It 
-> usually taps into the GCLK whenever high baudrates such as 921600 are 
-> used. For 115200 for example, the error rate was slightly better in the 
-> case of the peripheral clock and it acted accordingly, choosing the 
-> latter as its baudrate source clock. I do not think that a higher 
-> accuracy than this would be needed though. Say that using percent 
-> accuracy yields that the error rates are equal, but the gclk would have 
-> been better in this case by, say, a few 10 ^ -4, but the code logic does 
-> not see it so it proceeds using the peripheral clock. In that case, the 
-> error rate of the peripheral clock would still be low enough relative to 
-> the desired baudrate for the communication to function properly.
-> 
-> The higher the baudrate, the lower the error rate must be in order for 
-> things to go smoothly. For example, for a baudrate of 57600 I noticed 
-> that even an error rate as big as 6% is still enough for the 
-> communication to work properly, while in the case of 921600 anything 
-> bigger than 2% and things do not go smoothly anymore. So I guess that it 
-> would be safe to say that, unless you go for baudrates as high as tens 
-> of millions, things should work well with just percent accuracy. A 
-> higher accuracy always definetely helps, but I believe it is not needed 
-> in this case.
-> 
-> 
-> > Given you've abs() at the caller side, the error rate could be
-> > underestimated, is underestimating OK?
-> > 
-> 
-> 
-> Yes, this should be fine. While (both empirically and after looking 
-> stuff up) I noticed that in the case of negative error rates, their 
-> absolute value needs to be smaller than the one of positive error rates, 
-> it must be so by a very small margin that is negligible when estimating 
-> through percent accuracy.
+the altera_jtaguart driver would contain a function like
 
-OK. Thanks for checking.
+static int altera_jtaguart_do_tx_chars(struct uart_port *port,
+                                       unsigned int count)
+{
+       char ch;
 
+       return uart_port_tx_helper_limited(port, ch, count, true,
+                writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG),
+                ({}));
+}
 
--- 
- i.
+or some variation of that. It's a few more lines, but those
+extra lines would help me understand what is actually going on
+while still avoiding the usual bugs and duplication.
 
---8323329-565948247-1662550196=:1717--
+If the caller of that function is itself trivial (like
+serial21285_tx_chars), then the intermediate function can
+be omitted in order to save some of the extra complexity.
+
+       Arnd
