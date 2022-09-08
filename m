@@ -2,194 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61D6C38145
-	for <linux-serial@archiver.kernel.org>; Thu,  8 Sep 2022 06:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9DAECAAD5
+	for <linux-serial@archiver.kernel.org>; Thu,  8 Sep 2022 11:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiIHG05 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 8 Sep 2022 02:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
+        id S230266AbiIHLEZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 8 Sep 2022 07:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiIHG04 (ORCPT
+        with ESMTP id S230053AbiIHLEW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 8 Sep 2022 02:26:56 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5E3C6B59
-        for <linux-serial@vger.kernel.org>; Wed,  7 Sep 2022 23:26:55 -0700 (PDT)
+        Thu, 8 Sep 2022 07:04:22 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C6E138;
+        Thu,  8 Sep 2022 04:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662618415; x=1694154415;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=q99Tm8QnTTQTdDY3Uh7hMJPCKZHkNigrvyKEI7uJcUA=;
-  b=YbOiDEfRFe0yGv7cuN6uz6j8yytPq4GYoM1+lVjC24GGrzrSl2ba+5M4
-   VQQUU1r+qOym6uZ9P2mbMEhsBft3VsG/aXC23/c7B155ZCMVwzFKw+UML
-   yzSF8cP1TEn4JGxc6SdVfXnc1QhlQLoUJjcRUgRDxub0CqEfXpQ4xvZdf
-   DSzW5ICzKbpwdNRSj5DpD6eeLUBILhgdOFtYDPkIvVahOIxTVHW8eacms
-   6HQ+uuxBDMNWW1/Br9VM/Ver3yGUyqlZqQSIzEiioWhNxxhJU/gEuq7m1
-   m0BUGst51wm3+cg35bNkrQx/Z2ZHHgQWX070Ipao3n7ENDrtwfTpVV53r
+  t=1662635061; x=1694171061;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fqkHwC0iOprBEufOeKlcg21ZbXtIUhGHzIz0tLHzfq8=;
+  b=P5A11Smug85abEfoYrdeSWYKEViuicI7UnU0Cr0Wq2tBs/4DdY7cyXcu
+   djZjon6WvvkWf8BDIe20s3BNBs9X8tV50IGLyEG9XwNu++pF68TLcEryk
+   pH6Q/+HITs3PjIpnJ5dXB+3I28GBwHE5q3/w+CIDRl2AMwiiHsoo+ndwU
+   pqeIdHtFVYbDuvLMaYDv7AfL6aqnGFEWoTlWCPwWISWW+8MnCwzFkGJcg
+   Thlef21zmZ+5+aLOXYzRydArQD9OOdUb4woPPr9kuQ6mWzz3zhDeMyO6g
+   G3kn/t4U+w7SZTZDUFecmsSXG9E+Fni1RCIV9hZRF2B+Znr3RTE4HqSRB
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="280109931"
+X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="361098738"
 X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
-   d="scan'208";a="280109931"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 23:26:55 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="361098738"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 04:04:21 -0700
 X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
-   d="scan'208";a="565817074"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 07 Sep 2022 23:26:54 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oWB01-0007RV-2Q;
-        Thu, 08 Sep 2022 06:26:53 +0000
-Date:   Thu, 08 Sep 2022 14:25:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 1d10cd4da593bc0196a239dcc54dac24b6b0a74e
-Message-ID: <63198af3.cbyURGuko+J3HoKU%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="740634993"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 04:04:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oWFKO-00A5Z7-2n;
+        Thu, 08 Sep 2022 14:04:12 +0300
+Date:   Thu, 8 Sep 2022 14:04:12 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Subject: Re: [PATCH v1 4/5] fpga: dfl: add generic support for MSIX interrupts
+Message-ID: <YxnMLI17XvjN74DW@smile.fi.intel.com>
+References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+ <20220906190426.3139760-5-matthew.gerlach@linux.intel.com>
+ <YxeqTdny7Nu7LzZo@smile.fi.intel.com>
+ <alpine.DEB.2.22.394.2209071433320.3336870@rhweight-WRK1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2209071433320.3336870@rhweight-WRK1>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 1d10cd4da593bc0196a239dcc54dac24b6b0a74e  serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+On Wed, Sep 07, 2022 at 02:37:32PM -0700, matthew.gerlach@linux.intel.com wrote:
+> On Tue, 6 Sep 2022, Andy Shevchenko wrote:
+> > On Tue, Sep 06, 2022 at 12:04:25PM -0700, matthew.gerlach@linux.intel.com wrote:
 
-elapsed time: 915m
+...
 
-configs tested: 118
-configs skipped: 3
+> > > +	if (fid != FEATURE_ID_AFU && fid != PORT_FEATURE_ID_ERROR &&
+> > > +	    fid != PORT_FEATURE_ID_UINT && fid != FME_FEATURE_ID_GLOBAL_ERR) {
+> > > +		v = readq(base);
+> > > +		v = FIELD_GET(DFH_VERSION, v);
+> > > +
+> > > +		if (v == 1) {
+> > > +			v =  readq(base + DFHv1_CSR_SIZE_GRP);
+> > 
+> > I am already lost what v keeps...
+> > 
+> > Perhaps
+> > 
+> > 		v = readq(base);
+> > 		switch (FIELD_GET(DFH_VERSION, v)) {
+> > 		case 1:
+> > 			...
+> > 			break;
+> > 		}
+> 
+> How about?
+> 		if (FIELD_GET(DFH_VERSION, readq(base)) == 1) {
+> 			...
+> 		}
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-mips                             allyesconfig
-x86_64                        randconfig-a013
-arc                  randconfig-r043-20220907
-x86_64                        randconfig-a011
-x86_64                           allyesconfig
-sh                               allmodconfig
-i386                          randconfig-a001
-arc                              allyesconfig
-alpha                            allyesconfig
-i386                          randconfig-a003
-x86_64                        randconfig-a015
-x86_64                        randconfig-a004
-i386                          randconfig-a005
-x86_64                        randconfig-a002
-m68k                             allmodconfig
-x86_64                        randconfig-a006
-m68k                             allyesconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-i386                             allyesconfig
-i386                                defconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                           rhel-8.3-kvm
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-sparc                             allnoconfig
-arm                        cerfcube_defconfig
-powerpc                      arches_defconfig
-openrisc                 simple_smp_defconfig
-powerpc                     asp8347_defconfig
-arm                          pxa3xx_defconfig
-arm                         s3c6400_defconfig
-powerpc                     stx_gp3_defconfig
-arm64                            alldefconfig
-sh                           se7722_defconfig
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-sh                             sh03_defconfig
-sh                           se7750_defconfig
-s390                             allmodconfig
-xtensa                       common_defconfig
-csky                                defconfig
-sparc                            alldefconfig
-sparc                               defconfig
-um                                  defconfig
-sh                            titan_defconfig
-arm                            mps2_defconfig
-loongarch                           defconfig
-loongarch                         allnoconfig
-sh                     sh7710voipgw_defconfig
-i386                             alldefconfig
-powerpc                     ep8248e_defconfig
-m68k                          hp300_defconfig
-m68k                        m5272c3_defconfig
-arm                          exynos_defconfig
-ia64                          tiger_defconfig
-arc                              alldefconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-sh                          r7785rp_defconfig
-arm                          iop32x_defconfig
-powerpc                     mpc83xx_defconfig
-xtensa                generic_kc705_defconfig
-arm                        clps711x_defconfig
-arc                           tb10x_defconfig
-powerpc                       eiger_defconfig
-sh                          r7780mp_defconfig
-arm                            qcom_defconfig
-riscv                randconfig-r042-20220908
-arc                  randconfig-r043-20220908
-s390                 randconfig-r044-20220908
-nios2                            allyesconfig
-nios2                               defconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-ia64                             allmodconfig
-
-clang tested configs:
-hexagon              randconfig-r041-20220907
-hexagon              randconfig-r045-20220907
-s390                 randconfig-r044-20220907
-riscv                randconfig-r042-20220907
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-i386                          randconfig-a002
-x86_64                        randconfig-a014
-i386                          randconfig-a006
-x86_64                        randconfig-a001
-i386                          randconfig-a004
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-powerpc                     tqm8540_defconfig
-arm                           spitz_defconfig
-powerpc                 mpc8315_rdb_defconfig
-mips                           ip22_defconfig
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-x86_64                        randconfig-k001
-powerpc                     akebono_defconfig
-mips                      malta_kvm_defconfig
-arm                    vt8500_v6_v7_defconfig
+This one tends to be expanded in the future, so I would keep it switch case.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
