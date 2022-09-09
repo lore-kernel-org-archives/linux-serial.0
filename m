@@ -2,45 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25016ECAAA1
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C352ECAAD3
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiIIMRL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 08:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        id S229943AbiIIMYS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 08:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiIIMQw (ORCPT
+        with ESMTP id S230197AbiIIMXv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 08:16:52 -0400
+        Fri, 9 Sep 2022 08:23:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2E314480A;
-        Fri,  9 Sep 2022 05:14:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E6E48EB0;
+        Fri,  9 Sep 2022 05:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E37C5B822A8;
-        Fri,  9 Sep 2022 12:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B6FC433D6;
-        Fri,  9 Sep 2022 12:13:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3533B822A8;
+        Fri,  9 Sep 2022 12:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F001C433D7;
+        Fri,  9 Sep 2022 12:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662725583;
-        bh=wyT+RSE2oHYcIwAAxN7k6rwPkCm4BMGf+S0umuD69PI=;
+        s=k20201202; t=1662726181;
+        bh=f/MBk4DuV+ezF4qXmdCJCjmryA6nTjeI9XVb4sRPRn8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NBqgc3wBvCesUWYOaFSVqvPibG0TlWjXeieipY3hhTeBxSYoj4x1Ndfxzn1f+HITd
-         yN8VLlCxn+pr+ThxvZ1Fk9DT8rpqDqFcoPD/2b9Ai2KTvvIEiSrmiksGL4LAWWUfR4
-         qEmg4H+k0qGHIGGFd2Uw131KFADN81mhBgE1JvKuhGcQ6J+hUHG8Ni05+WGomVshAk
-         NlR1nW4/iXg3S/T8qQ3X0iueyhrovxA0ThwAs1PUhJBmrrR/Wz9O9pxTHzTJi+9y9A
-         RIP5Ox2cQVTZZOmCYB/xxqpnGxpNE997blqsjsOdbrxxkENe+qqZRpLbuQnGjAtLqJ
-         0foEurx1g3yVg==
+        b=fl65HRPASBnRey7QziwpTTh++x1s075YBaImqSA2XFii2ys0KOSOxu4LXRJFmue+1
+         zTNQlcg2Lt35tZzXHX7tQ6aCugsDvKfnidzQTkiahJbbTuaH3KTyOQKDDquC6Ip2i0
+         iCb0nhC/Jj5sFUJwMt9VGnBtVdgP1EQRzEtoh8HSutp930G7nb67pu5jUDyqjGA16I
+         37jw3n60ubTVjXuRmLbu1hDiZr3QDo7rtNUjFPdvpY1nshUWOAwnNEcz9rgvQa4jg4
+         a3gzW9x1+BxRdV4h67haa3Et9KQK0qoEXOjYc6YR64IoEYdMcVPgddxHnjmDlv8TZq
+         wVLmEcCXIDehA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1oWcsi-0001Ru-3k; Fri, 09 Sep 2022 14:13:12 +0200
-Date:   Fri, 9 Sep 2022 14:13:12 +0200
+        id 1oWd2M-0001Xo-Nt; Fri, 09 Sep 2022 14:23:10 +0200
+Date:   Fri, 9 Sep 2022 14:23:10 +0200
 From:   Johan Hovold <johan@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     gregkh@linuxfoundation.org,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Tobias Klauser <tklauser@distanz.ch>,
         Richard Genoud <richard.genoud@gmail.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
@@ -70,71 +71,44 @@ Cc:     gregkh@linuxfoundation.org,
         Patrice Chotard <patrice.chotard@foss.st.com>,
         linux-riscv@lists.infradead.org
 Subject: Re: [PATCH v3 0/4] tty: TX helpers
-Message-ID: <Yxst2PGeiQN+dL9e@hovoldconsulting.com>
+Message-ID: <YxswLiOaHQ5ajeOi@hovoldconsulting.com>
 References: <20220906104805.23211-1-jslaby@suse.cz>
  <Yxcvbk281f/vy4vb@hovoldconsulting.com>
  <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
+ <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
+In-Reply-To: <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 09:19:25AM +0200, Jiri Slaby wrote:
-> On 06. 09. 22, 13:30, Johan Hovold wrote:
-> > On Tue, Sep 06, 2022 at 12:48:01PM +0200, Jiri Slaby wrote:
-> >> This series introduces DEFINE_UART_PORT_TX_HELPER +
-> >> DEFINE_UART_PORT_TX_HELPER_LIMITED TX helpers. See PATCH 2/4 for the
-> >> details. Comments welcome.
-> >>
-> >> Then it switches drivers to use them. First, to
-> >> DEFINE_UART_PORT_TX_HELPER() in 3/4 and then
-> >> DEFINE_UART_PORT_TX_HELPER_LIMITED() in 4/4.
-> >>
-> >> The diffstat of patches 3+4 is as follows:
-> >>   26 files changed, 191 insertions(+), 823 deletions(-)
-> >> which appears to be nice.
-> > 
-> > Not really. This is horrid. Quality can't be measured in LoC (only).
-> > 
-> > The resulting code is unreadable. And for no good reason.
-> 
-> IMO, it's much more readable than the original ~ 30 various (and buggy 
-> -- see Ilpo's fixes) copies of this code. Apart from that, it makes 
-> further rework much easier (I have switch to kfifo in my mind for example).
+On Wed, Sep 07, 2022 at 01:16:23PM +0300, Ilpo Järvinen wrote:
 
-Sure, but you can't have that at the cost of something that is
-unreadable. Arnd's suggestions seems to improve things somewhat in this
-respect, though.
- 
-> > [ And note that you're "saving" something like 20 lines per driver:
-> 
-> It's not about saving, it's about deduplicating and unifying.
+> Also, I don't understand why you see it unreadable when the actual code is 
+> out in the open in that macro. It's formatted much better than e.g. 
+> read_poll_timeout() if you want an example of something that is hardly 
+> readable ;-). I agree though there's a learning-curve, albeit small, that 
+> it actually creates a function but that doesn't seem to me as big of an 
+> obstacle you seem to think.
 
-It was you who brought the diff stat that up and I put this in
-parentheses for a reason.
- 
-> > 	 12 files changed, 84 insertions(+), 349 deletions(-)
-> > ]
-> > 
-> > NAK
-> 
-> I'd love to come up with something nicer. That would be a function in 
-> serial-core calling hooks like I had [1] for example. But provided all 
-> those CPU workarounds/thunks, it'd be quite expensive to call two 
-> functions per character.
+There's a huge difference between the proposed macro with its
+I-lost-count-of-how-many arguments and levels of indirection and
+something like wait_event() which take one condition and has a
+descriptive name:
 
-Yeah, that was even worse so no need to reiterate that.
+	wait_event(device->misc_wait, atomic_read(&device->ap_pending_cnt) == 0);
 
-> Or creating a static inline (having ± the macro content) and the hooks 
-> as parameters and hope for optimizations to eliminate thunks (also 
-> suggested in the past [1]).
-> 
-> [1] https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
+vs
 
-If that works then that should improve readability as well.
+	static DEFINE_UART_PORT_TX_HELPER_LIMITED(altera_jtaguart_do_tx_chars,
+		true,
+		writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG),
+		({}));
+
+In the former case, you just need to look at the code to understand what
+is going on, very much unlike in the latter case.
 
 Johan
