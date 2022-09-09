@@ -2,42 +2,45 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B160ECAAA1
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 11:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25016ECAAA1
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229478AbiIILGP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 07:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
+        id S230283AbiIIMRL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 08:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiIILGN (ORCPT
+        with ESMTP id S230311AbiIIMQw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 07:06:13 -0400
+        Fri, 9 Sep 2022 08:16:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF34D21CA;
-        Fri,  9 Sep 2022 04:06:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2E314480A;
+        Fri,  9 Sep 2022 05:14:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1395B824F0;
-        Fri,  9 Sep 2022 11:06:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFB4C433C1;
-        Fri,  9 Sep 2022 11:06:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662721568;
-        bh=3NEzg2EVTYL6D0L+bzYSw8gVTESohGyL9ED7X39zx8U=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E37C5B822A8;
+        Fri,  9 Sep 2022 12:13:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B6FC433D6;
+        Fri,  9 Sep 2022 12:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662725583;
+        bh=wyT+RSE2oHYcIwAAxN7k6rwPkCm4BMGf+S0umuD69PI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HU5k6uR8qPVfMuxjpDGRdI+N9D1yMcepeX2HGegy4PMObnPCDRR8K5GtT7OuQmMAs
-         vXwFDf3X12zECHtFKyXBvTi9vyydPUy0yn5eZNJhWXeZSzKGqpZd5lUfzZBY8q4+kL
-         XzO/DAiVs1Vpku7HoApKQqDZ6NEUe1+9QqfgoffM=
-Date:   Fri, 9 Sep 2022 13:06:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=NBqgc3wBvCesUWYOaFSVqvPibG0TlWjXeieipY3hhTeBxSYoj4x1Ndfxzn1f+HITd
+         yN8VLlCxn+pr+ThxvZ1Fk9DT8rpqDqFcoPD/2b9Ai2KTvvIEiSrmiksGL4LAWWUfR4
+         qEmg4H+k0qGHIGGFd2Uw131KFADN81mhBgE1JvKuhGcQ6J+hUHG8Ni05+WGomVshAk
+         NlR1nW4/iXg3S/T8qQ3X0iueyhrovxA0ThwAs1PUhJBmrrR/Wz9O9pxTHzTJi+9y9A
+         RIP5Ox2cQVTZZOmCYB/xxqpnGxpNE997blqsjsOdbrxxkENe+qqZRpLbuQnGjAtLqJ
+         0foEurx1g3yVg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oWcsi-0001Ru-3k; Fri, 09 Sep 2022 14:13:12 +0200
+Date:   Fri, 9 Sep 2022 14:13:12 +0200
+From:   Johan Hovold <johan@kernel.org>
 To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+Cc:     gregkh@linuxfoundation.org,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Tobias Klauser <tklauser@distanz.ch>,
         Richard Genoud <richard.genoud@gmail.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
@@ -52,11 +55,12 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
         Manivannan Sadhasivam <mani@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
         Kevin Cernekee <cernekee@gmail.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -66,62 +70,71 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         Patrice Chotard <patrice.chotard@foss.st.com>,
         linux-riscv@lists.infradead.org
 Subject: Re: [PATCH v3 0/4] tty: TX helpers
-Message-ID: <YxseGPHVkSVdDnrh@kroah.com>
-References: <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
- <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
- <715b40ba-1bcc-4582-bed1-ef41126c7b94@www.fastmail.com>
- <cfd16d53-6aa0-e848-91d0-dce8ff72bb4d@linux.intel.com>
- <YxiONiDgGYp8MGQA@kroah.com>
- <c66f9c98-dcef-27c-d74a-ea826f6a799@linux.intel.com>
- <YxiQVTN/jX8AfO4L@kroah.com>
- <YxiiOWQxGCUz9ktF@shell.armlinux.org.uk>
- <2197faa3-0217-41e0-8ff0-b5396561c623@www.fastmail.com>
- <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
+Message-ID: <Yxst2PGeiQN+dL9e@hovoldconsulting.com>
+References: <20220906104805.23211-1-jslaby@suse.cz>
+ <Yxcvbk281f/vy4vb@hovoldconsulting.com>
+ <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 09, 2022 at 12:53:04PM +0200, Jiri Slaby wrote:
-> On 07. 09. 22, 16:56, Arnd Bergmann wrote:
-> > On Wed, Sep 7, 2022, at 3:52 PM, Russell King (Oracle) wrote:
-> > > On Wed, Sep 07, 2022 at 02:36:37PM +0200, Greg Kroah-Hartman wrote:
-> > > 
-> > > Of course, it would have been nicer to see the definition of this
-> > > macro, because then we can understand what the "ch" argument is to
-> > > this macro, and how that relates to the macro argument that is
-> > > shown in the example as a writel().
+On Wed, Sep 07, 2022 at 09:19:25AM +0200, Jiri Slaby wrote:
+> On 06. 09. 22, 13:30, Johan Hovold wrote:
+> > On Tue, Sep 06, 2022 at 12:48:01PM +0200, Jiri Slaby wrote:
+> >> This series introduces DEFINE_UART_PORT_TX_HELPER +
+> >> DEFINE_UART_PORT_TX_HELPER_LIMITED TX helpers. See PATCH 2/4 for the
+> >> details. Comments welcome.
+> >>
+> >> Then it switches drivers to use them. First, to
+> >> DEFINE_UART_PORT_TX_HELPER() in 3/4 and then
+> >> DEFINE_UART_PORT_TX_HELPER_LIMITED() in 4/4.
+> >>
+> >> The diffstat of patches 3+4 is as follows:
+> >>   26 files changed, 191 insertions(+), 823 deletions(-)
+> >> which appears to be nice.
 > > 
-> > I pulled out the 'ch' variable from the macro to avoid having
-> > the macro define local variables that are then passed to the
-> > inner expressions.
-> 
-> Note that I had "port" and "ch" as a part of the macro parameters in [v2],
-> but it didn't help the situation much.
-> > > Maybe a more complete example would help clear up the confusion?
-> > > Arnd?
+> > Not really. This is horrid. Quality can't be measured in LoC (only).
 > > 
-> > Here is a patch on top of the series that would implement the
-> > uart_port_tx_helper_limited() and uart_port_tx_helper()
-> > macros that can be used directly from drivers in place of defining
-> > local functions, with the (alphabetically) first two drivers
-> > converted to that.
+> > The resulting code is unreadable. And for no good reason.
 > 
-> If there are no objections, I will push the patches this directorin. I like
-> this more than [v2] or [v3] (the helper macros). Actually, I mentioned this
-> wait_event() style in [v1], but I perhaps simplified the concept too much to
-> completely eliminate the need of a wrapper function. And that made it too
-> complicated/too hard to understand.
+> IMO, it's much more readable than the original ~ 30 various (and buggy 
+> -- see Ilpo's fixes) copies of this code. Apart from that, it makes 
+> further rework much easier (I have switch to kfifo in my mind for example).
+
+Sure, but you can't have that at the cost of something that is
+unreadable. Arnd's suggestions seems to improve things somewhat in this
+respect, though.
+ 
+> > [ And note that you're "saving" something like 20 lines per driver:
 > 
-> Except I'd drop the "_helper" part from the name. Originally (in [v1]), I
-> had uart_port_tx() and uart_port_tx_limited() functions. In [v2+v3], I added
-> _helper to avoid confusion as we were generating a helpers using the macros.
-> Yes, technically, uart_port_tx() is still a helper, but I think it's
-> superfluous to have it in the name now.
+> It's not about saving, it's about deduplicating and unifying.
 
-No objection from me, thanks for doing this work!
+It was you who brought the diff stat that up and I put this in
+parentheses for a reason.
+ 
+> > 	 12 files changed, 84 insertions(+), 349 deletions(-)
+> > ]
+> > 
+> > NAK
+> 
+> I'd love to come up with something nicer. That would be a function in 
+> serial-core calling hooks like I had [1] for example. But provided all 
+> those CPU workarounds/thunks, it'd be quite expensive to call two 
+> functions per character.
 
-greg k-h
+Yeah, that was even worse so no need to reiterate that.
+
+> Or creating a static inline (having ± the macro content) and the hooks 
+> as parameters and hope for optimizations to eliminate thunks (also 
+> suggested in the past [1]).
+> 
+> [1] https://lore.kernel.org/all/20220411105405.9519-1-jslaby@suse.cz/
+
+If that works then that should improve readability as well.
+
+Johan
