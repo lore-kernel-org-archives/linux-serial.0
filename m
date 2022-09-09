@@ -2,44 +2,46 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C352ECAAD3
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A05C6FA86
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbiIIMYS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 08:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        id S230408AbiIIMlf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 08:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiIIMXv (ORCPT
+        with ESMTP id S230270AbiIIMld (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 08:23:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E6E48EB0;
-        Fri,  9 Sep 2022 05:23:03 -0700 (PDT)
+        Fri, 9 Sep 2022 08:41:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFD4D99CF;
+        Fri,  9 Sep 2022 05:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3533B822A8;
-        Fri,  9 Sep 2022 12:23:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F001C433D7;
-        Fri,  9 Sep 2022 12:23:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B949C61FC9;
+        Fri,  9 Sep 2022 12:41:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2491EC433C1;
+        Fri,  9 Sep 2022 12:41:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662726181;
-        bh=f/MBk4DuV+ezF4qXmdCJCjmryA6nTjeI9XVb4sRPRn8=;
+        s=k20201202; t=1662727292;
+        bh=/ZRVUtdEfLA1Q7ddcRbz1aDFhErn44JrkcHfJH9/laI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fl65HRPASBnRey7QziwpTTh++x1s075YBaImqSA2XFii2ys0KOSOxu4LXRJFmue+1
-         zTNQlcg2Lt35tZzXHX7tQ6aCugsDvKfnidzQTkiahJbbTuaH3KTyOQKDDquC6Ip2i0
-         iCb0nhC/Jj5sFUJwMt9VGnBtVdgP1EQRzEtoh8HSutp930G7nb67pu5jUDyqjGA16I
-         37jw3n60ubTVjXuRmLbu1hDiZr3QDo7rtNUjFPdvpY1nshUWOAwnNEcz9rgvQa4jg4
-         a3gzW9x1+BxRdV4h67haa3Et9KQK0qoEXOjYc6YR64IoEYdMcVPgddxHnjmDlv8TZq
-         wVLmEcCXIDehA==
+        b=JKUR0m9UMvBhQxBe1X97QpC6YoeIjOoYfUfFEGgnNSI2+wxr8RFJ4I7VDZaZ3pRiX
+         IzWJcWq5b22fbPNQfs+Moe37jxulkGnEWAaL9GG5ZJ8h0F12OzCD8u3vW81bjTGAVe
+         NlcmB+4gfZPdHRSRjtRDKFTLBpONtOzYF5bmyw1rkjnqN4qcXY5YQOIDUXV1SrYexh
+         Ng3+PCREQk9Wc0XsWhOaKuysTBtg92IzTSLlAeG6xoTXc6OiAEes30zx1EKxnJNiyS
+         g22XScVNPl1dHk+AfyKhD6hzWg+PTN8EMgNsLMxBO2VApJtPk8nv1mPgJEOR1SamzD
+         Mngf5Wq3wMByA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1oWd2M-0001Xo-Nt; Fri, 09 Sep 2022 14:23:10 +0200
-Date:   Fri, 9 Sep 2022 14:23:10 +0200
+        id 1oWdKH-0001g1-Hm; Fri, 09 Sep 2022 14:41:41 +0200
+Date:   Fri, 9 Sep 2022 14:41:41 +0200
 From:   Johan Hovold <johan@kernel.org>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Tobias Klauser <tklauser@distanz.ch>,
@@ -58,7 +60,6 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
         Manivannan Sadhasivam <mani@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com,
         Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
@@ -71,44 +72,86 @@ Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Patrice Chotard <patrice.chotard@foss.st.com>,
         linux-riscv@lists.infradead.org
 Subject: Re: [PATCH v3 0/4] tty: TX helpers
-Message-ID: <YxswLiOaHQ5ajeOi@hovoldconsulting.com>
-References: <20220906104805.23211-1-jslaby@suse.cz>
- <Yxcvbk281f/vy4vb@hovoldconsulting.com>
- <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
+Message-ID: <Yxs0heIbpyVmSWWY@hovoldconsulting.com>
+References: <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
  <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
+ <715b40ba-1bcc-4582-bed1-ef41126c7b94@www.fastmail.com>
+ <cfd16d53-6aa0-e848-91d0-dce8ff72bb4d@linux.intel.com>
+ <YxiONiDgGYp8MGQA@kroah.com>
+ <c66f9c98-dcef-27c-d74a-ea826f6a799@linux.intel.com>
+ <YxiQVTN/jX8AfO4L@kroah.com>
+ <YxiiOWQxGCUz9ktF@shell.armlinux.org.uk>
+ <2197faa3-0217-41e0-8ff0-b5396561c623@www.fastmail.com>
+ <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
+In-Reply-To: <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 01:16:23PM +0300, Ilpo Järvinen wrote:
+On Fri, Sep 09, 2022 at 12:53:04PM +0200, Jiri Slaby wrote:
+> On 07. 09. 22, 16:56, Arnd Bergmann wrote:
+> > On Wed, Sep 7, 2022, at 3:52 PM, Russell King (Oracle) wrote:
+> >> On Wed, Sep 07, 2022 at 02:36:37PM +0200, Greg Kroah-Hartman wrote:
+> >>
+> >> Of course, it would have been nicer to see the definition of this
+> >> macro, because then we can understand what the "ch" argument is to
+> >> this macro, and how that relates to the macro argument that is
+> >> shown in the example as a writel().
+> > 
+> > I pulled out the 'ch' variable from the macro to avoid having
+> > the macro define local variables that are then passed to the
+> > inner expressions.
+> 
+> Note that I had "port" and "ch" as a part of the macro parameters in 
+> [v2], but it didn't help the situation much.
+> >> Maybe a more complete example would help clear up the confusion?
+> >> Arnd?
+> > 
+> > Here is a patch on top of the series that would implement the
+> > uart_port_tx_helper_limited() and uart_port_tx_helper()
+> > macros that can be used directly from drivers in place of defining
+> > local functions, with the (alphabetically) first two drivers
+> > converted to that.
+> 
+> If there are no objections, I will push the patches this directorin. I 
+> like this more than [v2] or [v3] (the helper macros). Actually, I 
+> mentioned this wait_event() style in [v1], but I perhaps simplified the 
+> concept too much to completely eliminate the need of a wrapper function. 
+> And that made it too complicated/too hard to understand.
 
-> Also, I don't understand why you see it unreadable when the actual code is 
-> out in the open in that macro. It's formatted much better than e.g. 
-> read_poll_timeout() if you want an example of something that is hardly 
-> readable ;-). I agree though there's a learning-curve, albeit small, that 
-> it actually creates a function but that doesn't seem to me as big of an 
-> obstacle you seem to think.
+This sounds much better. You also had some users that needed some
+preamble which could now go in the same function (e.g.
+altera_jtaguart_tx_chars()).
 
-There's a huge difference between the proposed macro with its
-I-lost-count-of-how-many arguments and levels of indirection and
-something like wait_event() which take one condition and has a
-descriptive name:
+> Except I'd drop the "_helper" part from the name. Originally (in [v1]), 
+> I had uart_port_tx() and uart_port_tx_limited() functions. In [v2+v3], I 
+> added _helper to avoid confusion as we were generating a helpers using 
+> the macros. Yes, technically, uart_port_tx() is still a helper, but I 
+> think it's superfluous to have it in the name now.
 
-	wait_event(device->misc_wait, atomic_read(&device->ap_pending_cnt) == 0);
+That would also be an in improvement. For the altera example you could
+end up with something like:
 
-vs
+static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
+{
+	struct uart_port *port = &pp->port;
+	unsigned int space;
 
-	static DEFINE_UART_PORT_TX_HELPER_LIMITED(altera_jtaguart_do_tx_chars,
-		true,
-		writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG),
-		({}));
+	space = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
+			ALTERA_JTAGUART_CONTROL_WSPACE_MSK) >>
+			ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
 
-In the former case, you just need to look at the code to understand what
-is going on, very much unlike in the latter case.
+	uart_port_tx_chars(port, space,
+			   writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG));
+}
+
+which would be understandable.
+
+If there are too many arguments to be passed in, then perhaps you can
+explore Arnd's (and you own) suggestion to use inline helpers so that
+the arguments are named.
 
 Johan
