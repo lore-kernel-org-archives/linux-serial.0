@@ -2,53 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F6DC6FA86
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 09:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65793ECAAA1
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 09:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbiIIJK6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 05:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        id S232109AbiIIJMx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 05:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231849AbiIIJKz (ORCPT
+        with ESMTP id S232115AbiIIJMv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 05:10:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007A912D548;
-        Fri,  9 Sep 2022 02:10:54 -0700 (PDT)
+        Fri, 9 Sep 2022 05:12:51 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F5A138809;
+        Fri,  9 Sep 2022 02:12:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662714654; x=1694250654;
+  t=1662714768; x=1694250768;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=1t24DAZdaTeTQgh9a9FDeIongWZD4EJoGdOMahPOlbo=;
-  b=k0TXLjzf1mOpxk2SjuNXeMj/GrHe7c2GLGTdCfizOmXWXGyh8BVlnJcZ
-   4OJLBUGzt6a0XhuAHy8faEqQRArW4Amr1z1jZ2zW/5C5p/N900unNcXAh
-   daFkro8tyvnqy+C1sn3ncbAsF5jegmxN65q9Dq6tsZLgb0+wUgnyfQGR/
-   YdxCZXMOMr6R+2xrbL/0oq/sQobxJA1Acx7h/gG4wJPeERit3XAcSA7DX
-   x46kuXksWiAGOEXqim/c7wEBsUeuVZLwM5YQ/dtOTb9CC/wPu7nNbBGMy
-   bqYGHkxtyelCW9ltM4nHQtTwVC0xIRH36LfDpi4tqQFxTqM/Bif9TU99c
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="277822336"
+  bh=qXXOa+xXwqEYuH85kDTyeoK1yXiB/wu6uXJB6DqF/YE=;
+  b=hnMQh6Eps0kHw2PK6KrgpM8s7R24U6FhstKMy+KBoEWmsipUQYjv3FFT
+   bs/sROoJsrHVXK8LPdqe0mrm760fMs5QfH9UOrRxJb3PIypXwEjvo7Dnu
+   TD7+aczMiKAeXM45s+1W/FV9CBovRKUGCZG0HWreHiMCIYl9VbKCjI4ER
+   sYWBsvK6+i40KKEyILKHcbNOOIDOF1f5U+Gs6bP3a73RWIz7yUYxfBkEQ
+   NhcTYGGRMONK0slgbxuNKzX9XF3FAyIUwNDJayT/XJKVXh2edwSNmfUR0
+   3h2tT9Jw9pkTDUkFerxtxk9uoA/ipyRWmYFuAuYP52ixqMwdSpa1nfcHK
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="298772589"
 X-IronPort-AV: E=Sophos;i="5.93,302,1654585200"; 
-   d="scan'208";a="277822336"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 02:10:54 -0700
+   d="scan'208";a="298772589"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 02:12:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,302,1654585200"; 
-   d="scan'208";a="704338246"
+   d="scan'208";a="757537743"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 Sep 2022 02:10:53 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 09 Sep 2022 02:12:46 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 33843238; Fri,  9 Sep 2022 12:11:09 +0300 (EEST)
+        id 8DAD0238; Fri,  9 Sep 2022 12:13:02 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] serial: 8250_dma: Convert to use uart_xmit_advance()
-Date:   Fri,  9 Sep 2022 12:11:02 +0300
-Message-Id: <20220909091102.58941-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: 8250_omap: Convert to use uart_xmit_advance()
+Date:   Fri,  9 Sep 2022 12:12:58 +0300
+Message-Id: <20220909091258.68886-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,14 +60,14 @@ the Tx queue. Use it for the sake of unification and robustness.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 4 +---
+ drivers/tty/serial/8250/8250_omap.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index d99020fd3427..b85c82616e8c 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -26,9 +26,7 @@ static void __dma_tx_complete(void *param)
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index b43894e15b07..4f4d878dc2fc 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -984,9 +984,7 @@ static void omap_8250_dma_tx_complete(void *param)
  
  	dma->tx_running = 0;
  
@@ -77,8 +76,8 @@ index d99020fd3427..b85c82616e8c 100644
 -	p->port.icount.tx += dma->tx_size;
 +	uart_xmit_advance(&p->port, dma->tx_size);
  
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(&p->port);
+ 	if (priv->delayed_restore) {
+ 		priv->delayed_restore = 0;
 -- 
 2.35.1
 
