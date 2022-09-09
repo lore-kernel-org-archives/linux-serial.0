@@ -2,99 +2,88 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 100B2ECAAD3
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 09:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E74FECAAD3
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 10:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbiIIJRK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 05:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
+        id S229765AbiIIKRs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 06:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbiIIJRI (ORCPT
+        with ESMTP id S229824AbiIIKRr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 05:17:08 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7567E128C3B;
-        Fri,  9 Sep 2022 02:17:07 -0700 (PDT)
+        Fri, 9 Sep 2022 06:17:47 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CF3129C6C;
+        Fri,  9 Sep 2022 03:17:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662715027; x=1694251027;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Dhw2jhCuJW+jka0cep0s3bFZ08dxRspNbt2WscRo39c=;
-  b=dDPmGkykmzA72XMUJvQmejkdet2cvT//1VVGGppQSNGO+jpKXm4x178I
-   x7bGg/c3+uSC4p4/YzyvEXjW/L8i4kuN6/SFehgFGSUcj07Ujhn4HXlKM
-   c9755DGR68yGjgoG1AxR2nyrG1ARjRFEV7Tsxv8qvztqPd5ah2+pTpgKy
-   2eb3HZ1PpzJxo21ElwYOyEEjELrIYYW4xjRNZu8QtwpTpbDo8bpam0sy1
-   LU2PyqmLyvPqYKzXGWChWIU1x6dJ0a9LqVnXqcPC7qEVsuCZxkbK+E8Gq
-   7fj3+sfmd7jmAlBkgH1nlTsSWJK+THPVOTJ474ugjkCWSLJaG9yk9H85X
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="280459202"
+  t=1662718666; x=1694254666;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=twmve2pp6FrQGPPjMyndpXyUbQtJvOD5cguRNbI4b8k=;
+  b=LNomahuwvi9Ima+PTJbdzu13/NoqIfSY+viDyk/pqJBLgBx79r1tzYSL
+   dNoApEmfTG1kXPexjt5yrVSLkOnzgJSVr74dgajVbkCQroE1DD3+TgInx
+   J1Z9d7/kEEmk+6RDwZegYRqg7UCmN/cNPMoF4gyjJAfwJeNYUJ6e+YmuL
+   AxtryTlJqF1dhFEQ5n/+rHl9+vi8LzjChrxmhxJm6CtIJRvLhC7ZZ1bM8
+   qrx/X5LSkcPjR9zWWolCv8ztbsyLSZRcJLUzn/aCZ+0kyCr+LA82LfYdn
+   gMWGxIjVDSQvpWL1Gbs9lPoNAG+6/EN6iiIjouvKPq/0ooZcE6tQhWfrt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="323652426"
 X-IronPort-AV: E=Sophos;i="5.93,302,1654585200"; 
-   d="scan'208";a="280459202"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 02:17:06 -0700
+   d="scan'208";a="323652426"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 03:17:45 -0700
 X-IronPort-AV: E=Sophos;i="5.93,302,1654585200"; 
-   d="scan'208";a="677089043"
-Received: from ppogotov-mobl.ger.corp.intel.com ([10.249.45.197])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 02:17:04 -0700
-Date:   Fri, 9 Sep 2022 12:16:58 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+   d="scan'208";a="592559923"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 03:17:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oWb4v-00AW30-1f;
+        Fri, 09 Sep 2022 13:17:41 +0300
+Date:   Fri, 9 Sep 2022 13:17:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Jiri Slaby <jirislaby@kernel.org>
 Subject: Re: [PATCH v1 1/1] serial: 8250_dma: Convert to use
  uart_xmit_advance()
-In-Reply-To: <20220909091102.58941-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <81acf91-ba43-f276-fca7-ac9c9e721a88@linux.intel.com>
+Message-ID: <YxsSxbB47TNm2p0B@smile.fi.intel.com>
 References: <20220909091102.58941-1-andriy.shevchenko@linux.intel.com>
+ <81acf91-ba43-f276-fca7-ac9c9e721a88@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1445102681-1662715026=:1967"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <81acf91-ba43-f276-fca7-ac9c9e721a88@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1445102681-1662715026=:1967
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Fri, 9 Sep 2022, Andy Shevchenko wrote:
-
-> uart_xmit_advance() provides a common way on how to advance
-> the Tx queue. Use it for the sake of unification and robustness.
+On Fri, Sep 09, 2022 at 12:16:58PM +0300, Ilpo Järvinen wrote:
+> On Fri, 9 Sep 2022, Andy Shevchenko wrote:
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_dma.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index d99020fd3427..b85c82616e8c 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -26,9 +26,7 @@ static void __dma_tx_complete(void *param)
->  
->  	dma->tx_running = 0;
->  
-> -	xmit->tail += dma->tx_size;
-> -	xmit->tail &= UART_XMIT_SIZE - 1;
-> -	p->port.icount.tx += dma->tx_size;
-> +	uart_xmit_advance(&p->port, dma->tx_size);
->  
->  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
->  		uart_write_wakeup(&p->port);
+> > uart_xmit_advance() provides a common way on how to advance
+> > the Tx queue. Use it for the sake of unification and robustness.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+...
 
-Please note though that I already have patches for almost all these but 
-I've not just submitted the remaining ones yet.
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+Thanks!
+
+> Please note though that I already have patches for almost all these but
+> I've not just submitted the remaining ones yet.
+
+My interest only for a limited scope of 8250 compatible UARTs, I have sent
+just a couple of patches and I don't think I will send more.
 
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
---8323329-1445102681-1662715026=:1967--
+
