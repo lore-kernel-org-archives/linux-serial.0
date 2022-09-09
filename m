@@ -2,156 +2,184 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A05C6FA86
-	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 12:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFC0ECAAA1
+	for <linux-serial@archiver.kernel.org>; Fri,  9 Sep 2022 21:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbiIIMlf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 9 Sep 2022 08:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S229810AbiIIVAP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 9 Sep 2022 17:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiIIMld (ORCPT
+        with ESMTP id S229579AbiIIVAN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 9 Sep 2022 08:41:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFD4D99CF;
-        Fri,  9 Sep 2022 05:41:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B949C61FC9;
-        Fri,  9 Sep 2022 12:41:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2491EC433C1;
-        Fri,  9 Sep 2022 12:41:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662727292;
-        bh=/ZRVUtdEfLA1Q7ddcRbz1aDFhErn44JrkcHfJH9/laI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JKUR0m9UMvBhQxBe1X97QpC6YoeIjOoYfUfFEGgnNSI2+wxr8RFJ4I7VDZaZ3pRiX
-         IzWJcWq5b22fbPNQfs+Moe37jxulkGnEWAaL9GG5ZJ8h0F12OzCD8u3vW81bjTGAVe
-         NlcmB+4gfZPdHRSRjtRDKFTLBpONtOzYF5bmyw1rkjnqN4qcXY5YQOIDUXV1SrYexh
-         Ng3+PCREQk9Wc0XsWhOaKuysTBtg92IzTSLlAeG6xoTXc6OiAEes30zx1EKxnJNiyS
-         g22XScVNPl1dHk+AfyKhD6hzWg+PTN8EMgNsLMxBO2VApJtPk8nv1mPgJEOR1SamzD
-         Mngf5Wq3wMByA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oWdKH-0001g1-Hm; Fri, 09 Sep 2022 14:41:41 +0200
-Date:   Fri, 9 Sep 2022 14:41:41 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        Kevin Cernekee <cernekee@gmail.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v3 0/4] tty: TX helpers
-Message-ID: <Yxs0heIbpyVmSWWY@hovoldconsulting.com>
-References: <dec6d5c4-45b7-f087-95f4-bf1dae9e9d27@kernel.org>
- <4e9b4471-a6f2-4b16-d830-67d253ae4e6a@linux.intel.com>
- <715b40ba-1bcc-4582-bed1-ef41126c7b94@www.fastmail.com>
- <cfd16d53-6aa0-e848-91d0-dce8ff72bb4d@linux.intel.com>
- <YxiONiDgGYp8MGQA@kroah.com>
- <c66f9c98-dcef-27c-d74a-ea826f6a799@linux.intel.com>
- <YxiQVTN/jX8AfO4L@kroah.com>
- <YxiiOWQxGCUz9ktF@shell.armlinux.org.uk>
- <2197faa3-0217-41e0-8ff0-b5396561c623@www.fastmail.com>
- <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
+        Fri, 9 Sep 2022 17:00:13 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F6C4AD44
+        for <linux-serial@vger.kernel.org>; Fri,  9 Sep 2022 14:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662757212; x=1694293212;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KYqgmZMblaLQZluopLEtT7I5WmpFEN/7EXzLXB0D71M=;
+  b=IaVLZYztcRgFbUJQZr4DRjhyTiGdGbWsvY4k7Mj2SrutHPLwlpmYUuZD
+   0h2rxmhpkRvUy0AMZXKJXv+AC/887S1GIChxjt+Pn79zPAgrP+kiHkAK4
+   AXgVhyWtu+9shsfjDG/l18GM/qdm7cbMo6qjwaE63iuXe0H5JxvUzi8xK
+   gEp+rmpugyDqEO6yhBAXu/MYlFzmMt16ZuSMg0+kMqCNTu7H5R6R3IhRu
+   lbXAqV+8ynB+CG7L8Fd59W2gk5y1igJKVr2Liifk/hN7B4IrhmA3LLane
+   JHOlUac8YOwpgL+9R7VF8ITrzidDhhFEAq+/V6QvlpswxSxATgWK3GyFQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10465"; a="280589647"
+X-IronPort-AV: E=Sophos;i="5.93,304,1654585200"; 
+   d="scan'208";a="280589647"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 14:00:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,304,1654585200"; 
+   d="scan'208";a="683773474"
+Received: from lkp-server02.sh.intel.com (HELO b2938d2e5c5a) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 09 Sep 2022 14:00:07 -0700
+Received: from kbuild by b2938d2e5c5a with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oWl6c-0001iz-35;
+        Fri, 09 Sep 2022 21:00:06 +0000
+Date:   Sat, 10 Sep 2022 04:59:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ ccf3a570410af607124534396cfc0e9a0986b5e8
+Message-ID: <631ba94c.PRluRmaEXM8DBvz0%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5feff23c-9458-616c-66ce-13cca5829162@kernel.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 09, 2022 at 12:53:04PM +0200, Jiri Slaby wrote:
-> On 07. 09. 22, 16:56, Arnd Bergmann wrote:
-> > On Wed, Sep 7, 2022, at 3:52 PM, Russell King (Oracle) wrote:
-> >> On Wed, Sep 07, 2022 at 02:36:37PM +0200, Greg Kroah-Hartman wrote:
-> >>
-> >> Of course, it would have been nicer to see the definition of this
-> >> macro, because then we can understand what the "ch" argument is to
-> >> this macro, and how that relates to the macro argument that is
-> >> shown in the example as a writel().
-> > 
-> > I pulled out the 'ch' variable from the macro to avoid having
-> > the macro define local variables that are then passed to the
-> > inner expressions.
-> 
-> Note that I had "port" and "ch" as a part of the macro parameters in 
-> [v2], but it didn't help the situation much.
-> >> Maybe a more complete example would help clear up the confusion?
-> >> Arnd?
-> > 
-> > Here is a patch on top of the series that would implement the
-> > uart_port_tx_helper_limited() and uart_port_tx_helper()
-> > macros that can be used directly from drivers in place of defining
-> > local functions, with the (alphabetically) first two drivers
-> > converted to that.
-> 
-> If there are no objections, I will push the patches this directorin. I 
-> like this more than [v2] or [v3] (the helper macros). Actually, I 
-> mentioned this wait_event() style in [v1], but I perhaps simplified the 
-> concept too much to completely eliminate the need of a wrapper function. 
-> And that made it too complicated/too hard to understand.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: ccf3a570410af607124534396cfc0e9a0986b5e8  termios: kill uapi termios.h that are identical to generic one
 
-This sounds much better. You also had some users that needed some
-preamble which could now go in the same function (e.g.
-altera_jtaguart_tx_chars()).
+elapsed time: 732m
 
-> Except I'd drop the "_helper" part from the name. Originally (in [v1]), 
-> I had uart_port_tx() and uart_port_tx_limited() functions. In [v2+v3], I 
-> added _helper to avoid confusion as we were generating a helpers using 
-> the macros. Yes, technically, uart_port_tx() is still a helper, but I 
-> think it's superfluous to have it in the name now.
+configs tested: 107
+configs skipped: 3
 
-That would also be an in improvement. For the altera example you could
-end up with something like:
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
-{
-	struct uart_port *port = &pp->port;
-	unsigned int space;
+gcc tested configs:
+arm                                 defconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+x86_64                        randconfig-a006
+um                           x86_64_defconfig
+um                             i386_defconfig
+i386                             allyesconfig
+i386                                defconfig
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+mips                            ar7_defconfig
+mips                         rt305x_defconfig
+arc                      axs103_smp_defconfig
+openrisc                    or1ksim_defconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+x86_64                           rhel-8.3-kvm
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+arc                    vdk_hs38_smp_defconfig
+sh                         microdev_defconfig
+mips                           xway_defconfig
+loongarch                           defconfig
+loongarch                         allnoconfig
+i386                          randconfig-c001
+sh                             shx3_defconfig
+xtensa                              defconfig
+mips                    maltaup_xpa_defconfig
+mips                  maltasmvp_eva_defconfig
+sh                        edosk7705_defconfig
+arm                             pxa_defconfig
+arc                              alldefconfig
+arm                           u8500_defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+m68k                       m5475evb_defconfig
+powerpc                 mpc834x_itx_defconfig
+powerpc                     tqm8548_defconfig
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+nios2                            allyesconfig
+sh                             espt_defconfig
+sh                     magicpanelr2_defconfig
+s390                       zfcpdump_defconfig
+mips                        bcm47xx_defconfig
+riscv                               defconfig
+nios2                         10m50_defconfig
+powerpc                 mpc837x_rdb_defconfig
+riscv                randconfig-r042-20220908
+arc                  randconfig-r043-20220907
+arc                  randconfig-r043-20220908
+s390                 randconfig-r044-20220908
+arm                           sunxi_defconfig
+sh                        dreamcast_defconfig
+arm                            zeus_defconfig
+i386                          debian-10.3-kvm
+i386                        debian-10.3-kunit
+i386                         debian-10.3-func
+ia64                             allmodconfig
 
-	space = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
-			ALTERA_JTAGUART_CONTROL_WSPACE_MSK) >>
-			ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
+clang tested configs:
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-k001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+powerpc                        fsp2_defconfig
+powerpc                 mpc8272_ads_defconfig
+mips                        qi_lb60_defconfig
+arm                          pcm027_defconfig
+mips                           mtx1_defconfig
+riscv                randconfig-r042-20220907
+hexagon              randconfig-r041-20220907
+hexagon              randconfig-r041-20220908
+hexagon              randconfig-r045-20220908
+hexagon              randconfig-r045-20220907
+s390                 randconfig-r044-20220907
+riscv                randconfig-r042-20220909
+hexagon              randconfig-r041-20220909
+hexagon              randconfig-r045-20220909
+s390                 randconfig-r044-20220909
+powerpc                          allmodconfig
+powerpc                     tqm8540_defconfig
+powerpc                      ppc44x_defconfig
 
-	uart_port_tx_chars(port, space,
-			   writel(ch, port->membase + ALTERA_JTAGUART_DATA_REG));
-}
-
-which would be understandable.
-
-If there are too many arguments to be passed in, then perhaps you can
-explore Arnd's (and you own) suggestion to use inline helpers so that
-the arguments are named.
-
-Johan
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
