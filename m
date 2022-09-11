@@ -2,150 +2,98 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 179D6C6FA89
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Sep 2022 08:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B40D7ECAAA1
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Sep 2022 08:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbiIKIhY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Sep 2022 04:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
+        id S229991AbiIKI42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Sep 2022 04:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiIKIhX (ORCPT
+        with ESMTP id S229981AbiIKI41 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Sep 2022 04:37:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5882D30560;
-        Sun, 11 Sep 2022 01:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662885442; x=1694421442;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uMf3K04xeQCNkmkTP8NTLrU3WiyufBIe+F2AtJ43V04=;
-  b=VA/L7JBYE6UHEYhLhpxlsbLJM2EmHykYKN7HnqUYpZR6e/qTnWVRlUDI
-   EGpygAlcSvOfuG72S3/mU3to9IFLeUne2asCzy77YiQCSyMya/JAhwlzV
-   fvY0ew/wmdgWopPk859UZEgG0sVPAy2NukGbxets8MV9yC9Y4q+tN5jBc
-   6n2v3IfYR79ImljLKdYsWIXJ+o3mlIJn17xWp2lv5xUKg810hTnrjeP2t
-   +8SNH3ahAY7ifGMTMcvmUVlD7ZQUrlnBsquXwV9aDBKmq7dHAI5iLHTsq
-   EwqXkrJ6AfAsjOkgOLXhV05slnrK+UVd8k2DTKT5uaa6OSYYEUOptjbRO
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10466"; a="280725885"
-X-IronPort-AV: E=Sophos;i="5.93,307,1654585200"; 
-   d="scan'208";a="280725885"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 01:37:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,307,1654585200"; 
-   d="scan'208";a="566841440"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orsmga003.jf.intel.com with ESMTP; 11 Sep 2022 01:37:16 -0700
-Date:   Sun, 11 Sep 2022 16:27:45 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de,
-        Basheer Ahmed Muddebihal 
-        <basheer.ahmed.muddebihal@linux.intel.com>
-Subject: Re: [PATCH v1 3/5] fpga: dfl: Add DFHv1 Register Definitions
-Message-ID: <Yx2cAaQ0HhPkYyC4@yilunxu-OptiPlex-7050>
-References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
- <20220906190426.3139760-4-matthew.gerlach@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906190426.3139760-4-matthew.gerlach@linux.intel.com>
+        Sun, 11 Sep 2022 04:56:27 -0400
+X-Greylist: delayed 418 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 11 Sep 2022 01:56:25 PDT
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944972CCB9
+        for <linux-serial@vger.kernel.org>; Sun, 11 Sep 2022 01:56:25 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id 4910E101E6B69
+        for <linux-serial@vger.kernel.org>; Sun, 11 Sep 2022 10:49:11 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id E6364603E021
+        for <linux-serial@vger.kernel.org>; Sun, 11 Sep 2022 10:49:10 +0200 (CEST)
+X-Mailbox-Line: From 72fb646c1b0b11c989850c55f52f9ff343d1b2fa Mon Sep 17 00:00:00 2001
+Message-Id: <72fb646c1b0b11c989850c55f52f9ff343d1b2fa.1662884345.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Sun, 11 Sep 2022 10:22:01 +0200
+Subject: [PATCH] serial: fsl_lpuart: Reset prior to registration
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Ilpo Jarvinen <ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-09-06 at 12:04:24 -0700, matthew.gerlach@linux.intel.com wrote:
-> From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
-> 
-> This patch adds the definitions for DFHv1 header and related register
-> bitfields.
-> 
-> Signed-off-by: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> ---
->  include/linux/dfl.h | 37 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 37 insertions(+)
-> 
-> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
-> index b5accdcfa368..61bcf20c1bc8 100644
-> --- a/include/linux/dfl.h
-> +++ b/include/linux/dfl.h
-> @@ -23,6 +23,16 @@
->  #define GUID_H			0x10
->  #define NEXT_AFU		0x18
->  
-> +/*
-> + * DFHv1 Register Offset definitons
-> + * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
-> + * as common header registers
-> + */
-> +#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
-> +#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
-> +#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
-> +#define DFHv1_PARAM_DATA	0x8   /* Offset of Param data from Param header */
-> +
->  #define DFH_SIZE		0x8
->  
->  /* Device Feature Header Register Bitfield */
-> @@ -30,8 +40,35 @@
->  #define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
->  #define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
->  #define DFH_EOL			BIT_ULL(40)		/* End of list */
-> +#define DFH_VERSION		GENMASK_ULL(59, 52)	/* DFH version */
->  #define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
->  
-> +/*
-> + *  CSR Rel Bit, 1'b0 = relative (offset from feature DFH start),
+Since commit bd5305dcabbc ("tty: serial: fsl_lpuart: do software reset
+for imx7ulp and imx8qxp"), certain i.MX UARTs are reset after they've
+already been registered.  Register state may thus be clobbered after
+user space has begun to open and access the UART.
 
-Reduce one whitespace indent.
+Avoid by performing the reset prior to registration.
 
-> + * 1'b1 = absolute (ARM or other non-PCIe use)
-> + */
-> +#define DFHv1_CSR_ADDR_REL	BIT_ULL(0)
-> +
-> +/*
-> + * CSR Header Register Bit Definitions
-> + */
+Fixes: bd5305dcabbc ("tty: serial: fsl_lpuart: do software reset for imx7ulp and imx8qxp")
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org # v5.15+
+Cc: Fugang Duan <fugang.duan@nxp.com>
+Cc: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Use oneline style comment should be OK?
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index f21915015d67..e9d5b481bb31 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2719,14 +2719,15 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		lpuart_reg.cons = LPUART_CONSOLE;
+ 		handler = lpuart_int;
+ 	}
+-	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+-	if (ret)
+-		goto failed_attach_port;
+ 
+ 	ret = lpuart_global_reset(sport);
+ 	if (ret)
+ 		goto failed_reset;
+ 
++	ret = uart_add_one_port(&lpuart_reg, &sport->port);
++	if (ret)
++		goto failed_attach_port;
++
+ 	ret = uart_get_rs485_mode(&sport->port);
+ 	if (ret)
+ 		goto failed_get_rs485;
+@@ -2742,9 +2743,9 @@ static int lpuart_probe(struct platform_device *pdev)
+ 
+ failed_irq_request:
+ failed_get_rs485:
+-failed_reset:
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
++failed_reset:
+ 	lpuart_disable_clks(sport);
+ 	return ret;
+ }
+-- 
+2.36.1
 
-> +#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)  /* 63:1 of CSR address */
-> +
-> +/*
-> + * CSR SIZE Goup Register Bit Definitions
-> + */
-
-Same concern
-
-> +#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	/* Enumeration instantiated IP */
-> +#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	/* Group Features/interfaces */
-> +#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		/* Presence of Parameters */
-> +#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	/* Size of CSR Block in bytes */
-> +
-> +/*
-> + * PARAM Header Register Bit Definitions
-> + */
-
-Same
-
-> +#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0) /* Id of this Param  */
-> +#define DFHv1_PARAM_HDR_VERSION		GENMASK_ULL(31, 16) /* Version Param */
-> +#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 32) /* Offset of next Param */
-> +
->  /**
->   * enum dfl_id_type - define the DFL FIU types
->   */
-> -- 
-> 2.25.1
-> 
