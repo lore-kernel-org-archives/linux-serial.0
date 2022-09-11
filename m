@@ -2,121 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01AA9ECAAA1
-	for <linux-serial@archiver.kernel.org>; Sun, 11 Sep 2022 10:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26582ECAAD3
+	for <linux-serial@archiver.kernel.org>; Sun, 11 Sep 2022 15:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiIKKGw (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 11 Sep 2022 06:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
+        id S229630AbiIKPkU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 11 Sep 2022 11:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiIKKGw (ORCPT
+        with ESMTP id S229531AbiIKPkT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 11 Sep 2022 06:06:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1704013D7D;
-        Sun, 11 Sep 2022 03:06:51 -0700 (PDT)
+        Sun, 11 Sep 2022 11:40:19 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8D312753;
+        Sun, 11 Sep 2022 08:40:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662890811; x=1694426811;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=COoydWrhxx4yHmAPhCBCqR8wvWQLCV4m7CypWvSwh8w=;
-  b=d44lBWsFEfjgphwKGO7PfMVrzesBd1LZt5LIJ6qnTCcYcX0ut81SSd+b
-   6CaU5fbEwGLbFjr4GOLKJAxtcCvdVj1zriaNTnaWMaBWSIKVBPtUxArwO
-   EcBXVaO/lroMRTzLFscFkEmuV9NbxG+pXxeaZIBrWGzW41Uh5JaRiqXx5
-   3O3Uhm9OAppnXmDjO4nqBw9zebfVOPFCjgROqfWeZagsPyTTwqg+AxDQQ
-   LoMHNxJTUpOh9XrOMLs10ln82NA12pVTY0w3NfglpbVGCmm1pIp+cqm4r
-   eE4HJOkQFt8Gd7zxGf1XEhgVzv/sNrP3AnMqmmsv47po6qRc1Q74aVGC7
+  t=1662910819; x=1694446819;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=uma3p/ED+ciS4EU3RIneR8AdmYM1uIjtfF/IZxiZ/RY=;
+  b=Y4ef5OVbUKllQsXxTVKWsvogJymRjPTgQ+cEeM4Uf0CW1Ja8JptjuOvQ
+   EFVA/nALsdiVaA7Wh5RR35OAJjpRcdx1F8ho7tFZW6ogUL86l1UIUaYk4
+   QgimXrJ+OBZYR9GqrJ+fMWLoXP3CPQPiyy/J2r99rQbvfSV3PIQZ/Onkl
+   QnxhwCIzV0yP9YWPoM0ue7AGKLMFqXgVMiXzdsZZnudZNqi//lNFmNFLY
+   v394whOTS8YcfmBPLZvVrlm5Tl8NRUnwK0mUJGnWRKvB3Tc7Q1v7kvuMT
+   UPJUTCtaMdseWdkVwy34sEXtNuzKTZTAKQ1uX0cxTslXzTijfb/QVoBKU
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10466"; a="323936195"
+X-IronPort-AV: E=McAfee;i="6500,9779,10467"; a="284751532"
 X-IronPort-AV: E=Sophos;i="5.93,307,1654585200"; 
-   d="scan'208";a="323936195"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 03:06:50 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="284751532"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 08:40:18 -0700
 X-IronPort-AV: E=Sophos;i="5.93,307,1654585200"; 
-   d="scan'208";a="677732462"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga008.fm.intel.com with ESMTP; 11 Sep 2022 03:06:46 -0700
-Date:   Sun, 11 Sep 2022 17:57:15 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     matthew.gerlach@linux.intel.com
-Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+   d="scan'208";a="646162617"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 08:40:18 -0700
+Date:   Sun, 11 Sep 2022 08:40:32 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Greg KH <gregkh@linuxfoundation.org>
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
         basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
         mdf@kernel.org, linux-fpga@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        andriy.shevchenko@linux.intel.com,
+        linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
         niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
-Subject: Re: [PATCH v1 1/5] Documentation: fpga: dfl: Add documentation for
- DFHv1
-Message-ID: <Yx2w+yl9SFFx0Qtx@yilunxu-OptiPlex-7050>
-References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
- <20220906190426.3139760-2-matthew.gerlach@linux.intel.com>
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de,
+        Basheer Ahmed Muddebihal 
+        <basheer.ahmed.muddebihal@linux.intel.com>
+Subject: Re: [PATCH v1 2/5] fpga: dfl: Move the DFH definitions
+In-Reply-To: <YxgnOYWCSP7ormvK@kroah.com>
+Message-ID: <alpine.DEB.2.22.394.2209110838470.142336@rhweight-WRK1>
+References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com> <20220906190426.3139760-3-matthew.gerlach@linux.intel.com> <YxgnOYWCSP7ormvK@kroah.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906190426.3139760-2-matthew.gerlach@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-09-06 at 12:04:22 -0700, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add documentation describing the extentions provided by Version
-> 1 of the Device Feature Header (DFHv1).
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> ---
->  Documentation/fpga/dfl.rst | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-> index 15b670926084..31699b89781e 100644
-> --- a/Documentation/fpga/dfl.rst
-> +++ b/Documentation/fpga/dfl.rst
-> @@ -561,6 +561,30 @@ new DFL feature via UIO direct access, its feature id should be added to the
->  driver's id_table.
->  
->  
-> +Extending the Device Feature Header - DFHv1
-> +===========================================
-> +The current 8 bytes of the Device Feature Header, hereafter referred to as
-> +to DFHv0, provide very little opportunity for the hardware to describe itself
-> +to software. Version 1 of the Device Feature Header (DFHv1) is being introduced
-> +to provide increased flexibility and extensibility to hardware designs using
-> +Device Feature Lists.  The list below describes some of the goals behind the
-> +changes in DFHv1:
-> +
-> +* Provide a standardized mechanism for features to describe
-> +  parameters/capabilities to software.
-> +* Standardize the use of a GUID for all DFHv1 types.
-> +* Decouple the location of the DFH from the register space of the feature itself.
-> +
-> +Modeled after PCI Capabilities, DFHv1 Parameters provide a mechanism to associate
-> +a list of parameter values to a particular feature.
-> +
-> +With DFHv0, not all features types contained a GUID.  DFHv1 makes the GUILD standard
-> +across all types.
-> +
-> +With DFHv0, the register map of a given feature is located immediately following
-> +the DFHv0 in the memory space.  With DFHv1, the location of the feature register
-> +map can be specified as an offset to the DFHv1 or as an absolute address.
 
-Could you make a table or diagram to describe the data structure layout of DFHv1
-extention.
 
-Thanks,
-Yilun
+On Wed, 7 Sep 2022, Greg KH wrote:
 
-> +
->  Open discussion
->  ===============
->  FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial reconfiguration
-> -- 
-> 2.25.1
-> 
+> On Tue, Sep 06, 2022 at 12:04:23PM -0700, matthew.gerlach@linux.intel.com wrote:
+>> --- a/drivers/fpga/dfl.h
+>> +++ b/drivers/fpga/dfl.h
+>> @@ -2,7 +2,7 @@
+>>  /*
+>>   * Driver Header File for FPGA Device Feature List (DFL) Support
+>>   *
+>> - * Copyright (C) 2017-2018 Intel Corporation, Inc.
+>> + * Copyright (C) 2017-2022 Intel Corporation, Inc.
+>
+> I'm all for updated proper copyright dates, but in a patch that
+> _removes_ text from a file does not seem like the proper place for that,
+> right?  Please discuss with your corporate lawyers as to how to do this
+> properly and when to do it.
+>
+> thanks,
+>
+> greg k-h
+>
+
+Hi Greg,
+I discussed how and when to do this properly with my corporate lawyers and 
+confirmed this submission is consistent with their guidelines.
+
+You do raise an interesting point, though.  If you think this approach is 
+improper, we should probably discuss it, including whether this 
+restriction is already a condition for contributions or whether it should 
+be.  It wouldn't be the first difference of opinion on the finer points of 
+copyright law.
+
+Best Regards,
+
+Matthew Gerlach
