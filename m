@@ -2,148 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DB3C6FA83
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Sep 2022 10:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566AAECAAD5
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Sep 2022 10:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbiILKo2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Sep 2022 06:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        id S229643AbiILKyf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Sep 2022 06:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiILKoZ (ORCPT
+        with ESMTP id S229511AbiILKyd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Sep 2022 06:44:25 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE7224F33
-        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 03:44:23 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id q21so14215976lfo.0
-        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 03:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=F5GFWlX5p+iK1uMljz0gi7oHJBPZquU122BFTAsILYU=;
-        b=I7I0XbaD3zB7PPPgbSX9itHG4KiBz5coBxZLBl3oHU2imYvQhzYzeLkusK+K8RR2uJ
-         mQ2gcpMbYoNuZkCYLhJuT2nqzpwToLAxHOIL+N7PlwUpoKxU+oCwVmYwmvUUzvs3QKsr
-         9j/6XZHnm+t5AIJgfwQa0wRYc6razGcbtC+HXOOqfr8cHphk9b2XicS7aUsPnGOxHjHB
-         sXO4a0mWXRlSmZStxHBfeHkvx92UTqQFKOHdrEPROXQtDr/C5d5KTXIMB5hIYLyjESsB
-         +p+aWcwSQe0MYOlwNSiDiYwoYATAHhm/AYkc0dBH0rC6Lu2Ie20+a33SlQkRhKvTpbfd
-         KX5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=F5GFWlX5p+iK1uMljz0gi7oHJBPZquU122BFTAsILYU=;
-        b=KlDXf3qVNhDBbxd/qw2ippAcmPB5OfVoqxLR6f1+8x5Ccmzto84Ms/YvgjdkA2vXfn
-         0pyBGrfoPDQ1rh2Iy3DC+l0WnVslBKM5FK9ic/DxlMImFyWPhDtn8LJnfrAsV+2k0HVs
-         n0EqTDac/P21QJlthzFngqQhUPJLmADupFlDHG+jNZ+HJ7FqT7Te9oJF4Vw9YYUFC3rE
-         2anhrmyoivr2Jd7uN5sQxwBDvfiSmHg0/aVj3XWAriMkvaGdXTW4zE0c0vhmk+DDqLta
-         iaGiMb9OvHkVaPwLdI10VihR9puOpifIToJLnQ0wEtiIKSDyS36MSJZ72GZjs/AMe8vo
-         zCxw==
-X-Gm-Message-State: ACgBeo2i0QAzh0lER2aAOGllRYXp6v49WN7yOcaEf00Dm3txy1CiwGqr
-        n/lI4/8+n0+dmU3GyAGC/o9nhg==
-X-Google-Smtp-Source: AA6agR7/0d9DiYev9RCBwIhVGhNfzBFslqnPc8Ij7QZ/jYKPApzGCBOfvtR+jDenXc5T/wt3zdzt3w==
-X-Received: by 2002:a05:6512:b15:b0:492:ebc3:80d9 with SMTP id w21-20020a0565120b1500b00492ebc380d9mr9721467lfu.77.1662979462003;
-        Mon, 12 Sep 2022 03:44:22 -0700 (PDT)
-Received: from [10.129.96.84] ([109.232.243.34])
-        by smtp.gmail.com with ESMTPSA id y18-20020a2e7d12000000b00268d84f8db1sm1019944ljc.92.2022.09.12.03.44.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Sep 2022 03:44:21 -0700 (PDT)
-Message-ID: <aa6d8c7d-1723-7674-2142-a5aafe30e570@linaro.org>
-Date:   Mon, 12 Sep 2022 12:44:17 +0200
+        Mon, 12 Sep 2022 06:54:33 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7CCD86;
+        Mon, 12 Sep 2022 03:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662980070; x=1694516070;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hlBDz53+flWgbd1kP2vmgg1tnZZa5Xxm55qgoo4qc9s=;
+  b=dIPYNesc2xZt7KeQw1jaf2uhrjVkgIfNX0/DAsa0vvescMQ8lS8/T5jg
+   sjZsv+ECSZxRIVw/3UVjImEiBxG9tmBfWRzVe/gmVxCq7s2foNa0wsR+q
+   6UFmvshu1anZ1i+eIxFSdm4s7EDIzbqptIGVzFPqJg6QUsQaXF/JQKmMb
+   9aQ2JvPYfLXyWsnrpcamrYths152PjxGUpyChYg+Ph4SmiUwHBwZbgT+T
+   xnzot4CJlpMAZiEAxzZT1WD/W06b8GWJVgeWs+IASJCNZCcu7cZR8SZ8s
+   GMzd+i0dSeuMbc128KjzwmatEW91RGc21CHonzXaJ9pCIffaxZG5dNrH7
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10467"; a="297837609"
+X-IronPort-AV: E=Sophos;i="5.93,310,1654585200"; 
+   d="scan'208";a="297837609"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 03:54:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,310,1654585200"; 
+   d="scan'208";a="567122849"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 03:54:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oXh52-001JDf-2Y;
+        Mon, 12 Sep 2022 13:54:20 +0300
+Date:   Mon, 12 Sep 2022 13:54:20 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Subject: Re: [PATCH v1 5/5] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+Message-ID: <Yx8P3ABrwYaMBRhn@smile.fi.intel.com>
+References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+ <20220906190426.3139760-6-matthew.gerlach@linux.intel.com>
+ <YxesjfoBagiC3gGE@smile.fi.intel.com>
+ <alpine.DEB.2.22.394.2209081049290.61321@rhweight-WRK1>
+ <Yxpbx0Tclqy4O9cR@smile.fi.intel.com>
+ <alpine.DEB.2.22.394.2209110850120.142336@rhweight-WRK1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 06/13] dt-bindings: serial: atmel,at91-usart: Add
- SAM9260 compatibles to SAM9x60
-Content-Language: en-US
-To:     Sergiu.Moga@microchip.com, robh@kernel.org
-Cc:     lee@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
-        Claudiu.Beznea@microchip.com, richard.genoud@gmail.com,
-        radu_nicolae.pirea@upb.ro, gregkh@linuxfoundation.org,
-        broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        jirislaby@kernel.org, admin@hifiphile.com,
-        Kavyasree.Kotagiri@microchip.com, Tudor.Ambarus@microchip.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
-References: <20220906135511.144725-1-sergiu.moga@microchip.com>
- <20220906135511.144725-7-sergiu.moga@microchip.com>
- <9aa29d74-b1fc-d00e-dee4-57f277a366ab@linaro.org>
- <c30cc112-0fb8-01e6-1bb8-eed7db0b9049@microchip.com>
- <20220909013644.GA3731620-robh@kernel.org>
- <b6b044f6-de87-e85b-0b51-e957b90622ab@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <b6b044f6-de87-e85b-0b51-e957b90622ab@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2209110850120.142336@rhweight-WRK1>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/09/2022 09:45, Sergiu.Moga@microchip.com wrote:
-> On 09.09.2022 04:36, Rob Herring wrote:
->> On Thu, Sep 08, 2022 at 03:15:44PM +0000, Sergiu.Moga@microchip.com wrote:
->>> On 08.09.2022 15:30, Krzysztof Kozlowski wrote:
->>>> On 06/09/2022 15:55, Sergiu Moga wrote:
->>>>> Add the AT91SAM9260 serial compatibles to the list of SAM9X60 compatibles
->>>>> in order to highlight the incremental characteristics of the SAM9X60
->>>>> serial IP.
->>>>>
->>>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
->>>>> ---
->>>>>
->>>>>
->>>>> v1 -> v2:
->>>>> - Nothing, this patch was not here before
->>>>>
->>>>>
->>>>>    Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml | 2 ++
->>>>>    1 file changed, 2 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
->>>>> index b25535b7a4d2..4d80006963c7 100644
->>>>> --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
->>>>> +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
->>>>> @@ -26,6 +26,8 @@ properties:
->>>>>          - items:
->>>>>              - const: microchip,sam9x60-dbgu
->>>>>              - const: microchip,sam9x60-usart
->>>>> +          - const: atmel,at91sam9260-dbgu
->>>>> +          - const: atmel,at91sam9260-usart
->>>>
->>>> This is weird. You say in commit msg to "highlight the incremental
->>>> characteristics" but you basically change here existing compatibles.
->>>
->>>
->>> Does "show that they are incremental IP's" sound better then?
->>>
->>>
->>>> This is not enum, but a list.
->>>>
->>>
->>>
->>> What do you mean by this? I know it is a list, I specified so in the
->>> commit message.
->>
->> You are saying that compatible must be exactly the 4 strings above in
->> the order listed. You need another entry with another 'items' list.
->>
->> Rob
+On Sun, Sep 11, 2022 at 08:56:41AM -0700, matthew.gerlach@linux.intel.com wrote:
+> On Fri, 9 Sep 2022, Andy Shevchenko wrote:
+> > On Thu, Sep 08, 2022 at 11:27:03AM -0700, matthew.gerlach@linux.intel.com wrote:
+> > > On Tue, 6 Sep 2022, Andy Shevchenko wrote:
+> > > > On Tue, Sep 06, 2022 at 12:04:26PM -0700, matthew.gerlach@linux.intel.com wrote:
+
+...
+
+> > > > > +	dev_dbg(dfluart->dev, "UART_CLK_ID %llu Hz\n", dfluart->uart_clk);
+> > > > 
+> > > > Isn't this available via normal interfaces to user?
+> > > 
+> > > I am not sure what "normal interfaces to user" you are referring to.  The
+> > > code is just trying to read the frequency of the input clock to the uart
+> > > from a DFH paramter.
+> > 
+> > I mean dev_dbg() call. The user can get uart_clk via one of the UART/serial
+> > ABIs (don't remember which one, though).
 > 
-> 
-> That is what was intended though: a list of the 4 compatibles in that 
-> exact order. The 4th patch of this series also ensures that all 9x60 
-> nodes have that exact list of 4 compatibles.
+> I don't think UART/serial ABIs to get the input clock frequency would be
+> available until after the call to serial8250_register_8250_port()
 
-The commit msg suggest otherwise - two options, because it is
-incremental... But this one is not really incremental - you require this
-one, only one, configuration. It's in general fine, but commit msg
-should reflect what you are really intend to do here and why you are
-doing it.
+Is it a problem?
+
+> which needs the clock frequency as an input.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Best regards,
-Krzysztof
