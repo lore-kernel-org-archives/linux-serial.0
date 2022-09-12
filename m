@@ -2,105 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B6BECAAD5
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Sep 2022 08:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DB3C6FA83
+	for <linux-serial@archiver.kernel.org>; Mon, 12 Sep 2022 10:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbiILIhV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Sep 2022 04:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58302 "EHLO
+        id S229643AbiILKo2 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Sep 2022 06:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiILIhD (ORCPT
+        with ESMTP id S229660AbiILKoZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Sep 2022 04:37:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA122A249
-        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 01:36:22 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oXeuO-0003qU-HH; Mon, 12 Sep 2022 10:35:12 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oXeuK-000GV0-Lc; Mon, 12 Sep 2022 10:35:07 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oXeuI-000L6p-Kj; Mon, 12 Sep 2022 10:35:06 +0200
-Date:   Mon, 12 Sep 2022 10:35:06 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kever.yang@rock-chips.com, sjg@chromium.org,
-        philipp.tomsich@vrull.eu, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
-        ulf.hansson@linaro.org, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, kishon@ti.com, vkoul@kernel.org,
-        thierry.reding@gmail.com, gregkh@linuxfoundation.org,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        zhangqing@rock-chips.com, jamie@jamieiles.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v1 03/11] dt-bindings: pwm: rockchip: add
- rockchip,rk3128-pwm
-Message-ID: <20220912083506.js4zyou7kdphrs7m@pengutronix.de>
-References: <20220909212543.17428-1-jbx6244@gmail.com>
- <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com>
+        Mon, 12 Sep 2022 06:44:25 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE7224F33
+        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 03:44:23 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id q21so14215976lfo.0
+        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 03:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=F5GFWlX5p+iK1uMljz0gi7oHJBPZquU122BFTAsILYU=;
+        b=I7I0XbaD3zB7PPPgbSX9itHG4KiBz5coBxZLBl3oHU2imYvQhzYzeLkusK+K8RR2uJ
+         mQ2gcpMbYoNuZkCYLhJuT2nqzpwToLAxHOIL+N7PlwUpoKxU+oCwVmYwmvUUzvs3QKsr
+         9j/6XZHnm+t5AIJgfwQa0wRYc6razGcbtC+HXOOqfr8cHphk9b2XicS7aUsPnGOxHjHB
+         sXO4a0mWXRlSmZStxHBfeHkvx92UTqQFKOHdrEPROXQtDr/C5d5KTXIMB5hIYLyjESsB
+         +p+aWcwSQe0MYOlwNSiDiYwoYATAHhm/AYkc0dBH0rC6Lu2Ie20+a33SlQkRhKvTpbfd
+         KX5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=F5GFWlX5p+iK1uMljz0gi7oHJBPZquU122BFTAsILYU=;
+        b=KlDXf3qVNhDBbxd/qw2ippAcmPB5OfVoqxLR6f1+8x5Ccmzto84Ms/YvgjdkA2vXfn
+         0pyBGrfoPDQ1rh2Iy3DC+l0WnVslBKM5FK9ic/DxlMImFyWPhDtn8LJnfrAsV+2k0HVs
+         n0EqTDac/P21QJlthzFngqQhUPJLmADupFlDHG+jNZ+HJ7FqT7Te9oJF4Vw9YYUFC3rE
+         2anhrmyoivr2Jd7uN5sQxwBDvfiSmHg0/aVj3XWAriMkvaGdXTW4zE0c0vhmk+DDqLta
+         iaGiMb9OvHkVaPwLdI10VihR9puOpifIToJLnQ0wEtiIKSDyS36MSJZ72GZjs/AMe8vo
+         zCxw==
+X-Gm-Message-State: ACgBeo2i0QAzh0lER2aAOGllRYXp6v49WN7yOcaEf00Dm3txy1CiwGqr
+        n/lI4/8+n0+dmU3GyAGC/o9nhg==
+X-Google-Smtp-Source: AA6agR7/0d9DiYev9RCBwIhVGhNfzBFslqnPc8Ij7QZ/jYKPApzGCBOfvtR+jDenXc5T/wt3zdzt3w==
+X-Received: by 2002:a05:6512:b15:b0:492:ebc3:80d9 with SMTP id w21-20020a0565120b1500b00492ebc380d9mr9721467lfu.77.1662979462003;
+        Mon, 12 Sep 2022 03:44:22 -0700 (PDT)
+Received: from [10.129.96.84] ([109.232.243.34])
+        by smtp.gmail.com with ESMTPSA id y18-20020a2e7d12000000b00268d84f8db1sm1019944ljc.92.2022.09.12.03.44.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Sep 2022 03:44:21 -0700 (PDT)
+Message-ID: <aa6d8c7d-1723-7674-2142-a5aafe30e570@linaro.org>
+Date:   Mon, 12 Sep 2022 12:44:17 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tqnrn4kzd6owce4p"
-Content-Disposition: inline
-In-Reply-To: <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 06/13] dt-bindings: serial: atmel,at91-usart: Add
+ SAM9260 compatibles to SAM9x60
+Content-Language: en-US
+To:     Sergiu.Moga@microchip.com, robh@kernel.org
+Cc:     lee@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
+        Claudiu.Beznea@microchip.com, richard.genoud@gmail.com,
+        radu_nicolae.pirea@upb.ro, gregkh@linuxfoundation.org,
+        broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        jirislaby@kernel.org, admin@hifiphile.com,
+        Kavyasree.Kotagiri@microchip.com, Tudor.Ambarus@microchip.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20220906135511.144725-1-sergiu.moga@microchip.com>
+ <20220906135511.144725-7-sergiu.moga@microchip.com>
+ <9aa29d74-b1fc-d00e-dee4-57f277a366ab@linaro.org>
+ <c30cc112-0fb8-01e6-1bb8-eed7db0b9049@microchip.com>
+ <20220909013644.GA3731620-robh@kernel.org>
+ <b6b044f6-de87-e85b-0b51-e957b90622ab@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <b6b044f6-de87-e85b-0b51-e957b90622ab@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 12/09/2022 09:45, Sergiu.Moga@microchip.com wrote:
+> On 09.09.2022 04:36, Rob Herring wrote:
+>> On Thu, Sep 08, 2022 at 03:15:44PM +0000, Sergiu.Moga@microchip.com wrote:
+>>> On 08.09.2022 15:30, Krzysztof Kozlowski wrote:
+>>>> On 06/09/2022 15:55, Sergiu Moga wrote:
+>>>>> Add the AT91SAM9260 serial compatibles to the list of SAM9X60 compatibles
+>>>>> in order to highlight the incremental characteristics of the SAM9X60
+>>>>> serial IP.
+>>>>>
+>>>>> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+>>>>> ---
+>>>>>
+>>>>>
+>>>>> v1 -> v2:
+>>>>> - Nothing, this patch was not here before
+>>>>>
+>>>>>
+>>>>>    Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml | 2 ++
+>>>>>    1 file changed, 2 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+>>>>> index b25535b7a4d2..4d80006963c7 100644
+>>>>> --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+>>>>> +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+>>>>> @@ -26,6 +26,8 @@ properties:
+>>>>>          - items:
+>>>>>              - const: microchip,sam9x60-dbgu
+>>>>>              - const: microchip,sam9x60-usart
+>>>>> +          - const: atmel,at91sam9260-dbgu
+>>>>> +          - const: atmel,at91sam9260-usart
+>>>>
+>>>> This is weird. You say in commit msg to "highlight the incremental
+>>>> characteristics" but you basically change here existing compatibles.
+>>>
+>>>
+>>> Does "show that they are incremental IP's" sound better then?
+>>>
+>>>
+>>>> This is not enum, but a list.
+>>>>
+>>>
+>>>
+>>> What do you mean by this? I know it is a list, I specified so in the
+>>> commit message.
+>>
+>> You are saying that compatible must be exactly the 4 strings above in
+>> the order listed. You need another entry with another 'items' list.
+>>
+>> Rob
+> 
+> 
+> That is what was intended though: a list of the 4 compatibles in that 
+> exact order. The 4th patch of this series also ensures that all 9x60 
+> nodes have that exact list of 4 compatibles.
 
---tqnrn4kzd6owce4p
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The commit msg suggest otherwise - two options, because it is
+incremental... But this one is not really incremental - you require this
+one, only one, configuration. It's in general fine, but commit msg
+should reflect what you are really intend to do here and why you are
+doing it.
 
-Hello,
 
-On Sat, Sep 10, 2022 at 12:02:22AM +0200, Johan Jonker wrote:
-> Add rockchip,rk3128-pwm compatible string.
->=20
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-
-Considering the problems pointed out by Rob as orthogonal to this
-change:
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---tqnrn4kzd6owce4p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmMe7zcACgkQwfwUeK3K
-7AlZYwf/ffseGIKL3qdR1ObyfIb5V+iGVTp/SdYtO08mrURjLUEo+B+syZnhYPKY
-WaIox8KDLDXTTzG+l8SOyJN/eVX56XZFaFzqNKpscD60wLFga+ccFaNKGJtk7knG
-NvhVkaLBCMShPPlR6KT4mcKOmSBnZcge7q+h4oVQ5fgstpl2uOPQJPrIrZ+B+k8v
-36gKyh5sYqGHe+uP6mIyiO8yuPztWwFfCILv5MV99qgCPftl3L8IgyvK2vI6wO50
-ymfHbqlS8nxTODgi5iTI0PFMn0YJII1d2xwguOheFXUzRYuU/n3wft1Krdnwcdm2
-fMeJle5erwYQ8Z6/F8F+XCMTdI83dA==
-=6TOs
------END PGP SIGNATURE-----
-
---tqnrn4kzd6owce4p--
+Best regards,
+Krzysztof
