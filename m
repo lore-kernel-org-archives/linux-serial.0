@@ -2,82 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E9FC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 15:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E1FC6FA8B
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 15:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbiIMP1W (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 11:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        id S235324AbiIMPwH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 11:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236242AbiIMPZd (ORCPT
+        with ESMTP id S234356AbiIMPvu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 11:25:33 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4BF7C1AB;
-        Tue, 13 Sep 2022 07:38:29 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id d189so18019684ybh.12;
-        Tue, 13 Sep 2022 07:38:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=4gw0CfqCHcXqAoTLFj5CKupMrM0B3+NLn0hUfShCnJs=;
-        b=LXRZQqJvWtf444RNQViTqZZpUnJE35jc5FEy7+FY04exv9iSQYYyCZhIETfddk2kSG
-         neTQ0A2t/NBa6Q/hdWG/gXjxTnnaVyo8BkwxoUltzxzx4GamUydXWPaYmGnjuipuR11Z
-         UJLdMGB7TD88WvOaYxHrc4huQ/p7HNyd5aMd68K2Q1zbU8Pa0WALKzSTv6A+UE1gqbLU
-         KTSDJx4z2TtF27N3KN/LKkq8QLfhdK//6GNlUIaHW7O15DaBvb384kOMdEFIM93XRRjG
-         3BZR7/Qzg5KooM4AT++RR+R1BlCmg7PdJTBqQvuSdWXAvRGWy98K+/7WNUfvqRh80aiW
-         QLJw==
-X-Gm-Message-State: ACgBeo0/4zoKPlhbFIkTzjKBExCd38eiUIfgNQiUwJNgHQRcbBrXlxR7
-        HZbN+tmF8VBIry2fd9VIg1CUvRF8Rw==
-X-Google-Smtp-Source: AA6agR4n0Ns56EN8nmYZqaKfPiqFjPvLKM2zBkaiEJuhTpw5P4+YOL15TzmiGoYt1IKTERcqsRj7vA==
-X-Received: by 2002:a05:6830:9c8:b0:654:d91:222 with SMTP id y8-20020a05683009c800b006540d910222mr9721862ott.67.1663079183487;
-        Tue, 13 Sep 2022 07:26:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r6-20020a056830418600b00618fa37308csm5999103otu.35.2022.09.13.07.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 07:26:23 -0700 (PDT)
-Received: (nullmailer pid 3620466 invoked by uid 1000);
-        Tue, 13 Sep 2022 14:26:21 -0000
-Date:   Tue, 13 Sep 2022 09:26:21 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kever.yang@rock-chips.com, jamie@jamieiles.com,
-        philipp.tomsich@vrull.eu, u.kleine-koenig@pengutronix.de,
-        linux-spi@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        zhangqing@rock-chips.com, linux-i2c@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux@roeck-us.net,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, kishon@ti.com,
-        linux-pwm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        sjg@chromium.org, gregkh@linuxfoundation.org,
-        ulf.hansson@linaro.org, linux-rockchip@lists.infradead.org,
-        miquel.raynal@bootlin.com, vigneshr@ti.com,
-        thierry.reding@gmail.com, broonie@kernel.org, heiko@sntech.de,
-        linux-mtd@lists.infradead.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, vkoul@kernel.org,
-        wim@linux-watchdog.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, richard@nod.at
-Subject: Re: [PATCH v1 02/11] dt-bindings: i2c: rockchip: add
- rockchip,rk3128-i2c
-Message-ID: <20220913142621.GA3620421-robh@kernel.org>
-References: <20220909212543.17428-1-jbx6244@gmail.com>
- <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
+        Tue, 13 Sep 2022 11:51:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409D08E0E2;
+        Tue, 13 Sep 2022 07:53:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663080830; x=1694616830;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pLJ8priI7RmY67VypJNLPFkfcfxWAxaQ7nFJHrNbVhI=;
+  b=neolalmZlbeg0Cd8OmeZQeOnG7uEwFZyCMvomSBD5w15HJAPJteumXOU
+   +P/h8/TjVldCi8NOYeEkYmZ8KlbaIdTd33EhmwDfrBYYCJ2aUf8xXKdDC
+   aMcXqXjBCuFx7ntVH94TqY0k3ryLCX6sursai79XeQYOXeWfATUVVLYo6
+   Km5auT4V1i9fB3gtyoFwrZOMc2gue0T0Qq1IUBXcxsp3ooV9oG927Rgog
+   cyzBjpgRRJ4Uc+vKYDZ2IxWx4AhSU4X4Qz6o7rcQekwTQf5h1jHdlaXxD
+   Nvspvsl03zKeLVsGm4rxzhv34QgbXbJuyg6LQio0SAt3Vbz0LMo4S46S4
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="190643859"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 07:24:55 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 13 Sep 2022 07:24:55 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 07:24:50 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <jirislaby@kernel.org>, <sergiu.moga@microchip.com>,
+        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>,
+        <tudor.ambarus@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
+Subject: [PATCH v3 02/14] ARM: dts: at91: sam9x60ek: Add DBGU compatibles to uart1
+Date:   Tue, 13 Sep 2022 17:21:54 +0300
+Message-ID: <20220913142205.162399-3-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220913142205.162399-1-sergiu.moga@microchip.com>
+References: <20220913142205.162399-1-sergiu.moga@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 10 Sep 2022 00:02:30 +0200, Johan Jonker wrote:
-> Add rockchip,rk3128-i2c compatible string.
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Maintain consistency among the compatibles of the serial nodes of
+sam9x60ek and highlight the incremental characteristic of its serial
+IP's by making sure that all serial nodes contain both the sam9x60
+and sam9260 usart/dbgu compatibles.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+---
+
+
+v1 -> v2:
+- Nothing, this patch was not here before
+
+
+v2 -> v3:
+- Nothing, previously this was [PATCH 4]
+
+
+
+ arch/arm/boot/dts/at91-sam9x60ek.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
+index 7ade9979e1c6..67bce8d60908 100644
+--- a/arch/arm/boot/dts/at91-sam9x60ek.dts
++++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
+@@ -258,7 +258,7 @@ &flx5 {
+ 	status = "okay";
+ 
+ 	uart1: serial@200 {
+-		compatible = "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
++		compatible = "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
+ 		reg = <0x200 0x200>;
+ 		interrupts = <14 IRQ_TYPE_LEVEL_HIGH 7>;
+ 		dmas = <&dma0
+-- 
+2.34.1
+
