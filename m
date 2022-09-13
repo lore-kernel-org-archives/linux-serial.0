@@ -2,93 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A30ECAAD8
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 17:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B73C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 17:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233077AbiIMRbQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 13:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S233182AbiIMRfJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 13:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233100AbiIMRal (ORCPT
+        with ESMTP id S231966AbiIMReq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 13:30:41 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C97CEB858
-        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 09:19:37 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id AD37392009D; Tue, 13 Sep 2022 18:19:27 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id AA09E92009C;
-        Tue, 13 Sep 2022 17:19:27 +0100 (BST)
-Date:   Tue, 13 Sep 2022 17:19:27 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Anders Blomdell <anders.blomdell@control.lth.se>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
- 950 UART" gets wrong baudrate (PCI ID 1415:c158)
-In-Reply-To: <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
-Message-ID: <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
-References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se> <YyA9maUOlPIExIUd@kroah.com> <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se> <YyB4AtFJx++PeA6S@kroah.com> <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se> <YyCNOV9no9NPwv8m@kroah.com>
- <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Tue, 13 Sep 2022 13:34:46 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BAB26AF7
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 09:23:51 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id e16so21654955wrx.7
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 09:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=xEmsNDf40gec/YYynqTjtMwBV+qe6g+v810gZnB2/yY=;
+        b=n/VnNf+ICwVhsuuGRhFgokLQJs3XEMncu36QVLE3azT5YhnbnSmpQOE9CTuLNWloDt
+         UotvmVpIm4dXJeAFmeXtTj3VsSifIyT0Dn1ESPl8eunw5TILf3SXiL06KMnG1EStkB6+
+         PiXBXM3pxzv+7/oSbhKqETtoKIHT1My9+FWlEDQIsOfnn1ikv9sCNyPk8kd9jjSiNEDo
+         Qy0Bq3YiCk3UlTtklTb7rpxLjp7qtxssNT7HldVuQZ244KKxCFXMFLmJQPsAhkFTnTrn
+         +reZO90IKa8Gf9nYn6+T2VO1g8mSOWxQBXe0ulkQLvlMPKnmqeJXvGUa2IAHAuZ0AKos
+         gmSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=xEmsNDf40gec/YYynqTjtMwBV+qe6g+v810gZnB2/yY=;
+        b=M3SE2XTBR/pa4tyyx/CGR5eHBWbOHj0qfXFFmO/+MQB0uDrFJsOyMTTP1aVimkuj4O
+         QSYErKDN6qLg57nGXHujeCrxDhK368ew2TzgX4dcZl9dQ/s0sn+P8m39ldXeNCP4W8E0
+         e5bESMpHk6heQiLIlvBtOihBJ3zVHNgt7ChO8Bql1DW+9pSUjg0J10U8T4WDbMQhV9M+
+         djwCvjR5U4Su+IM6pwDsJcrmqQtMqqTTeO8+k1P9IbpBpY+fCH48ebH255tSkk7Tllyn
+         IE6kpFFSmdmC3gxuUWAwnaX0UpACJY+LeNlZjGANfLzwkYqHAQNkR3s59g8b5UfXXoAm
+         sJRw==
+X-Gm-Message-State: ACgBeo2ksT/2MkQxV7hW8pKQiOwKrFncdRp0h8ECaAxDsF9mxWtt0gWG
+        k4RiRN1CSGJ8dK++MmADOOImS5FDtG1AwQg5
+X-Google-Smtp-Source: AA6agR6Enox1pD56Uvibw4ec6gcVUjGoXNOSfHNSakSnkzP5QwlTMpiCjnemyEW1vyX0Dl/lIAU9ZQ==
+X-Received: by 2002:adf:fc02:0:b0:22a:43e8:d205 with SMTP id i2-20020adffc02000000b0022a43e8d205mr11154078wrr.420.1663079316589;
+        Tue, 13 Sep 2022 07:28:36 -0700 (PDT)
+Received: from [10.119.22.201] ([89.101.193.67])
+        by smtp.gmail.com with ESMTPSA id l4-20020a5d4104000000b0022584c82c80sm10849099wrp.19.2022.09.13.07.28.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Sep 2022 07:28:36 -0700 (PDT)
+Message-ID: <3372cb82-22be-a916-372c-292231ab74d9@linaro.org>
+Date:   Tue, 13 Sep 2022 16:28:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v3 07/14] dt-bindings: serial: atmel,at91-usart: Add
+ SAM9260 compatibles to SAM9X60
+Content-Language: en-US
+To:     Sergiu Moga <sergiu.moga@microchip.com>, lee@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, radu_nicolae.pirea@upb.ro,
+        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+        broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        jirislaby@kernel.org, admin@hifiphile.com,
+        kavyasree.kotagiri@microchip.com, tudor.ambarus@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20220913142205.162399-1-sergiu.moga@microchip.com>
+ <20220913142205.162399-8-sergiu.moga@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220913142205.162399-8-sergiu.moga@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Anders,
-
- Sorry to cause you trouble.
-
-> > I really don't know what to do here, sorry.  Are you saying a specific
-> > commit has broken this?  If so, did you test if you made a change it
-> > fixed the issue?
+On 13/09/2022 16:21, Sergiu Moga wrote:
+> Require SAM9260 fallback compatible for SAM9X60, because SAM9X60 is
+> fully compatible with SAM9260 and Linux driver requires the latter.
 > 
-> Yes, commit 366f6c955d4d1a5125ffcd6875ead26a3c7a2a1c broke the one to one
-> correspondence
-> between programmed and actual baudrate; reverting it (and
-> 9c5c8aaed50bf3478073ab51b8b1f3f5327d3cfa
-> that builds on that patch) restores the expected functionality (i.e. you get
-> the baudrate you ask for)
-> on 5.19.8.
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> ---
+> 
 
- I have implemented the calculation using parameters from original OxSemi 
-datasheets and verified this code across three architectures available to 
-me (POWER9, RISC-V, 32-bit x86) and a couple of cards made by different 
-manufacturers connected to a non-OxSemi serial device each at the other 
-end.  I have checked the usual baud rates of up to 460800bps.  Higher baud 
-rates work too, though I could only try them between OxSemi devices, so 
-actual rates were not verified for correctness.
 
- And offhand I can say it works just fine at 230400bps with 6.0.0-rc2 as 
-at commit 10d4879f9ef0 and my RISC-V machine (using an EXSYS EX-44171 
-1S+1P port PCIe option card, built around the OXPCIe952 too) talking to a 
-remote console server in my lab.  I don't have an oscilloscope available 
-to check actual waveforms produced.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> > What do you suggest happen here?
-> Either there is a bug in the code, or the chipset on my card (a Delock 2xRS232
-> card) is not a true oxford
-> chipset (the package and PCI id's says that they are).
 
- A bug can never be ruled out.  I doubt that Delock would use a fake chip 
-or indeed that anyone would choose to clone an OxSemi part, which seems 
-fairly complex to me for a serial port.
-
-> Since the chip seems to be discontinued since 2014 (see
-> https://www.mouser.com/PCN/PLX_Technology_2013_8.pdf),
-> I think a revert would not be uncalled for.
-
- The problem is the original calculation is inaccurate enough for the 
-serial interface not to communicate correctly at higher baud rates.  I 
-found setting two stop bits while talking to a remote end that has one 
-stop bit set a possible workaround for some cases, but why not do the 
-calculation correctly in the first place?
-
- If you're willing to debug it, then I'll be more than happy to supply you 
-with diagnostic patches, some of which I made in the development of the 
-fix.  Also what processor architecture do you use the interface with?
-
-  Maciej
+Best regards,
+Krzysztof
