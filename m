@@ -2,80 +2,81 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDEEC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 14:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAAEC6FA8B
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 14:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbiIMOBI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 10:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42720 "EHLO
+        id S232447AbiIMOGD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 10:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiIMOBH (ORCPT
+        with ESMTP id S232411AbiIMOFy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 10:01:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE42D19295
-        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 07:01:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A8EA61344
-        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 14:01:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D04C433C1;
-        Tue, 13 Sep 2022 14:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1663077665;
-        bh=9levNuHKXVrvH/ja1t4Mvp3ZcGIsekFd+mjdHlHB4gA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qEOT43R3+L3e4gyhttkg1N+hwwub02KyTmbDmPblK/R6p9T/+RGa+sZpbygu99hot
-         mXKDPy6HBrh4RcysipACmhtM/8PwcFFeEDyWouFnHAIY/+BtDM2vnXJuGx44f+U+xi
-         LYYaucqO4NiUZAzl49KNawwMCIDqPfIRMG4rwAJQ=
-Date:   Tue, 13 Sep 2022 16:01:29 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Anders Blomdell <anders.blomdell@control.lth.se>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        linux-serial@vger.kernel.org
-Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
- 950 UART" gets wrong baudrate (PCI ID 1415:c158)
-Message-ID: <YyCNOV9no9NPwv8m@kroah.com>
-References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
- <YyA9maUOlPIExIUd@kroah.com>
- <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se>
- <YyB4AtFJx++PeA6S@kroah.com>
- <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
+        Tue, 13 Sep 2022 10:05:54 -0400
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038571C127;
+        Tue, 13 Sep 2022 07:05:52 -0700 (PDT)
+Received: by mail-oo1-f50.google.com with SMTP id w39-20020a4a97aa000000b0044dfa1ddc67so1952747ooi.6;
+        Tue, 13 Sep 2022 07:05:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=gUoMuqH8RQNLf6TD5ZgHBTjgUa9ZzQ80Xl0NxTsaRAQ=;
+        b=atlBAHFy5pXU5vu/FMKYD5xMcXZAvVe+4JOqgOWDp0mnko8v3jEdh4zxfnyufDdVg4
+         fQSsLQu1Ub54q3gePuLMKBsBm+/SxRlNNSMkdFerrY1m6SUOqU08GFGQVxp3oCLX02Z/
+         UMz8gTiMyKApaCMQAD+uRgddhIecikQPGw4MtYPIZr1ZLFAfarZMDpnJS9GC/KbSQAFa
+         JlufXp8IkqgQ3kWExDBZWP4gymgvbNTMiM9yk9zjmg6UjLbEhBGDTtuRP5VhnY0neV5G
+         PmqnkENH9bO5++xzkjZY2bqInAM+fzAOSqrjyvPOo1kKVGD5x0ShyQDF9H2kkooCyJr3
+         cPzA==
+X-Gm-Message-State: ACgBeo1vsi/waodI0BM1NqWhLqSdFMaZtoD2gPM9cbEy36p3z6V8Ctvl
+        TJmUR9tUwJ8z737u2tftLg==
+X-Google-Smtp-Source: AA6agR6RrtTNw9L8FzOsi4f1dPwDybzh223SP/qImE6imeHr6gssP4vZDFglDT81BonBYIffpKUqWw==
+X-Received: by 2002:a4a:b04e:0:b0:472:912a:63c9 with SMTP id g14-20020a4ab04e000000b00472912a63c9mr8418280oon.87.1663077951213;
+        Tue, 13 Sep 2022 07:05:51 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k6-20020a056870818600b0010d7242b623sm7045343oae.21.2022.09.13.07.05.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Sep 2022 07:05:50 -0700 (PDT)
+Received: (nullmailer pid 3591626 invoked by uid 1000);
+        Tue, 13 Sep 2022 14:05:49 -0000
+Date:   Tue, 13 Sep 2022 09:05:49 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     philipp.tomsich@vrull.eu, linux-kernel@vger.kernel.org,
+        sjg@chromium.org, heiko@sntech.de, thierry.reding@gmail.com,
+        vigneshr@ti.com, linux-rockchip@lists.infradead.org,
+        linux-mmc@vger.kernel.org, gregkh@linuxfoundation.org,
+        linux@roeck-us.net, u.kleine-koenig@pengutronix.de, kishon@ti.com,
+        robh+dt@kernel.org, miquel.raynal@bootlin.com, jamie@jamieiles.com,
+        wim@linux-watchdog.org, broonie@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, zhangqing@rock-chips.com,
+        linux-watchdog@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-pwm@vger.kernel.org, vkoul@kernel.org, richard@nod.at,
+        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org, ulf.hansson@linaro.org,
+        kever.yang@rock-chips.com
+Subject: Re: [PATCH v1 01/11] dt-bindings: serial: rockchip: add
+ rockchip,rk3128-uart
+Message-ID: <20220913140549.GA3591205-robh@kernel.org>
+References: <20220909212543.17428-1-jbx6244@gmail.com>
+ <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
+In-Reply-To: <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 02:43:03PM +0200, Anders Blomdell wrote:
+On Sat, 10 Sep 2022 00:01:28 +0200, Johan Jonker wrote:
+> Add rockchip,rk3128-uart compatible string.
 > 
+> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> On 2022-09-13 14:30, Greg Kroah-Hartman wrote:
-> > On Tue, Sep 13, 2022 at 02:16:39PM +0200, Anders Blomdell wrote:
-> > > I get incorrect baudrates, my oscilloscope gives:
-> > > 
-> > > Programmed	Measured
-> > > 
-> > >    2400		  5208
-> > >    4800		 13150
-> > >    9600		 10410
-> > >   19200		 71420
-> > >   38400		142000
-> > >   57600		201600
-> > > 115200		138800
-> > 
-> > I'm sorry, I have no context here at all, what does this pertain to?
-> Programmed baudrate and the measured (actual) baudrate
 
-I really don't know what to do here, sorry.  Are you saying a specific
-commit has broken this?  If so, did you test if you made a change it
-fixed the issue?
-
-What do you suggest happen here?
-
-still confused,
-
-greg k-h
+Acked-by: Rob Herring <robh@kernel.org>
