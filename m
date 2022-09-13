@@ -2,110 +2,94 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D255C6FA82
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 15:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEBFC6FA8D
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 15:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234755AbiIMPBV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 11:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
+        id S235183AbiIMPJc (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 11:09:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234821AbiIMO7x (ORCPT
+        with ESMTP id S235520AbiIMPIh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 10:59:53 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1764F12759;
-        Tue, 13 Sep 2022 07:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663079351; x=1694615351;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4JmDRlnwM3eagYZBbdfsG68lq5CHJB8sXvup6gdh2I4=;
-  b=eKW1ijCESRTFAMIuBia6+WP+IjEUjFZZdrVo6eQ5F4wBpG9aGcomwKzS
-   LfzQ+vRc9tOoJgTkXDD6Eeps4DZO2oOD/ntqpPa7gPAddc4sNx/l2jZE3
-   3LmVJ45Bf3BYM8zSfDDyMspcL7FpZv8JEZNURQQ7wu0xacKPkjIqMAl+I
-   gMbsEH1nSfYByiezSq8cX4rbum9YtAppRF81QL4EbeYWgrAJgk8oIpuzU
-   Z5frMqjb9U+eBHiDgmmWnxS/VHAKP0YF5Fa5ip39bFDlVg40vs5kw0HgI
-   H1S1DUN7mvTS3jZCKDHgGKCbQAcuYL0cpqEeQZrH5ShcvA596hgkRg+GS
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
-   d="scan'208";a="180313694"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 07:25:59 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 13 Sep 2022 07:25:53 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 07:25:48 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <lee@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
-        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jirislaby@kernel.org>, <sergiu.moga@microchip.com>,
-        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>,
-        <tudor.ambarus@microchip.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v3 13/14] clk: at91: sama5d2: Add Generic Clocks for UART/USART
-Date:   Tue, 13 Sep 2022 17:22:05 +0300
-Message-ID: <20220913142205.162399-14-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220913142205.162399-1-sergiu.moga@microchip.com>
-References: <20220913142205.162399-1-sergiu.moga@microchip.com>
+        Tue, 13 Sep 2022 11:08:37 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8C56A4A1
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 07:31:06 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id bq9so21119052wrb.4
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 07:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=98b3ViV0sOxY601CxqpC7jH63smaiD0oF4bKw9dMEOU=;
+        b=x63sDMCcfZTy1D748IyJ5aIRfCyPzNArlDP0lV9hvY4+cWUdRbyGcVG6xrdDRre/wu
+         OK58fX8B9uI58ozCYyzfgATB4Rdq2rJik1QNvT01pZlRndkJ7W/smi2v5UEkVJCJJpMa
+         /UjP5jhzzQUt/3TQ1vnKejcSVqf6wAm8KqerKf1MwIz7CIhvIo0h/3JcJeGM09YkqRrM
+         JCz4zmvgYmgkI0MxrpHEOWKJjtiZjZNZQMe0OdoWeKlk3V7WARO0cSXoS+jwgdnjnS/y
+         Hmu7TrqgUjhUSWEwHLc8llAeqrkWMx8Xsa6pAvK076PPomcN0/DoT6ceK/jSnulzUi5Z
+         aqBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=98b3ViV0sOxY601CxqpC7jH63smaiD0oF4bKw9dMEOU=;
+        b=jJj2NiQgdwemw+4q66JlHcUxsZqHwnncmyxwkQMNEpj76MQkl3q6ykppuv1/Nwj20F
+         CG3uZYIpPoECB9d5bHvSnQi6jeATK07rN1zEzSCGntbT9LWHCPGMcqpWQgNIAXzLI8zc
+         bq3ug/FLIsQZ+fFR7eLG18v4vqm7nR5Cx05Kk3w+PYMY4z/YPgR1uJzIbYvV70dSESSo
+         hDwYalTMUZ9b9NQWRyO662ky2UPVUUQjLBq5ybm8EObj7w8l5H9XD+Qqef4YRc1AAQGj
+         +DCDAJgYKdhTupwnmGkkVeGL/iseZzAjHD0e1y7661Nr/new0k5Su3DwJUZbWApYzNzF
+         CYDw==
+X-Gm-Message-State: ACgBeo0aphH/EF66QXDaowbgAD/VXmZOvVdFOGd9lAfcNRvSXhCUyFV7
+        lYt5rTM89Y5qn9JdkhabXd9PKw==
+X-Google-Smtp-Source: AA6agR50vZb8xTosW20EeX8oWSBviovENhMmwWYTaHu44Hk9vz9gqIKhodf+GxHuJX6NHOObWD9U4w==
+X-Received: by 2002:a5d:550e:0:b0:228:da13:952c with SMTP id b14-20020a5d550e000000b00228da13952cmr18908046wrv.694.1663079400099;
+        Tue, 13 Sep 2022 07:30:00 -0700 (PDT)
+Received: from [10.119.22.201] ([89.101.193.67])
+        by smtp.gmail.com with ESMTPSA id t3-20020a1c4603000000b003a5c244fc13sm13971234wma.2.2022.09.13.07.29.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Sep 2022 07:29:59 -0700 (PDT)
+Message-ID: <fd42b847-0dcb-e116-a1bd-48e68161333f@linaro.org>
+Date:   Tue, 13 Sep 2022 16:29:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v3 09/14] dt-bindings: serial: atmel,at91-usart: Add gclk
+ as a possible USART clock
+Content-Language: en-US
+To:     Sergiu Moga <sergiu.moga@microchip.com>, lee@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, radu_nicolae.pirea@upb.ro,
+        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+        broonie@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        jirislaby@kernel.org, admin@hifiphile.com,
+        kavyasree.kotagiri@microchip.com, tudor.ambarus@microchip.com
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-clk@vger.kernel.org
+References: <20220913142205.162399-1-sergiu.moga@microchip.com>
+ <20220913142205.162399-10-sergiu.moga@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220913142205.162399-10-sergiu.moga@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add the generic clocks for UART/USART in the sama5d2 driver to allow them
-to be registered in the Common Clock Framework.
+On 13/09/2022 16:22, Sergiu Moga wrote:
+> The Devicetree nodes for FLEXCOM's USART can also have an alternative
+> clock source for the baudrate generator (other than the peripheral
+> clock), namely the Generick Clock. Thus make the binding aware of
+> this clock that someone may place in the clock related
+> properties of the USART node.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
-
-
-v1 -> v2:
-- Added R-b tag
-
-
-v2 -> v3:
-- Nothing
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
- drivers/clk/at91/sama5d2.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/clk/at91/sama5d2.c b/drivers/clk/at91/sama5d2.c
-index cfd0f5e23b99..84156dc52bff 100644
---- a/drivers/clk/at91/sama5d2.c
-+++ b/drivers/clk/at91/sama5d2.c
-@@ -120,6 +120,16 @@ static const struct {
- 	struct clk_range r;
- 	int chg_pid;
- } sama5d2_gck[] = {
-+	{ .n = "flx0_gclk",   .id = 19, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx1_gclk",   .id = 20, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx2_gclk",   .id = 21, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx3_gclk",   .id = 22, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "flx4_gclk",   .id = 23, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart0_gclk",  .id = 24, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart1_gclk",  .id = 25, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart2_gclk",  .id = 26, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart3_gclk",  .id = 27, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
-+	{ .n = "uart4_gclk",  .id = 28, .chg_pid = INT_MIN, .r = { .min = 0, .max = 27666666 }, },
- 	{ .n = "sdmmc0_gclk", .id = 31, .chg_pid = INT_MIN, },
- 	{ .n = "sdmmc1_gclk", .id = 32, .chg_pid = INT_MIN, },
- 	{ .n = "tcb0_gclk",   .id = 35, .chg_pid = INT_MIN, .r = { .min = 0, .max = 83000000 }, },
--- 
-2.34.1
-
+Best regards,
+Krzysztof
