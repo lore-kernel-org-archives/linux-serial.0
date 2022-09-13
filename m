@@ -2,75 +2,194 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC40C6FA83
-	for <linux-serial@archiver.kernel.org>; Mon, 12 Sep 2022 20:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6F0ECAAA1
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 02:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiILUOS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 12 Sep 2022 16:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
+        id S230132AbiIMC6O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 12 Sep 2022 22:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiILUOR (ORCPT
+        with ESMTP id S230133AbiIMC6F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 12 Sep 2022 16:14:17 -0400
-X-Greylist: delayed 902 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 12 Sep 2022 13:14:14 PDT
-Received: from wedge010.net.lu.se (wedge010.net.lu.se [130.235.56.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC920481D9
-        for <linux-serial@vger.kernel.org>; Mon, 12 Sep 2022 13:14:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
-        c=relaxed/relaxed; t=1663012749; h=from:subject:to:date:message-id;
-        bh=BhGGxzZ6YWAjkpHYm45Bc+E/I+GF1WwFLNUhoY+uL9g=;
-        b=HBC5UOWcmVq2id+eUdl+HlLh2/XVY4chm9WFudaAIn0aPXOH+R3HJvY4JSigh2y/MaRpzb1wtfL
-        4+uxfzijVRQ+lg22KTEPTstL6ML/z+Wut21Wi1G/+8kotususpzvFE7MIZA8LG2tXu4/7whplA2Ad
-        02ZaFwINS0J75JHNywd2av1t+wJCB6QsiGc0/pgRnYTYteIfGpEJDsERdgSDFuMz7GZMP7IfrS9mA
-        UQZHn1IvWJ880TlRVQuVFLHFYEUxGxjW5mw7JeoVMPffApsBjQPWaouVujNGcoZR7HOQE8gKC4nXk
-        1x+agDpYgVkFP+1FsIyOb3R31zuAgb1ijnNA==
-Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
- (130.235.56.200) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Mon, 12
- Sep 2022 21:59:09 +0200
-Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
- (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Mon, 12
- Sep 2022 21:59:09 +0200
-Message-ID: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
-Date:   Mon, 12 Sep 2022 21:59:08 +0200
+        Mon, 12 Sep 2022 22:58:05 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1D352FF6;
+        Mon, 12 Sep 2022 19:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663037883; x=1694573883;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Sp5gG4+b6ZZJ27Y2zvVjoqOFmRPQHUPIEcDl++tfFLY=;
+  b=UfXYse/jCGmOGor0qaEKRlyZBlOgtWv/wPPO/vyFB/OEWw2a+f3qJTBS
+   Skxr4l9zo4FO37ROH6fyp2TGXDaIjgelm9qz/hr3f9SGz5k+GxdjfJNWp
+   L62bbIDB82ERbiLMheWu7shOOZoZ/Fur5s8dlOkH+j1XCAofplBq7YDER
+   eDGdalp59CiarAsqFTV63dXjWEqisMm4UivrUMaNEDRz8S0dkKhwPair3
+   pZBIWZqNUvFPG+m5uTxKd870D1r5ADYb+sX7MULayB4VHjPdiY2n6miM+
+   A7UTqzQAlxVxdBwSd/tCPlQcnefOLTi77mRQ1iTk/8LuF4kZo1RxEowC0
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="359747665"
+X-IronPort-AV: E=Sophos;i="5.93,311,1654585200"; 
+   d="scan'208";a="359747665"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 19:57:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,311,1654585200"; 
+   d="scan'208";a="646736842"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orsmga008.jf.intel.com with ESMTP; 12 Sep 2022 19:57:54 -0700
+Date:   Tue, 13 Sep 2022 10:48:20 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Subject: Re: [PATCH v1 5/5] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+Message-ID: <Yx/vdIVnd+ZVOffL@yilunxu-OptiPlex-7050>
+References: <20220906190426.3139760-1-matthew.gerlach@linux.intel.com>
+ <20220906190426.3139760-6-matthew.gerlach@linux.intel.com>
+ <Yx2tSicH1M73cISi@yilunxu-OptiPlex-7050>
+ <alpine.DEB.2.22.394.2209120817490.960392@rhweight-WRK1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-serial@vger.kernel.org>
-From:   Anders Blomdell <anders.blomdell@control.lth.se>
-Subject: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native 950
- UART" gets wrong baudrate (PCI ID 1415:c158)
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [130.235.139.100]
-X-ClientProxiedBy: wexc011.uw.lu.se (130.235.59.233) To wexc007.uw.lu.se
- (130.235.59.251)
-X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
-X-OrganizationHeadersPreserved: wexc007.uw.lu.se
-X-ORF-InterSessionInfo: eid=CNqSUe6Ra18=;oid=AAAAAMCENUM=;bar=wip;cid=AFRb3DDViAQ08ILSDHAc86NA4A==;iss=y;loc=hp;s=oimKRc0dyxoLh90pl9o355Ro213dy5Qw9UOj9NTlTmRLbk/ngH3DCnDu+tpkn7vcS4+6zR7rTat3nJiit12pAA==
-Received-SPF: Pass (wedge010.net.lu.se: domain of
- anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
- receiver=wedge010.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
-X-CrossPremisesHeadersFilteredBySendConnector: wedge010.net.lu.se
-X-OrganizationHeadersPreserved: wedge010.net.lu.se
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2209120817490.960392@rhweight-WRK1>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Reverting commits
-   366f6c955d4d1a5125ffcd6875ead26a3c7a2a1c
-   9c5c8aaed50bf3478073ab51b8b1f3f5327d3cfa
-fixes my problems.
+On 2022-09-12 at 08:29:47 -0700, matthew.gerlach@linux.intel.com wrote:
+> 
+> 
+> On Sun, 11 Sep 2022, Xu Yilun wrote:
+> 
+> > On 2022-09-06 at 12:04:26 -0700, matthew.gerlach@linux.intel.com wrote:
+> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > 
+> > > Add a Device Feature List (DFL) bus driver for the Altera
+> > > 16550 implementation of UART.
+> > > 
+> > > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_dfl.c | 188 +++++++++++++++++++++++++++++
+> > >  drivers/tty/serial/8250/Kconfig    |   9 ++
+> > >  drivers/tty/serial/8250/Makefile   |   1 +
+> > >  include/linux/dfl.h                |   7 ++
+> > >  4 files changed, 205 insertions(+)
+> > >  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+> > > 
+> > > diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
+> > > new file mode 100644
+> > > index 000000000000..dcf6638a298c
+> > > --- /dev/null
+> > > +++ b/drivers/tty/serial/8250/8250_dfl.c
+> > > @@ -0,0 +1,188 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * Driver for FPGA UART
+> > > + *
+> > > + * Copyright (C) 2022 Intel Corporation, Inc.
+> > > + *
+> > > + * Authors:
+> > > + *   Ananda Ravuri <ananda.ravuri@intel.com>
+> > > + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > + */
+> > > +
+> > > +#include <linux/dfl.h>
+> > > +#include <linux/version.h>
+> > > +#include <linux/serial.h>
+> > > +#include <linux/serial_8250.h>
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/bitfield.h>
+> > > +#include <linux/io-64-nonatomic-lo-hi.h>
+> > > +
+> > > +struct dfl_uart {
+> > > +	void __iomem   *csr_base;
+> > > +	u64             csr_addr;
+> > > +	unsigned int    csr_size;
+> > > +	struct device  *dev;
+> > > +	u64             uart_clk;
+> > > +	u64             fifo_len;
+> > > +	unsigned int    fifo_size;
+> > > +	unsigned int    reg_shift;
+> > > +	unsigned int    line;
+> > > +};
+> > > +
+> > > +int feature_uart_walk(struct dfl_uart *dfluart, resource_size_t max)
+> > > +{
+> > > +	void __iomem *param_base;
+> > > +	int off;
+> > > +	u64 v;
+> > > +
+> > > +	v = readq(dfluart->csr_base + DFHv1_CSR_ADDR);
+> > > +	dfluart->csr_addr = FIELD_GET(DFHv1_CSR_ADDR_MASK, v);
+> > > +
+> > > +	v = readq(dfluart->csr_base + DFHv1_CSR_SIZE_GRP);
+> > > +	dfluart->csr_size = FIELD_GET(DFHv1_CSR_SIZE_GRP_SIZE, v);
+> > 
+> > These are generic for DFHv1, so maybe we parse them in DFL generic code.
+> 
+> I will look into moving this to the DFL generic code.
+> 
+> > 
+> > > +
+> > > +	if (dfluart->csr_addr == 0 || dfluart->csr_size == 0) {
+> > > +		dev_err(dfluart->dev, "FIXME bad dfh address and size\n");
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	if (!FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v)) {
+> > > +		dev_err(dfluart->dev, "missing required parameters\n");
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	param_base = dfluart->csr_base + DFHv1_PARAM_HDR;
+> > 
+> > The same concern.
+> > 
+> > > +
+> > > +	off = dfl_find_param(param_base, max, DFHv1_PARAM_ID_CLK_FRQ);
+> > > +	if (off < 0) {
+> > > +		dev_err(dfluart->dev, "missing CLK_FRQ param\n");
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	dfluart->uart_clk = readq(param_base + off + DFHv1_PARAM_DATA);
+> > > +	dev_dbg(dfluart->dev, "UART_CLK_ID %llu Hz\n", dfluart->uart_clk);
+> > 
+> > I see the DFHv1_PARAM_ID_CLK_FRQ defined in generic dfl.h, is this
+> > param definition global to all features, or specific to uart?
+> 
+> Certainly uart drivers need to know the input clock frequency in order to
+> properly calculate baud rate dividers, but drivers for other features/IP
+> blocks may need to know the input clock frequency as well.  On the other
+> hand not all drivers need to know the input clock frequency to the
+> feature/IP block.
+> 
+> > 
+> > Do we have clear definition of generic parameters vs feature specific
+> > parameters?
+> 
+> I don't think there is a clear definition of generic versus feature
+> specific, but a clock frequency and interrupt information it fairly generic.
+> 
+> > 
+> > The concern here is to avoid duplicated parameter parsing for each driver.
+> 
+> I understand the concern about avoiding duplicated parameter parsing.
 
-Regards
+Yeah. Another concern is, reviewers from other domains have to look into
+every detail of the DFH param layout to know what happened, which I
+think is not that friendly.
 
-Anders Blomdell
--- 
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118
-SE-221 00 Lund, Sweden
+Thanks,
+Yilun
