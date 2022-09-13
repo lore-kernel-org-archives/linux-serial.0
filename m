@@ -2,81 +2,156 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A812C6FA8D
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 14:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893DBC6FA82
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 14:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234680AbiIMO7t (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 10:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
+        id S234756AbiIMO7v (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 10:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235010AbiIMO6z (ORCPT
+        with ESMTP id S235119AbiIMO7Q (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 10:58:55 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A2B67C97;
-        Tue, 13 Sep 2022 07:28:36 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-11e9a7135easo32544794fac.6;
-        Tue, 13 Sep 2022 07:28:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=zYRS5/+Q00Jt+sqvHB1fjEMsS/sAzxnNY3oApp6VsX4=;
-        b=BDR0mhRW0cZNaNfmjAann9vKWXeLTkg8G8vI1awTj8pz/GDwkR3cK29FJghbA8RlAk
-         Vv6Rmd6Uwmcc6Uuc6sY0MxTpHn2MunKE4aXels7LbXsAGaOdo7dmmpV1kz5pjAkgnmFQ
-         6gyBnn39DThc73eIFjhxhH0kMV8Wb6tiDJdun2E8rRSc0V/AnUIV5CM3JK+WhtT9Rcmm
-         bhtHdsdd4jI161DBuSFcodN9OdBI0/r96rpu7RJhE8i/eXM/56BG6qsNJPDkSqNExxHz
-         vrA+b08LI/8IlVxJOGYMmg87BrTNdTrMnk/fZoo2zXiOWjl/6BkYhI06lhsfL6QCpuUu
-         J1Dg==
-X-Gm-Message-State: ACgBeo3pZ04ZQ0KZa0OFBe4YcYHxfLx51hXFtV9ZUB+NLbMVpHBgj4Av
-        4vHRYP6vQhW5UcLQmnoA/czu+59jjw==
-X-Google-Smtp-Source: AA6agR6hOpZPvoPt2Eb14Hvai4q1Lk4rE7+yyu9TNmztp+7DqLeOhYDLvEKfa24JcgVwwqI0QlyFNw==
-X-Received: by 2002:a05:6808:15aa:b0:34f:b7e3:26f5 with SMTP id t42-20020a05680815aa00b0034fb7e326f5mr1747211oiw.22.1663078560574;
-        Tue, 13 Sep 2022 07:16:00 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id i34-20020a056870892200b0012644cc4feasm6980943oao.55.2022.09.13.07.15.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 07:15:59 -0700 (PDT)
-Received: (nullmailer pid 3606168 invoked by uid 1000);
-        Tue, 13 Sep 2022 14:15:58 -0000
-Date:   Tue, 13 Sep 2022 09:15:58 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kishon@ti.com, wim@linux-watchdog.org, linux@roeck-us.net,
-        sjg@chromium.org, heiko@sntech.de, linux-watchdog@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-serial@vger.kernel.org,
-        linux-i2c@vger.kernel.org, broonie@kernel.org,
-        miquel.raynal@bootlin.com, linux-rockchip@lists.infradead.org,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-usb@vger.kernel.org, richard@nod.at, ulf.hansson@linaro.org,
-        linux-arm-kernel@lists.infradead.org, zhangqing@rock-chips.com,
-        jamie@jamieiles.com, thierry.reding@gmail.com,
-        linux-mmc@vger.kernel.org, robh+dt@kernel.org,
-        kever.yang@rock-chips.com, linux-spi@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        vkoul@kernel.org, philipp.tomsich@vrull.eu,
-        linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org,
-        u.kleine-koenig@pengutronix.de, vigneshr@ti.com
-Subject: Re: [PATCH v1 04/11] dt-bindings: mmc: rockchip: add
- rockchip,rk3128-dw-mshc
-Message-ID: <20220913141558.GA3606130-robh@kernel.org>
-References: <20220909212543.17428-1-jbx6244@gmail.com>
- <f2cb42c8-3664-a2d5-074d-5c9a10c693e8@gmail.com>
+        Tue, 13 Sep 2022 10:59:16 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263457434D;
+        Tue, 13 Sep 2022 07:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663079318; x=1694615318;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IAvz+EPRVJUa2sWHwWF/4LgxqmMeTJl/Cd8xvZqLdzA=;
+  b=DuTbcKJYCsBH6ALs5uDL8+qarqKM5HvWdZNN6iI/25wCqslpsH2tLj+E
+   6nKlsuqMLNus1lEWxuMR4n2eOyUEyz+tFookFS+x81/ihjSZnzhfwkfP8
+   J2Loona3UkR70WkyqrxcCgZ24G3W0Erm5ek5h3KdRri79GklhgsDy1MxA
+   gUAVAIyT+YW16Y/pVU4aIvtR/1Ce/sIlemfReBsZMyvDvgzTunLFAiHt3
+   pYqZ5iCqckpHAUorNmkEvoYmogQtD23WycXwafSlWp+u7EDzDsCue+/JR
+   O99jzO4Wti0ii61nRu7IxDIFzQa4Ab3bghg9fzT7ARm3z5GpzhipD/ilk
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="180313680"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 07:25:57 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 13 Sep 2022 07:25:48 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 07:25:43 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <jirislaby@kernel.org>, <sergiu.moga@microchip.com>,
+        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>,
+        <tudor.ambarus@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
+Subject: [PATCH v3 12/14] tty: serial: atmel: Only divide Clock Divisor if the IP is USART
+Date:   Tue, 13 Sep 2022 17:22:04 +0300
+Message-ID: <20220913142205.162399-13-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220913142205.162399-1-sergiu.moga@microchip.com>
+References: <20220913142205.162399-1-sergiu.moga@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f2cb42c8-3664-a2d5-074d-5c9a10c693e8@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 10 Sep 2022 00:02:14 +0200, Johan Jonker wrote:
-> Add rockchip,rk3128-dw-mshc compatible string.
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Make sure that the driver only divides the clock divisor if the
+IP handled at that point is USART, since UART IP's do not support
+implicit peripheral clock division. Instead, in the case of UART,
+go with the highest possible clock divisor.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+---
+
+
+v1 -> v2:
+- Nothing, this patch was not here before and is mainly meant as both cleanup
+and as a way to introduce a new field into struct atmel_uart_port that will be
+used by the last patch to diferentiate between USART and UART regarding the
+location of the Baudrate Clock Source bitmask.
+
+
+
+v2 -> v3:
+- Use ATMEL_US_CD instead of 65535
+- Previously [PATCH 10]
+
+
+
+
+ drivers/tty/serial/atmel_serial.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index ab4a9dfae07d..ad7483230090 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -150,6 +150,7 @@ struct atmel_uart_port {
+ 	u32			rts_low;
+ 	bool			ms_irq_enabled;
+ 	u32			rtor;	/* address of receiver timeout register if it exists */
++	bool			is_usart;
+ 	bool			has_frac_baudrate;
+ 	bool			has_hw_timer;
+ 	struct timer_list	uart_timer;
+@@ -1825,6 +1826,7 @@ static void atmel_get_ip_name(struct uart_port *port)
+ 	 */
+ 	atmel_port->has_frac_baudrate = false;
+ 	atmel_port->has_hw_timer = false;
++	atmel_port->is_usart = false;
+ 
+ 	if (name == new_uart) {
+ 		dev_dbg(port->dev, "Uart with hw timer");
+@@ -1834,6 +1836,7 @@ static void atmel_get_ip_name(struct uart_port *port)
+ 		dev_dbg(port->dev, "Usart\n");
+ 		atmel_port->has_frac_baudrate = true;
+ 		atmel_port->has_hw_timer = true;
++		atmel_port->is_usart = true;
+ 		atmel_port->rtor = ATMEL_US_RTOR;
+ 		version = atmel_uart_readl(port, ATMEL_US_VERSION);
+ 		switch (version) {
+@@ -1863,6 +1866,7 @@ static void atmel_get_ip_name(struct uart_port *port)
+ 			dev_dbg(port->dev, "This version is usart\n");
+ 			atmel_port->has_frac_baudrate = true;
+ 			atmel_port->has_hw_timer = true;
++			atmel_port->is_usart = true;
+ 			atmel_port->rtor = ATMEL_US_RTOR;
+ 			break;
+ 		case 0x203:
+@@ -2283,10 +2287,21 @@ static void atmel_set_termios(struct uart_port *port,
+ 		cd = uart_get_divisor(port, baud);
+ 	}
+ 
+-	if (cd > 65535) {	/* BRGR is 16-bit, so switch to slower clock */
++	/*
++	 * If the current value of the Clock Divisor surpasses the 16 bit
++	 * ATMEL_US_CD mask and the IP is USART, switch to the Peripheral
++	 * Clock implicitly divided by 8.
++	 * If the IP is UART however, keep the highest possible value for
++	 * the CD and avoid needless division of CD, since UART IP's do not
++	 * support implicit division of the Peripheral Clock.
++	 */
++	if (atmel_port->is_usart && cd > ATMEL_US_CD) {
+ 		cd /= 8;
+ 		mode |= ATMEL_US_USCLKS_MCK_DIV8;
++	} else {
++		cd &= ATMEL_US_CD;
+ 	}
++
+ 	quot = cd | fp << ATMEL_US_FP_OFFSET;
+ 
+ 	if (!(port->iso7816.flags & SER_ISO7816_ENABLED))
+-- 
+2.34.1
+
