@@ -2,103 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5F1ECAAD8
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 16:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394D4C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 16:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbiIMQzD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 12:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
+        id S231953AbiIMQ5L (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 12:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiIMQyc (ORCPT
+        with ESMTP id S231975AbiIMQ4s (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 12:54:32 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E02C0B68;
-        Tue, 13 Sep 2022 08:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663084045; x=1694620045;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=z/YKByiaIlpU8pE5yj2eqLLdZWkiyu84ffoyl6Fiz44=;
-  b=exGiSpZySfkoQtAtkzzY4CiEVQiBrKqCuFjT80ZR4ZHFit+nAKfZTSV2
-   IsI6MM/IWzzsP8mmE/SWNCu1atpAU7PENP/hM2lc1E7Gv7KXw0Jj9xEBC
-   5/1ToN5sxUtawyR4jEs3z34Th/TDkg95i+QzBxBKKwlEV2Ao3dITM12IH
-   9oGyZK2Kbs7AWeG5k1rC32ZKqfMrBqtwN8mnOpypLmNE63Aav8jyr2pwV
-   wRYU5Zm01qpoTxGDEXcziLYcyz/tuSq4IFHdKhtWUUhTjby1Bguj3o3d9
-   BwJLnsEFhgIeuDQvJ5A6tKhEYqupeJmEYb44JnX+tFSn0yEw+5EbTON4d
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
-   d="scan'208";a="176926450"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 07:25:47 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 13 Sep 2022 07:25:43 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 07:25:38 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <lee@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
-        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <jirislaby@kernel.org>, <sergiu.moga@microchip.com>,
-        <admin@hifiphile.com>, <kavyasree.kotagiri@microchip.com>,
-        <tudor.ambarus@microchip.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [PATCH v3 11/14] tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode Register
-Date:   Tue, 13 Sep 2022 17:22:03 +0300
-Message-ID: <20220913142205.162399-12-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220913142205.162399-1-sergiu.moga@microchip.com>
-References: <20220913142205.162399-1-sergiu.moga@microchip.com>
+        Tue, 13 Sep 2022 12:56:48 -0400
+Received: from wedge010.net.lu.se (wedge010.net.lu.se [130.235.56.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E694980497
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 08:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
+        c=relaxed/relaxed; t=1663083278; h=from:subject:to:date:message-id;
+        bh=oGFTdKbfZoa+wvZL9nP8FL93GRT6lYPTht/ziUpitlw=;
+        b=MMJdXcqbjQ1sEoyeRAcOlLu4DzIu/X+nq26S05BnMb5Gg8RUtzzrHG6+y9b7t/fIMpxcKui+AI3
+        zbVNnMcY05f7AE7JwGtrx+Q/Jwt8PIgbtpgHTVq128My9u2uhOWqmpismewmrUVO020DmHdJ5zlFf
+        SFaxMUujoM3/eEKU4B3CyGIaazfEIGcXcqgWA00P+Mi0Iemih9YgAmxqFgg9dMebfQGKxiabP4BRW
+        42DbHa0WSBg9fUAzZGyPuVXYQCz0+C0Fdc61EzTHs9v/RuzJ/0AA66p2Q7jUr4QNxtaAsjuwh6ZWo
+        j0ggFvTq9SwRpTIuKWfkqtyxVwCBVIF/7gyg==
+Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
+ (130.235.56.200) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Tue, 13
+ Sep 2022 17:34:37 +0200
+Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
+ (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Tue, 13
+ Sep 2022 17:34:34 +0200
+Message-ID: <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
+Date:   Tue, 13 Sep 2022 17:34:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
+ 950 UART" gets wrong baudrate (PCI ID 1415:c158)
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        <linux-serial@vger.kernel.org>
+References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
+ <YyA9maUOlPIExIUd@kroah.com>
+ <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se>
+ <YyB4AtFJx++PeA6S@kroah.com>
+ <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
+ <YyCNOV9no9NPwv8m@kroah.com>
+From:   Anders Blomdell <anders.blomdell@control.lth.se>
+In-Reply-To: <YyCNOV9no9NPwv8m@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [130.235.139.100]
+X-ClientProxiedBy: wexc009.uw.lu.se (130.235.59.253) To wexc007.uw.lu.se
+ (130.235.59.251)
+X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
+X-OrganizationHeadersPreserved: wexc007.uw.lu.se
+X-ORF-InterSessionInfo: eid=CNqSUe6UtI0=;oid=AAAAAMCENUM=;bar=wip;cid=AFRb3DDViAQ08ILSDHAc86NA4A==;iss=y;loc=hp;s=Oie6nXlU2Z8zTP62WbTvQxt+2i3wKGZctH8FSJOhg/WO6SYEOKCSfV2lKzV0cKayN8ACSXoNtyjI4QrXFQ0YCg==
+Received-SPF: Pass (wedge010.net.lu.se: domain of
+ anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
+ receiver=wedge010.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
+X-CrossPremisesHeadersFilteredBySendConnector: wedge010.net.lu.se
+X-OrganizationHeadersPreserved: wedge010.net.lu.se
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add definitions for the Baud Rate Source Clock bitmask of the
-Mode Register of UART IP's and its bitfields.
-
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
 
 
-v1 -> v2:
-- Nothing, this patch was not here before
+On 2022-09-13 16:01, Greg Kroah-Hartman wrote:
+> On Tue, Sep 13, 2022 at 02:43:03PM +0200, Anders Blomdell wrote:
+>>
+>>
+>> On 2022-09-13 14:30, Greg Kroah-Hartman wrote:
+>>> On Tue, Sep 13, 2022 at 02:16:39PM +0200, Anders Blomdell wrote:
+>>>> I get incorrect baudrates, my oscilloscope gives:
+>>>>
+>>>> Programmed	Measured
+>>>>
+>>>>     2400		  5208
+>>>>     4800		 13150
+>>>>     9600		 10410
+>>>>    19200		 71420
+>>>>    38400		142000
+>>>>    57600		201600
+>>>> 115200		138800
+>>>
+>>> I'm sorry, I have no context here at all, what does this pertain to?
+>> Programmed baudrate and the measured (actual) baudrate
+> 
+> I really don't know what to do here, sorry.  Are you saying a specific
+> commit has broken this?  If so, did you test if you made a change it
+> fixed the issue?
 
+Yes, commit 366f6c955d4d1a5125ffcd6875ead26a3c7a2a1c broke the one to one correspondence
+between programmed and actual baudrate; reverting it (and 9c5c8aaed50bf3478073ab51b8b1f3f5327d3cfa
+that builds on that patch) restores the expected functionality (i.e. you get the baudrate you ask for)
+on 5.19.8.
 
+> What do you suggest happen here?
+Either there is a bug in the code, or the chipset on my card (a Delock 2xRS232 card) is not a true oxford
+chipset (the package and PCI id's says that they are).
 
-v2 -> v3:
-- Previously this was [PATCH 11]
+Since the chip seems to be discontinued since 2014 (see https://www.mouser.com/PCN/PLX_Technology_2013_8.pdf),
+I think a revert would not be uncalled for.
 
+> 
+> still confused,
+So am I
 
- drivers/tty/serial/atmel_serial.h | 3 +++
- 1 file changed, 3 insertions(+)
+> 
+> greg k-h
 
-diff --git a/drivers/tty/serial/atmel_serial.h b/drivers/tty/serial/atmel_serial.h
-index 70d0611e56fd..ed64035ba6c3 100644
---- a/drivers/tty/serial/atmel_serial.h
-+++ b/drivers/tty/serial/atmel_serial.h
-@@ -68,6 +68,9 @@
- #define		ATMEL_US_NBSTOP_1		(0 << 12)
- #define		ATMEL_US_NBSTOP_1_5		(1 << 12)
- #define		ATMEL_US_NBSTOP_2		(2 << 12)
-+#define	ATMEL_UA_BRSRCCK	GENMASK(13, 12)	/* Clock Selection for UART */
-+#define		ATMEL_UA_BRSRCCK_PERIPH_CLK	(0 << 12)
-+#define		ATMEL_UA_BRSRCCK_GCLK		(1 << 12)
- #define	ATMEL_US_CHMODE		GENMASK(15, 14)	/* Channel Mode */
- #define		ATMEL_US_CHMODE_NORMAL		(0 << 14)
- #define		ATMEL_US_CHMODE_ECHO		(1 << 14)
+/Anders
 -- 
-2.34.1
-
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118
+SE-221 00 Lund, Sweden
