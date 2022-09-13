@@ -2,37 +2,37 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7EDECAAD8
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 19:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0045DC54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 21:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231795AbiIMTCj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 15:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
+        id S229520AbiIMVIg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 17:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiIMTCV (ORCPT
+        with ESMTP id S229575AbiIMVIe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 15:02:21 -0400
+        Tue, 13 Sep 2022 17:08:34 -0400
 Received: from wedge010.net.lu.se (wedge010.net.lu.se [130.235.56.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0909A6
-        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 11:59:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555A25FF68
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 14:08:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
-        c=relaxed/relaxed; t=1663095560; h=from:subject:to:date:message-id;
-        bh=f7KAV7KO4XAVzzhmwOA096xjxAMG+qPpw5e4BYQUeqk=;
-        b=CtCMRdHDfgjYuf+rDoxvUKD7Tf5RLRICEhlTO7dNhy6tvn9nfP8Z8tGNf85i9Ss+/zl7edzzWHY
-        KU/KPafhToafvBWZ10GCOHMGqfUcUkk5EAPG9kq56xCnZ/NUONyUxiqG9C9DrLG2e3rLXKWO4szsa
-        9Z/GqVxil1mDsMF4OZphI/U63feeCMHv/O4r52j6Jz8/xGLMQyqLAKeTg1FaDaANb3moWpbrmKBiX
-        lrvJfGIChU0GMEry2d0ko5/lFPjr8DmDqRp4XUsDblP6qJ5JlGFK1FU/r9ZelB7/qrIO6K7alzYTj
-        5u8omNoyY+BVPBmSyLBJhZuiWsp6Len/nUoA==
+        c=relaxed/relaxed; t=1663103308; h=from:subject:to:date:message-id;
+        bh=KIGFZTj7Z2Zlm32rKFWYL9h1NH7MOKG2gcZuWRQeSmE=;
+        b=ozHezd7ZHnZa8PzqPaMFpC87BtHPVnDuf0GGuyJxCmiUc4lIJt+qiooND1qQgzfTEyxbQlSvXHH
+        a17I879uHcqOmnAAXrV24wQpnsED0MIsUsgOB5D7Xt3ceg4/hyzymzG5t1oRBXHwSSBdF6dxE4pH4
+        ijugZ8kWdIERtch44nUDVFRSJ72tKSuM7odVTyHIgZkU5Q3PWAXUH56OK0Njde7nvVVNzbxUziH2I
+        MxICbbZTTw2FKsztVqmJlSfLQshn0Uxx5qWjM8LKA/bGX6SjEWdmKqeFi6fUfuyEU3wU9zmZcC9kU
+        2FOq1sv6vccNb5SM/7istxGMoEOp9Q/XuCMQ==
 Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
  (130.235.56.200) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Tue, 13
- Sep 2022 20:59:20 +0200
+ Sep 2022 23:08:28 +0200
 Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
  (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Tue, 13
- Sep 2022 20:59:15 +0200
-Message-ID: <3d6e5798-f8c9-ebe2-719c-520a3b62171c@control.lth.se>
-Date:   Tue, 13 Sep 2022 20:59:15 +0200
+ Sep 2022 23:07:47 +0200
+Message-ID: <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
+Date:   Tue, 13 Sep 2022 23:07:47 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
@@ -55,11 +55,11 @@ In-Reply-To: <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [130.235.139.100]
-X-ClientProxiedBy: wexc010.uw.lu.se (130.235.59.254) To wexc007.uw.lu.se
+X-ClientProxiedBy: wexc009.uw.lu.se (130.235.59.253) To wexc007.uw.lu.se
  (130.235.59.251)
 X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
 X-OrganizationHeadersPreserved: wexc007.uw.lu.se
-X-ORF-InterSessionInfo: eid=CNqSUe6VRQg=;oid=AAAAAMCENUM=;bar=wip;cid=AFRb3DDViAQ08ILSDHAc86NA4A==;iss=y;loc=hp;s=E5iwnbg2IH/zt95ytsPL6Vf9lJXcsX63l9pdQa1SPW0pkwrwJg9fACeb0Yql6M7CssHDa/d86jUAq6b+YCkdBw==
+X-ORF-InterSessionInfo: eid=CNqSUe6VjYM=;oid=AAAAAMCENUM=;bar=wip;cid=AFRb3DDViAQ08ILSDHAc86NA4A==;iss=y;loc=hp;s=r+anq9AaFtXuqdQscObp8FvIpf6vjIILXYmzMWwx+YETQmtfRv9YFz0j2zvtn7If/El7ARQqBpWbHHo4P3+XCQ==
 Received-SPF: Pass (wedge010.net.lu.se: domain of
  anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
  receiver=wedge010.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
@@ -69,22 +69,20 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I honestly don't understand how to calculate the  baudrate, the following hack:
+Seems like CPR/CPR2 does not affect baudrate, so maybe EFR bit 4 (enhance mode) is not set?
+If CPR is stuck at 8 (1.0 scaling), it all makes sense, these corresponds to what the oscilloscope gives:
 
-         switch (baud) {
-           case 9601: { tcr = 4;  cpr = 32; quot = 406; } break;
-           case 9602: { tcr = 8;  cpr = 16; quot = 406; } break;
-           case 9603: { tcr = 16; cpr = 8;  quot = 406; } break; /* tcr will be masked to 0 */
-         }
-	*frac = (cpr << 8) | (tcr & OXSEMI_TORNADO_TCR_MASK);
-         
-I believed that they should give the same baudrate, but I get these baudrates:
+2400 ->  tcr: 9, cpr: 18, quot: 1286
+          62500000/9/(8*.125)/1286 -> 5400
+4800 -> tcr: 7, cpr: 23, quot: 647
+	2500000/7/(8*.125)/647 -> 13799
+9600 -> tcr: 9, cpr: 9, quot: 643
+         62500000/9/(8*.125)/643 -> 10800.
+19200 -> tcr: 8, cpr: 31, quot: 105
+         62500000/7/(8*.125)/105 -> 85034
+38400 -> 62500000/14/(8*.125)/30 -> 148809
 
-9600 -> 10700   tcr = 9;  cpr = 9;  quot = 643;    /* Use standard calculations, not hack */
-9601 -> 38400	tcr = 4;  cpr = 32; quot = 406;
-9602 -> 19200	tcr = 8;  cpr = 16; quot = 406
-9603 ->  9600	tcr = 16; cpr = 8;  quot = 406;
-
+/Anders
 
 On 2022-09-13 18:19, Maciej W. Rozycki wrote:
 > Hi Anders,
