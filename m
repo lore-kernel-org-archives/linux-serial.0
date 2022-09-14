@@ -2,114 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87E8C6FA91
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 13:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE7FC6FA82
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 13:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiINN13 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Sep 2022 09:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S229543AbiINN5q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Sep 2022 09:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiINN10 (ORCPT
+        with ESMTP id S229491AbiINN5p (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Sep 2022 09:27:26 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330A86A4BA
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 06:27:23 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id z12so7391627wrp.9
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 06:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=8KUXcLjtkVihtg11T3oMt0vYyGo5xNo18xehwjt6aQM=;
-        b=d0YJHn4cl28LBNrFF2Jacudh0DH+lp8gvP4kqahW8yoym8X30qfMq9xOV1VrDFMtLL
-         +Qp5qIAsAYCUzQDPvkkNOBJrG3yiouopMdMBUZAYieEoHCSdl4k0DjgkcKYf8pCqg/69
-         OFnkAafaqoXnKOXKpwfSJDJE3HXsAZC5CYh5j8AzL3TwM/WksIx65zOSFThNRAXC57jO
-         qOeZnadSPmxZ3bhrA68xOCUcERLU+r9NvOqlY6Mf61VUvqmTyoqL8b31yQRP7JLoGe0X
-         fk9NM5uN8BY4HiK2qqyj1tLYHLhlwBtFunBY3cSzJRlZfq2vroy/vrIO7I6l1Ccc0Fy7
-         onFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=8KUXcLjtkVihtg11T3oMt0vYyGo5xNo18xehwjt6aQM=;
-        b=EOtO/tc9r2EvvRP12YU2BVaO4zkpSOlSVXwNYbC3k04CQXqPkHKy6fLekPRJl1SDqO
-         y187T5cwnipXUmXYiI1wM/FEkmXfe3jVvnTCOvQPVj9nS/EQtWMDPQKpy3nEHp0OQ6Zz
-         EDzCe6TagRAD4e0PewKsaxA13OmkN70quOlmABug+aHuPBoef/oBPEUAG3Q3aYL5iNri
-         tWFkixJd0GoSsRYKpBW7lorQgf0N1vDOLbEpq1+zcFVqr21hrYpO1DxYgfrHVnCKew1s
-         R/ym9GpcG0ar2hHeMaPi6Z5bfsKvIXag51uefxFL6PvxfzX9O5ePKS707QyTK3RV3spL
-         uz2Q==
-X-Gm-Message-State: ACgBeo38Bl56w0qJa2pcp2xRtF+CP6e3tkSv5Y+cYvP/JcbU5vSmt4+/
-        O/Emu++vIgu2H0MYENoYIqQ4RA==
-X-Google-Smtp-Source: AA6agR6TPMPPsLlhAtiQsyA/yLJqtqEhq4K5gfSRuANSt5F79zP1ztVc47OyVeBgOoCioZNHWtccbw==
-X-Received: by 2002:a5d:6986:0:b0:228:60f9:b013 with SMTP id g6-20020a5d6986000000b0022860f9b013mr20518582wru.102.1663162041670;
-        Wed, 14 Sep 2022 06:27:21 -0700 (PDT)
-Received: from [192.168.0.20] (210.145.15.109.rev.sfr.net. [109.15.145.210])
-        by smtp.gmail.com with ESMTPSA id v8-20020a05600c12c800b003a844885f88sm16243456wmd.22.2022.09.14.06.27.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Sep 2022 06:27:21 -0700 (PDT)
-Message-ID: <bfce8af1-8826-be59-437f-0982c14f6d24@baylibre.com>
-Date:   Wed, 14 Sep 2022 15:27:19 +0200
+        Wed, 14 Sep 2022 09:57:45 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C3A7538B
+        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 06:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663163864; x=1694699864;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=cj4J2/QhYKjh+fpWJTQ7CSERoN9Hal4Uns0xvlUftWI=;
+  b=MsW/Uiq4+y1OOalMhfO/1O8dc5Y5ui1zCOOQC+ppTUsExRY7kWwNrHjw
+   361n+b0O2IkRolPhDBbuw6s2D/mQZyBDzY5cUU8Uvsmz4WqgF1d9fD1x4
+   Mr8ASoqP1mTi9Lty6gh6EN51MTBOaeRyjw+tgZJYhB5jjyayOtFTKseuy
+   YM1Sl+zuGdZmhtsO9QoSvAQhKfZRv2/5El6ZoNDn0zSybWLYKf8oTSrj9
+   3M3j2UZMGK3zuvqN0EQIZmw1W6psibteVCrD8p8+nyZU5DZqQbFY/lXYz
+   cCMIefbBpfmNyRHI1IkXto7NzNeTskVnVuL8VADX2oj144LlaympfApki
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="298433280"
+X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
+   d="scan'208";a="298433280"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 06:57:43 -0700
+X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
+   d="scan'208";a="679056533"
+Received: from kkomeyli-mobl4.amr.corp.intel.com ([10.252.46.196])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 06:57:41 -0700
+Date:   Wed, 14 Sep 2022 16:57:39 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] serial: omap: Disallow RS-485 if rts-gpio is not
+ specified
+In-Reply-To: <f191dcca0d8ea03598c463fc0d3fba8941ff2275.1662888075.git.lukas@wunner.de>
+Message-ID: <c86291b0-3a9-5cd9-fff7-6ae537ec6036@linux.intel.com>
+References: <f191dcca0d8ea03598c463fc0d3fba8941ff2275.1662888075.git.lukas@wunner.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 16/17] arm64: dts: mediatek: add mt8365 device-tree
-Content-Language: en-US
-From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
-To:     fparent@baylibre.com
-Cc:     broonie@kernel.org, chaotian.jing@mediatek.com,
-        chunfeng.yun@mediatek.com, devicetree@vger.kernel.org,
-        dmaengine@vger.kernel.org, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux@roeck-us.net,
-        matthias.bgg@gmail.com, qii.wang@mediatek.com, robh+dt@kernel.org,
-        srinivas.kandagatla@linaro.org, ulf.hansson@linaro.org,
-        vkoul@kernel.org, wim@linux-watchdog.org
-References: <20220531135026.238475-17-fparent@baylibre.com>
- <20220720131257.530168-1-aouledameur@baylibre.com>
-In-Reply-To: <20220720131257.530168-1-aouledameur@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323329-1962044770-1663163864=:1599"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Fabien,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On 7/20/22 15:12, Amjad Ouled-Ameur wrote:
-> Hi Fabien,
->
->> +		tzts4: tzts4-thermal {
->> +			polling-delay-passive = <0>;
->> +			polling-delay = <0>;
->> +			thermal-sensors = <&thermal 4>;
->> +			trips {};
->> +			cooling-maps {};
->> +		};
-> AFAIK mt8365 has only 3 thermal sensors, therefore tzts4 should not be
-> added.
+--8323329-1962044770-1663163864=:1599
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-I discussed this further with MediaTek. tzts1, tzts2, tzts3 and tzts4 
-are used
+On Sun, 11 Sep 2022, Lukas Wunner wrote:
 
-for test-purpose only. Since they do not have trip points, thermal core 
-wouldn't
+> The serial-omap driver requires an rts-gpio for RS-485 to work.
+> Historically it has allowed enabling RS-485 even if no rts-gpio was
+> specified in the device tree.
+> 
+> That doesn't make any sense, so disable RS-485 on probe if rts-gpio is
+> missing and disallow user space from enabling it.
+> 
+> Three NULL pointer checks for up->rts_gpiod can be dropped as a result,
+> simplifying the driver slightly.
+> 
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
 
-register them anyway. Thus, I think we should remove them altogether. Only
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-cpu_thermal zone is relevant and should remain.
+-- 
+ i.
 
-
-Regards,
-
-Amjad
-
-> Regards,
-> Amjad
+--8323329-1962044770-1663163864=:1599--
