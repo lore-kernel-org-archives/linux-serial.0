@@ -2,86 +2,65 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69BFECAAD8
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 07:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2E9C6FA8B
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 08:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiINHYk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Sep 2022 03:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
+        id S229667AbiINIxJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Sep 2022 04:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiINHYk (ORCPT
+        with ESMTP id S229503AbiINIxG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Sep 2022 03:24:40 -0400
-X-Greylist: delayed 573 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 14 Sep 2022 00:24:38 PDT
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D979FEA
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 00:24:37 -0700 (PDT)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
-        id 156187F54E; Wed, 14 Sep 2022 10:15:02 +0300 (EEST)
-Date:   Wed, 14 Sep 2022 10:15:02 +0300
-From:   Lennert Buytenhek <buytenh@wantstofly.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: I/O page faults from 8250_mid PCIe UART after TIOCVHANGUP
-Message-ID: <YyF/dogp/0C87zLb@wantstofly.org>
+        Wed, 14 Sep 2022 04:53:06 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EB45F7F6;
+        Wed, 14 Sep 2022 01:53:04 -0700 (PDT)
+Received: from [89.101.193.68] (helo=phil.sntech)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oYO8L-0004ae-5u; Wed, 14 Sep 2022 10:52:37 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Johan Jonker <jbx6244@gmail.com>, kever.yang@rock-chips.com
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org, vkoul@kernel.org,
+        vigneshr@ti.com, linux@roeck-us.net, ulf.hansson@linaro.org,
+        devicetree@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        u.kleine-koenig@pengutronix.de, linux-mtd@lists.infradead.org,
+        zhangqing@rock-chips.com, linux-pwm@vger.kernel.org,
+        jamie@jamieiles.com, krzysztof.kozlowski+dt@linaro.org,
+        linux-spi@vger.kernel.org, gregkh@linuxfoundation.org,
+        thierry.reding@gmail.com, sjg@chromium.org,
+        philipp.tomsich@vrull.eu, kishon@ti.com, richard@nod.at,
+        linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org,
+        robh+dt@kernel.org, linux-mmc@vger.kernel.org, broonie@kernel.org,
+        wim@linux-watchdog.org, linux-serial@vger.kernel.org,
+        miquel.raynal@bootlin.com
+Subject: Re: (subset) [PATCH v1 01/11] dt-bindings: serial: rockchip: add rockchip,rk3128-uart
+Date:   Wed, 14 Sep 2022 10:52:33 +0200
+Message-Id: <166314554237.197444.11513118217413767473.b4-ty@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
+References: <20220909212543.17428-1-jbx6244@gmail.com> <4f283231-2ed4-202b-0c23-157bce0841ee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+On Sat, 10 Sep 2022 00:01:28 +0200, Johan Jonker wrote:
+> Add rockchip,rk3128-uart compatible string.
 
-On an Intel SoC with several 8250_mid PCIe UARTs built into the CPU, I
-can reliably trigger I/O page faults if I invoke TIOCVHANGUP on any of
-the UARTs and then re-open that UART.
+Applied, thanks!
 
-Invoking TIOCVHANGUP appears to clear the MSI address/data registers
-in the UART via tty_ioctl() -> tty_vhangup() -> __tty_hangup() ->
-uart_hangup() -> uart_shutdown() -> uart_port_shutdown() ->
-univ8250_release_irq() -> free_irq() -> irq_domain_deactivate_irq() ->
-__irq_domain_deactivate_irq() -> msi_domain_deactivate() ->
-__pci_write_msi_msg():
+[08/11] dt-bindings: arm: rockchip: pmu: add rockchip,rk3128-pmu
+        commit: 9c2f4521344f3b14fa0be050100ef726edc36cbc
+[10/11] dt-bindings: soc: rockchip: grf: add rockchip,rk3128-grf
+        commit: adc4f190260a6c004f950992d8c9ee3aec8da38b
 
-[root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-		Address: fee00278  Data: 0000
-[root@icelake ~]# cat hangup.c
-#include <stdio.h>
-#include <sys/ioctl.h>
-
-int main(int argc, char *argv[])
-{
-	ioctl(1, TIOCVHANGUP);
-
-	return 0;
-}
-[root@icelake ~]# gcc -Wall -o hangup hangup.c
-[root@icelake ~]# ./hangup > /dev/ttyS4
-[root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-		Address: 00000000  Data: 0000
-[root@icelake ~]#
-
-Opening the serial port device again while the UART is in this state
-then appears to cause the UART to generate an interrupt before the
-MSI vector has been set up again, causing a DMA write to I/O virtual
-address zero:
-
-[root@icelake console]# echo > /dev/ttyS4
-[  979.463307] DMAR: DRHD: handling fault status reg 3
-[  979.469409] DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-
-I'm guessing there's something under tty_open() -> uart_open() ->
-tty_port_open() -> uart_port_activate() -> uart_port_startup() ->
-serial8250_do_startup() that triggers a UART interrupt before the
-MSI vector has been set up again.
-
-I did a quick search but it didn't seem like this is a known issue.
-
-
-Thanks,
-Lennert
+Best regards,
+-- 
+Heiko Stuebner <heiko@sntech.de>
