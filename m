@@ -2,147 +2,106 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0045DC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 13 Sep 2022 21:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9D2ECAAD8
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 00:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbiIMVIg (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 13 Sep 2022 17:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
+        id S229630AbiINAA1 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 13 Sep 2022 20:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiIMVIe (ORCPT
+        with ESMTP id S229507AbiINAA0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 13 Sep 2022 17:08:34 -0400
-Received: from wedge010.net.lu.se (wedge010.net.lu.se [130.235.56.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555A25FF68
-        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 14:08:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
-        c=relaxed/relaxed; t=1663103308; h=from:subject:to:date:message-id;
-        bh=KIGFZTj7Z2Zlm32rKFWYL9h1NH7MOKG2gcZuWRQeSmE=;
-        b=ozHezd7ZHnZa8PzqPaMFpC87BtHPVnDuf0GGuyJxCmiUc4lIJt+qiooND1qQgzfTEyxbQlSvXHH
-        a17I879uHcqOmnAAXrV24wQpnsED0MIsUsgOB5D7Xt3ceg4/hyzymzG5t1oRBXHwSSBdF6dxE4pH4
-        ijugZ8kWdIERtch44nUDVFRSJ72tKSuM7odVTyHIgZkU5Q3PWAXUH56OK0Njde7nvVVNzbxUziH2I
-        MxICbbZTTw2FKsztVqmJlSfLQshn0Uxx5qWjM8LKA/bGX6SjEWdmKqeFi6fUfuyEU3wU9zmZcC9kU
-        2FOq1sv6vccNb5SM/7istxGMoEOp9Q/XuCMQ==
-Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
- (130.235.56.200) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Tue, 13
- Sep 2022 23:08:28 +0200
-Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
- (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Tue, 13
- Sep 2022 23:07:47 +0200
-Message-ID: <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
-Date:   Tue, 13 Sep 2022 23:07:47 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
+        Tue, 13 Sep 2022 20:00:26 -0400
+X-Greylist: delayed 27650 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Sep 2022 17:00:24 PDT
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0F525F113
+        for <linux-serial@vger.kernel.org>; Tue, 13 Sep 2022 17:00:24 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 908C292009C; Wed, 14 Sep 2022 02:00:23 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 8244892009B;
+        Wed, 14 Sep 2022 01:00:23 +0100 (BST)
+Date:   Wed, 14 Sep 2022 01:00:23 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Anders Blomdell <anders.blomdell@control.lth.se>,
+        Pavel Machek <pavel@ucw.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
 Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
  950 UART" gets wrong baudrate (PCI ID 1415:c158)
-Content-Language: en-US
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-serial@vger.kernel.org>
-References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
- <YyA9maUOlPIExIUd@kroah.com>
- <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se>
- <YyB4AtFJx++PeA6S@kroah.com>
- <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
- <YyCNOV9no9NPwv8m@kroah.com>
- <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
- <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
-From:   Anders Blomdell <anders.blomdell@control.lth.se>
-In-Reply-To: <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [130.235.139.100]
-X-ClientProxiedBy: wexc009.uw.lu.se (130.235.59.253) To wexc007.uw.lu.se
- (130.235.59.251)
-X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
-X-OrganizationHeadersPreserved: wexc007.uw.lu.se
-X-ORF-InterSessionInfo: eid=CNqSUe6VjYM=;oid=AAAAAMCENUM=;bar=wip;cid=AFRb3DDViAQ08ILSDHAc86NA4A==;iss=y;loc=hp;s=r+anq9AaFtXuqdQscObp8FvIpf6vjIILXYmzMWwx+YETQmtfRv9YFz0j2zvtn7If/El7ARQqBpWbHHo4P3+XCQ==
-Received-SPF: Pass (wedge010.net.lu.se: domain of
- anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
- receiver=wedge010.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
-X-CrossPremisesHeadersFilteredBySendConnector: wedge010.net.lu.se
-X-OrganizationHeadersPreserved: wedge010.net.lu.se
+In-Reply-To: <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
+Message-ID: <alpine.DEB.2.21.2209132254150.60554@angie.orcam.me.uk>
+References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se> <YyA9maUOlPIExIUd@kroah.com> <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se> <YyB4AtFJx++PeA6S@kroah.com> <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se> <YyCNOV9no9NPwv8m@kroah.com>
+ <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se> <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk> <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Seems like CPR/CPR2 does not affect baudrate, so maybe EFR bit 4 (enhance mode) is not set?
-If CPR is stuck at 8 (1.0 scaling), it all makes sense, these corresponds to what the oscilloscope gives:
+On Tue, 13 Sep 2022, Anders Blomdell wrote:
 
-2400 ->  tcr: 9, cpr: 18, quot: 1286
-          62500000/9/(8*.125)/1286 -> 5400
-4800 -> tcr: 7, cpr: 23, quot: 647
-	2500000/7/(8*.125)/647 -> 13799
-9600 -> tcr: 9, cpr: 9, quot: 643
-         62500000/9/(8*.125)/643 -> 10800.
-19200 -> tcr: 8, cpr: 31, quot: 105
-         62500000/7/(8*.125)/105 -> 85034
-38400 -> 62500000/14/(8*.125)/30 -> 148809
+> Seems like CPR/CPR2 does not affect baudrate, so maybe EFR bit 4 (enhance
+> mode) is not set?
 
-/Anders
+ Thanks for assessing the problem.  I've thought already it could be 
+misconfiguration.
 
-On 2022-09-13 18:19, Maciej W. Rozycki wrote:
-> Hi Anders,
+> If CPR is stuck at 8 (1.0 scaling), it all makes sense, these corresponds to
+> what the oscilloscope gives:
 > 
->   Sorry to cause you trouble.
-> 
->>> I really don't know what to do here, sorry.  Are you saying a specific
->>> commit has broken this?  If so, did you test if you made a change it
->>> fixed the issue?
->>
->> Yes, commit 366f6c955d4d1a5125ffcd6875ead26a3c7a2a1c broke the one to one
->> correspondence
->> between programmed and actual baudrate; reverting it (and
->> 9c5c8aaed50bf3478073ab51b8b1f3f5327d3cfa
->> that builds on that patch) restores the expected functionality (i.e. you get
->> the baudrate you ask for)
->> on 5.19.8.
-> 
->   I have implemented the calculation using parameters from original OxSemi
-> datasheets and verified this code across three architectures available to
-> me (POWER9, RISC-V, 32-bit x86) and a couple of cards made by different
-> manufacturers connected to a non-OxSemi serial device each at the other
-> end.  I have checked the usual baud rates of up to 460800bps.  Higher baud
-> rates work too, though I could only try them between OxSemi devices, so
-> actual rates were not verified for correctness.
-> 
->   And offhand I can say it works just fine at 230400bps with 6.0.0-rc2 as
-> at commit 10d4879f9ef0 and my RISC-V machine (using an EXSYS EX-44171
-> 1S+1P port PCIe option card, built around the OXPCIe952 too) talking to a
-> remote console server in my lab.  I don't have an oscilloscope available
-> to check actual waveforms produced.
-> 
->>> What do you suggest happen here?
->> Either there is a bug in the code, or the chipset on my card (a Delock 2xRS232
->> card) is not a true oxford
->> chipset (the package and PCI id's says that they are).
-> 
->   A bug can never be ruled out.  I doubt that Delock would use a fake chip
-> or indeed that anyone would choose to clone an OxSemi part, which seems
-> fairly complex to me for a serial port.
-> 
->> Since the chip seems to be discontinued since 2014 (see
->> https://www.mouser.com/PCN/PLX_Technology_2013_8.pdf),
->> I think a revert would not be uncalled for.
-> 
->   The problem is the original calculation is inaccurate enough for the
-> serial interface not to communicate correctly at higher baud rates.  I
-> found setting two stop bits while talking to a remote end that has one
-> stop bit set a possible workaround for some cases, but why not do the
-> calculation correctly in the first place?
-> 
->   If you're willing to debug it, then I'll be more than happy to supply you
-> with diagnostic patches, some of which I made in the development of the
-> fix.  Also what processor architecture do you use the interface with?
-> 
->    Maciej
+> 2400 ->  tcr: 9, cpr: 18, quot: 1286
+>          62500000/9/(8*.125)/1286 -> 5400
+> 4800 -> tcr: 7, cpr: 23, quot: 647
+> 	2500000/7/(8*.125)/647 -> 13799
+> 9600 -> tcr: 9, cpr: 9, quot: 643
+>         62500000/9/(8*.125)/643 -> 10800.
+> 19200 -> tcr: 8, cpr: 31, quot: 105
+>         62500000/7/(8*.125)/105 -> 85034
+> 38400 -> 62500000/14/(8*.125)/30 -> 148809
 
--- 
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118
-SE-221 00 Lund, Sweden
+ Agreed.
+
+ As the first debug aid could you please enable DEBUG_AUTOCONF at the top 
+of drivers/tty/serial/8250/8250_port.c and paste the relevant piece of 
+8250 initialisation recorded in the kernel log?  This will confirm (or 
+contradict) correct operation of the port configuration sequence.
+
+ Also I have identified a code piece that handles the EFR in a destructive 
+manner, which I must have previously missed, namely a conditional block 
+guarded by UART_CAP_EFR in `serial8250_do_set_termios'.  It should likely 
+be fixed, however it is supposed not to matter for OxSemi chips due to:
+
+		/* UART_CAP_EFR breaks billionon CF bluetooth card. */
+		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
+
+which then leads to:
+
+serial 0000:07:00.3: detected caps 00000700 should be 00000500
+
+and consequently UART_CAP_EFR gets cleared and this code block isn't 
+supposed to be reached.  Can you confirm the presence of a similar message 
+in your log?
+
+ NB it seems to me too big a hammer to have a generic serial port feature 
+globally disabled to work around an unidentified problem with an attached 
+particular serial device.  Pavel, as the originator of commit d0694e2aeb81 
+("serial: unbreak billionton CF card") can you please explain what the 
+motivation was here?
+
+ I could only track down two message threads related to the problem:
+
+<https://lore.kernel.org/lkml/20110106134254.68fa27ac@lxorguk.ukuu.org.uk/>
+
+and:
+
+<https://lore.kernel.org/linux-serial/4D001AF1.80902@mainpine.com/>
+
+but no attempt to actually narrow the issue down (also ISTM like a feature 
+such as flow control ought to be controlled via a termios call rather than 
+globally disabled).  Also could the corruption of the EFR in what is now 
+`serial8250_do_set_termios' (and used to be `serial8250_set_termios' then) 
+mentioned above be the culprit?
+
+  Maciej
