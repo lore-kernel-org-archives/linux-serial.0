@@ -2,151 +2,114 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48925ECAAD3
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 13:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87E8C6FA91
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 13:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbiINNGx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Sep 2022 09:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        id S229663AbiINN13 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Sep 2022 09:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiINNGw (ORCPT
+        with ESMTP id S229605AbiINN10 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Sep 2022 09:06:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94183474E0;
-        Wed, 14 Sep 2022 06:06:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663160807; x=1694696807;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z0axQ8qJC3iBquWFyEiDgeDMFF0a3+ccpP77u6bRgCM=;
-  b=dyNuHRx/vj7qH3PJPhcAzYDNVi5U+8GpBJTG00rBEHVbS2CZR+SHMZA9
-   yMpxDrEqfAd3nCBBabW7Xbdvxp0UpKs+VoLyzPIaVZQcsUGtILG/PQV+B
-   bLBkmg9KEVgP+4mPjW1q1TXxMZw2Gb8lHRs2PuPP8uuth5cNL/LPXm7mG
-   qIOIUS8I6sgjcTqw0wPgp2qxdqb6gexIwIkAdshrOJVp6oqheIs7MyMzu
-   0v7GnVHdqARbYOfdnAnk0Gs5TrbpOmjwbxgJI/4rlny9KJsZ/dzXk6lYc
-   7TZGuF+cThCy4MXgc1oQKArhyurDwPeXRVPhQu7CriqL5SNobsWN9cL0z
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="362385383"
-X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="362385383"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 06:06:47 -0700
-X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="594377659"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 06:06:45 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oYS6E-002DFA-2H;
-        Wed, 14 Sep 2022 16:06:42 +0300
-Date:   Wed, 14 Sep 2022 16:06:42 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: I/O page faults from 8250_mid PCIe UART after TIOCVHANGUP
-Message-ID: <YyHR4o5bOnODZzZ9@smile.fi.intel.com>
-References: <YyF/dogp/0C87zLb@wantstofly.org>
- <YyGoZLTFhYQvlf+P@smile.fi.intel.com>
- <YyG2tDdq9PWTlaBQ@wantstofly.org>
+        Wed, 14 Sep 2022 09:27:26 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330A86A4BA
+        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 06:27:23 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id z12so7391627wrp.9
+        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 06:27:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=8KUXcLjtkVihtg11T3oMt0vYyGo5xNo18xehwjt6aQM=;
+        b=d0YJHn4cl28LBNrFF2Jacudh0DH+lp8gvP4kqahW8yoym8X30qfMq9xOV1VrDFMtLL
+         +Qp5qIAsAYCUzQDPvkkNOBJrG3yiouopMdMBUZAYieEoHCSdl4k0DjgkcKYf8pCqg/69
+         OFnkAafaqoXnKOXKpwfSJDJE3HXsAZC5CYh5j8AzL3TwM/WksIx65zOSFThNRAXC57jO
+         qOeZnadSPmxZ3bhrA68xOCUcERLU+r9NvOqlY6Mf61VUvqmTyoqL8b31yQRP7JLoGe0X
+         fk9NM5uN8BY4HiK2qqyj1tLYHLhlwBtFunBY3cSzJRlZfq2vroy/vrIO7I6l1Ccc0Fy7
+         onFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8KUXcLjtkVihtg11T3oMt0vYyGo5xNo18xehwjt6aQM=;
+        b=EOtO/tc9r2EvvRP12YU2BVaO4zkpSOlSVXwNYbC3k04CQXqPkHKy6fLekPRJl1SDqO
+         y187T5cwnipXUmXYiI1wM/FEkmXfe3jVvnTCOvQPVj9nS/EQtWMDPQKpy3nEHp0OQ6Zz
+         EDzCe6TagRAD4e0PewKsaxA13OmkN70quOlmABug+aHuPBoef/oBPEUAG3Q3aYL5iNri
+         tWFkixJd0GoSsRYKpBW7lorQgf0N1vDOLbEpq1+zcFVqr21hrYpO1DxYgfrHVnCKew1s
+         R/ym9GpcG0ar2hHeMaPi6Z5bfsKvIXag51uefxFL6PvxfzX9O5ePKS707QyTK3RV3spL
+         uz2Q==
+X-Gm-Message-State: ACgBeo38Bl56w0qJa2pcp2xRtF+CP6e3tkSv5Y+cYvP/JcbU5vSmt4+/
+        O/Emu++vIgu2H0MYENoYIqQ4RA==
+X-Google-Smtp-Source: AA6agR6TPMPPsLlhAtiQsyA/yLJqtqEhq4K5gfSRuANSt5F79zP1ztVc47OyVeBgOoCioZNHWtccbw==
+X-Received: by 2002:a5d:6986:0:b0:228:60f9:b013 with SMTP id g6-20020a5d6986000000b0022860f9b013mr20518582wru.102.1663162041670;
+        Wed, 14 Sep 2022 06:27:21 -0700 (PDT)
+Received: from [192.168.0.20] (210.145.15.109.rev.sfr.net. [109.15.145.210])
+        by smtp.gmail.com with ESMTPSA id v8-20020a05600c12c800b003a844885f88sm16243456wmd.22.2022.09.14.06.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Sep 2022 06:27:21 -0700 (PDT)
+Message-ID: <bfce8af1-8826-be59-437f-0982c14f6d24@baylibre.com>
+Date:   Wed, 14 Sep 2022 15:27:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YyG2tDdq9PWTlaBQ@wantstofly.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 16/17] arm64: dts: mediatek: add mt8365 device-tree
+Content-Language: en-US
+From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
+To:     fparent@baylibre.com
+Cc:     broonie@kernel.org, chaotian.jing@mediatek.com,
+        chunfeng.yun@mediatek.com, devicetree@vger.kernel.org,
+        dmaengine@vger.kernel.org, jic23@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux@roeck-us.net,
+        matthias.bgg@gmail.com, qii.wang@mediatek.com, robh+dt@kernel.org,
+        srinivas.kandagatla@linaro.org, ulf.hansson@linaro.org,
+        vkoul@kernel.org, wim@linux-watchdog.org
+References: <20220531135026.238475-17-fparent@baylibre.com>
+ <20220720131257.530168-1-aouledameur@baylibre.com>
+In-Reply-To: <20220720131257.530168-1-aouledameur@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 14, 2022 at 02:10:44PM +0300, Lennert Buytenhek wrote:
-> On Wed, Sep 14, 2022 at 01:09:40PM +0300, Andy Shevchenko wrote:
-> > > On an Intel SoC with several 8250_mid PCIe UARTs built into the CPU, I
-> > > can reliably trigger I/O page faults if I invoke TIOCVHANGUP on any of
-> > > the UARTs and then re-open that UART.
-> > > 
-> > > Invoking TIOCVHANGUP appears to clear the MSI address/data registers
-> > > in the UART via tty_ioctl() -> tty_vhangup() -> __tty_hangup() ->
-> > > uart_hangup() -> uart_shutdown() -> uart_port_shutdown() ->
-> > > univ8250_release_irq() -> free_irq() -> irq_domain_deactivate_irq() ->
-> > > __irq_domain_deactivate_irq() -> msi_domain_deactivate() ->
-> > > __pci_write_msi_msg():
-> > > 
-> > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > 		Address: fee00278  Data: 0000
-> > > [root@icelake ~]# cat hangup.c
-> > > #include <stdio.h>
-> > > #include <sys/ioctl.h>
-> > > 
-> > > int main(int argc, char *argv[])
-> > > {
-> > > 	ioctl(1, TIOCVHANGUP);
-> > > 
-> > > 	return 0;
-> > > }
-> > > [root@icelake ~]# gcc -Wall -o hangup hangup.c
-> > > [root@icelake ~]# ./hangup > /dev/ttyS4
-> > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > 		Address: 00000000  Data: 0000
-> > > [root@icelake ~]#
-> > > 
-> > > Opening the serial port device again while the UART is in this state
-> > > then appears to cause the UART to generate an interrupt
-> > 
-> > The interrupt is ORed three: DMA Tx, DMA Rx and UART itself.
-> > Any of them can be possible, but to be sure, can you add:
-> > 
-> > 	dev_info(p->dev, "FISR: %x\n", fisr);
-> > 
-> > into dnv_handle_irq() before any other code and see which bits we
-> > actually got there before the crash?
-> > 
-> > (If it floods the logs, dev_info_ratelimited() may help)
-> 
-> I think that that wouldn't report anything because when the UART is
-> triggering an interrupt here, the MSI address/data are zero, so the
-> IRQ handler is not actually invoked.
+Hi Fabien,
 
-Ah, indeed. Then you may disable MSI (in 8250_mid) and see that anyway?
+On 7/20/22 15:12, Amjad Ouled-Ameur wrote:
+> Hi Fabien,
+>
+>> +		tzts4: tzts4-thermal {
+>> +			polling-delay-passive = <0>;
+>> +			polling-delay = <0>;
+>> +			thermal-sensors = <&thermal 4>;
+>> +			trips {};
+>> +			cooling-maps {};
+>> +		};
+> AFAIK mt8365 has only 3 thermal sensors, therefore tzts4 should not be
+> added.
 
-> If Ilpo doesn't beat me to it, I'll try adding some debug code to see
-> exactly which UART register write in the tty open path is causing the
-> UART to signal an interrupt before the IRQ handler is set up.
-> 
-> (The IOMMU stops the write in this case, so the machine doesn't crash,
-> we just get an I/O page fault warning in dmesg every time this happens.)
+I discussed this further with MediaTek. tzts1, tzts2, tzts3 and tzts4 
+are used
 
-And I believe you are not using that UART as debug console, so it won't
-dead lock itself. It's then better than I assumed.
+for test-purpose only. Since they do not have trip points, thermal core 
+wouldn't
 
-> > > before the
-> > > MSI vector has been set up again, causing a DMA write to I/O virtual
-> > > address zero:
-> > > 
-> > > [root@icelake console]# echo > /dev/ttyS4
-> > > [  979.463307] DMAR: DRHD: handling fault status reg 3
-> > > [  979.469409] DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-> > > 
-> > > I'm guessing there's something under tty_open() -> uart_open() ->
-> > > tty_port_open() -> uart_port_activate() -> uart_port_startup() ->
-> > > serial8250_do_startup() that triggers a UART interrupt before the
-> > > MSI vector has been set up again.
-> > > 
-> > > I did a quick search but it didn't seem like this is a known issue.
-> > 
-> > Thanks for your report and reproducer! Yes, I also never heard about
-> > such an issue before. Ilpo, who is doing more UART work nowadays, might
-> > have an idea, I hope.
-> 
-> Thank you!
+register them anyway. Thus, I think we should remove them altogether. Only
 
--- 
-With Best Regards,
-Andy Shevchenko
+cpu_thermal zone is relevant and should remain.
 
 
+Regards,
+
+Amjad
+
+> Regards,
+> Amjad
