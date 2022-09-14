@@ -2,105 +2,70 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32417C6FA8B
-	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 14:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD292ECAAD3
+	for <linux-serial@archiver.kernel.org>; Wed, 14 Sep 2022 14:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiINOCh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 14 Sep 2022 10:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
+        id S229774AbiINOQQ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 14 Sep 2022 10:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbiINOCB (ORCPT
+        with ESMTP id S229976AbiINOQA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 14 Sep 2022 10:02:01 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5719978BFD
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 07:01:17 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id p5so18375831ljc.13
-        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 07:01:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=4I1nWuKw3OANLT7/DYo/zylVSp6G+u/GpJfP6xzHR3E=;
-        b=brLbhteVZvljyIvgq/BZuRLdaBrU3dauTxDoV0afpm3D8G8eC+PzDhihujize4u5bY
-         xgox21O6n2RkerLtHPJSxFlI9Ypd4EaaCMtXQ7yq5LZNyMV3rxWn43mV+DL93secxJ35
-         4Mo/5OnJiR6EUaDKMTG+vYej6lxDoTN17UAF7qfMYvtkuVe2JYPn54zshCzOug6c4hnm
-         0PMtdZptGI+KTwKQPmr17gsklS46PN+JxnAiFa0Kz1YXmHRDDEHnUiBiga5Vbxp6gH4i
-         w0hl0XbK0nFJOe2yMuLg3FVQgvh34lleAXvP2oQC+kW2m8mmi10ye76Qq7J6zmCtULXy
-         wI1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=4I1nWuKw3OANLT7/DYo/zylVSp6G+u/GpJfP6xzHR3E=;
-        b=lZrLE16QkIl87LMG4OTQjKh1oP8whtnYR3GKmAE2jD7mwmMLoTQgqFGun5D7FwQBi5
-         7wxsEtdVlVLFyjb/4zIeQYwOLyYlOLbX09jXKtjnzYqMxP+o92fy1jCozWJiaGm3mTKo
-         br2k7s0OIdRYYUSBiCAi55hDheTPGgXrPqUC0yNGifV+/0P1VWdEPtS0ZqRHISsWQErX
-         ffFmVpPGtx0svUuqfkCDsR3TKS7eeRCIBEHmC3998wkOp6+fKBSerH2CrJa0K+Hb+1Yq
-         ATs9nODra1+jIyw2QAINs4YmDqvUmuuvEZwLUq3ZbMkghewFjqyu8/X6AKiNAVYGSvHF
-         oSxQ==
-X-Gm-Message-State: ACgBeo0iQzt7xiyeG+DOT2QXAIs/UXY2SKxW4Jx7iHmwAliTEruGLS8O
-        nymVhB9uZZgyKlKu9wK0l7UtmBsyjSih/rehDf4+CA==
-X-Google-Smtp-Source: AA6agR6JkJbCqyE2gTrtp6CclhDjtY75sWE4XsKvRX/lZhn/DSwVZZASJB/yTmhXGA6tUkOdrnfrqI0qNyYf9XVzF8k=
-X-Received: by 2002:a05:651c:214:b0:26a:b03b:9e0c with SMTP id
- y20-20020a05651c021400b0026ab03b9e0cmr10198201ljn.463.1663164075540; Wed, 14
- Sep 2022 07:01:15 -0700 (PDT)
+        Wed, 14 Sep 2022 10:16:00 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0D2D69F57
+        for <linux-serial@vger.kernel.org>; Wed, 14 Sep 2022 07:15:53 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 8234492009D; Wed, 14 Sep 2022 16:15:52 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 7D2B192009C;
+        Wed, 14 Sep 2022 15:15:52 +0100 (BST)
+Date:   Wed, 14 Sep 2022 15:15:52 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Anders Blomdell <anders.blomdell@control.lth.se>
+cc:     Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
+ 950 UART" gets wrong baudrate (PCI ID 1415:c158)
+In-Reply-To: <alpine.DEB.2.21.2209141224370.60554@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2209141456460.60554@angie.orcam.me.uk>
+References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se> <YyA9maUOlPIExIUd@kroah.com> <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se> <YyB4AtFJx++PeA6S@kroah.com> <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se> <YyCNOV9no9NPwv8m@kroah.com>
+ <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se> <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk> <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se> <alpine.DEB.2.21.2209132254150.60554@angie.orcam.me.uk> <5921dfd6-384e-b663-f0f7-8471b9e88c29@control.lth.se>
+ <alpine.DEB.2.21.2209141224370.60554@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220909212543.17428-1-jbx6244@gmail.com> <f2cb42c8-3664-a2d5-074d-5c9a10c693e8@gmail.com>
-In-Reply-To: <f2cb42c8-3664-a2d5-074d-5c9a10c693e8@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 14 Sep 2022 16:00:38 +0200
-Message-ID: <CAPDyKFrF5Tn9a_hqp7mrp14YCrcX4LV6Y5qNxOz2ZSRJJuMmCA@mail.gmail.com>
-Subject: Re: [PATCH v1 04/11] dt-bindings: mmc: rockchip: add rockchip,rk3128-dw-mshc
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     kever.yang@rock-chips.com, sjg@chromium.org,
-        philipp.tomsich@vrull.eu, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        kishon@ti.com, vkoul@kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, gregkh@linuxfoundation.org,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        zhangqing@rock-chips.com, jamie@jamieiles.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 10 Sept 2022 at 00:02, Johan Jonker <jbx6244@gmail.com> wrote:
->
-> Add rockchip,rk3128-dw-mshc compatible string.
->
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+On Wed, 14 Sep 2022, Maciej W. Rozycki wrote:
 
-Applied for next, thanks!
+> I'll examine your I/O conversation log in detail and will see if I can 
+> come up with a possible explanation.
 
-Kind regards
-Uffe
+ I think I know what is going on here.  Can you please confirm that you 
+have the CONFIG_SERIAL_8250_16550A_VARIANTS option disabled (default to 
+"off" for x86 only)?  That would explain things.
 
+ Offhand I am not sure what to do here.  There are several options to 
+choose from I can think of right now:
 
-> ---
->  Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
-> index bad28bc74..95f59a5e3 100644
-> --- a/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/rockchip-dw-mshc.yaml
-> @@ -32,6 +32,7 @@ properties:
->                - rockchip,px30-dw-mshc
->                - rockchip,rk1808-dw-mshc
->                - rockchip,rk3036-dw-mshc
-> +              - rockchip,rk3128-dw-mshc
->                - rockchip,rk3228-dw-mshc
->                - rockchip,rk3308-dw-mshc
->                - rockchip,rk3328-dw-mshc
-> --
-> 2.20.1
->
+1. Disable new OxSemi Tornado clock code iff !SERIAL_8250_16550A_VARIANTS, 
+   bringing back buggy calculation for rates above 115200bps and coarse 
+   BOTHER granularity.
+
+2. Same as above, but additionally limit the baud rates to 115200bps to 
+   avoid buggy rates.
+
+3. Force SERIAL_8250_16550A_VARIANTS to "y" if SERIAL_8250_PCI != "n". 
+
+4. Remove SERIAL_8250_16550A_VARIANTS altogether and execute code it 
+   guards unconditionally (does it still matter nowadays?).
+
+5. Something else not yet determined.
+
+ Greg, do you have any opinion?
+
+  Maciej
