@@ -2,181 +2,120 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D7BECAAD3
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Sep 2022 10:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD7BECAAD3
+	for <linux-serial@archiver.kernel.org>; Thu, 15 Sep 2022 12:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiIOKKY (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Sep 2022 06:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
+        id S229521AbiIOM0Z (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 15 Sep 2022 08:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbiIOKKV (ORCPT
+        with ESMTP id S229483AbiIOM0Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Sep 2022 06:10:21 -0400
-Received: from wedge009.net.lu.se (wedge009.net.lu.se [130.235.56.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBC42F38A
-        for <linux-serial@vger.kernel.org>; Thu, 15 Sep 2022 03:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
-        c=relaxed/relaxed; t=1663236614; h=from:subject:to:date:message-id;
-        bh=xPNF5FNZj0az+m7+jxLpJPPRE8O4T0wxV/25VkLLl8g=;
-        b=c6lytPrMZIDpcibkx8QNejAxJWBQR3yFwMH4HQ/+TUtaJ6vhJtofPf3CU8jqq39iWbk3M47xlmU
-        GgsM48LuZHkQOm4NnOUrbDEtGuDzIIKnyrfBCxwpKJl7ClF0SXuGfhf/21CmzyNv4NPGEdpwi3Luc
-        0X6iFjR8k1mAxR5olhkhvgBtY9n+bJqbW/I26byV+Wum2WXfaR97C8Nl82bm77Ri/ERLWWG5n5+bc
-        Mbl1KgRo6sxR50JRmMpfsLdDaBTYKqhc0Qj6JR//excW95XEARbohtLGwdviie2nu6VcV7XiQAwu5
-        P8ltrikorv/3zEQ5+kw4T+pLCvriLyHA7AZA==
-Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
- (130.235.56.199) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Thu, 15
- Sep 2022 12:10:14 +0200
-Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
- (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Thu, 15
- Sep 2022 12:09:23 +0200
-Message-ID: <12a346f8-afc9-e832-1b91-80e458819df8@control.lth.se>
-Date:   Thu, 15 Sep 2022 12:09:22 +0200
+        Thu, 15 Sep 2022 08:26:24 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA084BA75;
+        Thu, 15 Sep 2022 05:26:23 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id x94so9390613ede.11;
+        Thu, 15 Sep 2022 05:26:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=uGRL5yQLbY3ElF+aziAWDQcKmM/TufAgwc3RyqfUbOA=;
+        b=TZjkJcXRVux+bToBLPHAd5K6Hh2IjWPCCLb+L4D7PThzlh/RFAnwSF2DRlC1kJeQLE
+         DjGAyz+irYMIQS682A1kCt8mPme+WersR1DNk2BpprQslAGwOYcRqVxXYWzlAiqU7Fb9
+         yWWIzYkgizbuPw6IrkdOWqFyeaCQRSg+s07IRcw+dtxbe/juYPJOwhAA3RsAY3bBEo6e
+         LU8fgRLFw3xNN2JgrPORZYvF2KBT6+rcuTyMGF0p0xV2oDR9zTeube5y3R8eKc4Ed/Hs
+         qjawQUCdKuoZjHcq2oCRJ+5lDQexyWkvVr7a+NMXDvr0xKLYReiPCOSpDBXx23G2prYP
+         FbhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=uGRL5yQLbY3ElF+aziAWDQcKmM/TufAgwc3RyqfUbOA=;
+        b=cgKOBRQ4Kl6xIeKQiV1FvfjbTI3fN6UdEyBZBNF7VVTJYfFk8xjapXU80Vdf4a/X+T
+         jnp7i46V5HvT918tQU/KrcuDGsPyr7iF4OHhNqxU8RJmW4If1bj/dQW2Vs3QphmMiApn
+         7L7VfO8+2emv+L5SE64eu6HhKrs76ukpAhbrvM1CpWZfWGlCJChbyFv8gd5xj+BF+xp8
+         57bYjLlv2ttIfL181PYYBPpgIfyFN+VyrEZQYlU7P7uBrf6vt5TZvXIV8quk2xArLme/
+         iNM9gQ3gNbE2r8O4QM/8sk+HCc2kVQzNmxD3LFrdMf40vUC8Z1MFIis2ltA2ZSVI3mh6
+         wWmg==
+X-Gm-Message-State: ACgBeo17URDJu0xFOqXy8OY4DTH+Q2MHpVW3vFdrcxvzv79ToIwLPpJ5
+        Liv4bVX+8S9tPL65T/XYGqo=
+X-Google-Smtp-Source: AA6agR4YiRZmdLeUOPMY62dN48Kv59p5JJcRsxunUip1RF1UqEA5VDaKI4olBMaG1V1Gf6/zGQQNSA==
+X-Received: by 2002:a05:6402:40cb:b0:451:2b71:9940 with SMTP id z11-20020a05640240cb00b004512b719940mr23915246edb.237.1663244781806;
+        Thu, 15 Sep 2022 05:26:21 -0700 (PDT)
+Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id q16-20020a170906541000b0073d7b876621sm8981674ejo.205.2022.09.15.05.26.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 05:26:20 -0700 (PDT)
+Date:   Thu, 15 Sep 2022 14:26:18 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 RESEND 3/3] serial: tegra-tcu: Use
+ uart_xmit_advance(), fixes icount.tx accounting
+Message-ID: <YyMZ6g+7mVPilDSP@orome>
+References: <20220901143934.8850-1-ilpo.jarvinen@linux.intel.com>
+ <20220901143934.8850-4-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
- 950 UART" gets wrong baudrate (PCI ID 1415:c158)
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>
-CC:     Pavel Machek <pavel@ucw.cz>, <linux-serial@vger.kernel.org>
-References: <YyB4AtFJx++PeA6S@kroah.com>
- <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
- <YyCNOV9no9NPwv8m@kroah.com>
- <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
- <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
- <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
- <alpine.DEB.2.21.2209132254150.60554@angie.orcam.me.uk>
- <5921dfd6-384e-b663-f0f7-8471b9e88c29@control.lth.se>
- <alpine.DEB.2.21.2209141224370.60554@angie.orcam.me.uk>
- <alpine.DEB.2.21.2209141456460.60554@angie.orcam.me.uk>
- <YyHr6wD8F8KxyK5m@kroah.com>
-From:   Anders Blomdell <anders.blomdell@control.lth.se>
-In-Reply-To: <YyHr6wD8F8KxyK5m@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [130.235.139.100]
-X-ClientProxiedBy: wexc010.uw.lu.se (130.235.59.254) To wexc007.uw.lu.se
- (130.235.59.251)
-X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
-X-OrganizationHeadersPreserved: wexc007.uw.lu.se
-X-ORF-InterSessionInfo: eid=CNqSPWU3GxY=;oid=AAAAAJ/vdc8=;bar=wip;cid=CkEH+aCenQTtoKmWBCSG6rGzcA==;iss=n;s=tsziNTIflPr9wgHrNK7wHYw+MDCoprCdYRKHaGoqBkc9gbPdxRl35UQCkH96TMCQi4DWSnxGDUGNGND1rf6SAA==
-Received-SPF: Pass (wedge009.net.lu.se: domain of
- anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
- receiver=wedge009.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
-X-CrossPremisesHeadersFilteredBySendConnector: wedge009.net.lu.se
-X-OrganizationHeadersPreserved: wedge009.net.lu.se
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="JYX55bxPpJGogj/9"
+Content-Disposition: inline
+In-Reply-To: <20220901143934.8850-4-ilpo.jarvinen@linux.intel.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
+--JYX55bxPpJGogj/9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2022-09-14 16:57, Greg Kroah-Hartman wrote:
-> On Wed, Sep 14, 2022 at 03:15:52PM +0100, Maciej W. Rozycki wrote:
->> On Wed, 14 Sep 2022, Maciej W. Rozycki wrote:
->>
->>> I'll examine your I/O conversation log in detail and will see if I can
->>> come up with a possible explanation.
->>
->>   I think I know what is going on here.  Can you please confirm that you
->> have the CONFIG_SERIAL_8250_16550A_VARIANTS option disabled (default to
->> "off" for x86 only)?  That would explain things.
->>
->>   Offhand I am not sure what to do here.  There are several options to
->> choose from I can think of right now:
->>
->> 1. Disable new OxSemi Tornado clock code iff !SERIAL_8250_16550A_VARIANTS,
->>     bringing back buggy calculation for rates above 115200bps and coarse
->>     BOTHER granularity.
->>
->> 2. Same as above, but additionally limit the baud rates to 115200bps to
->>     avoid buggy rates.
-> 
-> Maybe this one?  That feels odd that we do different things for this old
-> config option, that's not good.  So making this "just work" should be
-> the best idea if at all possible.
-> 
->>
->> 3. Force SERIAL_8250_16550A_VARIANTS to "y" if SERIAL_8250_PCI != "n".
->>
->> 4. Remove SERIAL_8250_16550A_VARIANTS altogether and execute code it
->>     guards unconditionally (does it still matter nowadays?).
->>
->> 5. Something else not yet determined.
-We could force an EFR probe for this specific driver only.
+On Thu, Sep 01, 2022 at 05:39:34PM +0300, Ilpo J=C3=A4rvinen wrote:
+> Tx'ing does not correctly account Tx'ed characters into icount.tx.
+> Using uart_xmit_advance() fixes the problem.
+>=20
+> Cc: <stable@vger.kernel.org> # serial: Create uart_xmit_advance()
+> Fixes: 2d908b38d409 ("serial: Add Tegra Combined UART driver")
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/tegra-tcu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Pros: driver behaves the same regardless of CONFIG_SERIAL_8250_16550A_VARIANTS
-       other chips/drivers will not get probed
-Cons: autoconfig code will be somewhat bigger since code after the test will be reachable
-       change in unrelated part (8250_core.c) to propagate .probe flags
+Difficult to review without a copy of the first patch in my inbox. I was
+able to find it on lore, though and this does seem to do the right
+thing, so:
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 82726cda6066..b9f28f95cfd5 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -1011,6 +1011,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
-  		uart->rs485_start_tx	= up->rs485_start_tx;
-  		uart->rs485_stop_tx	= up->rs485_stop_tx;
-  		uart->dma		= up->dma;
-+		uart->probe		= up->probe;
-  
-  		/* Take tx_loadsz from fifosize if it wasn't set separately */
-  		if (uart->port.fifosize && !uart->tx_loadsz)
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index f6732c1ed238..b0b21e49ec6c 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1242,6 +1242,7 @@ static int pci_oxsemi_tornado_setup(struct serial_private *priv,
-  		up->port.get_divisor = pci_oxsemi_tornado_get_divisor;
-  		up->port.set_divisor = pci_oxsemi_tornado_set_divisor;
-  		up->port.set_mctrl = pci_oxsemi_tornado_set_mctrl;
-+		up->probe |= UART_PROBE_EFR;
-  	}
-  
-  	return pci_default_setup(priv, board, up, idx);
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 2b86c55ed374..b207d9982936 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1029,9 +1029,9 @@ static void autoconfig_16550a(struct uart_8250_port *up)
-  	up->port.type = PORT_16550A;
-  	up->capabilities |= UART_CAP_FIFO;
-  
--	if (!IS_ENABLED(CONFIG_SERIAL_8250_16550A_VARIANTS))
-+	if (!IS_ENABLED(CONFIG_SERIAL_8250_16550A_VARIANTS) &&
-+	    !(up->probe & UART_PROBE_EFR))
-  		return;
--
-  	/*
-  	 * Check for presence of the EFR when DLAB is set.
-  	 * Only ST16C650V1 UARTs pass this test.
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index ff84a3ed10ea..0855316468e2 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -112,6 +112,7 @@ struct uart_8250_port {
-  	unsigned char		probe;
-  	struct mctrl_gpios	*gpios;
-  #define UART_PROBE_RSA	(1 << 0)
-+#define UART_PROBE_EFR	(1 << 1)
-  
-  	/*
-  	 * Some bits in registers are cleared on a read, so they must
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-> 
-> We can't just remove it, as for x86 the default is disabled due to this
-> only being relevant for very old hardware.
-> 
-> thanks,
-> 
-> greg k-h
+--JYX55bxPpJGogj/9
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118
-SE-221 00 Lund, Sweden
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmMjGeoACgkQ3SOs138+
+s6HXkBAAlZGnHov9LOsy51mQEjgF33NARgWHCqPek6PaHIXE5mcpHyJN2Scsf2YS
+B/CkGnOL+BmUfQib/zn93OigRjoYTuWshbOGRv8ZulaO0xq7uOqNz/XDb3McmGVN
+seoqrEfKn3GHl5SOenWo+yDSGlUCm7ObcZB+G0A02QhdK2mbv+/0+7Vui+FZ8lt+
+N87Tv6/dfAtp/MpDcC1Qtl283B+1XpSOVXM3bAJtWtRViuTK9bWdiVFCc7Mlkt4U
+IwKyEc41YwPxIghrdwzPaQ0LBrtPvZuBACx5PTwp1R+cmMzZvMoRqWoibutlQb9l
+3b8wHE1CghyF32L9C0yqEDEg6c/fNqMukREUUbgaVOoKqZ5D3XdfMf/mTrBJ9LAj
+E3Cvii+RadRPjNb+fR/hMItht/iYrKPFdBs72W+MmBrieFUAnvfxwqE/8dFSWVdb
+Gxpiq11HhV665GTm3mFBeKidmAPQGWk1JEte7XVcmecAKi5YRviZQgjrN66to5Gc
+cV8edOjmkE39hcAftBOyewfzym6A/3VmenmftxLOfGa+1XitZ7pOkdnNT/BXhgBE
++Ua8GXGtRWV/E4q1o8+4Gu6s0kNK8YAdub5IWZc86i4z9rKQ3BaZpYEO3/NRqQLW
+Hwb5X7MBDqZLkZjKnPRC0Z965cICrCOkljkb1Rbretbu+0CbFPI=
+=foZk
+-----END PGP SIGNATURE-----
+
+--JYX55bxPpJGogj/9--
