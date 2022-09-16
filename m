@@ -2,267 +2,183 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9CAC6FA89
-	for <linux-serial@archiver.kernel.org>; Thu, 15 Sep 2022 16:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7C6C6FA8B
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Sep 2022 08:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiIOQ2C (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 15 Sep 2022 12:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
+        id S229821AbiIPIOE (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Sep 2022 04:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiIOQ16 (ORCPT
+        with ESMTP id S229471AbiIPIOD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 15 Sep 2022 12:27:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195519E11F;
-        Thu, 15 Sep 2022 09:27:57 -0700 (PDT)
+        Fri, 16 Sep 2022 04:14:03 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347F165838;
+        Fri, 16 Sep 2022 01:14:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663259277; x=1694795277;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=hTLgiq46065uoaGpLmCVB41MvllRV5rjFIMLJgL3xHU=;
-  b=gp6Fbu9f7eEvTJ+5RnrIg5o6HslxPAkykbFp8WmNmfIQmK5mnFrT0TjK
-   QLah07IbZE4L7Jh/e5T0htAYlDWpDhPBqdt1s3zApOvD3qnYisYLlz5x3
-   +eGhABU23bI3ZhFFFvc9B5U0HKNGnEPAzlNP8kDR6m+C8un/LSWU/RFYs
-   3284Okm7YOrEv5tl9dch9GaCIjpOapSSKa7zeaOQfZEkipMtXAb9o35Gr
-   LjqGAHY0dj7CJjlO2lUFgtgHZ/bh3vJrTlUjsnD9m46lAqsDndziV9b9u
-   lUjV9RoQ8LwxeuCsRS8Iaqon0/vYWYb9rSeoT8hdRYEPVz1i/wk/TRYNf
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10471"; a="297490732"
-X-IronPort-AV: E=Sophos;i="5.93,318,1654585200"; 
-   d="scan'208";a="297490732"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 09:27:55 -0700
-X-IronPort-AV: E=Sophos;i="5.93,318,1654585200"; 
-   d="scan'208";a="721066213"
-Received: from khagn-mobl1.ger.corp.intel.com ([10.249.46.185])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 09:27:53 -0700
-Date:   Thu, 15 Sep 2022 19:27:45 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: I/O page faults from 8250_mid PCIe UART after TIOCVHANGUP
-In-Reply-To: <YyHR4o5bOnODZzZ9@smile.fi.intel.com>
-Message-ID: <7fd034a9-c1e1-2dca-693b-129c9d2649@linux.intel.com>
-References: <YyF/dogp/0C87zLb@wantstofly.org> <YyGoZLTFhYQvlf+P@smile.fi.intel.com> <YyG2tDdq9PWTlaBQ@wantstofly.org> <YyHR4o5bOnODZzZ9@smile.fi.intel.com>
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663316042; x=1694852042;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=d2xfpADX5IJA0NM8YH2RRq/YHXJmlOrZp7b4lRemt9s=;
+  b=nLk6n9ARhWjpGtf+fqdBqymykXrYKfN6Hi0WAyxuVUwsSUgeLM0kqTX3
+   YnORBmQ5BnAbdPJJs+1BadvfFp3w1buNGEjgXFXQXtkXZrGqGiU6Kh+nw
+   gZHbmYuOLC/UFkzSJAPqs1OWI3G0Tg5lJIxWZzD3yNMDY5GXhFK/SBMkR
+   oJ2GnltWwjeWEAbKzAtxo1b5v6vXKXprCXGabcMQW5CeTbDbt5Lm/69WE
+   39IwkY/EqEN0kzqUfvP1XeFc6akdrtXyARByYXWpJYaaVeCIEyX3B99Op
+   P2Qwq/jWylXb/LCjkK620PeDOGCAUB6kmW+5ExgRhBuVNTc+8NZpfr8Wv
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,320,1654585200"; 
+   d="scan'208";a="180772329"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2022 01:14:01 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 16 Sep 2022 01:14:00 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.12 via Frontend
+ Transport; Fri, 16 Sep 2022 01:14:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bE6meWO2ZLhpBw+IomWZzIHTC7nNbo9RcvexVwWFVWI+iORqNEwC6wnFRATXgBYl0dFlaZ1KuCU6T7Io6hJmvZ5zKEP7hzS0X+1b2q5Cuyqx5YY0DfT+Pyvqktuho+1sVCE/ZN5yb4KAxtOSacY1dgW8WBegWRMCwj14xRH5S4A2EaK8JdpUHoMQ93wO3QXnr+I+veMl/PAU3yZGiwWaj0abNqIzjrarurGWp1fxrq4oEgqL2QveEIiUbqSGuYSc5eMMeSsm0kV6Ue6oJ2OFs82Wm7TZr3oc1cafIZyjc3rc5IEe8Ixnztz+wmOVPzW46IxF3cb92n785tztujyfmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d2xfpADX5IJA0NM8YH2RRq/YHXJmlOrZp7b4lRemt9s=;
+ b=QSm2QxvczWtZtJZfAkdbjVAxbSsKxzATpFrSKv33sHHsU/C7BQ0FQ1ZTj0qSWKYL3SC2+Nu11ALoVTxqp33nQYLdh8HzME1NIXDSHeO3/6BHfVrKfCDMatowAgvdW90ZCJsobpYSjGc/h00+1e9vTwXYD5MVanlDzzbEA726Ka1SdXKhl3ddTcU5J8OMPW0FTM46Z9nLkeHf6cPMs8BD8IKBmsiqrI0kXswlVlt4/So1cOXmEiFBTab5i3E3gx59WznStgeNsTlhc1+HHpFt10t5CE2KBEdXW+gn2gSwL4un+OmQH7q2CRW95bjerF3x/UUkMvYnxoJQcKHd3Y50jg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d2xfpADX5IJA0NM8YH2RRq/YHXJmlOrZp7b4lRemt9s=;
+ b=mneaCqOs061IOJ5iIz1hwqEThdnpx92rDwutmURr5hQKu1Nanu7HKrj3Azh1c5egOV/bcrZmj+H4uecxXq0I7XBSkGnMnfKOKq9ofXj1omMnNk7BUpEMy0dJgZQL0jOphIJVJZ6kFPV3Gnsu+cqK2tUYY98wo1TIJ4fbxREeC8I=
+Received: from CY4PR11MB1960.namprd11.prod.outlook.com (2603:10b6:903:11d::21)
+ by BL1PR11MB6052.namprd11.prod.outlook.com (2603:10b6:208:394::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Fri, 16 Sep
+ 2022 08:13:56 +0000
+Received: from CY4PR11MB1960.namprd11.prod.outlook.com
+ ([fe80::25b7:6f88:f38c:a675]) by CY4PR11MB1960.namprd11.prod.outlook.com
+ ([fe80::25b7:6f88:f38c:a675%4]) with mapi id 15.20.5632.016; Fri, 16 Sep 2022
+ 08:13:56 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <Sergiu.Moga@microchip.com>, <lee@kernel.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <Nicolas.Ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <broonie@kernel.org>,
+        <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <jirislaby@kernel.org>, <admin@hifiphile.com>,
+        <Kavyasree.Kotagiri@microchip.com>, <Tudor.Ambarus@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-clk@vger.kernel.org>
+Subject: Re: [PATCH v3 01/14] ARM: dts: at91: sama7g5: Swap rx and tx for
+ spi11
+Thread-Topic: [PATCH v3 01/14] ARM: dts: at91: sama7g5: Swap rx and tx for
+ spi11
+Thread-Index: AQHYyaREnjOanbrhB0uo6LM3SKc+eQ==
+Date:   Fri, 16 Sep 2022 08:13:56 +0000
+Message-ID: <b537bbcf-cb0f-551d-6dd0-cf50864bafa3@microchip.com>
+References: <20220913142205.162399-1-sergiu.moga@microchip.com>
+ <20220913142205.162399-2-sergiu.moga@microchip.com>
+In-Reply-To: <20220913142205.162399-2-sergiu.moga@microchip.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CY4PR11MB1960:EE_|BL1PR11MB6052:EE_
+x-ms-office365-filtering-correlation-id: a574cbbe-c128-419c-4e59-08da97bb6692
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Spln2nbcRxk88Vdbjt69MMHewaEU3aQ/1gu7LZh8EJ4iDwXtrKwsegGWE1LVTBWl6nrNRZ4qlqxpUGPiLknQ31xgRuTrfun82qFDb1C+M0gt95izhbJJeDGZc1zpTk4+t/t5MYExzdcmnLxNZZ0R6935IkNHnjwiwoG25RNEeHRclmVSPOAdfJmfSDi8TO/fyTt7RxvQiAzCVhZhFeklZygw3uZ2RALGBLqq8Tu6xOASsoOUWOVv9dCMVoeHDom2Zo+kCywj/Pg7Os1+43aHpqPrXXAKbESaapf+0WOZZZ8B2k5joTSJ/zsd6fSQOYhuVRSjwoFISQMUgZ8wqkpmwDCuVHqWhmCKNTYuxHB7SsiZBiIF8uRfBp2VYzRR+xOHRdLc/6iKLzFOeISUqtybpGvvxvsOZBym9bdrnYch8Z8SpPBQU551s9ICy0J+/NAvTe8Hrtqio/7+HZE0sDVryxRjwDGdB6tvMsmKCa1gj06Mx9M6Tub7rMXS+yt0eenPU7zvWOwP3fmx3lwwpi+pQR0UinpH8jfhKuW2KSe9ocdfS3XajLrFLCiKWVKvycJQXhRBbtlT5Pqh3oNT9QcDVQ6lXFMZp5f1q7cbHLyz2lbLKp4aA8AYIZtgVMoyHldt2cdC2NmYacpqkSX8epLSN/H6UMOicV2Itsa1+YCUfSLHwzxxKhccR26/YL4dAH95HZegPVIy9iG/G7MNahI9rhxOt4CYPDNAlEmKfLscwpI5t1mkdOKFAt7AaYlYDkjTdrA0QEFIMijhl5xqo5aCjwYMe50iFM9AngQoUpBNPJLkLmLmE89T7ZMzXuiXaCOk1uWGiaU/rMDhjAHAlw1TbQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1960.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(346002)(136003)(39860400002)(376002)(451199015)(66476007)(7416002)(71200400001)(66446008)(41300700001)(316002)(66556008)(26005)(122000001)(31686004)(110136005)(66946007)(4326008)(76116006)(91956017)(31696002)(5660300002)(86362001)(8936002)(54906003)(36756003)(8676002)(2906002)(6506007)(478600001)(921005)(186003)(64756008)(38100700002)(2616005)(83380400001)(6636002)(6486002)(38070700005)(6512007)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RnAvaWMvd0pXTmw2V09yY25tT3hwS2NJbnJuNjJFV2UxOXRHdW91Q3A4OTl6?=
+ =?utf-8?B?b1RRYnV4OURKdlNDc3JmL25rTWV5N2hNVHZId1lTejJISXdyVXhYZEtZQkEv?=
+ =?utf-8?B?TnRBS2JQcHRZM1pMRm9pdXRPYXZzNzg3eGRjcDRTeVc4Z1ZJQ0tmMUVUcGFj?=
+ =?utf-8?B?QTlLV3h2allMNmFjUHRFTzd2UllEaS9sUUViSjVLUTc0RUVuTHdEUG1ocWpI?=
+ =?utf-8?B?bjRZNTB2NzJtUEJLQ2xCd2kvalRBZWN2cnIzNTdUbzAzdXBhRlBmWXVSY2NN?=
+ =?utf-8?B?WWVsK0V2bU1BdGV6SnpKeFF1RzNaTXdaeWZyQzVhVWFHUDlTZE11VzZWK08r?=
+ =?utf-8?B?SERHeHBUekh6RVFjb0ljWTJQbVg2eTB4NGsvaVkySHN6MERrTWRlaWxNYVUx?=
+ =?utf-8?B?V2E5VXo2RHpxSE5SY1h6R3hxZmI2Rm9OOFZnUzlNZ3RQcHZWYnoyL1VSYmlj?=
+ =?utf-8?B?OHNmWS9NdDBURFZZcnNaV2haaUZWWDhHUHpSU2p1RDZ1Y0dpUTNBTm9TQmt0?=
+ =?utf-8?B?MmVZSXNQZlN5MlJQWkJobHdZcG9lOVJoVnBxVVBuZVlScSttM3pLNFRtQnYx?=
+ =?utf-8?B?bWljYjMzVEM3SHR4ZXI2bHM0eDhzMUhaVnJsVjJ2Z0JtTCszWm1HKytaSlRP?=
+ =?utf-8?B?Nlk5U0drV2s3MkRLelpSb0d5MjFGNmk5bEhzVFBaVDlyK1BMREh2TmZmODBz?=
+ =?utf-8?B?eVBRcTJ6Sm5QTGVWeldYRzc5VnpXS1FlWGVoRzhvV1krUEpZN3hKK2xwcnkx?=
+ =?utf-8?B?NVg4cjRPaWRQeTM4UGJONzhMTmk1R3cwRVZvQTdzRDJpeWlxUFRqWE9yQzhK?=
+ =?utf-8?B?c1BJWGljOUFWUWdqOTZsam53VG5zQkNRY0EycytrYTFScndxQ2l0WjFMdVkr?=
+ =?utf-8?B?Rm1IS2dSRVl2TWp0c2RUQzFXUXA0Z3pHeStPZGc1U1VvYVJseU1pY25MaGZD?=
+ =?utf-8?B?QmQyNUpDNGJxSWZGUWJ5czAyV2J3VmtPNUszM2dwRU9yYnZTRHFiTFREd3VX?=
+ =?utf-8?B?LzkxMXFPbERNcEVxVTVSbVpBV1ozUjkvZXFXaTJJTU4vV285RXhaMFA3cTVD?=
+ =?utf-8?B?ckRUbGdFclpDK2xJS1htVGthUVR2d2dKTUNHVkxzSzgvOVRYWm52WEo5YzZo?=
+ =?utf-8?B?QkY0dU42QUI0OVFRM21NM1VxSXZYMUc2VSs3WG9FSVdCUmlyRnZPSnhibUp4?=
+ =?utf-8?B?NlhyRkU0MVR4Ry9JT2V3YmprczJ0NkdMSVpqR0R2Y1FkemxLcEt1ZXhTYVZK?=
+ =?utf-8?B?aDVzMlc5VXVkRk5vYkJqM3VFVGRSc2RxVnhXTVE0eEIxSmY0NmFCK3dpbnhJ?=
+ =?utf-8?B?THQyTFJOS2oxTDRjN2xuaTRSdm5FdFdhWVVuVVF0aG1uYTdnMkVpQzJFdk1J?=
+ =?utf-8?B?SVJzTm1mUHpoSVJmTnRLUUdYbGNtMnU0cXNvVURSSGNuVU9hZU9LeXlqMmR1?=
+ =?utf-8?B?ZWw2NHp1WjF4MXREcXRlZlBDcS9Yc3NKQVlDUWVmOExTUDZqelQ1RkJQaUZW?=
+ =?utf-8?B?OW5iK0RaUTkyN1V3MHhkUEdPSlFxay9JVnV6ZGdrR0loa3NUQkNvOVBUNE9p?=
+ =?utf-8?B?TExhS2R3dHBsQkh5TWlIa2EzeXg2TG5ZR1JBV1FuOGo1NnlIb0NySXVnbGNW?=
+ =?utf-8?B?Z1hlZFF5bkJWMlBSUFZEZ0RKYmJVVkU1MnlKNFFiM0lQTDRqMkRBL1F3V3lR?=
+ =?utf-8?B?MXBQSmhKQ0NhTE41LzVqY3Z2TzRIS0k0eGhFR1BWNHp2YU9pd3p5Vmcxa1lL?=
+ =?utf-8?B?ekw5dXV0WStEVVI1UkFZSUt0WUtlVzFqVTV6bHhoV1FQZm9KdEgwekVBaTNv?=
+ =?utf-8?B?Y1lndEdHTURhQ3dzMDh6MGJLMVNlbVBJR0dlNXNVUW9TaGdnTWVkdVo5SjFn?=
+ =?utf-8?B?ZjN4Ny9JbjZvSEF1aTZkRGJEUXBLN0l6clQxQVdodjhhT2g5R3pZK2dKOStp?=
+ =?utf-8?B?cDI5REJ0bzFjSVEvNWF3dWE5bjh4UlU5eXNxT0hYMlNmaGxZWC9DWDFVVFBZ?=
+ =?utf-8?B?OWtEemN2ckg0NnlSTFQ2cXdrUHlqaVZNV2R5alNJZW0vYlhnNmU3cGdmMCt0?=
+ =?utf-8?B?Tk5lR0NGbzhmazRzRTQvckFvNnFFc1lPVnpvVXdNUW9rVlpxK2xYdk1LbElU?=
+ =?utf-8?B?cUYzSCtJdDdHTVNXcUhnaEpHUWxTa3psNzV4aS8vbjI3RkxnRDVYT1o1L05n?=
+ =?utf-8?B?NWc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B14148C00D4D184086D522ACBBDAC795@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1047278770-1663259274=:1610"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1960.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a574cbbe-c128-419c-4e59-08da97bb6692
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2022 08:13:56.1420
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dtN1Y1bOPLELRcJI9phQjZdKyQmDWC7lxB9wdIhGtb0j8gUOvJHXVQqrrLSWyrdqLrV3oxgsQpK9kzIT18ILQwBGj4AHN++5o62D7xfEMsc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB6052
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1047278770-1663259274=:1610
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 14 Sep 2022, Andy Shevchenko wrote:
-
-> On Wed, Sep 14, 2022 at 02:10:44PM +0300, Lennert Buytenhek wrote:
-> > On Wed, Sep 14, 2022 at 01:09:40PM +0300, Andy Shevchenko wrote:
-> > > > On an Intel SoC with several 8250_mid PCIe UARTs built into the CPU, I
-> > > > can reliably trigger I/O page faults if I invoke TIOCVHANGUP on any of
-> > > > the UARTs and then re-open that UART.
-> > > > 
-> > > > Invoking TIOCVHANGUP appears to clear the MSI address/data registers
-> > > > in the UART via tty_ioctl() -> tty_vhangup() -> __tty_hangup() ->
-> > > > uart_hangup() -> uart_shutdown() -> uart_port_shutdown() ->
-> > > > univ8250_release_irq() -> free_irq() -> irq_domain_deactivate_irq() ->
-> > > > __irq_domain_deactivate_irq() -> msi_domain_deactivate() ->
-> > > > __pci_write_msi_msg():
-> > > > 
-> > > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > > 		Address: fee00278  Data: 0000
-> > > > [root@icelake ~]# cat hangup.c
-> > > > #include <stdio.h>
-> > > > #include <sys/ioctl.h>
-> > > > 
-> > > > int main(int argc, char *argv[])
-> > > > {
-> > > > 	ioctl(1, TIOCVHANGUP);
-> > > > 
-> > > > 	return 0;
-> > > > }
-> > > > [root@icelake ~]# gcc -Wall -o hangup hangup.c
-> > > > [root@icelake ~]# ./hangup > /dev/ttyS4
-> > > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > > 		Address: 00000000  Data: 0000
-> > > > [root@icelake ~]#
-> > > > 
-> > > > Opening the serial port device again while the UART is in this state
-> > > > then appears to cause the UART to generate an interrupt
-> > > 
-> > > The interrupt is ORed three: DMA Tx, DMA Rx and UART itself.
-> > > Any of them can be possible, but to be sure, can you add:
-> > > 
-> > > 	dev_info(p->dev, "FISR: %x\n", fisr);
-> > > 
-> > > into dnv_handle_irq() before any other code and see which bits we
-> > > actually got there before the crash?
-> > > 
-> > > (If it floods the logs, dev_info_ratelimited() may help)
-> > 
-> > I think that that wouldn't report anything because when the UART is
-> > triggering an interrupt here, the MSI address/data are zero, so the
-> > IRQ handler is not actually invoked.
-> 
-> Ah, indeed. Then you may disable MSI (in 8250_mid) and see that anyway?
-> 
-> > If Ilpo doesn't beat me to it, I'll try adding some debug code to see
-> > exactly which UART register write in the tty open path is causing the
-> > UART to signal an interrupt before the IRQ handler is set up.
-> > 
-> > (The IOMMU stops the write in this case, so the machine doesn't crash,
-> > we just get an I/O page fault warning in dmesg every time this happens.)
-> 
-> And I believe you are not using that UART as debug console, so it won't
-> dead lock itself. It's then better than I assumed.
-> 
-> > > > before the
-> > > > MSI vector has been set up again, causing a DMA write to I/O virtual
-> > > > address zero:
-> > > > 
-> > > > [root@icelake console]# echo > /dev/ttyS4
-> > > > [  979.463307] DMAR: DRHD: handling fault status reg 3
-> > > > [  979.469409] DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-> > > > 
-> > > > I'm guessing there's something under tty_open() -> uart_open() ->
-> > > > tty_port_open() -> uart_port_activate() -> uart_port_startup() ->
-> > > > serial8250_do_startup() that triggers a UART interrupt before the
-> > > > MSI vector has been set up again.
-> > > > 
-> > > > I did a quick search but it didn't seem like this is a known issue.
-> > > 
-> > > Thanks for your report and reproducer! Yes, I also never heard about
-> > > such an issue before. Ilpo, who is doing more UART work nowadays, might
-> > > have an idea, I hope.
-
-The patch below seems to avoid the faults. I'm far from sure if it's the 
-best fix though as I don't fully understand what causes the faults during 
-the THRE tests because the port->irq is disabled by the THRE test block.
-
---
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-[PATCH] serial: 8250: Turn IER bits on only after irq has been set up
-
-Invoking TIOCVHANGUP on 8250_mid port and then reopening the
-port triggers these faults during serial8250_do_startup():
-
-  DMAR: DRHD: handling fault status reg 3
-  DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-
-The faults are triggered by the THRE test that temporarily toggles THRI
-in IER before UART's irq is set up.
-
-Refactor serial8250_do_startup() such that irq is setup before the THRE
-test. The current irq setup code is intermixed with the timer setup
-code. As THRE test must be performed prior to the timer setup, extract
-it into own function and call it only after the THRE test.
-
-Reported-by: Lennert Buytenhek <buytenh@wantstofly.org>
-Fixes: 40b36daad0ac ("[PATCH] 8250 UART backup timer")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
----
- drivers/tty/serial/8250/8250.h      |  2 ++
- drivers/tty/serial/8250/8250_core.c | 23 ++++++++++++-----------
- drivers/tty/serial/8250/8250_port.c |  8 +++++---
- 3 files changed, 19 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 287153d32536..dbf4c1204bf3 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -403,3 +403,5 @@ static inline int serial_index(struct uart_port *port)
- {
- 	return port->minor - 64;
- }
-+
-+void univ8250_setup_timer(struct uart_8250_port *up);
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 2e83e7367441..e81a9cab6960 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -298,21 +298,15 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
- }
- 
--static int univ8250_setup_irq(struct uart_8250_port *up)
-+void univ8250_setup_timer(struct uart_8250_port *up)
- {
- 	struct uart_port *port = &up->port;
--	int retval = 0;
- 
--	/*
--	 * The above check will only give an accurate result the first time
--	 * the port is opened so this value needs to be preserved.
--	 */
- 	if (up->bugs & UART_BUG_THRE) {
- 		pr_debug("%s - using backup timer\n", port->name);
- 
- 		up->timer.function = serial8250_backup_timeout;
--		mod_timer(&up->timer, jiffies +
--			  uart_poll_timeout(port) + HZ / 5);
-+		mod_timer(&up->timer, jiffies + uart_poll_timeout(port) + HZ / 5);
- 	}
- 
- 	/*
-@@ -322,10 +316,17 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
- 	 */
- 	if (!port->irq)
- 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
--	else
--		retval = serial_link_irq_chain(up);
-+}
-+EXPORT_SYMBOL_GPL(univ8250_setup_timer);
- 
--	return retval;
-+static int univ8250_setup_irq(struct uart_8250_port *up)
-+{
-+	struct uart_port *port = &up->port;
-+
-+	if (port->irq)
-+		return serial_link_irq_chain(up);
-+
-+	return 0;
- }
- 
- static void univ8250_release_irq(struct uart_8250_port *up)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 39b35a61958c..6e8e16227a3a 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2294,6 +2294,10 @@ int serial8250_do_startup(struct uart_port *port)
- 	if (port->irq && (up->port.flags & UPF_SHARE_IRQ))
- 		up->port.irqflags |= IRQF_SHARED;
- 
-+	retval = up->ops->setup_irq(up);
-+	if (retval)
-+		goto out;
-+
- 	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
- 		unsigned char iir1;
- 
-@@ -2336,9 +2340,7 @@ int serial8250_do_startup(struct uart_port *port)
- 		}
- 	}
- 
--	retval = up->ops->setup_irq(up);
--	if (retval)
--		goto out;
-+	univ8250_setup_timer(up);
- 
- 	/*
- 	 * Now, initialize the UART
-
--- 
-tg: (1d10cd4da593..) 8250/setup-irq-fix (depends on: tty-linus)
---8323329-1047278770-1663259274=:1610--
+T24gMTMuMDkuMjAyMiAxNzoyMSwgU2VyZ2l1IE1vZ2Egd3JvdGU6DQo+IFN3YXAgdGhlIHJ4IGFu
+ZCB0eCBvZiB0aGUgRE1BIHJlbGF0ZWQgRFQgcHJvcGVydGllcyBvZiB0aGUgc3BpMTEgbm9kZQ0K
+PiBpbiBvcmRlciB0byBtYWludGFpbiBjb25zaXN0ZW5jeSBhY3Jvc3MgTWljcm9jaGlwL0F0bWVs
+IFNvQyBmaWxlcy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNlcmdpdSBNb2dhIDxzZXJnaXUubW9n
+YUBtaWNyb2NoaXAuY29tPg0KDQpBcHBsaWVkIHRvIGF0OTEtZHQsIHRoYW5rcyENCg0KPiAtLS0N
+Cj4gDQo+IA0KPiB2MSAtPiB2MjoNCj4gLSBOb3RoaW5nLCB0aGlzIHBhdGNoIHdhcyBub3QgaGVy
+ZSBiZWZvcmUNCj4gDQo+IA0KPiB2MiAtPiB2MzoNCj4gLSBOb3RoaW5nLCB0aGlzIHdhcyBwcmV2
+aW91c2x5IFtQQVRDSCAyXQ0KPiANCj4gDQo+IA0KPiAgYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTdn
+NS5kdHNpIHwgNiArKystLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMg
+ZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTdn
+NS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTdnNS5kdHNpDQo+IGluZGV4IGJiNmQ3MWU2
+ZGZlYi4uMjQ5ZjljNjQwYjZjIDEwMDY0NA0KPiAtLS0gYS9hcmNoL2FybS9ib290L2R0cy9zYW1h
+N2c1LmR0c2kNCj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvc2FtYTdnNS5kdHNpDQo+IEBAIC04
+NjYsOSArODY2LDkgQEAgc3BpMTE6IHNwaUA0MDAgew0KPiAgCQkJCSNhZGRyZXNzLWNlbGxzID0g
+PDE+Ow0KPiAgCQkJCSNzaXplLWNlbGxzID0gPDA+Ow0KPiAgCQkJCWF0bWVsLGZpZm8tc2l6ZSA9
+IDwzMj47DQo+IC0JCQkJZG1hcyA9IDwmZG1hMCBBVDkxX1hETUFDX0RUX1BFUklEKDI3KT4sDQo+
+IC0JCQkJCSAgICA8JmRtYTAgQVQ5MV9YRE1BQ19EVF9QRVJJRCgyOCk+Ow0KPiAtCQkJCWRtYS1u
+YW1lcyA9ICJyeCIsICJ0eCI7DQo+ICsJCQkJZG1hcyA9IDwmZG1hMCBBVDkxX1hETUFDX0RUX1BF
+UklEKDI4KT4sDQo+ICsJCQkJCSAgICA8JmRtYTAgQVQ5MV9YRE1BQ19EVF9QRVJJRCgyNyk+Ow0K
+PiArCQkJCWRtYS1uYW1lcyA9ICJ0eCIsICJyeCI7DQo+ICAJCQkJc3RhdHVzID0gImRpc2FibGVk
+IjsNCj4gIAkJCX07DQo+ICAJCX07DQoNCg==
