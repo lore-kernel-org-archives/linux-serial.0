@@ -2,169 +2,118 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B03ECAAD8
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Sep 2022 13:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4F4C6FA92
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Sep 2022 19:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229872AbiIPNiS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Sep 2022 09:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        id S229745AbiIPT50 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Sep 2022 15:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiIPNiS (ORCPT
+        with ESMTP id S229455AbiIPT5Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Sep 2022 09:38:18 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD88AC267;
-        Fri, 16 Sep 2022 06:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663335497; x=1694871497;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sJMe/1PYpsqbrFNWnFUVcRts/I3YQPfG92WoPV3Im7Y=;
-  b=TnpMdf4NKf81gyfdZAu+w/QHA1bNnaT04CWmaCxYYXn2vIKvRZoHPVtC
-   N0YXdnL/3ud1Fm6UtHlMsJeiPMIF9zou98WMT5ip3kOqMR7o6skF5IC8X
-   VM/6AwIRA/z9SFjtg7DBLjSqD/NEfYoHDgiDgJ7KPB9CfEXWJsOCoacNH
-   i3jXKl7Qfl4nexOJpWH5ZJcrIsV6Ns/IzIr1GufXMwOQultBVwusRp0Xo
-   E8X7OQEO8kfGxCf8PVrQOgUMZKWZJt9mOGJaGJkPkBxSc0uUWF28mhP9c
-   3s35Qwg0r6CfoHFUN5M0c2NkNnWTLhmQAFLkUxeOCCBMDyBEg1L8U6msF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10472"; a="325265318"
-X-IronPort-AV: E=Sophos;i="5.93,320,1654585200"; 
-   d="scan'208";a="325265318"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 06:38:17 -0700
-X-IronPort-AV: E=Sophos;i="5.93,320,1654585200"; 
-   d="scan'208";a="946375217"
-Received: from lroque-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.209.126])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 06:38:14 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
-        Alex Williamson <alex.williamson@hp.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lennert Buytenhek <buytenh@arista.com>
-Subject: [PATCH v2 1/1] serial: 8250: Turn IER bits on only after irq has been set up
-Date:   Fri, 16 Sep 2022 16:38:04 +0300
-Message-Id: <20220916133804.15196-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 16 Sep 2022 15:57:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D19B6D68;
+        Fri, 16 Sep 2022 12:57:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 182FEB82919;
+        Fri, 16 Sep 2022 19:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2545C433D7;
+        Fri, 16 Sep 2022 19:57:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663358240;
+        bh=vCLtuY1TpVMliumE5DbT2WWZvJ7/teLjaPmFO/zeNJs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IOX0u1Ga5jI3fyqBR9wRY7ly+OLINlk+lX+/BsGejMs60jVRDL8sIKqdSt3XILF3S
+         3K8SPRau6FUTQjVtbE6TEJNBmBOBPcPVQXi8OX57u4C0HVoKJPkMEEJ00ksU2lEwGs
+         eneNMJ1+ZnjxnQkCh/cvuyCe2+sDYCEoDJMO2dCn8QTVKtHj5HclYZhNhoQ3rUjl8F
+         tLS/O8FsgwubYS4qOpznp7bdKsC95dfNfY+vQCoCjDHNxc5H6XhL91QFFlfKlKIRzu
+         6tQdmHN/uGcOz3u/YXt0EebKPWSOF1vo6zXrc1qJQEZh8QfmRKs6RTMPWgVqS4lGYT
+         5hmw0V5iFK+MA==
+Date:   Fri, 16 Sep 2022 20:57:18 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     kever.yang@rock-chips.com, sjg@chromium.org,
+        philipp.tomsich@vrull.eu, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
+        ulf.hansson@linaro.org, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, kishon@ti.com, vkoul@kernel.org,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        gregkh@linuxfoundation.org, broonie@kernel.org,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        zhangqing@rock-chips.com, jamie@jamieiles.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH v1 02/11] dt-bindings: i2c: rockchip: add
+ rockchip,rk3128-i2c
+Message-ID: <YyTVHph1bCF/gfjL@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Johan Jonker <jbx6244@gmail.com>, kever.yang@rock-chips.com,
+        sjg@chromium.org, philipp.tomsich@vrull.eu, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
+        ulf.hansson@linaro.org, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, kishon@ti.com, vkoul@kernel.org,
+        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+        gregkh@linuxfoundation.org, broonie@kernel.org,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        zhangqing@rock-chips.com, jamie@jamieiles.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+References: <20220909212543.17428-1-jbx6244@gmail.com>
+ <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Vbp8ZsxZHEPG+tBR"
+Content-Disposition: inline
+In-Reply-To: <405db21d-154e-fed0-7524-ace1cef0203c@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Invoking TIOCVHANGUP on 8250_mid port and then reopening the port
-triggers these faults during serial8250_do_startup():
 
-  DMAR: DRHD: handling fault status reg 3
-  DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+--Vbp8ZsxZHEPG+tBR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The cause is a DMA write to the address in MSI address register that
-was zeroed during the hangup as the irq was freed. The writes are
-triggered due signalling an interrupt during the THRE test that
-temporarily toggles THRI in IER. The THRE test currently occurs before
-UART's irq (and MSI address) is properly set up.
+On Sat, Sep 10, 2022 at 12:02:30AM +0200, Johan Jonker wrote:
+> Add rockchip,rk3128-i2c compatible string.
+>=20
+> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
 
-Refactor serial8250_do_startup() such that irq is set up before the
-THRE test. The current irq setup code is intermixed with the timer
-setup code. As THRE test must be performed prior to the timer setup,
-extract it into own function and call it only after the THRE test.
+Applied to for-next, thanks!
 
-Reported-by: Lennert Buytenhek <buytenh@arista.com>
-Tested-by: Lennert Buytenhek <buytenh@arista.com>
-Fixes: 40b36daad0ac ("[PATCH] 8250 UART backup timer")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
 
-v2:
-- Remove unnecessary changes to comments & newlines
-- Change Lennert's email & add Tested-by
-- Improve description of the problem (thank to Lennert's explanation)
+--Vbp8ZsxZHEPG+tBR
+Content-Type: application/pgp-signature; name="signature.asc"
 
- drivers/tty/serial/8250/8250.h      |  2 ++
- drivers/tty/serial/8250/8250_core.c | 16 +++++++++++-----
- drivers/tty/serial/8250/8250_port.c |  8 +++++---
- 3 files changed, 18 insertions(+), 8 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 287153d32536..dbf4c1204bf3 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -403,3 +403,5 @@ static inline int serial_index(struct uart_port *port)
- {
- 	return port->minor - 64;
- }
-+
-+void univ8250_setup_timer(struct uart_8250_port *up);
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 2e83e7367441..10d535640434 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -298,10 +298,9 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
- }
- 
--static int univ8250_setup_irq(struct uart_8250_port *up)
-+void univ8250_setup_timer(struct uart_8250_port *up)
- {
- 	struct uart_port *port = &up->port;
--	int retval = 0;
- 
- 	/*
- 	 * The above check will only give an accurate result the first time
-@@ -322,10 +321,17 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
- 	 */
- 	if (!port->irq)
- 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
--	else
--		retval = serial_link_irq_chain(up);
-+}
-+EXPORT_SYMBOL_GPL(univ8250_setup_timer);
- 
--	return retval;
-+static int univ8250_setup_irq(struct uart_8250_port *up)
-+{
-+	struct uart_port *port = &up->port;
-+
-+	if (port->irq)
-+		return serial_link_irq_chain(up);
-+
-+	return 0;
- }
- 
- static void univ8250_release_irq(struct uart_8250_port *up)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 39b35a61958c..6e8e16227a3a 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2294,6 +2294,10 @@ int serial8250_do_startup(struct uart_port *port)
- 	if (port->irq && (up->port.flags & UPF_SHARE_IRQ))
- 		up->port.irqflags |= IRQF_SHARED;
- 
-+	retval = up->ops->setup_irq(up);
-+	if (retval)
-+		goto out;
-+
- 	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
- 		unsigned char iir1;
- 
-@@ -2336,9 +2340,7 @@ int serial8250_do_startup(struct uart_port *port)
- 		}
- 	}
- 
--	retval = up->ops->setup_irq(up);
--	if (retval)
--		goto out;
-+	univ8250_setup_timer(up);
- 
- 	/*
- 	 * Now, initialize the UART
--- 
-2.30.2
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMk1R4ACgkQFA3kzBSg
+KbY8YxAAqkmITIjJchmw2BH4eehoxFiSAW8VYh6gojn2S2RgQjSwZsHnR8E8FMIu
+eUeROZH0Wd/Mihi8hLz9Fm3/aTSxUss5Zj2hzFr2RGOHqsicHtx622HwdTakfM08
+6NFWuuBya9tGX4iujN+oQsnI1NA8mDPNEIE8tMEh1wBzOY5m/ijAJLIALJ/cB/qj
+4MGIK9aKg9PfU3nSd0b+9Dn7iZDClo6CnBeKCAHhUeF+DoKzdLsl3FQzNtcIxS1+
++NL48AB8Kst01hfZHKpuUriTDT2lXfBeQi5NEKNRyc+1fEWBshPat1tYRlEfs9BA
+WAHNZkh3q8qsSDPh2lufGmmOhuX3pUumWAwHfHgbZksNtPj5ldSTXhUciPPHeufb
+Rf+Ne4WaMMX4JOJJ70wMKn+ycaJYRulfiOacroqTqTH7rSX+NuioTEtITA2KMa3q
+4WfMmHrJe3qLPhEkLXabhrYwMcAWkHaPDJ6dJJbHfxRtR0F8y0DMpyJrCRsF9TcS
++8Hqcq+y5bxc9n/eDxSrSQXXoEQLBFjGeJfCz4D+n6oOWv/6dxMe8dZyU7vq/Ea8
+0DApwW0esWTGZuuV5r2xmncP/4+spn2C2FCOI1ZqCPs2T3Kd7DPBEMPnp7UQRZFO
+cVkNoe0c0N9yQjMEVi9+aqqDWefE6imYt3d3PXqcHEYoHYqHON4=
+=t7C7
+-----END PGP SIGNATURE-----
 
+--Vbp8ZsxZHEPG+tBR--
