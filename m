@@ -2,161 +2,169 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF62FC54EE9
-	for <linux-serial@archiver.kernel.org>; Fri, 16 Sep 2022 13:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B03ECAAD8
+	for <linux-serial@archiver.kernel.org>; Fri, 16 Sep 2022 13:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229954AbiIPNSx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 16 Sep 2022 09:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45538 "EHLO
+        id S229872AbiIPNiS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 16 Sep 2022 09:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiIPNSu (ORCPT
+        with ESMTP id S229581AbiIPNiS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 16 Sep 2022 09:18:50 -0400
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C519EA3D44;
-        Fri, 16 Sep 2022 06:18:47 -0700 (PDT)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
-        id 2D4807F505; Fri, 16 Sep 2022 16:18:46 +0300 (EEST)
-Date:   Fri, 16 Sep 2022 16:18:46 +0300
-From:   Lennert Buytenhek <buytenh@wantstofly.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 16 Sep 2022 09:38:18 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD88AC267;
+        Fri, 16 Sep 2022 06:38:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663335497; x=1694871497;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sJMe/1PYpsqbrFNWnFUVcRts/I3YQPfG92WoPV3Im7Y=;
+  b=TnpMdf4NKf81gyfdZAu+w/QHA1bNnaT04CWmaCxYYXn2vIKvRZoHPVtC
+   N0YXdnL/3ud1Fm6UtHlMsJeiPMIF9zou98WMT5ip3kOqMR7o6skF5IC8X
+   VM/6AwIRA/z9SFjtg7DBLjSqD/NEfYoHDgiDgJ7KPB9CfEXWJsOCoacNH
+   i3jXKl7Qfl4nexOJpWH5ZJcrIsV6Ns/IzIr1GufXMwOQultBVwusRp0Xo
+   E8X7OQEO8kfGxCf8PVrQOgUMZKWZJt9mOGJaGJkPkBxSc0uUWF28mhP9c
+   3s35Qwg0r6CfoHFUN5M0c2NkNnWTLhmQAFLkUxeOCCBMDyBEg1L8U6msF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10472"; a="325265318"
+X-IronPort-AV: E=Sophos;i="5.93,320,1654585200"; 
+   d="scan'208";a="325265318"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 06:38:17 -0700
+X-IronPort-AV: E=Sophos;i="5.93,320,1654585200"; 
+   d="scan'208";a="946375217"
+Received: from lroque-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.209.126])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 06:38:14 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lennert Buytenhek <buytenh@wantstofly.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: I/O page faults from 8250_mid PCIe UART after TIOCVHANGUP
-Message-ID: <YyR3tnUXsgIJ1w/W@wantstofly.org>
-References: <YyF/dogp/0C87zLb@wantstofly.org>
- <YyGoZLTFhYQvlf+P@smile.fi.intel.com>
- <YyG2tDdq9PWTlaBQ@wantstofly.org>
- <YyHR4o5bOnODZzZ9@smile.fi.intel.com>
- <7fd034a9-c1e1-2dca-693b-129c9d2649@linux.intel.com>
- <YyRiPMa26qDptj3L@wantstofly.org>
- <421c541b-25d7-a1de-8c21-5a164dcf24ef@linux.intel.com>
+        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
+        Alex Williamson <alex.williamson@hp.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lennert Buytenhek <buytenh@arista.com>
+Subject: [PATCH v2 1/1] serial: 8250: Turn IER bits on only after irq has been set up
+Date:   Fri, 16 Sep 2022 16:38:04 +0300
+Message-Id: <20220916133804.15196-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <421c541b-25d7-a1de-8c21-5a164dcf24ef@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 16, 2022 at 03:02:04PM +0300, Ilpo Järvinen wrote:
+Invoking TIOCVHANGUP on 8250_mid port and then reopening the port
+triggers these faults during serial8250_do_startup():
 
-> > > > > > > On an Intel SoC with several 8250_mid PCIe UARTs built into the CPU, I
-> > > > > > > can reliably trigger I/O page faults if I invoke TIOCVHANGUP on any of
-> > > > > > > the UARTs and then re-open that UART.
-> > > > > > > 
-> > > > > > > Invoking TIOCVHANGUP appears to clear the MSI address/data registers
-> > > > > > > in the UART via tty_ioctl() -> tty_vhangup() -> __tty_hangup() ->
-> > > > > > > uart_hangup() -> uart_shutdown() -> uart_port_shutdown() ->
-> > > > > > > univ8250_release_irq() -> free_irq() -> irq_domain_deactivate_irq() ->
-> > > > > > > __irq_domain_deactivate_irq() -> msi_domain_deactivate() ->
-> > > > > > > __pci_write_msi_msg():
-> > > > > > > 
-> > > > > > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > > > > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > > > > > 		Address: fee00278  Data: 0000
-> > > > > > > [root@icelake ~]# cat hangup.c
-> > > > > > > #include <stdio.h>
-> > > > > > > #include <sys/ioctl.h>
-> > > > > > > 
-> > > > > > > int main(int argc, char *argv[])
-> > > > > > > {
-> > > > > > > 	ioctl(1, TIOCVHANGUP);
-> > > > > > > 
-> > > > > > > 	return 0;
-> > > > > > > }
-> > > > > > > [root@icelake ~]# gcc -Wall -o hangup hangup.c
-> > > > > > > [root@icelake ~]# ./hangup > /dev/ttyS4
-> > > > > > > [root@icelake ~]# lspci -s 00:1a.0 -vv | grep -A1 MSI:
-> > > > > > > 	Capabilities: [40] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> > > > > > > 		Address: 00000000  Data: 0000
-> > > > > > > [root@icelake ~]#
-> > > > > > > 
-> > > > > > > Opening the serial port device again while the UART is in this state
-> > > > > > > then appears to cause the UART to generate an interrupt
-> > > > > > 
-> > > > > > The interrupt is ORed three: DMA Tx, DMA Rx and UART itself.
-> > > > > > Any of them can be possible, but to be sure, can you add:
-> > > > > > 
-> > > > > > 	dev_info(p->dev, "FISR: %x\n", fisr);
-> > > > > > 
-> > > > > > into dnv_handle_irq() before any other code and see which bits we
-> > > > > > actually got there before the crash?
-> > > > > > 
-> > > > > > (If it floods the logs, dev_info_ratelimited() may help)
-> > > > > 
-> > > > > I think that that wouldn't report anything because when the UART is
-> > > > > triggering an interrupt here, the MSI address/data are zero, so the
-> > > > > IRQ handler is not actually invoked.
-> > > > 
-> > > > Ah, indeed. Then you may disable MSI (in 8250_mid) and see that anyway?
-> > > > 
-> > > > > If Ilpo doesn't beat me to it, I'll try adding some debug code to see
-> > > > > exactly which UART register write in the tty open path is causing the
-> > > > > UART to signal an interrupt before the IRQ handler is set up.
-> > > > > 
-> > > > > (The IOMMU stops the write in this case, so the machine doesn't crash,
-> > > > > we just get an I/O page fault warning in dmesg every time this happens.)
-> > > > 
-> > > > And I believe you are not using that UART as debug console, so it won't
-> > > > dead lock itself. It's then better than I assumed.
-> > > > 
-> > > > > > > before the
-> > > > > > > MSI vector has been set up again, causing a DMA write to I/O virtual
-> > > > > > > address zero:
-> > > > > > > 
-> > > > > > > [root@icelake console]# echo > /dev/ttyS4
-> > > > > > > [  979.463307] DMAR: DRHD: handling fault status reg 3
-> > > > > > > [  979.469409] DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-> > > > > > > 
-> > > > > > > I'm guessing there's something under tty_open() -> uart_open() ->
-> > > > > > > tty_port_open() -> uart_port_activate() -> uart_port_startup() ->
-> > > > > > > serial8250_do_startup() that triggers a UART interrupt before the
-> > > > > > > MSI vector has been set up again.
-> > > > > > > 
-> > > > > > > I did a quick search but it didn't seem like this is a known issue.
-> > > > > > 
-> > > > > > Thanks for your report and reproducer! Yes, I also never heard about
-> > > > > > such an issue before. Ilpo, who is doing more UART work nowadays, might
-> > > > > > have an idea, I hope.
-> > > 
-> > > The patch below seems to avoid the faults. [...]
-> > 
-> > Thanks for the fix!
-> > 
-> > 
-> > > [...] I'm far from sure if it's the 
-> > > best fix though as I don't fully understand what causes the faults during 
-> > > the THRE tests because the port->irq is disabled by the THRE test block.
-> > 
-> > If the IRQ hasn't been set up yet, the UART will have zeroes in its MSI
-> > address/data registers.  Disabling the IRQ at the interrupt controller
-> > won't stop the UART from performing a DMA write to the address programmed
-> > in its MSI address register (zero) when it wants to signal an interrupt.
-> > 
-> > (These UARTs (in Ice Lake-D) implement PCI 2.1 style MSI without masking
-> > capability, so there is no way to mask the interrupt at the source PCI
-> > function level, except disabling the MSI capability entirely, but that
-> > would cause it to fall back to INTx# assertion, and the PCI specification
-> > prohibits disabling the MSI capability as a way to mask a function's
-> > interrupt service request.)
+  DMAR: DRHD: handling fault status reg 3
+  DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
 
-(In other words, disabling the IRQ at the interrupt controller doesn't
-prevent the device from signaling an interrupt, and signaling an
-interrupt without a proper MSI target address configured in the device's
-MSI address register is what is causing the I/O page fault.)
+The cause is a DMA write to the address in MSI address register that
+was zeroed during the hangup as the irq was freed. The writes are
+triggered due signalling an interrupt during the THRE test that
+temporarily toggles THRI in IER. The THRE test currently occurs before
+UART's irq (and MSI address) is properly set up.
 
+Refactor serial8250_do_startup() such that irq is set up before the
+THRE test. The current irq setup code is intermixed with the timer
+setup code. As THRE test must be performed prior to the timer setup,
+extract it into own function and call it only after the THRE test.
 
-> > > Reported-by: Lennert Buytenhek <buytenh@wantstofly.org>
-> > 
-> > Could you make this buytenh@arista.com ?
-> 
-> Sure. Should I add Tested-by as well?
-
-OK!
-
+Reported-by: Lennert Buytenhek <buytenh@arista.com>
 Tested-by: Lennert Buytenhek <buytenh@arista.com>
+Fixes: 40b36daad0ac ("[PATCH] 8250 UART backup timer")
+Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
+---
+
+v2:
+- Remove unnecessary changes to comments & newlines
+- Change Lennert's email & add Tested-by
+- Improve description of the problem (thank to Lennert's explanation)
+
+ drivers/tty/serial/8250/8250.h      |  2 ++
+ drivers/tty/serial/8250/8250_core.c | 16 +++++++++++-----
+ drivers/tty/serial/8250/8250_port.c |  8 +++++---
+ 3 files changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 287153d32536..dbf4c1204bf3 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -403,3 +403,5 @@ static inline int serial_index(struct uart_port *port)
+ {
+ 	return port->minor - 64;
+ }
++
++void univ8250_setup_timer(struct uart_8250_port *up);
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 2e83e7367441..10d535640434 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -298,10 +298,9 @@ static void serial8250_backup_timeout(struct timer_list *t)
+ 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
+ }
+ 
+-static int univ8250_setup_irq(struct uart_8250_port *up)
++void univ8250_setup_timer(struct uart_8250_port *up)
+ {
+ 	struct uart_port *port = &up->port;
+-	int retval = 0;
+ 
+ 	/*
+ 	 * The above check will only give an accurate result the first time
+@@ -322,10 +321,17 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
+ 	 */
+ 	if (!port->irq)
+ 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
+-	else
+-		retval = serial_link_irq_chain(up);
++}
++EXPORT_SYMBOL_GPL(univ8250_setup_timer);
+ 
+-	return retval;
++static int univ8250_setup_irq(struct uart_8250_port *up)
++{
++	struct uart_port *port = &up->port;
++
++	if (port->irq)
++		return serial_link_irq_chain(up);
++
++	return 0;
+ }
+ 
+ static void univ8250_release_irq(struct uart_8250_port *up)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 39b35a61958c..6e8e16227a3a 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2294,6 +2294,10 @@ int serial8250_do_startup(struct uart_port *port)
+ 	if (port->irq && (up->port.flags & UPF_SHARE_IRQ))
+ 		up->port.irqflags |= IRQF_SHARED;
+ 
++	retval = up->ops->setup_irq(up);
++	if (retval)
++		goto out;
++
+ 	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
+ 		unsigned char iir1;
+ 
+@@ -2336,9 +2340,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 		}
+ 	}
+ 
+-	retval = up->ops->setup_irq(up);
+-	if (retval)
+-		goto out;
++	univ8250_setup_timer(up);
+ 
+ 	/*
+ 	 * Now, initialize the UART
+-- 
+2.30.2
+
