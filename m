@@ -2,104 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B29E3C54EE9
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 09:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7777FC6FA82
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 10:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbiISJcA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 05:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
+        id S229813AbiISKyI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 06:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiISJb7 (ORCPT
+        with ESMTP id S230249AbiISKxq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 05:31:59 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27869140A2;
-        Mon, 19 Sep 2022 02:31:59 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id A12EB5C030A;
-        Mon, 19 Sep 2022 05:31:56 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 19 Sep 2022 05:31:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1663579916; x=1663666316; bh=V0o7LEef+B
-        ZuEidJK6a/jvVmiWZ9XRI7Dey6frbpCPk=; b=uS4UCKxajYjRcBSiGgj7YYfQgp
-        7CV1pvuYtM22JSYUOoBecJOFPdcUwfEOmxkQHAqBG0hGgvMGJcw2g+WAe0Rze9YN
-        ifKNitab6fe+/qGmKK0RjXn8cQMNFQ2j7+IcjZTPrR4/1/14H0OI2Si+nCYo11xl
-        cudG4XPZVi+uMesbwiK1SXgcSsrQ7nfHogd/e8UiQEaT7yYdCvMV42VC8NdPQD4Q
-        Vh++z4i3eL3+VJETP8Vh7JYbudlGzBsa+E8ZYDRnFNx4Fl+cIHNOIz5gvCL1Ojk/
-        hpvXhCbymHebLhXvGdR6QSgqqrBIIonftKnOq+I0MxoJnfWYyL+fmvJ1mPJw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1663579916; x=1663666316; bh=V0o7LEef+BZuEidJK6a/jvVmiWZ9
-        XRI7Dey6frbpCPk=; b=I2bfSFrcOnMc6+xYDDMwW8dye5KJa46GzTzKhBHM26a+
-        lQcwJqJfrxMkN7hGy5qGDS8Yb7OW4ojzzqPaiodQ+O1UepGLM5jAo6E5Ig6ETqgb
-        wz1QGaFzLQAMNuh8pAUazhZcTVBbyOUf9zal+7cDkQ2id3jCWBivEcW5CJZmmMRn
-        oGOeFn0lLyM9P2fe1gxhZtPfOykcoG0jxXZLoByNC0+/5CZhT2YFa1NQhOLExKk9
-        GHgZx6oxO3Qxd6TOHIYtRogGp7rseQOGyJbfLJrsAuZOJWx35yOAOzxkurDzqa+a
-        nvxVI5jVQJYDRLHNybSCXuk7jdzG5DgUxYzQKLbnfg==
-X-ME-Sender: <xms:DDcoY-N1INGZqGF6Omi4QOCScnI4OUQwoDnkh8hYkBrc49uphyYwmg>
-    <xme:DDcoY88_9gNC2cPybmgl2wOlVlZ3vi8Y4EFLUN_DXmCEBMn-UUX4ORJRRUJ7mVve_
-    eLkFq177DO-fw>
-X-ME-Received: <xmr:DDcoY1R9YTmgAY0Klsoh4uhks_vOgQC5J7_GVh1hw4WWp5jJFcxNwNqMtcc2>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedgudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhm
-    qeenucggtffrrghtthgvrhhnpeehgedvvedvleejuefgtdduudfhkeeltdeihfevjeekje
-    euhfdtueefhffgheekteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:DDcoY-tAb6tZ_QcyeApGlk3lfl5DXtxruRqO_SN2g27UONvrJRnOkw>
-    <xmx:DDcoY2eKmdGEqlu375C2KRf23PguPbIXx3Iz1O9MBNo9tgSPjJAXzQ>
-    <xmx:DDcoYy0Uk5rA1eHMjxHFn4bzIUnwUsyKN0iasz9iiPCSFbsHcAb67w>
-    <xmx:DDcoY3uZlR4e6DEivEyVIwRZ6mCdzZ9dgz8K-v8Lhqs-TskkiYqMTA>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 Sep 2022 05:31:55 -0400 (EDT)
-Date:   Mon, 19 Sep 2022 11:32:24 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Li Zhong <floridsleeves@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        etremblay@distech-controls.com, l.sanfilippo@kunbus.com,
-        u.kleine-koenig@pengutronix.de, robert.hancock@calian.com,
-        ilpo.jarvinen@linux.intel.com, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, jirislaby@kernel.org
-Subject: Re: [PATCH v1] drivers/tty/serial/8250: check the return value of
- clk_prepare_enable()
-Message-ID: <Yyg3KKDCLaQUb2P0@kroah.com>
-References: <20220919085455.1582310-1-floridsleeves@gmail.com>
+        Mon, 19 Sep 2022 06:53:46 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFDFF16;
+        Mon, 19 Sep 2022 03:49:47 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id y3so63547289ejc.1;
+        Mon, 19 Sep 2022 03:49:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=meC2VdD2Xd6s7HoqRo+q1lRDIcjErU1huloDKPbW78w=;
+        b=Suqt+mqAiopwOKoqmx34ip/cKUJMEKRclkMu5uXSm08IIKWrURv9Cj6/IYbkY02UY5
+         gtHD5xSHKUtdLzNc7X+BLR3sXDicTl+d48F0r7jxT5eo+OePJLNMaw6eEgPxVixl5puM
+         AKYkHPuMKn1ee4eCoAlVlmkb4Bq258UIPYnlBx2GhFutxwJUX/Jr7/i3qexlQC4HtNlG
+         /TJNkoddsDqicEO6NLCUXPF+sGAvPeiMFS3eKN8IM74HVX4QS3UMK5cnP+zL3F50KZr5
+         2FwQ0+tUFF/Ige/ZUla6NyI6px8NBr2k9kjFKUKwpQfe/FPFhDYIQMzIm7rKE8uIJNG4
+         Czfg==
+X-Gm-Message-State: ACrzQf24Xw2Gr1mb66u4y5TLGp/HtLwWyr7CnB+imDr4Vqp3v15G2i/9
+        E1BdcYd5pE92il7LmH8GYxCZtqIjfqM=
+X-Google-Smtp-Source: AMsMyM7uh0UiLJZl9j8MB8GqN87EqKECdAWsrEdxOEUpih4Fa2RdQHSOFWRGFeOn4fJabGx1O9owBg==
+X-Received: by 2002:a17:907:2cf3:b0:77d:89da:499c with SMTP id hz19-20020a1709072cf300b0077d89da499cmr11998463ejc.694.1663584585322;
+        Mon, 19 Sep 2022 03:49:45 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906200900b0072b41776dd1sm15313750ejo.24.2022.09.19.03.49.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 03:49:44 -0700 (PDT)
+Message-ID: <ec300579-9565-a96a-2e8e-a42363fd9ad7@kernel.org>
+Date:   Mon, 19 Sep 2022 12:49:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220919085455.1582310-1-floridsleeves@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 1/2] serial: 8250: Let drivers request full 16550A feature
+ probing
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Anders Blomdell <anders.blomdell@control.lth.se>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <alpine.DEB.2.21.2209162317180.19473@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2209171043270.31781@angie.orcam.me.uk>
+ <8fa701a1-3f34-9152-daf6-1618dd0e7727@kernel.org>
+ <alpine.DEB.2.21.2209190911540.14808@angie.orcam.me.uk>
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <alpine.DEB.2.21.2209190911540.14808@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Sep 19, 2022 at 01:54:55AM -0700, Li Zhong wrote:
-> Check the return value of clk_prepare_enable() which could fail when
-> cannot enable the clock.
+On 19. 09. 22, 10:18, Maciej W. Rozycki wrote:
+> On Mon, 19 Sep 2022, Jiri Slaby wrote:
 > 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_of.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>>> --- linux-macro.orig/include/linux/serial_core.h
+>>> +++ linux-macro/include/linux/serial_core.h
+>>> @@ -414,7 +414,7 @@ struct uart_icount {
+>>>    	__u32	buf_overrun;
+>>>    };
+>>>    -typedef unsigned int __bitwise upf_t;
+>>> +typedef __u64 __bitwise upf_t;
+>>
+>> Why __u64 and not u64?
 > 
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index 1b461fba15a3..23e9b9e8c940 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -298,7 +298,8 @@ static int of_serial_resume(struct device *dev)
->  
->  	if (!uart_console(port) || console_suspend_enabled) {
->  		pm_runtime_get_sync(dev);
-> -		clk_prepare_enable(info->clk);
-> +		if (clk_prepare_enable(info->clk) < 0)
-> +			dev_warn(dev, "can't enable clk.\n");
+>   For consistency as there's `__u32' used elsewhere in this file.  It's not
+> clear to me what our rules WRT the use of `s*'/`u*' vs `__s*'/`__u*' are.
+> I don't think we have it mentioned under Documentation/.  Please clarify
+> if you know and I can update the change accordingly.
 
-Again, you check but do nothing with the error :(
+The rule is, AFAICT, use __u*/__s* in user (uapi) headers. Everywhere 
+else, use u*/s*.
+
+>>> @@ -522,6 +522,7 @@ struct uart_port {
+>>>    #define UPF_FIXED_PORT		((__force upf_t) (1 << 29))
+>>>    #define UPF_DEAD		((__force upf_t) (1 << 30))
+>>>    #define UPF_IOREMAP		((__force upf_t) (1 << 31))
+>>> +#define UPF_FULL_PROBE		((__force upf_t) (1ULL << 32))
+>>
+>> This looks like a perfect time to switch them all to BIT_ULL().
+> 
+>   Good point, I keep forgetting about that macro.  I'll keep this part
+> unchanged for the purpose of backporting and add 3/3 to switch all the
+> macros over.
+
+OK.
+
+thanks,
+-- 
+js
+suse labs
+
