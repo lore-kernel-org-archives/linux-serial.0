@@ -2,135 +2,229 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03055ECAAA1
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 22:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE53C6FA82
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 22:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiISWjh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 18:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60912 "EHLO
+        id S229996AbiISW42 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 18:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiISWjd (ORCPT
+        with ESMTP id S229815AbiISW41 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 18:39:33 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80E7E4E
-        for <linux-serial@vger.kernel.org>; Mon, 19 Sep 2022 15:39:30 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id u69so717104pgd.2
-        for <linux-serial@vger.kernel.org>; Mon, 19 Sep 2022 15:39:30 -0700 (PDT)
+        Mon, 19 Sep 2022 18:56:27 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CED45050
+        for <linux-serial@vger.kernel.org>; Mon, 19 Sep 2022 15:56:23 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id u9so2097917ejy.5
+        for <linux-serial@vger.kernel.org>; Mon, 19 Sep 2022 15:56:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=lixom-net.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=fFcLaIdKXlgDGkA95O0lHl/2ZQsYb6rituY3HQNR/Cw=;
-        b=KYcfCDEi4vF8hV/a+u7f57iqAAJ4vl/lQfGYkx27RywtgANIRwbfXfN5pAkDZs2F6N
-         o1or1G779iRYXIfEL+QSHX9L9DzHSjh8QQv1wptf1THJA09U3hqVpHWBsh9GcY0PizSN
-         zRXb8gMxH3ECXOPMRLdYAUL/7BbMtDyv8b8T1CgqRKOpGjnStB9MUUQfUeQ45Q75P9Vb
-         eFxOkF3sns5d29ooDP09ItoyeViXWsIdfLM48+AzcIX5KoxOFXYur8/Jv6ZgoR2UceN4
-         FQXK3bKK0+CfigkDXfsNUo6Z+pUguhpB5a9Jzf+8aC0SkDSoh0zwyjc8sfEgqMhDCxId
-         52fw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=5S9VBftUHA8Ab+AfT1DhnDF/jWnQCvfphMhw9w+YVhc=;
+        b=pT3AVw/XaQKfMJa28M67X6CWfwalI0Uvo6unsRjOTD2Z+d/hMLJagRy91+fB9mWt/H
+         RvjlLsn+3FsNx74QkbruJHKtTQ+30w35PYmoN36zBZvRhmzaaut2t/ejO0VHEYQ77EDj
+         OXDYFEqkBBbGSPaGws21i+7eNFUtsVpC10Ocfp53V0C+AqpxtnC2gWLf09NvoZb8DNZe
+         nefkWz5Q2xpTnqPE/9sJZpmszdShkKibcjHKjjaL4N2+oQKOJucjE0sZV5m8l2gxJQLL
+         eUTG5Bs9Z5UoBJW4L2zlLkhjGsOc0HVn5guvp/vsJvOqjFnEQJHDOGaHy7aMupntX7WF
+         7vTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=fFcLaIdKXlgDGkA95O0lHl/2ZQsYb6rituY3HQNR/Cw=;
-        b=38hlG8FL/1A5Jdpmc+t8s68v4nfSzuHUrxv26NG0GI2bQ5CH96E/HdbiScf5mGkKfr
-         EiZQht/vSXvrMaXRqUbCoLoDyKs7xuu3+VcOQOVHaSqNeODtCckABgprlE6mFSFHJ/aL
-         fRXVY0UHFM3yFxRKIlMct+AXagzDtgQuJm6aVJqC9OyTPP8nFpTwS2sWxImT3ie7U73/
-         +A+UR7s6rcOuB3ly7g1lsTV4HhD075FLYsf+pYGWAaviH5IdZpfSyCQ1P1qK+eH7BC4R
-         Qtvayeu0VMPqYuZmaZlQoihPdWEKPCl9cvtW55tHoxL2iQCVuiqSXdoIyDCCf26wrTMT
-         54+Q==
-X-Gm-Message-State: ACrzQf2LXx8Ee3RxKGfpW69Ly2Kaoyvoi/wF/gM328/ZStHVvgacvUgu
-        XCvSOqCpljVlrSCZ+UahTAtwFvz9ABRwEDbV
-X-Google-Smtp-Source: AMsMyM7DR/q1kUqDv3ej5C4oQEc0xUujKbwn4sZlKKHP//4c/iOs4jcquF4XZadj+kHrp9ciHVQrhw==
-X-Received: by 2002:a63:4243:0:b0:439:2031:be87 with SMTP id p64-20020a634243000000b004392031be87mr17659366pga.592.1663627170148;
-        Mon, 19 Sep 2022 15:39:30 -0700 (PDT)
-Received: from lx2k.lixom.net (99-152-116-91.lightspeed.sntcca.sbcglobal.net. [99.152.116.91])
-        by smtp.gmail.com with ESMTPSA id l5-20020a170903244500b00177f32b1a32sm21074410pls.271.2022.09.19.15.39.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Sep 2022 15:39:29 -0700 (PDT)
-From:   Olof Johansson <olof@lixom.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Subject: [PATCH] serial: sifive: enable clocks for UART when probed
-Date:   Mon, 19 Sep 2022 15:39:15 -0700
-Message-Id: <20220919223915.5146-1-olof@lixom.net>
-X-Mailer: git-send-email 2.30.2
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=5S9VBftUHA8Ab+AfT1DhnDF/jWnQCvfphMhw9w+YVhc=;
+        b=G+S/4hhjVN7eddmla5nbTEU47Y+n+znYGLDeAuVNqBgdbbn/9dTiadNbIcScwO8bmn
+         MFytjNr55FGvJsUDAeSs3TuHD7F6oVPBAqd4ynTGnJK3a5cMEVXE4V2vqgmEk3Dzfe6M
+         FD14DfN6ZvcI6HHS/J8hAqsFdGHBgi/jGnYsC3QT5oQuqurxYQAomD/EOqR47V3OMWv8
+         qAXsbJK5iraf/6VSTixxz4hkiaAGv+NNeP56xy0yeZCIVIDG0RRjf913ahzYYVg+G041
+         SqLZXADdJNMJ8vgkpNVsODsqo0V0LLWOiZC9SpXEr+XQSYheFMp+f2YFY3Tn41IVIIi/
+         LTxQ==
+X-Gm-Message-State: ACrzQf2RWmHzrMbPvKuICb6RKxETraetwiYeuxeZlLIS3QnERZywzQVE
+        MS6Axf9XkRqMTcR9ES/p3s1IiHcUuwva9bLHJo8pQw==
+X-Google-Smtp-Source: AMsMyM5kdxcAfNB78ChbidtnpNAMschNYMIGpvHRr7zgKTZ4CCEGx6bhJgHHTNr9SAgKH+LAmfDCBtvH2R9hQBackB8=
+X-Received: by 2002:a17:906:ef8c:b0:77c:8f77:330 with SMTP id
+ ze12-20020a170906ef8c00b0077c8f770330mr14503775ejb.604.1663628181793; Mon, 19
+ Sep 2022 15:56:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220701012647.2007122-1-saravanak@google.com>
+ <YwS5J3effuHQJRZ5@kroah.com> <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
+ <YygsEtxKz8dsEstc@kroah.com>
+In-Reply-To: <YygsEtxKz8dsEstc@kroah.com>
+From:   Olof Johansson <olof@lixom.net>
+Date:   Mon, 19 Sep 2022 15:56:09 -0700
+Message-ID: <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pali Rohar <pali@kernel.org>,
+        Andreas Farber <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Rob Herring <robh@kernel.org>,
+        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-actions@lists.infradead.org,
+        linux-unisoc@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When the PWM driver was changed to disable clocks if no PWMs are enabled,
-it ended up also disabling the shared parent with the UART, since the
-UART doesn't do any clock enablement on its own.
+On Mon, Sep 19, 2022 at 1:44 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
+> > On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
+> > > > These patches are on top of driver-core-next.
+> > > >
+> > > > Even if stdout-path isn't set in DT, this patch should take console
+> > > > probe times back to how they were before the deferred_probe_timeout
+> > > > clean up series[1].
+> > >
+> > > Now dropped from my queue due to lack of a response to other reviewer's
+> > > questions.
+> >
+> > What happened to this patch? I have a 10 second timeout on console
+> > probe on my SiFive Unmatched, and I don't see this flag being set for
+> > the serial driver. In fact, I don't see it anywhere in-tree. I can't
+> > seem to locate another patchset from Saravana around this though, so
+> > I'm not sure where to look for a missing piece for the sifive serial
+> > driver.
+> >
+> > This is the second boot time regression (this one not fatal, unlike
+> > the Layerscape PCIe one) from the fw_devlink patchset.
+> >
+> > Greg, can you revert the whole set for 6.0, please? It's obviously
+> > nowhere near tested enough to go in and I expect we'll see a bunch of
+> > -stable fixups due to this if we let it remain in.
+>
+> What exactly is "the whole set"?  I have the default option fix queued
+> up and will send that to Linus later this week (am traveling back from
+> Plumbers still), but have not heard any problems about any other issues
+> at all other than your report.
 
-To avoid these surprises, add clk_prepare_enable/clk_disable_unprepare
-calls.
+I stand corrected in this case, the issue on the Hifive Unmatched was
+a regression due to a PWM clock change -- I just sent a patch for that
+(serial driver fix).
 
-Fixes: ace41d7564e655 ("pwm: sifive: Ensure the clk is enabled exactly once per running PWM")
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Signed-off-by: Olof Johansson <olof@lixom.net>
----
- drivers/tty/serial/sifive.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+So it seems like as long as the fw_devlink.strict=1 patch is reverted,
+things are back to a working state here.
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index 5c3a07546a58..751f98068806 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -950,23 +950,28 @@ static int sifive_serial_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "unable to find controller clock\n");
- 		return PTR_ERR(clk);
- 	}
-+	clk_prepare_enable(clk);
- 
- 	id = of_alias_get_id(pdev->dev.of_node, "serial");
- 	if (id < 0) {
- 		dev_err(&pdev->dev, "missing aliases entry\n");
--		return id;
-+		r = id;
-+		goto probe_out1;
- 	}
- 
- #ifdef CONFIG_SERIAL_SIFIVE_CONSOLE
- 	if (id > SIFIVE_SERIAL_MAX_PORTS) {
- 		dev_err(&pdev->dev, "too many UARTs (%d)\n", id);
--		return -EINVAL;
-+		r = -EINVAL;
-+		goto probe_out1;
- 	}
- #endif
- 
- 	ssp = devm_kzalloc(&pdev->dev, sizeof(*ssp), GFP_KERNEL);
--	if (!ssp)
--		return -ENOMEM;
-+	if (!ssp) {
-+		r = -ENOMEM;
-+		goto probe_out1;
-+	}
- 
- 	ssp->port.dev = &pdev->dev;
- 	ssp->port.type = PORT_SIFIVE_V0;
-@@ -1028,6 +1033,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
- probe_out2:
- 	clk_notifier_unregister(ssp->clk, &ssp->clk_notifier);
- probe_out1:
-+	clk_disable_unprepare(clk);
- 	return r;
- }
- 
--- 
-2.30.2
+I still struggle with how the fw_devlink patchset is expected to work
+though, since DT is expected to describe the hardware configuration,
+and it has no knowledge of whether there are drivers that will be
+bound to any referenced supplier devnodes. It's not going to work well
+to assume that they will always be bound, and to add 10 second
+timeouts for those cases isn't a good solution. Seems like the number
+of special cases will keep adding up.
 
+The whole design feels like it's falling short, and it's been patched
+here and there to deal with the shortcomings, instead of revisiting
+the full solution. (The patches are the console one, and another to
+deal with nfsroot boots).
+
+As long as it doesn't keep regressing others, I suppose the work to
+redesign it can happen in-tree, but it's not usually how we try to do
+it for new functionality. Especially since it's still being iterated
+on (with active patch sets posted around -rc1 for improvements).
+
+Oh, and one more thing for the future -- the main patch that changes
+behavior due to dependency tracking is 2f8c3ae8288e, named "driver
+core: Add wait_for_init_devices_probe helper function". It's easy to
+overlook this when looking at a list of patches since it's said to
+just introduce a helper.
+
+
+-Olof
