@@ -2,92 +2,104 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA71C54EE9
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 08:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B29E3C54EE9
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 09:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229578AbiISIzM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 04:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S229906AbiISJcA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 05:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiISIzL (ORCPT
+        with ESMTP id S229814AbiISJb7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 04:55:11 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E6464D9;
-        Mon, 19 Sep 2022 01:55:10 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id p1-20020a17090a2d8100b0020040a3f75eso5439552pjd.4;
-        Mon, 19 Sep 2022 01:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=MMkRjNbatJklpFghNZh+6S773eFMltyEZW7eycnWeXs=;
-        b=RABW2tDqXoFg4LQ0NjP3HVYaOt+0OJLZuPB8x0CS2U9SMOMCrCB7dSCnNLyZoEQHLF
-         RKajIoMLS8m8F0kYmhMgUlPnfTVgsR/0sghQ2ia+B21YqPFs56FPzphpx1/d9iSt55id
-         1DRX6KkLs1nE1zb2LmlRM2uKumPFmiMssMrYihFIEEQrZeBxFHt7SCXTmHdaKePx4mLW
-         y0dt8focSVsxwbgrvRZ3KlsKlNscSdE/wfROPvOE83ZXbsNztIvqKkLuwfr5kiAdtEcV
-         y8CFHX1UBluCb0KDog7DguTqI0lcpLiwBfZuz8+7IuUKhkfEsFIFbD916vSD+ucwTqFU
-         17eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=MMkRjNbatJklpFghNZh+6S773eFMltyEZW7eycnWeXs=;
-        b=U9S4J7vJA/a/90nxN5B7WwwRPxoT2iFnjTd9Qec+P1IGmqwVqAJTee92G3SVlUZAiv
-         L2L9kM1B4y4mjOxJVbEnonkg6kdmMIKCyHSNR3Md2SCHJNpHoUoWV5OI024qkbhFQ0Lw
-         TCUDKlO8YTJU1bmkOhVpnuSOYHS5rDXvQ8HRtj2SrVjehshdO9tpMTzVTGpt8zNcsR7+
-         1wXbfjT+kgK37yWGoEzPv8so7iswYVpP61NppMOZaeCC9C/zOuJO07e7cbMMbc8jbu4+
-         5rL/2fgkGy/C6hZyoOWxyeC6xY8jLlEQj211YxMtbGBK/XSTR3KmqSxt9iGcI74aa9tx
-         0Pfw==
-X-Gm-Message-State: ACrzQf2zose8LGFnaxKKfcwzKYVpeoHQyhAn8AD6TiZ8sId8/cul/onX
-        kFhJjx97kp6VOveFrCG2enmptArE528zcA==
-X-Google-Smtp-Source: AMsMyM4qJlCxakHFEM9sLtYdvDPPYfuuDH6DFtcswTBBIpdYndlunojk1JqYWvDRar2iqo/sAeKElA==
-X-Received: by 2002:a17:90b:2398:b0:200:a861:2e86 with SMTP id mr24-20020a17090b239800b00200a8612e86mr18806211pjb.233.1663577709566;
-        Mon, 19 Sep 2022 01:55:09 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id i29-20020aa796fd000000b00538056de6ecsm19801091pfq.52.2022.09.19.01.55.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Sep 2022 01:55:08 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-Cc:     etremblay@distech-controls.com, l.sanfilippo@kunbus.com,
+        Mon, 19 Sep 2022 05:31:59 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27869140A2;
+        Mon, 19 Sep 2022 02:31:59 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id A12EB5C030A;
+        Mon, 19 Sep 2022 05:31:56 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 19 Sep 2022 05:31:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1663579916; x=1663666316; bh=V0o7LEef+B
+        ZuEidJK6a/jvVmiWZ9XRI7Dey6frbpCPk=; b=uS4UCKxajYjRcBSiGgj7YYfQgp
+        7CV1pvuYtM22JSYUOoBecJOFPdcUwfEOmxkQHAqBG0hGgvMGJcw2g+WAe0Rze9YN
+        ifKNitab6fe+/qGmKK0RjXn8cQMNFQ2j7+IcjZTPrR4/1/14H0OI2Si+nCYo11xl
+        cudG4XPZVi+uMesbwiK1SXgcSsrQ7nfHogd/e8UiQEaT7yYdCvMV42VC8NdPQD4Q
+        Vh++z4i3eL3+VJETP8Vh7JYbudlGzBsa+E8ZYDRnFNx4Fl+cIHNOIz5gvCL1Ojk/
+        hpvXhCbymHebLhXvGdR6QSgqqrBIIonftKnOq+I0MxoJnfWYyL+fmvJ1mPJw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1663579916; x=1663666316; bh=V0o7LEef+BZuEidJK6a/jvVmiWZ9
+        XRI7Dey6frbpCPk=; b=I2bfSFrcOnMc6+xYDDMwW8dye5KJa46GzTzKhBHM26a+
+        lQcwJqJfrxMkN7hGy5qGDS8Yb7OW4ojzzqPaiodQ+O1UepGLM5jAo6E5Ig6ETqgb
+        wz1QGaFzLQAMNuh8pAUazhZcTVBbyOUf9zal+7cDkQ2id3jCWBivEcW5CJZmmMRn
+        oGOeFn0lLyM9P2fe1gxhZtPfOykcoG0jxXZLoByNC0+/5CZhT2YFa1NQhOLExKk9
+        GHgZx6oxO3Qxd6TOHIYtRogGp7rseQOGyJbfLJrsAuZOJWx35yOAOzxkurDzqa+a
+        nvxVI5jVQJYDRLHNybSCXuk7jdzG5DgUxYzQKLbnfg==
+X-ME-Sender: <xms:DDcoY-N1INGZqGF6Omi4QOCScnI4OUQwoDnkh8hYkBrc49uphyYwmg>
+    <xme:DDcoY88_9gNC2cPybmgl2wOlVlZ3vi8Y4EFLUN_DXmCEBMn-UUX4ORJRRUJ7mVve_
+    eLkFq177DO-fw>
+X-ME-Received: <xmr:DDcoY1R9YTmgAY0Klsoh4uhks_vOgQC5J7_GVh1hw4WWp5jJFcxNwNqMtcc2>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
+    ertddttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhm
+    qeenucggtffrrghtthgvrhhnpeehgedvvedvleejuefgtdduudfhkeeltdeihfevjeekje
+    euhfdtueefhffgheekteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:DDcoY-tAb6tZ_QcyeApGlk3lfl5DXtxruRqO_SN2g27UONvrJRnOkw>
+    <xmx:DDcoY2eKmdGEqlu375C2KRf23PguPbIXx3Iz1O9MBNo9tgSPjJAXzQ>
+    <xmx:DDcoYy0Uk5rA1eHMjxHFn4bzIUnwUsyKN0iasz9iiPCSFbsHcAb67w>
+    <xmx:DDcoY3uZlR4e6DEivEyVIwRZ6mCdzZ9dgz8K-v8Lhqs-TskkiYqMTA>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 19 Sep 2022 05:31:55 -0400 (EDT)
+Date:   Mon, 19 Sep 2022 11:32:24 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Li Zhong <floridsleeves@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        etremblay@distech-controls.com, l.sanfilippo@kunbus.com,
         u.kleine-koenig@pengutronix.de, robert.hancock@calian.com,
         ilpo.jarvinen@linux.intel.com, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, jirislaby@kernel.org,
-        Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH v1] drivers/tty/serial/8250: check the return value of clk_prepare_enable()
-Date:   Mon, 19 Sep 2022 01:54:55 -0700
-Message-Id: <20220919085455.1582310-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        p.zabel@pengutronix.de, jirislaby@kernel.org
+Subject: Re: [PATCH v1] drivers/tty/serial/8250: check the return value of
+ clk_prepare_enable()
+Message-ID: <Yyg3KKDCLaQUb2P0@kroah.com>
+References: <20220919085455.1582310-1-floridsleeves@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220919085455.1582310-1-floridsleeves@gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Check the return value of clk_prepare_enable() which could fail when
-cannot enable the clock.
+On Mon, Sep 19, 2022 at 01:54:55AM -0700, Li Zhong wrote:
+> Check the return value of clk_prepare_enable() which could fail when
+> cannot enable the clock.
+> 
+> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_of.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+> index 1b461fba15a3..23e9b9e8c940 100644
+> --- a/drivers/tty/serial/8250/8250_of.c
+> +++ b/drivers/tty/serial/8250/8250_of.c
+> @@ -298,7 +298,8 @@ static int of_serial_resume(struct device *dev)
+>  
+>  	if (!uart_console(port) || console_suspend_enabled) {
+>  		pm_runtime_get_sync(dev);
+> -		clk_prepare_enable(info->clk);
+> +		if (clk_prepare_enable(info->clk) < 0)
+> +			dev_warn(dev, "can't enable clk.\n");
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- drivers/tty/serial/8250/8250_of.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 1b461fba15a3..23e9b9e8c940 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -298,7 +298,8 @@ static int of_serial_resume(struct device *dev)
- 
- 	if (!uart_console(port) || console_suspend_enabled) {
- 		pm_runtime_get_sync(dev);
--		clk_prepare_enable(info->clk);
-+		if (clk_prepare_enable(info->clk) < 0)
-+			dev_warn(dev, "can't enable clk.\n");
- 	}
- 
- 	serial8250_resume_port(info->line);
--- 
-2.25.1
-
+Again, you check but do nothing with the error :(
