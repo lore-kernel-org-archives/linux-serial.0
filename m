@@ -2,116 +2,105 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE676ECAAD3
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 04:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D5AECAAD3
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 06:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiISEoR (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 00:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
+        id S229684AbiISGuj (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 02:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiISEoQ (ORCPT
+        with ESMTP id S229852AbiISGud (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 00:44:16 -0400
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DF1193D0;
-        Sun, 18 Sep 2022 21:44:15 -0700 (PDT)
-Received: by mail-ed1-f41.google.com with SMTP id m3so19713688eda.12;
-        Sun, 18 Sep 2022 21:44:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Q0cD5qNEPRxZfsNmq0to2KwlndvtkRC9pRuN4rCumnA=;
-        b=yKCNl3ug3jcdI8E2sEGqwWLGjqSWF+KXTa5cVAquKvhyYFJRHalOCZJgF6mENGSBq2
-         Wz7Js8kYWOrELdrbIZa3SY1d5X/JGYrQGKaENx7dyJfc9lG2C25MaDNNMcvS4Fc2+cAY
-         F4HULeoDKZHb9JCGLKkGtcaLhLehSE74TA/NEWySRhOjBfnQ6CrEN31Fpfj29+kMqXsM
-         vr+JODEM76bvc6MoZsLTCRnbl9j50XtqnrC9EsjxWfJd6yEIVghxYgCS3B/7ezpfLFEg
-         dDTPOtvTnJcyBMYreS9weEipf+rrkFbHlMjcGy5fRecGiRtl3iWrUyzzXKitHdWCafz0
-         gfaA==
-X-Gm-Message-State: ACrzQf2ao6c7mA3XoN4BwGqhMOctO5N5zGpI5TV77TOQP9RMJo/fzzZY
-        bX62FoIQ5hGePCv8zkq5DMM=
-X-Google-Smtp-Source: AMsMyM7gUcDGMQDHqY2SgrgLcj0o1Nw/C3cdjTxZJvd4LormirRE5NAsQnRpgCZoydE7kKTL+KJhwA==
-X-Received: by 2002:a05:6402:240d:b0:442:b0c4:9e02 with SMTP id t13-20020a056402240d00b00442b0c49e02mr14118903eda.210.1663562653719;
-        Sun, 18 Sep 2022 21:44:13 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id a2-20020a170906468200b0073d71792c8dsm14715213ejr.180.2022.09.18.21.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 21:44:13 -0700 (PDT)
-Message-ID: <7785ca40-2f4d-a0a8-2ada-ca5fb941b6a2@kernel.org>
-Date:   Mon, 19 Sep 2022 06:44:11 +0200
+        Mon, 19 Sep 2022 02:50:33 -0400
+Received: from wedge009.net.lu.se (wedge009.net.lu.se [130.235.56.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5D7DF95
+        for <linux-serial@vger.kernel.org>; Sun, 18 Sep 2022 23:50:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; d=control.lth.se; s=edge;
+        c=relaxed/relaxed; t=1663570222; h=from:subject:to:date:message-id;
+        bh=YNCBsiZ95xq5NkRa1NuHw32Ku8kZ+Z4XjSzx5gT8W48=;
+        b=baOqtBCgNsH5oa2j2x7zN94Ob8tmKbFvuESPine0IN8sO3HYJV6z1QDt+i/3wUzsaQ9Fsx4Yqr/
+        TXLEvOGHzZPZcW0YPiUIytdQvkcae1LhshQWzw9dad/EDLw465xYtNo4V5igDOGRndWtwoT8TdfaZ
+        4FbDUzSQuSPJxi8PjrohZpOnFbJaGyy9Rs4RQZ6bcuMK8cMo4uOfyvRdKNGDmCxJQ2Yd9QDChkx3w
+        RpERuBG1n2xrhgFr38lL9QTfGDP7beeKCjs9aTX4KibqJK705UUO2mMOeqsa+s1RK9suvfHeTZ63Y
+        xzvfb58F3ZtxGUHKBWRa/zPCQCYVjF3+0HvA==
+Received: from wexc007.uw.lu.se (130.235.59.251) by mail.lu.se
+ (130.235.56.199) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P256) id 15.1.2507.12; Mon, 19
+ Sep 2022 08:50:22 +0200
+Received: from [130.235.83.196] (130.235.139.100) by wexc007.uw.lu.se
+ (130.235.59.251) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Mon, 19
+ Sep 2022 08:50:21 +0200
+Message-ID: <2c55cb59-c8c5-05f1-3d82-0bd9190d9ce3@control.lth.se>
+Date:   Mon, 19 Sep 2022 08:50:21 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH 2/2] serial: 8250: Request full 16550A feature probing for
- OxSemi PCIe devices
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: kernel 5.19.8: "Oxford Semiconductor Ltd OXPCIe952 Dual Native
+ 950 UART" gets wrong baudrate (PCI ID 1415:c158)
 Content-Language: en-US
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Josh Triplett <josh@joshtriplett.org>,
-        Anders Blomdell <anders.blomdell@control.lth.se>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <alpine.DEB.2.21.2209162317180.19473@angie.orcam.me.uk>
- <alpine.DEB.2.21.2209171020390.31781@angie.orcam.me.uk>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <alpine.DEB.2.21.2209171020390.31781@angie.orcam.me.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+CC:     Pavel Machek <pavel@ucw.cz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-serial@vger.kernel.org>
+References: <ef8fd762-88cf-548a-0599-17d939ad3a57@control.lth.se>
+ <YyA9maUOlPIExIUd@kroah.com>
+ <ff41c70a-767a-45b8-f993-1f70ad3d9254@control.lth.se>
+ <YyB4AtFJx++PeA6S@kroah.com>
+ <7a99a59e-838d-c9da-6ead-167398642c07@control.lth.se>
+ <YyCNOV9no9NPwv8m@kroah.com>
+ <e9ca9267-dfee-c7b0-f1ec-4d2b76a05991@control.lth.se>
+ <alpine.DEB.2.21.2209131638550.60554@angie.orcam.me.uk>
+ <3f2d2863-96dd-05d2-4d88-55666fe37bf8@control.lth.se>
+ <alpine.DEB.2.21.2209132254150.60554@angie.orcam.me.uk>
+ <5921dfd6-384e-b663-f0f7-8471b9e88c29@control.lth.se>
+ <alpine.DEB.2.21.2209141224370.60554@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2209141456460.60554@angie.orcam.me.uk>
+ <bd0cbb01-927a-e225-8cb5-6216088c4c07@control.lth.se>
+ <alpine.DEB.2.21.2209142154210.60554@angie.orcam.me.uk>
+From:   Anders Blomdell <anders.blomdell@control.lth.se>
+In-Reply-To: <alpine.DEB.2.21.2209142154210.60554@angie.orcam.me.uk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [130.235.139.100]
+X-ClientProxiedBy: wexc007.uw.lu.se (130.235.59.251) To wexc007.uw.lu.se
+ (130.235.59.251)
+X-CrossPremisesHeadersFilteredBySendConnector: wexc007.uw.lu.se
+X-OrganizationHeadersPreserved: wexc007.uw.lu.se
+X-ORF-InterSessionInfo: eid=CNqSPWVCJCM=;oid=AAAAAJ/vdc8=;bar=wip;cid=CkEH+aCenQTtoKmWBCSG6rGzcA==;iss=n;s=YyTx9JfeEYn3Bc0MZfGw9a+n+TkCittHTYUVg/MZDMZTkh1gmmj26HoA+bmHX1hapTe5sToqnKrFtBgtO7mpBw==
+Received-SPF: Pass (wedge009.net.lu.se: domain of
+ anders.blomdell@control.lth.se designates 130.235.59.251 as permitted sender)
+ receiver=wedge009.net.lu.se; client-ip=130.235.59.251; helo=wexc007.uw.lu.se;
+X-CrossPremisesHeadersFilteredBySendConnector: wedge009.net.lu.se
+X-OrganizationHeadersPreserved: wedge009.net.lu.se
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 17. 09. 22, 12:07, Maciej W. Rozycki wrote:
-> Oxford Semiconductor PCIe (Tornado) 950 serial port devices need to
-> operate in the enhanced mode via the EFR register for the Divide-by-M
-> N/8 baud rate generator prescaler to be used in their native UART mode.
-> Otherwise the prescaler is fixed at 1 causing grossly incorrect baud
-> rates to be programmed.
+On 2022-09-16 23:03, Maciej W. Rozycki wrote:
+> On Wed, 14 Sep 2022, Anders Blomdell wrote:
 > 
-> Accessing the EFR register requires 16550A features to have been probed
-> for, so request this to happen regardless of SERIAL_8250_16550A_VARIANTS
-> by setting UPF_FULL_PROBE in port flags.
+>>>    I think I know what is going on here.  Can you please confirm that you
+>>> have the CONFIG_SERIAL_8250_16550A_VARIANTS option disabled (default to
+>>> "off" for x86 only)?  That would explain things.
+>> Just found that myself while going through the initializaton sequence (while
+>> now knowing what to look for)
+>>
+>> Thats what you get for choosing Fedora ;-)
 > 
-> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> Reported-by: Anders Blomdell <anders.blomdell@control.lth.se>
-> Fixes: 366f6c955d4d ("serial: 8250: Add proper clock handling for OxSemi PCIe devices")
-> Cc: stable@vger.kernel.org # v5.19+
-> ---
->   drivers/tty/serial/8250/8250_pci.c |    5 +++++
->   1 file changed, 5 insertions(+)
+>   May I suggest that as a person directly affected you file a defect with
+> the distribution?  I think a distribution kernel should in principle have
+> all the reasonable features enabled for the hardware handled.
+First thing I did :-)
+
+https://bugzilla.redhat.com/show_bug.cgi?id=2126201
+
 > 
-> linux-serial-8250-oxsemi-efr.diff
-> Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
-> ===================================================================
-> --- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
-> +++ linux-macro/drivers/tty/serial/8250/8250_pci.c
-> @@ -1232,6 +1232,10 @@ static void pci_oxsemi_tornado_set_mctrl
->   	serial8250_do_set_mctrl(port, mctrl);
->   }
->   
-> +/*
-> + * We require EFR features for clock programming, so set UPF_FULL_PROBE
-> + * for full probing regardless of CONFIG_SERIAL_8250_16550A_VARIANTS setting.
-> + */
+>    Maciej
 
-It'd make more sense to me to move this comment right before the line 
-you add below.
-
->   static int pci_oxsemi_tornado_setup(struct serial_private *priv,
->   				    const struct pciserial_board *board,
->   				    struct uart_8250_port *up, int idx)
-> @@ -1239,6 +1243,7 @@ static int pci_oxsemi_tornado_setup(stru
->   	struct pci_dev *dev = priv->dev;
->   
->   	if (pci_oxsemi_tornado_p(dev)) {
-> +		up->port.flags |= UPF_FULL_PROBE;
->   		up->port.get_divisor = pci_oxsemi_tornado_get_divisor;
->   		up->port.set_divisor = pci_oxsemi_tornado_set_divisor;
->   		up->port.set_mctrl = pci_oxsemi_tornado_set_mctrl;
-
-thanks,
 -- 
-js
-suse labs
-
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118
+SE-221 00 Lund, Sweden
