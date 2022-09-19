@@ -2,61 +2,55 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A864AECAAD3
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 14:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86509ECAAD3
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 14:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbiISOHt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 10:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
+        id S229911AbiISOMf (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 10:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiISOHs (ORCPT
+        with ESMTP id S229725AbiISOMd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 10:07:48 -0400
+        Mon, 19 Sep 2022 10:12:33 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D67231ED3;
-        Mon, 19 Sep 2022 07:07:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E4715FCB;
+        Mon, 19 Sep 2022 07:12:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663596467; x=1695132467;
+  t=1663596752; x=1695132752;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=x+yyT+5VldaQAOebpTGHl+NUKCO2rBUvs7E2S7CcYD4=;
-  b=mBMQjLDz7AJpBvAG8RHguYScoOyEsyen279oApNcZlfd1ywz1v/8oUJw
-   nXX3Y8XwQdnZcAy10y0QgmsQD4vCV+5ZumnUpsnDNVSY8S/DhTi0ZtryX
-   84TsPKxLCe3bQEloSnVGtwYUs8SScS4Y7w16DQPSx+mh04IiPk9EnX7vE
-   ADkqqzknWFzvFLUOnS0tNv2TPhn/lqEZErYEbg0Vyxt/exqrq/XOh4Miq
-   ljN2eWfTA8E3HUQjhVNOFn6X+6LfEKsCV2bWWCxsRnYH6hfQA459241/R
-   nkFyJEnYxk9ZQsZjCJkKAb0m/+c0YPJ+376rk+u/4f/SzxqYfdNgzpUJT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="298134895"
+   references:mime-version;
+  bh=mmuYsKqRrTpSJWfKgGWiUtdtxdL3/r3pMzDQ3IrNf9E=;
+  b=HGJk/6vYgo6g5n/FmzSIAczWj9BJymWFnG5Rmsg1TeQBb2FCLLNAt5lH
+   8MyuQNTKeOgbkV6dAWVsCDhs6iHfuyl8eDD1JUTffw+hcBn7UfIrOce7p
+   7tClOoUpg1P2ru8R1ZQhoOCM6ae5CH4DyDa2vGH0voK3/CnNOa64zUF59
+   GTzEoWCj7CL53HtrAuzzOw6gSq7Q0KquzqcD+Pe88X8UIX9xjZQ1nyKbw
+   LFCj3bVFdLNd2HYEAoc5H3a85cq1ugAt1jfjIaqtN8Hu0xUdiGznxNlxe
+   9ux8b4qKZDhHe1ioR110w9Ng8gA0YW14oQxu7Z6iWnLe7KyZvzCxhinSH
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="298136837"
 X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
-   d="scan'208";a="298134895"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:07:11 -0700
+   d="scan'208";a="298136837"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:12:31 -0700
 X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
-   d="scan'208";a="707578965"
+   d="scan'208";a="651692744"
 Received: from iswiersz-mobl1.ger.corp.intel.com ([10.252.33.172])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:07:07 -0700
-Date:   Mon, 19 Sep 2022 17:06:56 +0300 (EEST)
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:12:29 -0700
+Date:   Mon, 19 Sep 2022 17:12:26 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jirislaby@kernel.org>,
-        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
-        Alex Williamson <alex.williamson@hp.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lennert Buytenhek <buytenh@arista.com>
-Subject: Re: [PATCH v2 1/1] serial: 8250: Turn IER bits on only after irq
- has been set up
-In-Reply-To: <YySaixqlQjkMYPUB@smile.fi.intel.com>
-Message-ID: <f55fafa9-c957-f7ee-ea49-475ba5f96d9@linux.intel.com>
-References: <20220916133804.15196-1-ilpo.jarvinen@linux.intel.com> <YySX8E3PjAvRr/ld@smile.fi.intel.com> <YySZ8M5OQqAaaT1b@smile.fi.intel.com> <YySaixqlQjkMYPUB@smile.fi.intel.com>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: I/O page faults from 8250_mid PCIe UART after TIOCVHANGUP
+In-Reply-To: <Yyhyxmt+rhxEI0VH@smile.fi.intel.com>
+Message-ID: <db3c5a9-9dc3-e57-d74d-8ee2d4b1a33@linux.intel.com>
+References: <YyF/dogp/0C87zLb@wantstofly.org> <YyGoZLTFhYQvlf+P@smile.fi.intel.com> <YyG2tDdq9PWTlaBQ@wantstofly.org> <YyHR4o5bOnODZzZ9@smile.fi.intel.com> <7fd034a9-c1e1-2dca-693b-129c9d2649@linux.intel.com> <Yyhyxmt+rhxEI0VH@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-34262818-1663596326=:1603"
-Content-ID: <6781d2c6-317b-9088-727e-72bcc5ce61be@linux.intel.com>
+Content-Type: multipart/mixed; boundary="8323329-749065660-1663596751=:1603"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -64,40 +58,38 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-34262818-1663596326=:1603
-Content-Type: text/plain; CHARSET=ISO-8859-15
+--8323329-749065660-1663596751=:1603
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
-Content-ID: <3b6a1468-8636-e0bd-c6-b2e242ebf6b@linux.intel.com>
 
 On Mon, 19 Sep 2022, Andy Shevchenko wrote:
 
-> On Fri, Sep 16, 2022 at 06:44:49PM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 16, 2022 at 06:36:16PM +0300, Andy Shevchenko wrote:
-> > > On Fri, Sep 16, 2022 at 04:38:04PM +0300, Ilpo Järvinen wrote:
-> > 
-> > Side note:
-> > 
-> > $ git grep -n -w setup_irq -- drivers/tty/
-> > drivers/tty/serial/8250/8250_core.c:382:        .setup_irq      = univ8250_setup_irq,
-> > drivers/tty/serial/8250/8250_port.c:2341:       retval = up->ops->setup_irq(up);
-> > 
-> > which rises a question of whether we need the setup_irq member in the
-> > respective structure.
+> On Thu, Sep 15, 2022 at 07:27:45PM +0300, Ilpo Järvinen wrote:
+> > On Wed, 14 Sep 2022, Andy Shevchenko wrote:
+> > > On Wed, Sep 14, 2022 at 02:10:44PM +0300, Lennert Buytenhek wrote:
+> > > > On Wed, Sep 14, 2022 at 01:09:40PM +0300, Andy Shevchenko wrote:
 > 
-> And to be confident, the files that include linux/serial_8250.h and have
-> setup_irq word in them (recursive `git grep`) in entire source tree:
+> ...
 > 
-> drivers/tty/serial/8250/8250_core.c
-> drivers/tty/serial/8250/8250_port.c
-> include/linux/serial_8250.h
+> > -	/*
+> > -	 * The above check will only give an accurate result the first time
+> > -	 * the port is opened so this value needs to be preserved.
+> > -	 */
+> 
+> Side note: I haven't got why you removed this comment (it may be some staled
+> info, but shouldn't be done in the separate change then?).
 
-Thanks. I know about it already.
+I cleaned up this part in v2 (as you probably noticed). I was just an 
+artifact of how the fix got initially made.
 
-The whole struct uart_8250_ops seems useless indirection layer (and 
-IIRC the results of my history dig, it was added w/o any justification). 
-It's on my kill list already :-) but I'll wait a bit with the cleanups to 
-avoid -linus vs -next conflicts.
+I've also located the place where the comment belongs to. "The above 
+check" refers to the THRE test. However, I don't fully understand the 
+comment itself, that is, why the test is claimed to only work for for the 
+first time. As long as FIFO is cleared beforehand, I think it should work 
+on other times too.
+
 
 -- 
  i.
---8323329-34262818-1663596326=:1603--
+
+--8323329-749065660-1663596751=:1603--
