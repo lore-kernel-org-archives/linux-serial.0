@@ -2,181 +2,200 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBA9ECAAD3
-	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 14:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258DCC6FA90
+	for <linux-serial@archiver.kernel.org>; Mon, 19 Sep 2022 15:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiISOlU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 19 Sep 2022 10:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
+        id S229772AbiISPNs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 19 Sep 2022 11:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiISOlM (ORCPT
+        with ESMTP id S229761AbiISPNq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 19 Sep 2022 10:41:12 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E036114E;
-        Mon, 19 Sep 2022 07:41:11 -0700 (PDT)
+        Mon, 19 Sep 2022 11:13:46 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6273136A;
+        Mon, 19 Sep 2022 08:13:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663598471; x=1695134471;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663600424; x=1695136424;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=38Iy38ftkISKzc0y4uuVPmb65R/Pe1Mz6gRWMcovat4=;
-  b=npJI+jHFk4Zm3TXFSmR12BGiAdH2/OUij+qJqX7Rw+bVSKw6ZkRlQqmM
-   LsMQm/9Mvl92VgqfuAw8yjtoQ5TzO2aN3wX2/g/QsU5+aKpdwQPtfZ6jN
-   CxA+uAQ0ifZlEufdVrA54eI5jGIX7Fg0Ee7aZaDo7kZBweSbd2TAXkKBG
-   Hn6dULg6qmLdaYCeGneL7k8sLIH5ew9PHrD7Hdef15OWQWXwX8MrYcMYR
-   ftQoifEtFGwpzGY80dTLRgNNjEK7ELmhUM3hfW6Q+Rqc/vYtsVH27ncyz
-   d8EVrgdYV1kjE96Ub9VcmR3sMFvRUhzVLksIGS1P0uONzVmsuCTUdBEkE
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="299407522"
+  bh=YMCsdQC6V+d0jtfh9mxYiwc8NtExVl3E+EUFPv1VjDg=;
+  b=UkI+VXKjV55FHXnb4PyPQY85sWLsBE8wcATqcRawmz0gFXnFpCJt+aTL
+   dX5+GhuaKtmZI1NJQiVwymqhEVqX/1mWz89Z9zvRbwzGhKpNvosumQbqX
+   2dmy5JnY4a7cI0BwK+0SNmT4OiyM1Uau2xjDYTz2XjeY/MXyT4E0WZ02G
+   f+BlqEQPyYaih9Q/w0Du3itulbIqdsu2biPXsLCCrXGfxKjjpnQE7BOYp
+   fGcIfnrR6+Nsrt9Rc3HqyDoHsHorTuD1KT4WwdKiUg/vwbYIKO/PEBXur
+   KxtGKhXZRAEWbABoT6dvkTWXD45FLEUPvWg7TBcAdDMG0Xi+nzjx3AdAE
+   w==;
 X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
-   d="scan'208";a="299407522"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:41:11 -0700
-X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
-   d="scan'208";a="863583868"
-Received: from iswiersz-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.33.172])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:41:07 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alex Williamson <alex.williamson@hp.com>,
-        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Lennert Buytenhek <buytenh@arista.com>
-Subject: [PATCH v3 1/1] serial: 8250: Toggle IER bits on only after irq has been set up
-Date:   Mon, 19 Sep 2022 17:40:57 +0300
-Message-Id: <20220919144057.12241-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+   d="scan'208";a="181106580"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Sep 2022 08:13:43 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 19 Sep 2022 08:13:39 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 19 Sep 2022 08:13:35 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <kavyasree.kotagiri@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH v4 0/9] Make atmel serial driver aware of GCLK
+Date:   Mon, 19 Sep 2022 18:08:38 +0300
+Message-ID: <20220919150846.1148783-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Invoking TIOCVHANGUP on 8250_mid port on Ice Lake-D and then reopening
-the port triggers these faults during serial8250_do_startup():
+This series of patches introduces the GCLK as a clock source for
+the baudrate generator of UART on sama5d2 SoCs. Unlike the serial mode of
+the USART offered by FLEXCOM, the UART does not provide a fractional part
+that can be added to the clock divisor to obtain a more accurate result,
+which greatly decreases the flexibility available for producing a higher
+variety of baudrates. Now, with the last patch of the series, the driver
+will check for a GCLK in the DT. If provided, whenever `atmel_set_termios`
+is called, unless there is a fractional part, the driver will compare the
+error rate between the desired baudrate and the actual baudrate obtained
+through each of the available clock sources and will choose the clock source
+with the lowest error rate. While at it, convert the DT binding
+for UART/USART to json-schema, update the FLEXCOM binding to reference the
+new UART/USART binding (while differentiating between the SPI of USART and the
+SPI of FLEXCOM) and do some small DT related fixups.
 
-  DMAR: DRHD: handling fault status reg 3
-  DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+The DT bindings related patches of this patch series depend on this patch
+series converting atmel-flexcom bindings to json-schema:
+https://lore.kernel.org/linux-arm-kernel/20220916075744.1879428-1-kavyasree.kotagiri@microchip.com/
 
-If the IRQ hasn't been set up yet, the UART will have zeroes in its MSI
-address/data registers. Disabling the IRQ at the interrupt controller
-won't stop the UART from performing a DMA write to the address programmed
-in its MSI address register (zero) when it wants to signal an interrupt.
+v1 -> v2:
+- [PATCH 3] dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding:
+	- use full schema paths
 
-The UARTs (in Ice Lake-D) implement PCI 2.1 style MSI without masking
-capability, so there is no way to mask the interrupt at the source PCI
-function level, except disabling the MSI capability entirely, but that
-would cause it to fall back to INTx# assertion, and the PCI specification
-prohibits disabling the MSI capability as a way to mask a function's
-interrupt service request.
+- [PATCH 5] dt-bindings: serial: atmel,at91-usart: convert to json-schema
+	- only do what the commit says, split the addition of other compatibles
+	(PATCH 6) and properties (PATCH 13) in other patches
+	- remove unnecessary "|"'s
+	- mention header in `atmel,usart-mode`'s description
+	- place `if:` under `allOf:`
+	- respect order of spi0's DT properties: compatible, then reg then the
+	reset of properties
 
-The MSI address register is zeroed during by the hangup as the irq is
-freed. The interrupt is signalled during serial8250_do_startup()
-performing a THRE test that temporarily toggles THRI in IER. The THRE
-test currently occurs before UART's irq (and MSI address) is properly
-set up.
+- two new baudrate clock source related patches:
+  [PATCH 9] tty: serial: atmel: Add definition for GCLK as baudrate source clock
+			+
+  [PATCH 10] tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode
+    Register:
+	- v1's bitfield definition of GCLK was wrong, so add two more patches:
+		- one for the definition of GCLK of USART IP's
+		- one for the definition of BRSRCCK bitmask and its bitfields
+		for UART IP's
 
-Refactor serial8250_do_startup() such that irq is set up before the
-THRE test. The current irq setup code is intermixed with the timer
-setup code. As THRE test must be performed prior to the timer setup,
-extract it into own function and call it only after the THRE test.
+- a new cleanup related patch that introduces a new struct atmel_uart_port field:
+  [PATCH 11] tty: serial: atmel: Only divide Clock Divisor if the IP is USART:
+  	- this ensures a division by 8 which is unnecessary and unappliable to
+	UART IP's is only done for USART IP's
 
-Reported-by: Lennert Buytenhek <buytenh@arista.com>
-Tested-by: Lennert Buytenhek <buytenh@arista.com>
-Fixes: 40b36daad0ac ("[PATCH] 8250 UART backup timer")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
+- four new patches regarding DT fixes and a SPI binding update that I came
+upon:
+  [PATCH 1] spi: dt-bindings: atmel,at91rm9200-spi: Add DMA related properties
+  [PATCH 2] ARM: dts: at91: sama7g5: Swap rx and tx for spi11
+  [PATCH 4] ARM: dts: at91: sam9x60ek: Add DBGU compatibles to uart1
+  [PATCH 6] dt-bindings: serial: atmel,at91-usart: Highlight SAM9X60 incremental
 
-v3:
-- Improved the commit with Lennert's superior descriptions.
-- Added Andy's Rev-by
+- [PATCH 12] tty: serial: atmel: Make the driver aware of the existence of GCLK
+	- take into account the different placement of the baudrate clock source
+	into the IP's Mode Register (USART vs UART)
+	- don't check for atmel_port->gclk != NULL
+	- use clk_round_rate instead of clk_set_rate + clk_get_rate
+	- remove clk_disable_unprepare from the end of the probe method
 
- drivers/tty/serial/8250/8250.h      |  2 ++
- drivers/tty/serial/8250/8250_core.c | 16 +++++++++++-----
- drivers/tty/serial/8250/8250_port.c |  8 +++++---
- 3 files changed, 18 insertions(+), 8 deletions(-)
+v2 -> v3:
+- Re-order the patches as suggested by Krzysztof Kozlowski:
+1. DTS changes needed for aligning to schema.
+2. all bindings
+3. rest
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index 287153d32536..dbf4c1204bf3 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -403,3 +403,5 @@ static inline int serial_index(struct uart_port *port)
- {
- 	return port->minor - 64;
- }
-+
-+void univ8250_setup_timer(struct uart_8250_port *up);
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 2e83e7367441..10d535640434 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -298,10 +298,9 @@ static void serial8250_backup_timeout(struct timer_list *t)
- 		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
- }
- 
--static int univ8250_setup_irq(struct uart_8250_port *up)
-+void univ8250_setup_timer(struct uart_8250_port *up)
- {
- 	struct uart_port *port = &up->port;
--	int retval = 0;
- 
- 	/*
- 	 * The above check will only give an accurate result the first time
-@@ -322,10 +321,17 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
- 	 */
- 	if (!port->irq)
- 		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
--	else
--		retval = serial_link_irq_chain(up);
-+}
-+EXPORT_SYMBOL_GPL(univ8250_setup_timer);
- 
--	return retval;
-+static int univ8250_setup_irq(struct uart_8250_port *up)
-+{
-+	struct uart_port *port = &up->port;
-+
-+	if (port->irq)
-+		return serial_link_irq_chain(up);
-+
-+	return 0;
- }
- 
- static void univ8250_release_irq(struct uart_8250_port *up)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 39b35a61958c..6e8e16227a3a 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2294,6 +2294,10 @@ int serial8250_do_startup(struct uart_port *port)
- 	if (port->irq && (up->port.flags & UPF_SHARE_IRQ))
- 		up->port.irqflags |= IRQF_SHARED;
- 
-+	retval = up->ops->setup_irq(up);
-+	if (retval)
-+		goto out;
-+
- 	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
- 		unsigned char iir1;
- 
-@@ -2336,9 +2340,7 @@ int serial8250_do_startup(struct uart_port *port)
- 		}
- 	}
- 
--	retval = up->ops->setup_irq(up);
--	if (retval)
--		goto out;
-+	univ8250_setup_timer(up);
- 
- 	/*
- 	 * Now, initialize the UART
+- New DT consistency related patch:
+  [PATCH 3] ARM: dts: at91: Add `atmel,usart-mode` required property to serial
+    nodes
+
+- [PATCH 6] dt-bindings: serial: atmel,at91-usart: convert to json-schema:
+  - Check value of `atmel,usart-mode` instead of the node regex
+  - Define all properties top level and disallow them explicitly for other type,
+  since additionalProperties:false conflicts with referencing other schemas
+  - Remove useless else if: after else:
+
+- [PATCH 7] dt-bindings: serial: atmel,at91-usart: add SAM9260 compatibles to
+  SAM9X60:
+  - Use the commit message suggested by Krzysztof Kozlowski
+
+- [PATCH 8] dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+  binding
+  - Compare devices based on the compatible instead of the clock
+
+- [PATCH 12] tty: serial: atmel: Only divide Clock Divisor if the IP is USART
+  - Use ATMEL_US_CD instead of 65535
+
+- [PATCH 14] tty: serial: atmel: Make the driver aware of the existence of GCLK
+  - add `gclk_fail` goto
+  - replace `goto err` with `goto err_clk_disable_unprepare;`
+
+
+v3 -> v4:
+- Remove the first 4 patches as they have already been applied
+https://lore.kernel.org/linux-arm-kernel/b537bbcf-cb0f-551d-6dd0-cf50864bafa3@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/53e72e5d-47fc-403d-c969-61b267a9ff15@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/1ae89854-74fa-6194-304f-db31d56d3674@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/3234cd79-65db-1210-50c1-e880ec6d87a0@microchip.com/
+- Remove the addition of gclk's to sama5d2 clock driver as it has already been applied
+https://lore.kernel.org/linux-arm-kernel/4b23db7d-d6b2-6c93-01f7-6a3b86f403d1@microchip.com/
+- [PATCH 2] -> [PATCH 5]
+  - add Acked-by/Reviewed-by tags to DT bindings
+- [PATCH 8]
+  - replace & with min_t
+
+
+
+
+Sergiu Moga (9):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding
+  dt-bindings: serial: atmel,at91-usart: convert to json-schema
+  dt-bindings: serial: atmel,at91-usart: Add SAM9260 compatibles to
+    SAM9X60
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+    binding
+  dt-bindings: serial: atmel,at91-usart: Add gclk as a possible USART
+    clock
+  tty: serial: atmel: Define GCLK as USART baudrate source clock
+  tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode Register
+  tty: serial: atmel: Only divide Clock Divisor if the IP is USART
+  tty: serial: atmel: Make the driver aware of the existence of GCLK
+
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |  19 +-
+ .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+ .../bindings/serial/atmel,at91-usart.yaml     | 190 ++++++++++++++++++
+ drivers/tty/serial/atmel_serial.c             |  76 ++++++-
+ drivers/tty/serial/atmel_serial.h             |   4 +
+ 5 files changed, 281 insertions(+), 106 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+
 -- 
-2.30.2
+2.34.1
 
