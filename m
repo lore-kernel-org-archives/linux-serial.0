@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97421C6FA91
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF69C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbiITFU5 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 01:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
+        id S230135AbiITFU6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 01:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiITFUy (ORCPT
+        with ESMTP id S230002AbiITFUy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 20 Sep 2022 01:20:54 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB354DB6B;
-        Mon, 19 Sep 2022 22:20:53 -0700 (PDT)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121BC4DB7A;
+        Mon, 19 Sep 2022 22:20:54 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id DEC3921CAC;
-        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id BE5AA1F8B0;
+        Tue, 20 Sep 2022 05:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663651250; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1663651252; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q2j1gKQOr1uxxBIOy9FBMHSzPifjlvk0WSprmVOm5tI=;
-        b=TB7ValD4tq+6lrfOsEL0XqCBFMmyTXcYJGM/cYGpmLtabu2/N57LTU0spObr9aYBFMMxu2
-        AT7j8uex3oSCejgHHIGoQgGC5XPPjc4Y7i+b+wDlR+tARQzNC5H30e7OOU6AEtdMt1SzO0
-        02xGH3PetX1OJLJEgd5wKxQNGtvdko8=
+        bh=dqYWbHDys658PO9cI+Q4Z9fm/eu7KUQM2lLlwljC3xU=;
+        b=V0cjK7yIJU3KGRaV1ns5Ue01jzb1IEM9mQOPmKorxPHeY5lRbhV9x7x9mZSVX58sJss5MW
+        78fdsgzTs+nQsK7LnPaXZDUva6ysoh+tujDKX6v2A3uAW4CeVDpnphVBDXyrNAFsLKGRW5
+        Eki8M08bsuobCa07kmKLSDofdStwkdA=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663651250;
+        s=susede2_ed25519; t=1663651252;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q2j1gKQOr1uxxBIOy9FBMHSzPifjlvk0WSprmVOm5tI=;
-        b=D8Y0qdcScKEcRODpwYokfEoxpfZGW7JThdHdxmBa0miUSeQsQJgy7P/oJoET3gLEReVFIN
-        e3aM9fkl06IFiDBA==
+        bh=dqYWbHDys658PO9cI+Q4Z9fm/eu7KUQM2lLlwljC3xU=;
+        b=Vcj6lXpcWhOmR7ycgpi0XPB/h6zk0jlUMC2iFU5fpMT6GqWLxQtTZ5nm5FIQpQI0oXnufP
+        9lnNPPUOqjTd1jDw==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9C90B2C141;
-        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 9058E2C142;
+        Tue, 20 Sep 2022 05:20:52 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH v4 02/10] tty: serial: clean up stop-tx part in altera_uart_tx_chars()
-Date:   Tue, 20 Sep 2022 07:20:42 +0200
-Message-Id: <20220920052049.20507-3-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH v4 07/10] tty: serial: extract serial_omap_put_char() from transmit_chars()
+Date:   Tue, 20 Sep 2022 07:20:47 +0200
+Message-Id: <20220920052049.20507-8-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220920052049.20507-1-jslaby@suse.cz>
 References: <20220920052049.20507-1-jslaby@suse.cz>
@@ -59,37 +58,66 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The "stop TX" path in altera_uart_tx_chars() is open-coded, so:
-* use uart_circ_empty() to check if the buffer is empty, and
-* when true, call altera_uart_stop_tx().
+This non-trivial code is doubled in transmit_chars(), so it deserves its
+own function. This will make next patches easier.
 
-Cc: Tobias Klauser <tklauser@distanz.ch>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
 
 Notes:
     [v4] this is new in v4 -- extracted as a separate change
 
- drivers/tty/serial/altera_uart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/omap-serial.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index a38db2cb8dc1..4170e66601ec 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -272,10 +272,8 @@ static void altera_uart_tx_chars(struct altera_uart *pp)
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- 
--	if (xmit->head == xmit->tail) {
--		pp->imr &= ~ALTERA_UART_CONTROL_TRDY_MSK;
--		altera_uart_update_ctrl_reg(pp);
--	}
-+	if (uart_circ_empty(xmit))
-+		altera_uart_stop_tx(port);
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index c87d85b901a7..b7b76e49115e 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -337,19 +337,24 @@ static void serial_omap_stop_rx(struct uart_port *port)
+ 	serial_out(up, UART_IER, up->ier);
  }
  
- static irqreturn_t altera_uart_interrupt(int irq, void *data)
++static void serial_omap_put_char(struct uart_omap_port *up, unsigned char ch)
++{
++	serial_out(up, UART_TX, ch);
++
++	if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
++			!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
++		up->rs485_tx_filter_count++;
++}
++
+ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ {
+ 	struct circ_buf *xmit = &up->port.state->xmit;
+ 	int count;
+ 
+ 	if (up->port.x_char) {
+-		serial_out(up, UART_TX, up->port.x_char);
++		serial_omap_put_char(up, up->port.x_char);
+ 		up->port.icount.tx++;
+ 		up->port.x_char = 0;
+-		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
+-		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
+-			up->rs485_tx_filter_count++;
+-
+ 		return;
+ 	}
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
+@@ -358,12 +363,9 @@ static void transmit_chars(struct uart_omap_port *up, unsigned int lsr)
+ 	}
+ 	count = up->port.fifosize / 4;
+ 	do {
+-		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
++		serial_omap_put_char(up, xmit->buf[xmit->tail]);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		up->port.icount.tx++;
+-		if ((up->port.rs485.flags & SER_RS485_ENABLED) &&
+-		    !(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
+-			up->rs485_tx_filter_count++;
+ 
+ 		if (uart_circ_empty(xmit))
+ 			break;
 -- 
 2.37.3
 
