@@ -2,45 +2,51 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B83BC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 08:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF54C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 08:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiITIya (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 04:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
+        id S229580AbiITI4Q (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 04:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbiITIy0 (ORCPT
+        with ESMTP id S229652AbiITI4P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 04:54:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691296B8FA;
-        Tue, 20 Sep 2022 01:54:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663664059; x=1695200059;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=3JHiv1cbPe8ZCd8mmIXB55mW1dRePjWIOPwNMnry1hk=;
-  b=LiMjq9up6eA+Dl6DrohfV6nmRHDJrD08V5Sp18PQIO04YDpYyDCqP8Wq
-   AsB0rkCiycuVexciCTwXVnxFaX58q/iENr0MVf7yYjB33c55GikFKwbn/
-   shuhfOzJXWm7jplRYBHp8zYRkiIHTx2SUOCp8JG6V00YhyJZj7DwRu7Hl
-   1D/qSCP2Z6ZUO1TRRMbAf1Ox8tCwGw/krGW5+cQbsWXYP0l4KDz0iW2GE
-   uuoxHoI74xAEVTt9XCpjblgg/xbJDkoPwvovEjnGvu4VoFREpntw2AqSZ
-   hiU7qT4XdmKP8RbHMCW2MSoe/+Swm5I7ueOc8sCaMvv5vZ6Ztlwug9g4k
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="297231680"
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="297231680"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 01:54:19 -0700
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="687323021"
-Received: from bdallmer-mobl.ger.corp.intel.com ([10.252.59.238])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 01:54:14 -0700
-Date:   Tue, 20 Sep 2022 11:54:12 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 20 Sep 2022 04:56:15 -0400
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AC8371AE;
+        Tue, 20 Sep 2022 01:56:14 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id 29so2835776edv.2;
+        Tue, 20 Sep 2022 01:56:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=SVKnPW1lA80jpFlxw0hEeDC0lfsM/uK2FrwITargAU0=;
+        b=o2CCWKkhUpKN5nkpSls9N+LPuhaXoELZsJpJFC6kz6tjf8hnlN6Oggok/JmcNKz6g/
+         1yW6Jic+1XMrpy1NGEJS9mzsffs1YswwMNNKuFz5rP5hLTv1qV0Yhoslqwpy8SnMl4Ze
+         NgVfoXSa3KA0mNUSEp2vB9fgpNCS4frljs04/Kbeteo/9EQLWF2p1L/CvTvErNHEHAqF
+         uH34R/CVUqFACUuWX0ou2xvMyW2hvmPQQGGK1obgpt+l/3gJ3xlcSKCqSpkdFIc2XJvk
+         D7SwYS/1pC+ToB3r5FYKbH1ZN6p5dNxvM4bWm9/yqSlkGyRY6Q8OyF/q1zVuvdBw5Bhe
+         rVSw==
+X-Gm-Message-State: ACrzQf0YeK8gkMKULAsRy5wR52r+jPFBzcSI2hT7xyZepfDQMIPI6K5e
+        c2HgLPUjauCbCIxLCh+431s=
+X-Google-Smtp-Source: AMsMyM51D5DYOdHYt9b/I4SW70I0iohaDWoxASIgxvYA6PtiynB6AyiOnXYfvUJDXG9ml01oxN9ySQ==
+X-Received: by 2002:aa7:c3cd:0:b0:453:8808:c7fb with SMTP id l13-20020aa7c3cd000000b004538808c7fbmr15586910edr.426.1663664172717;
+        Tue, 20 Sep 2022 01:56:12 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id f3-20020a170906048300b0073dc8d0eabesm542807eja.15.2022.09.20.01.56.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Sep 2022 01:56:12 -0700 (PDT)
+Message-ID: <9cd3b4bc-64e8-7603-f2e7-8260bdb8b019@kernel.org>
+Date:   Tue, 20 Sep 2022 10:56:10 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v4 09/10] tty: serial: use uart_port_tx() helper
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Tobias Klauser <tklauser@distanz.ch>,
@@ -57,94 +63,91 @@ cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        =?ISO-8859-15?Q?Andreas_F=E4rber?= <afaerber@suse.de>,
+        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
         Manivannan Sadhasivam <mani@kernel.org>
-Subject: Re: [PATCH v4 09/10] tty: serial: use uart_port_tx() helper
-In-Reply-To: <20220920052049.20507-10-jslaby@suse.cz>
-Message-ID: <87251b8a-d955-e6dd-94df-c7621e72bac@linux.intel.com>
-References: <20220920052049.20507-1-jslaby@suse.cz> <20220920052049.20507-10-jslaby@suse.cz>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-407419242-1663660068=:1766"
-Content-ID: <df4c474-68d1-debd-b7bb-519782b4b5f4@linux.intel.com>
+References: <20220920052049.20507-1-jslaby@suse.cz>
+ <20220920052049.20507-10-jslaby@suse.cz>
+ <87251b8a-d955-e6dd-94df-c7621e72bac@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <87251b8a-d955-e6dd-94df-c7621e72bac@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-407419242-1663660068=:1766
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <6ec236dd-66a1-72aa-3adc-f63fdc3ee@linux.intel.com>
-
-On Tue, 20 Sep 2022, Jiri Slaby wrote:
-
-> uart_port_tx() is a new helper to send characters to the device. Use it
-> in these drivers.
+On 20. 09. 22, 10:54, Ilpo JÃ¤rvinen wrote:
+> On Tue, 20 Sep 2022, Jiri Slaby wrote:
 > 
-> Cc: Tobias Klauser <tklauser@distanz.ch>
-> Cc: Richard Genoud <richard.genoud@gmail.com>
-> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: "Andreas Färber" <afaerber@suse.de>
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> ---
+>> uart_port_tx() is a new helper to send characters to the device. Use it
+>> in these drivers.
+>>
+>> Cc: Tobias Klauser <tklauser@distanz.ch>
+>> Cc: Richard Genoud <richard.genoud@gmail.com>
+>> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+>> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+>> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> Cc: Vladimir Zapolskiy <vz@mleia.com>
+>> Cc: Liviu Dudau <liviu.dudau@arm.com>
+>> Cc: Sudeep Holla <sudeep.holla@arm.com>
+>> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+>> Cc: Shawn Guo <shawnguo@kernel.org>
+>> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+>> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+>> Cc: Fabio Estevam <festevam@gmail.com>
+>> Cc: NXP Linux Team <linux-imx@nxp.com>
+>> Cc: "Andreas FÃ¤rber" <afaerber@suse.de>
+>> Cc: Manivannan Sadhasivam <mani@kernel.org>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+> 
+>> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+>> index b1cd9a76dd93..53b642ea46ba 100644
+>> --- a/drivers/tty/serial/mcf.c
+>> +++ b/drivers/tty/serial/mcf.c
+>> @@ -327,29 +327,13 @@ static void mcf_rx_chars(struct mcf_uart *pp)
+>>   static void mcf_tx_chars(struct mcf_uart *pp)
+>>   {
+>>   	struct uart_port *port = &pp->port;
+>> -	struct circ_buf *xmit = &port->state->xmit;
+>> -
+>> -	if (port->x_char) {
+>> -		/* Send special char - probably flow control */
+>> -		writeb(port->x_char, port->membase + MCFUART_UTB);
+>> -		port->x_char = 0;
+>> -		port->icount.tx++;
+>> -		return;
+>> -	}
+>> -
+>> -	while (readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY) {
+>> -		if (uart_circ_empty(xmit))
+>> -			break;
+>> -		writeb(xmit->buf[xmit->tail], port->membase + MCFUART_UTB);
+>> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE -1);
+>> -		port->icount.tx++;
+>> -	}
+>> -
+>> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>> -		uart_write_wakeup(port);
+>> +	unsigned int pending;
+>> +	u8 ch;
+>>   
+>> -	if (uart_circ_empty(xmit)) {
+>> -		mcf_stop_tx(port);
+>> +	pending = uart_port_tx(port, ch,
+>> +		readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY,
+>> +		writeb(ch, port->membase + MCFUART_UTB));
+>> +	if (!pending) {
+> 
+> Why unsigned int pending here and bool pending in the other cases?
 
-> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
-> index b1cd9a76dd93..53b642ea46ba 100644
-> --- a/drivers/tty/serial/mcf.c
-> +++ b/drivers/tty/serial/mcf.c
-> @@ -327,29 +327,13 @@ static void mcf_rx_chars(struct mcf_uart *pp)
->  static void mcf_tx_chars(struct mcf_uart *pp)
->  {
->  	struct uart_port *port = &pp->port;
-> -	struct circ_buf *xmit = &port->state->xmit;
-> -
-> -	if (port->x_char) {
-> -		/* Send special char - probably flow control */
-> -		writeb(port->x_char, port->membase + MCFUART_UTB);
-> -		port->x_char = 0;
-> -		port->icount.tx++;
-> -		return;
-> -	}
-> -
-> -	while (readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY) {
-> -		if (uart_circ_empty(xmit))
-> -			break;
-> -		writeb(xmit->buf[xmit->tail], port->membase + MCFUART_UTB);
-> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE -1);
-> -		port->icount.tx++;
-> -	}
-> -
-> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-> -		uart_write_wakeup(port);
-> +	unsigned int pending;
-> +	u8 ch;
->  
-> -	if (uart_circ_empty(xmit)) {
-> -		mcf_stop_tx(port);
-> +	pending = uart_port_tx(port, ch,
-> +		readb(port->membase + MCFUART_USR) & MCFUART_USR_TXREADY,
-> +		writeb(ch, port->membase + MCFUART_UTB));
-> +	if (!pending) {
+Right, I somehow omitted that pending is not used anywhere else. This 
+should be bool too, of course.
 
-Why unsigned int pending here and bool pending in the other cases?
+> Reviewed-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-
+thanks,
 -- 
- i.
---8323329-407419242-1663660068=:1766--
+js
+suse labs
+
