@@ -2,79 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A552EC6FA8B
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 12:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CACECAAD8
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 12:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbiITMKk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 08:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43714 "EHLO
+        id S229678AbiITMZx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 08:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiITMKi (ORCPT
+        with ESMTP id S230487AbiITMZw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 08:10:38 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506A527CFD
-        for <linux-serial@vger.kernel.org>; Tue, 20 Sep 2022 05:10:35 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 9295F100DE9D0;
-        Tue, 20 Sep 2022 14:10:33 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 6CE8B1B54E; Tue, 20 Sep 2022 14:10:33 +0200 (CEST)
-Date:   Tue, 20 Sep 2022 14:10:33 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vicente Bergas <vicencb@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>,
-        heiko@sntech.de, giulio.benetti@micronovasrl.com,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>
-Subject: Re: [PATCH v4 04/13] serial: 8250_dwlib: RS485 HW half & full duplex
- support
-Message-ID: <20220920121033.GA12065@wunner.de>
-References: <20220425143410.12703-1-ilpo.jarvinen@linux.intel.com>
- <20220425143410.12703-5-ilpo.jarvinen@linux.intel.com>
- <20220920113704.GA12014@wunner.de>
- <64fb5487-76c6-f6ed-d110-c98bde2f7917@linux.intel.com>
+        Tue, 20 Sep 2022 08:25:52 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DEFA195;
+        Tue, 20 Sep 2022 05:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663676750; x=1695212750;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=FBTXfJI31uC6GQV0ZGYB+frptD2zKMJQNM4znw8IIXw=;
+  b=PPifY3ctE2c9IS9mpWOef+24BCnH7IAss/CJIrnzwBBsELlgZLlvUEpD
+   mr58VofoTFc9hnAFEZnIiSMNgDdC/sFZEdgE9kDBEe55RNfoEyz2uw4US
+   CIq7ASEktpR0xLz700zmwlpinWdyM8FyFUBqqliUDtWLPGvygsS8jXPI2
+   eWKg/TNav+/jAvzlsyyWVkQF/JfQBh4e8N2/TyI7HzvqLE0Up+oJAkcqF
+   5U4XRFlVaoNpZzmmCWKV2UknNNT0Yk785XXryeIF337bRwk5JttxsyyMJ
+   P6iM27bNbnUF74toz/WlKSf5nzmdEUNJY8eWq/pkw5WpWhAVU1nsGXNPw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="301056799"
+X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
+   d="scan'208";a="301056799"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 05:25:49 -0700
+X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
+   d="scan'208";a="707972470"
+Received: from bdallmer-mobl.ger.corp.intel.com ([10.252.59.238])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 05:25:47 -0700
+Date:   Tue, 20 Sep 2022 15:25:45 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sherry Sun <sherry.sun@nxp.com>
+cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        bhuvanchandra.dv@toradex.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: disable dma rx/tx use flags in
+ lpuart_dma_shutdown
+In-Reply-To: <20220920111703.1532-1-sherry.sun@nxp.com>
+Message-ID: <ba937cd2-8a79-5352-c6bc-e553ee9baeed@linux.intel.com>
+References: <20220920111703.1532-1-sherry.sun@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <64fb5487-76c6-f6ed-d110-c98bde2f7917@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 03:01:52PM +0300, Ilpo Järvinen wrote:
-> I don't think you can just move from one to another like that because DE 
-> and RTS are not the same signal on these UARTs. So it's not going to be 
-> compatible w/o additional effort anyway.
+On Tue, 20 Sep 2022, Sherry Sun wrote:
+
+> lpuart_dma_shutdown tears down lpuart dma, but lpuart_flush_buffer can
+> still occur which in turn tries to access dma apis if lpuart_dma_tx_use
+> flag is true. At this point since dma is torn down, these dma apis can
+> abort. Set lpuart_dma_tx_use and the corresponding rx flag
+> lpuart_dma_rx_use to false in lpuart_dma_shutdown so that dmas are not
+> accessed after they are relinquished.
 > 
-> Initially, I tried to add a flag for selecting between the HW one and 
-> emulation but got overruled (you were among the opposing people ;-)).
-> ...IIRC, I tried to explain back then that those signals are not the
-> same with this HW.
+> Otherwise, when try to kill btattach, kernel may panic. This patch may
+> fix this issue.
+> root@imx8ulpevk:~# btattach -B /dev/ttyLP2 -S 115200
+> ^C[   90.182296] Internal error: synchronous external abort: 96000210 [#1] PREEMPT SMP
+> [   90.189806] Modules linked in: moal(O) mlan(O)
+> [   90.194258] CPU: 0 PID: 503 Comm: btattach Tainted: G           O      5.15.32-06136-g34eecdf2f9e4 #37
+> [   90.203554] Hardware name: NXP i.MX8ULP 9X9 EVK (DT)
+> [   90.208513] pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   90.215470] pc : fsl_edma3_disable_request+0x8/0x60
+> [   90.220358] lr : fsl_edma3_terminate_all+0x34/0x20c
+> [   90.225237] sp : ffff800013f0bac0
+> [   90.228548] x29: ffff800013f0bac0 x28: 0000000000000001 x27: ffff000008404800
+> [   90.235681] x26: ffff000008404960 x25: ffff000008404a08 x24: ffff000008404a00
+> [   90.242813] x23: ffff000008404a60 x22: 0000000000000002 x21: 0000000000000000
+> [   90.249946] x20: ffff800013f0baf8 x19: ffff00000559c800 x18: 0000000000000000
+> [   90.257078] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
+> [   90.264211] x14: 0000000000000003 x13: 0000000000000000 x12: 0000000000000040
+> [   90.271344] x11: ffff00000600c248 x10: ffff800013f0bb10 x9 : ffff000057bcb090
+> [   90.278477] x8 : fffffc0000241a08 x7 : ffff00000534ee00 x6 : ffff000008404804
+> [   90.285609] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff0000055b3480
+> [   90.292742] x2 : ffff8000135c0000 x1 : ffff00000534ee00 x0 : ffff00000559c800
+> [   90.299876] Call trace:
+> [   90.302321]  fsl_edma3_disable_request+0x8/0x60
+> [   90.306851]  lpuart_flush_buffer+0x40/0x160
+> [   90.311037]  uart_flush_buffer+0x88/0x120
+> [   90.315050]  tty_driver_flush_buffer+0x20/0x30
+> [   90.319496]  hci_uart_flush+0x44/0x90
+> [   90.323162]  +0x34/0x12c
+> [   90.327253]  tty_ldisc_close+0x38/0x70
+> [   90.331005]  tty_ldisc_release+0xa8/0x190
+> [   90.335018]  tty_release_struct+0x24/0x8c
+> [   90.339022]  tty_release+0x3ec/0x4c0
+> [   90.342593]  __fput+0x70/0x234
+> [   90.345652]  ____fput+0x14/0x20
+> [   90.348790]  task_work_run+0x84/0x17c
+> [   90.352455]  do_exit+0x310/0x96c
+> [   90.355688]  do_group_exit+0x3c/0xa0
+> [   90.359259]  __arm64_sys_exit_group+0x1c/0x20
+> [   90.363609]  invoke_syscall+0x48/0x114
+> [   90.367362]  el0_svc_common.constprop.0+0xd4/0xfc
+> [   90.372068]  do_el0_svc+0x2c/0x94
+> [   90.375379]  el0_svc+0x28/0x80
+> [   90.378438]  el0t_64_sync_handler+0xa8/0x130
+> [   90.382711]  el0t_64_sync+0x1a0/0x1a4
+> [   90.386376] Code: 17ffffda d503201f d503233f f9409802 (b9400041)
+> [   90.392467] ---[ end trace 2f60524b4a43f1f6 ]---
+> [   90.397073] note: btattach[503] exited with preempt_count 1
+> [   90.402636] Fixing recursive fault but reboot is needed!
+> 
+> Fixes: 6250cc30c4c4 ("tty: serial: fsl_lpuart: Use scatter/gather DMA for Tx")
+> Signed-off-by: Thara Gopinath <tgopinath@microsoft.com>
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/fsl_lpuart.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index f21915015d67..064bd1f33c21 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1771,6 +1771,7 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
+>  	if (sport->lpuart_dma_rx_use) {
+>  		del_timer_sync(&sport->lpuart_timer);
+>  		lpuart_dma_rx_free(&sport->port);
+> +		sport->lpuart_dma_rx_use = false;
+>  	}
+>  
+>  	if (sport->lpuart_dma_tx_use) {
+> @@ -1779,6 +1780,7 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
+>  			sport->dma_tx_in_progress = false;
+>  			dmaengine_terminate_all(sport->dma_tx_chan);
+>  		}
+> +		sport->lpuart_dma_tx_use = false;
+>  	}
+>  
+>  	if (sport->dma_tx_chan)
 
-Right, I remember that discussion. :)
+Isn't it still racy because lpuart_dma_shutdown() is called outside of 
+port's lock?
 
-I guess we can always retrofit that selection option if anyone needs it.
-Generally if hardware RS485 support is available, one doesn't want to
-use software emulation.
+-- 
+ i.
 
-stm32-usart.c originally only had hardware-driven Driver Enable and
-software emulation was added afterwards because the RTS pin is
-sometimes pinmuxed to some other function.  But such use cases are
-probably rare.
-
-Thanks,
-
-Lukas
