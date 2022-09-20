@@ -2,51 +2,57 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0277FC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 09:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A682ECAAD8
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 10:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbiITJTS (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 05:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
+        id S230347AbiITK61 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 06:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiITJTQ (ORCPT
+        with ESMTP id S230364AbiITK6X (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 05:19:16 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CCC639F;
-        Tue, 20 Sep 2022 02:19:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663665555; x=1695201555;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=BAbM1TqEtb44PX0/vS1qF8q9DcnRF8aqNBELI9rzAgQ=;
-  b=AE8DQMEXSMEwIAe3wUkwPL+SrtdfdjQgE9NmScb5gEmPQ/c6KpsOlke4
-   gow5198aR5MqZL4N22KAOGx8dEjxUbA/WJBPszGKSHz2vxqu0lW5Og/Sn
-   e8SRT8Ec74Qly0eBFiDgMq/tIb93lWQ8B0nigQe3gckp41r6Z8iU+kp7P
-   O07W9NNJl7KZIiPazo8uurQCqABwDBtw/t0tMyE6lKCrP7MC1BGQCrC6w
-   g4IRtXJ8vDAGXts5ZSyTaqOpApMiby1kPKRAUjb9pKFU+js+gthKFwjlu
-   u7oP1Sx/LIw4F3aSMWDlt/gFnRPzOSGCujjaopvt26kWjowvxV2njuawG
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="361383639"
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="361383639"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 02:19:15 -0700
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="744459621"
-Received: from bdallmer-mobl.ger.corp.intel.com ([10.252.59.238])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 02:19:11 -0700
-Date:   Tue, 20 Sep 2022 12:19:08 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tue, 20 Sep 2022 06:58:23 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9136872ECD;
+        Tue, 20 Sep 2022 03:58:08 -0700 (PDT)
+Received: by mail-ej1-f47.google.com with SMTP id y17so5198502ejo.6;
+        Tue, 20 Sep 2022 03:58:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=DIf4A6MJfckarZjD46d4BsfCfgbtP0HUjIfcnatCVF4=;
+        b=MtxzBxJckZt202x3WkcyuKwwdUpR/UE2O+GhTXXvcBrugYt+qcHWwexSnbpYwnJ6wN
+         voRhBQN2ayJ7iR7fS34bOC/zN0hZtcVXKZRyc27GKFDLMBHpD938fQEB41/vwI5RqBl3
+         qRr+SE0fqY3Rg3khEq6RC3y6KDoSUj9PgOvdBkzYSwdNDISIxNXDpPaLwEEiDwet6hoo
+         I4OSCbShg5G/HAca5IpWAZrCfrJe2n0SW6pjAwFCqX0FHioHMx5peoC2dcEpBSDCmi4f
+         Q3KtxBxIyAwNQ+Ilxm65Xhjj0MWJQYNCgwgqrPflx6IydvR7AkznDDbcImKKKxusMgkY
+         ZxNQ==
+X-Gm-Message-State: ACrzQf0sCFNE3PU4Nj/jYNTH7bDFXyZMYTEP1HZvCwud8xjYjQ0mIg4V
+        7/eiBKU/n1a85Upc/Ua9hkQ=
+X-Google-Smtp-Source: AMsMyM5kxMnMuhMcHTwEZeZUOWkC/2ffdKn/oARxrizmy9SaILemUN35/307/v8LTz/ze3YlWW9CkA==
+X-Received: by 2002:a17:906:cc10:b0:77a:fe95:eae2 with SMTP id ml16-20020a170906cc1000b0077afe95eae2mr16531605ejb.466.1663671486796;
+        Tue, 20 Sep 2022 03:58:06 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id bi14-20020a170906a24e00b007803083a36asm651296ejb.115.2022.09.20.03.58.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Sep 2022 03:58:06 -0700 (PDT)
+Message-ID: <bb3fa609-858f-ab16-95b4-06fd43ec6129@kernel.org>
+Date:   Tue, 20 Sep 2022 12:58:04 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v4 10/10] tty: serial: use uart_port_tx_limited()
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial <linux-serial@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com,
-        =?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
         Kevin Cernekee <cernekee@gmail.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -55,101 +61,39 @@ cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Chunyan Zhang <zhang.lyra@gmail.com>,
         Patrice Chotard <patrice.chotard@foss.st.com>,
         linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v4 10/10] tty: serial: use uart_port_tx_limited()
-In-Reply-To: <20220920075844.29360-1-jslaby@suse.cz>
-Message-ID: <f2653c92-1769-fc7c-8ad8-abf34affef6b@linux.intel.com>
-References: <20220920052049.20507-1-jslaby@suse.cz> <20220920075844.29360-1-jslaby@suse.cz>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1250180477-1663664450=:1766"
-Content-ID: <5186414d-2cc-26ad-bf70-acafdbdd2d7@linux.intel.com>
+References: <20220920052049.20507-1-jslaby@suse.cz>
+ <20220920075844.29360-1-jslaby@suse.cz>
+ <f2653c92-1769-fc7c-8ad8-abf34affef6b@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <f2653c92-1769-fc7c-8ad8-abf34affef6b@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1250180477-1663664450=:1766
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <8a48e911-6d7c-c65b-e692-658250d45aa1@linux.intel.com>
-
-On Tue, 20 Sep 2022, Jiri Slaby wrote:
-
-> uart_port_tx_limited() is a new helper to send characters to the device.
-> Use it in these drivers.
+On 20. 09. 22, 11:19, Ilpo JÃ¤rvinen wrote:
+> One improvement suggestion below.
 > 
-> mux.c also needs to define tx_done(). But I'm not sure if the driver
-> really wants to wait for all the characters to dismiss from the HW fifo
-> at this code point. Hence I marked this as FIXME.
+>> diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+>> index 23f339757894..f224f5141726 100644
+>> --- a/drivers/tty/serial/altera_jtaguart.c
+>> +++ b/drivers/tty/serial/altera_jtaguart.c
+>> @@ -137,39 +137,17 @@ static void altera_jtaguart_rx_chars(struct altera_jtaguart *pp)
+>>   static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
+...
+>> +	space = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG);
+>> +	space &= ALTERA_JTAGUART_CONTROL_WSPACE_MSK;
+>> +	space >>= ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
 > 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: "Pali Rohár" <pali@kernel.org>
-> Cc: Kevin Cernekee <cernekee@gmail.com>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Paul Walmsley <paul.walmsley@sifive.com>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: linux-riscv@lists.infradead.org
+> This is FIELD_GET(ALTERA_JTAGUART_CONTROL_WSPACE_MSK, ...) & then allows
+> killing ALTERA_JTAGUART_CONTROL_WSPACE_OFF. I'd probably do it in a
+> separate patch though.
 
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Right. Prepared for v5.
 
-One improvement suggestion below.
-
-> diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-> index 23f339757894..f224f5141726 100644
-> --- a/drivers/tty/serial/altera_jtaguart.c
-> +++ b/drivers/tty/serial/altera_jtaguart.c
-> @@ -137,39 +137,17 @@ static void altera_jtaguart_rx_chars(struct altera_jtaguart *pp)
->  static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
->  {
->  	struct uart_port *port = &pp->port;
-> -	struct circ_buf *xmit = &port->state->xmit;
-> -	unsigned int pending, count;
-> -
-> -	if (port->x_char) {
-> -		/* Send special char - probably flow control */
-> -		writel(port->x_char, port->membase + ALTERA_JTAGUART_DATA_REG);
-> -		port->x_char = 0;
-> -		port->icount.tx++;
-> -		return;
-> -	}
-> +	unsigned int space;
-> +	u8 ch;
->  
-> -	pending = uart_circ_chars_pending(xmit);
-> -	if (pending > 0) {
-> -		count = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
-> -				ALTERA_JTAGUART_CONTROL_WSPACE_MSK) >>
-> -			ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
-> -		if (count > pending)
-> -			count = pending;
-> -		if (count > 0) {
-> -			pending -= count;
-> -			while (count--) {
-> -				writel(xmit->buf[xmit->tail],
-> -				       port->membase + ALTERA_JTAGUART_DATA_REG);
-> -				xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-> -				port->icount.tx++;
-> -			}
-> -			if (pending < WAKEUP_CHARS)
-> -				uart_write_wakeup(port);
-> -		}
-> -	}
-> +	space = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG);
-> +	space &= ALTERA_JTAGUART_CONTROL_WSPACE_MSK;
-> +	space >>= ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
-
-This is FIELD_GET(ALTERA_JTAGUART_CONTROL_WSPACE_MSK, ...) & then allows 
-killing ALTERA_JTAGUART_CONTROL_WSPACE_OFF. I'd probably do it in a 
-separate patch though.
-
-
+thanks,
 -- 
- i.
---8323329-1250180477-1663664450=:1766--
+js
+suse labs
+
