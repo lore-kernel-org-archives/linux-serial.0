@@ -2,83 +2,85 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25827C54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 20:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C105C6FA82
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 23:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbiITU4n (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 16:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S231585AbiITXlW (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 19:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiITU4l (ORCPT
+        with ESMTP id S231578AbiITXlF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 16:56:41 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD9869F77;
-        Tue, 20 Sep 2022 13:56:39 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id D39121C0003; Tue, 20 Sep 2022 22:56:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
-        t=1663707397;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type;
-        bh=r9rh1lRm/DkkVvz81Uc8+tUw8Wdv4XX3sKR27wWxMCA=;
-        b=LC52VEXvq1rVE1t+lOnf2OqwQeopaPe3q7iZInndd/etq9hxrkigPjISG2LJVG+oZP5It+
-        tVPzDJQjkpkVjQLBByiv69YaUpTULjJkRSfNYgtb6vBXAUmkSAgi2tsrK7U/A3zH10ImWt
-        a0BhY308WW+TcHECmGojd7wv53Kb+So=
-Date:   Tue, 20 Sep 2022 22:56:37 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     kernel list <linux-kernel@vger.kernel.org>, robh@kernel.org,
-        linux-serial@vger.kernel.org, ribalda@kernel.org,
-        andriy.shevchenko@linux.intel.com, johan@kernel.org
-Subject: Cutiepi, serdevs, and right way to handle its power button
-Message-ID: <20220920205637.GA17170@duo.ucw.cz>
+        Tue, 20 Sep 2022 19:41:05 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C20007C76D;
+        Tue, 20 Sep 2022 16:38:19 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id BBF0292009E; Wed, 21 Sep 2022 01:35:37 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id B644892009B;
+        Wed, 21 Sep 2022 00:35:37 +0100 (BST)
+Date:   Wed, 21 Sep 2022 00:35:37 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     Josh Triplett <josh@joshtriplett.org>,
+        Anders Blomdell <anders.blomdell@control.lth.se>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH v2 2/3] serial: 8250: Request full 16550A feature probing
+ for OxSemi PCIe devices
+In-Reply-To: <alpine.DEB.2.21.2209201659350.41633@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2209210005040.41633@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2209201659350.41633@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Oxford Semiconductor PCIe (Tornado) 950 serial port devices need to 
+operate in the enhanced mode via the EFR register for the Divide-by-M 
+N/8 baud rate generator prescaler to be used in their native UART mode.  
+Otherwise the prescaler is fixed at 1 causing grossly incorrect baud 
+rates to be programmed.
 
---6c2NcOVqGQ03X4Wi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Accessing the EFR register requires 16550A features to have been probed 
+for, so request this to happen regardless of SERIAL_8250_16550A_VARIANTS 
+by setting UPF_FULL_PROBE in port flags.
 
-Hi!
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Anders Blomdell <anders.blomdell@control.lth.se>
+Fixes: 366f6c955d4d ("serial: 8250: Add proper clock handling for OxSemi PCIe devices")
+Cc: stable@vger.kernel.org # v5.19+
+---
+No change from v1.
+---
+ drivers/tty/serial/8250/8250_pci.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-Cutiepie is a small handheld tablet. It has embedded controller
-connected via serial to the main system, handling stuff such as power
-button and battery percentage. Currently they are using userland
-deamon for communication, but I believe that should eventually go into
-kernel.
-
-For debugging, it would be really nice to be able to attach my module
-to given serdev. Is such thing possible? I see "[PATCH v2 00/19]
-Dynamically load/remove serdev devices via sysfs*" series
-(https://www.spinics.net/lists/linux-serial/msg30732.html) but I'm not
-sure if equivalent functionality exists in mainline kernel?
-
-Is there some kind of similar hardware already supported by mainline?
-Using driver as a reference might be easier than starting from
-scratch.
-
-Thanks and best regards,
-								Pavel
-
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
-
---6c2NcOVqGQ03X4Wi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYyopBQAKCRAw5/Bqldv6
-8sB6AKCU3BmN+mPnuXU0+Ay0EuRrQ+LYyACgmGBIVcVSKQjvDVelmUqHEOqXxT0=
-=5Nv7
------END PGP SIGNATURE-----
-
---6c2NcOVqGQ03X4Wi--
+linux-serial-8250-oxsemi-efr.diff
+Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
+===================================================================
+--- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
++++ linux-macro/drivers/tty/serial/8250/8250_pci.c
+@@ -1232,6 +1232,10 @@ static void pci_oxsemi_tornado_set_mctrl
+ 	serial8250_do_set_mctrl(port, mctrl);
+ }
+ 
++/*
++ * We require EFR features for clock programming, so set UPF_FULL_PROBE
++ * for full probing regardless of CONFIG_SERIAL_8250_16550A_VARIANTS setting.
++ */
+ static int pci_oxsemi_tornado_setup(struct serial_private *priv,
+ 				    const struct pciserial_board *board,
+ 				    struct uart_8250_port *up, int idx)
+@@ -1239,6 +1243,7 @@ static int pci_oxsemi_tornado_setup(stru
+ 	struct pci_dev *dev = priv->dev;
+ 
+ 	if (pci_oxsemi_tornado_p(dev)) {
++		up->port.flags |= UPF_FULL_PROBE;
+ 		up->port.get_divisor = pci_oxsemi_tornado_get_divisor;
+ 		up->port.set_divisor = pci_oxsemi_tornado_set_divisor;
+ 		up->port.set_mctrl = pci_oxsemi_tornado_set_mctrl;
