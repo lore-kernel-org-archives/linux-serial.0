@@ -2,54 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5A7ECAAD8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B17D4C6FA82
 	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbiITFVA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 01:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        id S230141AbiITFVB (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 01:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiITFUy (ORCPT
+        with ESMTP id S230020AbiITFUy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 20 Sep 2022 01:20:54 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAF94D4DD;
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BA050184;
         Mon, 19 Sep 2022 22:20:53 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2C6B221CB9;
-        Tue, 20 Sep 2022 05:20:51 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 867981F8AB;
+        Tue, 20 Sep 2022 05:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663651251; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1663651252; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UI2jWYkFC7yTyQ71uYKxabQJQdsHojOQkO52hXQioaY=;
-        b=RcRxz1VdBnWER++nYaGrYWA3pzAoUVNe5xc7j1k2UaeRrL21lgV/MtqHIfjCjrnq8pCmLE
-        n+rrCIHGM5wvVXaL/W1iYNMuYEN4r8nFUXIpeDxNn9R0rHF3RIAUrJj4hFk9XHhjcNK8On
-        CMy1Ebfv+U709TYaLT9I/74s5Q/tEjU=
+        bh=oYr7Z62BDiJmHGeEjwvvRpRLmgO1LxdvAVFhnRhBAuU=;
+        b=gShQunqA0Rgna9E2rlYCaPjsbh+aRbdw8uxgzvHtnLorl9NLvg7g7GhtTuscdkAqxnM1nI
+        //uO2xSaCn1i/WoTl4UgJBWI388oYH6jsZwYRjatTPH8N480KirwLCoCm7bS8HDsWhoELg
+        Vspzw2t7eoJ+8mFF6SsfPO/oAcpoMig=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663651251;
+        s=susede2_ed25519; t=1663651252;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UI2jWYkFC7yTyQ71uYKxabQJQdsHojOQkO52hXQioaY=;
-        b=qOY0EUaed4/ac2F5DBb1tXPyfi1oWtSOosFx/8Dbct0nT0tBBaSBFJ2R/0dlYF9RuryQDR
-        qsC9ddav/qtD3oBQ==
+        bh=oYr7Z62BDiJmHGeEjwvvRpRLmgO1LxdvAVFhnRhBAuU=;
+        b=xzZ8giAcMxfEo/SouinHWMmzrOIiXZCMRtaq8Vvo2sfP/TduXLv2poBA7DsfZ8z1G5Kz6a
+        Z5N43FEfcD0IhGAA==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EB8A12C142;
-        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 56EA12C141;
+        Tue, 20 Sep 2022 05:20:52 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH v4 03/10] tty: serial: altera_uart_{r,t}x_chars() need only uart_port
-Date:   Tue, 20 Sep 2022 07:20:43 +0200
-Message-Id: <20220920052049.20507-4-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH v4 06/10] tty: serial: switch mpc52xx_uart_int_{r,t}x_chars() to bool
+Date:   Tue, 20 Sep 2022 07:20:46 +0200
+Message-Id: <20220920052049.20507-7-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220920052049.20507-1-jslaby@suse.cz>
 References: <20220920052049.20507-1-jslaby@suse.cz>
@@ -59,60 +58,97 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Both altera_uart_{r,t}x_chars() need only uart_port, not altera_uart. So
-pass the former from altera_uart_interrupt() directly.
+mpc52xx_uart_int_rx_chars() returns unsigned int.
+mpc52xx_uart_int_tx_chars() returns int.
 
-Apart it maybe saves a dereference, this makes the transition of
-altera_uart_tx_chars() easier to follow in the next patch.
+The both results are binary ORed to the "keepgoing" variable. Unify all
+three to bool as the only interesting value is whether we should keep
+looping (true/false).
 
-Cc: Tobias Klauser <tklauser@distanz.ch>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
 
 Notes:
     [v4] this is new in v4 -- extracted as a separate change
 
- drivers/tty/serial/altera_uart.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/tty/serial/mpc52xx_uart.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index 4170e66601ec..82f2790de28d 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -199,9 +199,8 @@ static void altera_uart_set_termios(struct uart_port *port,
- 	 */
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 6f09b1cb3e1c..73362d4bc45d 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1364,7 +1364,7 @@ static const struct uart_ops mpc52xx_uart_ops = {
+ /* Interrupt handling                                                       */
+ /* ======================================================================== */
+ 
+-static inline unsigned int
++static inline bool
+ mpc52xx_uart_int_rx_chars(struct uart_port *port)
+ {
+ 	struct tty_port *tport = &port->state->port;
+@@ -1425,7 +1425,7 @@ mpc52xx_uart_int_rx_chars(struct uart_port *port)
+ 	return psc_ops->raw_rx_rdy(port);
  }
  
--static void altera_uart_rx_chars(struct altera_uart *pp)
-+static void altera_uart_rx_chars(struct uart_port *port)
+-static inline int
++static inline bool
+ mpc52xx_uart_int_tx_chars(struct uart_port *port)
  {
--	struct uart_port *port = &pp->port;
- 	unsigned char ch, flag;
- 	unsigned short status;
- 
-@@ -246,9 +245,8 @@ static void altera_uart_rx_chars(struct altera_uart *pp)
- 	tty_flip_buffer_push(&port->state->port);
- }
- 
--static void altera_uart_tx_chars(struct altera_uart *pp)
-+static void altera_uart_tx_chars(struct uart_port *port)
- {
--	struct uart_port *port = &pp->port;
  	struct circ_buf *xmit = &port->state->xmit;
+@@ -1435,13 +1435,13 @@ mpc52xx_uart_int_tx_chars(struct uart_port *port)
+ 		psc_ops->write_char(port, port->x_char);
+ 		port->icount.tx++;
+ 		port->x_char = 0;
+-		return 1;
++		return true;
+ 	}
  
- 	if (port->x_char) {
-@@ -286,9 +284,9 @@ static irqreturn_t altera_uart_interrupt(int irq, void *data)
+ 	/* Nothing to do ? */
+ 	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+ 		mpc52xx_uart_stop_tx(port);
+-		return 0;
++		return false;
+ 	}
  
- 	spin_lock(&port->lock);
- 	if (isr & ALTERA_UART_STATUS_RRDY_MSK)
--		altera_uart_rx_chars(pp);
-+		altera_uart_rx_chars(port);
- 	if (isr & ALTERA_UART_STATUS_TRDY_MSK)
--		altera_uart_tx_chars(pp);
-+		altera_uart_tx_chars(port);
- 	spin_unlock(&port->lock);
+ 	/* Send chars */
+@@ -1460,23 +1460,23 @@ mpc52xx_uart_int_tx_chars(struct uart_port *port)
+ 	/* Maybe we're done after all */
+ 	if (uart_circ_empty(xmit)) {
+ 		mpc52xx_uart_stop_tx(port);
+-		return 0;
++		return false;
+ 	}
  
- 	return IRQ_RETVAL(isr);
+-	return 1;
++	return true;
+ }
+ 
+ static irqreturn_t
+ mpc5xxx_uart_process_int(struct uart_port *port)
+ {
+ 	unsigned long pass = ISR_PASS_LIMIT;
+-	unsigned int keepgoing;
++	bool keepgoing;
+ 	u8 status;
+ 
+ 	/* While we have stuff to do, we continue */
+ 	do {
+ 		/* If we don't find anything to do, we stop */
+-		keepgoing = 0;
++		keepgoing = false;
+ 
+ 		psc_ops->rx_clr_irq(port);
+ 		if (psc_ops->rx_rdy(port))
+@@ -1495,7 +1495,7 @@ mpc5xxx_uart_process_int(struct uart_port *port)
+ 
+ 		/* Limit number of iteration */
+ 		if (!(--pass))
+-			keepgoing = 0;
++			keepgoing = false;
+ 
+ 	} while (keepgoing);
+ 
 -- 
 2.37.3
 
