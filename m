@@ -2,54 +2,54 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF34EC54EE9
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D60C6FA90
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiITFU4 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 20 Sep 2022 01:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S230094AbiITFU6 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 20 Sep 2022 01:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiITFUx (ORCPT
+        with ESMTP id S229977AbiITFUy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 01:20:53 -0400
+        Tue, 20 Sep 2022 01:20:54 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1A14DB7A;
-        Mon, 19 Sep 2022 22:20:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FF84F669;
+        Mon, 19 Sep 2022 22:20:53 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 917321F889;
-        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4B4371F8A8;
+        Tue, 20 Sep 2022 05:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663651250; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1663651252; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rG/RuZqj0s6o1zZB075A45sdYsusSoWW/nWCKNRy+j4=;
-        b=0TndwT8Irvaz65JK4PQuLXA1r9Or8dZzulSYgk2LY2iwFTvi19BGbyyDQYc00DxXR8FV4e
-        V0UcEoDgnI+REjHvJ99LV/EFyoDCG8/+RAwfZJ6GDQ5eKEq7G+rra3bQYsPuaItDkh7lJw
-        oEsXw5lAULbrQZ3jeh0S9PEjplNBIuw=
+        bh=3DR+e5tUXrU5pDouwWQoOJcV84hEa4+bOrdcoGBahis=;
+        b=AHlZ6BHmkCZhxrHKia31hETrcgXlk+z2qr1mmJoKqGy8iCeLFN5pmRIKSo6tvoGDZ+MsxV
+        EGPlgFVnH9amtpbWjXAvi3U72/FyvTcEtWVA1poFSDX+sxjzNKR1QrW4VyDyzNMxLUnZV9
+        //Lmah+LrAYoJ6uR/44KRIvELBy9zh4=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663651250;
+        s=susede2_ed25519; t=1663651252;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rG/RuZqj0s6o1zZB075A45sdYsusSoWW/nWCKNRy+j4=;
-        b=PfuLgrKsT+5LTJiq5qsWX4ileX2mTCDLaxn0ajGoYDfynzGLB4suDo083oJ0IvMz4hn2Aj
-        p6tfxM5GAjIclJCA==
+        bh=3DR+e5tUXrU5pDouwWQoOJcV84hEa4+bOrdcoGBahis=;
+        b=3KvSp9eNVo6hma1f/FIQVS47Gx+6sERkSqqH6QPNc8c3rEaFCIC3sAOFTTchzZYbg4zyld
+        yOSEBD2qbOiPeoAA==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5BB6B2C142;
-        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 6DF7E2C142;
+        Tue, 20 Sep 2022 05:20:51 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
+        Jiri Slaby <jslaby@suse.cz>, Vladimir Zapolskiy <vz@mleia.com>,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 01/10] tty: serial: move and cleanup vt8500_tx_empty()
-Date:   Tue, 20 Sep 2022 07:20:41 +0200
-Message-Id: <20220920052049.20507-2-jslaby@suse.cz>
+Subject: [PATCH v4 05/10] tty: serial: extract tx_ready() from __serial_lpc32xx_tx()
+Date:   Tue, 20 Sep 2022 07:20:45 +0200
+Message-Id: <20220920052049.20507-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220920052049.20507-1-jslaby@suse.cz>
 References: <20220920052049.20507-1-jslaby@suse.cz>
@@ -59,61 +59,49 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Make vt8500_tx_empty() more readable by introducing a new local variable
-and move the function before handle_tx(). That way we can reuse it in
-there too.
+The condition in __serial_lpc32xx_tx()'s loop is barely readable.
+Extract it to a separate function. This will make the cleanup in the
+next patches easier too.
 
+Cc: Vladimir Zapolskiy <vz@mleia.com>
 Cc: <linux-arm-kernel@lists.infradead.org>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
 
 Notes:
-    [v3] this is new in v3 -- extracted as a separate change from later
-         patches
+    [v4] this is new in v4 -- extracted as a separate change
 
- drivers/tty/serial/vt8500_serial.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/tty/serial/lpc32xx_hs.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/vt8500_serial.c b/drivers/tty/serial/vt8500_serial.c
-index 508ad7afa6de..10fbdb09965f 100644
---- a/drivers/tty/serial/vt8500_serial.c
-+++ b/drivers/tty/serial/vt8500_serial.c
-@@ -187,6 +187,13 @@ static void handle_rx(struct uart_port *port)
- 	tty_flip_buffer_push(tport);
- }
+diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
+index 0d5ef7df27d0..ed47f4768338 100644
+--- a/drivers/tty/serial/lpc32xx_hs.c
++++ b/drivers/tty/serial/lpc32xx_hs.c
+@@ -278,6 +278,13 @@ static void __serial_lpc32xx_rx(struct uart_port *port)
  
-+static unsigned int vt8500_tx_empty(struct uart_port *port)
+ static void serial_lpc32xx_stop_tx(struct uart_port *port);
+ 
++static bool serial_lpc32xx_tx_ready(struct uart_port *port)
 +{
-+	unsigned int idx = vt8500_read(port, VT8500_URFIDX) & 0x1f;
++	u32 level = readl(LPC32XX_HSUART_LEVEL(port->membase));
 +
-+	return idx < 16 ? TIOCSER_TEMT : 0;
++	return LPC32XX_HSU_TX_LEV(level) < 64;
 +}
 +
- static void handle_tx(struct uart_port *port)
+ static void __serial_lpc32xx_tx(struct uart_port *port)
  {
  	struct circ_buf *xmit = &port->state->xmit;
-@@ -201,7 +208,7 @@ static void handle_tx(struct uart_port *port)
- 		return;
- 	}
+@@ -293,8 +300,7 @@ static void __serial_lpc32xx_tx(struct uart_port *port)
+ 		goto exit_tx;
  
--	while ((vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16) {
-+	while (vt8500_tx_empty(port)) {
- 		if (uart_circ_empty(xmit))
- 			break;
- 
-@@ -260,12 +267,6 @@ static irqreturn_t vt8500_irq(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static unsigned int vt8500_tx_empty(struct uart_port *port)
--{
--	return (vt8500_read(port, VT8500_URFIDX) & 0x1f) < 16 ?
--						TIOCSER_TEMT : 0;
--}
--
- static unsigned int vt8500_get_mctrl(struct uart_port *port)
- {
- 	unsigned int usr;
+ 	/* Transfer data */
+-	while (LPC32XX_HSU_TX_LEV(readl(
+-		LPC32XX_HSUART_LEVEL(port->membase))) < 64) {
++	while (serial_lpc32xx_tx_ready(port)) {
+ 		writel((u32) xmit->buf[xmit->tail],
+ 		       LPC32XX_HSUART_FIFO(port->membase));
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 -- 
 2.37.3
 
