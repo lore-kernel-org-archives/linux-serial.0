@@ -2,105 +2,121 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 052B6C6FA82
-	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FBBECAAD8
+	for <linux-serial@archiver.kernel.org>; Tue, 20 Sep 2022 05:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiITFUy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        id S229806AbiITFUy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 20 Sep 2022 01:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiITFUx (ORCPT
+        with ESMTP id S229667AbiITFUw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 20 Sep 2022 01:20:53 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7ABB4DF11;
-        Mon, 19 Sep 2022 22:20:52 -0700 (PDT)
+        Tue, 20 Sep 2022 01:20:52 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6494D4DD;
+        Mon, 19 Sep 2022 22:20:51 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 654AA1F8A6;
-        Tue, 20 Sep 2022 05:20:51 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5090A1F8A4;
+        Tue, 20 Sep 2022 05:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663651251; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PBb254ufDLViHW1psKMCbOT0ZEYgTcb/VpywoIn1+Pk=;
-        b=JprHj6lqGzW/P7TP1CSeXgoLGRytYOf+MKeTqUmar/N8h/INk9kJc8ZdzZ8oloeAzTBGOe
-        rCMhHBzMPpHkFlrmWUVy3TwD0S5O7L6N9Y7M2cniwUOdiedqdUEHhwSClxxG79xHXGzWzz
-        FcsM+MCUVTK3wLT9tJl8mJtBzztjPZw=
+        t=1663651250; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=d2A5fMQmjms2Sx4O1XUaS8Jg2w3M2p6OWk5+8JtwhCY=;
+        b=wIP71jWXyPCFcpry5mSTPJ/0aRk0njEx940wGlzSXAL1DdmbKLnhxKpnCbeLRzL7FT13RS
+        cBqHjaGujJ8MfM5PtmGtGKSQhCN3/A09PKHBDgt2A22nlFExJVzO3a1FhcnvvWIq2JFL92
+        V7YdqY1/OGvLm9jiB4eMnmVnhNPyhxE=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663651251;
+        s=susede2_ed25519; t=1663651250;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PBb254ufDLViHW1psKMCbOT0ZEYgTcb/VpywoIn1+Pk=;
-        b=2eS108/4W2ZEiJdwrgU0c2YVtVlbK9qGheh98zt01LsFh9SxYeAoi6mdfk+rPrHP/gVyXm
-        GTSNK4i+fmmTOsDg==
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=d2A5fMQmjms2Sx4O1XUaS8Jg2w3M2p6OWk5+8JtwhCY=;
+        b=fmFLmsti1LRRV06uzM8TSQpu/k7+mtCJdz5QJ+zO/Xl3YzTYxNnYMKJR03r+vGWZeZ6yl6
+        n8LKpgz1HUG377Cg==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 37C282C141;
-        Tue, 20 Sep 2022 05:20:51 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id B559A2C141;
+        Tue, 20 Sep 2022 05:20:49 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH v4 04/10] tty: serial: extract lqasc_tx_ready() from lqasc_tx_chars()
-Date:   Tue, 20 Sep 2022 07:20:44 +0200
-Message-Id: <20220920052049.20507-5-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>, Arnd Bergmann <arnd@arndb.de>,
+        Johan Hovold <johan@kernel.org>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Subject: [PATCH v4 00/10] tty: TX helpers
+Date:   Tue, 20 Sep 2022 07:20:40 +0200
+Message-Id: <20220920052049.20507-1-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220920052049.20507-1-jslaby@suse.cz>
-References: <20220920052049.20507-1-jslaby@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The condition in lqasc_tx_chars()'s loop is barely readable. Extract it
-to a separate function. This will make the cleanup in the next patches
-easier too.
+This series introduces uart_port_tx() + uart_port_tx_limited() TX
+helpers. See PATCH 8/10 for the details. Comments welcome.
 
-(Put it before lqasc_start_tx(), so that we can use it there later.)
+First the series performs simple cleanups, so that the later patches are
+easier to follow.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
+Then it switches drivers to use them. First, to uart_port_tx() in 9/10
+and then uart_port_tx_limited() in 10/10.
 
-Notes:
-    [v4] this is new in v4 -- extracted as a separate change
+The diffstat of patches 9+10 is as follows:
+ 26 files changed, 145 insertions(+), 740 deletions(-)
+which appears to be nice.
 
- drivers/tty/serial/lantiq.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 6637b3caa6b7..6da1b7496c6c 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -139,6 +139,13 @@ lqasc_stop_tx(struct uart_port *port)
- 	return;
- }
- 
-+static bool lqasc_tx_ready(struct uart_port *port)
-+{
-+	u32 fstat = __raw_readl(port->membase + LTQ_ASC_FSTAT);
-+
-+	return (fstat & ASCFSTAT_TXFREEMASK) >> ASCFSTAT_TXFREEOFF;
-+}
-+
- static void
- lqasc_start_tx(struct uart_port *port)
- {
-@@ -228,8 +235,7 @@ lqasc_tx_chars(struct uart_port *port)
- 		return;
- 	}
- 
--	while (((__raw_readl(port->membase + LTQ_ASC_FSTAT) &
--		ASCFSTAT_TXFREEMASK) >> ASCFSTAT_TXFREEOFF) != 0) {
-+	while (lqasc_tx_ready(port)) {
- 		if (port->x_char) {
- 			writeb(port->x_char, port->membase + LTQ_ASC_TBUF);
- 			port->icount.tx++;
+Jiri Slaby (10):
+  tty: serial: move and cleanup vt8500_tx_empty()
+  tty: serial: clean up stop-tx part in altera_uart_tx_chars()
+  tty: serial: altera_uart_{r,t}x_chars() need only uart_port
+  tty: serial: extract lqasc_tx_ready() from lqasc_tx_chars()
+  tty: serial: extract tx_ready() from __serial_lpc32xx_tx()
+  tty: serial: switch mpc52xx_uart_int_{r,t}x_chars() to bool
+  tty: serial: extract serial_omap_put_char() from transmit_chars()
+  tty: serial: introduce transmit helpers
+  tty: serial: use uart_port_tx() helper
+  tty: serial: use uart_port_tx_limited()
+
+ Documentation/driver-api/serial/driver.rst |  3 +
+ drivers/tty/serial/21285.c                 | 32 ++-------
+ drivers/tty/serial/altera_jtaguart.c       | 40 +++--------
+ drivers/tty/serial/altera_uart.c           | 41 +++--------
+ drivers/tty/serial/amba-pl010.c            | 32 ++-------
+ drivers/tty/serial/apbuart.c               | 34 ++-------
+ drivers/tty/serial/atmel_serial.c          | 28 ++------
+ drivers/tty/serial/bcm63xx_uart.c          | 47 +++----------
+ drivers/tty/serial/fsl_lpuart.c            | 30 ++------
+ drivers/tty/serial/lantiq.c                | 44 +++---------
+ drivers/tty/serial/lpc32xx_hs.c            | 39 +++--------
+ drivers/tty/serial/mcf.c                   | 28 ++------
+ drivers/tty/serial/mpc52xx_uart.c          | 49 +++----------
+ drivers/tty/serial/mps2-uart.c             | 26 ++-----
+ drivers/tty/serial/mux.c                   | 45 ++++--------
+ drivers/tty/serial/mvebu-uart.c            | 38 ++--------
+ drivers/tty/serial/mxs-auart.c             | 32 +++------
+ drivers/tty/serial/omap-serial.c           | 46 ++++---------
+ drivers/tty/serial/owl-uart.c              | 32 ++-------
+ drivers/tty/serial/pxa.c                   | 33 ++-------
+ drivers/tty/serial/rp2.c                   | 31 ++-------
+ drivers/tty/serial/sa1100.c                | 34 ++-------
+ drivers/tty/serial/serial_txx9.c           | 32 ++-------
+ drivers/tty/serial/sifive.c                | 31 ++-------
+ drivers/tty/serial/sprd_serial.c           | 33 ++-------
+ drivers/tty/serial/st-asc.c                | 48 ++-----------
+ drivers/tty/serial/vt8500_serial.c         | 41 +++--------
+ include/linux/serial_core.h                | 80 ++++++++++++++++++++++
+ 28 files changed, 264 insertions(+), 765 deletions(-)
+
 -- 
 2.37.3
 
