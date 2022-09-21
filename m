@@ -2,199 +2,86 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F060BC32771
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Sep 2022 13:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBC4C6FA82
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Sep 2022 14:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbiIUNVF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Sep 2022 09:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        id S229640AbiIUOpk (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Sep 2022 10:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbiIUNU6 (ORCPT
+        with ESMTP id S229901AbiIUOpi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Sep 2022 09:20:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB38293532;
-        Wed, 21 Sep 2022 06:20:56 -0700 (PDT)
+        Wed, 21 Sep 2022 10:45:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FB570E5C;
+        Wed, 21 Sep 2022 07:45:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663766456; x=1695302456;
-  h=date:from:cc:subject:in-reply-to:message-id:references:
-   mime-version;
-  bh=vYgIHBqQT1LOSTdLXHjE2GGwmevR+anrYC3oXAZSnJk=;
-  b=m91KiL9EZBDNnPeO1yVHjcRDB20rUWU5T65pw2VHoXqtkehKzATSHejm
-   UrDD8dQWsi29FQ1qDdnXJyXzPU1+AetHWp4e4jB12Bsn05NMspcxerA3J
-   pPu99Ez9wp356DMkAtfAo3icXcnIpSb7bspKKOMO1iq8GfQv1pHDaC21t
-   NfDPXBvMflgiEVB57iTraW8n/qYEny5VJmw4IqQyCHqjRG1nMLS50x5Y/
-   T3ak3XqSMkundQanGycngiTxsXE9gqA/2+FovvVLKEXrFYCjT5Z7CsX3P
-   fSVecyAXlMaxb3uylLozxcCVY9soez+ABD3QMc/7MZuTmDK7rMndoFcBs
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="298715561"
+  t=1663771537; x=1695307537;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iKixqXcEefl/Xpj9HOMOB56b4Cbr/aAPwTYc0H7GWvQ=;
+  b=lNUIz7ErRMIcdb4oWSY+dwzlLKH+7k4NKyHzO/qLF1q5Lpr+JON+JrxM
+   bNpbMdduYT1NLc76n4rAMFsRzd6C8hqH3JzJBcEbHr5EP2622WBPEhnGu
+   P3zcOISOn9GG3aoL4NmMt0NpdwE2nnup3Aju61Ch9a/drkfapyvIYceFh
+   yf9p4n2IRscHnYhIoSJqmNwFViMNAlC3cy0t6F0JvoReToZwYR6CzCnKR
+   BzBrmrLcoucEB7ZdIME+Wo4pK+RXmCGV0tFTuYzEeUwUaJNGTVgzkSqte
+   pgbbO2RlsHcOtst6lvyj4/AYqt9SyIXQuP4H31RCKt7BI1ELXqiv/rtRB
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="297621062"
 X-IronPort-AV: E=Sophos;i="5.93,333,1654585200"; 
-   d="scan'208";a="298715561"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 06:20:56 -0700
+   d="scan'208";a="297621062"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 07:45:37 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,333,1654585200"; 
-   d="scan'208";a="794668445"
-Received: from dgonsal1-mobl1.ger.corp.intel.com ([10.252.58.151])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 06:20:52 -0700
-Date:   Wed, 21 Sep 2022 16:20:50 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alex Williamson <alex.williamson@hp.com>,
-        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lennert Buytenhek <buytenh@arista.com>
-Subject: Re: [PATCH v3 1/1] serial: 8250: Toggle IER bits on only after irq
- has been set up
-In-Reply-To: <20220919144057.12241-1-ilpo.jarvinen@linux.intel.com>
-Message-ID: <24ec3f1f-b39c-eeb1-d53-ed97e2ccdb4f@linux.intel.com>
-References: <20220919144057.12241-1-ilpo.jarvinen@linux.intel.com>
+   d="scan'208";a="687899979"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004.fm.intel.com with ESMTP; 21 Sep 2022 07:45:35 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ob0yk-005az3-09;
+        Wed, 21 Sep 2022 17:45:34 +0300
+Date:   Wed, 21 Sep 2022 17:45:33 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     kernel list <linux-kernel@vger.kernel.org>, robh@kernel.org,
+        linux-serial@vger.kernel.org, ribalda@kernel.org, johan@kernel.org
+Subject: Re: Cutiepi, serdevs, and right way to handle its power button
+Message-ID: <YysjjSXao4MERCwQ@smile.fi.intel.com>
+References: <20220920205637.GA17170@duo.ucw.cz>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1816087576-1663766455=:1741"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220920205637.GA17170@duo.ucw.cz>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Tue, Sep 20, 2022 at 10:56:37PM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> Cutiepie is a small handheld tablet. It has embedded controller
+> connected via serial to the main system, handling stuff such as power
+> button and battery percentage. Currently they are using userland
+> deamon for communication, but I believe that should eventually go into
+> kernel.
+> 
+> For debugging, it would be really nice to be able to attach my module
+> to given serdev. Is such thing possible? I see "[PATCH v2 00/19]
+> Dynamically load/remove serdev devices via sysfs*" series
+> (https://www.spinics.net/lists/linux-serial/msg30732.html) but I'm not
+> sure if equivalent functionality exists in mainline kernel?
+> 
+> Is there some kind of similar hardware already supported by mainline?
+> Using driver as a reference might be easier than starting from
+> scratch.
 
---8323329-1816087576-1663766455=:1741
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Mon, 19 Sep 2022, Ilpo Järvinen wrote:
-
-> Invoking TIOCVHANGUP on 8250_mid port on Ice Lake-D and then reopening
-> the port triggers these faults during serial8250_do_startup():
-> 
->   DMAR: DRHD: handling fault status reg 3
->   DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0 [fault reason 0x05] PTE Write access is not set
-> 
-> If the IRQ hasn't been set up yet, the UART will have zeroes in its MSI
-> address/data registers. Disabling the IRQ at the interrupt controller
-> won't stop the UART from performing a DMA write to the address programmed
-> in its MSI address register (zero) when it wants to signal an interrupt.
-> 
-> The UARTs (in Ice Lake-D) implement PCI 2.1 style MSI without masking
-> capability, so there is no way to mask the interrupt at the source PCI
-> function level, except disabling the MSI capability entirely, but that
-> would cause it to fall back to INTx# assertion, and the PCI specification
-> prohibits disabling the MSI capability as a way to mask a function's
-> interrupt service request.
-> 
-> The MSI address register is zeroed during by the hangup as the irq is
-> freed. The interrupt is signalled during serial8250_do_startup()
-> performing a THRE test that temporarily toggles THRI in IER. The THRE
-> test currently occurs before UART's irq (and MSI address) is properly
-> set up.
-> 
-> Refactor serial8250_do_startup() such that irq is set up before the
-> THRE test. The current irq setup code is intermixed with the timer
-> setup code. As THRE test must be performed prior to the timer setup,
-> extract it into own function and call it only after the THRE test.
-> 
-> Reported-by: Lennert Buytenhek <buytenh@arista.com>
-> Tested-by: Lennert Buytenhek <buytenh@arista.com>
-> Fixes: 40b36daad0ac ("[PATCH] 8250 UART backup timer")
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
-> 
-> v3:
-> - Improved the commit with Lennert's superior descriptions.
-> - Added Andy's Rev-by
-> 
->  drivers/tty/serial/8250/8250.h      |  2 ++
->  drivers/tty/serial/8250/8250_core.c | 16 +++++++++++-----
->  drivers/tty/serial/8250/8250_port.c |  8 +++++---
->  3 files changed, 18 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index 287153d32536..dbf4c1204bf3 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -403,3 +403,5 @@ static inline int serial_index(struct uart_port *port)
->  {
->  	return port->minor - 64;
->  }
-> +
-> +void univ8250_setup_timer(struct uart_8250_port *up);
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 2e83e7367441..10d535640434 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -298,10 +298,9 @@ static void serial8250_backup_timeout(struct timer_list *t)
->  		jiffies + uart_poll_timeout(&up->port) + HZ / 5);
->  }
->  
-> -static int univ8250_setup_irq(struct uart_8250_port *up)
-> +void univ8250_setup_timer(struct uart_8250_port *up)
->  {
->  	struct uart_port *port = &up->port;
-> -	int retval = 0;
->  
->  	/*
->  	 * The above check will only give an accurate result the first time
-> @@ -322,10 +321,17 @@ static int univ8250_setup_irq(struct uart_8250_port *up)
->  	 */
->  	if (!port->irq)
->  		mod_timer(&up->timer, jiffies + uart_poll_timeout(port));
-> -	else
-> -		retval = serial_link_irq_chain(up);
-> +}
-> +EXPORT_SYMBOL_GPL(univ8250_setup_timer);
->  
-> -	return retval;
-> +static int univ8250_setup_irq(struct uart_8250_port *up)
-> +{
-> +	struct uart_port *port = &up->port;
-> +
-> +	if (port->irq)
-> +		return serial_link_irq_chain(up);
-> +
-> +	return 0;
->  }
->  
->  static void univ8250_release_irq(struct uart_8250_port *up)
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 39b35a61958c..6e8e16227a3a 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2294,6 +2294,10 @@ int serial8250_do_startup(struct uart_port *port)
->  	if (port->irq && (up->port.flags & UPF_SHARE_IRQ))
->  		up->port.irqflags |= IRQF_SHARED;
->  
-> +	retval = up->ops->setup_irq(up);
-> +	if (retval)
-> +		goto out;
-> +
->  	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
->  		unsigned char iir1;
->  
-> @@ -2336,9 +2340,7 @@ int serial8250_do_startup(struct uart_port *port)
->  		}
->  	}
->  
-> -	retval = up->ops->setup_irq(up);
-> -	if (retval)
-> -		goto out;
-> +	univ8250_setup_timer(up);
->  
->  	/*
->  	 * Now, initialize the UART
-
-Hi Greg,
-
-Please scratch this patch. It seems to create a circular dependency issue 
-with allmodconfig. I'll send v4 once the problem is sorted out.
+Is it arm or x86 based tablet?
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
---8323329-1816087576-1663766455=:1741--
+
