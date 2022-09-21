@@ -2,91 +2,92 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC85C6FA8E
-	for <linux-serial@archiver.kernel.org>; Wed, 21 Sep 2022 15:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DB1C6FA82
+	for <linux-serial@archiver.kernel.org>; Wed, 21 Sep 2022 17:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbiIUPBJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 21 Sep 2022 11:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S229705AbiIURRN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 21 Sep 2022 13:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiIUPBD (ORCPT
+        with ESMTP id S229437AbiIURRM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 21 Sep 2022 11:01:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1DEE03F;
-        Wed, 21 Sep 2022 08:01:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663772462; x=1695308462;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/rkfDswWDTfUnkPIQd70RxRVXiWpXkOh8LLLnbRgRUA=;
-  b=C6FUQzPJGWkX4/e1RqAiVsQUhBatcA9eg7N3o4ox9VV/uMEhTAw6Nyrt
-   P0k7Wevfws9CnwZrLlAEIaevQJv2CYAJ5gxNeVBsxTSzN8P3JXjLDqSNV
-   m2xmeGM9Z43PewY59F6BHGfJQynoZkJaVEU5rATl5tJGXZqsrRCbeljt2
-   FMlMMNmCLYJUM/dWwvWP859YOwJ6cigB+TdG9awrWa50MtHNo2MFRLshm
-   KwpODCJKHeAR8J/mt6f80zQCawYWxMQc4KlOsLhxSp3VxacUXxqtj0LE3
-   BzIJJMxT6+s8U7U5pJ1BQNY+uf/5HQaDqsbur5WFwboFYHG1IHu7dBcZn
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="283072737"
-X-IronPort-AV: E=Sophos;i="5.93,333,1654585200"; 
-   d="scan'208";a="283072737"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 08:00:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,333,1654585200"; 
-   d="scan'208";a="948184820"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Sep 2022 08:00:06 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ob1Cm-005bHz-18;
-        Wed, 21 Sep 2022 18:00:04 +0300
-Date:   Wed, 21 Sep 2022 18:00:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alex Williamson <alex.williamson@hp.com>,
-        Aristeu Sergio Rozanski Filho <aris@cathedrallabs.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lennert Buytenhek <buytenh@arista.com>
-Subject: Re: [PATCH v3 1/1] serial: 8250: Toggle IER bits on only after irq
- has been set up
-Message-ID: <Yysm9ALLsXk3oYRt@smile.fi.intel.com>
-References: <20220919144057.12241-1-ilpo.jarvinen@linux.intel.com>
- <24ec3f1f-b39c-eeb1-d53-ed97e2ccdb4f@linux.intel.com>
+        Wed, 21 Sep 2022 13:17:12 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FB69E2EE;
+        Wed, 21 Sep 2022 10:17:09 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id A935A1C0001; Wed, 21 Sep 2022 19:17:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+        t=1663780627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pSRz24bpKnR47fpvXftTQUQXHR+ooHizhrLLLWndvDE=;
+        b=FEYJcwSbaBgdCoBdr0O/F/55xd5kYOlPqVKfeuyqdX9gCYmCLspp1mPxjshEGwel90OH1Y
+        7LlV301BcHFqrJdScGwkzKUGLujoT23KIjxifJe1pqEeCMgTMeaGrbQLG0QY8oZy9N78CX
+        CNOEVpYYOdbYiQt/uJjM2m/SBA2Chk8=
+Date:   Wed, 21 Sep 2022 19:17:07 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     kernel list <linux-kernel@vger.kernel.org>, robh@kernel.org,
+        linux-serial@vger.kernel.org, ribalda@kernel.org, johan@kernel.org
+Subject: Re: Cutiepi, serdevs, and right way to handle its power button
+Message-ID: <20220921171707.GA8443@duo.ucw.cz>
+References: <20220920205637.GA17170@duo.ucw.cz>
+ <YysjjSXao4MERCwQ@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="1yeeQ81UyVL57Vl7"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <24ec3f1f-b39c-eeb1-d53-ed97e2ccdb4f@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <YysjjSXao4MERCwQ@smile.fi.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Sep 21, 2022 at 04:20:50PM +0300, Ilpo Järvinen wrote:
-> On Mon, 19 Sep 2022, Ilpo Järvinen wrote:
 
-...
+--1yeeQ81UyVL57Vl7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > -	retval = up->ops->setup_irq(up);
-> > -	if (retval)
-> > -		goto out;
-> > +	univ8250_setup_timer(up);
+On Wed 2022-09-21 17:45:33, Andy Shevchenko wrote:
+> On Tue, Sep 20, 2022 at 10:56:37PM +0200, Pavel Machek wrote:
+> > Hi!
+> >=20
+> > Cutiepie is a small handheld tablet. It has embedded controller
+> > connected via serial to the main system, handling stuff such as power
+> > button and battery percentage. Currently they are using userland
+> > deamon for communication, but I believe that should eventually go into
+> > kernel.
+> >=20
+> > For debugging, it would be really nice to be able to attach my module
+> > to given serdev. Is such thing possible? I see "[PATCH v2 00/19]
+> > Dynamically load/remove serdev devices via sysfs*" series
+> > (https://www.spinics.net/lists/linux-serial/msg30732.html) but I'm not
+> > sure if equivalent functionality exists in mainline kernel?
+> >=20
+> > Is there some kind of similar hardware already supported by mainline?
+> > Using driver as a reference might be easier than starting from
+> > scratch.
+>=20
+> Is it arm or x86 based tablet?
 
-> Please scratch this patch. It seems to create a circular dependency issue
-> with allmodconfig. I'll send v4 once the problem is sorted out.
+arm64, but CPU architecture really should not matter.
 
-In accordance with what you told me privately, I think you will need yet
-another ops, i.e. ->setup_timer().
+Best regards,
+								Pavel
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
 
--- 
-With Best Regards,
-Andy Shevchenko
+--1yeeQ81UyVL57Vl7
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYytHEwAKCRAw5/Bqldv6
+8qIzAKCRTrRwV/SltYWgSAFyjIxSnh3ONwCfS6ZchPDQ/OqNKYkP+e8SbinwPQU=
+=wKSv
+-----END PGP SIGNATURE-----
+
+--1yeeQ81UyVL57Vl7--
