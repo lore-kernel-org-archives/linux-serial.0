@@ -2,163 +2,216 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F2BC6FA86
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Sep 2022 11:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E6CC54EE9
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Sep 2022 11:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbiIVLXD (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Sep 2022 07:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S231423AbiIVLmU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Sep 2022 07:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiIVLXB (ORCPT
+        with ESMTP id S229936AbiIVLmQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Sep 2022 07:23:01 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBD0E05F5;
-        Thu, 22 Sep 2022 04:23:00 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28MAO95w032068;
-        Thu, 22 Sep 2022 11:22:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2022-7-12;
- bh=NRKz0OE6ZmtbIUPA4PFPsgAEnmu6fCyJCO31ugTnp3U=;
- b=pdgc9NH/UrAKFimexgcDGGPifkwF+ZG/J8ew2p7thOZmVs+4TdyQB62ww5uZz7PBmRaz
- Tk34thYDvc1CgcTcNpebPnTYZwFEbBNxQf/4fuLAYTH0R88lR5tMI1/poTqsAdDT8WmY
- 72WxWtmT8ByvWyMTphuCs5sFv10EKHIXSDc9bUFcq1FtGdrwhVrjtcUUQN7zI3S0cQ1g
- dgMEDyxCC0bL0JlAh2ckYtOse1iP9Hp+0MKdlVZPE1cW3DMOEpAhhcWe86dTIenmo62p
- +sLz+lCeO5hPwO8W3kzP+InsyLf7znW1xO81DnJ5ntaNTfamiHiNWVqjTU/sXyyzk/MV ZQ== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3jn69kw750-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 22 Sep 2022 11:22:56 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 28MBKupX010324;
-        Thu, 22 Sep 2022 11:22:55 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2176.outbound.protection.outlook.com [104.47.56.176])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3jp3cb5mtb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 22 Sep 2022 11:22:54 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FzeR29P0xvFf9eUTHYTSSBrSgFltMEbaOH0UIzoHfbWmfMJD4OBEQ+wt7UdJgLy3y3h4UI6GTzbtWHjGGOFGLJ+P4zm9qEhC74MWtCXq5wbw59tLptMxBYGMa59i2q2ZRjDE7nyx0P72qSCHXw8UAgAxqjyBXuTFSzoBwiojnm/WOJpRW8CrbFXPbvx/Xndith6sYg648ButByyNJHHChvwzSe4x0itngEPXK+hExsezyUbG2zVjSIuwN1vIlGWnqiyEG/3dASTn9TU5l0hs1L9zhIv1jkAKdMsZRi6mAvgU0ExHg2U+Q1VrGg5MvA5GPDFRqsYr01iw4wI5E9ZTdA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NRKz0OE6ZmtbIUPA4PFPsgAEnmu6fCyJCO31ugTnp3U=;
- b=O7aOWx9Zi3KoPpXEmbx8KPvCjNUz7nbInEhqXYDP6vhJQYd+P8ZInvsGnvJzGpa4pNZwt/uNZf64NYlnBxrArOYj+AdBzZZfSYfWtrdWbK/kqwRNWTSefVK2Xp6g0dQQgWoi2y+NoPB4ilcRZFBqjEpQvJaklpud788x/PO1xOjeAAn/H3aBYTX7KJaO670mugRPVuIooSqI51FvRFAio3ejvlXcz8yz9rFvR+A+v8pfDi8ndm5roVZ7tJpHgT+EYTeEgtCAunCjJdD6/g4TSYH7ZtznGSdkgcyDkcjAB32+jpXYWYBgKmWUhphcwEuLqE35GdzyFPKRFRdoY7vP9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NRKz0OE6ZmtbIUPA4PFPsgAEnmu6fCyJCO31ugTnp3U=;
- b=DrfAI/6AgbG6h1kQ/YC9107qhx72FA9AdvPRlQ9Pc022ZxFT4DEEX3CfgO4uLjMhBPSrdxuFzOsf4p4+smsWbZ2tVVKRm2cswHE6l7tYP9pFa93s+TZ+Tuca4cJBtaMayi5PsuGFmyOS48exya69kvyYQpAkDhtn6sY048PtT8k=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MW4PR10MB6347.namprd10.prod.outlook.com
- (2603:10b6:303:1eb::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.15; Thu, 22 Sep
- 2022 11:22:53 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::a493:38d9:86ee:73d6]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::a493:38d9:86ee:73d6%6]) with mapi id 15.20.5654.019; Thu, 22 Sep 2022
- 11:22:53 +0000
-Date:   Thu, 22 Sep 2022 14:22:47 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Konrad Zapalowicz <bergo.torino@gmail.com>,
-        linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] drivers: serial: jsm: fix some leaks in probe
-Message-ID: <YyxFh1+lOeZ9WfKO@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-ClientProxiedBy: ZR2P278CA0033.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:47::9) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        Thu, 22 Sep 2022 07:42:16 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81389B843;
+        Thu, 22 Sep 2022 04:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663846934; x=1695382934;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=h4RtjIzXLWK5epTWueE8Vm3jsayEzVLuddfdK7Akvws=;
+  b=cCkd1B3oquXRKrsj+/aDEibpkdiB0flY7dnHH/hc8piTiVU7/w/DmsGe
+   ExecArRAfbZwFOTGhs598LEGjUglqqW0YOBWqFYtOcOqbiwSFsx0iQT4y
+   d6VCYkdxGzO1hJ4VSe48G2gxQFqBogq6r62xrD/T5Bg3EuTy0/PJFv2vP
+   sbHmsLChVvyW0O2GgKaEEdxhuY1hu+bh3RCZWwCBYabUoPEQCZGmp17k3
+   kZxKu5qDWSFJIaxuNZI3vd6R3R0JbR9GvrcYq0zD197EXBTkWeBUzgZZv
+   poQNCy7hx8ix6Nk5B88BZq149bqKCVCU6Oi7sY1Ex1eUFLHghZeEXgO7w
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
+   d="scan'208";a="114897412"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Sep 2022 04:42:14 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 22 Sep 2022 04:42:13 -0700
+Received: from ROB-ULT-M68701.amer.actel.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Thu, 22 Sep 2022 04:42:07 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <lee@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <kavyasree.kotagiri@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH v5 0/9] Make atmel serial driver aware of GCLK
+Date:   Thu, 22 Sep 2022 14:33:38 +0300
+Message-ID: <20220922113347.144383-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2365:EE_|MW4PR10MB6347:EE_
-X-MS-Office365-Filtering-Correlation-Id: c969ac0d-9b49-4d08-bac8-08da9c8cca5b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hJCXJB9brWBiT9xy0OvB0J58UyNDwpRnKMRIVoNhhrrd7lSWtBbNOADCj884xx+9rK/5Gj6y/fhvO4TXyZu7JXpuMUIiT8PsXDnIz5owakWVUrQ7KktvtAyWzlOZcrnzmhR+VJ6q8QVoHTBo+DQ8BET+kPLAbe4YvS1lZb1rlr0ofSsqAPZv+HHevuwabkbwcmWXgDJhQ3KOzoGEPxqAmJLtj9qYslM1PSUxbBX8uQojJJzbRfsduB1o668gcF9oiWUVGjCPwB7X6MEUFx6Wcc+SXwbvmG9U72b0Edh8xs62OqlIMnZk/31yRGiliAHh8e5jir72ri3dCH+qqb7OmqnUN3qUDdibVUoqB4wmZbFsLYSPvG2h0sXz4LREZ9l8eCpaBIZTB/q+EtU9zcqLs7jDqrraJkHZtkJwXO+DoFNqBZiT1WBLfsPFVa+TAuBE5HY0lyDBcMmoRUifa7CkXf9BAdaQaubFekfzcjlSghq0+Hn6DX+PMZEPTEh4vm9yDHvHtLTm2Fa/5s5iU+XICL/QIAqJiylkYx13I7Iybj0o6T/GzTKeo+nSaMjvYpKJZGluOXl2sdsazbzty0U6dwEqp0MLAlHdGIB280D9gfO1NMMtQGDEhhfRhB948YaeOP/exkDg7lVfSaTz3K09WsGFNT219VVScoGsmg6x1pLD4nsqVyNXfk4HC7H8zXLUtjVDf18mwLouMseb0yJdpLPYvrJ+QlySkGU08q0oNxCvLFFG9MuEm3I0XNPVVECFzBFpaa94Ir+LEtySKpXSHg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(376002)(39860400002)(136003)(366004)(346002)(396003)(451199015)(86362001)(44832011)(4744005)(5660300002)(2906002)(8676002)(54906003)(26005)(316002)(33716001)(6916009)(38100700002)(8936002)(41300700001)(66476007)(66556008)(4326008)(6512007)(66946007)(478600001)(6666004)(6506007)(186003)(83380400001)(6486002)(9686003)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Blfk3wdymTc276IT0p6+1Vn8JqC+mMnoweP5gjRWuBtHOAhA6yVixXnkuN31?=
- =?us-ascii?Q?BTcTWVhR223jHzcvsnyFE5vYXHWaFAtGlO01iqIoJj2z72JiCXRZI8/7qwXd?=
- =?us-ascii?Q?N8IhY/C1A0+mEuaOfsDuup6W4ZUN+ArmbHXhgdB/wLsxStaskbmnBbk2JsA+?=
- =?us-ascii?Q?wXIRudCC8trv4bDjYgO7ea3Tr9XPPs4knJzwdfS8G0NDwsE0OGo0F7X7G4az?=
- =?us-ascii?Q?otn63D5z1/LiOMgcO9A7le7ohLzXblKC+p5I8AkKwNSs+A8HiVmLjRCtFQwz?=
- =?us-ascii?Q?IWFlbRoO5gi7+OYEkAV7PMSLVC0PB/OIpueo4Dz+G4dtq1DUcHgjYX/7rOg3?=
- =?us-ascii?Q?anoRQHxrvAvaJQYlglVPOLgmoYXpRTAM9tTl6QJJ7oZKuURwkxspVschA+af?=
- =?us-ascii?Q?Odgpe22k4E22iLNVsSb1Pvop1ZYHt40lMnkXRAQ+ore2L4HRt+dEkYyhvBN0?=
- =?us-ascii?Q?4txp0cr5T+nWb+UXsGrfkMGvCN1V0BjE5j42XMXWrK06l/Ii64sMn2dEvz+J?=
- =?us-ascii?Q?ImursLBzl0bmPqz9DoKQ+qqeDlSL10e2zIhSM2ipdSeVg1tfdHl6aGkYPbyb?=
- =?us-ascii?Q?3q9tNungMyECcUFTldOSj4k9VQbF75IP31E84/9ZgX3ifpYHvW8wCkYIIOuA?=
- =?us-ascii?Q?gNKpgYqb/Bx8vfrdPf+A5SgMLR//3NOhTdEODOibchNAje87bgUziTaYLsLk?=
- =?us-ascii?Q?MIuKm9qkLDAlY+fhygaoxfJSJw1P665Bbyd75cTlpGbRXKaVM0CjhSErXY3Z?=
- =?us-ascii?Q?3xcYGHGWnayMeC9sUuOdNFlmQj+M57so9uLKqQsL7YAkaFnWRYu8CtV5KLPk?=
- =?us-ascii?Q?AB97s+AQEOYX0LZOpFvGlxzhANaYevdYr3RzzI1W38IEj6RdRsIyLvQ1JsHA?=
- =?us-ascii?Q?ZRe/KZlwpfwrKA+p61EJJULCA0INeZs01eJXqyX6qySYTj3mNRK9EDUFocH9?=
- =?us-ascii?Q?Sz4RQcvRMw2ModGNXz/XJzB7DvQtUM6VrxLcw+GXM8+egK2GW/FoP5a87rKQ?=
- =?us-ascii?Q?CQe6tKSsZsJ5YFa2XZqn0wJLYHui0DuBRqGU2PE4eWq5G10yY2KhCcrWJKeA?=
- =?us-ascii?Q?CaOJ+3OsH2eqRqWqlEZ256+0LeyE4PVk1mKTa66kWESo6BjW5OY75hSO60aJ?=
- =?us-ascii?Q?kJ4qPgxK0kWPtz2QOE6BNnq9lUoXZ5X47AKmK6z4m3Nrin46hTtgKrdgOgBx?=
- =?us-ascii?Q?9/wufdGGH0SMuAqm9SWJ8XRE31s9ib9FZWc8h6reCezXS+MSMyzSLB1tVRBk?=
- =?us-ascii?Q?BojKlmA1JiTf9Pq3UTuZBfFQiScWwOF5GDtbGjnrDhDdSPwnmmUSaS7WP7S7?=
- =?us-ascii?Q?eQyb5L7/+XS7f6n6r6899M67zS8Ixv8cY7A+nI09Tzj5QECSgwvXDvvCB5t2?=
- =?us-ascii?Q?4ixTdhEmIPY9PuxUaePh5sogT5goR7rX6LWVBmoqa1OWIdLi7Kp0mYiVkGD5?=
- =?us-ascii?Q?/ob7D9hXmlc+ft3I1mtOkrhZ2eWKkVttGs/28MzXQZTij5FiVJ2d47neeuQr?=
- =?us-ascii?Q?kQIzdHo1Xf6G/YoAkFSKnXWXcIgP6SmYycQGz6YesA3h3pKA5q8kLmeJvyH6?=
- =?us-ascii?Q?b585Fxn32Z8NPulokk1WjjARW552zggjJRQXuCAH8JN4a0qa51QNAlahY20o?=
- =?us-ascii?Q?Ew=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c969ac0d-9b49-4d08-bac8-08da9c8cca5b
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 11:22:53.2116
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jFIeyg5WrezWdvWfsGDp/ikXudgNu49jc4vGSQCOsoXE3SilAH6Rbduz7vhp3iTDv7L/slUxQn1Vb10imcjpyRXt3EgS34P5LAK8WTlC4Iw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6347
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-22_07,2022-09-22_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 mlxlogscore=999
- bulkscore=0 suspectscore=0 adultscore=0 spamscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
- definitions=main-2209220075
-X-Proofpoint-ORIG-GUID: naVJq8D0NQjSHG05ZKajl4FIGubk9tXC
-X-Proofpoint-GUID: naVJq8D0NQjSHG05ZKajl4FIGubk9tXC
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This error path needs to unwind instead of just returning directly.
+This series of patches introduces the GCLK as a clock source for
+the baudrate generator of UART on sama5d2 SoCs. Unlike the serial mode of
+the USART offered by FLEXCOM, the UART does not provide a fractional part
+that can be added to the clock divisor to obtain a more accurate result,
+which greatly decreases the flexibility available for producing a higher
+variety of baudrates. Now, with the last patch of the series, the driver
+will check for a GCLK in the DT. If provided, whenever `atmel_set_termios`
+is called, unless there is a fractional part, the driver will compare the
+error rate between the desired baudrate and the actual baudrate obtained
+through each of the available clock sources and will choose the clock source
+with the lowest error rate. While at it, convert the DT binding
+for UART/USART to json-schema, update the FLEXCOM binding to reference the
+new UART/USART binding (while differentiating between the SPI of USART and the
+SPI of FLEXCOM), do some small DT related fixups and do some small driver
+cleanup.
 
-Fixes: 03a8482c17dd ("drivers: serial: jsm: Enable support for Digi Classic adapters")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/tty/serial/jsm/jsm_driver.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The DT bindings related patches of this patch series depend on this patch
+series converting atmel-flexcom bindings to json-schema:
+https://lore.kernel.org/linux-arm-kernel/20220916075744.1879428-1-kavyasree.kotagiri@microchip.com/
 
-diff --git a/drivers/tty/serial/jsm/jsm_driver.c b/drivers/tty/serial/jsm/jsm_driver.c
-index 0ea799bf8dbb..417a5b6bffc3 100644
---- a/drivers/tty/serial/jsm/jsm_driver.c
-+++ b/drivers/tty/serial/jsm/jsm_driver.c
-@@ -211,7 +211,8 @@ static int jsm_probe_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 		break;
- 	default:
--		return -ENXIO;
-+		rc = -ENXIO;
-+		goto out_kfree_brd;
- 	}
- 
- 	rc = request_irq(brd->irq, brd->bd_ops->intr, IRQF_SHARED, "JSM", brd);
+v1 -> v2:
+- [PATCH 3] dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding:
+	- use full schema paths
+
+- [PATCH 5] dt-bindings: serial: atmel,at91-usart: convert to json-schema
+	- only do what the commit says, split the addition of other compatibles
+	(PATCH 6) and properties (PATCH 13) in other patches
+	- remove unnecessary "|"'s
+	- mention header in `atmel,usart-mode`'s description
+	- place `if:` under `allOf:`
+	- respect order of spi0's DT properties: compatible, then reg then the
+	reset of properties
+
+- two new baudrate clock source related patches:
+  [PATCH 9] tty: serial: atmel: Add definition for GCLK as baudrate source clock
+			+
+  [PATCH 10] tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode
+    Register:
+	- v1's bitfield definition of GCLK was wrong, so add two more patches:
+		- one for the definition of GCLK of USART IP's
+		- one for the definition of BRSRCCK bitmask and its bitfields
+		for UART IP's
+
+- a new cleanup related patch that introduces a new struct atmel_uart_port field:
+  [PATCH 11] tty: serial: atmel: Only divide Clock Divisor if the IP is USART:
+  	- this ensures a division by 8 which is unnecessary and unappliable to
+	UART IP's is only done for USART IP's
+
+- four new patches regarding DT fixes and a SPI binding update that I came
+upon:
+  [PATCH 1] spi: dt-bindings: atmel,at91rm9200-spi: Add DMA related properties
+  [PATCH 2] ARM: dts: at91: sama7g5: Swap rx and tx for spi11
+  [PATCH 4] ARM: dts: at91: sam9x60ek: Add DBGU compatibles to uart1
+  [PATCH 6] dt-bindings: serial: atmel,at91-usart: Highlight SAM9X60 incremental
+
+- [PATCH 12] tty: serial: atmel: Make the driver aware of the existence of GCLK
+	- take into account the different placement of the baudrate clock source
+	into the IP's Mode Register (USART vs UART)
+	- don't check for atmel_port->gclk != NULL
+	- use clk_round_rate instead of clk_set_rate + clk_get_rate
+	- remove clk_disable_unprepare from the end of the probe method
+
+v2 -> v3:
+- Re-order the patches as suggested by Krzysztof Kozlowski:
+1. DTS changes needed for aligning to schema.
+2. all bindings
+3. rest
+
+- New DT consistency related patch:
+  [PATCH 3] ARM: dts: at91: Add `atmel,usart-mode` required property to serial
+    nodes
+
+- [PATCH 6] dt-bindings: serial: atmel,at91-usart: convert to json-schema:
+  - Check value of `atmel,usart-mode` instead of the node regex
+  - Define all properties top level and disallow them explicitly for other type,
+  since additionalProperties:false conflicts with referencing other schemas
+  - Remove useless else if: after else:
+
+- [PATCH 7] dt-bindings: serial: atmel,at91-usart: add SAM9260 compatibles to
+  SAM9X60:
+  - Use the commit message suggested by Krzysztof Kozlowski
+
+- [PATCH 8] dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+  binding
+  - Compare devices based on the compatible instead of the clock
+
+- [PATCH 12] tty: serial: atmel: Only divide Clock Divisor if the IP is USART
+  - Use ATMEL_US_CD instead of 65535
+
+- [PATCH 14] tty: serial: atmel: Make the driver aware of the existence of GCLK
+  - add `gclk_fail` goto
+  - replace `goto err` with `goto err_clk_disable_unprepare;`
+
+
+v3 -> v4:
+- Remove the first 4 patches as they have already been applied
+https://lore.kernel.org/linux-arm-kernel/b537bbcf-cb0f-551d-6dd0-cf50864bafa3@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/53e72e5d-47fc-403d-c969-61b267a9ff15@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/1ae89854-74fa-6194-304f-db31d56d3674@microchip.com/
+https://lore.kernel.org/linux-arm-kernel/3234cd79-65db-1210-50c1-e880ec6d87a0@microchip.com/
+- Remove the addition of gclk's to sama5d2 clock driver as it has already been applied
+https://lore.kernel.org/linux-arm-kernel/4b23db7d-d6b2-6c93-01f7-6a3b86f403d1@microchip.com/
+- [PATCH 2] -> [PATCH 5]
+  - add Acked-by/Reviewed-by tags to DT bindings
+- [PATCH 8]
+  - replace & with min_t
+
+
+
+v4 -> v5:
+- squash previous
+`[PATCH v4 7/9] tty: serial: atmel: Define BRSRCCK bitmask of UART IP's Mode Register`
+into a newly added
+`[PATCH v5 6/9] tty: serial: atmel: Separate mode clearing between UART and USART`
+whose role is mainly of cleanup and to make a clear separation between the
+clearing of the mode for UART vs USART and make BRSRCCK into a bitfield
+instead of a bitmask as it is only a bit.
+- squash previous
+`[PATCH v4 6/9] tty: serial: atmel: Define GCLK as USART baudrate source clock`
+into the current
+`[PATCH v5 8/9] tty: serial: atmel: Make the driver aware of the existence of GCLK`
+- new bitfield conversions to FIELD_PREP/FIELD_GET PATCH
+`[PATCH v5 9/9] tty: serial: atmel: Use FIELD_PREP/FIELD_GET`
+
+
+Sergiu Moga (9):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI child node ref
+    binding
+  dt-bindings: serial: atmel,at91-usart: convert to json-schema
+  dt-bindings: serial: atmel,at91-usart: Add SAM9260 compatibles to
+    SAM9X60
+  dt-bindings: mfd: atmel,sama5d2-flexcom: Add USART child node ref
+    binding
+  dt-bindings: serial: atmel,at91-usart: Add gclk as a possible USART
+    clock
+  tty: serial: atmel: Separate mode clearing between UART and USART
+  tty: serial: atmel: Only divide Clock Divisor if the IP is USART
+  tty: serial: atmel: Make the driver aware of the existence of GCLK
+  tty: serial: atmel: Use FIELD_PREP/FIELD_GET
+
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |  19 +-
+ .../devicetree/bindings/mfd/atmel-usart.txt   |  98 ---------
+ .../bindings/serial/atmel,at91-usart.yaml     | 190 ++++++++++++++++++
+ drivers/tty/serial/atmel_serial.c             |  82 +++++++-
+ drivers/tty/serial/atmel_serial.h             |  75 +++----
+ 5 files changed, 321 insertions(+), 143 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-usart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+
 -- 
-2.35.1
+2.34.1
 
