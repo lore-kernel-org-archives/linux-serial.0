@@ -2,80 +2,95 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7123C6FA8B
-	for <linux-serial@archiver.kernel.org>; Thu, 22 Sep 2022 09:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CEFC6FA82
+	for <linux-serial@archiver.kernel.org>; Thu, 22 Sep 2022 10:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiIVJ5w (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Sep 2022 05:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        id S229531AbiIVKLn (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 22 Sep 2022 06:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231335AbiIVJ5c (ORCPT
+        with ESMTP id S229705AbiIVKLm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Sep 2022 05:57:32 -0400
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0AED58A3;
-        Thu, 22 Sep 2022 02:56:51 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 15B7A2817F1A5;
-        Thu, 22 Sep 2022 11:56:48 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id F27A028CB9; Thu, 22 Sep 2022 11:56:47 +0200 (CEST)
-Date:   Thu, 22 Sep 2022 11:56:47 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        andriy.shevchenko@linux.intel.com, matwey.kornilov@gmail.com,
-        giulio.benetti@micronovasrl.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH v3 0/5] serial: 8250: Add rs485 emulation to 8250_dw
-Message-ID: <20220922095647.GA8414@wunner.de>
-References: <20200517215610.2131618-1-heiko@sntech.de>
+        Thu, 22 Sep 2022 06:11:42 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFF5F12;
+        Thu, 22 Sep 2022 03:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663841501; x=1695377501;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qa3RLDa2tBvV/1AbLvKwOSQAPY5aFxSgOz7wVyLrl1o=;
+  b=P3KKEXpwaCljRcskQ5+Ubv4YOCdFbToBygG47KBgyyke+ciydrWoo8YJ
+   6cKoxqlRieFEwjZhaL6CbxKq6DKXiltiyCbnLWdghfTlDi7mo7aKXh2TY
+   rD70NBrmqFteuByXaJekah8Rq0WMsjpl+OwhVNDGfTMB5UDCQHYLM5vMl
+   YQLLPP0qJVj1jSpULqLpaNinQenvF5YjzmDJnhrY7+LPkRPu0j2bldhDj
+   7x7nAXsX44+wpG04IFM3gcO8PNbd7B8kPJwf1jbAAalIV26j7zZceo/dF
+   Gkz6NU/XVIYNCv8IHz5G8ncJh7XxBid47Vu1dF4RL0hBGGlspK42njv5z
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="297856692"
+X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
+   d="scan'208";a="297856692"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 03:11:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
+   d="scan'208";a="864799457"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Sep 2022 03:11:39 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1obJBB-005xLw-25;
+        Thu, 22 Sep 2022 13:11:37 +0300
+Date:   Thu, 22 Sep 2022 13:11:37 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     kernel list <linux-kernel@vger.kernel.org>, robh@kernel.org,
+        linux-serial@vger.kernel.org, ribalda@kernel.org, johan@kernel.org
+Subject: Re: Cutiepi, serdevs, and right way to handle its power button
+Message-ID: <Yyw02TpYzlVfg0op@smile.fi.intel.com>
+References: <20220920205637.GA17170@duo.ucw.cz>
+ <YysjjSXao4MERCwQ@smile.fi.intel.com>
+ <20220921171707.GA8443@duo.ucw.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200517215610.2131618-1-heiko@sntech.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220921171707.GA8443@duo.ucw.cz>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, May 17, 2020 at 11:56:05PM +0200, Heiko Stuebner wrote:
-> This series tries to revive the work of Giulio Benetti from 2018 [0]
-> which seemed to have stalled at that time.
+On Wed, Sep 21, 2022 at 07:17:07PM +0200, Pavel Machek wrote:
+> On Wed 2022-09-21 17:45:33, Andy Shevchenko wrote:
+> > On Tue, Sep 20, 2022 at 10:56:37PM +0200, Pavel Machek wrote:
+> > > Hi!
+> > > 
+> > > Cutiepie is a small handheld tablet. It has embedded controller
+> > > connected via serial to the main system, handling stuff such as power
+> > > button and battery percentage. Currently they are using userland
+> > > deamon for communication, but I believe that should eventually go into
+> > > kernel.
+> > > 
+> > > For debugging, it would be really nice to be able to attach my module
+> > > to given serdev. Is such thing possible? I see "[PATCH v2 00/19]
+> > > Dynamically load/remove serdev devices via sysfs*" series
+> > > (https://www.spinics.net/lists/linux-serial/msg30732.html) but I'm not
+> > > sure if equivalent functionality exists in mainline kernel?
+> > > 
+> > > Is there some kind of similar hardware already supported by mainline?
+> > > Using driver as a reference might be easier than starting from
+> > > scratch.
+> > 
+> > Is it arm or x86 based tablet?
 > 
-> The board I needed that on also had the additional caveat that it
-> uses non-standard pins for DE/RE so needed gpio mctrl layer as well
-> and even more special needed to control the RE pin manually not as
-> part of it being connected to the DE signal as seems to be the standard.
-[...]
-> Giulio Benetti (2):
->   serial: 8250: Handle implementations not having TEMT interrupt using
->     em485
->   serial: 8250_dw: add em485 support
-> 
-> Heiko Stuebner (3):
->   serial: 8520_port: Fix function param documentation
->   dt-bindings: serial: Add binding for rs485 receiver enable GPIO
->   serial: 8250: Support separate rs485 rx-enable GPIO
+> arm64, but CPU architecture really should not matter.
 
-ICYMI, patch [1/5] of this series got accepted back in the day
-and patches [4/5] and [5/5] appeared in slightly modified form in v5.19
-(commits b54f7a922d33 and 5ff33917faca).
+It makes sense on the usual practices done for the platform as a whole, e.g.
+ACPI vs. DT. So, I believe this one is DT based.
 
-So only patches [2/5] and [3/5] of this series would have to be
-upstreamed in case you're still interested in pursuing them.
-Note that a related DT property was introduced with 103dcf2ea2df.
-Also note that you got some review comments on this series that
-may still need to be addressed.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Just thought I'd let you know as I rediscovered this thread today
-when flushing out old e-mails from my inbox.
 
-Thanks,
-
-Lukas
