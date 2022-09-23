@@ -2,106 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F91C04A95
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 17:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926BAC07E9D
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 18:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbiIWRKh (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Sep 2022 13:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        id S229525AbiIWSKl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Sep 2022 14:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiIWRKg (ORCPT
+        with ESMTP id S229583AbiIWSKk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Sep 2022 13:10:36 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B45CF370B;
-        Fri, 23 Sep 2022 10:10:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663953034; x=1695489034;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mn6yhKOElmfbXGir3ybNXHJ2hPzgirxFvVm3h7RTIzs=;
-  b=jQnVJBEgIaabSat6yTuemPBuua7pbd0b6WtlrTgMsIh8RI1OSH14HaSy
-   xBr8/6jUkF5qYe+L2VCvcnJP+hWGvg6+6OQhpIOkqMz5E7Unt+eXhxJKW
-   NQ4cAQMZeTJEvzC+MHg2q/KYJiGf8R0IGPcbTVg3VdCSouczz6Eh6AyY6
-   dNLvcU+oGyrwwZXGbdWS8fYqo1VLeCKzSYQ3KDo5GPk+82OzLGz7wQo39
-   kR5YMbQ6BBL/h0BlbTIJY5ThBDuv7v67Y1yVQl30S5y6C+B4KdjQ45S+Q
-   TfGeXuIXUlhllzPG0Kkl2qK4f4JEu+tBsbzhcLaETAsiL/eFo9cKH/NLY
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="326969142"
-X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
-   d="scan'208";a="326969142"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 10:10:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
-   d="scan'208";a="571440021"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 23 Sep 2022 10:10:31 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 812BEF7; Fri, 23 Sep 2022 20:10:49 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Magnus Damm <damm+renesas@opensource.se>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] serdev: Replace poll loop by readx_poll_timeout() macro
-Date:   Fri, 23 Sep 2022 20:10:48 +0300
-Message-Id: <20220923171048.37386-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 23 Sep 2022 14:10:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8883CAD993
+        for <linux-serial@vger.kernel.org>; Fri, 23 Sep 2022 11:10:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 265606296F
+        for <linux-serial@vger.kernel.org>; Fri, 23 Sep 2022 18:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE01C433D6;
+        Fri, 23 Sep 2022 18:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1663956637;
+        bh=TNEkw7lJBAai2Va25HHqtz9AOKap22gLUNyUMdWBl/4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k4gmzRuHUD/0MXDeGNyCqM2nNB/YZQ/wEYqS+4hlOPbBx33chHTvlZ8RSZAingd9K
+         TXjsu8NBzTWlzmzH34bYq1vFH9qp6OyTzyVm3MEVo6lEN9ATELx00Icx/SsXLIKuE0
+         wjVEqinM9r1eU6emUkSQR9SCM3MJtAY8SwdyvIh0=
+Date:   Fri, 23 Sep 2022 20:10:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sergiu.Moga@microchip.com
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [tty:tty-next 42/45] atmel_serial.c:undefined reference to
+ `__clk_is_enabled'
+Message-ID: <Yy32mnnbWH3LOtel@kroah.com>
+References: <202209240013.GWFiVnCP-lkp@intel.com>
+ <700b1dff-fb79-2cff-bee7-7172ed33b152@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <700b1dff-fb79-2cff-bee7-7172ed33b152@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The readx_poll_timeout() consolidates the necessary code under
-macro. Replace current code with it.
+On Fri, Sep 23, 2022 at 04:28:08PM +0000, Sergiu.Moga@microchip.com wrote:
+> On 23.09.2022 19:22, kernel test robot wrote:
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+> > head:   adafbbf6895eb0ce41a313c6ee68870ab9aa93cd
+> > commit: 5e3ce1f261296bfe4bb59a98c82f4959d214a4f7 [42/45] tty: serial: atmel: Make the driver aware of the existence of GCLK
+> > config: m68k-randconfig-r003-20220922 (https://download.01.org/0day-ci/archive/20220924/202209240013.GWFiVnCP-lkp@intel.com/config)
+> > compiler: m68k-linux-gcc (GCC) 12.1.0
+> > reproduce (this is a W=1 build):
+> >          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> >          chmod +x ~/bin/make.cross
+> >          # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=5e3ce1f261296bfe4bb59a98c82f4959d214a4f7
+> >          git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+> >          git fetch --no-tags tty tty-next
+> >          git checkout 5e3ce1f261296bfe4bb59a98c82f4959d214a4f7
+> >          # save the config file
+> >          mkdir build_dir && cp config build_dir/.config
+> >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+> > 
+> > If you fix the issue, kindly add following tag where applicable
+> > | Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > All errors (new ones prefixed by >>):
+> > 
+> >     m68k-linux-ld: drivers/tty/serial/atmel_serial.o: in function `atmel_set_termios':
+> >>> atmel_serial.c:(.text+0xf88): undefined reference to `__clk_is_enabled'
+> >     m68k-linux-ld: drivers/tty/serial/atmel_serial.o: in function `atmel_serial_pm':
+> >     atmel_serial.c:(.text+0x14fc): undefined reference to `__clk_is_enabled'
+> > 
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://01.org/lkp
+> 
+> 
+> This does not appear on ARCH=arm, for which this patch is intended. So I 
+> guess this is fine?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: dropped TODO: in the Subject line
- include/linux/serdev.h | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+No, you can't break the build on any arch.  Please fix up.
 
-diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-index 66f624fc618c..69d9c3188065 100644
---- a/include/linux/serdev.h
-+++ b/include/linux/serdev.h
-@@ -7,9 +7,11 @@
- 
- #include <linux/types.h>
- #include <linux/device.h>
-+#include <linux/iopoll.h>
- #include <linux/uaccess.h>
- #include <linux/termios.h>
- #include <linux/delay.h>
-+#include <vdso/time64.h>
- 
- struct serdev_controller;
- struct serdev_device;
-@@ -279,18 +281,10 @@ static inline bool serdev_device_get_cts(struct serdev_device *serdev)
- 
- static inline int serdev_device_wait_for_cts(struct serdev_device *serdev, bool state, int timeout_ms)
- {
--	unsigned long timeout;
- 	bool signal;
- 
--	timeout = jiffies + msecs_to_jiffies(timeout_ms);
--	while (time_is_after_jiffies(timeout)) {
--		signal = serdev_device_get_cts(serdev);
--		if (signal == state)
--			return 0;
--		usleep_range(1000, 2000);
--	}
--
--	return -ETIMEDOUT;
-+	return readx_poll_timeout(serdev_device_get_cts, serdev, signal, signal == state,
-+				  2000, timeout_ms * USEC_PER_MSEC);
- }
- 
- static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enable)
--- 
-2.35.1
+thanks,
 
+greg k-h
