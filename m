@@ -2,75 +2,82 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E493C6FA90
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 10:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F29C6FA91
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 10:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiIWKXB convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Sep 2022 06:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
+        id S230282AbiIWK3O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Sep 2022 06:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiIWKW7 (ORCPT
+        with ESMTP id S231218AbiIWK2x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Sep 2022 06:22:59 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2134812E439;
-        Fri, 23 Sep 2022 03:22:57 -0700 (PDT)
-Received: from p508fdb48.dip0.t-ipconnect.de ([80.143.219.72] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1obfpM-0005nH-6s; Fri, 23 Sep 2022 12:22:36 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Johan Jonker <jbx6244@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     kever.yang@rock-chips.com, sjg@chromium.org,
-        philipp.tomsich@vrull.eu, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, ulf.hansson@linaro.org,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        kishon@ti.com, vkoul@kernel.org, thierry.reding@gmail.com,
-        gregkh@linuxfoundation.org, broonie@kernel.org,
-        wim@linux-watchdog.org, linux@roeck-us.net,
-        zhangqing@rock-chips.com, jamie@jamieiles.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-phy@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v1 03/11] dt-bindings: pwm: rockchip: add rockchip,rk3128-pwm
-Date:   Fri, 23 Sep 2022 12:22:34 +0200
-Message-ID: <2166557.taCxCBeP46@phil>
-In-Reply-To: <20220920062149.o6gdhsh7bk5rl4ah@pengutronix.de>
-References: <20220909212543.17428-1-jbx6244@gmail.com> <f5dd0ee4-d97e-d878-ffde-c06e9b233e38@gmail.com> <20220920062149.o6gdhsh7bk5rl4ah@pengutronix.de>
+        Fri, 23 Sep 2022 06:28:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98AA128A37;
+        Fri, 23 Sep 2022 03:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663928928; x=1695464928;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rZsIBuKNgLub+auoIS69rq+B1ncorMSEq0WWo4jjZ2c=;
+  b=CNbqh7rBMzULRwx+JWwBDrmdeR02ed+Yj65XB5l0Ihs7E6aQMvrKbzBn
+   wV7YFFvdArnrvZGLLX2KbFVLiJ4J283EZITY5jmpscCO/zAApJX6QmDbS
+   PAjXbFUeuA7LVx57L3fRTPoy4CeEWnZu0s0gWoyIidYFifEycCvkHqnuw
+   3VXj8FiQdgXzTOVgWsQmNdLN9X73iApfB/eoBjaCGwCnx9/LfuEx2DW8H
+   npoQxSTrCOtRrMXMXLMGsyy7UV1RBSYmACLzResIzWMnm7bIcZdy+0r1u
+   JM6uwnFtzJby/iFLpUGwmzRyBOmNMtPVVkTb3/VOiFQR7ADHTp5YBXz2Q
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="302010087"
+X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
+   d="scan'208";a="302010087"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 03:28:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
+   d="scan'208";a="948974907"
+Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Sep 2022 03:28:45 -0700
+Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1obfvJ-0005Zk-01;
+        Fri, 23 Sep 2022 10:28:45 +0000
+Date:   Fri, 23 Sep 2022 18:28:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     kbuild-all@lists.01.org, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-doc@vger.kernel.org
+Subject: [tty:tty-next 37/45] htmldocs: Warning: MAINTAINERS references a
+ file that doesn't exist:
+ Documentation/devicetree/bindings/mfd/atmel-usart.txt
+Message-ID: <202209231815.jXlxs0vj-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Am Dienstag, 20. September 2022, 08:21:49 CEST schrieb Uwe Kleine-König:
-> Hello,
-> 
-> On Sat, Sep 10, 2022 at 12:02:22AM +0200, Johan Jonker wrote:
-> > Add rockchip,rk3128-pwm compatible string.
-> > 
-> > Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> 
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> Is the expectation that this goes in via PWM, or together with the other
-> patches via the rockchip maintainers?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   adafbbf6895eb0ce41a313c6ee68870ab9aa93cd
+commit: b9e947fbf008769ffda1028f627d604757e62265 [37/45] dt-bindings: serial: atmel,at91-usart: convert to json-schema
+reproduce:
+        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=b9e947fbf008769ffda1028f627d604757e62265
+        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+        git fetch --no-tags tty tty-next
+        git checkout b9e947fbf008769ffda1028f627d604757e62265
+        make menuconfig
+        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
+        make htmldocs
 
-in general I think bindings always go through the subsystem that
-they're targetting - PWM in this case.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-Acked-by: Heiko Stuebner <heiko@sntech.de>
+All warnings (new ones prefixed by >>):
 
+>> Warning: MAINTAINERS references a file that doesn't exist: Documentation/devicetree/bindings/mfd/atmel-usart.txt
 
-Heiko
-
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
