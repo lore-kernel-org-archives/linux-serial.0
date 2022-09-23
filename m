@@ -2,82 +2,138 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F29C6FA91
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 10:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C963C6FA8E
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 12:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbiIWK3O (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Sep 2022 06:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50322 "EHLO
+        id S232107AbiIWMWl (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Sep 2022 08:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiIWK2x (ORCPT
+        with ESMTP id S231588AbiIWMV6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Sep 2022 06:28:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98AA128A37;
-        Fri, 23 Sep 2022 03:28:48 -0700 (PDT)
+        Fri, 23 Sep 2022 08:21:58 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E18135046;
+        Fri, 23 Sep 2022 05:17:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663928928; x=1695464928;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rZsIBuKNgLub+auoIS69rq+B1ncorMSEq0WWo4jjZ2c=;
-  b=CNbqh7rBMzULRwx+JWwBDrmdeR02ed+Yj65XB5l0Ihs7E6aQMvrKbzBn
-   wV7YFFvdArnrvZGLLX2KbFVLiJ4J283EZITY5jmpscCO/zAApJX6QmDbS
-   PAjXbFUeuA7LVx57L3fRTPoy4CeEWnZu0s0gWoyIidYFifEycCvkHqnuw
-   3VXj8FiQdgXzTOVgWsQmNdLN9X73iApfB/eoBjaCGwCnx9/LfuEx2DW8H
-   npoQxSTrCOtRrMXMXLMGsyy7UV1RBSYmACLzResIzWMnm7bIcZdy+0r1u
-   JM6uwnFtzJby/iFLpUGwmzRyBOmNMtPVVkTb3/VOiFQR7ADHTp5YBXz2Q
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="302010087"
-X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="302010087"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 03:28:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="948974907"
-Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 23 Sep 2022 03:28:45 -0700
-Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1obfvJ-0005Zk-01;
-        Fri, 23 Sep 2022 10:28:45 +0000
-Date:   Fri, 23 Sep 2022 18:28:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sergiu Moga <sergiu.moga@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-doc@vger.kernel.org
-Subject: [tty:tty-next 37/45] htmldocs: Warning: MAINTAINERS references a
- file that doesn't exist:
- Documentation/devicetree/bindings/mfd/atmel-usart.txt
-Message-ID: <202209231815.jXlxs0vj-lkp@intel.com>
+  t=1663935450; x=1695471450;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HyCYvT4MS9aixSrjDPMIu3T0VuZk0mTl3XzcDjq7QLc=;
+  b=Pfin51E61Eha6ZMYr0qpf63pT4sqikWy2dx9kpPO9oXhe3TgnsiHy1kB
+   UF81lhbIP8XfBCL/OUuoIrm6z0+cYZcDalKqwJcCCSTSmQSsd4wpnudaM
+   7NG0R29Q7qHmoN70g6AU3c9l+3/ACgDp3umtBumXHIbYF7ZtS+T66OxSn
+   0i7hPEJnr7oHJYIsc6DKNv6XH7BoVIXFTo0CXG5SToeMniHbb4HgG/o2b
+   6HDpIJzXfyuR+4guEek+sHumRc725ihEORyAmm2BLDxKBKebdzsGZgOgT
+   DlyMfwySP/TYEE8T+dFWLpCaccGIuPuuK4ok974MrsnA7oDeWpdsG4xgx
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="364595264"
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="364595264"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 05:17:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="762597729"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 05:17:29 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v2 1/6] Documentation: fpga: dfl: Add documentation for DFHv1
+Date:   Fri, 23 Sep 2022 05:17:40 -0700
+Message-Id: <20220923121745.129167-2-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220923121745.129167-1-matthew.gerlach@linux.intel.com>
+References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
-head:   adafbbf6895eb0ce41a313c6ee68870ab9aa93cd
-commit: b9e947fbf008769ffda1028f627d604757e62265 [37/45] dt-bindings: serial: atmel,at91-usart: convert to json-schema
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/commit/?id=b9e947fbf008769ffda1028f627d604757e62265
-        git remote add tty https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-        git fetch --no-tags tty tty-next
-        git checkout b9e947fbf008769ffda1028f627d604757e62265
-        make menuconfig
-        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
-        make htmldocs
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+Add documentation describing the extensions provided by Version
+1 of the Device Feature Header (DFHv1).
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+---
+v2: s/GUILD/GUID/
+    add picture
+---
+ Documentation/fpga/dfl.rst | 49 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
->> Warning: MAINTAINERS references a file that doesn't exist: Documentation/devicetree/bindings/mfd/atmel-usart.txt
-
+diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+index 15b670926084..7c786b75b498 100644
+--- a/Documentation/fpga/dfl.rst
++++ b/Documentation/fpga/dfl.rst
+@@ -561,6 +561,55 @@ new DFL feature via UIO direct access, its feature id should be added to the
+ driver's id_table.
+ 
+ 
++Extending the Device Feature Header - DFHv1
++===========================================
++The current 8 bytes of the Device Feature Header, hereafter referred to as
++to DFHv0, provide very little opportunity for the hardware to describe itself
++to software. Version 1 of the Device Feature Header (DFHv1) is being introduced
++to provide increased flexibility and extensibility to hardware designs using
++Device Feature Lists.  The list below describes some of the goals behind the
++changes in DFHv1:
++
++* Provide a standardized mechanism for features to describe
++  parameters/capabilities to software.
++* Standardize the use of a GUID for all DFHv1 types.
++* Decouple the location of the DFH from the register space of the feature itself.
++
++Modeled after PCI Capabilities, DFHv1 Parameters provide a mechanism to associate
++a list of parameter values to a particular feature.
++
++With DFHv0, not all features types contained a GUID.  DFHv1 makes the GUID standard
++across all types.
++
++With DFHv0, the register map of a given feature is located immediately following
++the DFHv0 in the memory space.  With DFHv1, the location of the feature register
++map can be specified as an offset to the DFHv1 or as an absolute address.  The DFHv1
++structure is shown below:
++
++    +-----------------------------------------------------------------------+
++    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 ID 0|
++    +-----------------------------------------------------------------------+
++    |63                                 GUID_L                             0|
++    +-----------------------------------------------------------------------+
++    |63                                 GUID_H                             0|
++    +-----------------------------------------------------------------------+
++    |63                 Address/Offset                            1|  Rel  0|
++    +-----------------------------------------------------------------------+
++    |63 Size of register set  32|Params 31|30 Group    16|15 Instance      0|
++    +-----------------------------------------------------------------------+
++    |63 Next parameter offset 32|31 Param Version 16|15 Param ID           0|
++    +-----------------------------------------------------------------------+
++    |63                 Parameter Data                                     0|
++    +-----------------------------------------------------------------------+
++
++                                  ...
++
++    +-----------------------------------------------------------------------+
++    |63 Next parameter offset 32|31 Param Version 16|15 Param ID           0|
++    +-----------------------------------------------------------------------+
++    |63                 Parameter Data                                     0|
++    +-----------------------------------------------------------------------+
++
+ Open discussion
+ ===============
+ FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial reconfiguration
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
