@@ -2,165 +2,407 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E48ECAAD8
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 03:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F8EECAAD8
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 09:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbiIWDRd (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 22 Sep 2022 23:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S231759AbiIWJZV (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Sep 2022 05:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiIWDRc (ORCPT
+        with ESMTP id S231725AbiIWJZS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 22 Sep 2022 23:17:32 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31986115A59
-        for <linux-serial@vger.kernel.org>; Thu, 22 Sep 2022 20:17:31 -0700 (PDT)
+        Fri, 23 Sep 2022 05:25:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0336BD5774
+        for <linux-serial@vger.kernel.org>; Fri, 23 Sep 2022 02:25:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663903051; x=1695439051;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FyWyuBn3TVL1ZosfRbu1mnqFR9j4jNh9Ap6fPZNsCuQ=;
-  b=W4Yif7CVBNYubqPA06VF8gJYkKfzJniLWElGNEHSo4VHsRS7fjhafznb
-   ILBErcxvkNoIdXeevoeInL2XSPGR5rju7xMpshC0TVwiznIUn+NEwr1x4
-   JLVeYvFkdMsFxM8rM2RUMD0uKns6tubU/UjnJhltGjtPbwHe31aiQxZEo
-   loWgwg3Fj/cc9FTq/W3A2GoP4Uq1Y4z8qOb8h404MZzZJcgozQwMbzMQS
-   ow0wGaq+8el5edCN0XQNzbilBIn9zQjndMduEUv3lgY/FDRH8LQmdr8AJ
-   4cfKGfGMSxh8m410WfQFTuZSym59nOkCfZTMHDy8VhdpMzZHngWKhAIAK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="280221824"
+  t=1663925114; x=1695461114;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=3Cpz1211lP5KxVHbu/lZS/QovEQl+Tqc/XJUyFk/sSI=;
+  b=V60Z1l5IJiNdOs9Dhe+zVZDxljVXKE2N4WXA/szA7Qt6SARIuNhHXID1
+   qDRu0te6Vj305BFBY3pLAuHEHzQ56+wBX3h9IkqTUpXgs/cecLeDu0FE5
+   XAKOll6yIngzsP7/YB3wNBp14Vfddr8WBR6DRQTxF+39Ybq/GRTwEM/5Q
+   +O8O+fd2LvSNiFu9Y4/7KBwKnYWpTmRRbQc3/S2iHA67OjSWBjy+VCs4Z
+   hDH4Xe8cFpngBcYRxn41J/NYLTlvHLdZyN3sYUPFCllTJvJAY72cjI6z5
+   Hqg0CPsC7t1dvYdzlUwEGJBQEG8d/hVz2P4fi80D1LBp6LkSvD1gCxe3j
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="280919453"
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="280221824"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 20:17:30 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="280919453"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 02:25:14 -0700
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="597716499"
-Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Sep 2022 20:17:29 -0700
-Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1obZBx-0005Gc-0R;
-        Fri, 23 Sep 2022 03:17:29 +0000
-Date:   Fri, 23 Sep 2022 11:16:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- adafbbf6895eb0ce41a313c6ee68870ab9aa93cd
-Message-ID: <632d2510.fOX6a/rceaid1Q1b%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="948958681"
+Received: from alutz-mobl.ger.corp.intel.com ([10.252.35.146])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 02:25:12 -0700
+Date:   Fri, 23 Sep 2022 12:25:06 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>, Vicente Bergas <vicencb@gmail.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v4] serial: Deassert Transmit Enable on probe in
+ driver-specific way
+In-Reply-To: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
+Message-ID: <76e0a2d5-aac9-51f2-79c1-c5d3cc9ca081@linux.intel.com>
+References: <2de36eba3fbe11278d5002e4e501afe0ceaca039.1663863805.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; BOUNDARY="8323329-2101545177-1663924701=:1595"
+Content-ID: <ad4e11dd-bc32-655e-ca26-7c48b070d35a@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: adafbbf6895eb0ce41a313c6ee68870ab9aa93cd  serial: stm32: Deassert Transmit Enable on ->rs485_config()
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-elapsed time: 724m
+--8323329-2101545177-1663924701=:1595
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <bd7cdb4-5e19-732f-754c-83afb36c9c60@linux.intel.com>
 
-configs tested: 89
-configs skipped: 3
+On Thu, 22 Sep 2022, Lukas Wunner wrote:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> When a UART port is newly registered, uart_configure_port() seeks to
+> deassert RS485 Transmit Enable by setting the RTS bit in port->mctrl.
+> However a number of UART drivers interpret a set RTS bit as *assertion*
+> instead of deassertion:  Affected drivers include those using
+> serial8250_em485_config() (except 8250_bcm2835aux.c) and some using
+> mctrl_gpio (e.g. imx.c).
+> 
+> Since the interpretation of the RTS bit is driver-specific, it is not
+> suitable as a means to centrally deassert Transmit Enable in the serial
+> core.  Instead, the serial core must call on drivers to deassert it in
+> their driver-specific way.  One way to achieve that is to call
+> ->rs485_config().  It implicitly deasserts Transmit Enable.
+> 
+> So amend uart_configure_port() and uart_resume_port() to invoke
+> uart_rs485_config().  That allows removing calls to uart_rs485_config()
+> from drivers' ->probe() hooks and declaring the function static.
+> 
+> Skip any invocation of ->set_mctrl() if RS485 is enabled.  RS485 has no
+> hardware flow control, so the modem control lines are irrelevant and
+> need not be touched.  When leaving RS485 mode, reset the modem control
+> lines to the state stored in port->mctrl.  That way, UARTs which are
+> muxed between RS485 and RS232 transceivers drive the lines correctly
+> when switched to RS232.  (serial8250_do_startup() historically raises
+> the OUT1 modem signal because otherwise interrupts are not signaled on
+> ancient PC UARTs, but I believe that no longer applies to modern,
+> RS485-capable UARTs and is thus safe to be skipped.)
+> 
+> imx.c modifies port->mctrl whenever Transmit Enable is asserted and
+> deasserted.  Stop it from doing that so port->mctrl reflects the RS232
+> line state.
+> 
+> 8250_omap.c deasserts Transmit Enable on ->runtime_resume() by calling
+> ->set_mctrl().  Because that is now a no-op in RS485 mode, amend the
+> function to call serial8250_em485_stop_tx().
+> 
+> fsl_lpuart.c retrieves and applies the RS485 device tree properties
+> after registering the UART port.  Because applying now happens on
+> registration in uart_configure_port(), move retrieval of the properties
+> ahead of uart_add_one_port().
+> 
+> Fixes: d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Tested-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Link: https://lore.kernel.org/all/20220329085050.311408-1-matthias.schiffer@ew.tq-group.com/
+> Reported-by: Roosen Henri <Henri.Roosen@ginzinger.com>
+> Link: https://lore.kernel.org/all/8f538a8903795f22f9acc94a9a31b03c9c4ccacb.camel@ginzinger.com/
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: stable@vger.kernel.org # v4.14+
 
-gcc tested configs:
-arc                  randconfig-r043-20220922
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-m68k                             allmodconfig
-alpha                            allyesconfig
-x86_64                           allyesconfig
-arc                              allyesconfig
-x86_64                        randconfig-a015
-arc                                 defconfig
-s390                             allmodconfig
-m68k                             allyesconfig
-alpha                               defconfig
-i386                          randconfig-a001
-i386                                defconfig
-s390                                defconfig
-powerpc                           allnoconfig
-i386                          randconfig-a003
-arm                                 defconfig
-x86_64                        randconfig-a002
-s390                             allyesconfig
-arm64                            allyesconfig
-arm                              allyesconfig
-i386                          randconfig-a005
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-mips                             allyesconfig
-sh                               allmodconfig
-x86_64                        randconfig-a004
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-i386                             allyesconfig
-ia64                             allmodconfig
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-x86_64                    rhel-8.3-kselftests
-csky                              allnoconfig
-arc                               allnoconfig
-alpha                             allnoconfig
-riscv                             allnoconfig
-microblaze                          defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220922
-i386                          randconfig-c001
-sparc                               defconfig
-loongarch                        alldefconfig
-xtensa                       common_defconfig
-m68k                        stmark2_defconfig
-xtensa                           allyesconfig
-csky                                defconfig
-sparc                            allyesconfig
-x86_64                                  kexec
-nios2                            allyesconfig
-nios2                               defconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-powerpc                          allyesconfig
-riscv                               defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-arm                        cerfcube_defconfig
-arm                           viper_defconfig
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-clang tested configs:
-hexagon              randconfig-r041-20220922
-riscv                randconfig-r042-20220922
-hexagon              randconfig-r045-20220922
-s390                 randconfig-r044-20220922
-x86_64                        randconfig-a012
-x86_64                        randconfig-a016
-x86_64                        randconfig-a014
-i386                          randconfig-a002
-x86_64                        randconfig-a001
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a003
-i386                          randconfig-a013
-x86_64                        randconfig-a005
-i386                          randconfig-a011
-i386                          randconfig-a015
-mips                     loongson1c_defconfig
++Cc Vicente. I suppose this should address the problem with RTS being 
+initially wrong he reported during DW RS485 patches.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ i.
+
+
+> ---
+>  v1 -> v2:
+>  Deassert RTS in serial8250_em485_init() only if no transmission is
+>  currently ongoing (Ilpo)
+> 
+>  v2 -> v3:
+>  Drop superfluous newline
+> 
+>  v3 -> v4:
+>  Resend with changelog at maintainer's request
+> 
+>  drivers/tty/serial/8250/8250_omap.c |  3 +++
+>  drivers/tty/serial/8250/8250_pci.c  |  9 +--------
+>  drivers/tty/serial/8250/8250_port.c | 12 +++++++-----
+>  drivers/tty/serial/fsl_lpuart.c     | 10 ++++------
+>  drivers/tty/serial/imx.c            |  8 ++------
+>  drivers/tty/serial/serial_core.c    | 36 ++++++++++++++++++++----------------
+>  include/linux/serial_core.h         |  1 -
+>  7 files changed, 37 insertions(+), 42 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index b43894e..2e67754 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -342,6 +342,9 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
+>  	omap8250_update_mdr1(up, priv);
+>  
+>  	up->port.ops->set_mctrl(&up->port, up->port.mctrl);
+> +
+> +	if (up->port.rs485.flags & SER_RS485_ENABLED)
+> +		serial8250_em485_stop_tx(up);
+>  }
+>  
+>  /*
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 6f66dc2..b260c55 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -1627,7 +1627,6 @@ static int pci_fintek_init(struct pci_dev *dev)
+>  	resource_size_t bar_data[3];
+>  	u8 config_base;
+>  	struct serial_private *priv = pci_get_drvdata(dev);
+> -	struct uart_8250_port *port;
+>  
+>  	if (!(pci_resource_flags(dev, 5) & IORESOURCE_IO) ||
+>  			!(pci_resource_flags(dev, 4) & IORESOURCE_IO) ||
+> @@ -1674,13 +1673,7 @@ static int pci_fintek_init(struct pci_dev *dev)
+>  
+>  		pci_write_config_byte(dev, config_base + 0x06, dev->irq);
+>  
+> -		if (priv) {
+> -			/* re-apply RS232/485 mode when
+> -			 * pciserial_resume_ports()
+> -			 */
+> -			port = serial8250_get_port(priv->line[i]);
+> -			uart_rs485_config(&port->port);
+> -		} else {
+> +		if (!priv) {
+>  			/* First init without port data
+>  			 * force init to RS232 Mode
+>  			 */
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 907c5ff..b21550c 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -600,7 +600,7 @@ void serial8250_rpm_put(struct uart_8250_port *p)
+>  static int serial8250_em485_init(struct uart_8250_port *p)
+>  {
+>  	if (p->em485)
+> -		return 0;
+> +		goto deassert_rts;
+>  
+>  	p->em485 = kmalloc(sizeof(struct uart_8250_em485), GFP_ATOMIC);
+>  	if (!p->em485)
+> @@ -616,7 +616,9 @@ static int serial8250_em485_init(struct uart_8250_port *p)
+>  	p->em485->active_timer = NULL;
+>  	p->em485->tx_stopped = true;
+>  
+> -	p->rs485_stop_tx(p);
+> +deassert_rts:
+> +	if (p->em485->tx_stopped)
+> +		p->rs485_stop_tx(p);
+>  
+>  	return 0;
+>  }
+> @@ -2047,6 +2049,9 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  
+>  static void serial8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+>  {
+> +	if (port->rs485.flags & SER_RS485_ENABLED)
+> +		return;
+> +
+>  	if (port->set_mctrl)
+>  		port->set_mctrl(port, mctrl);
+>  	else
+> @@ -3189,9 +3194,6 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+>  	if (flags & UART_CONFIG_TYPE)
+>  		autoconfig(up);
+>  
+> -	if (port->rs485.flags & SER_RS485_ENABLED)
+> -		uart_rs485_config(port);
+> -
+>  	/* if access method is AU, it is a 16550 with a quirk */
+>  	if (port->type == PORT_16550A && port->iotype == UPIO_AU)
+>  		up->bugs |= UART_BUG_NOMSR;
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index e9d5b48..dfc73fe 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -2724,15 +2724,13 @@ static int lpuart_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto failed_reset;
+>  
+> -	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+> -	if (ret)
+> -		goto failed_attach_port;
+> -
+>  	ret = uart_get_rs485_mode(&sport->port);
+>  	if (ret)
+>  		goto failed_get_rs485;
+>  
+> -	uart_rs485_config(&sport->port);
+> +	ret = uart_add_one_port(&lpuart_reg, &sport->port);
+> +	if (ret)
+> +		goto failed_attach_port;
+>  
+>  	ret = devm_request_irq(&pdev->dev, sport->port.irq, handler, 0,
+>  				DRIVER_NAME, sport);
+> @@ -2742,9 +2740,9 @@ static int lpuart_probe(struct platform_device *pdev)
+>  	return 0;
+>  
+>  failed_irq_request:
+> -failed_get_rs485:
+>  	uart_remove_one_port(&lpuart_reg, &sport->port);
+>  failed_attach_port:
+> +failed_get_rs485:
+>  failed_reset:
+>  	lpuart_disable_clks(sport);
+>  	return ret;
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 5875ee6..05b432d 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -380,8 +380,7 @@ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
+>  {
+>  	*ucr2 &= ~(UCR2_CTSC | UCR2_CTS);
+>  
+> -	sport->port.mctrl |= TIOCM_RTS;
+> -	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+> +	mctrl_gpio_set(sport->gpios, sport->port.mctrl | TIOCM_RTS);
+>  }
+>  
+>  /* called with port.lock taken and irqs caller dependent */
+> @@ -390,8 +389,7 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+>  	*ucr2 &= ~UCR2_CTSC;
+>  	*ucr2 |= UCR2_CTS;
+>  
+> -	sport->port.mctrl &= ~TIOCM_RTS;
+> -	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+> +	mctrl_gpio_set(sport->gpios, sport->port.mctrl & ~TIOCM_RTS);
+>  }
+>  
+>  static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+> @@ -2347,8 +2345,6 @@ static int imx_uart_probe(struct platform_device *pdev)
+>  		dev_err(&pdev->dev,
+>  			"low-active RTS not possible when receiver is off, enabling receiver\n");
+>  
+> -	uart_rs485_config(&sport->port);
+> -
+>  	/* Disable interrupts before requesting them */
+>  	ucr1 = imx_uart_readl(sport, UCR1);
+>  	ucr1 &= ~(UCR1_ADEN | UCR1_TRDYEN | UCR1_IDEN | UCR1_RRDYEN | UCR1_RTSDEN);
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index c711318..179ee19 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -158,15 +158,10 @@ static void uart_start(struct tty_struct *tty)
+>  	unsigned long flags;
+>  	unsigned int old;
+>  
+> -	if (port->rs485.flags & SER_RS485_ENABLED) {
+> -		set &= ~TIOCM_RTS;
+> -		clear &= ~TIOCM_RTS;
+> -	}
+> -
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	old = port->mctrl;
+>  	port->mctrl = (old & ~clear) | set;
+> -	if (old != port->mctrl)
+> +	if (old != port->mctrl && !(port->rs485.flags & SER_RS485_ENABLED))
+>  		port->ops->set_mctrl(port, port->mctrl);
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  }
+> @@ -1391,7 +1386,7 @@ static void uart_set_rs485_termination(struct uart_port *port,
+>  				 !!(rs485->flags & SER_RS485_TERMINATE_BUS));
+>  }
+>  
+> -int uart_rs485_config(struct uart_port *port)
+> +static int uart_rs485_config(struct uart_port *port)
+>  {
+>  	struct serial_rs485 *rs485 = &port->rs485;
+>  	int ret;
+> @@ -1405,7 +1400,6 @@ int uart_rs485_config(struct uart_port *port)
+>  
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(uart_rs485_config);
+>  
+>  static int uart_get_rs485_config(struct uart_port *port,
+>  			 struct serial_rs485 __user *rs485)
+> @@ -1444,8 +1438,13 @@ static int uart_set_rs485_config(struct tty_struct *tty, struct uart_port *port,
+>  
+>  	spin_lock_irqsave(&port->lock, flags);
+>  	ret = port->rs485_config(port, &tty->termios, &rs485);
+> -	if (!ret)
+> +	if (!ret) {
+>  		port->rs485 = rs485;
+> +
+> +		/* Reset RTS and other mctrl lines when disabling RS485 */
+> +		if (!(rs485.flags & SER_RS485_ENABLED))
+> +			port->ops->set_mctrl(port, port->mctrl);
+> +	}
+>  	spin_unlock_irqrestore(&port->lock, flags);
+>  	if (ret)
+>  		return ret;
+> @@ -2352,7 +2351,8 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
+>  
+>  		spin_lock_irq(&uport->lock);
+>  		ops->stop_tx(uport);
+> -		ops->set_mctrl(uport, 0);
+> +		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +			ops->set_mctrl(uport, 0);
+>  		/* save mctrl so it can be restored on resume */
+>  		mctrl = uport->mctrl;
+>  		uport->mctrl = 0;
+> @@ -2440,7 +2440,8 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  
+>  		uart_change_pm(state, UART_PM_STATE_ON);
+>  		spin_lock_irq(&uport->lock);
+> -		ops->set_mctrl(uport, 0);
+> +		if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +			ops->set_mctrl(uport, 0);
+>  		spin_unlock_irq(&uport->lock);
+>  		if (console_suspend_enabled || !uart_console(uport)) {
+>  			/* Protected by port mutex for now */
+> @@ -2451,7 +2452,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  				if (tty)
+>  					uart_change_speed(tty, state, NULL);
+>  				spin_lock_irq(&uport->lock);
+> -				ops->set_mctrl(uport, uport->mctrl);
+> +				if (!(uport->rs485.flags & SER_RS485_ENABLED))
+> +					ops->set_mctrl(uport, uport->mctrl);
+> +				else
+> +					uart_rs485_config(uport);
+>  				ops->start_tx(uport);
+>  				spin_unlock_irq(&uport->lock);
+>  				tty_port_set_initialized(port, 1);
+> @@ -2558,10 +2562,10 @@ int uart_resume_port(struct uart_driver *drv, struct uart_port *uport)
+>  		 */
+>  		spin_lock_irqsave(&port->lock, flags);
+>  		port->mctrl &= TIOCM_DTR;
+> -		if (port->rs485.flags & SER_RS485_ENABLED &&
+> -		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
+> -			port->mctrl |= TIOCM_RTS;
+> -		port->ops->set_mctrl(port, port->mctrl);
+> +		if (!(port->rs485.flags & SER_RS485_ENABLED))
+> +			port->ops->set_mctrl(port, port->mctrl);
+> +		else
+> +			uart_rs485_config(port);
+>  		spin_unlock_irqrestore(&port->lock, flags);
+>  
+>  		/*
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 02a4299..0354369 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -933,5 +933,4 @@ static inline int uart_handle_break(struct uart_port *port)
+>  					 !((cflag) & CLOCAL))
+>  
+>  int uart_get_rs485_mode(struct uart_port *port);
+> -int uart_rs485_config(struct uart_port *port);
+>  #endif /* LINUX_SERIAL_CORE_H */
+> 
+--8323329-2101545177-1663924701=:1595--
