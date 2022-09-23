@@ -2,81 +2,238 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B6B9C6FA82
-	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 15:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921B4C6FA82
+	for <linux-serial@archiver.kernel.org>; Fri, 23 Sep 2022 15:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbiIWPaM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 23 Sep 2022 11:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
+        id S232678AbiIWPes (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Fri, 23 Sep 2022 11:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232542AbiIWPaL (ORCPT
+        with ESMTP id S232651AbiIWPeq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 23 Sep 2022 11:30:11 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38189A025C;
-        Fri, 23 Sep 2022 08:30:10 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id u16-20020a05600c211000b003b5152ebf09so981814wml.5;
-        Fri, 23 Sep 2022 08:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=gg7c3+nPaOD0UzlmBSknHTXtYlfYqSbcyWP/vuEk7iw=;
-        b=AdqWNyJmseV6WkMJUgNEnikY3m5LuH3gfZwjmnoZmqoNeG7+bJYlRYwdr3WDrFIDtp
-         uWJCiknjsHSeVTL4PTPcH5pXuUt1EEmRw1uJdffkceAgBhE+VivNBfKFZFLuJrIMd8db
-         xTuzchA6U2Z8C5R+GtV9smjSqJQzc1YkkfZJb9L32Gr2zlGz0DmYpyGKfumF9iFKgPPv
-         nsswJBKkSBRXgsLrDEhcDxBr3HfYVqUGw6NVQbLcapstY0itJt63tn3e22h1beIodCoQ
-         lgLJYFjR3M1HWM7sD59Rjryd2iKlu0scsSLKOCrHtB2mxRhuyGP+V+Aos5yvyDkfNY27
-         2eCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=gg7c3+nPaOD0UzlmBSknHTXtYlfYqSbcyWP/vuEk7iw=;
-        b=kfVa+LDvmHIviYFtwQpySNLhwzzwSA1Br9Rg4HFZbexcItlD7JMdxy3DT82HxwFs31
-         scFtiurd/zd6udVtaKJfdPX8LJ3+zcLvCusX8U8unBdBrLfpnuo46f8T5JsVrtooewGK
-         867rlnnnLCJv3Sxzy/PYuugyv2atSChwLjCYsQuVlN2YkgBNgVRkDizyflVScKiIB0+4
-         SUY6/PyBugaU4gpb4hsvTLUHUJU9Vwdxu+wnTGLTJW8+2eXtPeCt3xwpcYXp4IA+APe3
-         JjXmpXYIEcm/cwVoU+SytKN0agdSixXWf4JX1L1paVCuQd5zGBHN3WukBdUnu9nNWqik
-         S6Cw==
-X-Gm-Message-State: ACrzQf1y3WXa5s4j2L86/ISYOmCWkwtOM77CeefpGMrH+DfHL0/mBsfu
-        ZyDoVxaV5V2OeBhTuDXTYL9BIxWaHLSEYl7CUAk395XyiuI=
-X-Google-Smtp-Source: AMsMyM5RTWD4gU/b2HEuIL0niREH20lZYx8/WgJjmlRiiIZpt6drIFCBzdIEnFEi4AQh9EeHig0PGCUiPV7ptw59K/8=
-X-Received: by 2002:a05:600c:4e44:b0:3b4:bed2:4f5e with SMTP id
- e4-20020a05600c4e4400b003b4bed24f5emr13737730wmq.193.1663947008663; Fri, 23
- Sep 2022 08:30:08 -0700 (PDT)
+        Fri, 23 Sep 2022 11:34:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17828357DF;
+        Fri, 23 Sep 2022 08:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663947284; x=1695483284;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=7SQbpKKz8VanXGTPlKzllewliUqrbY7ICoQto0yQ8eA=;
+  b=RYveBZjwTB5GqO0tDKXpGLjfgv1/+4pNJgxsVvMT+PM2z2ST0j2Its6J
+   Op3t3n6b9/P6W1IqZKLym7npQta6UEF2J0173HLE0OKWaIslVIT/RdJgm
+   sqwPU1TrkVgDbQeo+lre7raKwlW9Gc+cck/rJHfMGnRuBL8YD93jnrhtz
+   aNI58O2ybiTrSQpr45GDejv5vb1DDUyWejRaJywx6dT2bKO54rRu4JU0T
+   GNM9VBC6gjm0cvQMcGDZdP/aK0JvSJg7VpPFgMxMqgpOYafU3Vt8Kk5Xj
+   8C+GUswHD2VHSYCZUE4ol/eYi6sZBa2eXUP9laFn234HxoFwZ+A8+dEWu
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="298215486"
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="298215486"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 08:34:43 -0700
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="762651177"
+Received: from alutz-mobl.ger.corp.intel.com ([10.252.35.146])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 08:34:38 -0700
+Date:   Fri, 23 Sep 2022 18:34:31 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org,
+        Lukas Wunner <lukas@wunner.de>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2 6/6] tty: serial: 8250: add DFL bus driver for Altera
+ 16550.
+In-Reply-To: <20220923121745.129167-7-matthew.gerlach@linux.intel.com>
+Message-ID: <6eb563c0-2811-f152-544d-392da0cbb65b@linux.intel.com>
+References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com> <20220923121745.129167-7-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-From:   Jeff Harris <jefftharris@gmail.com>
-Date:   Fri, 23 Sep 2022 11:29:52 -0400
-Message-ID: <CAGMfbUO=Zy_nXJ9wKV5r2xRBuK7_X3kL2TvM1jWB_hTPUvhnbw@mail.gmail.com>
-Subject: serial: New xr20m117x driver questions
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I have a driver for the MaxLinear XR20M117x family of UARTs that I'd like
-to contribute but have a couple questions.  The driver is heavily based on
-the existing sc16is7xx driver.  The driver started with the sample driver
-from MaxLinear for Linux 3.x.x, but as the integration of their driver
-proceeded into our 4.4 kernel, there were features and fixes missing that
-were present in the current sc16is7xx driver.
+On Fri, 23 Sep 2022, matthew.gerlach@linux.intel.com wrote:
 
-The register set is similar, but there are a few places where the behavior
-is different.  Would it be best to create a new driver or add the XR20M117x
-UARTs to the sc16is7xx driver with a flag to choose one behavior or the
-other?
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> 
+> Add a Device Feature List (DFL) bus driver for the Altera
+> 16550 implementation of UART.
+> 
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> ---
+> v2: clean up error messages
+>     alphabetize header files
+>     fix 'missing prototype' error by making function static
+>     tried to sort Makefile and Kconfig better
+> ---
+>  drivers/tty/serial/8250/8250_dfl.c | 177 +++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig    |   9 ++
+>  drivers/tty/serial/8250/Makefile   |   1 +
+>  include/linux/dfl.h                |   7 ++
+>  4 files changed, 194 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_dfl.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dfl.c b/drivers/tty/serial/8250/8250_dfl.c
+> new file mode 100644
+> index 000000000000..539ca6138eda
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_dfl.c
+> @@ -0,0 +1,177 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Driver for FPGA UART
+> + *
+> + * Copyright (C) 2022 Intel Corporation, Inc.
+> + *
+> + * Authors:
+> + *   Ananda Ravuri <ananda.ravuri@intel.com>
+> + *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/dfl.h>
+> +#include <linux/io-64-nonatomic-lo-hi.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/serial.h>
+> +#include <linux/serial_8250.h>
+> +
+> +struct dfl_uart {
+> +	void __iomem   *csr_base;
+> +	struct device  *dev;
+> +	u64             uart_clk;
+> +	u64             fifo_len;
+> +	unsigned int    fifo_size;
+> +	unsigned int    reg_shift;
 
-I have developed and tested the driver as a back-port of the mainline
-sc16is7xx driver to the 4.4 kernel used on our embedded platform.  I don't
-have a ready method to test the driver with a newer kernel (other than
-ensuring compilation success).  Is that a concern for accepting the driver?
+Why to make this intermediate storage for these values, wouldn't it be 
+simpler to just fill them into the uart_port directly?
 
-Part link:
-https://www.maxlinear.com/product/interface/uarts/i2c-spi-uarts/xr20m1172
+> +	unsigned int    line;
+> +};
+> +
+> +static int feature_uart_walk(struct dfl_uart *dfluart, resource_size_t max)
+> +{
+> +	void __iomem *param_base;
+> +	int off;
+> +	u64 v;
+> +
+> +	v = readq(dfluart->csr_base + DFHv1_CSR_SIZE_GRP);
+> +
+> +	if (!FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v)) {
+> +		dev_err(dfluart->dev, "missing required DFH parameters\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	param_base = dfluart->csr_base + DFHv1_PARAM_HDR;
 
-Thanks,
-Jeff
+Are all callers of dfl_find_param() expected to run these same checks and
+calculations? Perhaps some helper to find param base would be useful and
+it could also run those checks.
+
+> +	off = dfl_find_param(param_base, max, DFHv1_PARAM_ID_CLK_FRQ);
+> +	if (off < 0) {
+> +		dev_err(dfluart->dev, "missing CLK_FRQ param\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	dfluart->uart_clk = readq(param_base + off + DFHv1_PARAM_DATA);
+> +	dev_dbg(dfluart->dev, "UART_CLK_ID %llu Hz\n", dfluart->uart_clk);
+> +
+> +	off = dfl_find_param(param_base, max, DFHv1_PARAM_ID_FIFO_LEN);
+> +	if (off < 0) {
+> +		dev_err(dfluart->dev, "missing FIFO_LEN param\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	dfluart->fifo_len = readq(param_base + off + DFHv1_PARAM_DATA);
+> +	dev_dbg(dfluart->dev, "UART_FIFO_ID fifo_len %llu\n", dfluart->fifo_len);
+> +
+> +	off = dfl_find_param(param_base, max, DFHv1_PARAM_ID_REG_LAYOUT);
+> +	if (off < 0) {
+> +		dev_err(dfluart->dev, "missing REG_LAYOUT param\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	v = readq(param_base + off + DFHv1_PARAM_DATA);
+> +	dfluart->fifo_size = FIELD_GET(DFHv1_PARAM_ID_REG_WIDTH, v);
+
+???
+
+> +	dfluart->reg_shift = FIELD_GET(DFHv1_PARAM_ID_REG_SHIFT, v);
+> +	dev_dbg(dfluart->dev, "UART_LAYOUT_ID width %d shift %d\n",
+> +		dfluart->fifo_size, dfluart->reg_shift);
+> +
+> +	return 0;
+> +}
+> +
+> +static int dfl_uart_probe(struct dfl_device *dfl_dev)
+> +{
+> +	struct device *dev = &dfl_dev->dev;
+> +	struct uart_8250_port uart;
+> +	struct dfl_uart *dfluart;
+> +	int ret;
+> +
+> +	memset(&uart, 0, sizeof(uart));
+> +
+> +	dfluart = devm_kzalloc(dev, sizeof(*dfluart), GFP_KERNEL);
+> +	if (!dfluart)
+> +		return -ENOMEM;
+> +
+> +	dfluart->dev = dev;
+> +
+> +	dfluart->csr_base = devm_ioremap_resource(dev, &dfl_dev->mmio_res);
+> +	if (IS_ERR(dfluart->csr_base)) {
+> +		return PTR_ERR(dfluart->csr_base);
+> +	}
+
+No need for braces.
+
+> +static void dfl_uart_remove(struct dfl_device *dfl_dev)
+> +{
+> +	struct dfl_uart *dfluart = dev_get_drvdata(&dfl_dev->dev);
+> +
+> +	if (dfluart->line > 0)
+
+Line 0 is valid uart port. Perhaps you'd never see it here due to how the 
+8250 driver allocs ports but it would be better to not make this kind of 
+assumption.
+
+> +		serial8250_unregister_port(dfluart->line);
+> +}
+
+> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
+> index 7d74ef8d1d20..a17aeccc501e 100644
+> --- a/include/linux/dfl.h
+> +++ b/include/linux/dfl.h
+> @@ -67,6 +67,13 @@
+>  #define DFHv1_PARAM_MSIX_STARTV	0x8
+>  #define DFHv1_PARAM_MSIX_NUMV	0xc
+>  
+> +#define DFHv1_PARAM_ID_CLK_FRQ    0x2
+> +#define DFHv1_PARAM_ID_FIFO_LEN   0x3
+> +
+> +#define DFHv1_PARAM_ID_REG_LAYOUT 0x4
+> +#define DFHv1_PARAM_ID_REG_WIDTH  GENMASK_ULL(63, 32)
+> +#define DFHv1_PARAM_ID_REG_SHIFT  GENMASK_ULL(31, 0)
+
+Should UART be included into these names or are they intended to be more 
+generic parameters (for non-UART uses)?
+
+
+-- 
+ i.
+
