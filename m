@@ -2,108 +2,77 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671EBC32771
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 06:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 034B9C07E9D
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 06:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233075AbiIXGoN (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 02:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S229479AbiIXG4b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 02:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbiIXGoM (ORCPT
+        with ESMTP id S233353AbiIXG43 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 02:44:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1504811D0D1;
-        Fri, 23 Sep 2022 23:44:10 -0700 (PDT)
+        Sat, 24 Sep 2022 02:56:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0FB1C915;
+        Fri, 23 Sep 2022 23:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EDA4DCE0A1D;
-        Sat, 24 Sep 2022 06:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B217FC433D6;
-        Sat, 24 Sep 2022 06:44:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A6AC60B5B;
+        Sat, 24 Sep 2022 06:56:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E87EC433C1;
+        Sat, 24 Sep 2022 06:56:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664001847;
-        bh=XU+g1TD85eu+F7lKIDh9lt03VNI1wjjOGHmpCB5PpDQ=;
+        s=korg; t=1664002587;
+        bh=BSAa+I4RIdZWGzshe6klmFRiSF/Qy5u0G3INxPjE03s=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DuBuothuIcm+Rf/8d4hwbhg/hA+Gss6N8vAry1R91LV411DY530k21Lse+D8jK9GG
-         RpObjQM3WoK71AFU96BN6LRe54sLdG/uz1FMIPcnkAD74N/BuW+r/s/f/dz+lbhX0r
-         cXIqKeTiJ/jKqhCUt4kEWx27bLxhdSydHSx5SXog=
-Date:   Sat, 24 Sep 2022 08:44:38 +0200
+        b=RPA1JcMfo1TKe/PFlRooU2HR/7jYkduwKByfrkCrKpay2GR6NJzYjFL9uBcvYlBzy
+         XKht7TJIZZH9HjQWFtohzuL1GaF/MkdGnMOqJD/xveeztbAD+RFVBHwEH89TtcQ7o8
+         eUFkz+CRiKLWXbj5jIbeh8EwCuYfdqYelYFu+qtE=
+Date:   Sat, 24 Sep 2022 08:56:58 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Sven Schnelle <svens@stackframe.org>,
-        John David Anglin <dave.anglin@bell.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        linux-parisc@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH printk 00/18] preparation for threaded/atomic printing
-Message-ID: <Yy6nVpd3+yogT5pJ@kroah.com>
-References: <20220924000454.3319186-1-john.ogness@linutronix.de>
+To:     Jeff Harris <jefftharris@gmail.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: serial: New xr20m117x driver questions
+Message-ID: <Yy6qOmuuzIffRQGC@kroah.com>
+References: <CAGMfbUO=Zy_nXJ9wKV5r2xRBuK7_X3kL2TvM1jWB_hTPUvhnbw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220924000454.3319186-1-john.ogness@linutronix.de>
+In-Reply-To: <CAGMfbUO=Zy_nXJ9wKV5r2xRBuK7_X3kL2TvM1jWB_hTPUvhnbw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Sep 24, 2022 at 02:10:36AM +0206, John Ogness wrote:
-> Hi,
+On Fri, Sep 23, 2022 at 11:29:52AM -0400, Jeff Harris wrote:
+> I have a driver for the MaxLinear XR20M117x family of UARTs that I'd like
+> to contribute but have a couple questions.  The driver is heavily based on
+> the existing sc16is7xx driver.  The driver started with the sample driver
+> from MaxLinear for Linux 3.x.x, but as the integration of their driver
+> proceeded into our 4.4 kernel, there were features and fixes missing that
+> were present in the current sc16is7xx driver.
 > 
-> This series is essentially the first 18 patches of tglx's RFC series
-> [0] with only minor changes in comments and commit messages. It's
-> purpose is to lay the groundwork for the upcoming threaded/atomic
-> console printing posted as the RFC series and demonstrated at
-> LPC2022 [1].
-> 
-> This series is interesting for mainline because it cleans up various
-> code and documentation quirks discovered while working on the new
-> console printing implementation.
-> 
-> Aside from cleanups, the main features introduced here are:
-> 
-> - Converts the console's DIY linked list implementation to hlist.
-> 
-> - Introduces a console list lock (mutex) so that readers (such as
->   /proc/consoles) can safely iterate the consoles without blocking
->   console printing.
-> 
-> - Adds SRCU support to the console list to prepare for safe console
->   list iterating from any context.
-> 
-> - Refactors buffer handling to prepare for per-console, per-cpu,
->   per-context atomic printing.
-> 
-> The series has the following parts:
-> 
->    Patches  1 - 5:   Cleanups
-> 
->    Patches  6 - 12:  Locking and list conversion
-> 
->    Patches 13 - 18:  Improved output buffer handling to prepare for
->                      code sharing
-> 
+> The register set is similar, but there are a few places where the behavior
+> is different.  Would it be best to create a new driver or add the XR20M117x
+> UARTs to the sc16is7xx driver with a flag to choose one behavior or the
+> other?
 
-These all look great to me, thanks for resending them.
+Probably a flag, but let's see the patch to be sure.
 
-Do you want them to go through my serial/tty tree, or is there some
-other tree to take them through (printk?)
+> I have developed and tested the driver as a back-port of the mainline
+> sc16is7xx driver to the 4.4 kernel used on our embedded platform.  I don't
+> have a ready method to test the driver with a newer kernel (other than
+> ensuring compilation success).  Is that a concern for accepting the driver?
 
-If they are to go through someone else's tree, feel free to add:
+Please don't use any new devices with the obsolete and insecure and
+out-of-date 4.4 kernel tree, that's going to be a regulatory nightmare
+when you realize how broken it is.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Anyway, it has to work in the latest kernel tree for us to be able to
+accept it as we can't go back in time and do new development on old
+kernels :)
+
+thanks,
+
+greg k-h
