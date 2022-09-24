@@ -2,245 +2,71 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF9DC32771
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 13:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 707BAC07E9D
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 15:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiIXNA3 (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 09:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        id S233991AbiIXPsy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 11:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiIXNA2 (ORCPT
+        with ESMTP id S233987AbiIXPsy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 09:00:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782CF760D5
-        for <linux-serial@vger.kernel.org>; Sat, 24 Sep 2022 06:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664024426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y6VBsZTlTPMMCZ9hB1ioUDpa1bHhT3SIX3HM69t18nU=;
-        b=Rmm4fQk30etSXDcDfRDTjh7tNL+lnB2R0HR/m8R7b2FIVdMmmznNTvZJCN/rt+omJ6vsN6
-        pkmXjy6+XgW7OCXB4/gGLnjLX0w8k57FcWaSS3mLPPECb5wzy6mxFsn3dO1GNo6pUv7Eq2
-        upDMMb516bRBssUeBlOw+NPXG8LdOMU=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-548-u88M1DqXO1OIbMe0CxHAnA-1; Sat, 24 Sep 2022 09:00:25 -0400
-X-MC-Unique: u88M1DqXO1OIbMe0CxHAnA-1
-Received: by mail-oi1-f200.google.com with SMTP id o11-20020aca410b000000b00350d7b7b23cso830915oia.0
-        for <linux-serial@vger.kernel.org>; Sat, 24 Sep 2022 06:00:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-language:content-transfer-encoding:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Y6VBsZTlTPMMCZ9hB1ioUDpa1bHhT3SIX3HM69t18nU=;
-        b=Ev2yaojdAXbCL4ClfwQKbXJTksEW+N1io0O+0xIvffDBggi7ggMj0dnUkGO0pTODD8
-         fgnMdATLNr/wqPE1gptXGZhM6rGzU2JnlMyU+fBOdF1G53vmi3e1+D3gwMxMwF4RUQBr
-         +uDSu7B3XFrQgzTFyEb+PTD2dVia0gyfCpx3BvHwlcKNbjzYAmVBcDe5Rbc6z+3e7QH3
-         UlmO+LnTZ9HlXqeE9Ie+SwekY33NZV3+QqOZwgx447Wrt035bSgd1vz5LYQeO5KoCe2Z
-         kDQIEpsZJO1tEi2+EEMMiTAP+e3bLFoWbQ0VH1mCCvnD4R8OKzIfy5EUPnHvlQ7ZFFsj
-         VMlQ==
-X-Gm-Message-State: ACrzQf2VYnAA11aXlN5VImUHhiV1nl7OcZkQ1LmeVXnKZ1JYaRZaTl0M
-        CVOTBv7TQqT2m5IjLWTSsWRs37+Xmw6ynukf0LWOdNO+1lhIM11Y3MikDDehwe+Q0cuSmMYpkKS
-        c0fVo8/stbb8FK8gqLWoEHr13
-X-Received: by 2002:a05:6808:2387:b0:350:28c5:335 with SMTP id bp7-20020a056808238700b0035028c50335mr10724260oib.18.1664024424308;
-        Sat, 24 Sep 2022 06:00:24 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4Plqizw1oIMnqphfxYycrv5+euohr0GRfxmVnkosA60BwHS3FdyHxgryWunmJR+0ojS5xXRw==
-X-Received: by 2002:a05:6808:2387:b0:350:28c5:335 with SMTP id bp7-20020a056808238700b0035028c50335mr10724231oib.18.1664024423819;
-        Sat, 24 Sep 2022 06:00:23 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id fo9-20020a0568709a0900b0012784cb563dsm6228176oab.22.2022.09.24.06.00.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Sep 2022 06:00:22 -0700 (PDT)
-Subject: Re: [PATCH v2 2/6] fpga: dfl: Move the DFH definitions
-To:     matthew.gerlach@linux.intel.com, hao.wu@intel.com,
-        yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, mdf@kernel.org,
-        linux-fpga@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tianfei.zhang@intel.com,
-        corbet@lwn.net, gregkh@linuxfoundation.org,
-        linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        geert+renesas@glider.be, andriy.shevchenko@linux.intel.com,
-        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
-Cc:     Basheer Ahmed Muddebihal 
-        <basheer.ahmed.muddebihal@linux.intel.com>
-References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com>
- <20220923121745.129167-3-matthew.gerlach@linux.intel.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <36342784-34c3-6a08-7cd4-eb185b61061a@redhat.com>
-Date:   Sat, 24 Sep 2022 06:00:19 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20220923121745.129167-3-matthew.gerlach@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        Sat, 24 Sep 2022 11:48:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83830A0313;
+        Sat, 24 Sep 2022 08:48:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2665B810F3;
+        Sat, 24 Sep 2022 15:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94480C433C1;
+        Sat, 24 Sep 2022 15:48:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664034529;
+        bh=IXg2iWJ7jjOL+ra7uiFXqgJZBh8yG2RGJMjs3vBlJvM=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=HkNbc6QdGIKPKzSS+4o8YnNOWYU3+nXG7LCJCblAXHgEwIYXujer76JmllLa4x0QA
+         yf7ouUiU/9WfFl99rukl7H9ydQamp9oUe+zuhb8It2R89Gvio1ev2WIVCQ7bBnUP8B
+         PKaeLFfr7SRXO0MseQITYx3Qd1nJowLu3d4wdr03Y4+I6PL5cI6pLRxJzJ+judO9EX
+         siT5cJSQeQJS6+VDTTVt9eNEF6k/NLeNOIZoJZXYnWxixzaHjVy96NHZ+dyiQgRqxN
+         FgDPjwKND11RCjAe41CApIcsvLTSqx//rSu4FGh/q1tbhLdY6TKDYuBV94VstAmXWd
+         7Ipo9zYjgpYoQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 83997C072E7;
+        Sat, 24 Sep 2022 15:48:49 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.0-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yy6+jsGstABsKP1X@kroah.com>
+References: <Yy6+jsGstABsKP1X@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yy6+jsGstABsKP1X@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.0-rc7
+X-PR-Tracked-Commit-Id: 643792048ee84b199052e9c8f89253649ca78922
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 7e2cd21e02b35483ce8ea88da5732d4d3ec3a6c9
+Message-Id: <166403452952.2421.10947971564971798020.pr-tracker-bot@kernel.org>
+Date:   Sat, 24 Sep 2022 15:48:49 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The pull request you sent on Sat, 24 Sep 2022 10:23:42 +0200:
 
-On 9/23/22 5:17 AM, matthew.gerlach@linux.intel.com wrote:
-> From: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
->
-> Moving the DFH register offset and register definitions from
-> drivers/fpga/dfl.h to include/linux/dfl.h. These definitions
-> need to be accessed by dfl drivers that are outside of
-> drivers/fpga.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.0-rc7
 
-This comment does not match what is done.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/7e2cd21e02b35483ce8ea88da5732d4d3ec3a6c9
 
-A move, a change in names and the introduction new defines.
+Thank you!
 
-I am not sure if moving these #defines is the best approach, the later 
-use of the in the uart with FIELD_GET's i think should be wrapped as 
-functions and these functions exported rather than the #defines.
-
-So split this patch and justify why #defines are added to the user's 
-includes.
-
-Tom
-
->
-> Signed-off-by: Basheer Ahmed Muddebihal <basheer.ahmed.muddebihal@linux.intel.com>
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> ---
-> v2: remove extra space in commit
->      use uniform number of digits in constants
->      don't change copyright date because of removed content
-> ---
->   drivers/fpga/dfl-afu-main.c |  4 ++--
->   drivers/fpga/dfl.c          |  2 +-
->   drivers/fpga/dfl.h          | 20 +-------------------
->   include/linux/dfl.h         | 33 ++++++++++++++++++++++++++++++++-
->   4 files changed, 36 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/fpga/dfl-afu-main.c b/drivers/fpga/dfl-afu-main.c
-> index 7f621e96d3b8..c26961ee33db 100644
-> --- a/drivers/fpga/dfl-afu-main.c
-> +++ b/drivers/fpga/dfl-afu-main.c
-> @@ -468,8 +468,8 @@ afu_id_show(struct device *dev, struct device_attribute *attr, char *buf)
->   		return -EBUSY;
->   	}
->   
-> -	guidl = readq(base + GUID_L);
-> -	guidh = readq(base + GUID_H);
-> +	guidl = readq(base + DFH_GUID_L);
-> +	guidh = readq(base + DFH_GUID_H);
->   	mutex_unlock(&pdata->lock);
->   
->   	return scnprintf(buf, PAGE_SIZE, "%016llx%016llx\n", guidh, guidl);
-> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> index b9aae85ba930..1132f3c10440 100644
-> --- a/drivers/fpga/dfl.c
-> +++ b/drivers/fpga/dfl.c
-> @@ -1163,7 +1163,7 @@ static int parse_feature_fiu(struct build_feature_devs_info *binfo,
->   	 * find and parse FIU's child AFU via its NEXT_AFU register.
->   	 * please note that only Port has valid NEXT_AFU pointer per spec.
->   	 */
-> -	v = readq(binfo->ioaddr + NEXT_AFU);
-> +	v = readq(binfo->ioaddr + DFH_NEXT_AFU);
->   
->   	offset = FIELD_GET(NEXT_AFU_NEXT_DFH_OFST, v);
->   	if (offset)
-> diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
-> index 06cfcd5e84bb..e620fcb02b5a 100644
-> --- a/drivers/fpga/dfl.h
-> +++ b/drivers/fpga/dfl.h
-> @@ -17,6 +17,7 @@
->   #include <linux/bitfield.h>
->   #include <linux/cdev.h>
->   #include <linux/delay.h>
-> +#include <linux/dfl.h>
->   #include <linux/eventfd.h>
->   #include <linux/fs.h>
->   #include <linux/interrupt.h>
-> @@ -53,28 +54,9 @@
->   #define PORT_FEATURE_ID_UINT		0x12
->   #define PORT_FEATURE_ID_STP		0x13
->   
-> -/*
-> - * Device Feature Header Register Set
-> - *
-> - * For FIUs, they all have DFH + GUID + NEXT_AFU as common header registers.
-> - * For AFUs, they have DFH + GUID as common header registers.
-> - * For private features, they only have DFH register as common header.
-> - */
-> -#define DFH			0x0
-> -#define GUID_L			0x8
-> -#define GUID_H			0x10
-> -#define NEXT_AFU		0x18
-> -
-> -#define DFH_SIZE		0x8
-> -
->   /* Device Feature Header Register Bitfield */
-> -#define DFH_ID			GENMASK_ULL(11, 0)	/* Feature ID */
->   #define DFH_ID_FIU_FME		0
->   #define DFH_ID_FIU_PORT		1
-> -#define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
-> -#define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
-> -#define DFH_EOL			BIT_ULL(40)		/* End of list */
-> -#define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
->   #define DFH_TYPE_AFU		1
->   #define DFH_TYPE_PRIVATE	3
->   #define DFH_TYPE_FIU		4
-> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
-> index 431636a0dc78..33d167c53b09 100644
-> --- a/include/linux/dfl.h
-> +++ b/include/linux/dfl.h
-> @@ -2,7 +2,7 @@
->   /*
->    * Header file for DFL driver and device API
->    *
-> - * Copyright (C) 2020 Intel Corporation, Inc.
-> + * Copyright (C) 2020-2022 Intel Corporation, Inc.
->    */
->   
->   #ifndef __LINUX_DFL_H
-> @@ -11,6 +11,37 @@
->   #include <linux/device.h>
->   #include <linux/mod_devicetable.h>
->   
-> +/*
-> + * Device Feature Header Register Set
-> + *
-> + * For FIUs, they all have DFH + GUID + NEXT_AFU as common header registers.
-> + * For AFUs, they have DFH + GUID as common header registers.
-> + * For private features, they only have DFH register as common header.
-> + */
-> +#define DFH			0x00
-> +#define DFH_GUID_L		0x08
-> +#define DFH_GUID_H		0x10
-> +#define DFH_NEXT_AFU		0x18
-> +
-> +/*
-> + * DFHv1 Register Offset definitons
-> + * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
-> + * as common header registers
-> + */
-> +#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
-> +#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
-> +#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
-> +#define DFHv1_PARAM_DATA	0x08  /* Offset of Param data from Param header */
-> +
-> +#define DFH_SIZE		0x08
-> +
-> +/* Device Feature Header Register Bitfield */
-> +#define DFH_ID			GENMASK_ULL(11, 0)	/* Feature ID */
-> +#define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
-> +#define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
-> +#define DFH_EOL			BIT_ULL(40)		/* End of list */
-> +#define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
-> +
->   /**
->    * enum dfl_id_type - define the DFL FIU types
->    */
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
