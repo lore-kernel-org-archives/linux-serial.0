@@ -2,89 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 221A1C07E9D
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 10:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7101C32771
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 11:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiIXKoI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 06:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
+        id S233627AbiIXL5i (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 07:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbiIXKoH (ORCPT
+        with ESMTP id S232263AbiIXL5i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 06:44:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40B3EE32;
-        Sat, 24 Sep 2022 03:44:06 -0700 (PDT)
+        Sat, 24 Sep 2022 07:57:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4D3A2858;
+        Sat, 24 Sep 2022 04:57:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BF8560BB9;
-        Sat, 24 Sep 2022 10:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AAAC433C1;
-        Sat, 24 Sep 2022 10:44:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664016245;
-        bh=aiDjtGcub9TCH2Zjr7EGsrufP9lbe/sjAusroWPF83U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JxbZHCwcGlguzXoumgpZIEHUCy97ZKx3zzCz4liJ3+mMigUXDff6LmnEk0mWi6tLL
-         GRKmT2EiynmzAUPX2d61mKeOT3qv+AL490cuq5OgAfTb/XponJKwEvJLo/M/MwLreM
-         pYsEvVCXq8RbCPoEWoRsgPeaOg5BK7sceGO/3CXY5Y6jm5vwqUYboOCGV0tLKZI5Lo
-         zSYwvzuBME8ydqHB78G4+Rxuenab7h5wSlTY3r2vPVH8gtPCv0zoFrRVMMmMATQUDq
-         JpOmC46f33DcxEISg9U0FEh9pWHlA0wtKLRIlhmsxpiQ8YrKkGlrY/rP9WCOT0cNrX
-         yyogV6r7afwJw==
-Received: by pali.im (Postfix)
-        id 071018A2; Sat, 24 Sep 2022 12:44:03 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: 8250: Fix restoring termios speed after suspend
-Date:   Sat, 24 Sep 2022 12:43:24 +0200
-Message-Id: <20220924104324.4035-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8DD0B80B8C;
+        Sat, 24 Sep 2022 11:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02697C433C1;
+        Sat, 24 Sep 2022 11:57:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1664020652;
+        bh=vnkNDhlyuWFuHtAtX6n8u3cxAUeHMgDdGDReB96XMRY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rpkWcVb9I7qeW57zLdW+o+rajeAwbSUeNAp6fcfsx1UZBhvG1vegl6WE3QWv+8yGu
+         ZWjfBLMCwUg/E3W0iljnZfT20obDk1PpUaxhQ2VONXV9gXcajylrtg9f7k92NfSJfd
+         1DyPpzk6pv0lYDs70ML6B6bNvW6UOOXjxzBN/DQM=
+Date:   Sat, 24 Sep 2022 13:57:29 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Magnus Damm <damm+renesas@opensource.se>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/1] serdev: Replace poll loop by readx_poll_timeout()
+ macro
+Message-ID: <Yy7wqSWVBGwNtiiZ@kroah.com>
+References: <20220923171048.37386-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220923171048.37386-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since commit edc6afc54968 ("tty: switch to ktermios and new framework")
-termios speed is no longer stored only in c_cflag member but also in new
-additional c_ispeed and c_ospeed members. If BOTHER flag is set in c_cflag
-then termios speed is stored only in these new members.
+On Fri, Sep 23, 2022 at 08:10:48PM +0300, Andy Shevchenko wrote:
+> The readx_poll_timeout() consolidates the necessary code under
+> macro. Replace current code with it.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: dropped TODO: in the Subject line
+>  include/linux/serdev.h | 14 ++++----------
+>  1 file changed, 4 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index 66f624fc618c..69d9c3188065 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -7,9 +7,11 @@
+>  
+>  #include <linux/types.h>
+>  #include <linux/device.h>
+> +#include <linux/iopoll.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/termios.h>
+>  #include <linux/delay.h>
+> +#include <vdso/time64.h>
 
-Since commit 027b57170bf8 ("serial: core: Fix initializing and restoring
-termios speed") termios speed is available also in struct console.
+Ick, just for USEC_PER_MSEC?  That should be in units.h, not burried in
+a vdso-only .h file.  This feels wrong, sorry.
 
-So properly restore also c_ispeed and c_ospeed members after suspend to fix
-restoring termios speed which is not represented by Bnnn constant.
-
-Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/tty/serial/8250/8250_port.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 39b35a61958c..441f317c55af 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3314,8 +3314,13 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- 	unsigned int baud, quot, frac = 0;
- 
- 	termios.c_cflag = port->cons->cflag;
--	if (port->state->port.tty && termios.c_cflag == 0)
-+	termios.c_ispeed = port->cons->ispeed;
-+	termios.c_ospeed = port->cons->ospeed;
-+	if (port->state->port.tty && termios.c_cflag == 0) {
- 		termios.c_cflag = port->state->port.tty->termios.c_cflag;
-+		termios.c_ispeed = port->state->port.tty->termios.c_ispeed;
-+		termios.c_ospeed = port->state->port.tty->termios.c_ospeed;
-+	}
- 
- 	baud = serial8250_get_baud_rate(port, &termios, NULL);
- 	quot = serial8250_get_divisor(port, baud, &frac);
--- 
-2.20.1
-
+greg k-h
