@@ -2,77 +2,101 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034B9C07E9D
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 06:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26426C32771
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 08:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiIXG4b (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 02:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
+        id S233221AbiIXIXt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 04:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233353AbiIXG43 (ORCPT
+        with ESMTP id S232228AbiIXIXs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 02:56:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0FB1C915;
-        Fri, 23 Sep 2022 23:56:28 -0700 (PDT)
+        Sat, 24 Sep 2022 04:23:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2C325DE;
+        Sat, 24 Sep 2022 01:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A6AC60B5B;
-        Sat, 24 Sep 2022 06:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E87EC433C1;
-        Sat, 24 Sep 2022 06:56:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5123FB80ECF;
+        Sat, 24 Sep 2022 08:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96BE4C433C1;
+        Sat, 24 Sep 2022 08:23:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664002587;
-        bh=BSAa+I4RIdZWGzshe6klmFRiSF/Qy5u0G3INxPjE03s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RPA1JcMfo1TKe/PFlRooU2HR/7jYkduwKByfrkCrKpay2GR6NJzYjFL9uBcvYlBzy
-         XKht7TJIZZH9HjQWFtohzuL1GaF/MkdGnMOqJD/xveeztbAD+RFVBHwEH89TtcQ7o8
-         eUFkz+CRiKLWXbj5jIbeh8EwCuYfdqYelYFu+qtE=
-Date:   Sat, 24 Sep 2022 08:56:58 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jeff Harris <jefftharris@gmail.com>
-Cc:     Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: serial: New xr20m117x driver questions
-Message-ID: <Yy6qOmuuzIffRQGC@kroah.com>
-References: <CAGMfbUO=Zy_nXJ9wKV5r2xRBuK7_X3kL2TvM1jWB_hTPUvhnbw@mail.gmail.com>
+        s=korg; t=1664007824;
+        bh=MJucUiBD2uBtXMibzIy7JKisKwfId+DiTuUh8qZjI2E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Lb7TDI122JO7DngyDuWU3FBPJ2q8itUYHEXjundcOdurEiGRpExcGwGHz/1WnAEwU
+         r/zjYXQsYzFlDYN3buwjT9OajQWLElY2bLgOXXcb/J0+G+sFFCbqQN8h9HWrIrRGRR
+         5UhTx5iqieOdQmMjdGvZJw5GRUbVbITnhXUWeTrw=
+Date:   Sat, 24 Sep 2022 10:23:42 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 6.0-rc7
+Message-ID: <Yy6+jsGstABsKP1X@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAGMfbUO=Zy_nXJ9wKV5r2xRBuK7_X3kL2TvM1jWB_hTPUvhnbw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Sep 23, 2022 at 11:29:52AM -0400, Jeff Harris wrote:
-> I have a driver for the MaxLinear XR20M117x family of UARTs that I'd like
-> to contribute but have a couple questions.  The driver is heavily based on
-> the existing sc16is7xx driver.  The driver started with the sample driver
-> from MaxLinear for Linux 3.x.x, but as the integration of their driver
-> proceeded into our 4.4 kernel, there were features and fixes missing that
-> were present in the current sc16is7xx driver.
-> 
-> The register set is similar, but there are a few places where the behavior
-> is different.  Would it be best to create a new driver or add the XR20M117x
-> UARTs to the sc16is7xx driver with a flag to choose one behavior or the
-> other?
+The following changes since commit 7e18e42e4b280c85b76967a9106a13ca61c16179:
 
-Probably a flag, but let's see the patch to be sure.
+  Linux 6.0-rc4 (2022-09-04 13:10:01 -0700)
 
-> I have developed and tested the driver as a back-port of the mainline
-> sc16is7xx driver to the 4.4 kernel used on our embedded platform.  I don't
-> have a ready method to test the driver with a newer kernel (other than
-> ensuring compilation success).  Is that a concern for accepting the driver?
+are available in the Git repository at:
 
-Please don't use any new devices with the obsolete and insecure and
-out-of-date 4.4 kernel tree, that's going to be a regulatory nightmare
-when you realize how broken it is.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.0-rc7
 
-Anyway, it has to work in the latest kernel tree for us to be able to
-accept it as we can't go back in time and do new development on old
-kernels :)
+for you to fetch changes up to 643792048ee84b199052e9c8f89253649ca78922:
 
-thanks,
+  serial: sifive: enable clocks for UART when probed (2022-09-22 16:38:18 +0200)
 
-greg k-h
+----------------------------------------------------------------
+TTY/Serial driver fixes for 6.0-rc7
+
+Here are some small, and late, serial driver fixes for 6.0-rc7 to
+resolve some reported problems.
+
+Included in here are:
+	- tegra icount accounting fixes, including a framework function
+	  that other drivers will be converted over to using in 6.1-rc1.
+	- fsl_lpuart reset bugfix
+	- 8250 omap 485 bugfix
+	- sifive serial clock bugfix
+
+The last 3 patches have not shown up in linux-next due to them being
+added to my tree only 2 days ago, but they are tiny and self-contained
+and the developers say they resolve issues that they have with 6.0-rc.
+The other 3 have been in linux-next for a while with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Ilpo Järvinen (3):
+      serial: Create uart_xmit_advance()
+      serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+      serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+
+Lukas Wunner (1):
+      serial: fsl_lpuart: Reset prior to registration
+
+Matthias Schiffer (1):
+      serial: 8250: omap: Use serial8250_em485_supported
+
+Olof Johansson (1):
+      serial: sifive: enable clocks for UART when probed
+
+ drivers/tty/serial/8250/8250_omap.c |  1 +
+ drivers/tty/serial/fsl_lpuart.c     |  9 +++++----
+ drivers/tty/serial/serial-tegra.c   |  5 ++---
+ drivers/tty/serial/sifive.c         |  2 +-
+ drivers/tty/serial/tegra-tcu.c      |  2 +-
+ include/linux/serial_core.h         | 17 +++++++++++++++++
+ 6 files changed, 27 insertions(+), 9 deletions(-)
