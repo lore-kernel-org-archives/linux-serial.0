@@ -2,101 +2,180 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26426C32771
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 08:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6598DC32771
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 08:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233221AbiIXIXt (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 04:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S233559AbiIXI3k (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 04:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbiIXIXs (ORCPT
+        with ESMTP id S233532AbiIXI3j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 04:23:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2C325DE;
-        Sat, 24 Sep 2022 01:23:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5123FB80ECF;
-        Sat, 24 Sep 2022 08:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96BE4C433C1;
-        Sat, 24 Sep 2022 08:23:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664007824;
-        bh=MJucUiBD2uBtXMibzIy7JKisKwfId+DiTuUh8qZjI2E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Lb7TDI122JO7DngyDuWU3FBPJ2q8itUYHEXjundcOdurEiGRpExcGwGHz/1WnAEwU
-         r/zjYXQsYzFlDYN3buwjT9OajQWLElY2bLgOXXcb/J0+G+sFFCbqQN8h9HWrIrRGRR
-         5UhTx5iqieOdQmMjdGvZJw5GRUbVbITnhXUWeTrw=
-Date:   Sat, 24 Sep 2022 10:23:42 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.0-rc7
-Message-ID: <Yy6+jsGstABsKP1X@kroah.com>
+        Sat, 24 Sep 2022 04:29:39 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B39BC21;
+        Sat, 24 Sep 2022 01:29:37 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id f193so2305228pgc.0;
+        Sat, 24 Sep 2022 01:29:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=H9XCRPFdXqUNtmAqhermX4cpbxgjD3c7QiDFM+/CVWY=;
+        b=L+IBBWJm7mGDiOSPJIMesYOnEzlLQZvFMwAWErTLWcqud7pyVGr6XypYfSyB6hN+34
+         PzVwtZIwrNQFfyRUgCUTuDoXecoQb4daIgwWik2QTtsmO+vDuQE3TWcj1kuCcXbb/3Cu
+         U+1n7qHcWMAIwhoeYJftVORJ8hPu6GS396RLeFworHv0TuvNLlgdJQjSfvg7iyvrSD7f
+         v5U6OBzYFURHQzezkrwvVQsKR1L1j0Ipt2A+vk38ONuHfbnHV8jldzHD0qQwvttUZdA5
+         4YIxsr4VjgYGN2BlXI2ESBU2UlrlchJ7u6TpaTAl/3lrOC7wJr4aQBIvrqyXLEU1qTN1
+         VzEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=H9XCRPFdXqUNtmAqhermX4cpbxgjD3c7QiDFM+/CVWY=;
+        b=Y6+anBYwjUWZdY3rwrSdK+uYFItP7Mohyvbgi0E3S3pfoTcJ54KpqWQv70bdi65mzh
+         UaIiWFrNWG3rTVctkm3BWj/v+vD0NMalKlA0MrHn9M+ptQbb87pteoO6Iuh6BDxgQD+M
+         vWmzgDBfTI23Wntvt50PsHO3tMJjReH5pI7zEDfkvTbYFO+1vzum0pakmh2Mo3udovVP
+         8a7jQGMtDWgAg7ZIBhBXhCKm/468bvjXLlST9nBTvfvZaG9XXi8/qj7kbMrge2rvPgfp
+         QlFsZxZ2i/6AqnYKGNNMlx4DSBuL8ucf0C1bsZTlYAuH8snpjpX3mKmGRvyPvaUMtZKr
+         yTHg==
+X-Gm-Message-State: ACrzQf0k1QWzhlHZGtommawMbZA7Ha9g6cM04xs52MKXGh1VNNQXupqZ
+        oZ36FumVSYz+z3WFLMLHBNQ=
+X-Google-Smtp-Source: AMsMyM53KSErTl1m3UqDiFLr87+cKnvRRi113EC/U4YT1zYcRzBlbVl9uy7+/iCME4Pj13MrhZX28g==
+X-Received: by 2002:a05:6a00:99c:b0:54c:27c4:3acb with SMTP id u28-20020a056a00099c00b0054c27c43acbmr12711258pfg.22.1664008177184;
+        Sat, 24 Sep 2022 01:29:37 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-92.three.co.id. [180.214.233.92])
+        by smtp.gmail.com with ESMTPSA id q18-20020a170902eb9200b0017872bc9865sm7162435plg.63.2022.09.24.01.29.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Sep 2022 01:29:35 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 6A0AD1037EC; Sat, 24 Sep 2022 15:29:30 +0700 (WIB)
+Date:   Sat, 24 Sep 2022 15:29:30 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     matthew.gerlach@linux.intel.com
+Cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        jirislaby@kernel.org, geert+renesas@glider.be,
+        andriy.shevchenko@linux.intel.com,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
+Subject: Re: [PATCH v2 1/6] Documentation: fpga: dfl: Add documentation for
+ DFHv1
+Message-ID: <Yy6/6nPa8buvqvbp@debian.me>
+References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com>
+ <20220923121745.129167-2-matthew.gerlach@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gILyyALDCOs9GF4/"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220923121745.129167-2-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 7e18e42e4b280c85b76967a9106a13ca61c16179:
 
-  Linux 6.0-rc4 (2022-09-04 13:10:01 -0700)
+--gILyyALDCOs9GF4/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-are available in the Git repository at:
+On Fri, Sep 23, 2022 at 05:17:40AM -0700, matthew.gerlach@linux.intel.com w=
+rote:
+> +With DFHv0, the register map of a given feature is located immediately f=
+ollowing
+> +the DFHv0 in the memory space.  With DFHv1, the location of the feature =
+register
+> +map can be specified as an offset to the DFHv1 or as an absolute address=
+=2E  The DFHv1
+> +structure is shown below:
+> +
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 =
+ID 0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63                                 GUID_L                          =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63                                 GUID_H                          =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63                 Address/Offset                            1|  Re=
+l  0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63 Size of register set  32|Params 31|30 Group    16|15 Instance   =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63 Next parameter offset 32|31 Param Version 16|15 Param ID        =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63                 Parameter Data                                  =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +
+> +                                  ...
+> +
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63 Next parameter offset 32|31 Param Version 16|15 Param ID        =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +    |63                 Parameter Data                                  =
+   0|
+> +    +-------------------------------------------------------------------=
+----+
+> +
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.0-rc7
+For consistency with DFL location diagram (which is above the DFHv1
+diagram above), use literal code block instead of table:
 
-for you to fetch changes up to 643792048ee84b199052e9c8f89253649ca78922:
+---- >8 ----
 
-  serial: sifive: enable clocks for UART when probed (2022-09-22 16:38:18 +0200)
+diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+index 7c786b75b4988f..db6bff4aee25eb 100644
+--- a/Documentation/fpga/dfl.rst
++++ b/Documentation/fpga/dfl.rst
+@@ -584,7 +584,7 @@ across all types.
+ With DFHv0, the register map of a given feature is located immediately fol=
+lowing
+ the DFHv0 in the memory space.  With DFHv1, the location of the feature re=
+gister
+ map can be specified as an offset to the DFHv1 or as an absolute address. =
+ The DFHv1
+-structure is shown below:
++structure is shown below::
+=20
+     +---------------------------------------------------------------------=
+--+
+     |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11 ID=
+ 0|
 
-----------------------------------------------------------------
-TTY/Serial driver fixes for 6.0-rc7
+Thanks.
 
-Here are some small, and late, serial driver fixes for 6.0-rc7 to
-resolve some reported problems.
+--=20
+An old man doll... just what I always wanted! - Clara
 
-Included in here are:
-	- tegra icount accounting fixes, including a framework function
-	  that other drivers will be converted over to using in 6.1-rc1.
-	- fsl_lpuart reset bugfix
-	- 8250 omap 485 bugfix
-	- sifive serial clock bugfix
+--gILyyALDCOs9GF4/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-The last 3 patches have not shown up in linux-next due to them being
-added to my tree only 2 days ago, but they are tiny and self-contained
-and the developers say they resolve issues that they have with 6.0-rc.
-The other 3 have been in linux-next for a while with no reported issues.
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYy6/4wAKCRD2uYlJVVFO
+o5KXAQCJ1UPL/CFnyL4a2ndyowwbvrWpIGVW1a8pRAsFnePQGwD8CNztDfBpOPJZ
+1qnoSvaJGCUYL/4tQ+pvqPu1Dyn+JgA=
+=P99G
+-----END PGP SIGNATURE-----
 
-----------------------------------------------------------------
-Ilpo Järvinen (3):
-      serial: Create uart_xmit_advance()
-      serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
-      serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
-
-Lukas Wunner (1):
-      serial: fsl_lpuart: Reset prior to registration
-
-Matthias Schiffer (1):
-      serial: 8250: omap: Use serial8250_em485_supported
-
-Olof Johansson (1):
-      serial: sifive: enable clocks for UART when probed
-
- drivers/tty/serial/8250/8250_omap.c |  1 +
- drivers/tty/serial/fsl_lpuart.c     |  9 +++++----
- drivers/tty/serial/serial-tegra.c   |  5 ++---
- drivers/tty/serial/sifive.c         |  2 +-
- drivers/tty/serial/tegra-tcu.c      |  2 +-
- include/linux/serial_core.h         | 17 +++++++++++++++++
- 6 files changed, 27 insertions(+), 9 deletions(-)
+--gILyyALDCOs9GF4/--
