@@ -2,87 +2,89 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63035C32771
-	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 09:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 221A1C07E9D
+	for <linux-serial@archiver.kernel.org>; Sat, 24 Sep 2022 10:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbiIXJru (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 24 Sep 2022 05:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        id S232200AbiIXKoI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sat, 24 Sep 2022 06:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233436AbiIXJrs (ORCPT
+        with ESMTP id S231258AbiIXKoH (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 24 Sep 2022 05:47:48 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9E012889F
-        for <linux-serial@vger.kernel.org>; Sat, 24 Sep 2022 02:47:47 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id fs14so2131222pjb.5
-        for <linux-serial@vger.kernel.org>; Sat, 24 Sep 2022 02:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=3+pOaDQW9YjxLklfVNTeyrUxpQCI7rQ2FY27kMcvVNA=;
-        b=HB9MKYQSVCpN/uOYAgHtfTu8vX+gh120MEMg6y8EIcdyz09xYzp2JSduLy24Dvszy4
-         1P6BsSMu2mOvfjkp7zHTUtONSi2wbDo6M1uy9AKuN43KZoUA4/EqJvSPJHoKE8piFuiq
-         TFDPTQqsUqfRalbN7HFLyt9F8n9Jwf+Qj+abU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=3+pOaDQW9YjxLklfVNTeyrUxpQCI7rQ2FY27kMcvVNA=;
-        b=fVm6mTXb9bsjfgDJr1IA9hexDBGx3UCdcIwKoYw1yaoHzZdVF0cp2ANo2+P2+DayBM
-         bfEQA8NR1Pg+m9mistb3JhUdqv5JKtJw0/4EsQvZE9KKuCyVgL5eASgNKn1hfX7maRnM
-         qbo8WcLw7re+1N+U7iws9BeragbNnnIsaIrhO98IVjx6olSNNcGzUv7Phi54+T18L882
-         oLQDkZBsB7uttsBgfsYqUiL+uHK4S8tjYefKfgyP8s0D0RwVR0o/wA+LjGrdb4zb3wYx
-         Lq+E1ac5a8wxE8UtTelVY9+wEYrvCpe/DLEVJs6UcW8bWhVo2AgaLpohDzi8smbTr8Ig
-         J4vg==
-X-Gm-Message-State: ACrzQf284GYXbRuMGYeAzuHy96h1eLVTFkoz4HEUYVcwS4d8gYImFWy0
-        gAZkmallW7ufqiyRCUzq2RI8og==
-X-Google-Smtp-Source: AMsMyM50G4MkB+jPSoG0HzIFo+yOu3RUvfrllcNX4ltgLcfVL+PMcHqel4EXpC55kA3rQFQuMU8DdQ==
-X-Received: by 2002:a17:90a:fe0a:b0:203:467b:9e64 with SMTP id ck10-20020a17090afe0a00b00203467b9e64mr14759009pjb.146.1664012866953;
-        Sat, 24 Sep 2022 02:47:46 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:f4de:2419:efa3:8fed])
-        by smtp.gmail.com with ESMTPSA id y23-20020aa78f37000000b0053e61633057sm7899715pfr.132.2022.09.24.02.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Sep 2022 02:47:46 -0700 (PDT)
-Date:   Sat, 24 Sep 2022 18:47:38 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Sven Schnelle <svens@stackframe.org>,
-        John David Anglin <dave.anglin@bell.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        linux-parisc@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH printk 00/18] preparation for threaded/atomic printing
-Message-ID: <Yy7SOp9wKWdDnbLM@google.com>
-References: <20220924000454.3319186-1-john.ogness@linutronix.de>
+        Sat, 24 Sep 2022 06:44:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40B3EE32;
+        Sat, 24 Sep 2022 03:44:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BF8560BB9;
+        Sat, 24 Sep 2022 10:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AAAC433C1;
+        Sat, 24 Sep 2022 10:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664016245;
+        bh=aiDjtGcub9TCH2Zjr7EGsrufP9lbe/sjAusroWPF83U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JxbZHCwcGlguzXoumgpZIEHUCy97ZKx3zzCz4liJ3+mMigUXDff6LmnEk0mWi6tLL
+         GRKmT2EiynmzAUPX2d61mKeOT3qv+AL490cuq5OgAfTb/XponJKwEvJLo/M/MwLreM
+         pYsEvVCXq8RbCPoEWoRsgPeaOg5BK7sceGO/3CXY5Y6jm5vwqUYboOCGV0tLKZI5Lo
+         zSYwvzuBME8ydqHB78G4+Rxuenab7h5wSlTY3r2vPVH8gtPCv0zoFrRVMMmMATQUDq
+         JpOmC46f33DcxEISg9U0FEh9pWHlA0wtKLRIlhmsxpiQ8YrKkGlrY/rP9WCOT0cNrX
+         yyogV6r7afwJw==
+Received: by pali.im (Postfix)
+        id 071018A2; Sat, 24 Sep 2022 12:44:03 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250: Fix restoring termios speed after suspend
+Date:   Sat, 24 Sep 2022 12:43:24 +0200
+Message-Id: <20220924104324.4035-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220924000454.3319186-1-john.ogness@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On (22/09/24 02:10), John Ogness wrote:
-> 
->    Patches  6 - 12:  Locking and list conversion
-> 
+Since commit edc6afc54968 ("tty: switch to ktermios and new framework")
+termios speed is no longer stored only in c_cflag member but also in new
+additional c_ispeed and c_ospeed members. If BOTHER flag is set in c_cflag
+then termios speed is stored only in these new members.
 
-A quick question: I wonder why xenfb_make_preferred_console() isn't
-converted to list lock and for_each_registered_console()?
+Since commit 027b57170bf8 ("serial: core: Fix initializing and restoring
+termios speed") termios speed is available also in struct console.
+
+So properly restore also c_ispeed and c_ospeed members after suspend to fix
+restoring termios speed which is not represented by Bnnn constant.
+
+Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/tty/serial/8250/8250_port.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 39b35a61958c..441f317c55af 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3314,8 +3314,13 @@ static void serial8250_console_restore(struct uart_8250_port *up)
+ 	unsigned int baud, quot, frac = 0;
+ 
+ 	termios.c_cflag = port->cons->cflag;
+-	if (port->state->port.tty && termios.c_cflag == 0)
++	termios.c_ispeed = port->cons->ispeed;
++	termios.c_ospeed = port->cons->ospeed;
++	if (port->state->port.tty && termios.c_cflag == 0) {
+ 		termios.c_cflag = port->state->port.tty->termios.c_cflag;
++		termios.c_ispeed = port->state->port.tty->termios.c_ispeed;
++		termios.c_ospeed = port->state->port.tty->termios.c_ospeed;
++	}
+ 
+ 	baud = serial8250_get_baud_rate(port, &termios, NULL);
+ 	quot = serial8250_get_divisor(port, baud, &frac);
+-- 
+2.20.1
+
