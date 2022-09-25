@@ -2,74 +2,84 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA626C6FA8E
-	for <linux-serial@archiver.kernel.org>; Sun, 25 Sep 2022 07:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CBFC54EE9
+	for <linux-serial@archiver.kernel.org>; Sun, 25 Sep 2022 15:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbiIYHaP (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 25 Sep 2022 03:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55358 "EHLO
+        id S232671AbiIYPYC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 25 Sep 2022 11:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbiIYHaN (ORCPT
+        with ESMTP id S232239AbiIYPXv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 25 Sep 2022 03:30:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A082C648;
-        Sun, 25 Sep 2022 00:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27BDA61286;
-        Sun, 25 Sep 2022 07:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3348EC433C1;
-        Sun, 25 Sep 2022 07:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664091011;
-        bh=iHRwgtpmT8IOWrtRKXFWjHHFf8cC5eSWZNDQ46u7lkA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L8iLcT9YrvZ6U1Y8EHOZSd0t9aAPlFrk/7pq2p9L2SXPckKU7KuCK0/x/Ex1f7CJX
-         spXdJ4EaMaLX5dpenuj4WZdwOM1ibJRrDLh3WkekhmmNbwEQnV1NxlvO2WNDf207d8
-         za7CQyuAZlGGYU8xWIDb8LpeWW/2SVxGBTTBWRJ4=
-Date:   Sun, 25 Sep 2022 09:28:25 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: 8250_dma: Convert to use
- uart_xmit_advance()
-Message-ID: <YzADGdooXnOPygdK@kroah.com>
-References: <20220909091102.58941-1-andriy.shevchenko@linux.intel.com>
- <Yyxs8o7tB6BVS0Kt@kroah.com>
- <1ae6a32c-9f3d-ee56-a26a-7a90b4ee2bfe@linux.intel.com>
- <YyxySWYgJ7ceavcM@kroah.com>
- <Yyx5KGjVgyiasqyv@smile.fi.intel.com>
+        Sun, 25 Sep 2022 11:23:51 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4702E68A;
+        Sun, 25 Sep 2022 08:23:44 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1664119422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lYuGfRxRRD8ElWe/MX6vcbHsXtJqzWLNDRr3hQbeYms=;
+        b=4o6/Yi8W8TR3wYtjLafNd4nWDKzlEQ5gkc02I+3sxBfpo+9vezn8sQ19N6+TlWDlvcFoeo
+        RFsRvT62TZBgT97wmFthNJKAUVJFU+5Ihq6xusXNWhKXuYjLiOY+vfq8S0q1K3s7Q95lUX
+        J7bvje9GBQyCD1rofPDn9fo5Jlz8JpsSPmb2PjYpgTAp4leKgkth0ix2cBy4gFQWIpnCAc
+        g/ni0Cr0XwYUTLPmDMCLOQyDKr20tfasmCoAkeq8fdWTqwUMU4hUVefInzz2MW6iYhTgCx
+        ZWjQioSQ2Ure1/UJBQvd+vyXD3njCGMVlXy2axBfZ7zb4e3BxjdG+6ZDPlTpnQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1664119422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lYuGfRxRRD8ElWe/MX6vcbHsXtJqzWLNDRr3hQbeYms=;
+        b=H6VsHstNf5MPQfIzMB81iwdLZoKfcg9RiYTwfM9z+i652PjiqjMzynDssmCOuun7W04ekK
+        8/JHdHOKiDhav9CA==
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Sven Schnelle <svens@stackframe.org>,
+        John David Anglin <dave.anglin@bell.net>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        linux-parisc@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: Re: [PATCH printk 00/18] preparation for threaded/atomic printing
+In-Reply-To: <Yy6nVpd3+yogT5pJ@kroah.com>
+References: <20220924000454.3319186-1-john.ogness@linutronix.de>
+ <Yy6nVpd3+yogT5pJ@kroah.com>
+Date:   Sun, 25 Sep 2022 17:29:41 +0206
+Message-ID: <87czbj7a0y.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yyx5KGjVgyiasqyv@smile.fi.intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 06:03:04PM +0300, Andy Shevchenko wrote:
-> On Thu, Sep 22, 2022 at 04:33:45PM +0200, Greg Kroah-Hartman wrote:
-> > On Thu, Sep 22, 2022 at 05:24:55PM +0300, Ilpo Järvinen wrote:
-> > > On Thu, 22 Sep 2022, Greg Kroah-Hartman wrote:
-> > > > On Fri, Sep 09, 2022 at 12:11:02PM +0300, Andy Shevchenko wrote:
-> 
-> ...
-> 
-> > > > Breaks the build :(
-> > > 
-> > > I'd guess it's because uart_xmit_advance() is current only in tty-linus,
-> > > not in tty-next.
-> > 
-> > Probably, can someone resend this when 6.1-rc1 is out?
-> 
-> Sure.
+On 2022-09-24, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> These all look great to me, thanks for resending them.
+>
+> Do you want them to go through my serial/tty tree, or is there some
+> other tree to take them through (printk?)
 
-Nevermind, I took them now, thanks.
+Thanks Greg. but I would prefer they go through the printk tree. In
+particular, I want Petr to have the chance to review patches 15-18.
 
-greg k-h
+> If they are to go through someone else's tree, feel free to add:
+>
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Thanks!
+
+John
