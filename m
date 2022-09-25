@@ -2,84 +2,134 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CBFC54EE9
-	for <linux-serial@archiver.kernel.org>; Sun, 25 Sep 2022 15:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 113CBC54EE9
+	for <linux-serial@archiver.kernel.org>; Sun, 25 Sep 2022 19:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbiIYPYC (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 25 Sep 2022 11:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
+        id S232705AbiIYTwM (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Sun, 25 Sep 2022 15:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiIYPXv (ORCPT
+        with ESMTP id S231390AbiIYTwL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 25 Sep 2022 11:23:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4702E68A;
-        Sun, 25 Sep 2022 08:23:44 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1664119422;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lYuGfRxRRD8ElWe/MX6vcbHsXtJqzWLNDRr3hQbeYms=;
-        b=4o6/Yi8W8TR3wYtjLafNd4nWDKzlEQ5gkc02I+3sxBfpo+9vezn8sQ19N6+TlWDlvcFoeo
-        RFsRvT62TZBgT97wmFthNJKAUVJFU+5Ihq6xusXNWhKXuYjLiOY+vfq8S0q1K3s7Q95lUX
-        J7bvje9GBQyCD1rofPDn9fo5Jlz8JpsSPmb2PjYpgTAp4leKgkth0ix2cBy4gFQWIpnCAc
-        g/ni0Cr0XwYUTLPmDMCLOQyDKr20tfasmCoAkeq8fdWTqwUMU4hUVefInzz2MW6iYhTgCx
-        ZWjQioSQ2Ure1/UJBQvd+vyXD3njCGMVlXy2axBfZ7zb4e3BxjdG+6ZDPlTpnQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1664119422;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lYuGfRxRRD8ElWe/MX6vcbHsXtJqzWLNDRr3hQbeYms=;
-        b=H6VsHstNf5MPQfIzMB81iwdLZoKfcg9RiYTwfM9z+i652PjiqjMzynDssmCOuun7W04ekK
-        8/JHdHOKiDhav9CA==
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Sven Schnelle <svens@stackframe.org>,
-        John David Anglin <dave.anglin@bell.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        linux-parisc@vger.kernel.org,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH printk 00/18] preparation for threaded/atomic printing
-In-Reply-To: <Yy6nVpd3+yogT5pJ@kroah.com>
-References: <20220924000454.3319186-1-john.ogness@linutronix.de>
- <Yy6nVpd3+yogT5pJ@kroah.com>
-Date:   Sun, 25 Sep 2022 17:29:41 +0206
-Message-ID: <87czbj7a0y.fsf@jogness.linutronix.de>
+        Sun, 25 Sep 2022 15:52:11 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EC526112
+        for <linux-serial@vger.kernel.org>; Sun, 25 Sep 2022 12:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664135530; x=1695671530;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=38dVI5/QwhfmPNA4W0MdRmyz8vLZP+rhGnlnLWofO4w=;
+  b=KlfslBJUnsq0BMQyuk58uqoXFR2NPFdG+mwQKzXz0SDUohGVbKeYKVgw
+   sW2kaU+XvL2+NIg+IKOSjhtiDhc/mI2AEFjCHSx/HOkhW0IDKVJ6T/Mpp
+   Mk6Ptbd8n/zHPCtw1sxnmvRo779GoqT+V7awP84TsAHMZloCmYgOhOU7F
+   I4lSQd1XBPFW9hj1ZFr6UqX/waLXlHNKnHu4DlqAQXuBv3y1DdcSODggL
+   7bVtPsP54CLTMehBU3ko2rMkWLt1fi8MytCeXxxtMbAXiG1Qmf1c3n6A5
+   uH4Urj69nVm0jVDTI4MeJtdewdkQ9h4OnnpgcIs68cMBTQ/eMBSCKNgSt
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10481"; a="327230767"
+X-IronPort-AV: E=Sophos;i="5.93,344,1654585200"; 
+   d="scan'208";a="327230767"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2022 12:52:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,344,1654585200"; 
+   d="scan'208";a="796096760"
+Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 25 Sep 2022 12:52:08 -0700
+Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1ocXfc-0008KA-0Q;
+        Sun, 25 Sep 2022 19:52:08 +0000
+Date:   Mon, 26 Sep 2022 03:51:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 379a33786d489ab81885ff0b3935cfeb36137fea
+Message-ID: <6330b14e.ycfDbAwcCRieXJw2%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2022-09-24, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> These all look great to me, thanks for resending them.
->
-> Do you want them to go through my serial/tty tree, or is there some
-> other tree to take them through (printk?)
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 379a33786d489ab81885ff0b3935cfeb36137fea  serial: 8250: Fix restoring termios speed after suspend
 
-Thanks Greg. but I would prefer they go through the printk tree. In
-particular, I want Petr to have the chance to review patches 15-18.
+elapsed time: 722m
 
-> If they are to go through someone else's tree, feel free to add:
->
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+configs tested: 58
+configs skipped: 2
 
-Thanks!
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-John
+gcc tested configs:
+x86_64                              defconfig
+x86_64                               rhel-8.3
+um                             i386_defconfig
+i386                                defconfig
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+arc                  randconfig-r043-20220925
+powerpc                           allnoconfig
+x86_64                        randconfig-a013
+x86_64                           rhel-8.3-kvm
+x86_64                        randconfig-a011
+arc                                 defconfig
+x86_64                        randconfig-a015
+x86_64                           rhel-8.3-syz
+alpha                               defconfig
+arc                              allyesconfig
+arm                                 defconfig
+alpha                            allyesconfig
+s390                             allmodconfig
+arm                              allyesconfig
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+s390                                defconfig
+riscv                randconfig-r042-20220925
+m68k                             allyesconfig
+i386                             allyesconfig
+m68k                             allmodconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                        randconfig-a004
+s390                 randconfig-r044-20220925
+i386                          randconfig-a001
+arm64                            allyesconfig
+x86_64                        randconfig-a002
+i386                          randconfig-a003
+i386                          randconfig-a005
+i386                          randconfig-a014
+s390                             allyesconfig
+sh                               allmodconfig
+x86_64                        randconfig-a006
+mips                             allyesconfig
+i386                          randconfig-a012
+powerpc                          allmodconfig
+i386                          randconfig-a016
+ia64                             allmodconfig
+
+clang tested configs:
+x86_64                        randconfig-a014
+hexagon              randconfig-r045-20220925
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+hexagon              randconfig-r041-20220925
+i386                          randconfig-a002
+x86_64                        randconfig-a005
+i386                          randconfig-a013
+x86_64                        randconfig-a001
+i386                          randconfig-a006
+i386                          randconfig-a011
+i386                          randconfig-a004
+x86_64                        randconfig-a003
+i386                          randconfig-a015
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
