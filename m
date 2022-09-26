@@ -2,147 +2,100 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F242C32771
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Sep 2022 16:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D764AC6FA82
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Sep 2022 16:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236559AbiIZQYU (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Sep 2022 12:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
+        id S229682AbiIZQrJ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Sep 2022 12:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235458AbiIZQYC (ORCPT
+        with ESMTP id S229680AbiIZQqe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Sep 2022 12:24:02 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB6EFE64F;
-        Mon, 26 Sep 2022 08:12:52 -0700 (PDT)
+        Mon, 26 Sep 2022 12:46:34 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A696112477B;
+        Mon, 26 Sep 2022 08:37:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664205172; x=1695741172;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=DdnFEf3Z9EiRRHykbZYmRviWkWZkPGSza/2gJffcK00=;
-  b=legMk3/mh2fDpYFBJ/uK4VY3CWV8U0yeSlkbqFF62Eq6v4au2naPCGAw
-   tDzNEsnscPUlRkhsYecJSjZUwtqNV7fF08t+l9VDH5Cd5lMtK3U9lAIMl
-   sbXx1bAeqMXjX9oovMhgPfKfmR/6l5vL87cF9HoHkMLFZLBZdIoHWJ2jb
-   RZFwrSA/hk0D6+1ml9RGDk+PiQz5nZL3W1G1QHj5R8PargdSSuxf5Jfc6
-   DAEqgYni9HPY25ArgtL1RsItk9PfUEM3MXyAp7vsFpbaEhGzuCJXIHMCO
-   tBJDhPbBySipKhQ67312Oao557O3HZfAJRfev8uOlgogA46HlFfq6ydSG
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="387345848"
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1664206636; x=1695742636;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=p1AnJWXRzUzKOoto4sBMgcTv9RELTIBHZTO2mWpPdk8=;
+  b=OamwnlCM9CjDpb5a9PpcBXo64XejIgiRxeSTgoxnX0INquSRvDZx6jXo
+   NXBbN6J1R9svjmdhVyuOIsY3r6HtYlAn6J4kqvKSPo6IbmXPkqp0gm6ZO
+   RTUdtLOJXDuNUMTbtN9h9rSxLdNv5UjHq45upguM7SnkMJVBaP4d5Ct4J
+   Ej3gI6NBvk5koWZeerScIDGG08nSoQRoowTcaANR4BAz56CesmL9qUFjH
+   WpYoRkmlaTF3DfRX2XWnmt/asD5g7PwEZ6d5QtID0eE8fW1kbY/3/WwDt
+   QOihtUCs62PX/uxlPNiSR5qPeJ3jdPj03TKRcxquBTUDmqtqLcM88RKjr
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,346,1654585200"; 
-   d="scan'208";a="387345848"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 08:12:51 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="746649807"
-X-IronPort-AV: E=Sophos;i="5.93,346,1654585200"; 
-   d="scan'208";a="746649807"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.139])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 08:12:51 -0700
-Date:   Mon, 26 Sep 2022 08:13:10 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tianfei.zhang@intel.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-        jirislaby@kernel.org, geert+renesas@glider.be,
-        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, lukas@wunner.de
-Subject: Re: [PATCH v2 4/6] fpga: dfl: add generic support for MSIX
- interrupts
-In-Reply-To: <Yy3O5OeDjJ99g/M2@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.22.394.2209260804500.363733@rhweight-WRK1>
-References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com> <20220923121745.129167-5-matthew.gerlach@linux.intel.com> <Yy3O5OeDjJ99g/M2@smile.fi.intel.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+   d="scan'208";a="115446950"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Sep 2022 08:37:15 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 26 Sep 2022 08:37:15 -0700
+Received: from [10.159.205.135] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Mon, 26 Sep 2022 08:37:13 -0700
+Message-ID: <47b7352e-153d-22e0-6bb6-5a7b17b6a081@microchip.com>
+Date:   Mon, 26 Sep 2022 17:37:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] tty: serial: atmel: Add COMMON_CLK dependency to
+ SERIAL_ATMEL
+Content-Language: en-US
+To:     Sergiu Moga <sergiu.moga@microchip.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <claudiu.beznea@microchip.com>, <richard.genoud@gmail.com>,
+        <linux-serial@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, kernel test robot <lkp@intel.com>
+References: <20220926143244.485578-1-sergiu.moga@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220926143244.485578-1-sergiu.moga@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 26/09/2022 at 16:32, Sergiu Moga wrote:
+> Now that the driver makes use of `__clk_is_enabled()` in order to
+> know whether a `clk_disable_unprepare()` is needed or not on the
+> GCLK, a new dependency has been introduced: COMMON_CLK. If this
+> `CONFIG_COMMON_CLK` is not enabled, whatever config may have this
+> driver enabled without COMMON_CLK then an undefined reference to
+> `__clk_is_enabled()` will be issued by the linker.
+> 
+> Thus, make sure that, unless `CONFIG_COMMON_CLK` is enabled, this
+> driver is not compiled.
+> 
+> Fixes: 5e3ce1f26129 ("tty: serial: atmel: Make the driver aware of the existence of GCLK")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+> ---
+>   drivers/tty/serial/Kconfig | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index a18dd525e42b..1aec3cf002f7 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -127,6 +127,7 @@ config SERIAL_SB1250_DUART_CONSOLE
+>   
+>   config SERIAL_ATMEL
+>   	bool "AT91 on-chip serial port support"
+> +	depends on COMMON_CLK
+>   	depends on ARCH_AT91 || COMPILE_TEST
+>   	select SERIAL_CORE
+>   	select SERIAL_MCTRL_GPIO if GPIOLIB
 
 
-On Fri, 23 Sep 2022, Andy Shevchenko wrote:
-
-> On Fri, Sep 23, 2022 at 05:17:43AM -0700, matthew.gerlach@linux.intel.com wrote:
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>
->> Define and use a DFHv1 parameter to add generic support for MSIX
->> interrupts for DFL devices.
->
-> ...
->
->> +	if (fid != FEATURE_ID_AFU && fid != PORT_FEATURE_ID_ERROR &&
->> +	    fid != PORT_FEATURE_ID_UINT && fid != FME_FEATURE_ID_GLOBAL_ERR) {
->
->> +
->
-> Unneeded blank line.
-
-I will remove the blank line.
-
->
->> +		v = FIELD_GET(DFH_VERSION, readq(base));
->> +		switch (v) {
->
-> This v...
->
->> +		case 0:
->> +			break;
->> +
->> +		case 1:
->> +			v =  readq(base + DFHv1_CSR_SIZE_GRP);
->
-> Extra space.
->
-> ...and this v are semantically different. It's quite hard to deduce their
-> semantics.
-
-I was trying to be consistent with the existing code where the read was 
-stored in a temporary variable, v, and the FIELD_GET would be used for the 
-specific field.  Will it be sufficiently clear if the v used above is 
-changed to dfl_ver, and this use of v followed by FIELD_GET remains as is?
-
->
->> +			if (FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v)) {
->> +				off = dfl_find_param(base + DFHv1_PARAM_HDR, ofst,
->> +						     DFHv1_PARAM_ID_MSIX);
->
-> I guess I have suggested to use temporary variable(s) here.
->
-> 			void __iomem *dfhv1 = base + DFHv1...;
-> 			void __iomem *nth;
->
->> +				if (off >= 0) {
->
-> 					nth = dfhv1 + off;
->
->> +					ibase = readl(base + DFHv1_PARAM_HDR +
->> +						      off + DFHv1_PARAM_MSIX_STARTV);
->> +					inr = readl(base + DFHv1_PARAM_HDR +
->> +						    off + DFHv1_PARAM_MSIX_NUMV);
->
-> 					ibase = readl(nth + DFHv1_PARAM_MSIX_STARTV);
-> 					inr = readl(nth + DFHv1_PARAM_MSIX_NUMV);
->
->> +					dev_dbg(binfo->dev, "start %d num %d fid 0x%x\n",
->> +						ibase, inr, fid);
->> +				}
->> +			}
->> +			break;
->> +
->> +		default:
->> +			dev_warn(binfo->dev, "unexpected DFH version %lld\n", v);
->> +			break;
->> +		}
->> +	}
->
-> -- 
-> With Best Regards,
-> Andy Shevchenko
->
->
->
+-- 
+Nicolas Ferre
