@@ -2,107 +2,171 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945C7C07E9D
-	for <linux-serial@archiver.kernel.org>; Mon, 26 Sep 2022 07:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A5D2C32771
+	for <linux-serial@archiver.kernel.org>; Mon, 26 Sep 2022 09:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234042AbiIZHQy (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 26 Sep 2022 03:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        id S233314AbiIZJeL (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Mon, 26 Sep 2022 05:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234043AbiIZHQv (ORCPT
+        with ESMTP id S235052AbiIZJdo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 26 Sep 2022 03:16:51 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E55532052;
-        Mon, 26 Sep 2022 00:16:46 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id bq9so8740469wrb.4;
-        Mon, 26 Sep 2022 00:16:46 -0700 (PDT)
+        Mon, 26 Sep 2022 05:33:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320BB10E7
+        for <linux-serial@vger.kernel.org>; Mon, 26 Sep 2022 02:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664184820;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H9yo7nQ7X6csLZdzPbIjxBnehSyTfz7orjW0yNtRxTE=;
+        b=bKhWn1gWvhj7Bh7ttKpKwKlqOFN66DmQSbPvWvu0bsF545aV78flz5bDrHJDoi4BXwo8uP
+        ec27cMPuwWRK22Kdt+zjkofKZCGrPNVaDRdx7Akwcf9R/Gj2G3OaAME7WbZxbf8dCQRhOE
+        92QbhWn/feB3srhZJwuLNkKdaH3cnTg=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-220-2qF0d6xeO-exVvoF0GeNtQ-1; Mon, 26 Sep 2022 05:33:39 -0400
+X-MC-Unique: 2qF0d6xeO-exVvoF0GeNtQ-1
+Received: by mail-wm1-f70.google.com with SMTP id fc12-20020a05600c524c00b003b5054c70d3so3898408wmb.5
+        for <linux-serial@vger.kernel.org>; Mon, 26 Sep 2022 02:33:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=ioYGPRvwOzTPXX99j4J/86pZ+x1+n0p+8AnOz//0Jhc=;
-        b=oaXmMK7zWNr/X2XgflIbyeGIUvEvSyxF0uMyTxiCcDBXg4QqC2ZrgHKmtpYSgeDbOG
-         MRSySzK3ru2WA21EeskQfK5/ynq7a+ToEcJFd+iKMq7vtgXzp9ngH90DzJvZtmOgl4uZ
-         jQsw2knzf+NYdKPjQZMSuXROCbDVjSPzJVrNoYHxqep2EkYrVEINU/xMfHLm3sRBX13g
-         6BFbkdg+Jv9R1Dan5HyxXy3f9Ycd2VH7u4RUHxYBVsitpdbjvF77uOmO2/Az/JHbum0g
-         OWfnCSODOb1GAHYJMOgIFZrjqZDrBmBUa1xBfj/L2Fp19uRHmNLqAdKJGfzrS+oc0hA4
-         XmPQ==
-X-Gm-Message-State: ACrzQf1qOe8z7Y8DuBRTQEffeFYr2rGsI0ZJggtCcyz5T+XhG6crfxYn
-        pa7ng2CoTV/TjR5kcx1lPg++dMjaUME=
-X-Google-Smtp-Source: AMsMyM6PzY2abUiBbLPacTKWhY3Ho5enMulUINnroWZ+u5YNMzPvvIkUrzm3gGWeVYZ8yYDHKpt7/w==
-X-Received: by 2002:a5d:47cc:0:b0:22c:86fe:ad94 with SMTP id o12-20020a5d47cc000000b0022c86fead94mr9236407wrc.599.1664176604539;
-        Mon, 26 Sep 2022 00:16:44 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id g11-20020a05600c310b00b003b4fe03c881sm10532225wmo.48.2022.09.26.00.16.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Sep 2022 00:16:44 -0700 (PDT)
-Message-ID: <f61a3a55-808e-01cc-287e-d840f7948d2f@kernel.org>
-Date:   Mon, 26 Sep 2022 09:16:43 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=H9yo7nQ7X6csLZdzPbIjxBnehSyTfz7orjW0yNtRxTE=;
+        b=vJRYaK/R0fE6cEhPqEbfshcSpnE8oNvs6Cbev65VP4aqMjLyaXe57I0lK/2lUbOdS+
+         a+2qWL0MSrHqw1EOJqpgnbX27y7TmPSih4GrcTa5VocZUX4WKnc7rlm6EEru2SBGpFhp
+         U9U1Nk95/9X5kYqoqGMsWIzZNsit2yr8Hqu/Gz138e+VNQXXYpHd9xfolJmg0sDo01FE
+         ivMCKtrXeZy52zksKjS7b+n8W2RczUkIlM2r7R1fBZYa3XZeBDO413SPYvRvS8uxnSs6
+         J5YOMCVzkp9XutV1uI4/Q0LBZviOAxtzyib8LACSKvjclHcUt0ZU/g04icVQvT2FtH+0
+         D5Kg==
+X-Gm-Message-State: ACrzQf25ZiF0QMiLlYaT0R53WhqlA6upUPjePReh5K2od7G4LZLnlRD3
+        SlTlJDuFvShRISYFBVUGMHZTnKO8OHjOYrxNGUWK/F0IaTvGUy9HdVa6YQ3pOLDx/FEVsByfRsG
+        tGqmJntyZZyXDk9R3PcNCv0Y=
+X-Received: by 2002:a05:600c:114f:b0:3b4:9a0a:6204 with SMTP id z15-20020a05600c114f00b003b49a0a6204mr14264172wmz.132.1664184818141;
+        Mon, 26 Sep 2022 02:33:38 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4pQqUHviODc3cofcz3alTrEOSQs7Ng28XfxFeTiv0/6sR/oQsIefxECuC6NG0anOiJGp5dpQ==
+X-Received: by 2002:a05:600c:114f:b0:3b4:9a0a:6204 with SMTP id z15-20020a05600c114f00b003b49a0a6204mr14264155wmz.132.1664184817894;
+        Mon, 26 Sep 2022 02:33:37 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id n32-20020a05600c502000b003a531c7aa66sm10720950wmr.1.2022.09.26.02.33.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 02:33:36 -0700 (PDT)
+Date:   Mon, 26 Sep 2022 10:33:35 +0100
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk 10/18] kgbd: Pretend that console list walk is safe
+Message-ID: <20220926093335.exvrpwp5khlwqxhp@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220924000454.3319186-1-john.ogness@linutronix.de>
+ <20220924000454.3319186-11-john.ogness@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH] serial: 8250: Fix restoring termios speed after suspend
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220924104324.4035-1-pali@kernel.org>
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220924104324.4035-1-pali@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220924000454.3319186-11-john.ogness@linutronix.de>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 24. 09. 22, 12:43, Pali Rohár wrote:
-> Since commit edc6afc54968 ("tty: switch to ktermios and new framework")
-> termios speed is no longer stored only in c_cflag member but also in new
-> additional c_ispeed and c_ospeed members. If BOTHER flag is set in c_cflag
-> then termios speed is stored only in these new members.
+On Sat 2022-09-24 02:10 +0206, John Ogness wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-> Since commit 027b57170bf8 ("serial: core: Fix initializing and restoring
-> termios speed") termios speed is available also in struct console.
+> Provide a special list iterator macro for KGDB to allow unprotected list
+> walks and add a few comments to explain the hope based approach.
 > 
-> So properly restore also c_ispeed and c_ospeed members after suspend to fix
-> restoring termios speed which is not represented by Bnnn constant.
+> Preperatory change for changing the console list to hlist and adding
+> lockdep asserts to regular list walks.
 > 
-> Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
 > ---
->   drivers/tty/serial/8250/8250_port.c | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/kgdboc.c |  5 ++++-
+>  include/linux/console.h     | 10 ++++++++++
+>  kernel/debug/kdb/kdb_io.c   |  7 ++++++-
+>  3 files changed, 20 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 39b35a61958c..441f317c55af 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3314,8 +3314,13 @@ static void serial8250_console_restore(struct uart_8250_port *up)
->   	unsigned int baud, quot, frac = 0;
->   
->   	termios.c_cflag = port->cons->cflag;
-> -	if (port->state->port.tty && termios.c_cflag == 0)
-> +	termios.c_ispeed = port->cons->ispeed;
-> +	termios.c_ospeed = port->cons->ospeed;
-> +	if (port->state->port.tty && termios.c_cflag == 0) {
-
-I don't currently know how safe it is to assume port->state->port.tty 
-cannot change between the test above and the dereferences below.
-
-In anyway, you should cache it as it is used 4 times now. It would make 
-the code definitely more readable.
-
->   		termios.c_cflag = port->state->port.tty->termios.c_cflag;
-> +		termios.c_ispeed = port->state->port.tty->termios.c_ispeed;
-> +		termios.c_ospeed = port->state->port.tty->termios.c_ospeed;
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index af2aa76bae15..57a5fd27dffe 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -462,10 +462,13 @@ static void kgdboc_earlycon_pre_exp_handler(void)
+>  	 * we have no other choice so we keep using it.  Since not all
+>  	 * serial drivers might be OK with this, print a warning once per
+>  	 * boot if we detect this case.
+> +	 *
+> +	 * Pretend that walking the console list is safe...
+>  	 */
+> -	for_each_console(con)
+> +	for_each_console_kgdb(con) {
+>  		if (con == kgdboc_earlycon_io_ops.cons)
+>  			return;
 > +	}
->   
->   	baud = serial8250_get_baud_rate(port, &termios, NULL);
->   	quot = serial8250_get_divisor(port, baud, &frac);
+>  
+>  	already_warned = true;
+>  	pr_warn("kgdboc_earlycon is still using bootconsole\n");
+> diff --git a/include/linux/console.h b/include/linux/console.h
+> index 24344f9b0bc1..86a6125512b9 100644
+> --- a/include/linux/console.h
+> +++ b/include/linux/console.h
+> @@ -187,6 +187,16 @@ extern void console_list_unlock(void) __releases(console_mutex);
+>  #define for_each_console(con)						\
+>  	for (con = console_drivers; con != NULL; con = con->next)
+>  
+> +/**
+> + * for_each_console_kgdb() - Iterator over registered consoles for KGDB
+> + * @con:	struct console pointer used as loop cursor
+> + *
+> + * Has no serialization requirements and KGDB pretends that this is safe.
+> + * Don't use outside of the KGDB fairy tale land!
+> + */
+> +#define for_each_console_kgdb(con)					\
+> +	for (con = console_drivers; con != NULL; con = con->next)
+> +
+>  extern int console_set_on_cmdline;
+>  extern struct console *early_console;
+>  
+> diff --git a/kernel/debug/kdb/kdb_io.c b/kernel/debug/kdb/kdb_io.c
+> index 67d3c48a1522..fb3775e61a3b 100644
+> --- a/kernel/debug/kdb/kdb_io.c
+> +++ b/kernel/debug/kdb/kdb_io.c
+> @@ -558,7 +558,12 @@ static void kdb_msg_write(const char *msg, int msg_len)
+>  		cp++;
+>  	}
+>  
+> -	for_each_console(c) {
+> +	/*
+> +	 * This is a completely unprotected list walk designed by the
+> +	 * wishful thinking department. See the oops_in_progress comment
+> +	 * below - especially the encourage section...
+> +	 */
+> +	for_each_console_kgdb(c) {
+>  		if (!(c->flags & CON_ENABLED))
+>  			continue;
+>  		if (c == dbg_io_ops->cons)
+> -- 
+> 2.30.2
+> 
+
+Reviewed-by: Aaron Tomlin <atomlin@redhat.com>
 
 -- 
-js
-suse labs
+Aaron Tomlin
 
