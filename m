@@ -2,104 +2,76 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7981EC07E9D
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 10:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D57AC07E9D
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 11:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbiI0K6N (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Sep 2022 06:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        id S231352AbiI0LIA (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Sep 2022 07:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231681AbiI0K6M (ORCPT
+        with ESMTP id S230214AbiI0LHj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 27 Sep 2022 06:58:12 -0400
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752BC6AE97;
-        Tue, 27 Sep 2022 03:58:10 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id z6so14430937wrq.1;
-        Tue, 27 Sep 2022 03:58:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=EjbYwEB4aUSvoakBSHtMBtNMFeoYUjvUaUSAqImO7JY=;
-        b=Lbh/sD85kvQ+4hqW8CXNy1KqgkxXBaQnJoTBdCC41CWDmOkewSBbL8DTX2+8AtThzh
-         h9lcBXKWJobmi2GyCcPUE9qPmPAPrH90ihzPZAZQDVtCV/j/9eGfRcugD5Kn6G4PPQqb
-         mPZUT6rqew1q6bJiwX+U98ouGdKrUcl/SlEHCsVWZalrOrxpA6ovTCULqsr3hJfxEcNV
-         R4XTmPqB5CjU2fHiDo9Zocvb3NlCCZS8Nd91G9GuWqK+eL0Wf9G8WEY5U89dX2ZTQcJ9
-         +GwfKfOpxrcOOgV+bThN3ecNRjB7/LrNJwZCdwG2Ry+Y5Ygk09TaAR1fxBP5gPm0h0IT
-         +TwQ==
-X-Gm-Message-State: ACrzQf0TTS0URZoMn2Tee0xfzweU+8OxzKdY7uOndCr0RQOq1Nmjs8IY
-        pe9l9MHUtOo1fYQvPoBwweY=
-X-Google-Smtp-Source: AMsMyM4CJmcmicknDIVtF3w0gV2zdBrrF+539QrxrQoQRpbuYMtHtaJKBaiGaGJw6MeMm00BDZJlgQ==
-X-Received: by 2002:adf:e9ce:0:b0:22c:ae77:b75c with SMTP id l14-20020adfe9ce000000b0022cae77b75cmr4544603wrn.380.1664276288559;
-        Tue, 27 Sep 2022 03:58:08 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id l6-20020a05600c4f0600b003b4924493bfsm16926995wmq.9.2022.09.27.03.58.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Sep 2022 03:58:08 -0700 (PDT)
-Message-ID: <f4143edb-cbc2-8b36-c227-b1ca13f3619b@kernel.org>
-Date:   Tue, 27 Sep 2022 12:58:07 +0200
+        Tue, 27 Sep 2022 07:07:39 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424B44A122;
+        Tue, 27 Sep 2022 04:05:34 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8B14821E87;
+        Tue, 27 Sep 2022 11:05:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1664276732; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=nl/CWuFt/XhPYNdKRVer+oirWRrEHCRaaK1Ncyhziys=;
+        b=yHCz5AaYdxLJxyl6UVokv5cd7np7F1Az4In4JOsrB1KEg+/i3ttgiC2ITCXmJUM1FOQFXv
+        Hz6vHxUD+MRY2cMOPLBq8WiWYfNmmOyTjdbqonVF/kb+tUfHgmnYSpG4maaD+2y5xLcOPY
+        AIYb/0VJQy1Lqrjr2Qibi0TTwL6T+NQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1664276732;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=nl/CWuFt/XhPYNdKRVer+oirWRrEHCRaaK1Ncyhziys=;
+        b=K6ay8fBT3PTIe41sjQ6qb1twFqH1VvYRV4zB5aefk1vEbp0+NKtrml/vg3x/JcNdJGZPd1
+        v2V3BBrLyPVgwmAw==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 581582C162;
+        Tue, 27 Sep 2022 11:05:32 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH] tty: serial: allow pxa.c to be COMPILE_TESTed
+Date:   Tue, 27 Sep 2022 13:05:28 +0200
+Message-Id: <20220927110528.12815-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v2] serial: Convert serial_rs485 to kernel doc
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-References: <1c401476-8f4d-827c-f8e1-b4853988e2@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <1c401476-8f4d-827c-f8e1-b4853988e2@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 27. 09. 22, 12:47, Ilpo Järvinen wrote:
-> --- a/Documentation/driver-api/serial/serial-rs485.rst
-> +++ b/Documentation/driver-api/serial/serial-rs485.rst
-> @@ -29,11 +29,11 @@ RS485 Serial Communications
->   3. Data Structures Already Available in the Kernel
->   ==================================================
->   
-> -   The Linux kernel provides the serial_rs485 structure (see [1]) to handle
-> -   RS485 communications. This data structure is used to set and configure RS485
-> +   The Linux kernel provides the serial_rs485 structure to handle RS485
-> +   communications.  This data structure is used to set and configure RS485
->      parameters in the platform data and in ioctls.
->   
-> -   The device tree can also provide RS485 boot time parameters (see [2]
-> +   The device tree can also provide RS485 boot time parameters (see [1]
->      for bindings). The driver is in charge of filling this data structure from
->      the values given by the device tree.
->   
-> @@ -47,6 +47,9 @@ RS485 Serial Communications
->      for the uart_port. TIOCGRS485 ioctl can be used to read back the
->      serial_rs485 structure matching to the current configuration.
->   
-> +.. kernel-doc:: include/uapi/linux/serial.h
-> +   :identifiers: serial_rs485
-> +
->   4. Usage from user-level
->   ========================
->   
-> @@ -126,6 +129,4 @@ RS485 Serial Communications
->   6. References
->   =============
->   
-> - [1]	include/uapi/linux/serial.h
-> -
-> - [2]	Documentation/devicetree/bindings/serial/rs485.txt
-> + [1]	Documentation/devicetree/bindings/serial/rs485.txt
+There is no issue compiling pxa.c even in the SERIAL_8250=y case. So to
+cover it in the usual configurations, add "|| COMPILE_TEST" there.
 
-BTW could that [1] be converted into proper hyperlink too (separately)?
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks,
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 2a18a42a5004..cf7324215916 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -427,7 +427,7 @@ config SERIAL_PXA
+ 
+ config SERIAL_PXA_NON8250
+ 	bool
+-	depends on !SERIAL_8250
++	depends on !SERIAL_8250 || COMPILE_TEST
+ 
+ config SERIAL_PXA_CONSOLE
+ 	bool "Console on PXA serial port (DEPRECATED)"
 -- 
-js
-suse labs
+2.37.3
 
