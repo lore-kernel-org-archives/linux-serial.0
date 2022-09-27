@@ -2,153 +2,103 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7848C6FA8E
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 11:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA01C6FA83
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 11:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbiI0LSr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Sep 2022 07:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S232119AbiI0Lro (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Sep 2022 07:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231682AbiI0LSX (ORCPT
+        with ESMTP id S232165AbiI0Lrl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 27 Sep 2022 07:18:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AABB6BCE9;
-        Tue, 27 Sep 2022 04:18:22 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 3AE451FD05;
-        Tue, 27 Sep 2022 11:18:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1664277501; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gm3ZZcNM0cZY4fp0d7F1FO1agY/rjagivksQPwk6oIA=;
-        b=ppqx4kdco2y2Xo+vIvFPNzincoNo3Qwu7T3jJSA7FI0FamgW9vwRn7/sgsusjfTiej1ePN
-        7sM1Y5JkdiQojlVyYUgaaxhwnR/SbHsZGl4cBaqdDkNUaGo3i2TV+mEzJgVCOjt0HSfvKV
-        Phm4Nkhxo5pGCVxutaWnnknL/eSNzkc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1664277501;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gm3ZZcNM0cZY4fp0d7F1FO1agY/rjagivksQPwk6oIA=;
-        b=QvdEkqSKah1i7nT4ePYpknUqnl3xXCbstUGUzQyh7RzdtaMto+1v2jnQgIm+BxaWOpp/9L
-        Ab7xdE1bs35yaWAw==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 039E62C166;
-        Tue, 27 Sep 2022 11:18:20 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH 3/4] tty: serial: unify TX space reads under altera_jtaguart_tx_space()
-Date:   Tue, 27 Sep 2022 13:18:18 +0200
-Message-Id: <20220927111819.18516-3-jslaby@suse.cz>
-X-Mailer: git-send-email 2.37.3
+        Tue, 27 Sep 2022 07:47:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B442B6D1F;
+        Tue, 27 Sep 2022 04:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664279260; x=1695815260;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=s6AJoa89+cpJOlqj7hRJRgtFtDN6+afMKye4KWGWigU=;
+  b=DrcSQExnoZQ6pHR4MEZR2JyPkb5lbQBOrPJYby9PUfb+zsw3bbBVJ8G/
+   oL201zU38ScuJqxwo32g7LrkB2m8+Xnoz0CofGe3J9Q5DAgFHGNOx5FKU
+   FSmyPMVIrrq9nHvDMtP5uPQtUXSgUvipPjguWZK4Osetg9DS1IC8HrwLE
+   aLo5w8syPwt/DSMhe3zQVMIYKOORgkym2Yk2k2jGNeCewQ6T6+amrK5uj
+   4vMjChe5sepUYAcZWzl6Y4Y7mJA7k1M3gktiUxayn/P/4MBpumFwfjH2o
+   BXcJDw6w7B/xO3X3uNlZ45YP8YoKh4THYgb800Nit9CmXZaBuhNIY7rFW
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="301272305"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="301272305"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 04:47:40 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="710531219"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="710531219"
+Received: from aksaxena-mobl2.ger.corp.intel.com ([10.252.60.19])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 04:47:38 -0700
+Date:   Tue, 27 Sep 2022 14:47:37 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/4] tty: serial: extend lqasc_tx_ready() to
+ lqasc_console_putchar()
 In-Reply-To: <20220927111819.18516-1-jslaby@suse.cz>
+Message-ID: <b46d3edd-adb8-c91a-c1-a2cfe39205f@linux.intel.com>
 References: <20220927111819.18516-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-268247081-1664279261=:2334"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-TX space reads from the control register are performed in various forms
-on 4 places in altera_jtaguart. Unify all those and do the read and
-masking on a single place.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-The new helper altera_jtaguart_tx_space() uses FIELD_GET(), so we can
-drop ALTERA_JTAGUART_CONTROL_WSPACE_OFF now.
+--8323329-268247081-1664279261=:2334
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Cc: Tobias Klauser <tklauser@distanz.ch>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/serial/altera_jtaguart.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+On Tue, 27 Sep 2022, Jiri Slaby wrote:
 
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index 23f339757894..ac8ce418de36 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -9,6 +9,7 @@
-  * (C) Copyright 2010, Tobias Klauser <tklauser@distanz.ch>
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/kernel.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-@@ -48,7 +49,6 @@
- #define ALTERA_JTAGUART_CONTROL_WI_MSK		0x00000200
- #define ALTERA_JTAGUART_CONTROL_AC_MSK		0x00000400
- #define ALTERA_JTAGUART_CONTROL_WSPACE_MSK	0xFFFF0000
--#define ALTERA_JTAGUART_CONTROL_WSPACE_OFF	16
- 
- /*
-  * Local per-uart structure.
-@@ -59,10 +59,19 @@ struct altera_jtaguart {
- 	unsigned long imr;	/* Local IMR mirror */
- };
- 
-+static unsigned int altera_jtaguart_tx_space(struct uart_port *port, u32 *ctlp)
-+{
-+	u32 ctl = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG);
-+
-+	if (ctlp)
-+		*ctlp = ctl;
-+
-+	return FIELD_GET(ALTERA_JTAGUART_CONTROL_WSPACE_MSK, ctl);
-+}
-+
- static unsigned int altera_jtaguart_tx_empty(struct uart_port *port)
- {
--	return (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
--		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) ? TIOCSER_TEMT : 0;
-+	return altera_jtaguart_tx_space(port, NULL) ? TIOCSER_TEMT : 0;
- }
- 
- static unsigned int altera_jtaguart_get_mctrl(struct uart_port *port)
-@@ -150,9 +159,7 @@ static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
- 
- 	pending = uart_circ_chars_pending(xmit);
- 	if (pending > 0) {
--		count = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
--				ALTERA_JTAGUART_CONTROL_WSPACE_MSK) >>
--			ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
-+		count = altera_jtaguart_tx_space(port, NULL);
- 		if (count > pending)
- 			count = pending;
- 		if (count > 0) {
-@@ -298,12 +305,11 @@ static struct altera_jtaguart altera_jtaguart_ports[ALTERA_JTAGUART_MAXPORTS];
- #if defined(CONFIG_SERIAL_ALTERA_JTAGUART_CONSOLE_BYPASS)
- static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c)
- {
--	unsigned long status;
- 	unsigned long flags;
-+	u32 status;
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	while (((status = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG)) &
--		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) == 0) {
-+	while (!altera_jtaguart_tx_space(port, &status)) {
- 		if ((status & ALTERA_JTAGUART_CONTROL_AC_MSK) == 0) {
- 			spin_unlock_irqrestore(&port->lock, flags);
- 			return;	/* no connection activity */
-@@ -321,8 +327,7 @@ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&port->lock, flags);
--	while ((readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
--		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) == 0) {
-+	while (!altera_jtaguart_tx_space(port, NULL)) {
- 		spin_unlock_irqrestore(&port->lock, flags);
- 		cpu_relax();
- 		spin_lock_irqsave(&port->lock, flags);
--- 
-2.37.3
+> There is one more place where lqasc_tx_ready() can be used now:
+> lqasc_console_putchar(). So replace the open-coded variant by the
+> helper.
+> 
+> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+> ---
+>  drivers/tty/serial/lantiq.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+> index 6da1b7496c6c..ba9739af30ed 100644
+> --- a/drivers/tty/serial/lantiq.c
+> +++ b/drivers/tty/serial/lantiq.c
+> @@ -606,15 +606,12 @@ static const struct uart_ops lqasc_pops = {
+>  static void
+>  lqasc_console_putchar(struct uart_port *port, unsigned char ch)
+>  {
+> -	int fifofree;
+> -
+>  	if (!port->membase)
+>  		return;
+>  
+> -	do {
+> -		fifofree = (__raw_readl(port->membase + LTQ_ASC_FSTAT)
+> -			& ASCFSTAT_TXFREEMASK) >> ASCFSTAT_TXFREEOFF;
+> -	} while (fifofree == 0);
+> +	while (!lqasc_tx_ready(port))
+> +		;
+> +
+>  	writeb(ch, port->membase + LTQ_ASC_TBUF);
+>  }
+>  
+> 
+--8323329-268247081-1664279261=:2334--
