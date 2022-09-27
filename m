@@ -2,63 +2,52 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B760C6FA83
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 06:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B275C6FA90
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 10:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbiI0Gqp (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Sep 2022 02:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
+        id S230509AbiI0KrZ (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Sep 2022 06:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiI0Gqn (ORCPT
+        with ESMTP id S229851AbiI0KrY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 27 Sep 2022 02:46:43 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21546A00E2;
-        Mon, 26 Sep 2022 23:46:42 -0700 (PDT)
+        Tue, 27 Sep 2022 06:47:24 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EAAF499;
+        Tue, 27 Sep 2022 03:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664261202; x=1695797202;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=UYSRZj7T7ZxjpirfOn+GZ9jSLsE+bkyXb8Mh75XWUEA=;
-  b=bhGRdeaPHQZJaEVHiAHvnjRXKHdFH13zP3itfJ3ZSTRY6wDJBQvqd1Kr
-   dNv7hscvM0IdOgsvZmpz59BRq4J6SLyIeVROSJNsaV3L7ruQkpjSRIWvQ
-   p9XbGaE+thiEhW0HK1s98O7Aufe/BT3NTnhnsKcCFGBGYVNGectnGPR9m
-   g0Xu/+abFfiPJOeQjmZeVlaiSlG66Ds13kZ0An4ZG2GrUoCmJV0Q6laM4
-   +PhX7cVfVHqsmPb9TiDYFXuTJ1SUQO+uYIHCnmblkaiVXQZ+/I/09uVym
-   lHMFkWfCjodJ4CaMxzs60Z8fXvCrFUrbvoGApDbmPj9F58tQhh6uNWcX1
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="365280456"
-X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
-   d="scan'208";a="365280456"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 23:46:41 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="689882103"
-X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
-   d="scan'208";a="689882103"
+  t=1664275643; x=1695811643;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=hN5Bp4Ggb6Ex76+LvlvoDPaQw1VAn4H/N7W96oY8WEA=;
+  b=KRNWqNv2rufnl21ulUVfpmBTsxOlF9UY+jCy9wYit13EeNaA1Xr4Q3ia
+   5ce7X3wge6A8pUHrcUTG/0TuKklbH0HZYWZs/+YJ/PYk/gjZ65/QVorlm
+   z9uzfmCkwmrE7SKlrWi+8+/vC7W0aNvA20gUaluPLcInOsz62jR8PnUsp
+   mBUsLeCPizE4Kn+M3T1kxcMh8Z7rbpjK9RQvsGfKPDfMxdOtpFr9tCn2P
+   s1Pf3sWWD7t68z3yoCLmOSjKQaCIT2AIa/SfHLAPOdrJIjDuDFKSg/Ju9
+   1Qv3/U9DaEqJBT4J4HB9LIQw03ewpD7TEmlsGeiTUcewu3n9IlGqbEJJs
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="298880282"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="298880282"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 03:47:15 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="572607712"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="572607712"
 Received: from aksaxena-mobl2.ger.corp.intel.com ([10.252.60.19])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 23:46:36 -0700
-Date:   Tue, 27 Sep 2022 09:46:32 +0300 (EEST)
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 03:47:13 -0700
+Date:   Tue, 27 Sep 2022 13:47:12 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     matthew.gerlach@linux.intel.com
-cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
-        mdf@kernel.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        tianfei.zhang@intel.com, corbet@lwn.net,
+To:     Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
-        macro@orcam.me.uk, johan@kernel.org, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v2 4/6] fpga: dfl: add generic support for MSIX
- interrupts
-In-Reply-To: <alpine.DEB.2.22.394.2209260734490.363733@rhweight-WRK1>
-Message-ID: <609e122-f6a0-c0c2-4168-4025dd96a1ac@linux.intel.com>
-References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com> <20220923121745.129167-5-matthew.gerlach@linux.intel.com> <a602677-78ac-23a0-1a63-96b325595998@linux.intel.com> <alpine.DEB.2.22.394.2209260734490.363733@rhweight-WRK1>
+        linux-serial <linux-serial@vger.kernel.org>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2] serial: Convert serial_rs485 to kernel doc
+Message-ID: <1c401476-8f4d-827c-f8e1-b4853988e2@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-529190930-1664261202=:2334"
+Content-Type: multipart/mixed; boundary="8323329-422374268-1664275636=:2334"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -66,125 +55,151 @@ X-Mailing-List: linux-serial@vger.kernel.org
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-529190930-1664261202=:2334
-Content-Type: text/plain; charset=ISO-8859-15
+--8323329-422374268-1664275636=:2334
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
 
-On Mon, 26 Sep 2022, matthew.gerlach@linux.intel.com wrote:
+Convert struct serial_rs485 comments to kernel doc format and include
+it into documentation.
 
-> 
-> 
-> On Fri, 23 Sep 2022, Ilpo Järvinen wrote:
-> 
-> > On Fri, 23 Sep 2022, matthew.gerlach@linux.intel.com wrote:
-> > 
-> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> > > 
-> > > Define and use a DFHv1 parameter to add generic support for MSIX
-> > > interrupts for DFL devices.
-> > > 
-> > > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> > > ---
-> > > v2: fix kernel doc
-> > >     clarify use of DFH_VERSION field
-> > > ---
-> > >  drivers/fpga/dfl.c  | 60 +++++++++++++++++++++++++++++++++++++++++----
-> > >  include/linux/dfl.h | 14 +++++++++++
-> > >  2 files changed, 69 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> > > index 1132f3c10440..dfd3f563c92d 100644
-> > > --- a/drivers/fpga/dfl.c
-> > > +++ b/drivers/fpga/dfl.c
-> > > @@ -941,23 +941,22 @@ static int parse_feature_irqs(struct
-> > > build_feature_devs_info *binfo,
-> > >  	void __iomem *base = binfo->ioaddr + ofst;
-> > >  	unsigned int i, ibase, inr = 0;
-> > >  	enum dfl_id_type type;
-> > > -	int virq;
-> > > +	int virq, off;
-> > >  	u64 v;
-> > > 
-> > >  	type = feature_dev_id_type(binfo->feature_dev);
-> > > 
-> > >  	/*
-> > >  	 * Ideally DFL framework should only read info from DFL header, but
-> > > -	 * current version DFL only provides mmio resources information for
-> > > +	 * current version, DFHv0, only provides mmio resources information
-> > > for
-> > >  	 * each feature in DFL Header, no field for interrupt resources.
-> > >  	 * Interrupt resource information is provided by specific mmio
-> > >  	 * registers of each private feature which supports interrupt. So in
-> > >  	 * order to parse and assign irq resources, DFL framework has to look
-> > >  	 * into specific capability registers of these private features.
-> > >  	 *
-> > > -	 * Once future DFL version supports generic interrupt resource
-> > > -	 * information in common DFL headers, the generic interrupt parsing
-> > > -	 * code will be added. But in order to be compatible to old version
-> > > +	 * DFHv1 supports generic interrupt resource information in DFHv1
-> > > +	 * parameter blocks. But in order to be compatible to old version
-> > >  	 * DFL, the driver may still fall back to these quirks.
-> > >  	 */
-> > >  	if (type == PORT_ID) {
-> > > @@ -981,6 +980,36 @@ static int parse_feature_irqs(struct
-> > > build_feature_devs_info *binfo,
-> > >  		}
-> > >  	}
-> > > 
-> > > +	if (fid != FEATURE_ID_AFU && fid != PORT_FEATURE_ID_ERROR &&
-> > > +	    fid != PORT_FEATURE_ID_UINT && fid != FME_FEATURE_ID_GLOBAL_ERR) {
-> > > +
-> > > +		v = FIELD_GET(DFH_VERSION, readq(base));
-> > 
-> > I'd call this variable version (or ver) if you want to store it but it
-> > would also fit to switch () line so that no extra variable is needed.
-> 
-> I will change the v to dfh_ver to be clearer.  I want to store the value
-> because it is used in the default case in the error message.  The error
-> message helps to debug broken FPGA images.
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
 
-Right, I missed that (or didn't think it too much and all being called 
-"v" didn't help either :-)).
+---
+v2:
+- Include serial_rs485 into documentation
+- Add * to multi-line flag descriptions
 
-> > > +			if (FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v)) {
-> > > +				off = dfl_find_param(base + DFHv1_PARAM_HDR,
-> > > ofst,
-> > > +						     DFHv1_PARAM_ID_MSIX);
-> > > +				if (off >= 0) {
-> > 
-> > I'd reverse these 2 conditions and break when there's nothing to do.
-> 
-> I'm not sure what you mean by reversing these conditions because a DFHv1 may
-> or may not have parameters (the first condition), and a DFHv1 may have
-> parameters but may not have a MSI-X parameter (the second condition).
+For reasons unknown to me, the formatting in the flags doesn't produce the
+effect promised by kerneldoc's documentation:
 
-This is what I meant:
+  https://www.kernel.org/doc/html/latest/doc-guide/kernel-doc.html#return-values
 
-		if (!FIELD_GET(DFHv1_CSR_SIZE_GRP_HAS_PARAMS, v))
-			break;
 
-		off = dfl_find_param(...);
-		if (off < 0)
-			break;
+ Documentation/driver-api/serial/serial-rs485.rst | 13 ++---
+ include/uapi/linux/serial.h                      | 61 ++++++++++++++++--------
+ 2 files changed, 47 insertions(+), 27 deletions(-)
 
-		ibase = ...
-
+diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
+index 6ebad75c74ed..3b3492a60ecc 100644
+--- a/Documentation/driver-api/serial/serial-rs485.rst
++++ b/Documentation/driver-api/serial/serial-rs485.rst
+@@ -29,11 +29,11 @@ RS485 Serial Communications
+ 3. Data Structures Already Available in the Kernel
+ ==================================================
+ 
+-   The Linux kernel provides the serial_rs485 structure (see [1]) to handle
+-   RS485 communications. This data structure is used to set and configure RS485
++   The Linux kernel provides the serial_rs485 structure to handle RS485
++   communications.  This data structure is used to set and configure RS485
+    parameters in the platform data and in ioctls.
+ 
+-   The device tree can also provide RS485 boot time parameters (see [2]
++   The device tree can also provide RS485 boot time parameters (see [1]
+    for bindings). The driver is in charge of filling this data structure from
+    the values given by the device tree.
+ 
+@@ -47,6 +47,9 @@ RS485 Serial Communications
+    for the uart_port. TIOCGRS485 ioctl can be used to read back the
+    serial_rs485 structure matching to the current configuration.
+ 
++.. kernel-doc:: include/uapi/linux/serial.h
++   :identifiers: serial_rs485
++
+ 4. Usage from user-level
+ ========================
+ 
+@@ -126,6 +129,4 @@ RS485 Serial Communications
+ 6. References
+ =============
+ 
+- [1]	include/uapi/linux/serial.h
+-
+- [2]	Documentation/devicetree/bindings/serial/rs485.txt
++ [1]	Documentation/devicetree/bindings/serial/rs485.txt
+diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+index cea06924b295..47b09d8c2fe7 100644
+--- a/include/uapi/linux/serial.h
++++ b/include/uapi/linux/serial.h
+@@ -107,37 +107,56 @@ struct serial_icounter_struct {
+ 	int reserved[9];
+ };
+ 
+-/*
++/**
++ * struct serial_rs485 - serial interface for controlling RS485 settings.
++ * @flags:			RS485 feature flags.
++ * @delay_rts_before_send:	Delay before send (milliseconds).
++ * @delay_rts_after_send:	Delay after send (milliseconds).
++ * @addr_recv:			Receive filter for RS485 addressing mode
++ *				(used only when %SER_RS485_ADDR_RECV is set).
++ * @addr_dest:			Destination address for RS485 addressing mode
++ *				(used only when %SER_RS485_ADDR_DEST is set).
++ * @padding0:			Padding (set to zero).
++ * @padding1:			Padding (set to zero).
++ * @padding:			Deprecated, use @padding0 and @padding1 instead.
++ *				Do not use with @addr_recv and @addr_dest (due to
++ *				overlap).
++ *
+  * Serial interface for controlling RS485 settings on chips with suitable
+  * support. Set with TIOCSRS485 and get with TIOCGRS485 if supported by your
+  * platform. The set function returns the new state, with any unsupported bits
+  * reverted appropriately.
++ *
++ * serial_rs485::flags bits are:
++ * * %SER_RS485_ENABLED		- RS485 enabled.
++ * * %SER_RS485_RTS_ON_SEND	- Logical level for RTS pin when sending.
++ * * %SER_RS485_RTS_AFTER_SEND	- Logical level for RTS pin after sent.
++ * * %SER_RS485_RX_DURING_TX	- Full-duplex RS485 line.
++ * * %SER_RS485_TERMINATE_BUS	- Enable bus termination (if supported).
++ * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
++ * * %SER_RS485_ADDR_RECV	- Receive address filter (enables @addr_recv).
++ * *				  Requires %SER_RS485_ADDRB.
++ * * %SER_RS485_ADDR_DEST	- Destination address (enables @addr_dest).
++ * *				  Requires %SER_RS485_ADDRB.
+  */
+-
+ struct serial_rs485 {
+-	__u32	flags;			/* RS485 feature flags */
+-#define SER_RS485_ENABLED		(1 << 0)	/* If enabled */
+-#define SER_RS485_RTS_ON_SEND		(1 << 1)	/* Logical level for
+-							   RTS pin when
+-							   sending */
+-#define SER_RS485_RTS_AFTER_SEND	(1 << 2)	/* Logical level for
+-							   RTS pin after sent*/
++	__u32	flags;
++#define SER_RS485_ENABLED		(1 << 0)
++#define SER_RS485_RTS_ON_SEND		(1 << 1)
++#define SER_RS485_RTS_AFTER_SEND	(1 << 2)
+ #define SER_RS485_RX_DURING_TX		(1 << 4)
+-#define SER_RS485_TERMINATE_BUS		(1 << 5)	/* Enable bus
+-							   termination
+-							   (if supported) */
+-
+-/* RS-485 addressing mode */
+-#define SER_RS485_ADDRB			(1 << 6)	/* Enable addressing mode */
+-#define SER_RS485_ADDR_RECV		(1 << 7)	/* Receive address filter */
+-#define SER_RS485_ADDR_DEST		(1 << 8)	/* Destination address */
++#define SER_RS485_TERMINATE_BUS		(1 << 5)
++#define SER_RS485_ADDRB			(1 << 6)
++#define SER_RS485_ADDR_RECV		(1 << 7)
++#define SER_RS485_ADDR_DEST		(1 << 8)
+ 
+-	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
+-	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
++	__u32	delay_rts_before_send;
++	__u32	delay_rts_after_send;
+ 
+-	/* The fields below are defined by flags */
++	/* private: The fields below are defined by flags */
+ 	union {
+-		__u32	padding[5];		/* Memory is cheap, new structs are a pain */
++		/* private: Memory is cheap, new structs are a pain. */
++		__u32	padding[5];
+ 
+ 		struct {
+ 			__u8	addr_recv;
 
 -- 
- i.
-
-
-> > > +					ibase = readl(base + DFHv1_PARAM_HDR +
-> > > +						      off +
-> > > DFHv1_PARAM_MSIX_STARTV);
-> > > +					inr = readl(base + DFHv1_PARAM_HDR +
-> > > +						    off +
-> > > DFHv1_PARAM_MSIX_NUMV);
-> > > +					dev_dbg(binfo->dev, "start %d num %d
-> > > fid 0x%x\n",
-> > > +						ibase, inr, fid);
-> > > +				}
-> > > +			}
-> > > +			break;
-
---8323329-529190930-1664261202=:2334--
+tg: (2eb6f6da8b51..) rs485/kdoc (depends on: supported-fix/intro-kernel_serial_rs485_to_user_rs485)
+--8323329-422374268-1664275636=:2334--
