@@ -2,53 +2,53 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CE3C6FA82
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 11:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7848C6FA8E
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 11:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbiI0LSq (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Sep 2022 07:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        id S231582AbiI0LSr (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Sep 2022 07:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231709AbiI0LSX (ORCPT
+        with ESMTP id S231682AbiI0LSX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Tue, 27 Sep 2022 07:18:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5426BCEB;
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AABB6BCE9;
         Tue, 27 Sep 2022 04:18:22 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 83FF71FD07;
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3AE451FD05;
         Tue, 27 Sep 2022 11:18:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1664277501; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g6ztBScsKSn32mkT2NhD08kHlXvqclyG0jMfeztB7nU=;
-        b=2ygAvVOXTuAu2mtJF1vrPjUFilv97iBfRlK7wohSbSnUtDV+j4nE3WfxnQs0/5ctR/Ailh
-        JvbrVp3snQu9JvGHaePH8tgzZUtyBiXEy5nCaVR37jU40pd49YG9rRuRIMm1g+iWBX2L55
-        sN7w2SSz7fHUsrO2+iFKAA6u07MMNB8=
+        bh=gm3ZZcNM0cZY4fp0d7F1FO1agY/rjagivksQPwk6oIA=;
+        b=ppqx4kdco2y2Xo+vIvFPNzincoNo3Qwu7T3jJSA7FI0FamgW9vwRn7/sgsusjfTiej1ePN
+        7sM1Y5JkdiQojlVyYUgaaxhwnR/SbHsZGl4cBaqdDkNUaGo3i2TV+mEzJgVCOjt0HSfvKV
+        Phm4Nkhxo5pGCVxutaWnnknL/eSNzkc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1664277501;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=g6ztBScsKSn32mkT2NhD08kHlXvqclyG0jMfeztB7nU=;
-        b=HUxLzx87puN1Dd0I2gvbpmWCWVWr9xyK9ek1B6FNOlnSu/oxDhash4C95JEBTXk6YDPtE8
-        fCySs6ZRtHgtPdBQ==
+        bh=gm3ZZcNM0cZY4fp0d7F1FO1agY/rjagivksQPwk6oIA=;
+        b=QvdEkqSKah1i7nT4ePYpknUqnl3xXCbstUGUzQyh7RzdtaMto+1v2jnQgIm+BxaWOpp/9L
+        Ab7xdE1bs35yaWAw==
 Received: from localhost.localdomain (unknown [10.100.208.98])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4C1622C162;
-        Tue, 27 Sep 2022 11:18:21 +0000 (UTC)
+        by relay2.suse.de (Postfix) with ESMTPS id 039E62C166;
+        Tue, 27 Sep 2022 11:18:20 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>,
         Tobias Klauser <tklauser@distanz.ch>
-Subject: [PATCH 4/4] tty: serial: do unlock on a common path in altera_jtaguart_console_putc()
-Date:   Tue, 27 Sep 2022 13:18:19 +0200
-Message-Id: <20220927111819.18516-4-jslaby@suse.cz>
+Subject: [PATCH 3/4] tty: serial: unify TX space reads under altera_jtaguart_tx_space()
+Date:   Tue, 27 Sep 2022 13:18:18 +0200
+Message-Id: <20220927111819.18516-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220927111819.18516-1-jslaby@suse.cz>
 References: <20220927111819.18516-1-jslaby@suse.cz>
@@ -58,35 +58,97 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-port->lock is unlocked in each branch in altera_jtaguart_console_putc(),
-so do it before the "if". "status" needs not be under the lock, as the
-register was already read.
+TX space reads from the control register are performed in various forms
+on 4 places in altera_jtaguart. Unify all those and do the read and
+masking on a single place.
+
+The new helper altera_jtaguart_tx_space() uses FIELD_GET(), so we can
+drop ALTERA_JTAGUART_CONTROL_WSPACE_OFF now.
 
 Cc: Tobias Klauser <tklauser@distanz.ch>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/serial/altera_jtaguart.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/altera_jtaguart.c | 27 ++++++++++++++++-----------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index ac8ce418de36..c2d154d78e54 100644
+index 23f339757894..ac8ce418de36 100644
 --- a/drivers/tty/serial/altera_jtaguart.c
 +++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -310,11 +310,12 @@ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c
+@@ -9,6 +9,7 @@
+  * (C) Copyright 2010, Tobias Klauser <tklauser@distanz.ch>
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+@@ -48,7 +49,6 @@
+ #define ALTERA_JTAGUART_CONTROL_WI_MSK		0x00000200
+ #define ALTERA_JTAGUART_CONTROL_AC_MSK		0x00000400
+ #define ALTERA_JTAGUART_CONTROL_WSPACE_MSK	0xFFFF0000
+-#define ALTERA_JTAGUART_CONTROL_WSPACE_OFF	16
+ 
+ /*
+  * Local per-uart structure.
+@@ -59,10 +59,19 @@ struct altera_jtaguart {
+ 	unsigned long imr;	/* Local IMR mirror */
+ };
+ 
++static unsigned int altera_jtaguart_tx_space(struct uart_port *port, u32 *ctlp)
++{
++	u32 ctl = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG);
++
++	if (ctlp)
++		*ctlp = ctl;
++
++	return FIELD_GET(ALTERA_JTAGUART_CONTROL_WSPACE_MSK, ctl);
++}
++
+ static unsigned int altera_jtaguart_tx_empty(struct uart_port *port)
+ {
+-	return (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
+-		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) ? TIOCSER_TEMT : 0;
++	return altera_jtaguart_tx_space(port, NULL) ? TIOCSER_TEMT : 0;
+ }
+ 
+ static unsigned int altera_jtaguart_get_mctrl(struct uart_port *port)
+@@ -150,9 +159,7 @@ static void altera_jtaguart_tx_chars(struct altera_jtaguart *pp)
+ 
+ 	pending = uart_circ_chars_pending(xmit);
+ 	if (pending > 0) {
+-		count = (readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
+-				ALTERA_JTAGUART_CONTROL_WSPACE_MSK) >>
+-			ALTERA_JTAGUART_CONTROL_WSPACE_OFF;
++		count = altera_jtaguart_tx_space(port, NULL);
+ 		if (count > pending)
+ 			count = pending;
+ 		if (count > 0) {
+@@ -298,12 +305,11 @@ static struct altera_jtaguart altera_jtaguart_ports[ALTERA_JTAGUART_MAXPORTS];
+ #if defined(CONFIG_SERIAL_ALTERA_JTAGUART_CONSOLE_BYPASS)
+ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c)
+ {
+-	unsigned long status;
+ 	unsigned long flags;
++	u32 status;
  
  	spin_lock_irqsave(&port->lock, flags);
- 	while (!altera_jtaguart_tx_space(port, &status)) {
-+		spin_unlock_irqrestore(&port->lock, flags);
-+
+-	while (((status = readl(port->membase + ALTERA_JTAGUART_CONTROL_REG)) &
+-		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) == 0) {
++	while (!altera_jtaguart_tx_space(port, &status)) {
  		if ((status & ALTERA_JTAGUART_CONTROL_AC_MSK) == 0) {
--			spin_unlock_irqrestore(&port->lock, flags);
+ 			spin_unlock_irqrestore(&port->lock, flags);
  			return;	/* no connection activity */
- 		}
--		spin_unlock_irqrestore(&port->lock, flags);
-+
+@@ -321,8 +327,7 @@ static void altera_jtaguart_console_putc(struct uart_port *port, unsigned char c
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+-	while ((readl(port->membase + ALTERA_JTAGUART_CONTROL_REG) &
+-		ALTERA_JTAGUART_CONTROL_WSPACE_MSK) == 0) {
++	while (!altera_jtaguart_tx_space(port, NULL)) {
+ 		spin_unlock_irqrestore(&port->lock, flags);
  		cpu_relax();
  		spin_lock_irqsave(&port->lock, flags);
- 	}
 -- 
 2.37.3
 
