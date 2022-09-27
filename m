@@ -2,236 +2,187 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB068C6FA94
-	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 12:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00806C54EE9
+	for <linux-serial@archiver.kernel.org>; Tue, 27 Sep 2022 12:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbiI0MkG (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 27 Sep 2022 08:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S231706AbiI0Mye (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Tue, 27 Sep 2022 08:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbiI0MkB (ORCPT
+        with ESMTP id S231727AbiI0My1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 27 Sep 2022 08:40:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C167269F;
-        Tue, 27 Sep 2022 05:39:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2890F61932;
-        Tue, 27 Sep 2022 12:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15663C433C1;
-        Tue, 27 Sep 2022 12:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664282397;
-        bh=37yDCTtTXKSMe/LNxUNskIHnOhgXH3MxP0BfzMXipSc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oDLkAAZAK9fwuZt7LKXM8ftnzMYuqEX16TQ7tEzyFmrIv30ofSaafC4Y6LcrceyD7
-         V+zHm07PGvSaenwVeBW7ozfKT0qc6eaS4RIQDezd00apiD/wzViERNkpjWxNMuSu3T
-         TKNCo/J23ajBzpoO84jGyHvI9aryn0jwbsbvfsIQ=
-Date:   Tue, 27 Sep 2022 14:39:53 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Olof Johansson <olof@lixom.net>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
-Message-ID: <YzLvGXjP8+W0X/1s@kroah.com>
-References: <20220701012647.2007122-1-saravanak@google.com>
- <YwS5J3effuHQJRZ5@kroah.com>
- <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
- <YygsEtxKz8dsEstc@kroah.com>
- <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
- <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
- <YzLp9yXgoJmy5YU8@smile.fi.intel.com>
+        Tue, 27 Sep 2022 08:54:27 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABB8E118D;
+        Tue, 27 Sep 2022 05:54:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664283266; x=1695819266;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Flh/QIQI4J2i9KB5PdCsdOmNeR/PhgABr6J+CVo/0qg=;
+  b=chr/NFCRW2I0L0NnBbfPuwcHpkdg9QyBCVcpTrzdM2HvzL2RtUC6lFc0
+   dRNiaYfl2U1/XiDsx85JEfFADlG+w+VZZcTMq20ol8A+25YgPmt3dzhDp
+   /F1dgA1Obb36s5W6IdwOSc7vAbfk72uB+Bhpjau3HpK5mA3fJVzAY0hXC
+   VlEKKTjopmvmmkvwGhrDoJ5hWlEvkFNeqzrkjERFmYiPP7TutKTYwlS75
+   yW3m5wTZC1IeDHk6phbmxyzBPPKhspsSkzXLPelncEeIG9Mip30zcA1Ul
+   cZGj0xt/lljbX3fTMxOERHFnlzk5/0WqNCye/sDcz98uQ4dBWsEajQTkX
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="284433545"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="284433545"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 05:54:25 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="866558230"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="866558230"
+Received: from aksaxena-mobl2.ger.corp.intel.com ([10.252.60.19])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 05:54:18 -0700
+Date:   Tue, 27 Sep 2022 15:54:16 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     matthew.gerlach@linux.intel.com
+cc:     hao.wu@intel.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        basheer.ahmed.muddebihal@intel.com, trix@redhat.com,
+        mdf@kernel.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        tianfei.zhang@intel.com, corbet@lwn.net,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        niklas.soderlund+renesas@ragnatech.se, phil.edworthy@renesas.com,
+        macro@orcam.me.uk, johan@kernel.org, Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH v2 1/6] Documentation: fpga: dfl: Add documentation for
+ DFHv1
+In-Reply-To: <alpine.DEB.2.22.394.2209270535320.2165158@rhweight-WRK1>
+Message-ID: <f411fef5-1aa4-4cf-6037-cddf6f1e3d0@linux.intel.com>
+References: <20220923121745.129167-1-matthew.gerlach@linux.intel.com> <20220923121745.129167-2-matthew.gerlach@linux.intel.com> <40e867ec-c7-66f-9db9-94f6132d587e@linux.intel.com> <alpine.DEB.2.22.394.2209270535320.2165158@rhweight-WRK1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YzLp9yXgoJmy5YU8@smile.fi.intel.com>
+Content-Type: multipart/mixed; boundary="8323329-962032008-1664283266=:2334"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 03:17:59PM +0300, Andy Shevchenko wrote:
-> On Mon, Sep 26, 2022 at 01:25:05PM -0500, Rob Herring wrote:
-> > On Mon, Sep 19, 2022 at 5:56 PM Olof Johansson <olof@lixom.net> wrote:
-> > >
-> > > On Mon, Sep 19, 2022 at 1:44 AM Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
-> > > > > On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
-> > > > > <gregkh@linuxfoundation.org> wrote:
-> > > > > >
-> > > > > > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
-> > > > > > > These patches are on top of driver-core-next.
-> > > > > > >
-> > > > > > > Even if stdout-path isn't set in DT, this patch should take console
-> > > > > > > probe times back to how they were before the deferred_probe_timeout
-> > > > > > > clean up series[1].
-> > > > > >
-> > > > > > Now dropped from my queue due to lack of a response to other reviewer's
-> > > > > > questions.
-> > > > >
-> > > > > What happened to this patch? I have a 10 second timeout on console
-> > > > > probe on my SiFive Unmatched, and I don't see this flag being set for
-> > > > > the serial driver. In fact, I don't see it anywhere in-tree. I can't
-> > > > > seem to locate another patchset from Saravana around this though, so
-> > > > > I'm not sure where to look for a missing piece for the sifive serial
-> > > > > driver.
-> > > > >
-> > > > > This is the second boot time regression (this one not fatal, unlike
-> > > > > the Layerscape PCIe one) from the fw_devlink patchset.
-> > > > >
-> > > > > Greg, can you revert the whole set for 6.0, please? It's obviously
-> > > > > nowhere near tested enough to go in and I expect we'll see a bunch of
-> > > > > -stable fixups due to this if we let it remain in.
-> > > >
-> > > > What exactly is "the whole set"?  I have the default option fix queued
-> > > > up and will send that to Linus later this week (am traveling back from
-> > > > Plumbers still), but have not heard any problems about any other issues
-> > > > at all other than your report.
-> > >
-> > > I stand corrected in this case, the issue on the Hifive Unmatched was
-> > > a regression due to a PWM clock change -- I just sent a patch for that
-> > > (serial driver fix).
-> > >
-> > > So it seems like as long as the fw_devlink.strict=1 patch is reverted,
-> > > things are back to a working state here.
-> > >
-> > > I still struggle with how the fw_devlink patchset is expected to work
-> > > though, since DT is expected to describe the hardware configuration,
-> > > and it has no knowledge of whether there are drivers that will be
-> > > bound to any referenced supplier devnodes. It's not going to work well
-> > > to assume that they will always be bound, and to add 10 second
-> > > timeouts for those cases isn't a good solution. Seems like the number
-> > > of special cases will keep adding up.
-> > 
-> > Since the introduction of deferred probe, the kernel has always
-> > assumed if there is a device described, then there is or will be a
-> > driver for it. The result is you can't use new DTs (if they add
-> > providers) with older kernels.
-> > 
-> > We've ended up with a timeout because no one has come up with a better
-> > way to handle it. What the kernel needs is userspace saying "I'm done
-> > loading modules", but it's debatable whether that's a good solution
-> > too.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-962032008-1664283266=:2334
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
+On Tue, 27 Sep 2022, matthew.gerlach@linux.intel.com wrote:
+
 > 
-> In my opinion the deferred probe is a big hack and that is the root
-> cause of the issues we have here and there. It has to be redesigned
-> to be mathematically robust. It was an attempt by Andrzej Hajda to
-> solve this [1].
 > 
-> [1]: https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
+> On Fri, 23 Sep 2022, Ilpo Järvinen wrote:
+> 
+> > On Fri, 23 Sep 2022, matthew.gerlach@linux.intel.com wrote:
+> > 
+> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > 
+> > > Add documentation describing the extensions provided by Version
+> > > 1 of the Device Feature Header (DFHv1).
+> > > 
+> > > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > ---
+> > > v2: s/GUILD/GUID/
+> > >     add picture
+> > > ---
+> > >  Documentation/fpga/dfl.rst | 49 ++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 49 insertions(+)
+> > > 
+> > > diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+> > > index 15b670926084..7c786b75b498 100644
+> > > --- a/Documentation/fpga/dfl.rst
+> > > +++ b/Documentation/fpga/dfl.rst
+> > > @@ -561,6 +561,55 @@ new DFL feature via UIO direct access, its feature id
+> > > should be added to the
+> > >  driver's id_table.
+> > > 
+> > > 
+> > > +Extending the Device Feature Header - DFHv1
+> > > +===========================================
+> > > +The current 8 bytes of the Device Feature Header, hereafter referred to
+> > > as
+> > > +to DFHv0, provide very little opportunity for the hardware to describe
+> > > itself
+> > > +to software. Version 1 of the Device Feature Header (DFHv1) is being
+> > > introduced
+> > > +to provide increased flexibility and extensibility to hardware designs
+> > > using
+> > > +Device Feature Lists.  The list below describes some of the goals behind
+> > > the
+> > > +changes in DFHv1:
+> > > +
+> > > +* Provide a standardized mechanism for features to describe
+> > > +  parameters/capabilities to software.
+> > > +* Standardize the use of a GUID for all DFHv1 types.
+> > > +* Decouple the location of the DFH from the register space of the feature
+> > > itself.
+> > > +
+> > > +Modeled after PCI Capabilities, DFHv1 Parameters provide a mechanism to
+> > > associate
+> > > +a list of parameter values to a particular feature.
+> > > +
+> > > +With DFHv0, not all features types contained a GUID.  DFHv1 makes the
+> > > GUID standard
+> > > +across all types.
+> > > +
+> > > +With DFHv0, the register map of a given feature is located immediately
+> > > following
+> > > +the DFHv0 in the memory space.  With DFHv1, the location of the feature
+> > > register
+> > > +map can be specified as an offset to the DFHv1 or as an absolute address.
+> > > The DFHv1
+> > > +structure is shown below:
+> > > +
+> > > +
+> > > +-----------------------------------------------------------------------+
+> > > +    |63 Type 60|59 DFH VER 52|51 Rsvd 41|40 EOL|39 Next 16|15 VER 12|11
+> > > ID 0|
+> > > +
+> > > +-----------------------------------------------------------------------+
+> > > +    |63                                 GUID_L
+> > > 0|
+> > > +
+> > > +-----------------------------------------------------------------------+
+> > > +    |63                                 GUID_H
+> > > 0|
+> > > +
+> > > +-----------------------------------------------------------------------+
+> > > +    |63                 Address/Offset                            1|  Rel
+> > > 0|
+> > > +
+> > > +-----------------------------------------------------------------------+
+> > 
+> > Is something missing here given the layout is claimed (in 2/6) to be:
+> > 
+> > "DFHv1 Register Offset definitons
+> > In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA"
+> > 
+> > ?
+> 
+> 
+> I was hesitant to have a picture because the description would then be in two
+> places.  I suspect my picture is not clear, but it does line up with the
+> offset definitions:
+> 
+> DFH offset 0x0
+> GUID offsets 0x8 and 0x10
+> CSR_START offset 0x18
+> CSR_SIZE offset 0x20
+> First PARAM_HDR, if it exists, is 0x28,
+> First PARAM_DATA, if it exists, is 0x30.
 
-deferred probe has _ALWAYS_ been known to be a hack, way back when we
-accepted it, but it was the best hack we had to solve a real problem
-that we had, so it was accepted.
+I already noted in the other email I figured it out. It was thanks to 
+the offsets in the header how I found out where I had misintepreted 
+things. I initially had thought PARAM_DATA would be the parameters, both 
+headers and param data, but then realized that it's PARAM_HDR+PARAM_DATA 
+which is repeated n times.
 
-It's been polished over the years, but yes, it does break down at times,
-due to the crazy complexity of hardware systems that we have no control
-over.
+I don't think there's need to fix anything in here.
 
-If you have concrete solutions for how to solve the issue, wonderful,
-please submit patches :)
+-- 
+ i.
 
-thanks,
-
-greg k-h
+--8323329-962032008-1664283266=:2334--
