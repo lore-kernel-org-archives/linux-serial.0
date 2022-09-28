@@ -2,89 +2,116 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD1CC32771
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Sep 2022 11:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98182C54EE9
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Sep 2022 15:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233263AbiI1LwI (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Sep 2022 07:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
+        id S234119AbiI1PEH (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 28 Sep 2022 11:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233083AbiI1LwH (ORCPT
+        with ESMTP id S233247AbiI1PEG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Sep 2022 07:52:07 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004611BC;
-        Wed, 28 Sep 2022 04:52:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664365927; x=1695901927;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=JbPedr5Aug0M5rs26jYGMN7zaZdiXgsSQ4iu0gsMQUQ=;
-  b=gZJ7A2BMy8QZzt+PRwQRjwDg9zgpLVZZjvZih30akIU7Z5llXOZ2PqOR
-   rDf9Zhm4M7Tb1FCZVdu/l72k39/XgeZO2jAE/Cd0SVofMIQUvdYgfIHfx
-   kf7ooK4QS4osHh2M8cCOBwMp6M/EVuN4PIS3cxoNhDf1AgDlz5nol/JAR
-   SJq9nlOGcVJvT0pK0OUpx0FDqChgt+6WU1Oa78ACBR6btdOoszzfiOKDU
-   h8V8UzEATxjAEyHjw7EaMYR7gAt5CwngkIsYWw2M1vgzQUcNxCliCISLt
-   pMQE43VeQcMnctgF8afuBY16MwzrA5LK6oSMenjsFNfeweyShJ5Tmgsfb
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="303064158"
-X-IronPort-AV: E=Sophos;i="5.93,352,1654585200"; 
-   d="scan'208";a="303064158"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2022 04:52:06 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="599549670"
-X-IronPort-AV: E=Sophos;i="5.93,352,1654585200"; 
-   d="scan'208";a="599549670"
-Received: from kjurkiew-mobl.ger.corp.intel.com ([10.251.211.248])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2022 04:52:04 -0700
-Date:   Wed, 28 Sep 2022 14:52:02 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 3/4] Documentation: rs485: Mention
- uart_get_rs485_mode()
-In-Reply-To: <CAHp75Vd6OJ68BbaYt21hPpOpDbvT9pow6PSDhedGULjikGhoNg@mail.gmail.com>
-Message-ID: <c4df6e19-5390-3ce8-eb7f-8059115187d0@linux.intel.com>
-References: <20220928110509.13544-1-ilpo.jarvinen@linux.intel.com> <20220928110509.13544-4-ilpo.jarvinen@linux.intel.com> <CAHp75Vd6OJ68BbaYt21hPpOpDbvT9pow6PSDhedGULjikGhoNg@mail.gmail.com>
+        Wed, 28 Sep 2022 11:04:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BB088A1A;
+        Wed, 28 Sep 2022 08:04:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED1D4B81FA2;
+        Wed, 28 Sep 2022 15:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF0CC433C1;
+        Wed, 28 Sep 2022 15:03:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664377438;
+        bh=NRllYnWOmIZn9K9w86cX3L3Nj4a7CsqYqfE3TbG8jFo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EzDIqzwOpCcuTEMA4WbMpGj+/uVLnmZvjsbMne/ABCC1CMSvRTBy/48jWaf0Hg4KY
+         bgw7smjokwizE2hSdWQHQ+cTqWj0rH+KQEeu+Uyzn+lM3xCLLFdgJM89J7TYUHAeRo
+         PX8jGzmMpXwVWpUb47Qi6TDvbxzsP+Ijx8hVO+5DJvVSy6lMnyeN1XcwNChk2gy54W
+         4ZEvIoGNRKBP5M43zUg4/UajXWDeWR+nMBA/jGnAjLu6IV7GlYvUvvk1tLJPPMke4o
+         92YBTWMlPGFYjhuo+qJ3bjl2JKgm01hr4RuLriDn5HfIn5oqsEdk2XrUOdQ0TCAu12
+         RJBE6qFFNqwlA==
+Date:   Wed, 28 Sep 2022 16:03:51 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, radu_nicolae.pirea@upb.ro,
+        richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, kavyasree.kotagiri@microchip.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v5 1/9] dt-bindings: mfd: atmel,sama5d2-flexcom: Add SPI
+ child node ref binding
+Message-ID: <YzRiVwzJYXtat1O5@google.com>
+References: <20220922113347.144383-1-sergiu.moga@microchip.com>
+ <20220922113347.144383-2-sergiu.moga@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1426318885-1664365926=:1695"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220922113347.144383-2-sergiu.moga@microchip.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, 22 Sep 2022, Sergiu Moga wrote:
 
---8323329-1426318885-1664365926=:1695
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 28 Sep 2022, Andy Shevchenko wrote:
-
-> On Wed, Sep 28, 2022 at 2:05 PM Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> wrote:
+> Another functionality of FLEXCOM is that of SPI. In order for
+> the proper validation of the SPI children nodes through the binding
+> to occur, the proper binding for SPI must be referenced.
 > 
-> >     The device tree can also provide RS485 boot time parameters
-> > -   [#DT-bindings]_. The driver is in charge of filling this data structure
-> > -   from the values given by the device tree.
-> > +   [#DT-bindings]_. The serial core fills the struct serial_rs485 from the
-> > +   values given by the device tree when driver calls uart_get_rs485_mode().
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
 > 
-> the driver
 > 
-> Feels like this should be before the previous patch and actually have
-> a Fixes tag.
+> v1 -> v2:
+> - use full schema paths
+> 
+> 
+> v2 -> v3:
+> - Added Reviewed-by tag, previously this was [PATCH 3]
+> 
+> 
+> v3 -> v4:
+> - Nothing, previously this was [PATCH 5]
+> 
+> 
+> v4 -> v5:
+> - Nothing
+> 
+> 
+> 
+>  .../devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml       | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
-I don't feel it would be an appropriate tag for this kind of cases 
-where documentation is simply lacking behind what the core code now 
-offers.
+Not sure how these can be handled.
+
+I guess I cannot take these until the other patches are applied.
+
+NB: The patch doesn't apply cleanly anyway, so will need to be rebased.
+
+> diff --git a/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> index 0c80f4e98c54..f283cfd84b2d 100644
+> --- a/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/atmel,sama5d2-flexcom.yaml
+> @@ -78,10 +78,9 @@ patternProperties:
+>        of USART bindings.
+>  
+>    "^spi@[0-9a-f]+$":
+> -    type: object
+> +    $ref: /schemas/spi/atmel,at91rm9200-spi.yaml
+>      description:
+> -      Child node describing SPI. See ../spi/spi_atmel.txt for details
+> -      of SPI bindings.
+> +      Child node describing SPI.
+>  
+>    "^i2c@[0-9a-f]+$":
+>      $ref: /schemas/i2c/atmel,at91sam-i2c.yaml
 
 -- 
- i.
-
---8323329-1426318885-1664365926=:1695--
+Lee Jones [李琼斯]
