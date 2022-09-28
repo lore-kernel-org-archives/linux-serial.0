@@ -2,180 +2,223 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171F4C6FA86
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Sep 2022 07:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BEDC32771
+	for <linux-serial@archiver.kernel.org>; Wed, 28 Sep 2022 07:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233693AbiI1Hhx (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Sep 2022 03:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        id S233674AbiI1Hrs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 28 Sep 2022 03:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233697AbiI1HhV (ORCPT
+        with ESMTP id S233689AbiI1Hr3 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Sep 2022 03:37:21 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C701C106F74;
-        Wed, 28 Sep 2022 00:36:22 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 52DDC826D;
-        Wed, 28 Sep 2022 07:21:58 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Romain Naour <romain.naour@smile.fr>
-Subject: [RFC PATCH 5/5] serial: 8250: omap: Fix life cycle issues for interrupt handlers
-Date:   Wed, 28 Sep 2022 10:29:34 +0300
-Message-Id: <20220928072934.48359-6-tony@atomide.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220928072934.48359-1-tony@atomide.com>
-References: <20220928072934.48359-1-tony@atomide.com>
+        Wed, 28 Sep 2022 03:47:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA817A5C67
+        for <linux-serial@vger.kernel.org>; Wed, 28 Sep 2022 00:43:58 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1odRjL-0003gm-1l; Wed, 28 Sep 2022 09:43:43 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1odRjK-003NGS-Q4; Wed, 28 Sep 2022 09:43:41 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1odRjI-004519-H5; Wed, 28 Sep 2022 09:43:40 +0200
+Date:   Wed, 28 Sep 2022 09:43:38 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-serial@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Peng Fan <peng.fan@nxp.com>, Fabio Estevam <festevam@denx.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        kernel@dh-electronics.com, NXP Linux Team <linux-imx@nxp.com>,
+        kernel@pengutronix.de, Shawn Guo <shawnguo@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] tty: serial: imx: Handle RS485 DE signal active high
+Message-ID: <20220928074338.4myghfoyxb2mmywo@pengutronix.de>
+References: <20220928044037.605217-1-marex@denx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tzb3sd6pjcdccpnt"
+Content-Disposition: inline
+In-Reply-To: <20220928044037.605217-1-marex@denx.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We have the struct uart_8250_port instance recycled on device rebind while
-the struct omap8250_priv instance is not. For the console uart,
-__tty_hangup() does not call tty->ops->hangup() as cons_filp stays open,
-and uart shutdown won't get called. This means we have a stale
-priv->wakeirq handler around after unbind, and port->irq is not freed on
-unbind.
 
-There's no need to claim the interrupts on startup. We can fix this and
-simplify the driver a bit by claiming the interrupts in probe, and clearing
-them on remove. For the device interrupt, we can use devm_request_irq().
+--tzb3sd6pjcdccpnt
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-To do this, we change omap8250_irq() to use struct omap8250_priv data
-directly so we don't have to wait for the assigned port from
-serial8250_register_8250_port().
+On Wed, Sep 28, 2022 at 06:40:37AM +0200, Marek Vasut wrote:
+> The default polarity of RS485 DE signal is active high. This driver does
+> not handle such case properly. Currently, when a pin is multiplexed as a
+> UART CTS_B on boot, this pin is pulled HIGH by the i.MX UART CTS circuit,
+> which activates DE signal on the RS485 transceiver and thus behave as if
+> the RS485 was transmitting data, so the system blocks the RS485 bus when
+> it starts and until user application takes over. This behavior is not OK.
+> The problem consists of two separate parts.
+>=20
+> First, the i.MX UART IP requires UCR1 UARTEN and UCR2 RXEN to be set for
+> UCR2 CTSC and CTS bits to have any effect. The UCR2 CTSC bit permits the
+> driver to set CTS (RTS_B or RS485 DE signal) to either level sychronous
+> to the internal UART IP clock. Compared to other options, like GPIO CTS
+> control, this has the benefit of being synchronous to the UART IP clock
+> and thus without glitches or bus delays. The reason for the CTS design
+> is likely because when the Receiver is disabled, the UART IP can never
+> indicate that it is ready to receive data by assering CTS signal, so
+> the CTS is always pulled HIGH by default.
+>=20
+> When the port is closed by user space, imx_uart_stop_rx() clears UCR2
+> RXEN bit, and imx_uart_shutdown() clears UCR1 UARTEN bit. This disables
+> UART Receiver and UART itself, and forces CTS signal HIGH, which leads
+> to the RS485 bus being blocked because RS485 DE is incorrectly active.
+>=20
+> The proposed solution for this problem is to keep the Receiver running
+> even after the port is closed, but in loopback mode. This disconnects
+> the RX FIFO input from the RXD external signal, and since UCR2 TXEN is
+> cleared, the UART Transmitter is disabled, so nothing can feed data in
+> the RX FIFO. Because the Receiver is still enabled, the UCR2 CTSC and
+> CTS bits still have effect and the CTS (RS485 DE) control is retained.
+>=20
+> Note that in case of RS485 DE signal active low, there is no problem and
+> no special handling is necessary. The CTS signal defaults to HIGH, thus
+> the RS485 is by default set to Receive and the bus is not blocked.
+>=20
+> Note that while there is the possibility to control CTS using GPIO with
+> either CTS polarity, this has the downside of not being synchronous to
+> the UART IP clock and thus glitchy and susceptible to slow DE switching.
+>=20
+> Second, on boot, before the UART driver probe callback is called, the
+> driver core triggers pinctrl_init_done() and configures the IOMUXC to
+> default state. At this point, UCR1 UARTEN and UCR2 RXEN are both still
+> cleared, but UART CTS_B (RS485 DE) is configured as CTS function, thus
+> the RTS signal is pulled HIGH by the UART IP CTS circuit.
+>=20
+> One part of the solution here is to enable UCR1 UARTEN and UCR2 RXEN and
+> UTS loopback in this driver probe callback, thus unblocking the CTSC and
+> CTS control early on. But this is still too late, since the pin control
+> is already configured and CTS has been pulled HIGH for a short period
+> of time.
+>=20
+> When Linux kernel boots and this driver is bound, the pin control is set
+> to special "init" state if the state is available, and driver can switch
+> the "default" state afterward when ready. This state can be used to set
+> the CTS line as a GPIO in DT temporarily, and a GPIO hog can force such
+> GPIO to LOW, thus keeping the RS485 DE line LOW early on boot. Once the
+> driver takes over and UCR1 UARTEN and UCR2 RXEN and UTS loopback are all
+> enabled, the driver can switch to "default" pin control state and control
+> the CTS line as function instead. DT binding example is below:
+>=20
+> "
+> &gpio6 {
+>   rts-init-hog {
+>     gpio-hog;
+>     gpios =3D <5 0>;
+>     output-low;
+>     line-name =3D "rs485-de";
+>   };
+> };
+>=20
+> &uart5 { /* DHCOM UART2 */
+>   pinctrl-0 =3D <&pinctrl_uart5>;
+>   pinctrl-1 =3D <&pinctrl_uart5_init>;
+>   pinctrl-names =3D "default", "init";
+>   ...
+> };
+> pinctrl_uart5_init: uart5-init-grp {
+>   fsl,pins =3D <
+> ...
+>     MX6QDL_PAD_CSI0_DAT19__GPIO6_IO05       0x30b1
+>   >;
+> };
+>=20
+> pinctrl_uart5: uart5-grp {
+>   fsl,pins =3D <
+> ...
+>     MX6QDL_PAD_CSI0_DAT19__UART5_CTS_B      0x30b1
+>   >;
+> };
+> "
 
-We must also drop IRQF_SHARED to set IRQ_NOAUTOEN to avoid spurious
-interrupts until the port has been registered. There's no need for
-IRQF_SHARED for 8250_omap, the serial port interrupt lines are dedicated
-lines.
+An alternative work around is to use the GPIO as RTS also in default,
+isn't it?
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
- drivers/tty/serial/8250/8250_omap.c | 44 ++++++++++++++---------------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> ---
+> Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+> Cc: Fabio Estevam <festevam@denx.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Cc: Peng Fan <peng.fan@nxp.com>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: kernel@dh-electronics.com
+> Cc: kernel@pengutronix.de
+> Cc: linux-arm-kernel@lists.infradead.org
+> To: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/imx.c | 51 +++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 45 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 05b432dc7a85c..144f1cedd4b64 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -489,7 +489,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
+>  static void imx_uart_stop_rx(struct uart_port *port)
+>  {
+>  	struct imx_port *sport =3D (struct imx_port *)port;
+> -	u32 ucr1, ucr2, ucr4;
+> +	u32 ucr1, ucr2, ucr4, uts;
+> =20
+>  	ucr1 =3D imx_uart_readl(sport, UCR1);
+>  	ucr2 =3D imx_uart_readl(sport, UCR2);
+> @@ -505,7 +505,17 @@ static void imx_uart_stop_rx(struct uart_port *port)
+>  	imx_uart_writel(sport, ucr1, UCR1);
+>  	imx_uart_writel(sport, ucr4, UCR4);
+> =20
+> -	ucr2 &=3D ~UCR2_RXEN;
+> +	if (port->rs485.flags & SER_RS485_ENABLED &&
+> +	    port->rs485.flags & SER_RS485_RTS_ON_SEND &&
+> +	    sport->have_rtscts && !sport->have_rtsgpio) {
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -625,9 +625,9 @@ static int omap_8250_dma_handle_irq(struct uart_port *port);
- 
- static irqreturn_t omap8250_irq(int irq, void *dev_id)
- {
--	struct uart_port *port = dev_id;
--	struct omap8250_priv *priv = port->private_data;
--	struct uart_8250_port *up = up_to_u8250p(port);
-+	struct omap8250_priv *priv = dev_id;
-+	struct uart_8250_port *up = serial8250_get_port(priv->line);
-+	struct uart_port *port = &up->port;
- 	unsigned int iir, lsr;
- 	int ret;
- 
-@@ -683,12 +683,6 @@ static int omap_8250_startup(struct uart_port *port)
- 	struct omap8250_priv *priv = port->private_data;
- 	int ret;
- 
--	if (priv->wakeirq) {
--		ret = dev_pm_set_dedicated_wake_irq(port->dev, priv->wakeirq);
--		if (ret)
--			return ret;
--	}
--
- 	pm_runtime_get_sync(port->dev);
- 
- 	up->mcr = 0;
-@@ -712,11 +706,6 @@ static int omap_8250_startup(struct uart_port *port)
- 		}
- 	}
- 
--	ret = request_irq(port->irq, omap8250_irq, IRQF_SHARED,
--			  dev_name(port->dev), port);
--	if (ret < 0)
--		goto err;
--
- 	up->ier = UART_IER_RLSI | UART_IER_RDI;
- 	serial_out(up, UART_IER, up->ier);
- 
-@@ -736,11 +725,6 @@ static int omap_8250_startup(struct uart_port *port)
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 	return 0;
--err:
--	pm_runtime_mark_last_busy(port->dev);
--	pm_runtime_put_autosuspend(port->dev);
--	dev_pm_clear_wake_irq(port->dev);
--	return ret;
- }
- 
- static void omap_8250_shutdown(struct uart_port *port)
-@@ -773,8 +757,6 @@ static void omap_8250_shutdown(struct uart_port *port)
- 
- 	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
--	free_irq(port->irq, port);
--	dev_pm_clear_wake_irq(port->dev);
- }
- 
- static void omap_8250_throttle(struct uart_port *port)
-@@ -1387,8 +1369,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 				 &up.overrun_backoff_time_ms) != 0)
- 		up.overrun_backoff_time_ms = 0;
- 
--	priv->wakeirq = irq_of_parse_and_map(np, 1);
--
- 	pdata = of_device_get_match_data(&pdev->dev);
- 	if (pdata)
- 		priv->habit |= pdata->habit;
-@@ -1466,16 +1446,33 @@ static int omap8250_probe(struct platform_device *pdev)
- 		}
- 	}
- #endif
-+
-+	irq_set_status_flags(irq, IRQ_NOAUTOEN);
-+	ret = devm_request_irq(&pdev->dev, irq, omap8250_irq, 0,
-+			       dev_name(&pdev->dev), priv);
-+	if (ret < 0)
-+		return ret;
-+
-+	priv->wakeirq = irq_of_parse_and_map(np, 1);
-+	if (priv->wakeirq) {
-+		ret = dev_pm_set_dedicated_wake_irq(&pdev->dev, priv->wakeirq);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = serial8250_register_8250_port(&up);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "unable to register 8250 port\n");
- 		goto err;
- 	}
- 	priv->line = ret;
-+	platform_set_drvdata(pdev, priv);
-+	enable_irq(irq);
- 	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 	return 0;
- err:
-+	dev_pm_clear_wake_irq(&pdev->dev);
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
- 	pm_runtime_put_sync(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-@@ -1493,6 +1490,7 @@ static int omap8250_remove(struct platform_device *pdev)
- 
- 	serial8250_unregister_port(priv->line);
- 	priv->line = -ENODEV;
-+	dev_pm_clear_wake_irq(&pdev->dev);
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
- 	pm_runtime_put_sync(&pdev->dev);
- 	flush_work(&priv->qos_work);
--- 
-2.37.3
+IMHO this needs a comment. The later hunks might benefit from a comment
+two. I'd explain it once in more detail and refer to that description
+=66rom the other relevant code sections.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--tzb3sd6pjcdccpnt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmMz+yYACgkQwfwUeK3K
+7AmC2Qf/ZjvFqBd/PMf1guNxdAvs4DEfaUYPfHvRxQcRP49TqNkNq2YcDLh431p4
+y2okzVFvgLLXh0fP860WgKiwJIpANbZT1PSQO7dJF8iGlIm4lFXJjtA0effVypf/
+ifsRrXZe8r3+trjkFNNuHOKvD9m4SGEBZ9dlr6088xLgJbv22B/aYPMhKbIIhxk1
+8VvXGimxtPxrKLc0ev2UaKPIDerlkEucPHKlpMAEdtfHUwzyHN1/xUCXuTtoYMUi
+Zn1WrJj+H95zLrLKdMIgewZm3H/l5wdquTpCns0YlTBScckUrkPCdzMqOUlRxC7X
+exBeV0XNYw0UFEY/iq2mMlqw6lJDFg==
+=IFJc
+-----END PGP SIGNATURE-----
+
+--tzb3sd6pjcdccpnt--
