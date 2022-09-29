@@ -2,114 +2,148 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA03C04A95
-	for <linux-serial@archiver.kernel.org>; Wed, 28 Sep 2022 23:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE48FC04A95
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 03:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233644AbiI1XdK (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 28 Sep 2022 19:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
+        id S234032AbiI2DaF (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Wed, 28 Sep 2022 23:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiI1XdI (ORCPT
+        with ESMTP id S234868AbiI2D3x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 28 Sep 2022 19:33:08 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16ED9B40CE
-        for <linux-serial@vger.kernel.org>; Wed, 28 Sep 2022 16:33:07 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id bj12so30130396ejb.13
-        for <linux-serial@vger.kernel.org>; Wed, 28 Sep 2022 16:33:07 -0700 (PDT)
+        Wed, 28 Sep 2022 23:29:53 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1517A1C43F;
+        Wed, 28 Sep 2022 20:29:46 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id jm5so123959plb.13;
+        Wed, 28 Sep 2022 20:29:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=q74yArMABpzeLkr74sIBfXXMxk7/EMgQ3hoGRYitxYU=;
-        b=U0Q8SQFHSkScbj4cM4pTg7Yzb04zm5WgomM/5gs7MQUTxOnAoEjVy5BjCW7Lo5/BUi
-         xVGQd3n/TGijftlrmbedS+TIFC4PIQ4GVxgHSTo1Hxqh7rav4zS5xPPOiO0U6zV/NMl4
-         5n8EmZnC9tTRHnX8rS/uqie8PD5M0KehiVHl4=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=WBLQeUiWrXR3Z7msbrDY/7CaG4wrpqUAwf6qrwrbU6A=;
+        b=VxSOGrGjbA/bYJRf7pHU3BC22kHB1pCeeLw3QZX/r/gwtuobatc9b3InephBeK8K3v
+         w4tChFV/yUPzFfdG83fKKERSkBKdGs0WWGMJWrZ9tXgCDGFekP1cdSNk+5H9AdgArbeO
+         7iaL05JZpCirdpaONrompU6L8t6bBQycDJnsluRsP2NJzRYGJx9OkCr8GNwbuNgFhv4L
+         yJUJpKf3PD2IjeDGHnmdcKBdeZh+jC+ngl5c6QJcy815d+4dujgMXs50CTPUd3DWKha+
+         taMUS3Es0LknaayEHmKb0znQTdFlKh6wPgVZOFxP0B235AxBWZxok8y004oynCYztULf
+         sC6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=q74yArMABpzeLkr74sIBfXXMxk7/EMgQ3hoGRYitxYU=;
-        b=Y4dl8zrvUate1OSxQUrW7Bf05S8QgkZfzB/0rRUjBk2vGHV0QH4wSHH17fBUMBrYF0
-         3KVIjwIPtXeVCFMC+JllJtPm6RB6MgRCH/NuVw7STyCpjNacwUfzjDDMT16lV23j9iHW
-         4ze8LoFsW9uOpNY8uYWvV1lqYRduiOlo1ij2sc6H5ssgfKS5LegodJNUT1FhfzgUIMgJ
-         RNCKC+QKMZ5iLmIrcQkkcTPPPBpaLG6xKDnphNfDH2MgjcZtPWXs78gDUdu0G7hmR9TX
-         78fnB8xzaToiO6raKeDczoYDmqIrO7ODu9I5xvcIPzypRqhLz/D2TJTnqKaX91VrZmh0
-         IqpA==
-X-Gm-Message-State: ACrzQf0iiDs36hCae//kg6E8sr37wgL0pRebcvrEGSlgO0XpMcu0rOC5
-        /Z5fLX9FlIYiqWSajTyHViLsH8feAGdRDt5R
-X-Google-Smtp-Source: AMsMyM6EifXEJ+KEa5dm9BB/FSRnOaxLEI6xuhsOxPNrcVN4rwzR9/Y6UJnoutqHIftGQUypn5vm6g==
-X-Received: by 2002:a17:907:a425:b0:783:b550:d99d with SMTP id sg37-20020a170907a42500b00783b550d99dmr289469ejc.17.1664407985326;
-        Wed, 28 Sep 2022 16:33:05 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id u24-20020a056402065800b004571907240asm4197586edx.36.2022.09.28.16.33.03
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 16:33:04 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id bk15so14252183wrb.13
-        for <linux-serial@vger.kernel.org>; Wed, 28 Sep 2022 16:33:03 -0700 (PDT)
-X-Received: by 2002:a5d:522f:0:b0:228:dc7f:b9a8 with SMTP id
- i15-20020a5d522f000000b00228dc7fb9a8mr145687wra.617.1664407983299; Wed, 28
- Sep 2022 16:33:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220924000454.3319186-1-john.ogness@linutronix.de> <20220924000454.3319186-10-john.ogness@linutronix.de>
-In-Reply-To: <20220924000454.3319186-10-john.ogness@linutronix.de>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 28 Sep 2022 16:32:51 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W5mnR6MH+KLK9VgUCvY0rsjkMdR7un=pHmtNBBup7w7g@mail.gmail.com>
-Message-ID: <CAD=FV=W5mnR6MH+KLK9VgUCvY0rsjkMdR7un=pHmtNBBup7w7g@mail.gmail.com>
-Subject: Re: [PATCH printk 09/18] serial: kgdboc: Lock console list in probe function
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=WBLQeUiWrXR3Z7msbrDY/7CaG4wrpqUAwf6qrwrbU6A=;
+        b=qSv3dImV2v+bm/CX+5yuGS2swlSqio/6uY3fk7zV8n0oDRGsQJWuicjpTUFtMm6XlY
+         QHr8XSsnykZWC91jd3dKIZYq3wGII1VJ7XjmreOzWGWAk3ktdV94wb5W4xa1XAMBqXDp
+         +q0i5R/sxRSzzGHWd8lroY1ZWQlW4U008Ko79VckmbcQS4ArySZ9bVWL44zq5tTJF2vl
+         xoC/xtYkjS/i+AH9IWorHBsNKFZRwdUqsbJ3JH0zypkknfuYWv1+DlIi35ulezxFWuOf
+         uJuozW9ru6Ffqxaq0esDZimAK3zxdnzNMtj+Ot269EKSMzq47EeX4Y/UJ/G7d5dZIrdw
+         Us/g==
+X-Gm-Message-State: ACrzQf1c4v2FoRQ0OQINDbsCB0VnKDGgz8NGycYbmQhnQLLM6QoiwB5C
+        hFGo+wAzlU6el2iBR+GZZys=
+X-Google-Smtp-Source: AMsMyM6AhuzBvnqb70L2tjG7p4gnIj3jE1w61YnXwy3QXbd9/cDs27XZOTWJTOQPOJoPhkBE+KfmAw==
+X-Received: by 2002:a17:902:ecca:b0:179:f3a3:11ae with SMTP id a10-20020a170902ecca00b00179f3a311aemr1336780plh.32.1664422186142;
+        Wed, 28 Sep 2022 20:29:46 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-79.three.co.id. [180.214.233.79])
+        by smtp.gmail.com with ESMTPSA id z9-20020a170903018900b00177f4ef7970sm4650993plg.11.2022.09.28.20.29.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 20:29:45 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 76D49109240; Thu, 29 Sep 2022 10:29:41 +0700 (WIB)
+Date:   Thu, 29 Sep 2022 10:29:41 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 1/4] serial: Convert serial_rs485 to kernel doc
+Message-ID: <YzURJa1RnxP+uj5/@debian.me>
+References: <20220928110509.13544-1-ilpo.jarvinen@linux.intel.com>
+ <20220928110509.13544-2-ilpo.jarvinen@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="K1U/UeAdAUv32+TP"
+Content-Disposition: inline
+In-Reply-To: <20220928110509.13544-2-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-On Fri, Sep 23, 2022 at 5:05 PM John Ogness <john.ogness@linutronix.de> wrote:
->
-> From: Thomas Gleixner <tglx@linutronix.de>
->
-> Unprotected list walks are not necessarily safe.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-> ---
->  drivers/tty/serial/kgdboc.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 79b7db8580e0..af2aa76bae15 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -193,7 +193,8 @@ static int configure_kgdboc(void)
->         if (!p)
->                 goto noconfig;
->
-> -       for_each_console(cons) {
-> +       console_list_lock();
-> +       for_each_registered_console(cons) {
->                 int idx;
->                 if (cons->device && cons->device(cons, &idx) == p &&
->                     idx == tty_line) {
-> @@ -201,6 +202,7 @@ static int configure_kgdboc(void)
->                         break;
->                 }
->         }
-> +       console_list_unlock();
+--K1U/UeAdAUv32+TP
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Seems right to me, thanks!
+On Wed, Sep 28, 2022 at 02:05:06PM +0300, Ilpo J=C3=A4rvinen wrote:
+> diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+> index cea06924b295..6e347eb10b1f 100644
+> --- a/include/uapi/linux/serial.h
+> +++ b/include/uapi/linux/serial.h
+> @@ -107,37 +107,57 @@ struct serial_icounter_struct {
+>  	int reserved[9];
+>  };
+> =20
+> -/*
+> +/**
+> + * struct serial_rs485 - serial interface for controlling RS485 settings.
+> + * @flags:			RS485 feature flags.
+> + * @delay_rts_before_send:	Delay before send (milliseconds).
+> + * @delay_rts_after_send:	Delay after send (milliseconds).
+> + * @addr_recv:			Receive filter for RS485 addressing mode
+> + *				(used only when %SER_RS485_ADDR_RECV is set).
+> + * @addr_dest:			Destination address for RS485 addressing mode
+> + *				(used only when %SER_RS485_ADDR_DEST is set).
+> + * @padding0:			Padding (set to zero).
+> + * @padding1:			Padding (set to zero).
+> + * @padding:			Deprecated, use @padding0 and @padding1 instead.
+> + *				Do not use with @addr_recv and @addr_dest (due to
+> + *				overlap).
+> + *
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+I don't see definition of fields after @delay_rts_after_send in the
+htmldocs output.
+
+>   * Serial interface for controlling RS485 settings on chips with suitable
+>   * support. Set with TIOCSRS485 and get with TIOCGRS485 if supported by =
+your
+>   * platform. The set function returns the new state, with any unsupporte=
+d bits
+>   * reverted appropriately.
+> + *
+> + * serial_rs485::flags bits are:
+> + *
+> + * * %SER_RS485_ENABLED		- RS485 enabled.
+> + * * %SER_RS485_RTS_ON_SEND	- Logical level for RTS pin when sending.
+> + * * %SER_RS485_RTS_AFTER_SEND	- Logical level for RTS pin after sent.
+> + * * %SER_RS485_RX_DURING_TX	- Full-duplex RS485 line.
+> + * * %SER_RS485_TERMINATE_BUS	- Enable bus termination (if supported).
+> + * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
+> + * * %SER_RS485_ADDR_RECV	- Receive address filter (enables @addr_recv).
+> + *				  Requires %SER_RS485_ADDRB.
+> + * * %SER_RS485_ADDR_DEST	- Destination address (enables @addr_dest).
+> + *				  Requires %SER_RS485_ADDRB.
+
+The last two items are rendered as bold text instead (maybe due to missing
+fields rendering above?)
+
+Thanks.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--K1U/UeAdAUv32+TP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYzURHwAKCRD2uYlJVVFO
+o8zJAQDrJlHQQ8z/otn+Vn3JTSypBOX/wYulcrUjC3PCnmS62QEAhw9oX9TDlsT7
+SHsIcotFsXnBGmqvABQh60L3fA9uJAM=
+=M/47
+-----END PGP SIGNATURE-----
+
+--K1U/UeAdAUv32+TP--
