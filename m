@@ -2,113 +2,147 @@ Return-Path: <linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4774C07E9D
-	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 07:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCDFC6FA82
+	for <linux-serial@archiver.kernel.org>; Thu, 29 Sep 2022 08:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbiI2Hfb (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 29 Sep 2022 03:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        id S235628AbiI2Ijs (ORCPT <rfc822;linux-serial@archiver.kernel.org>);
+        Thu, 29 Sep 2022 04:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiI2Hfa (ORCPT
+        with ESMTP id S235623AbiI2Ijq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 29 Sep 2022 03:35:30 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB9051402;
-        Thu, 29 Sep 2022 00:35:23 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id h7so753405wru.10;
-        Thu, 29 Sep 2022 00:35:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=GRl+oMu7Ig6loanPDrU5KffQs98gJpdl7SVPVmkpeUs=;
-        b=XptR0Jko0ezYV8xZfhTNdfModNf63g9qzI2uE70iHH7JMDPV/Mey2Fr9Z1bwojW5Dx
-         Wr2tbrsMShd/hytA/qhsWyu2OllTuU45th9ttL1P438klGwOAy9E8kIl9jUlT930LGkE
-         MHFDaeTiX1XkAjfXR2pe8FtEv0R4LAUfF5g86ngPsIVUajnYxA2Doe6AvppEMvg6Mvlr
-         O4T46clxAg8BdZEpDYJYs2jiVt6QcnrFe5WJ/GeWgGqo80Qfpp7vNfUfjQlgT1dyAbym
-         AI6IcavxukZgrcMuyyTEUlujiw/B7nM+sU22BLxYRYc0Gajetj4u2LEyt2qlPJXWts4L
-         5+rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=GRl+oMu7Ig6loanPDrU5KffQs98gJpdl7SVPVmkpeUs=;
-        b=omZH1iQe4nFnA08lvfehxSYqzxls8JNArZXaAH7ozL4n4YWLCIXN/gI3fclpaZtwQs
-         FN7Jqn/+xJZZKMKC4b5pYSeoWyyMsxgyjbOxCw0n4RbCBteOZi4tTfElaJ/rOUYUEiF/
-         RH4kqgUFIW/sRVV1znb91d83AoCOOgSWmWFk5txY3qUHG1CbdRSX70iGmPGMsZrsHyUB
-         I6s3RTQ9zcoLz3rrXHqvdpy5/zD9ic8U4f8aDL/MnvivArBj4nwPaCNiC0DfyWhiJL7A
-         HM65WkHA0psHnLN0r8o1/+A6xzW+uKrjKoPeIiQfPlUT+7S8779knmAHpjRPMQbEi/Ig
-         b8RQ==
-X-Gm-Message-State: ACrzQf20w5j2j5pLw6KjhElEup/V804dHPp6LmeXszsatlt3+1RLArum
-        YmMDjpg3es9x17wijpufwhg=
-X-Google-Smtp-Source: AMsMyM4EvRgq4gnZR1Iisps+1a9RfHGEa3bzDN7qrMsXr6sMPIvBaj2TODLQj9wFNMRjx2/q8J9W4A==
-X-Received: by 2002:a5d:6389:0:b0:22c:c497:4668 with SMTP id p9-20020a5d6389000000b0022cc4974668mr1132561wru.61.1664436921870;
-        Thu, 29 Sep 2022 00:35:21 -0700 (PDT)
-Received: from [192.168.178.202] (54.161.185.81.rev.sfr.net. [81.185.161.54])
-        by smtp.gmail.com with ESMTPSA id o9-20020a05600c510900b003a5c244fc13sm4055195wms.2.2022.09.29.00.35.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 00:35:21 -0700 (PDT)
-Message-ID: <ceefc4c1-128b-6582-6074-378ad3ae7e0a@gmail.com>
-Date:   Thu, 29 Sep 2022 09:35:18 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH -next] tty: serial: atmel: driver depends on COMMON_CLK
-Content-Language: fr
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Sergiu Moga <sergiu.moga@microchip.com>,
+        Thu, 29 Sep 2022 04:39:46 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB08A1ADAA;
+        Thu, 29 Sep 2022 01:39:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664440785; x=1695976785;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=5ZIGBUcxLSm/CK0zM/5R1D7/PfgOCEXhU60Fxb19yVM=;
+  b=awQLQHEOGdbcSwM4n+TPM1XofzEbbUdlwQogKkhTSTKSRhMQR5n+jff4
+   cOjADj+wdJOYLOqcNXnS3pS9wOllFFZekWKA0Nn0lZlJ124NT8sAkUaSP
+   SvrL8auNnMSJwdIKb+ziRNV03OLXaLpmozXudaFVStRFDthiunjyCLU2c
+   r0IDsOjJ2risSihSyLhDxUUARXM2IOsBnAeheTyDG9Egj7l+64dbtVGKD
+   gWCozVt1O8pAUxgU+p8asfvl2IxwOvePF0V/+WL0WwKiVve4PYnxbfmRh
+   TXKGTebIlZFFEsMBqKMdUeaG8Z3UV2BTvOkrcP+yFae//S+UuAjyubaMo
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="328207925"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="328207925"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 01:39:27 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="797473966"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="797473966"
+Received: from pramona-mobl1.ger.corp.intel.com ([10.252.60.139])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 01:39:24 -0700
+Date:   Thu, 29 Sep 2022 11:39:15 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>
+cc:     Jiri Slaby <jirislaby@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-References: <20220929054851.7723-1-rdunlap@infradead.org>
-From:   Richard Genoud <richard.genoud@gmail.com>
-In-Reply-To: <20220929054851.7723-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 1/4] serial: Convert serial_rs485 to kernel doc
+In-Reply-To: <YzURJa1RnxP+uj5/@debian.me>
+Message-ID: <75f07dbe-d1dd-ac18-5c8e-e6972e7fb28b@linux.intel.com>
+References: <20220928110509.13544-1-ilpo.jarvinen@linux.intel.com> <20220928110509.13544-2-ilpo.jarvinen@linux.intel.com> <YzURJa1RnxP+uj5/@debian.me>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-1716970536-1664440767=:1640"
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-Le 29/09/2022 à 07:48, Randy Dunlap a écrit :
-> Since atmel_serial.c uses interfaces that are provided by
-> the COMMON_CLK Kconfig symbol, the driver should depend on
-> COMMON_CLK to prevent build errors.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1716970536-1664440767=:1640
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+
+On Thu, 29 Sep 2022, Bagas Sanjaya wrote:
+
+> On Wed, Sep 28, 2022 at 02:05:06PM +0300, Ilpo Järvinen wrote:
+> > diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+> > index cea06924b295..6e347eb10b1f 100644
+> > --- a/include/uapi/linux/serial.h
+> > +++ b/include/uapi/linux/serial.h
+> > @@ -107,37 +107,57 @@ struct serial_icounter_struct {
+> >  	int reserved[9];
+> >  };
+> >  
+> > -/*
+> > +/**
+> > + * struct serial_rs485 - serial interface for controlling RS485 settings.
+> > + * @flags:			RS485 feature flags.
+> > + * @delay_rts_before_send:	Delay before send (milliseconds).
+> > + * @delay_rts_after_send:	Delay after send (milliseconds).
+> > + * @addr_recv:			Receive filter for RS485 addressing mode
+> > + *				(used only when %SER_RS485_ADDR_RECV is set).
+> > + * @addr_dest:			Destination address for RS485 addressing mode
+> > + *				(used only when %SER_RS485_ADDR_DEST is set).
+> > + * @padding0:			Padding (set to zero).
+> > + * @padding1:			Padding (set to zero).
+> > + * @padding:			Deprecated, use @padding0 and @padding1 instead.
+> > + *				Do not use with @addr_recv and @addr_dest (due to
+> > + *				overlap).
+> > + *
 > 
-> ld: drivers/tty/serial/atmel_serial.o: in function `atmel_serial_pm':
-> atmel_serial.c:(.text+0x1553): undefined reference to `__clk_is_enabled'
-> ld: drivers/tty/serial/atmel_serial.o: in function `atmel_set_termios':
-> atmel_serial.c:(.text+0x1dfe): undefined reference to `__clk_is_enabled'
+> I don't see definition of fields after @delay_rts_after_send in the
+> htmldocs output.
+
+So it seems, this one I had missed. I guess the reason is that those 
+members are inside anonymous unions. But the formatting follows what 
+is documented here AFAICT:
+
+https://www.kernel.org/doc/html/latest/doc-guide/kernel-doc.html#nested-structs-unions
+
+Kerneldoc doesn't seem to live up to what is documented about it. It's a 
+bit ironic that documentation system fails to document even itself to 
+sufficient level, and what's worse, seems to be full of faulty examples.
+
+Any suggestions how to make it work?
+
+> >   * Serial interface for controlling RS485 settings on chips with suitable
+> >   * support. Set with TIOCSRS485 and get with TIOCGRS485 if supported by your
+> >   * platform. The set function returns the new state, with any unsupported bits
+> >   * reverted appropriately.
+> > + *
+> > + * serial_rs485::flags bits are:
+> > + *
+> > + * * %SER_RS485_ENABLED		- RS485 enabled.
+> > + * * %SER_RS485_RTS_ON_SEND	- Logical level for RTS pin when sending.
+> > + * * %SER_RS485_RTS_AFTER_SEND	- Logical level for RTS pin after sent.
+> > + * * %SER_RS485_RX_DURING_TX	- Full-duplex RS485 line.
+> > + * * %SER_RS485_TERMINATE_BUS	- Enable bus termination (if supported).
+> > + * * %SER_RS485_ADDRB		- Enable RS485 addressing mode.
+> > + * * %SER_RS485_ADDR_RECV	- Receive address filter (enables @addr_recv).
+> > + *				  Requires %SER_RS485_ADDRB.
+> > + * * %SER_RS485_ADDR_DEST	- Destination address (enables @addr_dest).
+> > + *				  Requires %SER_RS485_ADDRB.
 > 
-> Fixes: 5e3ce1f26129 ("tty: serial: atmel: Make the driver aware of the existence of GCLK")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Sergiu Moga <sergiu.moga@microchip.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Richard Genoud <richard.genoud@gmail.com>
-> Cc: linux-serial@vger.kernel.org
-> Cc: Jiri Slaby <jirislaby@kernel.org>
+> The last two items are rendered as bold text instead (maybe due to missing
+> fields rendering above?)
 
-There's already a patch fixing this, acked by Nicolas :
-https://lkml.org/lkml/2022/9/26/1587
+It just goes into some random formatting mode here. Even if I remove those 
+field markers (@) it doesn't do formatting differently so your guesss is 
+wrong.
 
-> ---
->   drivers/tty/serial/Kconfig |    1 +
->   1 file changed, 1 insertion(+)
-> 
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -128,6 +128,7 @@ config SERIAL_SB1250_DUART_CONSOLE
->   config SERIAL_ATMEL
->   	bool "AT91 on-chip serial port support"
->   	depends on ARCH_AT91 || COMPILE_TEST
-> +	depends on COMMON_CLK
->   	select SERIAL_CORE
->   	select SERIAL_MCTRL_GPIO if GPIOLIB
->   	select MFD_AT91_USART
+I found now a way to make it work though. It works when I put the whole 
+description on a single line but it comes at the cost of removing the 
+alignment of those "-". The other way to make it work would be like this:
 
-Thanks !
+* * %SER_RS485_ADDR_RECV - Receive address filter (enables @addr_recv).
+    Requires %SER_RS485_ADDRB.
 
-Regards,
-Richard
+...And that's no good. I guess the single-line approach is an acceptable 
+compromise for this case.
+
+-- 
+ i.
+
+--8323329-1716970536-1664440767=:1640--
